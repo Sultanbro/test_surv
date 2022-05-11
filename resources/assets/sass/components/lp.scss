@@ -1,0 +1,35 @@
+.lp {
+    flex: 0 0 290px;
+    max-width: 290px;
+    overflow-x: hidden;
+    float:left;
+    padding: 10px;
+    background: #f8f8f8;
+    display: flex;
+    height: 100%;
+    min-height: 100vh;
+    //min-height: calc(100vh - 55px);
+    border-right: 1px solid #dfdfdf;
+    position: sticky;
+    top: 0;
+    width: 290px;
+    flex-direction: column;
+    height: 100%;
+
+    & > .dragArea {
+        margin-left: 0;
+    }
+    a {
+        color: #262626;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+        &:hover {
+            color: #466446;
+        }
+    }
+
+    i {
+    color: #262626;
+    }
+}

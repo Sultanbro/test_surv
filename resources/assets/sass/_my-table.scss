@@ -1,0 +1,167 @@
+.my-table {
+    max-height: none !important;
+    font-family: 'Calibri', Arial, Helvetica, sans-serif;
+    tr {
+        .badge {
+            opacity: 0;
+        }
+        &:hover {
+            .badge {
+                opacity: 1;
+            }
+        }
+    }
+    th {
+        background-color: #fff !important;
+        box-shadow: 5px 2px 4px 0px rgba(0, 0, 0, 0.14);
+        color: #000 !important;
+        border-bottom: none !important;
+    }
+    .cell-border {
+        position: absolute;
+        right: -1px;
+        bottom: -4px;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 6px solid #b8daff;
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+    .t-name {
+        padding: 0 .5rem !important;
+        vertical-align: middle;
+        text-align: center;
+        font-weight: 500;
+    }
+    td {
+        height: 30px;
+    }
+    &.summary-kaspi {
+        td {
+            padding: 0 !important;
+            input {
+                height: 100%;
+                line-height: 25px;
+                border: 2px solid transparent;
+                padding: 0.3rem 0 !important;
+            }
+            .t-name div {
+                padding: 0px 7px !important;
+            }
+            div {
+                height: 100%;
+                line-height: 25px;
+                border: 2px solid transparent;
+                padding: 0 0.3rem !important
+            }
+        }
+    }
+    .day {
+        min-width: 45px;
+        padding: .2rem .3rem !important;
+        vertical-align: middle;
+        text-align: center;
+        position: relative;
+        font-weight: 700;
+        font-size: .8rem;
+        >div {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            cursor: pointer;
+            &:hover {
+                background: rgba(184, 218, 255, 0.384);
+            }
+        }
+        &.Sat,
+        &.Sun {
+            background: #FEF2CB;
+        }
+    }
+    overflow-x: scroll;
+    scrollbar-color: #23b3f2 #F5F5F5;
+    scrollbar-width: thin;
+    &::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+        background-color: #F5F5F5;
+    }
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+        background-color: #F5F5F5;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 5px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+        background-color: #23b3f2;
+    }
+}
+
+.table {
+    .day-minute {
+        &.table-success {
+            background-color: #56ea56 !important;
+        }
+        &.table-danger {
+            background-color: #ff7669 !important;
+        }
+    }
+    .day {
+        &.table-success {
+            background-color: #56ea56 !important;
+        }
+        &.table-danger {
+            background-color: #ff7669 !important;
+        }
+    }
+    td.px-3 {
+        &.table-success {
+            background-color: #56ea56 !important;
+        }
+        &.table-danger {
+            background-color: #ff7669 !important;
+        }
+    }
+}
+
+.my-table-max {
+    max-height: inherit !important;
+    .day-minute {
+        padding: 0 !important;
+        text-align: center;
+        &.table-success {
+            background-color: #56ea56 !important;
+        }
+        &.table-danger {
+            background-color: #ff7669 !important;
+        }
+    }
+}
+
+.my-table::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+    background-color: #F5F5F5;
+}
+
+.my-table::-webkit-scrollbar-thumb {
+    border-radius: 0;
+    box-shadow: unset !important;
+    background-color: #dbdbdb;
+    cursor: pointer;
+}
+
+.my-table::-webkit-scrollbar-track {
+    box-shadow: unset !important;
+    border-radius: 0;
+    background-color: #F5F5F5;
+}

@@ -1,0 +1,33 @@
+.kb-sections {
+    .section {
+        padding: 8px 0;
+        cursor:pointer;
+        p {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+        &:hover {
+            p {
+                display: block;
+            }   
+            i {
+                display: block;
+            }
+        }
+        i {
+            display: none;
+            width: 27px;
+            margin-left: 5px;
+            padding: 5px;
+            background: #dddddd;
+            border-radius: 4px;
+            &:hover {
+                color:$hover-blue;
+            }
+        }
+    }
+}
+
+
