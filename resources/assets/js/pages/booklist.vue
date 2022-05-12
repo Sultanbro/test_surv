@@ -286,6 +286,21 @@
             <div class="bp" v-html="activesbook.text">
             
             </div>
+
+            <questions
+                  v-if="[5,18,157,84].includes(auth_user_id)"
+                  :questions="activesbook.questions"
+                  :id="activesbook.id"
+                  type="kb"
+                  mode="edit"
+                />
+            <questions
+                  v-else
+                  :questions="activesbook.questions"
+                  :id="activesbook.id"
+                  type="kb"
+                  mode="read"
+                />
           </div>
         </template>
       </div>
