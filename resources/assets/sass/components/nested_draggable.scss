@@ -120,7 +120,7 @@ ul {
 li.chapter:hover > div p {
   color: rgb(10, 161, 10);
 }
-.chapter {
+.dragArea .chapter {
   .mover {
     display: none;
   }
@@ -129,8 +129,7 @@ li.chapter:hover > div p {
   }
 }
 
-.chapter:hover ,
-.chapter:hover ~ .chapter {
+.dragArea:hover .chapter {
   .mover {
     display: block;
   }

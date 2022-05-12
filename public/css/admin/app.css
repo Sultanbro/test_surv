@@ -1776,23 +1776,21 @@ li.chapter:hover > div p {
   color: #0aa10a;
 }
 
-.chapter .mover {
+.dragArea .chapter .mover {
   display: none;
 }
 
-.chapter .shower {
+.dragArea .chapter .shower {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
 
-.chapter:hover .mover,
-.chapter:hover ~ .chapter .mover {
+.dragArea:hover .chapter .mover {
   display: block;
 }
 
-.chapter:hover .shower,
-.chapter:hover ~ .chapter .shower {
+.dragArea:hover .chapter .shower {
   display: none;
 }
 
