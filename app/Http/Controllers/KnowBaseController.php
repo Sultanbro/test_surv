@@ -25,6 +25,13 @@ class KnowBaseController extends Controller
         ];
     }
 
+    public function getArchived(Request $request) {
+        return [
+            'books' => KnowBase::onlyTrashed()->whereNull('parent_id')->with('children')->orderBy('order')->get()->toArray(),
+        ];
+    }
+    
+
     public function getTree(Request $request) {
         $trees = KnowBase::where('parent_id', $request->id)->with('children')->orderBy('order')->get();
 

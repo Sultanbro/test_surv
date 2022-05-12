@@ -30,7 +30,8 @@
         </div>
         
         <div class="sections-wrap noscrollbar" v-else>
-          <template v-for="(book, b_index) in archived_books">
+          <template v-for="(book, b_index) in 
+          ">
             <div
               class="section d-flex aic jcsb"
               :key="book.id"
@@ -48,11 +49,11 @@
 
 
         <div class="d-flex">
-          <div class="btn" @click="showArchive = true" v-if="[5,18,157,84].includes(auth_user_id)">
-            <i class="fa fa-plus"></i>
+          <div class="btn btn-grey" @click="getArchivedBooks" v-if="[5,18,157,84].includes(auth_user_id)">
+            <i class="fa fa-trash"></i>
             <span>Архив</span>
           </div>
-          <div class="btn" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
+          <div class="btn btn-grey" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
             <i class="fa fa-plus"></i>
             <span>Добавить</span>
           </div>
@@ -115,6 +116,7 @@ export default {
   data: function() {
     return {
       books: [],
+      archived_books: [],
       trees: [],
       section: 0,
       activeBook: null,
@@ -171,7 +173,7 @@ export default {
     back() {
       this.activeBook = null;
     },
-
+    
     editAccess(book) {
       alert('Редактирование доступа');
     },
@@ -201,7 +203,28 @@ export default {
           loader.hide();
           alert(error);
         });
+    },
+
+    getArchivedBooks() {
+      let loader = this.$loading.show();
+
+      axios
+        .get("/kb/get-archived")
+        .then((response) => {
+         
+          this.archived_books = response.data.books
+          this.showArchive = true
+          loader.hide();
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
     }
+
+
+
+    
   },
 };
 </script>
