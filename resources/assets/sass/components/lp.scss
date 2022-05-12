@@ -20,10 +20,11 @@
         height: calc(100vh - 150px);
         overflow-y:auto;
         overflow-x: hidden;
+        & > .dragArea {
+            margin-left: 5px;
+        }
     }
-    & > .dragArea {
-        margin-left: 0;
-    }
+    
     a {
         color: #262626;
         text-overflow: ellipsis;

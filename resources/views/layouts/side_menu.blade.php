@@ -191,6 +191,9 @@
 
 
 
+
+
+
 <!-- profile menu -->
 <div class="profile-menu">
     <ul>
@@ -202,6 +205,13 @@
         </li>
         <li>
             <a href="#" class="link">
+                    @include('includes.admin_notifications', [
+                            'unread_notifications' => $unread_notifications,
+                            'read_notifications' => $read_notifications,
+                            'unread' => $unread,
+                            'head_users' => $head_users,
+                            'bonus_notification' => $bonus_notification,
+                        ])
                 <i class="far fa-bell"></i>
                 <span>Уведомления</span>
             </a>

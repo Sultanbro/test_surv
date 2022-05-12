@@ -1854,8 +1854,8 @@ li.chapter:hover > div p {
   overflow-x: hidden;
 }
 
-.lp > .dragArea {
-  margin-left: 0;
+.lp .kb-wrap > .dragArea {
+  margin-left: 5px;
 }
 
 .lp a {

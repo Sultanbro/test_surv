@@ -27,7 +27,13 @@
 
 <div id="app" class="right-panel right-panel-app d-flex">
 
-    @include('layouts.side_menu')
+    @include('layouts.side_menu', [
+                            'unread_notifications' => $unread_notifications,
+                            'read_notifications' => $read_notifications,
+                            'unread' => $unread,
+                            'head_users' => $head_users,
+                            'bonus_notification' => $bonus_notification,
+                        ])
         
     <div class="page">
 
@@ -47,13 +53,7 @@
 
                 </div>
                 <div class=" d-flex justify-content-end">
-                    @include('includes.admin_notifications', [
-                            'unread_notifications' => $unread_notifications,
-                            'read_notifications' => $read_notifications,
-                            'unread' => $unread,
-                            'head_users' => $head_users,
-                            'bonus_notification' => $bonus_notification,
-                        ])
+                   
                     <div class="user-area dropdown " style="display: flex; align-items: center;">
                         <profile user="{{json_encode(auth()->user())}}"></profile>
                     </div>
