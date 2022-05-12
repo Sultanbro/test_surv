@@ -298,7 +298,36 @@ $('#setRead').click(function() {
     font-size: 12px;
 }
 </style>
-
+<style>
+.kolokolchik {
+  position: static !important;
+}
+.kolokolchik .panel {
+    width: 480px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin-left: 0;
+}
+.kolokolchik .panel .tail {
+    position: absolute;
+    border: 10px solid transparent;
+    top: 20px;
+    left: -8px;
+    filter: drop-shadow(2px 11px 0px black);
+    margin-left: -10px;
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+.kolokolchik .panel .panel_body .notification_list .notification_item {
+    background-color: #f7fcff;
+    border-radius: 5px;
+    border: 1px solid #e4eef7;
+}
+.kolokolchik .panel .panel_body .notification_list .notification_item .notification-change {
+  background: #459cd1;
+}
+</style>
 <style>
       a {
         cursor: pointer;

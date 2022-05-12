@@ -205,7 +205,7 @@
         </li>
         <li>
             <a href="#" class="link">
-                    @include('includes.admin_notifications', [
+                @include('includes.admin_notifications', [
                             'unread_notifications' => $unread_notifications,
                             'read_notifications' => $read_notifications,
                             'unread' => $unread,
