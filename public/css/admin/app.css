@@ -3346,6 +3346,10 @@ body.admin {
   background: aliceblue;
 }
 
+#video.w65 {
+  width: 65%;
+}
+
 .admin label {
   font-weight: 700;
 }

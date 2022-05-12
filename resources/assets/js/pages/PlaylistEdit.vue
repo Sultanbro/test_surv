@@ -207,7 +207,7 @@
     >
       <div class="fast-edit">
         <div v-if="activeVideo !== null">
-          <div id="video" class="mb-3"></div>
+          <div id="video" class="mb-3 w65"></div>
 
           <div class="row mb-2">
             <div class="col-md-4">

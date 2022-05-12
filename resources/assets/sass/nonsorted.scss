@@ -564,7 +564,10 @@ body.admin {
 }
 #video {
   width: 100%;
-  background: aliceblue; 
+  background: aliceblue;
+  &.w65 {
+    width: 65%;
+  } 
 }
 .admin label {
   font-weight: 700;
