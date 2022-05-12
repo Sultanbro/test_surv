@@ -304,6 +304,8 @@ $('#setRead').click(function() {
 <style>
 .kolokolchik {
   position: static !important;
+    float: none;
+    width: 100%;
 }
 .kolokolchik .panel {
     width: 480px;

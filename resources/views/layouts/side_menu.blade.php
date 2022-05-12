@@ -206,7 +206,7 @@
         <li>
             <div class="link">
                 <div class="kolokolchik">
-                    <div id="toggle_panel">
+                    <div id="toggle_panel" class="d-flex">
                         <i class="far fa-bell"></i>
                         <span>Уведомления</span>
                     </div>
