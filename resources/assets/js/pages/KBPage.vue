@@ -149,12 +149,10 @@ export default {
     // бывор группы
     const urlParams = new URLSearchParams(window.location.search);
     let section = urlParams.get('s');
-    console.log(section);
-    console.log(this.books);
-    if(this.books.findIndex(b => b.id == Number(section)) != -1) {
-      this.selectSection(this.books.find(b => b.id == Number(section)));
+    if(section) {
+      console.log(section)
+      this.selectSection(this.books.find(b => b.id == Number(section)))
     }
-
   },
 
   methods: {
@@ -175,6 +173,9 @@ export default {
           id: book.id,
         })
         .then((response) => {
+          if(response.data.error) {
+            this.$message.info('Раздел не найден');
+          }
           this.trees = response.data.trees;
           this.activeBook = book;
 
