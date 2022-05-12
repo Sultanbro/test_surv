@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\KnowBase;
 use App\User;
+use App\Models\TestQuestion;
 use Carbon\Carbon;
 
 class KnowBaseController extends Controller
