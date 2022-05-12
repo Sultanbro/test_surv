@@ -21,13 +21,13 @@ class KnowBaseController extends Controller
 
     public function get(Request $request) {
         return [
-            'books' => KnowBase::whereNull('parent_id')->with('children:id,title,parent_id,order')->orderBy('order')->get()->toArray(),
+            'books' => KnowBase::whereNull('parent_id')->orderBy('order')->get()->toArray(),
         ];
     }
 
     public function getArchived(Request $request) {
         return [
-            'books' => KnowBase::onlyTrashed()->whereNull('parent_id')->with('children')->orderBy('order')->get()->toArray(),
+            'books' => KnowBase::onlyTrashed()->whereNull('parent_id')->orderBy('order')->get()->toArray(),
         ];
     }
     
