@@ -83,7 +83,7 @@
                                         <i class="fa far fa-trash"></i>
                                         <div class="text">Убрать из плейлиста</div>
                                     </div>
-                                    <div class="item" @click.stop="showTests(v_index)">
+                                    <div class="item" @click.stop="showQuestions(v_index)">
                                         <i class="fa far fa-question"></i>
                                         <div class="text">Тесты к видео</div>
                                     </div>
@@ -142,6 +142,17 @@
     </div>
     
 
+    <b-modal v-model="modals.questions.show" hide-footer title="Вопросы к видео" size="lg">
+        <div class="vid">
+           <questions
+                v-if="[5,18,157,84].includes(auth_user_id)"
+                :questions="activeVideo.questions"
+                :id="activeVideo.id"
+                type="video"
+                mode="edit"
+            />
+        </div>
+    </b-modal>
 
     <b-modal v-model="modals.addVideo.show" hide-footer title="Добавить видео из существующих" size="lg">
         <div class="video-search">
@@ -241,6 +252,9 @@ export default {
                     },
                     file: null
                 },
+                questions: {
+                    show: false
+                }
             },
             player: null
         };
@@ -259,6 +273,13 @@ export default {
      
     },
     methods: {
+        showQuestions(v_index) {
+            let questions = this.playlist.videos[v_index].questions;
+            if(questions == undefined) this.playlist.videos[v_index].questions = [];
+            this.modals.questions.show = true;
+            this.activeVideo = this.playlist.videos[v_index];
+        },
+
         saveOrder(evt) {
             console.log(evt.oldIndex);
             console.log(evt.newIndex);
@@ -290,9 +311,6 @@ export default {
             });
         },
 
-        showTests(v_index) {
-             console.log('showTests');
-        },
         openControlsMenu(video) {
             console.log('openControlsMenu');
             video.show_controls = true

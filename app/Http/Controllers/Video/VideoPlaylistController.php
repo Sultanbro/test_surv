@@ -36,8 +36,14 @@ class VideoPlaylistController extends Controller {
 	}
 
 	public function get($id) {
+
+		$pl =  Playlist::with('videos')->find($id);
+
+		foreach($pl->videos as $video) {
+			$video->questions = TestQuestion::where('testable_type', 'video')->where('testable_id', $video->id)->get();
+		}
 		return [
-			'playlist' => Playlist::with('videos')->find($id),
+			'playlist' => $pl,
 			'categories' => Category::all(),
 			'all_videos' => Video::select('id', 'title', 'links')->where('playlist_id', 0)->get(),
 		];
@@ -147,24 +153,25 @@ class VideoPlaylistController extends Controller {
 
 	public function saveTest(Request $request)
     {
-      foreach ($request->questions as $key => $q) {
-        $params = [
-            'order' => 0,
-            'page'=> 0,
-            'points'=> $q['points'],
-            'testable_id'=> $request->id,
-            'testable_type'=> "video",
-            'text'=> $q['text'],
-            'type'=> $q['type'],
-            'variants'=> $q['variants'],
-        ];
+      	foreach ($request->questions as $key => $q) {
+			$params = [
+				'order' => 0,
+				'page'=> 0,
+				'points'=> $q['points'],
+				'testable_id'=> $request->id,
+				'testable_type'=> "video",
+				'text'=> $q['text'],
+				'type'=> $q['type'],
+				'variants'=> $q['variants'],
+			];
 
-        if($q['id'] != 0) {
-            $testq = TestQuestion::find($q['id']);
-            if($testq) $testq->update($params);
-        } else {
-            TestQuestion::create($params);
-        }
+			if($q['id'] != 0) {
+				$testq = TestQuestion::find($q['id']);
+				if($testq) $testq->update($params);
+			} else {
+				TestQuestion::create($params);
+			}
+		}
     }
 	
 }
