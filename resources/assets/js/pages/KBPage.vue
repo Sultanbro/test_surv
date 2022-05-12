@@ -20,7 +20,7 @@
             class="dragArea" 
             tag="div"
             handle=".fa-bars"
-            :list="tasks"
+            :list="books"
             :group="{ name: 'g1' }"
             @end="saveOrder">
             <template v-for="(book, b_index) in books">

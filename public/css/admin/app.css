@@ -3456,7 +3456,7 @@ body {
   display: block;
 }
 
-.kb-sections .section:hover i {
+.kb-sections .section:hover .section-btns i {
   display: block;
 }
 
