@@ -20,7 +20,8 @@ $(".panel_head .panel_in").on("click", function(e) {
 
 
 $('#toggle_panel').click(function() {
-  $('#noti_panel').toggle();
+  $('#noti_panel .bgpanel').toggleClass('active');
+  $('#noti_panel .panel').slideToggle();
 });
 
 $.ajaxSetup({
