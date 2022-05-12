@@ -2236,7 +2236,7 @@ ul.main-menu {
 
 .questions {
   padding: 30px;
-  max-width: 750px;
+  max-width: 100%;
   background: #ffffff;
   border: 1px solid #d7d7d7;
   border-radius: 5px;

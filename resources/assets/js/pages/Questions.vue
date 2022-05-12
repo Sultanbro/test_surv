@@ -128,7 +128,7 @@
     </template>
     <template v-if="mode == 'edit'">
       <button
-        v-if="['kb', 'video'].includes(type)"
+        v-if="['kb'].includes(type)"
         class="btn btn-success mr-2" 
         @click="saveTest">
           Сохранить

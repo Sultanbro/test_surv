@@ -259,7 +259,7 @@
 
 
           <div class="d-flex mt-3">
-            <button class="btn mr-1" @click="saveActiveVideo">Сохранить</button>
+            <button class="btn mr-1" @click="updateVideo">Сохранить</button>
           </div>
         </div>
       </div>
@@ -390,7 +390,7 @@ export default {
         });
     },
 
-    saveVideo() {
+   updateVideo() {
       axios
         .post("/playlists/video/update", {
           id: this.playlist.id,
