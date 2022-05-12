@@ -156,6 +156,7 @@ export default {
   },
 
   methods: {
+    
     fetchData() {
       axios
         .get("/kb/get", {})
@@ -179,7 +180,12 @@ export default {
           this.trees = response.data.trees;
           this.activeBook = response.data.book;
 
-          window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + book.id);
+          // change URL
+          const urlParams = new URLSearchParams(window.location.search);
+          let b = urlParams.get('b');
+          let uri = "/kb?s=" + book.id;
+          if(b) uri+= '&?b=' + b;
+          window.history.replaceState({}, "База знаний", uri);
 
         })
         .catch((error) => {
