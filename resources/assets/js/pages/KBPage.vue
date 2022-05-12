@@ -7,8 +7,12 @@
           <i class="fa fa-search"></i>
           <span>Искать в базе...</span>
         </div>
+        <div class="btn btn-grey mb-3" @click="showArchive = false" v-if="showArchive">
+          <i class="fa fa-arrow-left"></i>
+          <span>Вернуться к разделам</span>
+        </div>
 
-        <div class="sections-wrap noscrollbar">
+        <div class="sections-wrap noscrollbar" v-if="!showArchive">
           <template v-for="(book, b_index) in books">
             <div
               class="section d-flex aic jcsb"
@@ -25,11 +29,35 @@
           </template>
         </div>
         
-
-        <div class="btn-add" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
-          <i class="fa fa-plus"></i>
-          <span>Добавить раздел</span>
+        <div class="sections-wrap noscrollbar" v-else>
+          <template v-for="(book, b_index) in archived_books">
+            <div
+              class="section d-flex aic jcsb"
+              :key="book.id"
+              v-if="[5,18,157,84].includes(auth_user_id)"
+              @click.stop="selectSection(book)"
+            >
+              <p>{{ book.title }}</p>
+              <div class="section-btns">
+                <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
+                <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
+              </div>
+            </div>
+          </template>
         </div>
+
+
+        <div class="d-flex">
+          <div class="btn" @click="showArchive = true" v-if="[5,18,157,84].includes(auth_user_id)">
+            <i class="fa fa-plus"></i>
+            <span>Архив</span>
+          </div>
+          <div class="btn" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
+            <i class="fa fa-plus"></i>
+            <span>Добавить</span>
+          </div>
+        </div>
+        
       </aside>
       <div class="rp" style="flex: 1 1 0%; padding-bottom: 50px;">
         <div class="hat">
@@ -91,6 +119,7 @@ export default {
       section: 0,
       activeBook: null,
       showCreate: false,
+      showArchive: false,
       section_name: ''
     };
   },
