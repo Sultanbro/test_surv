@@ -280,7 +280,7 @@
               <img src="/images/avatar.png" alt="avatar icon">
               <div class="text">
                 <p class="name">{{ activesbook.author }}</p>
-                <p class="edited">{{ activesbook.updated_at }}</p>
+                <p class="edited">{{ activesbook.edited_at }}</p>
               </div>
             </div>
             <div class="bp" v-html="activesbook.text">

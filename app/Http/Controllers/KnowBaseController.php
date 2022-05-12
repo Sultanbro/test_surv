@@ -52,7 +52,7 @@ class KnowBaseController extends Controller
 
       $user = User::withTrashed()->find($page->user_id);
       $page->author = $user ? $user->LAST_NAME . ' ' . $user->NAME : 'Неизвестный';
-      $page->updated_at = Carbon::parse($page->updated_at)->format('H:i d.m.Y');
+      $page->edited_at = Carbon::parse($page->updated_at)->format('H:i d.m.Y');
     
       return [
         'book' => $page
