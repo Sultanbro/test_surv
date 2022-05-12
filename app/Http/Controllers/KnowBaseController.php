@@ -21,7 +21,7 @@ class KnowBaseController extends Controller
 
     public function get(Request $request) {
         return [
-            'books' => KnowBase::whereNull('parent_id')->with('children:id,name,parent_id,order')->orderBy('order')->get()->toArray(),
+            'books' => KnowBase::whereNull('parent_id')->with('children:id,title,parent_id,order')->orderBy('order')->get()->toArray(),
         ];
     }
 
