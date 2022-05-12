@@ -145,6 +145,14 @@ export default {
 
   created() {
     this.fetchData();
+
+    // бывор группы
+    const urlParams = new URLSearchParams(window.location.search);
+    let section = urlParams.get('s');
+    if(this.books.findIndex(b => b.id == Number(section)) != -1) {
+      this.selectSection(this.books.find(b => b.id == Number(section)));
+    }
+
   },
 
   methods: {
@@ -167,6 +175,9 @@ export default {
         .then((response) => {
           this.trees = response.data.trees;
           this.activeBook = book;
+
+          window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + book.id);
+
         })
         .catch((error) => {
           alert(error);
