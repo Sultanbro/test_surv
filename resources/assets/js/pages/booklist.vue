@@ -275,7 +275,18 @@
         </template>
 
         <template  v-if="activesbook != null && !edit_actives_book">
-          <div class="book_page" v-html="activesbook.text"></div>
+          <div class="book_page">
+            <div class="author d-flex aic mb-2">
+              <img src="/images/avatar.png" alt="avatar icon">
+              <div class="text">
+                <p class="name">{{ activesbook.author }}</p>
+                <p class="edited">{{ activesbook.updated_at }}</p>
+              </div>
+            </div>
+            <div class="bp" v-html="activesbook.text">
+            
+            </div>
+          </div>
         </template>
       </div>
 

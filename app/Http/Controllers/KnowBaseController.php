@@ -46,7 +46,12 @@ class KnowBaseController extends Controller
 
     public function getPage(Request $request, $id = null)
     {
-      $page = KnowBase::find($request->id);
+      $page = KnowBase::withTrashed()->find($request->id);
+
+      $user = User::withTrashed()->find($page->user_id);
+      $page->author = $user ? $user->LAST_NAME . ' ' . $user->NAME : 'Неизвестный';
+      $page->updated_at = $page->updated_at->format('H:i d.m.Y');
+    
       return [
         'book' => $page
       ];
