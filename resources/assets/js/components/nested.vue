@@ -70,7 +70,7 @@ export default {
     
     saveOrder(event) {
 
-        console.log(event)
+      
 
         let parent_id = null;
         if(event.to.parentElement.nodeName != "ASIDE") {
@@ -85,7 +85,7 @@ export default {
           parent_id: parent_id
         })
         .then(response => {
-           
+           this.$message.success('Очередь сохранена');
         })
     },
 
