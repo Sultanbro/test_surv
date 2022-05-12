@@ -48,7 +48,7 @@
 
     <!-- PAGE -->
     <div v-else>
-      <booklist :trees="trees" :parent_name="activeBook.name" :parent_id="activeBook.id" @back="back" :auth_user_id="auth_user_id" />
+      <booklist :trees="trees" :parent_name="activeBook.title" :parent_id="activeBook.id" @back="back" :auth_user_id="auth_user_id" />
     </div>
 
 
