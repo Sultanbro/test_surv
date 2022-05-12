@@ -75,6 +75,9 @@ export default {
         let parent_id = null;
         if(event.to.parentElement.nodeName != "ASIDE") {
           parent_id = event.to.parentElement.id;
+          if(parent_id == '') {
+            parent_id = this.parent_id 
+          }
         } else {
           parent_id = this.parent_id
         }
