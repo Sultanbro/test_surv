@@ -94,7 +94,7 @@
         </li>
 
         <li class="menu-item">
-            <a href="/timetracking/info" class="side-btn @if($menu == 'surv') active @endif">
+            <a href="/timetracking/reports" class="side-btn @if($menu == 'surv') active @endif">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Учет времени</span>
             </a>
