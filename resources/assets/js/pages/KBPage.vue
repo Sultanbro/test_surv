@@ -27,6 +27,7 @@
                   <div
                     class="section d-flex aic jcsb"
                     :key="book.id"
+                    :id="book.id"
                     @click.stop="selectSection(book)"
                   >
                     <div class="d-flex aic">
@@ -252,6 +253,7 @@ export default {
     },
 
     saveOrder(event) {
+
         axios.post('/kb/page/save-order', {
           id: event.item.id,
           order: event.newIndex, // oldIndex

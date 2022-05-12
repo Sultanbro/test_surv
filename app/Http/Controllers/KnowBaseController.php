@@ -21,7 +21,7 @@ class KnowBaseController extends Controller
 
     public function get(Request $request) {
         return [
-            'books' => KnowBase::whereNull('parent_id')->orderBy('order')->get()->toArray(),
+            'books' => KnowBase::whereNull('parent_id')->with('children:id,name,parent_id,order')->orderBy('order')->get()->toArray(),
         ];
     }
 
@@ -73,7 +73,7 @@ class KnowBaseController extends Controller
 
 
         if($request->parent_id == null) {
-          $pages =  KnowBase::whereNull('parent_id')
+          $pages =  KnowBase::where('parent_id', 0)
             ->where('id', '!=', $request->id)
             ->where('order', '>=', $request->order)
             ->orderBy('order', 'asc')
