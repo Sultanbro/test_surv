@@ -741,7 +741,7 @@ export default {
     },
     copyLink(book) {
       var Url = this.$refs["mylink" + book.id];
-      Url.value = "https://admin.u-marketing.org/corp_book/" + book.hash;
+      Url.value = "http://surv.u-marketing.org/corp_book/" + book.hash;
 
       Url.select();
       document.execCommand("copy");
