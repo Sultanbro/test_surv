@@ -65,6 +65,7 @@ class KnowBaseController extends Controller
       if($page) {
         $page->text = $request->text ?? '';
         $page->title = $request->title ?? 'Без названия';
+        $page->user_id = Auth::user()->ID;
         $page->save();
       }
 
