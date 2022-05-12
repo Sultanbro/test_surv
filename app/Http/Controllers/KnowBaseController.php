@@ -93,7 +93,7 @@ class KnowBaseController extends Controller
         'text' => '',
         'order' => $kb ? $kb->order + 1 : 0,
         'parent_id' => $request->id,
-        'hash' => 'adssad',
+        'hash' => md5(uniqid().mt_rand()),
         'is_deleted' => 0
       ]);
 
