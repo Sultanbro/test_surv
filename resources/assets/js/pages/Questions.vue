@@ -316,7 +316,7 @@ export default {
     saveTest() {
       let loader = this.$loading.show();
 
-      let url = this.type == 'kb' ? "/kb/page/add-section" : "/playlists/save-test";
+      let url = this.type == 'kb' ? "/kb/page/save-test" : "/playlists/save-test";
 
       axios
         .post(url, {
