@@ -84,7 +84,7 @@
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
 <!-- <script src="/js/manifest.js"></script>
 <script src="/js/vendor.js"></script>  -->
-<script src="/js/app.js?12"></script>
+<script src="/js/app.js?13"></script>
 
 
 @include('includes.admin_notifications_css_js')

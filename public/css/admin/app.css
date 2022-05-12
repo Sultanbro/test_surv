@@ -1821,6 +1821,12 @@ li.chapter:hover > div p {
   height: 100%;
 }
 
+.lp .kb-wrap {
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .lp > .dragArea {
   margin-left: 0;
 }

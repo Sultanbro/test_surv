@@ -10,14 +10,17 @@
         <span>Вернуться к разделам</span>
       </div>
 
-      <nested-draggable
-        :tasks="tree"
-        :auth_user_id="auth_user_id"
-        :key="tree_key"
-        :open="true"
-        @showPage="showPage"
-        :parent_id="parent_id"
-      />
+      <div class="kb-wrap noscrollbar">
+        <nested-draggable
+          :tasks="tree"
+          :auth_user_id="auth_user_id"
+          :key="tree_key"
+          :open="true"
+          @showPage="showPage"
+          :parent_id="parent_id"
+        />
+      </div>
+      
 
       <div class="btn-add" @click="addPage" v-if="[5,18,157,84].includes(auth_user_id)">
         <i class="fa fa-plus"></i>
@@ -31,7 +34,7 @@
 
     <!-- Right Panel -->
 
-    <div class="rp" style="flex: 1;padding-bottom: 50px;flex: 1 1 0%;height: 100vh;overflow-y: auto;">
+    <div class="rp" style="flex: 1;padding-bottom: 0px;flex: 1 1 0%;height: 100vh;overflow-y: auto;">
       <div class="hat">
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">

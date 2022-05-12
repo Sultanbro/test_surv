@@ -16,6 +16,11 @@
     flex-direction: column;
     height: 100%;
 
+    .kb-wrap {
+        height: calc(100vh - 150px);
+        overflow-y:auto;
+        overflow-x: hidden;
+    }
     & > .dragArea {
         margin-left: 0;
     }
