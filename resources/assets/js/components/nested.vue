@@ -14,15 +14,15 @@
           @mouseleave="hover = false"
           :key="el.id">
         <div class="d-flex">
-          <div class="handles" >
+          <div class="handles d-flex aic" >
             <i class="fa fa-bars mover"></i>
-            <div class="d-flex shower">
+            <div class="shower">
               <i class="fa fa-chevron-right pointer" v-if="el.children.length > 0"></i>
               <i class="fa fa-caret-right pointer" v-else></i>
             </div>
             
           </div>
-          <p @click="toggleOpen(el)">{{ el.title }}</p>
+          <p @click="toggleOpen(el)" class="mb-0">{{ el.title }}</p>
         </div>
         <nested-draggable :tasks="el.children" @showPage="showPage" :parent_id="el.id" :auth_user_id="auth_user_id" />
       </li>
