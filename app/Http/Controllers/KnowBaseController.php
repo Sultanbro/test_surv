@@ -127,6 +127,13 @@ class KnowBaseController extends Controller
       $kb = KnowBase::find($request->id);
       if($kb) $kb->delete();
     }
+
+    public function restoreeSection(Request $request)
+    {
+      $kb = KnowBase::onlyTrashed()->find($request->id);
+      if($kb) $kb->restore();
+    }
+    
    
 
     

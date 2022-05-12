@@ -9,10 +9,11 @@
         </div>
         <div class="btn btn-grey mb-3" @click="showArchive = false" v-if="showArchive">
           <i class="fa fa-arrow-left"></i>
-          <span>Вернуться к разделам</span>
+          <span>Выйти из архива</span>
         </div>
-
-        <div class="sections-wrap noscrollbar" v-if="!showArchive">
+        
+        
+        <div class="sections-wrap noscrollbar" v-if="!showArchive"> 
           <template v-for="(book, b_index) in books">
             <div
               class="section d-flex aic jcsb"
@@ -39,7 +40,7 @@
             >
               <p>{{ book.title }}</p>
               <div class="section-btns">
-                <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
+                <i class="fa fa-trash mr-1" @click.stop="restoreSection(b_index)"></i>
                 <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
               </div>
             </div>
@@ -121,7 +122,7 @@ export default {
       activeBook: null,
       showCreate: false,
       showArchive: false,
-      section_name: ''
+      section_name: '',
     };
   },
   watch: {},
@@ -165,6 +166,20 @@ export default {
           .then((response) => {
             this.books.splice(i, 1);
             this.$message.success("Удалено");
+          });
+      }
+    },
+
+    restoreSection(i) {
+      if (confirm("Вы уверены что хотите восстановить раздел?")) {
+        axios
+          .post("/kb/page/restore-section", {
+            id: this.archived_books[i].id
+          })
+          .then((response) => {
+            this.books.push(this.archived_books[i]);
+            this.archived_books.splice(i, 1);
+            this.$message.success("Восстановлен");
           });
       }
     },
