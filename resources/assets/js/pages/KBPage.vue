@@ -184,7 +184,7 @@ export default {
           const urlParams = new URLSearchParams(window.location.search);
           let b = urlParams.get('b');
           let uri = "/kb?s=" + book.id;
-          if(b) uri+= '&?b=' + b;
+          if(b) uri+= '&b=' + b;
           window.history.replaceState({}, "База знаний", uri);
 
         })
