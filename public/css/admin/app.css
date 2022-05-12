@@ -1776,11 +1776,11 @@ li.chapter:hover > div p {
   color: #0aa10a;
 }
 
-.mover {
+.chapter .mover {
   display: none;
 }
 
-.shower {
+.chapter .shower {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

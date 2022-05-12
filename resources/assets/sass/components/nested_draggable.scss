@@ -120,13 +120,15 @@ ul {
 li.chapter:hover > div p {
   color: rgb(10, 161, 10);
 }
+.chapter {
+  .mover {
+    display: none;
+  }
+  .shower {
+    display: flex;
+  }
+}
 
-.mover {
-  display: none;
-}
-.shower {
-  display: flex;
-}
 .chapter:hover ,
 .chapter:hover ~ .chapter {
   .mover {
