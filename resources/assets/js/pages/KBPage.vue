@@ -216,6 +216,7 @@ export default {
 
     back() {
       this.activeBook = null;
+      window.history.replaceState({ id: "100" }, "База знаний", "/kb");
     },
     
     editAccess(book) {
