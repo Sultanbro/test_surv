@@ -115,7 +115,7 @@
       title="Вопросы к видео"
       size="lg"
     >
-      <div class="vid">
+      <div class="vid" v-if="activeVideo != null">
         <questions
           v-if="[5, 18, 157, 84].includes(auth_user_id)"
           :questions="activeVideo.questions"
