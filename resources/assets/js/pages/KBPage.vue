@@ -8,7 +8,7 @@
           <span>Искать в базе...</span>
         </div>
 
-        <div class="sections-wrap">
+        <div class="sections-wrap noscrollbar">
           <template v-for="(book, b_index) in books">
             <div
               class="section d-flex aic jcsb"
