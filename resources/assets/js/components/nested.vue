@@ -18,7 +18,7 @@
             <i class="fa fa-bars mover"></i>
             <div class="shower">
               <i class="fa fa-chevron-right pointer" v-if="el.children.length > 0"></i>
-              <i class="fa fa-caret-right pointer" v-else></i>
+              <i class="fa fa-circle pointer" v-else></i>
             </div>
             
           </div>

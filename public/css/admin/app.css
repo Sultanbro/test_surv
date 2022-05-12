@@ -1770,6 +1770,10 @@ ul {
   padding: 5px 0;
 }
 
+.chapter .fa-circle {
+  font-size: 5px;
+}
+
 .chapter p {
   font-size: 14px;
   word-break: break-all;

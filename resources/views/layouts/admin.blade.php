@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/admin/css/bootstrap.min.css">
     <link rel="stylesheet" href="/admin/css/style.css">
     <link rel="stylesheet" href="/admin/css/custom.css">
-    <link rel="stylesheet" href="/css/admin/app.css?2">
+    <link rel="stylesheet" href="/css/admin/app.css?3">
     <link rel="stylesheet" href="/admin/css/all.min.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
 
@@ -84,7 +84,7 @@
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
 <!-- <script src="/js/manifest.js"></script>
 <script src="/js/vendor.js"></script>  -->
-<script src="/js/app.js?14"></script>
+<script src="/js/app.js?15"></script>
 
 
 @include('includes.admin_notifications_css_js')
