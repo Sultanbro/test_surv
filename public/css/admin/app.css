@@ -3460,7 +3460,7 @@ body {
   display: block;
 }
 
-.kb-sections .section i {
+.kb-sections .section .section-btns i {
   display: none;
   width: 27px;
   margin-left: 5px;
@@ -3469,7 +3469,7 @@ body {
   border-radius: 4px;
 }
 
-.kb-sections .section i:hover {
+.kb-sections .section .section-btns i:hover {
   color: #1d9ce5;
 }
 
