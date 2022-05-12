@@ -1795,11 +1795,11 @@ li.chapter:hover > div p {
   display: flex;
 }
 
-.chapter:hover .mover {
+.chapter .handles:hover > .mover {
   display: block;
 }
 
-.chapter:hover .shower {
+.chapter .handles:hover > .shower {
   display: none;
 }
 

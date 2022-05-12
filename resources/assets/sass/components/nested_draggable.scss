@@ -137,11 +137,11 @@ li.chapter:hover > div p {
   }
 }
 
-.chapter:hover {
-  .mover {
+.chapter .handles:hover {
+  & > .mover {
     display: block;
   }
-  .shower {
+  & > .shower {
     display: none;
   }
 }
