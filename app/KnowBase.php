@@ -18,6 +18,7 @@ class KnowBase extends Model
     protected $fillable = [
         'parent_id',
         'title', 
+        'user_id', // author 
         'text', 
         'is_deleted', 
         'order', 
