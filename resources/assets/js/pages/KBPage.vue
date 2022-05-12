@@ -127,7 +127,7 @@ export default {
     },
 
     deleteSection(i) {
-      if (confirm("Вы уверены что хотите удалить раздел?")) {
+      if (confirm("Вы уверены что хотите архивировать раздел?")) {
         axios
           .post("/kb/page/delete-section", {
             id: this.books[i].id
