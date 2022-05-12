@@ -29,8 +29,11 @@
                     :key="book.id"
                     @click.stop="selectSection(book)"
                   >
-                    <i class="fa fa-bars mover"></i>
-                    <p>{{ book.title }}</p>
+                    <div class="d-flex">
+                      <i class="fa fa-bars mover"></i>
+                      <p>{{ book.title }}</p>
+                    </div>
+                    
                     <div class="section-btns">
                       <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
                       <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
