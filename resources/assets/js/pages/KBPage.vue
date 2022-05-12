@@ -14,20 +14,32 @@
         
         
         <div class="sections-wrap noscrollbar" v-if="!showArchive"> 
-          <template v-for="(book, b_index) in books">
-            <div
-              class="section d-flex aic jcsb"
-              :key="book.id"
-              v-if="[5,18,157,84].includes(auth_user_id)"
-              @click.stop="selectSection(book)"
-            >
-              <p>{{ book.title }}</p>
-              <div class="section-btns">
-                <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
-                <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
-              </div>
-            </div>
-          </template>
+
+
+          <draggable 
+            class="dragArea" 
+            tag="div"
+            handle=".fa-bars"
+            :list="tasks"
+            :group="{ name: 'g1' }"
+            @end="saveOrder">
+            <template v-for="(book, b_index) in books">
+                  <div
+                    class="section d-flex aic jcsb"
+                    :key="book.id"
+                    @click.stop="selectSection(book)"
+                  >
+                    <i class="fa fa-bars mover"></i>
+                    <p>{{ book.title }}</p>
+                    <div class="section-btns">
+                      <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
+                      <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
+                    </div>
+                  </div>
+            </template>
+          </draggable>
+
+          
         </div>
         
         <div class="sections-wrap noscrollbar" v-else>
@@ -234,7 +246,20 @@ export default {
           loader.hide();
           alert(error);
         });
-    }
+    },
+
+    saveOrder(event) {
+        axios.post('/kb/page/save-order', {
+          id: event.item.id,
+          order: event.newIndex, // oldIndex
+          parent_id: null
+        })
+        .then(response => {
+           this.$message.success('Очередь сохранена');
+        })
+    },
+
+
 
 
 
