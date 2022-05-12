@@ -38,6 +38,7 @@ Route::post('/playlists/save-video', 'Video\VideoPlaylistController@save_video')
 Route::post('/playlists/delete-video', 'Video\VideoPlaylistController@delete_video');
 Route::post('/playlists/remove-video', 'Video\VideoPlaylistController@remove_video');
 Route::post('/playlists/save', 'Video\VideoPlaylistController@save');
+Route::post('/playlists/save-test', 'Video\VideoPlaylistController@saveTest');
 
 
 Route::get('/kb', 'KnowBaseController@index');
@@ -66,6 +67,7 @@ Route::post('/kb/page/delete-section', 'KnowBaseController@deleteSection');
 Route::post('/kb/page/restore-section', 'KnowBaseController@restoreSection');
 Route::post('/kb/page/add-section', 'KnowBaseController@addSection');
 Route::post('/kb/page/save-order', 'KnowBaseController@saveOrder');
+Route::post('/kb/page/save-test', 'KnowBaseController@saveTest');
 Route::post('/kb/page/create', 'KnowBaseController@createPage');
 
 

@@ -145,6 +145,29 @@ class KnowBaseController extends Controller
       $kb = KnowBase::onlyTrashed()->find($request->id);
       if($kb) $kb->restore();
     }
+
+    public function saveTest(Request $request)
+    {
+      foreach ($request->questions as $key => $q) {
+        $params = [
+            'order' => 0,
+            'page'=> 0,
+            'points'=> $q['points'],
+            'testable_id'=> $request->id,
+            'testable_type'=> "kb",
+            'text'=> $q['text'],
+            'type'=> $q['type'],
+            'variants'=> $q['variants'],
+        ];
+
+        if($q['id'] != 0) {
+            $testq = TestQuestion::find($q['id']);
+            if($testq) $testq->update($params);
+        } else {
+            TestQuestion::create($params);
+        }
+      }
+    }
     
    
 
