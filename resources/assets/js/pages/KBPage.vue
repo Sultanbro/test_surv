@@ -7,20 +7,24 @@
           <i class="fa fa-search"></i>
           <span>Искать в базе...</span>
         </div>
-        <template v-for="(book, b_index) in books">
-          <div
-            class="section d-flex aic jcsb"
-            :key="book.id"
-            v-if="[5,18,157,84].includes(auth_user_id)"
-            @click.stop="selectSection(book)"
-          >
-            <p>{{ book.title }}</p>
-            <div class="section-btns">
-              <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
-              <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
+
+        <div class="sections-wrap">
+          <template v-for="(book, b_index) in books">
+            <div
+              class="section d-flex aic jcsb"
+              :key="book.id"
+              v-if="[5,18,157,84].includes(auth_user_id)"
+              @click.stop="selectSection(book)"
+            >
+              <p>{{ book.title }}</p>
+              <div class="section-btns">
+                <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
+                <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
+              </div>
             </div>
-          </div>
-        </template>
+          </template>
+        </div>
+        
 
         <div class="btn-add" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
           <i class="fa fa-plus"></i>
