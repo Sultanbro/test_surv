@@ -24,7 +24,7 @@
 
       <div class="btn-add" @click="addPage" v-if="[5,18,157,84].includes(auth_user_id)">
         <i class="fa fa-plus"></i>
-        <span>Добавить статью</span>
+        <span>Добавить страницу</span>
       </div>
 
           
@@ -39,10 +39,10 @@
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">
             <a href="#">База знаний</a>
-            <i class="fa fa-caret-right"></i>
+            <i class="fa fa-chevron-right"></i>
             <a href="#">{{ parent_name }}</a>
             <template v-if="activesbook != null">
-              <i class="fa fa-caret-right"></i>
+              <i class="fa fa-chevron-right"></i>
               <a href="#">{{ activesbook.title }}</a>
             </template>
           </div>
@@ -555,7 +555,14 @@ export default {
     this.tree = this.trees;
     this.books = [];
 
-    console.log("trees=> ", this.tree);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let book_id = urlParams.get('b');
+    console.log(book_id)
+    if(book_id && this.tree.findIndex(b => b.id == book_id) != -1) {
+      this.showPage(book_id)
+    }
+
   },
   methods: {
     movecatt() {
@@ -930,7 +937,10 @@ export default {
       axios.get("/kb/get/" + id, {}).then((response) => {
         this.activesbook = response.data.book;
         this.edit_actives_book = false;
+
+        window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.parent_id + '&b=' + id);
       });
+      
     },
     editorSave() {},
   },
