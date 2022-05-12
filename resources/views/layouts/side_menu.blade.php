@@ -205,15 +205,20 @@
         </li>
         <li>
             <div class="link kolokolchik">
-                <i class="far fa-bell"></i>
-                <span>Уведомления</span>
-                @include('includes.admin_notifications', [
+                <div id="toggle_panel">
+                    <i class="far fa-bell"></i>
+                    <span>Уведомления</span>
+                </div>
+                <div id="noti_panel">
+                    @include('includes.admin_notifications', [
                             'unread_notifications' => $unread_notifications,
                             'read_notifications' => $read_notifications,
                             'unread' => $unread,
                             'head_users' => $head_users,
                             'bonus_notification' => $bonus_notification,
                         ])
+                </div>  
+                
             </div>
         </li>
         <li>
