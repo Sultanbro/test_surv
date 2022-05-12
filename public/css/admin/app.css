@@ -1409,6 +1409,10 @@ draggable
   border: 1px solid #dcdee5;
 }
 
+.btn-grey:hover {
+  background: #d0d2d8;
+}
+
 .bc {
   width: 100%;
   display: -webkit-box;
@@ -3430,7 +3434,7 @@ body {
 }
 
 .kb-sections .sections-wrap {
-  height: calc(100vh - 120px);
+  height: calc(100vh - 94px);
   overflow-y: auto;
   overflow-x: hidden;
 }

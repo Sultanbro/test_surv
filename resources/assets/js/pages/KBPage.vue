@@ -17,7 +17,7 @@
 
 
           <draggable 
-            class="dragArea" 
+            class="dragArea ml-0" 
             tag="div"
             handle=".fa-bars"
             :list="books"
@@ -29,8 +29,8 @@
                     :key="book.id"
                     @click.stop="selectSection(book)"
                   >
-                    <div class="d-flex">
-                      <i class="fa fa-bars mover"></i>
+                    <div class="d-flex aic">
+                      <i class="fa fa-bars mover mr-2"></i>
                       <p>{{ book.title }}</p>
                     </div>
                     
@@ -63,12 +63,12 @@
         </div>
 
 
-        <div class="d-flex">
-          <div class="btn btn-grey" @click="getArchivedBooks" v-if="[5,18,157,84].includes(auth_user_id)">
+        <div class="d-flex jscb">
+          <div class="btn btn-grey w-full mr-1" @click="getArchivedBooks" v-if="[5,18,157,84].includes(auth_user_id)">
             <i class="fa fa-trash"></i>
             <span>Архив</span>
           </div>
-          <div class="btn btn-grey" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
+          <div class="btn btn-grey w-full" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
             <i class="fa fa-plus"></i>
             <span>Добавить</span>
           </div>
