@@ -73,7 +73,7 @@ class KnowBaseController extends Controller
 
 
         if($request->parent_id == null) {
-          $pages =  KnowBase::where('parent_id', 0)
+          $pages =  KnowBase::whereNull('parent_id')
             ->where('id', '!=', $request->id)
             ->where('order', '>=', $request->order)
             ->orderBy('order', 'asc')
