@@ -123,8 +123,11 @@
 }
 
 .handles i {
+  position: relative;
+  top: 1px;
   color: #a3a3a3;
   font-size: 12px;
+  width: 25px;
 }
 
 .mover {
@@ -212,9 +215,7 @@ ul {
 }
 
 .chapter p {
-  width: 100%;
-  padding: 5px;
-  font-size: 13px;
+  font-size: 14px;
   word-break: break-all;
   white-space: nowrap;
   cursor: pointer;
