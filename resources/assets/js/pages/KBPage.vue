@@ -30,8 +30,7 @@
         </div>
         
         <div class="sections-wrap noscrollbar" v-else>
-          <template v-for="(book, b_index) in 
-          ">
+          <template v-for="(book, b_index) in archived_books">
             <div
               class="section d-flex aic jcsb"
               :key="book.id"
