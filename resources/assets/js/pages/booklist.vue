@@ -36,6 +36,8 @@
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">
             <a href="#">База знаний</a>
+            <i class="fa fa-caret-right"></i>
+            <a href="#">{{ parent_name }}</a>
             <template v-if="activesbook != null">
               <i class="fa fa-caret-right"></i>
               <a href="#">{{ activesbook.title }}</a>
@@ -515,7 +517,7 @@
 import nestedDraggable from "../components/nested";
 export default { 
   name: "booklist",
-  props: ["trees", 'parent_id', 'auth_user_id'],
+  props: ["trees", 'parent_id', 'auth_user_id', 'parent_name'],
   components: { 
     nestedDraggable,
   },
