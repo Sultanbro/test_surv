@@ -1786,11 +1786,11 @@ li.chapter:hover > div p {
   display: flex;
 }
 
-.dragArea:hover .chapter .mover {
+.dragArea:hover > .chapter .mover {
   display: block;
 }
 
-.dragArea:hover .chapter .shower {
+.dragArea:hover > .chapter .shower {
   display: none;
 }
 

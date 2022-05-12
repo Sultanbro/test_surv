@@ -129,7 +129,7 @@ li.chapter:hover > div p {
   }
 }
 
-.dragArea:hover .chapter {
+.dragArea:hover > .chapter {
   .mover {
     display: block;
   }
