@@ -149,6 +149,8 @@ export default {
     // бывор группы
     const urlParams = new URLSearchParams(window.location.search);
     let section = urlParams.get('s');
+    console.log(section);
+    console.log(this.books);
     if(this.books.findIndex(b => b.id == Number(section)) != -1) {
       this.selectSection(this.books.find(b => b.id == Number(section)));
     }
@@ -156,7 +158,7 @@ export default {
   },
 
   methods: {
-    fetchData() {
+    async fetchData() {
       axios
         .get("/kb/get", {})
         .then((response) => {
