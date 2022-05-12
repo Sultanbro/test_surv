@@ -15,9 +15,12 @@
           :key="el.id">
         <div class="d-flex">
           <div class="handles" >
-            <i class="fa fa-bars mover" v-if="hover"></i>
-            <i class="fa fa-chevron-right pointer" v-else-if="el.children.length > 0"></i>
-            <i class="fa fa-caret-right pointer" v-else></i>
+            <i class="fa fa-bars mover"></i>
+            <div class="d-flex shower">
+              <i class="fa fa-chevron-right pointer" v-if="el.children.length > 0"></i>
+              <i class="fa fa-caret-right pointer" v-else></i>
+            </div>
+            
           </div>
           <p @click="toggleOpen(el)">{{ el.title }}</p>
         </div>

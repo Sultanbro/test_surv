@@ -1776,6 +1776,26 @@ li.chapter:hover > div p {
   color: #0aa10a;
 }
 
+.mover {
+  display: none;
+}
+
+.shower {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.chapter:hover .mover,
+.chapter:hover ~ .chapter .mover {
+  display: block;
+}
+
+.chapter:hover .shower,
+.chapter:hover ~ .chapter .shower {
+  display: none;
+}
+
 .tox .tox-editor-container {
   padding: 0 !important;
 }

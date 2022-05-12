@@ -647,38 +647,38 @@ export default {
       }, 500);
     },
     copyes() {
-      if (this.delo == 0) {
-        if (this.selectone != null) {
-          let book = {
-            id: 0,
-            title: this.activesbook.title,
-            text: this.activesbook.text,
-            category_id: this.selectone,
-            order: 0,
-          };
+      // if (this.delo == 0) {
+      //   if (this.selectone != null) {
+      //     let book = {
+      //       id: 0,
+      //       title: this.activesbook.title,
+      //       text: this.activesbook.text,
+      //       category_id: this.selectone,
+      //       order: 0,
+      //     };
 
-          axios
-            .post("/page/copy/", {
-              books: book,
-            })
-            .then((response) => {
-              book.id = response.data;
-              this.books.push(book);
-              this.activebook(book);
-            });
-        }
-      } else {
-        if (this.selectone != null) {
-          this.activesbook.category_id = this.selectone;
+      //     axios
+      //       .post("/page/copy/", {
+      //         books: book,
+      //       })
+      //       .then((response) => {
+      //         book.id = response.data;
+      //         this.books.push(book);
+      //         this.activebook(book);
+      //       });
+      //   }
+      // } else {
+      //   if (this.selectone != null) {
+      //     this.activesbook.category_id = this.selectone;
 
-          axios
-            .post("/page/move/", {
-              id: this.activesbook.id,
-              catid: this.selectone,
-            })
-            .then((response) => {});
-        }
-      }
+      //     axios
+      //       .post("/page/move/", {
+      //         id: this.activesbook.id,
+      //         catid: this.selectone,
+      //       })
+      //       .then((response) => {});
+      //   }
+      // }
     },
     onEndSort(books, id) {
       let arr;
