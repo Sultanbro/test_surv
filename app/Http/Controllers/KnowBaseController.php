@@ -7,6 +7,7 @@ use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\KnowBase;
+use App\User;
 
 class KnowBaseController extends Controller
 {
