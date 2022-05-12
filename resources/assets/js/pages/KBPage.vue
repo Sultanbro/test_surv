@@ -151,7 +151,7 @@ export default {
     let section = urlParams.get('s');
     if(section) {
       console.log(section)
-      this.selectSection(this.books.find(b => b.id == Number(section)))
+      this.selectSection({id: section})
     }
   },
 
@@ -177,7 +177,7 @@ export default {
             this.$message.info('Раздел не найден');
           }
           this.trees = response.data.trees;
-          this.activeBook = book;
+          this.activeBook = response.data.book;
 
           window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + book.id);
 

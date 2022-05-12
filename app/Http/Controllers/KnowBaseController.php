@@ -39,7 +39,8 @@ class KnowBaseController extends Controller
           $tree->parent_id = null;
         }
         return [
-            'trees' => $trees->toArray()
+            'trees' => $trees->toArray(),
+            'book' => KnowBase::find($request->id),
         ];
     }
 
