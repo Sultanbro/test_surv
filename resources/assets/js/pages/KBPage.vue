@@ -158,7 +158,7 @@ export default {
   },
 
   methods: {
-    async fetchData() {
+    fetchData() {
       axios
         .get("/kb/get", {})
         .then((response) => {
