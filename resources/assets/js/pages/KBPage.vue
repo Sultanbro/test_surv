@@ -7,18 +7,21 @@
           <i class="fa fa-search"></i>
           <span>Искать в базе...</span>
         </div>
-        <template v-for="book in books">
+        <template v-for="(book, b_index) in books">
           <div
             class="section d-flex aic jcsb"
             :key="book.id"
             @click.stop="selectSection(book)"
           >
             <p>{{ book.title }}</p>
-            <i class="fa fa-cogs" @click.stop="editAccess(book)"></i>
+            <div class="section-btns">
+              <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
+              <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
+            </div>
           </div>
         </template>
 
-        <div class="btn-add" @click="addSection">
+        <div class="btn-add" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
           <i class="fa fa-plus"></i>
           <span>Добавить раздел</span>
         </div>
@@ -40,21 +43,50 @@
 
     <!-- PAGE -->
     <div v-else>
-      <booklist :trees="trees" :parent_id="activeBook.id" @back="back" />
+      <booklist :trees="trees" :parent_id="activeBook.id" @back="back" :auth_user_id="auth_user_id" />
     </div>
+
+
+
+
+
+    <b-modal
+      v-model="showCreate"
+      title="Новый раздел"
+      size="md"
+      class="modalle"
+      hide-footer
+      hide-header
+    >
+      <input
+        type="text"
+        v-model="section_name"
+        placeholder="Название раздела..."
+        class="form-control mb-2"
+      />
+      <button class="btn btn-primary rounded m-auto" @click="addSection">
+        <span>Сохранить</span>
+      </button>
+    </b-modal>
+
+
   </div>
 </template>
 
 <script>
 export default {
   name: "KBPage",
-  props: {},
+  props: {
+    auth_user_id: Number 
+  },
   data: function() {
     return {
       books: [],
       trees: [],
       section: 0,
       activeBook: null,
+      showCreate: false,
+      section_name: ''
     };
   },
   watch: {},
@@ -88,6 +120,20 @@ export default {
           alert(error);
         });
     },
+
+    deleteSection(i) {
+      if (confirm("Вы уверены что хотите удалить раздел?")) {
+        axios
+          .post("/kb/page/delete-section", {
+            id: this.books[i].id
+          })
+          .then((response) => {
+            this.books.splice(i, 1);
+            this.$message.success("Удалено");
+          });
+      }
+    },
+
     back() {
       this.activeBook = null;
     },
@@ -97,7 +143,30 @@ export default {
     },
 
     addSection() {
-        alert('Новый раздел');
+      if (this.section_name.length <= 2) {
+        alert("Слишком короткое название!");
+        return "";
+      }
+
+      let loader = this.$loading.show();
+
+      axios
+        .post("/kb/page/add-section", {
+          name: this.section_name,
+        })
+        .then((response) => {
+          this.showCreate = false;
+          this.section_name = "";
+
+          this.books.push(response.data);
+
+          this.$message.success("Раздел успешно создан!");
+          loader.hide();
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
     }
   },
 };

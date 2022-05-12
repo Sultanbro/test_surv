@@ -2,7 +2,7 @@
   <draggable 
     class="dragArea" 
     tag="ul"
-    handle=".fa-bars"
+    :handle="handle"
     :list="tasks"
     :group="{ name: 'g1' }"
     @end="saveOrder">
@@ -21,7 +21,7 @@
           </div>
           <p @click="toggleOpen(el)">{{ el.title }}</p>
         </div>
-        <nested-draggable :tasks="el.children" @showPage="showPage" :parent_id="el.id" />
+        <nested-draggable :tasks="el.children" @showPage="showPage" :parent_id="el.id" :auth_user_id="auth_user_id" />
       </li>
     </template>
   </draggable>
@@ -35,11 +35,20 @@ export default {
     },
     parent_id: {
       default: null
+    },
+    auth_user_id: {
+      type: Number
     }
   },
   data() {
     return {
-      hover: false
+      hover: false,
+      handle: '.fa-t',
+    }
+  },
+  created() {
+    if([5,18,157,84].includes(this.auth_user_id)) {
+      this.handle = '.fa-bars';
     }
   },
   methods: {

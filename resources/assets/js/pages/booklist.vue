@@ -12,13 +12,14 @@
 
       <nested-draggable
         :tasks="tree"
+        :auth_user_id="auth_user_id"
         :key="tree_key"
         :open="true"
         @showPage="showPage"
         :parent_id="parent_id"
       />
 
-      <div class="btn-add" @click="addPage">
+      <div class="btn-add" @click="addPage" v-if="[5,18,157,84].includes(auth_user_id)">
         <i class="fa fa-plus"></i>
         <span>Добавить статью</span>
       </div>
@@ -30,7 +31,7 @@
 
     <!-- Right Panel -->
 
-    <div class="rp" style="flex: 1;padding-bottom: 50px;">
+    <div class="rp" style="flex: 1;padding-bottom: 50px;flex: 1 1 0%;height: 100vh;overflow-y: auto;">
       <div class="hat">
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">
@@ -41,8 +42,8 @@
             </template>
           </div>
 
-          <div class="control-btns">
-            <div class="d-flex justify-content-end" v-if="activesbook != null">
+          <div class="control-btns" v-if="[5,18,157,84].includes(auth_user_id)">
+            <div class="d-flex justify-content-end" :asd="auth_user_id" v-if="activesbook != null">
               <input
                 type="text"
                 :ref="'mylink' + activesbook.id"
@@ -514,7 +515,7 @@
 import nestedDraggable from "../components/nested";
 export default { 
   name: "booklist",
-  props: ["trees", 'parent_id'],
+  props: ["trees", 'parent_id', 'auth_user_id'],
   components: { 
     nestedDraggable,
   },

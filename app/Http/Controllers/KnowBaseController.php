@@ -97,8 +97,29 @@ class KnowBaseController extends Controller
         'is_deleted' => 0
       ]);
 
-    } 
+    }
+    
+    public function addSection(Request $request)
+    {
+      $kb = KnowBase::whereNull('parent_id')->orderBy('order', 'desc')->first();
 
+      return KnowBase::create([
+        'title' => $request->name,
+        'text' => '',
+        'order' => $kb ? $kb->order + 1 : 0,
+        'parent_id' => null,
+        'hash' => 'cat',
+        'is_deleted' => 0
+      ]);
+
+    }
+
+    
+    public function deleteSection(Request $request)
+    {
+      $kb = KnowBase::find($request->id);
+      if($kb) $kb->delete();
+    }
    
 
     

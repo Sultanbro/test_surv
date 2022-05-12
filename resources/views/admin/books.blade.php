@@ -2,7 +2,7 @@
 @section('title', 'База знаний')
 @section('content')
 
-<page-kb />
+<page-kb :auth_user_id="{{ auth()->user()->ID }}"/>
 
 @endsection 
 @section('scripts')

@@ -61,6 +61,8 @@ Route::get('/kb/get/{id}', 'KnowBaseController@getPage');
 Route::post('/kb/tree', 'KnowBaseController@getTree');
 
 Route::post('/kb/page/update', 'KnowBaseController@updatePage');
+Route::post('/kb/page/delete-section', 'KnowBaseController@deleteSection');
+Route::post('/kb/page/add-section', 'KnowBaseController@addSection');
 Route::post('/kb/page/save-order', 'KnowBaseController@saveOrder');
 Route::post('/kb/page/create', 'KnowBaseController@createPage');
 
