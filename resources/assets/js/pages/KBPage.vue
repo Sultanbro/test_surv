@@ -11,6 +11,7 @@
           <div
             class="section d-flex aic jcsb"
             :key="book.id"
+            v-if="[5,18,157,84].includes(auth_user_id)"
             @click.stop="selectSection(book)"
           >
             <p>{{ book.title }}</p>
@@ -139,7 +140,7 @@ export default {
     },
 
     editAccess(book) {
-      alert(book.title);
+      alert('Редактирование доступа');
     },
 
     addSection() {

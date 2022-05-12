@@ -3413,7 +3413,7 @@ body {
   position: absolute;
   right: 0;
   top: 0;
-  height: 100%;
+  text-align: center;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

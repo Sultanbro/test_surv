@@ -50,49 +50,7 @@
 
         
    
-        <li class="menu-item">
-            <a href="/video_playlists" class="side-btn @if($menu == 'video_edit') active @endif">
-                <i class="fas fa-play"></i>
-                <span>Видеокурсы</span>
-            </a>
-
-            <ul class="sub-menu">
-                <li>
-                    <a href="/video_playlists" class="link">
-                        <i class="fas fa-film"></i>
-                        <span>Плейлисты</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/videos" class="link">
-                        <i class="fa fa-file-video"></i>
-                        <span>Видеофайлы</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/video_categories" class="link">
-                        <i class="fas fa-list"></i>
-                        <span>Категории</span>
-                    </a>
-                </li>
-                <!-- <li>
-                    <a href="/video_groups" class="link">
-                        <i class="far fa-folder-open"></i>
-                        <span>Группы</span>
-                    </a>
-                </li> -->
-            </ul>
-
-
-        </li> 
-
-        <li class="menu-item">
-            <a href="/admin/upbooks" class="side-btn @if($menu == 'upbook_edit') active @endif">
-                <i class="fas fa-book-open"></i>
-                <span>Книги</span>
-            </a>
-        </li>
-
+       
         <li class="menu-item">
             <a href="/timetracking/reports" class="side-btn @if($menu == 'surv') active @endif">
                 <i class="fas fa-calendar-alt"></i>
@@ -173,6 +131,49 @@
             </a>
         </li>
         
+        <li class="menu-item">
+            <a href="/video_playlists" class="side-btn @if($menu == 'video_edit') active @endif">
+                <i class="fas fa-play"></i>
+                <span>Видеокурсы</span>
+            </a>
+
+            <ul class="sub-menu">
+                <li>
+                    <a href="/video_playlists" class="link">
+                        <i class="fas fa-film"></i>
+                        <span>Плейлисты</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/videos" class="link">
+                        <i class="fa fa-file-video"></i>
+                        <span>Видеофайлы</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/video_categories" class="link">
+                        <i class="fas fa-list"></i>
+                        <span>Категории</span>
+                    </a>
+                </li>
+                <!-- <li>
+                    <a href="/video_groups" class="link">
+                        <i class="far fa-folder-open"></i>
+                        <span>Группы</span>
+                    </a>
+                </li> -->
+            </ul>
+
+
+        </li> 
+
+        <li class="menu-item">
+            <a href="/admin/upbooks" class="side-btn @if($menu == 'upbook_edit') active @endif">
+                <i class="fas fa-book-open"></i>
+                <span>Книги</span>
+            </a>
+        </li>
+
         
 
     </ul>
