@@ -6,24 +6,7 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-lg-6 mb-2">
-        <div class="d-flex justify-content-between">
-          <p class="mr-2">Количество видео: {{ playlist.videos.length }}</p>
-          <div class="d-flex">
-            <button
-              class="btn btn-sm mr-2"
-              @click="modals.addVideo.show = true"
-            >
-              Добавить
-            </button>
-            <button class="btn btn-sm" @click="modals.upload.show = true">
-              Загрузить видео
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+   
     <div class="row">
       <div class="col-lg-6">
         <draggable
@@ -57,10 +40,6 @@
                     <i class="fa far fa-trash"></i>
                     <div class="text">Убрать из плейлиста</div>
                   </div>
-                  <div class="item" @click.stop="showQuestions(v_index)">
-                    <i class="fa far fa-question"></i>
-                    <div class="text">Тесты к видео</div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -68,6 +47,20 @@
         </draggable>
       </div>
       <div class="col-lg-6">
+        <div class="d-flex justify-content-between">
+          <p class="mr-2">Количество видео: {{ playlist.videos.length }}</p>
+          <div class="d-flex">
+            <button
+              class="btn btn-sm mr-2"
+              @click="modals.addVideo.show = true"
+            >
+              Добавить
+            </button>
+            <button class="btn btn-sm" @click="modals.upload.show = true">
+              Загрузить видео
+            </button>
+          </div>
+        </div>
         <div>
           <label for="title">Название</label>
           <div class="form-group">
@@ -109,22 +102,7 @@
       </div>
     </div>
 
-    <b-modal
-      v-model="modals.questions.show"
-      hide-footer
-      title="Вопросы к видео"
-      size="lg"
-    >
-      <div class="vid" v-if="activeVideo != null">
-        <questions
-          v-if="[5, 18, 157, 84].includes(auth_user_id)"
-          :questions="activeVideo.questions"
-          :id="activeVideo.id"
-          type="video"
-          mode="edit"
-        />
-      </div>
-    </b-modal>
+
 
     <b-modal
       v-model="modals.addVideo.show"
@@ -267,6 +245,19 @@
               ></textarea>
             </div>
           </div>
+
+
+           <div class="vid">
+                <questions
+                    v-if="[5, 18, 157, 84].includes(auth_user_id)"
+                    :questions="activeVideo.questions"
+                    :id="activeVideo.id"
+                    type="video"
+                    mode="edit"
+                    />
+            </div>
+
+
           <div class="d-flex mt-3">
             <button class="btn mr-1" @click="saveActiveVideo">Сохранить</button>
           </div>
@@ -311,9 +302,6 @@ export default {
             text: "",
           },
           file: null,
-        },
-        questions: {
-          show: false,
         },
       },
       sidebars: {
@@ -401,6 +389,23 @@ export default {
           alert(error);
         });
     },
+
+    saveVideo() {
+      axios
+        .post("/playlists/video/update", {
+          id: this.playlist.id,
+          video: this.activeVideo,
+        })
+        .then((response) => {
+          this.sidebars.edit_video.show = false;
+          this.$message.success("Сохранено!");
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
+
     saveActiveVideo() {
       console.log("saveActiveVideo");
       axios

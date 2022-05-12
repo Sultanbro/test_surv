@@ -39,6 +39,7 @@ Route::post('/playlists/delete-video', 'Video\VideoPlaylistController@delete_vid
 Route::post('/playlists/remove-video', 'Video\VideoPlaylistController@remove_video');
 Route::post('/playlists/save', 'Video\VideoPlaylistController@save');
 Route::post('/playlists/save-test', 'Video\VideoPlaylistController@saveTest');
+Route::post('/playlists/video/update', 'Video\VideoController@updateVideo');
 
 
 Route::get('/kb', 'KnowBaseController@index');
