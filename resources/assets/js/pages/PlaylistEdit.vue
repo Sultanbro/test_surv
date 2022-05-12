@@ -98,41 +98,7 @@
         </div>
         <div class="col-lg-6">
       
-            <div class="fast-edit">
-                <div v-if="activeVideo === null" class="no-video">Выберите видео для просмотра и редактирования</div>
-                <div v-if="activeVideo !== null">
-                    <div id="video" class="mb-3"></div>
-
-                    <div class="row mb-2">
-                        <div class="col-md-4">
-                            Название
-                        </div>
-                        <div class="col-md-8">
-                            <input type="text" class="form-control" v-model="activeVideo.title">
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-md-4">
-                            Ссылка на видео
-                        </div>
-                        <div class="col-md-8">
-                            <input type="text" class="form-control" v-model="activeVideo.links" disabled>
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-md-4">
-                            Описание
-                        </div>
-                        <div class="col-md-8">
-                            <textarea class="form-control" v-model="activeVideo.text"></textarea>
-                        </div>
-                    </div>
-                    <div class="d-flex mt-3">
-                        <button class="btn mr-1"  @click="saveActiveVideo">Сохранить</button>
-                    </div>
-                    
-                </div>
-            </div>
+            asdasdasddasdasd
         </div>
     </div>
     <div class="row">
@@ -211,6 +177,48 @@
                 </div>
             </div>
     </b-modal>
+    
+    <sidebar
+        title="Редактирование видео"
+        :open="sidebars.edit_video.show"
+        @close="sidebars.edit_video.show = false"
+        width="50%"
+      >
+        <div class="fast-edit">
+            <div v-if="activeVideo !== null">
+                <div id="video" class="mb-3"></div>
+
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        Название
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" v-model="activeVideo.title">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        Ссылка на видео
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" v-model="activeVideo.links" disabled>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        Описание
+                    </div>
+                    <div class="col-md-8">
+                        <textarea class="form-control" v-model="activeVideo.text"></textarea>
+                    </div>
+                </div>
+                <div class="d-flex mt-3">
+                    <button class="btn mr-1"  @click="saveActiveVideo">Сохранить</button>
+                </div>
+                
+            </div>
+        </div>
+    </sidebar>
 
 </div>
 </template>
@@ -222,7 +230,8 @@ export default {
     name: "PlaylistEdit", 
     props: {
         token: String,
-        id: Number
+        id: Number,
+        auth_user_id: Number
     },
     data: function () {
         return {
@@ -254,6 +263,11 @@ export default {
                 },
                 questions: {
                     show: false
+                }
+            },
+            sidebars: {
+                edit_video: {
+                    show:false
                 }
             },
             player: null
@@ -420,6 +434,7 @@ export default {
 
         showVideoSettings(video) {
             this.activeVideo = video;
+            this.sidebars.edit_video.show = true;
             var player = new Playerjs({ 
                 id:"video", 
                 poster: '',
