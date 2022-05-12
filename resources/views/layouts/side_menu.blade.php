@@ -204,7 +204,9 @@
             </a>
         </li>
         <li>
-            <a href="#" class="link">
+            <div class="link kolokolchik">
+                <i class="far fa-bell"></i>
+                <span>Уведомления</span>
                 @include('includes.admin_notifications', [
                             'unread_notifications' => $unread_notifications,
                             'read_notifications' => $read_notifications,
@@ -212,9 +214,7 @@
                             'head_users' => $head_users,
                             'bonus_notification' => $bonus_notification,
                         ])
-                <i class="far fa-bell"></i>
-                <span>Уведомления</span>
-            </a>
+            </div>
         </li>
         <li>
             <a href="#" class="link link-start">

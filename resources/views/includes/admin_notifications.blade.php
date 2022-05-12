@@ -1,75 +1,68 @@
 
 
-<div class="kolokolchik">
-    <div class="inf">
-        <a href="#" title="Ваши уведомления" class="tooglenotifi ">
-        	<i class="fa fa-bell" aria-hidden="true"></i>
-            <div class="{{$unread?'blink-notification':''}}" style="border-color: #00bef6;position: absolute;top: 0;left: 0;bottom: 0;right: 0;border-radius: 50%;"></div>
-            <span class="numb" style="font-weight:800">{{ $unread }}</span>
+
+<div class="bgpanel"></div>
+<div class="panel" style="display:none;">
+    <div class="tail"></div>
+    <div class="panel_head">
+        <div class="panel_in active" data-tab="1">Уведомления</div>
+        <div class="panel_in " data-tab="2">Уведомления прочитанные</div>
+    </div>
+    <div class="panel_body">
+        <div class="panel_out active" data-id="1">
+            <div class="notification_list">
+                @foreach ($unread_notifications as $item)
+                    <div class="notification_item unread_noti" id="unnoti{{$item->id}}">
+                        <div class="notifi_top">
+                            <!-- <div class="label-wrapper {{$item->type=='important'?'':'hidden'}}"><span
+                                        class="label-wrapper_text">{{$item->type=='important'?'ВАЖНОЕ':''}}</span>
+                            </div>  -->
+                            <span class="notification-date">{{$item->formattedDate()}}</span>
+                            <!-- <span class="notification-projectId">{{$item->formattedDate()}}</span> -->
+                        </div>
+                        <div class="notification-title">{{$item->title}}</div>
+                        <div class="notification-text">
+                            {!!$item->message!!}
+                        </div>
+
+                        
+                        <a class="set-read" data-id="{{ $item->id }}" 
+                            @if($item->title == 'Пропал с обучения: 1 день' || $item->title == 'Пропал с обучения: 2 день') data-comment="1"  @else data-comment="0" @endif
+                            @if($item->title == 'Заполните отчет') data-type="report"  @else data-type="empty" @endif>
+                            <div class="notification-change"><i class="fa fa-check"></i></div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        <div class="panel_out " data-id="2">
+            <div class="notification_list">
+                @foreach ($read_notifications as $item)
+                    <div class="notification_item read_noti" >
+                        <div class="notifi_top" style="display:flex;justify-content:space-between">
+                            <!-- <div class="label-wrapper {{$item->type=='important'?'':'hidden'}}">
+                                <span class="label-wrapper_text">{{$item->type=='important'?'ВАЖНОЕ':''}}</span>
+                            </div> -->
+                            <span class="notification-date">{{$item->formattedDate()}}</span>
+                            <span class="notification-projectId">{{ $item->read_at }}</span>
+                        </div>
+                        <div class="notification-title">{{$item->title}}</div>
+                        <div class="notification-text">
+                            {!!$item->message!!}
+                        </div>
+                    </div>
+                @endforeach
+
+            </div>
+        </div>
+    </div>
+    <div class="panel_foot">
+        <a id="setRead">
+            <button><i class="fa fa-check"></i>Отметить все, как прочитанные</button>
         </a>
     </div>
-    <div class="bgpanel"></div>
-    <div class="panel" style="display:none;">
-        <div class="tail"></div>
-        <div class="panel_head">
-            <div class="panel_in active" data-tab="1">Уведомления</div>
-            <div class="panel_in " data-tab="2">Уведомления прочитанные</div>
-        </div>
-        <div class="panel_body">
-            <div class="panel_out active" data-id="1">
-                <div class="notification_list">
-                    @foreach ($unread_notifications as $item)
-                        <div class="notification_item unread_noti" id="unnoti{{$item->id}}">
-                            <div class="notifi_top">
-                                <!-- <div class="label-wrapper {{$item->type=='important'?'':'hidden'}}"><span
-                                            class="label-wrapper_text">{{$item->type=='important'?'ВАЖНОЕ':''}}</span>
-                                </div>  -->
-                                <span class="notification-date">{{$item->formattedDate()}}</span>
-                                <!-- <span class="notification-projectId">{{$item->formattedDate()}}</span> -->
-                            </div>
-                            <div class="notification-title">{{$item->title}}</div>
-                            <div class="notification-text">
-                                {!!$item->message!!}
-                            </div>
-
-                            
-                            <a class="set-read" data-id="{{ $item->id }}" 
-                                @if($item->title == 'Пропал с обучения: 1 день' || $item->title == 'Пропал с обучения: 2 день') data-comment="1"  @else data-comment="0" @endif
-                                @if($item->title == 'Заполните отчет') data-type="report"  @else data-type="empty" @endif>
-                                <div class="notification-change"><i class="fa fa-check"></i></div>
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-            <div class="panel_out " data-id="2">
-                <div class="notification_list">
-                    @foreach ($read_notifications as $item)
-                        <div class="notification_item read_noti" >
-                            <div class="notifi_top" style="display:flex;justify-content:space-between">
-                                <!-- <div class="label-wrapper {{$item->type=='important'?'':'hidden'}}">
-                                    <span class="label-wrapper_text">{{$item->type=='important'?'ВАЖНОЕ':''}}</span>
-                                </div> -->
-                                <span class="notification-date">{{$item->formattedDate()}}</span>
-                                <span class="notification-projectId">{{ $item->read_at }}</span>
-                            </div>
-                            <div class="notification-title">{{$item->title}}</div>
-                            <div class="notification-text">
-                                {!!$item->message!!}
-                            </div>
-                        </div>
-                    @endforeach
-
-                </div>
-            </div>
-        </div>
-        <div class="panel_foot">
-            <a id="setRead">
-                <button><i class="fa fa-check"></i>Отметить все, как прочитанные</button>
-            </a>
-        </div>
-    </div>
 </div>
+
 
 
 
