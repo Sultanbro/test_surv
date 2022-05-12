@@ -204,22 +204,24 @@
             </a>
         </li>
         <li>
-            <div class="link kolokolchik">
-                <div id="toggle_panel">
-                    <i class="far fa-bell"></i>
-                    <span>Уведомления</span>
+            <div class="link">
+                <div class="kolokolchik">
+                    <div id="toggle_panel">
+                        <i class="far fa-bell"></i>
+                        <span>Уведомления</span>
+                    </div>
+                    <div id="noti_panel">
+                        @include('includes.admin_notifications', [
+                                'unread_notifications' => $unread_notifications,
+                                'read_notifications' => $read_notifications,
+                                'unread' => $unread,
+                                'head_users' => $head_users,
+                                'bonus_notification' => $bonus_notification,
+                            ])
+                    </div>  
                 </div>
-                <div id="noti_panel">
-                    @include('includes.admin_notifications', [
-                            'unread_notifications' => $unread_notifications,
-                            'read_notifications' => $read_notifications,
-                            'unread' => $unread,
-                            'head_users' => $head_users,
-                            'bonus_notification' => $bonus_notification,
-                        ])
-                </div>  
-                
             </div>
+           
         </li>
         <li>
             <a href="#" class="link link-start">
