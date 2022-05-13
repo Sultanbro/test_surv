@@ -497,7 +497,7 @@ export default {
       this.sidebars.edit_video.show = false
       this.activeVideo = null;
 
-       this.player.pause();
+      document.getElementById("video").innerHTML = ''
      
     },
 
