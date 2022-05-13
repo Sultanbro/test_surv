@@ -326,6 +326,8 @@ export default {
       file: '',
     });
 
+    console.log(this.player)
+
   },
   methods: {
     showQuestions(v_index) {
