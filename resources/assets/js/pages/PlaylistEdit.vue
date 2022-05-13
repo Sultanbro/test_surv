@@ -268,7 +268,7 @@
 </template>
 
 <script>
-
+import Playerjs from '../plugins/playerjs/playerjs'
 export default {
   name: "PlaylistEdit",
   props: {
