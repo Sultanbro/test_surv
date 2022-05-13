@@ -497,8 +497,8 @@ export default {
       this.sidebars.edit_video.show = false
       this.activeVideo = null;
 
-       
-      console.log(Object.getOwnPropertyNames(this.player).filter(item => typeof this.player[item] === 'function'))
+       this.player.pause();
+     
     },
 
     fetchData() {
