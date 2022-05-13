@@ -202,7 +202,7 @@
     <sidebar
       title="Редактирование видео"
       :open="sidebars.edit_video.show"
-      @close="sidebars.edit_video.show = false"
+      @close="closeSidebar"
       width="50%"
     >
       <div class="fast-edit">
@@ -517,6 +517,11 @@ export default {
           alert(error);
         });
     },
+
+    closeSidebar() {
+      this.sidebars.edit_video.show = false;
+      this.activeVideo = null
+    }
   },
 };
 </script>
