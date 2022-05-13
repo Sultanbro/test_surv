@@ -103,19 +103,25 @@ class KnowBaseController extends Controller
 
     } 
     
-    public function createPage(Request $request, $id = null)
+    public function createPage(Request $request)
     {
-      $kb = KnowBase::where('order', 'desc')->first();
-   
-      return KnowBase::create([
+      $kb = KnowBase::where('parent_id', $request->id)->orderBy('order', 'desc')->first();
+      $order = $kb ? $kb->order + 1 : 0;
+
+      $kb = KnowBase::create([
         'title' => 'Новая страница',
         'text' => '',
         'user_id' => Auth::user()->ID,
-        'order' => $kb ? $kb->order + 1 : 0,
+        'order' => $order,
         'parent_id' => $request->id,
         'hash' => md5(uniqid().mt_rand()),
         'is_deleted' => 0
       ]);
+
+      $kb->children = [];
+      $kb->parent_id = null;
+      return $kb;
+
 
     }
     

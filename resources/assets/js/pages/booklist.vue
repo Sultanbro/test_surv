@@ -17,7 +17,6 @@
           :open="true"
           @showPage="showPage"
           :parent_id="parent_id"
-          ref="sidebar_links"
         />
       </div>
       
@@ -555,7 +554,6 @@ export default {
     return {
       loader: false,
       delo: 0,
-      tree_key: 1,
       showActionModal: false,
       showImageModal: false,
       showAudioModal: false,
@@ -870,9 +868,7 @@ export default {
       }).then((response) => {
         this.activesbook = response.data;
         this.tree.push(response.data);
-        this.edit_actives_book = true
-        this.tree_key++
-        this.$refs.sidebar_links.$forceUpdate();
+        this.edit_actives_book = true;
       });
     },
 
