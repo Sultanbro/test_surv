@@ -496,7 +496,10 @@ export default {
     closeSidebar() {
       this.sidebars.edit_video.show = false
       this.activeVideo = null;
-      this.player.stop();
+
+      getMethods = (obj) => Object.getOwnPropertyNames(obj).filter(item => typeof obj[item] === 'function')
+       
+      console.log(getMethods(this.player))
     },
 
     fetchData() {
