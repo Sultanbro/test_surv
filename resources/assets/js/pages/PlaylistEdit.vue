@@ -201,13 +201,14 @@
 
     <sidebar
       title="Редактирование видео"
-      v-show="sidebars.edit_video.show"
+      v-if="sidebars.edit_video.show"
       @close="closeSidebar"
       width="50%"
     >
       <div class="fast-edit">
+        <div id="video" class="mb-3 w65"></div>
         <div v-if="activeVideo !== null">
-          <div id="video" class="mb-3 w65"></div>
+          
 
           <div class="row mb-2">
             <div class="col-md-4">
