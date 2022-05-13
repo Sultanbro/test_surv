@@ -970,7 +970,7 @@ export default {
           //   this.find(this.activesbook.id);
           // }
           this.$message.success('Удалено');
-          console.log(this.deepSearch(this.tree, this.activesbook))
+          this.removeNode(this.tree, this.activesbook.id)
         });
       }
     },
@@ -978,6 +978,15 @@ export default {
     deepSearch(array, item) {
       return array.some(function s(el) {
         return el == item || ((el instanceof Array) && el.some(s));
+      })
+    },
+
+    removeNode(arr, id) {
+      arr.forEach((it, index) => {
+        if (it.id === id) {
+          arr.splice(index, 1)
+        }
+        removeNode(it.children, id)
       })
     },
 
@@ -998,7 +1007,7 @@ export default {
       axios.get("/kb/get/" + id, {}).then((response) => {
         this.activesbook = response.data.book;
         this.edit_actives_book = false;
-        console.log(this.deepSearch(this.tree, this.activesbook))
+   
         window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.parent_id + '&b=' + id);
       });
       

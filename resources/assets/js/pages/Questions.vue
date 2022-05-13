@@ -193,6 +193,7 @@ export default {
   mounted() {},
   methods: {
     prepareVariants() {
+      if(this.questions === undefined) this.questions = [];
       this.questions.forEach((q) => {
         if (q.type == 0) {
           q.variants.forEach((v) => {
