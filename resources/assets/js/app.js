@@ -23,7 +23,7 @@ import 'vue-select/dist/vue-select.css';
 
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-
+import playerJs from './plugins/playerjs/playerjs'
 
 moment.locale('ru')
 require('moment-weekday-calc')
@@ -49,6 +49,7 @@ Vue.use(VGauge);
 Vue.use(VueMask);
 Vue.use(Antd)
 Vue.use(Notifications)
+Vue.use(PlayerJs)
 
 Vue.component('timetracking', require('./components/timetracking.vue')); // шапка начать день
 Vue.component('draggable', draggable); // драг

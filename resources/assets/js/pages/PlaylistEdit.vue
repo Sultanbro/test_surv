@@ -268,6 +268,7 @@
 </template>
 
 <script>
+
 export default {
   name: "PlaylistEdit",
   props: {
@@ -483,11 +484,6 @@ export default {
     showVideoSettings(video) {
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
-      var player = new Playerjs({
-        id: "video",
-        poster: "",
-        file: video.links,
-      });
       var player = new Playerjs({
         id: "video",
         poster: "",
