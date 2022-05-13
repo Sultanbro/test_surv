@@ -23,13 +23,13 @@
 
                 
                 <template v-for="(item, i) in users.items">
-                    <tr :key="i"  >
+                    <tr>
                         <td v-for="(field, f) in users.fields" :key="f" :class="field.class" @click="expandUser(item)">
                             <div>{{ item[field.key] }}</div> 
                         </td>
                     </tr>
-                    <template v-for="(course, c) in item.courses">
-                        <tr :key="c"  v-if="!item.expanded">
+                    <template v-for="course in item.courses">
+                        <tr v-if="!item.expanded">
                             <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
                                 <div>{{ course[field.key] }}</div> 
                             </td>
