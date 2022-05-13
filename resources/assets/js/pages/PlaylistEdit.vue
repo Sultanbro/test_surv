@@ -319,7 +319,14 @@ export default {
     this.fetchData();
   },
 
-  mounted() {},
+  mounted() {
+     this.player = new Playerjs({
+      id: "video",
+      poster: "",
+      file: '',
+    });
+
+  },
   methods: {
     showQuestions(v_index) {
       let questions = this.playlist.videos[v_index].questions;
@@ -484,7 +491,7 @@ export default {
     showVideoSettings(video) {
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
-      var player = new Playerjs({
+      this.player = new Playerjs({
         id: "video",
         poster: "",
         file: video.links,
