@@ -28,11 +28,13 @@
                             <div>{{ item[field.key] }}</div> 
                         </td>
                     </tr>
-                    <tr :key="i"  v-if="!item.expanded">
-                        <td v-for="(course, f) in item.courses" :key="f">
-                            <div>{{ course }}</div> 
-                        </td>
-                    </tr>
+                    <template v-for="(course, c) in item.courses">
+                        <tr :key="c"  v-if="!item.expanded">
+                            <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
+                                <div>{{ course[field.key] }}</div> 
+                            </td>
+                        </tr>
+                    </template>
                 </template>
                 
 

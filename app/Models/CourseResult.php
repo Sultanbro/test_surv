@@ -90,6 +90,7 @@ class CourseResult extends Model
         $arr['progress'] = 25;
         //$arr['assigned_at'] = date('Y-m-d');
         $arr['points'] = 2150;
+        $arr['expanded'] = false;
         $arr['courses'] = self::getUserCourses($user->ID);
         return $arr;
     }
