@@ -29,7 +29,7 @@
                         </td>
                     </tr>
                     <tr :key="i"  v-if="!item.expanded">
-                        <td v-for="(course, f) in item.courses" :key="f" :class="field.class">
+                        <td v-for="(course, f) in item.courses" :key="f">
                             <div>{{ course }}</div> 
                         </td>
                     </tr>
