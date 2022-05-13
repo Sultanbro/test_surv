@@ -492,7 +492,7 @@ export default {
     },
 
     closeSidebar() {
-      sidebars.edit_video.show = false
+      this.sidebars.edit_video.show = false
       this.activeVideo = null;
     },
 
