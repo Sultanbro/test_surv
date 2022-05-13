@@ -6,11 +6,10 @@
       </div>
     </div>
 
-   
     <div class="row">
       <div class="col-lg-6">
         <draggable
-          class="videos  mb-4"
+          class="videos mb-4"
           tag="div"
           handle=".fa-bars"
           :list="playlist.videos"
@@ -102,8 +101,6 @@
       </div>
     </div>
 
-
-
     <b-modal
       v-model="modals.addVideo.show"
       hide-footer
@@ -170,9 +167,7 @@
       </div>
       <div v-if="modals.upload.step == 2">
         <div class="row mb-2" v-if="modals.upload.file !== null">
-          <div class="col-md-4">
-            Название
-          </div>
+          <div class="col-md-4">Название</div>
           <div class="col-md-8">
             <input
               type="text"
@@ -201,19 +196,16 @@
 
     <sidebar
       title="Редактирование видео"
-      v-if="sidebars.edit_video.show"
+      :open="sidebars.edit_video.show"
       @close="closeSidebar"
       width="50%"
     >
       <div class="fast-edit">
-        <div id="video" class="mb-3 w65"></div>
         <div v-if="activeVideo !== null">
-          
+          <div id="video" class="mb-3 w65"></div>
 
           <div class="row mb-2">
-            <div class="col-md-4">
-              Название
-            </div>
+            <div class="col-md-4">Название</div>
             <div class="col-md-8">
               <input
                 type="text"
@@ -223,9 +215,7 @@
             </div>
           </div>
           <div class="row mb-2">
-            <div class="col-md-4">
-              Ссылка на видео
-            </div>
+            <div class="col-md-4">Ссылка на видео</div>
             <div class="col-md-8">
               <input
                 type="text"
@@ -236,9 +226,7 @@
             </div>
           </div>
           <div class="row mb-2">
-            <div class="col-md-4">
-              Описание
-            </div>
+            <div class="col-md-4">Описание</div>
             <div class="col-md-8">
               <textarea
                 class="form-control"
@@ -247,17 +235,15 @@
             </div>
           </div>
 
-
-           <div class="vid">
-                <questions
-                    v-if="[5, 18, 157, 84].includes(auth_user_id)"
-                    :questions="activeVideo.questions"
-                    :id="activeVideo.id"
-                    type="video"
-                    mode="edit"
-                    />
-            </div>
-
+          <div class="vid">
+            <questions
+              v-if="[5, 18, 157, 84].includes(auth_user_id)"
+              :questions="activeVideo.questions"
+              :id="activeVideo.id"
+              type="video"
+              mode="edit"
+            />
+          </div>
 
           <div class="d-flex mt-3">
             <button class="btn mr-1" @click="updateVideo">Сохранить</button>
@@ -269,7 +255,6 @@
 </template>
 
 <script>
-import Playerjs from '../plugins/playerjs/playerjs'
 export default {
   name: "PlaylistEdit",
   props: {
@@ -277,7 +262,7 @@ export default {
     id: Number,
     auth_user_id: Number,
   },
-  data: function() {
+  data: function () {
     return {
       categories: [],
       all_videos: [],
@@ -320,14 +305,7 @@ export default {
     this.fetchData();
   },
 
-  mounted() {
-     this.player = new Playerjs({
-      id: "video",
-      poster: "",
-      file: '',
-    });
-    console.log(this.player)
-  },
+  mounted() {},
   methods: {
     showQuestions(v_index) {
       let questions = this.playlist.videos[v_index].questions;
@@ -343,19 +321,21 @@ export default {
     },
 
     removeVideo(v_index) {
-      let video = this.playlist.videos[v_index];
+      if (confirm("Вы уверены убрать видео из плейлиста?")) {
+        let video = this.playlist.videos[v_index];
 
-      axios
-        .post("/playlists/remove-video", {
-          id: video.id,
-        })
-        .then((response) => {
-          this.playlist.videos.splice(v_index, 1);
-          this.$message.success("Исключен из плейлиста. Файл не удален");
-        })
-        .catch((error) => {
-          alert(error);
-        });
+        axios
+          .post("/playlists/remove-video", {
+            id: video.id,
+          })
+          .then((response) => {
+            this.playlist.videos.splice(v_index, 1);
+            this.$message.success("Исключен из плейлиста. Файл не удален");
+          })
+          .catch((error) => {
+            alert(error);
+          });
+      }
     },
 
     deleteVideo() {
@@ -399,7 +379,7 @@ export default {
         });
     },
 
-   updateVideo() {
+    updateVideo() {
       axios
         .post("/playlists/video/update", {
           id: this.playlist.id,
@@ -413,7 +393,6 @@ export default {
           alert(error);
         });
     },
-
 
     saveActiveVideo() {
       console.log("saveActiveVideo");
@@ -492,13 +471,12 @@ export default {
     showVideoSettings(video) {
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
-      // this.player = new Playerjs({
-      //   id: "video",
-      //   poster: "",
-      //   file: video.links,
-      // });
-
-      this.player.url = video.links;
+      var player = new Playerjs({
+        id: "video",
+        poster: "",
+        file: video.links,
+      });
+      console.log(player.url);
     },
 
     fetchData() {
@@ -531,8 +509,8 @@ export default {
 
     closeSidebar() {
       this.sidebars.edit_video.show = false;
-      this.activeVideo = null
-    }
+      this.activeVideo = null;
+    },
   },
 };
 </script>
