@@ -758,7 +758,7 @@ export default {
     },
     addimage(url) {
       tinymce.activeEditor.insertContent(
-        '<img alt="картинка" src="' + url + '"/>'
+        '<img alt="картинка" src="/'+ url + '"/>'
       );
     },
     submit() {
@@ -971,6 +971,7 @@ export default {
           // }
           this.$message.success('Удалено');
           this.removeNode(this.tree, this.activesbook.id)
+          this.activesbook = null;
         });
       }
     },
