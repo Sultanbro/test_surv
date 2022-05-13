@@ -14,7 +14,6 @@
         <nested-draggable
           :tasks="tree"
           :auth_user_id="auth_user_id"
-          :key="tree_key"
           :open="true"
           @showPage="showPage"
           :parent_id="parent_id"
@@ -579,8 +578,12 @@ export default {
       attachment: null,                                                                            
     }
   },
-  mounted() {
+  created() {
     this.tree = this.trees;
+  },
+
+  mounted() {
+    
     this.books = [];
 
 
