@@ -986,7 +986,7 @@ export default {
         if (it.id === id) {
           arr.splice(index, 1)
         }
-        removeNode(it.children, id)
+        this.removeNode(it.children, id)
       })
     },
 
