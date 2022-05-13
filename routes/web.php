@@ -70,6 +70,7 @@ Route::post('/kb/page/add-section', 'KnowBaseController@addSection');
 Route::post('/kb/page/save-order', 'KnowBaseController@saveOrder');
 Route::post('/kb/page/save-test', 'KnowBaseController@saveTest');
 Route::post('/kb/page/create', 'KnowBaseController@createPage');
+Route::post('/kb/page/delete', 'KnowBaseController@deletePage');
 
 
 

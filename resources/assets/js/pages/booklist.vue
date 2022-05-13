@@ -111,6 +111,13 @@
               </button>
               
               <button
+                class="form-control btn-danger btn-medium ml-2"
+                @click="deletePage"
+              >
+                  <i class="fa fa-trash"></i>
+              </button>
+
+              <button
                 class="form-control btn-save btn-medium ml-2"
                 @click="edit_actives_book = true"
               >
@@ -948,6 +955,32 @@ export default {
       this.actives = tre;
       this.activesbook = null;
     },
+
+    deletePage() {
+      if(confirm('Вы уверены?')) {
+        axios
+        .post("/kb/page/delete", {
+          id: this.activesbook.id,
+        })
+        .then((response) => {
+          // if(this.activesbook.parent_id == null) {
+          //   let index = this.tree.findIndex(t => t.id == this.activesbook.id);
+          //   this.tree.splice(index, 1);
+          // } else {
+          //   this.find(this.activesbook.id);
+          // }
+          this.$message.success('Удалено');
+          console.log(this.deepSearch(this.tree, this.activesbook))
+        });
+      }
+    },
+
+    deepSearch(array, item) {
+      return array.some(function s(el) {
+        return el == item || ((el instanceof Array) && el.some(s));
+      })
+    },
+
     activebook(book) {
       axios
         .post("/books/get_book/", {
@@ -965,7 +998,7 @@ export default {
       axios.get("/kb/get/" + id, {}).then((response) => {
         this.activesbook = response.data.book;
         this.edit_actives_book = false;
-
+        console.log(this.deepSearch(this.tree, this.activesbook))
         window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.parent_id + '&b=' + id);
       });
       
