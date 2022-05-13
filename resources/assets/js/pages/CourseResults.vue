@@ -3,6 +3,7 @@
     <p>Тут ничего нет</p>
     <div>
         {{ monthInfo }}
+        {{ currentGroup }}
     </div>
 </div>
 </template>
@@ -11,12 +12,18 @@
 export default {
     name: "CourseResults", 
     watch: {
-        utility_items() {
-            //vm.$forceUpdate()
+        monthInfo() {
+           
         },
+        currentGroup() {
+
+        }
     },
     props: {
         monthInfo: {
+            required: false
+        },
+        currentGroup: {
             required: false
         }
     },

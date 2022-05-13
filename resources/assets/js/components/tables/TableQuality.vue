@@ -54,7 +54,7 @@
           <a-tabs type="card" v-if="dataLoaded">
             <a-tab-pane tab="Неделя" key="1">
 
-              <div class="col-3 d-flex align-items-start">
+              <div class="mb-3">
                 <button
                   class="btn btn-success rounded change-type"
                   @click="change_type()"
@@ -64,8 +64,8 @@
                     Number(activeuserid) == 157
                   "
                 >
-                  <span v-if="can_add_records">Оценка с U-calls</span>
-                  <span v-else>Ручная оценка</span>
+                  <span v-if="can_add_records">Перевести на Оценку с U-calls</span>
+                  <span v-else>Перевести на Ручную оценку</span>
                 </button>
                 <button
                   class="btn btn-success rounded change-type ml-2"
@@ -458,8 +458,8 @@
           </a-tabs>
         </a-tab-pane>
         <a-tab-pane tab="Прогресс по курсам" key="2">
-
-            <course-results  :monthInfo="monthInfo" />
+            
+            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
 
         </a-tab-pane>
       </a-tabs>
