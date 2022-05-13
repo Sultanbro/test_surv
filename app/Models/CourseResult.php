@@ -108,7 +108,9 @@ class CourseResult extends Model
         // foreach ($variable as $key => $value) {
         //     # code...
         // }
-        
+        array_push($arrx, $arr);
+        array_push($arrx, $arr);
+        array_push($arrx, $arr);
         return $arrx;
     }
 
