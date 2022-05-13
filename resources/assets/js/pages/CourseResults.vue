@@ -10,6 +10,11 @@
 <script>
 export default {
     name: "CourseResults", 
+    watch: {
+        utility_items() {
+            //vm.$forceUpdate()
+        },
+    },
     props: {
         monthInfo: {
             required: false

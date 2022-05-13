@@ -30,25 +30,6 @@
         <div class="btn btn-primary rounded mr-2" @click="fetchData()">
           <i class="fa fa-redo-alt"></i>
         </div>
-        <button
-          class="btn btn-success rounded change-type"
-          @click="change_type()"
-          v-if="
-            Number(activeuserid) == 18 ||
-            Number(activeuserid) == 5 ||
-            Number(activeuserid) == 157
-          "
-        >
-          <span v-if="can_add_records">Оценка с U-calls</span>
-          <span v-else>Ручная оценка</span>
-        </button>
-        <button
-          class="btn btn-success rounded change-type ml-2"
-          @click="showCritWindow = true"
-          v-if="can_add_records && [5, 18, 157].includes(Number(activeuserid))"
-        >
-          <span>Критерии</span>
-        </button>
       </div>
       <div
         class="col-2"
@@ -72,6 +53,29 @@
         <a-tab-pane tab="Оценка диалогов" key="1">
           <a-tabs type="card" v-if="dataLoaded">
             <a-tab-pane tab="Неделя" key="1">
+
+              <div class="col-3 d-flex align-items-start">
+                <button
+                  class="btn btn-success rounded change-type"
+                  @click="change_type()"
+                  v-if="
+                    Number(activeuserid) == 18 ||
+                    Number(activeuserid) == 5 ||
+                    Number(activeuserid) == 157
+                  "
+                >
+                  <span v-if="can_add_records">Оценка с U-calls</span>
+                  <span v-else>Ручная оценка</span>
+                </button>
+                <button
+                  class="btn btn-success rounded change-type ml-2"
+                  @click="showCritWindow = true"
+                  v-if="can_add_records && [5, 18, 157].includes(Number(activeuserid))"
+                >
+                  <span>Критерии</span>
+                </button>
+              </div>
+
               <div class="table-responsive my-table">
                 <table class="table b-table table-bordered table-sm">
                   <tr>
