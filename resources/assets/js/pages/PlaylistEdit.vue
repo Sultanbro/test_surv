@@ -498,7 +498,7 @@ export default {
       this.activeVideo = null;
 
        
-      console.log(Object.getOwnPropertyNames(this.player).filter(item => typeof obj[item] === 'function'))
+      console.log(Object.getOwnPropertyNames(this.player).filter(item => typeof this.player[item] === 'function'))
     },
 
     fetchData() {
