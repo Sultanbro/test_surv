@@ -326,7 +326,7 @@ export default {
       file: '',
     });
 
-    console.log(this.player)
+    this.player.url = 'https://admin.u-marketing.org/sharedvideos/cardon/kachestva/Качество 52- великие продавцы умеют слушать, но могут и оставаться глухими.mp4'
 
   },
   methods: {
