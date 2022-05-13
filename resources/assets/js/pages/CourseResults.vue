@@ -23,12 +23,12 @@
 
                 
                 <template v-for="(item, i) in users.items">
-                    <tr :key="i" @click="expandUser(item)" v-if="!item.expanded">
-                        <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
+                    <tr :key="i"  v-if="!item.expanded">
+                        <td v-for="(field, f) in users.fields" :key="f" :class="field.class" @click="expandUser(item)">
                             <div>{{ item[field.key] }}</div> 
                         </td>
                     </tr>
-                    <tr :key="i" @click="shrinkUser(item)" v-else>
+                    <tr :key="i"  v-else>
                         <td v-for="(course, f) in item.courses" :key="f" :class="field.class">
                             <div>{{ course }}</div> 
                         </td>
@@ -118,12 +118,13 @@ export default {
 
         expandUser(item) {
             this.users.items.forEach(i => i.expanded = false);
-            item.expanded = true;
+            if(!item.expanded) {
+                item.expanded = true;
+            }
+            
         },
         
-        shrinkUser(item) {
-            this.users.items.forEach(i => i.expanded = false);
-        }
+        
      
     } 
 }
