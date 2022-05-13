@@ -496,7 +496,7 @@ export default {
       this.sidebars.edit_video.show = false
       this.activeVideo = null;
 
-      document.getElementById("video").innerHTML = ''
+      //document.getElementById("video").innerHTML = ''
      
     },
 
