@@ -265,6 +265,7 @@
       </div>
     </sidebar>
 
+    <div id="video"></div>
   </div>
 </template>
 
@@ -495,9 +496,6 @@ export default {
     closeSidebar() {
       this.sidebars.edit_video.show = false
       this.activeVideo = null;
-
-      //document.getElementById("video").innerHTML = ''
-     
     },
 
     fetchData() {
