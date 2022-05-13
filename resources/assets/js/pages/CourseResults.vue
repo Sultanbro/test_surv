@@ -24,7 +24,7 @@
 
                 <tr v-for="(item, i) in users.items" :key="i">
                     <td v-for="(field, f) in users.fields" :key="f">
-                        <div>{{ item[f] }}</div>
+                        <div>{{ item[f.key] }}</div>
                     </td>
                 </tr>
 
