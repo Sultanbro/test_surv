@@ -5,5 +5,12 @@
 @endsection
 
 @section('scripts')
-<!-- <script src="/video_learning/playerjs.js" ></script> -->
+<script src="/video_learning/playerjs.js" ></script>
+<script>
+var player = new Playerjs({
+    id: "video",
+    poster: "",
+    file: '/',
+});   
+</script>
 @endsection
