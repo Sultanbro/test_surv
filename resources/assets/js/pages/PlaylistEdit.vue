@@ -488,6 +488,11 @@ export default {
         poster: "",
         file: video.links,
       });
+      var player = new Playerjs({
+        id: "video",
+        poster: "",
+        file: video.links,
+      });
     },
 
     fetchData() {
