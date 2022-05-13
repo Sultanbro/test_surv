@@ -94,7 +94,7 @@ class CourseResult extends Model
         return $arr;
     }
 
-    private static function getUserCourses($user_id) {
+    private static function getUserCourses($user) {
         $arrx = [];
 
 
