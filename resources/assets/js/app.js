@@ -127,6 +127,7 @@ Vue.component('t-coming', require('./pages/TableComing.vue')); // время п�
 Vue.component('t-accrual', require('./pages/TableAccrual.vue')); // начисления
 Vue.component('analytics', require('./pages/Analytics.vue')); // hr 
 Vue.component('analytics-page', require('./pages/AnalyticsPage.vue')); // аналитика
+Vue.component('course-results', require('./pages/CourseResults.vue')); // результаты по курсам
 
 // Настройки
 Vue.component('userlist', require('./pages/userlist.vue')); // Сотрудники

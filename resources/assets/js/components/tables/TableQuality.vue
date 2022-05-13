@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-5 quality">
+  <div class="mt-5 quality quality-page">
     <div class="row">
       <div class="col-3">
         <select class="form-control" v-model="currentGroup" @change="fetchData">
