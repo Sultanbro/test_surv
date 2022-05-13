@@ -52,15 +52,34 @@ class CourseResult extends Model
         $arr[] = [
             'key' => 'name',
             'name' => 'Сотрудник',
+            'class' => 'text-left'
         ];
         $arr[] = [
-            'key' => 'progress',
-            'name' => 'Прогресс',
+            'key' => 'status',
+            'name' => 'Статус',
+            'class' => 'text'
         ];
         $arr[] = [
             'key' => 'points',
             'name' => 'Набрано баллов',
+            'class' => 'text'
         ];
+        $arr[] = [
+            'key' => 'progress',
+            'name' => 'Прогресс',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'started_at',
+            'name' => 'Дата начала',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'ended_at',
+            'name' => 'Дата завершения',
+            'class' => 'text'
+        ];
+        
         return $arr;
     }
     
@@ -71,7 +90,26 @@ class CourseResult extends Model
         $arr['progress'] = 25;
         //$arr['assigned_at'] = date('Y-m-d');
         $arr['points'] = 2150;
+        $arr['courses'] = self::getUserCourses($user->ID);
         return $arr;
+    }
+
+    private static function getUserCourses($user_id) {
+        $arrx = [];
+
+
+        $arr = [];
+        $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME;
+        $arr['user_id'] = $user->ID;
+        $arr['progress'] = 123;
+        //$arr['assigned_at'] = date('Y-m-d');
+        $arr['points'] = 23;
+
+        // foreach ($variable as $key => $value) {
+        //     # code...
+        // }
+        
+        return $arrx;
     }
 
     public static function getGroups($date = null)

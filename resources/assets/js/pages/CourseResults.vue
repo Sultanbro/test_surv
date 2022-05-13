@@ -13,20 +13,28 @@
         <p>Тут ничего нет</p>
         <div class="table-responsive" v-if="users.items.length > 0">
            
-            <table class="table b-table table-bordered table-sm table-responsive">
+            <table class="table b-table table-bordered table-sm">
 
                 <tr>
-                    <th class="text-left" v-for="(field, index) in users.fields" :key="index">
+                    <th v-for="(field, index) in users.fields" :key="index" :class="field.class">
                         <div>{{ field.name }}</div>
                     </th>
                 </tr>
 
-
-                <tr v-for="(item, i) in users.items" :key="i">
-                    <td v-for="(field, f) in users.fields" :key="f">
-                        <div>{{ item[field.key] }}</div> 
-                    </td>
-                </tr>
+                
+                <template v-for="(item, i) in users.items">
+                    <tr :key="i" @click="expandUser(item)" v-if="!item.expanded">
+                        <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
+                            <div>{{ item[field.key] }}</div> 
+                        </td>
+                    </tr>
+                    <tr :key="i" @click="shrinkUser(item)" v-else>
+                        <td v-for="(course, f) in item.courses" :key="f" :class="field.class">
+                            <div>{{ course }}</div> 
+                        </td>
+                    </tr>
+                </template>
+                
 
             </table>
 
@@ -108,7 +116,14 @@ export default {
                 });
             },
 
-
+        expandUser(item) {
+            this.users.items.forEach(i => i.expanded = false);
+            item.expanded = true;
+        },
+        
+        shrinkUser(item) {
+            this.users.items.forEach(i => i.expanded = false);
+        }
      
     } 
 }
