@@ -94,12 +94,12 @@ class CourseResult extends Model
         return $arr;
     }
 
-    private static function getUserCourses($user) {
+    private static function getUserCourses($user_id) {
         $arrx = [];
 
 
         $arr = [];
-        $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME;
+        $arr['name'] = 'Название курса';
         $arr['user_id'] = $user->ID;
         $arr['progress'] = 123;
         //$arr['assigned_at'] = date('Y-m-d');
