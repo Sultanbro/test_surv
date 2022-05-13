@@ -13,7 +13,7 @@
         <p>Тут ничего нет</p>
         <div class="table-responsive" v-if="users.items.length > 0">
            
-            <table class="table b-table table-bordered table-sm table-responsive" :class="{'inverted' : color_invert}">
+            <table class="table b-table table-bordered table-sm table-responsive">
 
                 <tr>
                     <th class="text-left" v-for="(field, index) in users.fields" :key="index">
