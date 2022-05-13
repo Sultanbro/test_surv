@@ -100,7 +100,7 @@ class CourseResult extends Model
 
         $arr = [];
         $arr['name'] = 'Название курса';
-        $arr['user_id'] = $user->ID;
+        $arr['user_id'] = $user_id;
         $arr['progress'] = 123;
         //$arr['assigned_at'] = date('Y-m-d');
         $arr['points'] = 23;
