@@ -202,7 +202,7 @@
     <sidebar
       title="Редактирование видео"
       :open="sidebars.edit_video.show"
-      @close="sidebars.edit_video.show = false"
+      @close="closeSidebar"
       width="50%"
     >
       <div class="fast-edit">
@@ -484,11 +484,16 @@ export default {
     showVideoSettings(video) {
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
-      var player = new Playerjs({
+      this.player = new Playerjs({
         id: "video",
         poster: "",
         file: video.links,
       });
+    },
+
+    closeSidebar() {
+      this.sidebars.edit_video.show = false
+      this.activeVideo = null;
     },
 
     fetchData() {
