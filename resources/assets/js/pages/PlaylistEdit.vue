@@ -477,6 +477,7 @@ export default {
         file: video.links,
       });
       console.log(player.url);
+      console.log(player.file);
     },
 
     fetchData() {
