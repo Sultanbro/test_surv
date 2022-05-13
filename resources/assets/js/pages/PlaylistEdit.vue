@@ -201,7 +201,7 @@
 
     <sidebar
       title="Редактирование видео"
-      :open="sidebars.edit_video.show"
+      v-show="sidebars.edit_video.show"
       @close="closeSidebar"
       width="50%"
     >
