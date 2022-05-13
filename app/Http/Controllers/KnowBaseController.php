@@ -110,6 +110,7 @@ class KnowBaseController extends Controller
       return KnowBase::create([
         'title' => 'Новая страница',
         'text' => '',
+        'user_id' => Auth::user()->ID,
         'order' => $kb ? $kb->order + 1 : 0,
         'parent_id' => $request->id,
         'hash' => md5(uniqid().mt_rand()),
@@ -125,6 +126,7 @@ class KnowBaseController extends Controller
       return KnowBase::create([
         'title' => $request->name,
         'text' => '',
+        'user_id' => Auth::user()->ID,
         'order' => $kb ? $kb->order + 1 : 0,
         'parent_id' => null,
         'hash' => 'cat',

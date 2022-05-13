@@ -64,7 +64,7 @@
         </div>
 
 
-        <div class="d-flex jscb">
+        <div class="d-flex jscb" v-if="!showArchive">
           <div class="btn btn-grey w-full mr-1" @click="getArchivedBooks" v-if="[5,18,157,84].includes(auth_user_id)">
             <i class="fa fa-trash"></i>
             <span>Архив</span>
