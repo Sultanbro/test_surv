@@ -162,6 +162,8 @@
               contextmenu: true,
               spellchecker_whitelist: ['Ephox', 'Moxiecode'],
               language: 'ru',
+              convert_urls: false,
+              relative_urls: false,
               language_url: '/static/langs/ru.js',
               content_css: '/static/css/mycontent.css',
               fontsize_formats:
