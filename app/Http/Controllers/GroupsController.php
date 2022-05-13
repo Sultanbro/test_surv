@@ -182,7 +182,7 @@ class GroupsController extends Controller
                 
                 
                 if($excel) {
-                    $date = $excel[0]['data_i_vremya_sozdaniya']->format('Y-m-d');
+                    $date = Carbon::parse($excel[0]['data_i_vremya_sozdaniya'])->format('Y-m-d');
                     
                 } else {
                     $date = date('Y-m-d');
