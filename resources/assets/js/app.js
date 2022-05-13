@@ -23,7 +23,7 @@ import 'vue-select/dist/vue-select.css';
 
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-import playerJs from './plugins/playerjs/playerjs'
+import PlayerJs from './plugins/playerjs/playerjs'
 
 moment.locale('ru')
 require('moment-weekday-calc')
