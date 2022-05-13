@@ -27,7 +27,7 @@
                         <div>{{ item[f] }}</div>
                     </td>
                 </tr>
-                
+
             </table>
 
 
@@ -90,7 +90,7 @@ export default {
         this.fetchData();
     },
     methods: {
-        fetchItems() {
+        fetchData() {
             let loader = this.$loading.show();
 
             axios
