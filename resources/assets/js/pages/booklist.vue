@@ -758,7 +758,7 @@ export default {
     },
     addimage(url) {
       tinymce.activeEditor.insertContent(
-        '<img alt="картинка" src="/'+ url + '"/>'
+        '<img alt="картинка" src="'+ url + '"/>'
       );
     },
     submit() {
