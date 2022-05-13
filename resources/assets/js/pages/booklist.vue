@@ -18,6 +18,7 @@
           :open="true"
           @showPage="showPage"
           :parent_id="parent_id"
+          ref="sidebar_links"
         />
       </div>
       
@@ -868,6 +869,7 @@ export default {
         this.tree.push(response.data);
         this.edit_actives_book = true
         this.tree_key++
+        this.$refs.sidebar_links.$forceUpdate();
       });
     },
 
