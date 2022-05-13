@@ -53,7 +53,7 @@ class KnowBaseController extends Controller
 
       $user = User::withTrashed()->find($page->user_id);
       $page->author = $user ? $user->LAST_NAME . ' ' . $user->NAME : 'Неизвестный';
-      $page->edited_at = Carbon::parse($page->updated_at)->format('H:i d.m.Y');
+      $page->edited_at = Carbon::parse($page->updated_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
       
 
       $page->questions = TestQuestion::where('testable_type', 'kb')->where('testable_id', $request->id)->get();

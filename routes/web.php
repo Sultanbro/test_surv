@@ -58,6 +58,9 @@ Route::post('/admin/courses/save', 'CourseController@save');
 Route::post('/admin/courses/create', 'CourseController@create');
 Route::post('/admin/courses/get-item', 'CourseController@getItem');
 
+Route::post('/course-results/get', 'CourseResultController@get');
+
+
 Route::get('/kb/get', 'KnowBaseController@get');
 Route::get('/kb/get-archived', 'KnowBaseController@getArchived');
 Route::get('/kb/get/{id}', 'KnowBaseController@getPage');
