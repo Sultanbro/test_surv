@@ -120,6 +120,33 @@
     </b-modal>
 
 
+    <b-modal
+      v-model="showEdit"
+      title="Редактирование раздела"
+      size="md"
+      class="modalle"
+      hide-footer
+      hide-header
+    >
+
+      <div v-if="update_book != null">
+        <input
+          type="text"
+          v-model="update_book.title"
+          placeholder="Название раздела..."
+          class="form-control mb-2"
+        />
+
+        <div>
+          <p>Доступы к разделу: еще не реализовано</p>
+        </div>
+        <button class="btn btn-primary rounded m-auto" @click="updateSection">
+          <span>Сохранить</span>
+        </button>
+      </div>
+      
+    </b-modal>
+
   </div>
 </template>
 
@@ -138,7 +165,9 @@ export default {
       activeBook: null,
       showCreate: false,
       showArchive: false,
+      showEdit: false,
       section_name: '',
+      update_book: null
     };
   },
   watch: {},
@@ -226,7 +255,12 @@ export default {
     },
     
     editAccess(book) {
-      alert('Редактирование доступа');
+
+
+      this.showEdit = true;
+      this.update_book = book;
+      
+      
     },
 
     addSection() {
@@ -272,6 +306,39 @@ export default {
           alert(error);
         });
     },
+
+    updateSection() {
+      if (this.update_book.title.length <= 2) {
+        alert("Слишком короткое название!");
+        return "";
+      }
+
+      let loader = this.$loading.show();
+
+      axios 
+        .post("/kb/page/update-section", {
+          title: this.update_book.title,
+          id: this.update_book.id,
+        })
+        .then((response) => {
+          this.showEdit = false;
+          let index = this.books.findIndex(b => b.id == this.update_book.id);
+
+          if(index != -1) {
+            this.books[index].title = this.update_book.title;
+          }
+
+          this.update_book = null;
+
+
+          this.$message.success("Изменения сохранены!"); 
+          loader.hide();
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+    },  
 
     saveOrder(event) {
 

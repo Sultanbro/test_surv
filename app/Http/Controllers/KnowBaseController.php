@@ -62,6 +62,19 @@ class KnowBaseController extends Controller
       ];
     } 
     
+    
+    
+    public function updateSection(Request $request)
+    {
+      $page = KnowBase::find($request->id);
+      if($page) {
+        $page->title = $request->title;
+        $page->user_id = Auth::user()->ID;
+        $page->save();
+      }
+
+    } 
+
     public function updatePage(Request $request, $id = null)
     {
       $page = KnowBase::find($request->id);
