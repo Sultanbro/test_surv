@@ -11,6 +11,14 @@
       </div>
 
       <div class="kb-wrap noscrollbar">
+
+        <div class="chapter mb-3">
+          <span>{{ parent_name }}</span>
+          <div class="chapter-btns">
+            <i class="fa fa-plus"></i> 
+          </div>
+        </div>
+        
         <nested-draggable
           :tasks="tree"
           :auth_user_id="auth_user_id"
@@ -21,10 +29,10 @@
       </div>
       
 
-      <div class="btn-add" @click="addPage" v-if="[5,18,157,84].includes(auth_user_id)">
+      <!-- <div class="btn-add" @click="addPage" v-if="[5,18,157,84].includes(auth_user_id)">
         <i class="fa fa-plus"></i>
         <span>Добавить страницу</span>
-      </div>
+      </div> -->
 
           
     </aside>
@@ -872,13 +880,13 @@ export default {
       }
     },
 
-    addPage() {
+    addPage(book) {
       axios.post("/kb/page/create", {
-        id: this.parent_id
+        id: book.id
       }).then((response) => {
         this.activesbook = response.data;
-        this.tree.push(response.data);
         this.edit_actives_book = true;
+        book.children.push(this.activesbook);
       });
     },
 

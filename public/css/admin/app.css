@@ -1779,6 +1779,32 @@ ul {
   font-size: 5px;
 }
 
+.chapter .chapter-btns i {
+  width: 27px;
+  margin-left: 5px;
+  padding: 5px;
+  background: #dddddd;
+  border-radius: 4px;
+}
+
+.chapter .chapter-btns i:hover {
+  color: #1d9ce5;
+}
+
+.chapter .chapter-btns {
+  position: absolute;
+  right: 0;
+  top: 6px;
+  text-align: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.chapter:hover .chapter-btns {
+  display: block;
+}
+
 .chapter p {
   font-size: 14px;
   word-break: break-all;

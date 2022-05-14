@@ -22,6 +22,9 @@
             
           </div>
           <p @click="toggleOpen(el)" class="mb-0">{{ el.title }}</p>
+           <div class="chapter-btns">
+              <i class="fa fa-plus mr-1" @click.stop="$emit('addPage', el)"></i>
+            </div>
         </div>
         <nested-draggable :tasks="el.children" @showPage="showPage" :parent_id="el.id" :auth_user_id="auth_user_id" />
       </li>
