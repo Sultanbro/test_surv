@@ -119,6 +119,7 @@ ul {
 
 .chapter {
   padding: 5px 0;
+  position: relative;
 
   .fa-circle {
     font-size: 5px;
@@ -130,7 +131,8 @@ ul {
     padding: 5px;
     background: #dddddd;
     border-radius: 4px;
-
+    cursor: pointer;
+    
     &:hover {
       color: $hover-blue;
     }
@@ -141,11 +143,11 @@ ul {
     right: 0;
     top: 6px;
     text-align: center;
-    display: flex;
+    display: none;
   }
 
   &:hover .chapter-btns {
-    display: block;
+    display: flex;
   }
 }
 
