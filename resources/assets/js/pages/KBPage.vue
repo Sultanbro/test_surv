@@ -3,7 +3,7 @@
     <!-- PAGE -->
     <div class="kb-sections d-flex" v-if="activeBook === null">
       <aside id="left-panel" class="lp">
-        <div class="btn btn-search mb-3" @click="showSearch">
+        <div class="btn btn-search mb-3" @click="showSearch = true">
           <i class="fa fa-search"></i>
           <span>Искать в базе...</span>
         </div>
