@@ -124,7 +124,7 @@
       v-model="showEdit"
       title="Редактирование раздела"
       size="md"
-      dialog-class="modalle"
+      :dialog-class="'modallissimo'"
       hide-footer
     >
 
