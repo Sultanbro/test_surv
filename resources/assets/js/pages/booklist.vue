@@ -1020,8 +1020,11 @@ export default {
     },
     
     setTargetBlank() {
-      var links = document.querySelectorAll(".bp-text a");
-      links.forEach(l => l.setAttribute("target", "_blank"));
+      this.$nextTick(() => {
+        var links = document.querySelectorAll(".bp-text a");
+        links.forEach(l => l.setAttribute("target", "_blank"));
+      })
+      
     },
 
     editorSave() {},
