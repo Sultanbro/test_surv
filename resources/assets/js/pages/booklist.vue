@@ -24,7 +24,7 @@
           :auth_user_id="auth_user_id"
           :open="true"
           @showPage="showPage"
-          @appPage="appPage"
+          @addPage="addPage"
           :parent_id="parent_id"
         />
       </div>
