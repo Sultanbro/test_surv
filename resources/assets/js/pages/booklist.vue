@@ -14,7 +14,7 @@
 
         <div class="chapter mb-3">
           <div class="d-flex">
-            <span>{{ parent_name }}</span>
+            <span class="font-16 font-bold">{{ parent_name }}</span>
             <div class="chapter-btns">
               <i class="fa fa-plus" @click="addPageToTree"></i> 
             </div>

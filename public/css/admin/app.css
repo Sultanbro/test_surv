@@ -2676,6 +2676,14 @@ tspan:last-child {
   font-weight: 600;
 }
 
+.font-16 {
+  font-size: 16px;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
 .navbar.navbar-expand-sm.navbar-default {
   background: transparent;
   border: none !important;
