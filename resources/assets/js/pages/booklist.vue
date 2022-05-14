@@ -13,9 +13,11 @@
       <div class="kb-wrap noscrollbar">
 
         <div class="chapter mb-3">
-          <span>{{ parent_name }}</span>
-          <div class="chapter-btns">
-            <i class="fa fa-plus" @click="addPageToTree"></i> 
+          <div class="d-flex">
+            <span>{{ parent_name }}</span>
+            <div class="chapter-btns">
+              <i class="fa fa-plus" @click="addPageToTree"></i> 
+            </div>
           </div>
         </div>
 

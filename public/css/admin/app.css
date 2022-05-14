@@ -1806,7 +1806,7 @@ ul {
   display: none;
 }
 
-.chapter:hover > .chapter-btns {
+.chapter:hover > .d-flex > .chapter-btns {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

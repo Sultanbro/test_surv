@@ -150,7 +150,7 @@ ul {
     display: none;
   }
 
-  &:hover > .chapter-btns {
+  &:hover > .d-flex > .chapter-btns {
     display: flex;
   }
 }
