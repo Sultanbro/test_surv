@@ -603,6 +603,7 @@ export default {
 
   },
   methods: {
+    
     movecatt() {
       this.actives.parent_cat_id = this.selectone;
       axios
@@ -1011,13 +1012,18 @@ export default {
         this.activesbook = response.data.book;
         this.edit_actives_book = false;
         
-        var links = document.querySelector(".bp-text a");
-        links.setAttribute("target", "_blank");
+        this.setTargetBlank();
 
         window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.parent_id + '&b=' + id);
       });
       
     },
+    
+    setTargetBlank() {
+      var links = document.querySelector(".bp-text a");
+      links.setAttribute("target", "_blank");
+    },
+
     editorSave() {},
   },
 };
