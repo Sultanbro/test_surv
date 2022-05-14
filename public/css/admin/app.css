@@ -1776,6 +1776,10 @@ ul {
   position: relative;
 }
 
+.chapter:first-child {
+  margin-top: 5px;
+}
+
 .chapter .fa-circle {
   font-size: 5px;
 }
@@ -1783,8 +1787,9 @@ ul {
 .chapter .chapter-btns i {
   width: 27px;
   margin-left: 5px;
+  font-size: 10px;
   padding: 5px;
-  background: #dddddd;
+  background: #c7d0d6;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -1801,7 +1806,7 @@ ul {
   display: none;
 }
 
-.chapter:hover .chapter-btns {
+.chapter:hover > .chapter-btns {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

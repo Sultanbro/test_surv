@@ -121,6 +121,9 @@ ul {
   padding: 5px 0;
   position: relative;
 
+  &:first-child {
+    margin-top: 5px;
+  }
   .fa-circle {
     font-size: 5px;
   }
@@ -128,11 +131,12 @@ ul {
   .chapter-btns i {
     width: 27px;
     margin-left: 5px;
+    font-size: 10px;
     padding: 5px;
-    background: #dddddd;
+    background: #c7d0d6;
     border-radius: 4px;
     cursor: pointer;
-    
+
     &:hover {
       color: $hover-blue;
     }
@@ -146,7 +150,7 @@ ul {
     display: none;
   }
 
-  &:hover .chapter-btns {
+  &:hover > .chapter-btns {
     display: flex;
   }
 }

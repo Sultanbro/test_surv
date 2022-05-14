@@ -15,7 +15,7 @@
         <div class="chapter mb-3">
           <span>{{ parent_name }}</span>
           <div class="chapter-btns">
-            <i class="fa fa-plus"></i> 
+            <i class="fa fa-plus" @click="addPageToTree"></i> 
           </div>
         </div>
 
@@ -888,6 +888,18 @@ export default {
         this.activesbook = response.data;
         this.edit_actives_book = true;
         book.children.push(this.activesbook);
+        this.$message.info('Добавлена страница');
+      });
+    },
+
+    addPageToTree() {
+      axios.post("/kb/page/create", {
+        id: this.parent_id
+      }).then((response) => {
+        this.activesbook = response.data;
+        this.edit_actives_book = true;
+        this.tree.push(this.activesbook);
+        this.$message.info('Добавлена страница');
       });
     },
 
