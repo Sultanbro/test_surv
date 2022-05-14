@@ -1764,7 +1764,7 @@ draggable
 
 .mover {
   cursor: move;
-  color: #d7d7d7;
+  color: #d7d7d7 !important;
 }
 
 ul {
@@ -1806,7 +1806,7 @@ ul {
   display: none;
 }
 
-.chapter:hover > .d-flex > .chapter-btns {
+.chapter:hover .d-flex > .chapter-btns {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -2682,6 +2682,18 @@ tspan:last-child {
 
 .font-bold {
   font-weight: 700;
+}
+
+nav {
+  margin: 0 -15px;
+}
+
+.nav-tabs a.active {
+  border: 2px solid #ddd;
+}
+
+.nav-tabs .nav-link.active {
+  border-color: transparent transparent #1076b0;
 }
 
 .navbar.navbar-expand-sm.navbar-default {
