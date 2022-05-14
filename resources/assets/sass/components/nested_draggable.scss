@@ -150,13 +150,13 @@ ul {
     display: none;
   }
 
-  &:hover .d-flex > .chapter-btns {
+ .d-flex:hover > .chapter-btns {
     display: flex;
   }
 }
 
 .chapter p {
-  font-size: 14px;
+  font-size: 13px;
   word-break: break-all;
   white-space: nowrap;
   cursor: pointer;

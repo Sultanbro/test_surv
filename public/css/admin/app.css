@@ -1806,14 +1806,14 @@ ul {
   display: none;
 }
 
-.chapter:hover .d-flex > .chapter-btns {
+.chapter .d-flex:hover > .chapter-btns {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
 
 .chapter p {
-  font-size: 14px;
+  font-size: 13px;
   word-break: break-all;
   white-space: nowrap;
   cursor: pointer;
