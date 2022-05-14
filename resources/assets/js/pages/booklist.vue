@@ -1020,8 +1020,8 @@ export default {
     },
     
     setTargetBlank() {
-      var links = document.querySelector(".bp-text a");
-      links.setAttribute("target", "_blank");
+      var links = document.querySelectorAll(".bp-text a");
+      links.forEach(l => l.setAttribute("target", "_blank"));
     },
 
     editorSave() {},
