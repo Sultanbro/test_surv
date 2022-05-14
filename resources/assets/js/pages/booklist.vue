@@ -291,7 +291,7 @@
                 <p class="edited">{{ activesbook.edited_at }}</p>
               </div>
             </div>
-            <div class="bp" v-html="activesbook.text">
+            <div class="bp-text" v-html="activesbook.text">
             
             </div>
 
@@ -1010,7 +1010,10 @@ export default {
       axios.get("/kb/get/" + id, {}).then((response) => {
         this.activesbook = response.data.book;
         this.edit_actives_book = false;
-   
+        
+        var links = document.querySelector(".bp-text a");
+        links.setAttribute("target", "_blank");
+
         window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.parent_id + '&b=' + id);
       });
       
