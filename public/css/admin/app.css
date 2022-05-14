@@ -3565,6 +3565,26 @@ body {
   display: flex;
 }
 
+.modal-search {
+  margin: 50px 80px;
+}
+
+.modal-search .s-content .item {
+  padding: 5px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-search .s-content .item p {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.modal-search .s-content .item .text {
+  font-size: 12px;
+  color: #ccc;
+}
+
 .videos {
   max-height: 500px;
   max-height: calc(100vh - 136px);

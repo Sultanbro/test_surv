@@ -3,7 +3,7 @@
     <!-- PAGE -->
     <div class="kb-sections d-flex" v-if="activeBook === null">
       <aside id="left-panel" class="lp">
-        <div class="btn btn-search mb-3">
+        <div class="btn btn-search mb-3" @click="showSearch">
           <i class="fa fa-search"></i>
           <span>Искать в базе...</span>
         </div>
@@ -106,7 +106,6 @@
       size="md"
       class="modalle"
       hide-footer
-      hide-header
     >
       <input
         type="text"
@@ -124,7 +123,7 @@
       v-model="showEdit"
       title="Редактирование раздела"
       size="md"
-      :dialog-class="'modallissimo'"
+      dialog-class="modallxe"
       hide-footer
     >
 
@@ -146,6 +145,33 @@
       
     </b-modal>
 
+    <b-modal
+      v-model="showSearch"
+      title="Поиск"
+      size="md"
+      dialog-class="modal-search"
+      hide-header
+      hide-footer
+    >
+
+      <div>
+        <input
+          type="text"
+          v-model="search.input"
+          placeholder="Поиск по всей базе..."
+          class="form-control mb-2"
+        />
+
+        <div class="s-content">
+         <div class="item" v-for="item in search.items">
+           <p>{{ item.title }}</p>
+           <div class="text">{{ item.title }}</div>
+         </div>
+        </div>
+        
+      </div>
+      
+    </b-modal>
   </div>
 </template>
 
@@ -164,9 +190,14 @@ export default {
       activeBook: null,
       showCreate: false,
       showArchive: false,
+      showSearch: false,
       showEdit: false,
       section_name: '',
-      update_book: null
+      update_book: null,
+      search: {
+        input: '',
+        items: []
+      }
     };
   },
   watch: {},
