@@ -126,7 +126,6 @@
       size="md"
       class="modalle"
       hide-footer
-      hide-header
     >
 
       <div v-if="update_book != null">

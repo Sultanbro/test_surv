@@ -99,7 +99,7 @@
               
               <button
                 class="form-control btn-delete btn-medium ml-2"
-                @click="deletebook"
+                @click="deletePage"
               >
                 Удалить
               </button>
@@ -860,18 +860,7 @@ export default {
         });
     },
 
-    deletebook() {
-      if (confirm("Вы уверены что хотите удалить книгу?") == true) {
-        
-        axios
-          .post("/pages/delete/", {
-            id: this.activesbook.id
-          })
-          .then((response) => {
-               this.$message.info("Удалено");
-          });
-      }
-    },
+  
     deletecat(cat) {
       if (confirm("Вы уверены что хотите удалить категорию?") == true) {
         this.tree.splice(this.tree.indexOf(cat), 1);
@@ -989,19 +978,12 @@ export default {
           id: this.activesbook.id,
         })
         .then((response) => {
-          // if(this.activesbook.parent_id == null) {
-          //   let index = this.tree.findIndex(t => t.id == this.activesbook.id);
-          //   this.tree.splice(index, 1);
-          // } else {
-          //   this.find(this.activesbook.id);
-          // }
           this.$message.success('Удалено');
           this.removeNode(this.tree, this.activesbook.id)
           this.activesbook = null;
         });
       }
     },
-
     deepSearch(array, item) {
       return array.some(function s(el) {
         return el == item || ((el instanceof Array) && el.some(s));
