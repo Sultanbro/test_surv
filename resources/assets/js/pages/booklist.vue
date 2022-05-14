@@ -18,12 +18,13 @@
             <i class="fa fa-plus"></i> 
           </div>
         </div>
-        
+
         <nested-draggable
           :tasks="tree"
           :auth_user_id="auth_user_id"
           :open="true"
           @showPage="showPage"
+          @appPage="appPage"
           :parent_id="parent_id"
         />
       </div>
