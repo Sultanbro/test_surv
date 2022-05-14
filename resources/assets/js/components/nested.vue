@@ -26,7 +26,7 @@
               <i class="fa fa-plus mr-1" @click.stop="$emit('addPage', el)"></i>
             </div>
         </div>
-        <nested-draggable :tasks="el.children" @showPage="showPage" @addPage="addPage" :parent_id="el.id" :auth_user_id="auth_user_id" />
+        <nested-draggable :tasks="el.children" @showPage="showPage" @addPage="$emit('addPage', el)" :parent_id="el.id" :auth_user_id="auth_user_id" />
       </li>
     </template>
   </draggable>
