@@ -651,8 +651,8 @@ export default {
     let book_id = urlParams.get('b');
     this.breadcrumbs = [{id:this.id, title: this.parent_title}];
     console.log('book_id '  + book_id)
-    console.log(this.tree)
-    if(book_id && this.tree.findIndex(b => b.id == book_id) != -1) {
+    console.log(this.deepSearchId(this.tree, {id:book_id}))
+    if(book_id && this.deepSearchId(this.tree, {id:book_id})) {
       this.showPage(book_id)
     }
 
@@ -1055,6 +1055,12 @@ export default {
     deepSearch(array, item) {
       return array.some(function s(el) {
         return el == item || ((el instanceof Array) && el.some(s));
+      })
+    },
+
+    deepSearchId(array, item) {
+      return array.some(function s(el) {
+        return el.id == item.id || ((el instanceof Array) && el.some(s));
       })
     },
 
