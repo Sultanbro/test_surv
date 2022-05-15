@@ -91,13 +91,16 @@ class KnowBaseController extends Controller
       if($request->refresh) {
 
         $top_parent = $this->getTopParent($request->id);
-
-        $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')->orderBy('order')->get();
-
-        foreach($trees as $tree) {
-          $tree->parent_id = null;
+        if($top_parent) {
+          $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')->orderBy('order')->get();
+          foreach($trees as $tree) {
+            $tree->parent_id = null;
+          }
+          $trees = $trees->toArray();
         }
-        $trees = $trees->toArray();
+        
+
+       
       }
 
       return [

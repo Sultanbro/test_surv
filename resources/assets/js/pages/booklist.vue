@@ -27,7 +27,7 @@
           :open="true"
           @showPage="showPage"
           @addPage="addPage"
-          :parent_id="parent_id"
+          :parent_id="id"
         />
       </div>
       
@@ -601,6 +601,7 @@ export default {
   },
   data() {
     return {
+      id: 0,
       loader: false,
       delo: 0,
       parent_title: '',
@@ -635,6 +636,7 @@ export default {
   created() {
     this.tree = this.trees;
     this.parent_title = this.parent_name;
+    this.id = this.parent_id;
     if(this.show_page_id != 0) {
       this.showPage(this.show_page_id, true)
     }
@@ -647,7 +649,7 @@ export default {
 
     const urlParams = new URLSearchParams(window.location.search);
     let book_id = urlParams.get('b');
-    this.breadcrumbs = [{id:this.parent_id, title: this.parent_title}];
+    this.breadcrumbs = [{id:this.id, title: this.parent_title}];
     if(book_id && this.tree.findIndex(b => b.id == book_id) != -1) {
       this.showPage(book_id)
     }
@@ -721,7 +723,7 @@ export default {
       axios
         .post("/books/order/", {
           tree: this.tree,
-          id: this.parent_id,
+          id: this.id,
         })
         .then((response) => {
           this.loader = false;
@@ -949,7 +951,7 @@ export default {
 
     addPageToTree() {
       axios.post("/kb/page/create", {
-        id: this.parent_id
+        id: this.id
       }).then((response) => {
         this.activesbook = response.data;
         this.edit_actives_book = true;
@@ -1089,14 +1091,17 @@ export default {
         this.edit_actives_book = false;
         
         if(refreshTree) {
-          this.parent_id = response.data.top_parent.id;
+          this.id = response.data.top_parent.id;
           this.parent_title = response.data.top_parent.title
           this.tree = response.data.tree
+          this.showSearch = false;
+          this.search.input = false;
+          this.search.items = [];
         }
 
         this.setTargetBlank();
 
-        window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.parent_id + '&b=' + id);
+        window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
       });
       
     },
