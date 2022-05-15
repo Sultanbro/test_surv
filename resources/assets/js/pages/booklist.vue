@@ -51,7 +51,7 @@
             <a href="#">База знаний</a>
             <template v-for="(bc, bc_index) in breadcrumbs">
               <i class="fa fa-chevron-right"></i>
-              <a href="#" @click="showPage(bc.id)" :key="bc_index">{{ bc.title }}</a>
+              <a href="#" @click="showPage(bc.id)">{{ bc.title }}</a>
             </template>
           </div>
 
