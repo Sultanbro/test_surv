@@ -638,7 +638,7 @@ export default {
     this.parent_title = this.parent_name;
     this.id = this.parent_id;
     if(this.show_page_id != 0) {
-      this.showPage(this.show_page_id, true)
+      this.showPage(this.show_page_id, true, true)
     }
   },
 
@@ -1105,7 +1105,7 @@ export default {
       this.actives = null;
     },
 
-    showPage(id, refreshTree = false) {
+    showPage(id, refreshTree = false, expand = false) {
       if(this.activesbook && this.activesbook.id == id) return '';
       
       axios.post("/kb/get", {
@@ -1123,9 +1123,10 @@ export default {
           this.showSearch = false;
           this.search.input = false;
           this.search.items = [];
-          this.expandTree();
+         
         }
 
+        if(expand)  this.expandTree();
         this.setTargetBlank();
         
 

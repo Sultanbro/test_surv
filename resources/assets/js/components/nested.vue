@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     toggleOpen(el) {
-      this.showPage(el.id);
+      this.showPage(el.id, false, true);
       el.opened = !el.opened
     },  
     showPage(id) {
