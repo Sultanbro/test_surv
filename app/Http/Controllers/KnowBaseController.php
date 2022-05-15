@@ -37,6 +37,7 @@ class KnowBaseController extends Controller
       
       foreach ($items as $key => $item) {
         $item->text = $this->cutFragment($item->text, $request->text);
+        $item->top_id = 0;
       }
 
       return [
@@ -85,12 +86,36 @@ class KnowBaseController extends Controller
       $page->questions = TestQuestion::where('testable_type', 'kb')->where('testable_id', $request->id)->get();
       $breadcrumbs = $this->getBreadcrumbs($page);
 
+
+      $tree = [];
+      $top_parent = [];
+      if($request->refresh) {
+
+        $top_parent = $this->getTopParent($request->id);
+
+        $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')->orderBy('order')->get();
+
+        foreach($trees as $tree) {
+          $tree->parent_id = null;
+        }
+      }
+
       return [
         'book' => $page,
-        'breadcrumbs' => $breadcrumbs
+        'breadcrumbs' => $breadcrumbs,
+        'tree' => $tree,
+        'top_parent' => $top_parent,
       ];
     } 
     
+    private function getTopParent($id) {
+      $kb = KnowBase::find($id);
+      if($kb && $kb->parent_id != null) {
+        return $this->getTopParent($kb->parent_id);
+      }
+      return $kb;
+    }
+
     private function getBreadcrumbs($page) {
       $breadcrumbs = [];
       $breadcrumbs[] = $page;

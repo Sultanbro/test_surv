@@ -62,9 +62,9 @@ Route::post('/course-results/get', 'CourseResultController@get');
 
 
 Route::get('/kb/get', 'KnowBaseController@get');
+Route::post('/kb/get', 'KnowBaseController@getPage');
 Route::post('/kb/search', 'KnowBaseController@search');
 Route::get('/kb/get-archived', 'KnowBaseController@getArchived');
-Route::get('/kb/get/{id}', 'KnowBaseController@getPage');
 Route::post('/kb/tree', 'KnowBaseController@getTree');
 
 Route::post('/kb/page/update', 'KnowBaseController@updatePage');

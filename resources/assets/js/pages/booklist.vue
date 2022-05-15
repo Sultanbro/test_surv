@@ -564,7 +564,7 @@
 import nestedDraggable from "../components/nested";
 export default { 
   name: "booklist",
-  props: ["trees", 'parent_id', 'auth_user_id', 'parent_name'],
+  props: ["trees", 'parent_id', 'auth_user_id', 'parent_name', 'show_page_id'],
   components: { 
     nestedDraggable,
   },
@@ -597,6 +597,9 @@ export default {
   },
   created() {
     this.tree = this.trees;
+    if(this.show_page_id != 0) {
+      this.showPage(this.show_page_id, true)
+    }
   },
 
   mounted() {
@@ -1009,16 +1012,26 @@ export default {
         });
       this.actives = null;
     },
-    showPage(id) {
+
+    showPage(id, refreshTree = false) {
       if(this.activesbook && this.activesbook.id == id) return '';
       
-      axios.get("/kb/get/" + id, {}).then((response) => {
+      axios.post("/kb/get/", {
+        id: id,
+        refresh: refreshTree
+      }).then((response) => {
         this.activesbook = response.data.book;
 
         this.breadcrumbs = response.data.breadcrumbs;
-
+        
         this.edit_actives_book = false;
         
+        if(resreshTree) {
+          this.parent_id = response.data.top_parent.id;
+          this.parent_name = response.data.top_parent.title;
+          this.tree = response.data.tree
+        }
+
         this.setTargetBlank();
 
         window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.parent_id + '&b=' + id);

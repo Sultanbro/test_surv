@@ -97,7 +97,8 @@
         ref="booklist"
         :trees="trees" 
         :parent_name="activeBook.title" 
-        :parent_id="activeBook.id" 
+        :parent_id="activeBook.id"
+        :show_page_id="show_page_id"
         @back="back" 
         :auth_user_id="auth_user_id" />
     </div>
@@ -170,7 +171,7 @@
         />
 
         <div class="s-content">
-         <div class="item" v-for="item in search.items" @click="showPage(item.id)" :key="item.id">
+         <div class="item" v-for="item in search.items" @click="selectSection(item.top_id, item.id)" :key="item.id">
            <p>{{ item.title }}</p>
            <div class="text" v-html="item.text"></div>
          </div>
@@ -199,6 +200,7 @@ export default {
       showArchive: false,
       showSearch: false,
       showEdit: false,
+      show_page_id: 0,
       section_name: '',
       update_book: null,
       search: {
@@ -233,12 +235,8 @@ export default {
           alert(error);
         });
     },
-
-    showPage(id) {
-      this.$refs.booklist.showPage(id);
-    },
     
-    selectSection(book) {
+    selectSection(book, page_id = 0) {
       axios
         .post("kb/tree", {
           id: book.id,
@@ -249,6 +247,7 @@ export default {
           }
           this.trees = response.data.trees;
           this.activeBook = response.data.book;
+          this.show_page_id = page_id;
 
           // change URL
           const urlParams = new URLSearchParams(window.location.search);
