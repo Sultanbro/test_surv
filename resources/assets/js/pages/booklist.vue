@@ -655,6 +655,8 @@ export default {
     
     let result = null
     for (let obj in this.tree) {
+      console.log('asdasf');
+      console.log(obj);
       result = this.deepSearchId(obj, book_id)
       if (result) {
         console.log(result);
