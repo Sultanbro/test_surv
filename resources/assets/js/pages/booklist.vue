@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex">
     <aside id="left-panel" class="lp">
-      <div class="btn btn-search mb-3">
+      <div class="btn btn-search mb-3" @click="$emit('search')">
         <i class="fa fa-search"></i>
         <span>Искать в базе...</span>
       </div>
@@ -14,7 +14,7 @@
 
         <div class="chapter mb-3">
           <div class="d-flex">
-            <span class="font-16 font-bold">{{ parent_name }}</span>
+            <span class="font-16 font-bold">{{ parent_title }}</span>
             <div class="chapter-btns">
               <i class="fa fa-plus" @click="addPageToTree"></i> 
             </div>
@@ -572,6 +572,7 @@ export default {
     return {
       loader: false,
       delo: 0,
+      parent_title: '',
       showActionModal: false,
       showImageModal: false,
       showAudioModal: false,
@@ -597,6 +598,7 @@ export default {
   },
   created() {
     this.tree = this.trees;
+    this.parent_title = this.parent_name;
     if(this.show_page_id != 0) {
       this.showPage(this.show_page_id, true)
     }
@@ -609,7 +611,7 @@ export default {
 
     const urlParams = new URLSearchParams(window.location.search);
     let book_id = urlParams.get('b');
-    this.breadcrumbs = [{id:this.parent_id, title: this.parent_name}];
+    this.breadcrumbs = [{id:this.parent_id, title: this.parent_title}];
     if(book_id && this.tree.findIndex(b => b.id == book_id) != -1) {
       this.showPage(book_id)
     }
@@ -1016,7 +1018,7 @@ export default {
     showPage(id, refreshTree = false) {
       if(this.activesbook && this.activesbook.id == id) return '';
       
-      axios.post("/kb/get/", {
+      axios.post("/kb/get", {
         id: id,
         refresh: refreshTree
       }).then((response) => {
@@ -1028,8 +1030,7 @@ export default {
         
         if(refreshTree) {
           this.parent_id = response.data.top_parent.id;
-          this.parent_name = response.data.top_parent.title;
-          console.log(response.data.tree)
+          this.parent_title = response.data.top_parent.title
           this.tree = response.data.tree
         }
 

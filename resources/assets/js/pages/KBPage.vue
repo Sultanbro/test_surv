@@ -100,6 +100,7 @@
         :parent_id="activeBook.id"
         :show_page_id="show_page_id"
         @back="back" 
+        @search="showSearch = true" 
         :auth_user_id="auth_user_id" />
     </div>
 
@@ -248,7 +249,9 @@ export default {
           this.trees = response.data.trees;
           this.activeBook = response.data.book;
           this.show_page_id = page_id;
-
+          this.showSearch = false;
+          this.search.input = '';
+          this.search.items = [];
           // change URL
           const urlParams = new URLSearchParams(window.location.search);
           let b = urlParams.get('b');

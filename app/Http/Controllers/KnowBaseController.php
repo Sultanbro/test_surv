@@ -86,7 +86,7 @@ class KnowBaseController extends Controller
       $breadcrumbs = $this->getBreadcrumbs($page);
 
 
-      $tree = [];
+      $trees = [];
       $top_parent = [];
       if($request->refresh) {
 
