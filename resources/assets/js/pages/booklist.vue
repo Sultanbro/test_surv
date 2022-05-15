@@ -1135,10 +1135,7 @@ export default {
     
     expandTree() {
       this.breadcrumbs.forEach(bc => {
-        let item = this.deepSearchId(this.tree, bc.id);
-        if(item != null) {
-          item.opened = true;
-        }
+        console.log(bc.id + '--- ' +bc.parent_id)
       });
     },
 
