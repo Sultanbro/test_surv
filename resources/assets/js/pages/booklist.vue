@@ -49,11 +49,9 @@
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">
             <a href="#">База знаний</a>
-            <i class="fa fa-chevron-right"></i>
-            <a href="#">{{ parent_name }}</a>
             <template v-for="(bc, bc_index) in breadcrumbs">
-              <i class="fa fa-chevron-right"></i>
-              <a href="#">{{ bc.title }}</a>
+              <i class="fa fa-chevron-right" :key="bc_index"></i>
+              <a href="#" @click="showPage(bc.id)" :key="bc_index">{{ bc.title }}</a>
             </template>
           </div>
 
@@ -608,7 +606,7 @@ export default {
 
     const urlParams = new URLSearchParams(window.location.search);
     let book_id = urlParams.get('b');
-    console.log(book_id)
+    this.breadcrumbs = [{id:this.parent_id, title: this.parent_name}];
     if(book_id && this.tree.findIndex(b => b.id == book_id) != -1) {
       this.showPage(book_id)
     }
