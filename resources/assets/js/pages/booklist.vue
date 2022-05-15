@@ -50,7 +50,7 @@
           <div class="bc">
             <a href="#">База знаний</a>
             <template v-for="(bc, bc_index) in breadcrumbs">
-              <i class="fa fa-chevron-right" :key="bc_index"></i>
+              <i class="fa fa-chevron-right"></i>
               <a href="#" @click="showPage(bc.id)" :key="bc_index">{{ bc.title }}</a>
             </template>
           </div>
