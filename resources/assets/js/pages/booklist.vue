@@ -1113,9 +1113,7 @@ export default {
         refresh: refreshTree
       }).then((response) => {
         this.activesbook = response.data.book;
-
         this.breadcrumbs = response.data.breadcrumbs;
-        
         this.edit_actives_book = false;
         
         if(refreshTree) {
@@ -1128,12 +1126,22 @@ export default {
         }
 
         this.setTargetBlank();
+        this.expandTree();
 
         window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
       });
       
     },
     
+    expandTree() {
+      this.breadcrumbs.forEach(bc => {
+        let item = this.tree.deepSearchId(this.tree, bc.id);
+        if(item != null) {
+          item.opened = true;
+        }
+      });
+    },
+
     setTargetBlank() {
       this.$nextTick(() => {
         var links = document.querySelectorAll(".bp-text a");
