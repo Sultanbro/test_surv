@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex">
     <aside id="left-panel" class="lp">
-      <div class="btn btn-search mb-3" @click="$emit('search')">
+      <div class="btn btn-search mb-3" @click="showSearch = true">
         <i class="fa fa-search"></i>
         <span>Искать в базе...</span>
       </div>
@@ -557,6 +557,37 @@
         </div>
       </div>
     </div>
+
+
+    <b-modal
+      v-model="showSearch"
+      title="Поиск"
+      size="md"
+      dialog-class="modal-search"
+      hide-header
+      hide-footer
+    >
+
+      <div>
+        <input
+          type="text"
+          v-model="search.input"
+          @keyup="searchInput"
+          placeholder="Поиск по всей базе..."
+          class="form-control mb-2"
+        />
+
+        <div class="s-content">
+         <div class="item" v-for="item in search.items" @click="showPage(item.id, true)">
+           <p>{{ item.title }}</p>
+           <div class="text" v-html="item.text"></div>
+         </div>
+        </div>
+        
+      </div>
+      
+    </b-modal>
+
   </div>
 </template>
 
@@ -574,6 +605,11 @@ export default {
       delo: 0,
       parent_title: '',
       showActionModal: false,
+      showSearch: false,
+      search: {
+        input: '',
+        items: []
+      },
       showImageModal: false,
       showAudioModal: false,
       showPermissionModal: false,
@@ -619,6 +655,30 @@ export default {
   },
   methods: {
     
+     searchInput() {
+      if(this.search.input.length <= 2) return null;
+      
+      axios
+        .post("kb/search", {
+          text: this.search.input,
+        })
+        .then((response) => {
+         
+          this.search.items = response.data.items;
+          this.emphasizeTexts();
+
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
+    emphasizeTexts() {
+      this.search.items.forEach(item => {
+         item.text = item.text.replace(new RegExp(this.search.input,"gi"), "<b>" + this.search.input +  "</b>");
+      });
+    },
+
     movecatt() {
       this.actives.parent_cat_id = this.selectone;
       axios

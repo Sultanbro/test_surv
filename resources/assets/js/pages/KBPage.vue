@@ -100,7 +100,6 @@
         :parent_id="activeBook.id"
         :show_page_id="show_page_id"
         @back="back" 
-        @search="showSearch = true" 
         :auth_user_id="auth_user_id" />
     </div>
 
