@@ -1073,7 +1073,7 @@ export default {
       }
      
       for (let item of obj.children) {
-        let check = dfs(item, targetId)
+        let check = this.deepSearchId(item, targetId)
         if (check) {
           return check
         }
