@@ -7,7 +7,7 @@
     :group="{ name: 'g1' }"
     @end="saveOrder">
     <template v-for="el in tasks">
-        <li v-if="el.opened" 
+        <li v-if="opened" 
           class="chapter"
           :id="el.id"
           :key="el.id">
@@ -26,7 +26,7 @@
               <i class="fa fa-plus mr-1" @click.stop="addPage(el)"></i>
             </div>
         </div>
-        <nested-draggable :tasks="el.children" @showPage="showPage" @addPage="addPage" :parent_id="el.id" :auth_user_id="auth_user_id" />
+        <nested-draggable :tasks="el.children" @showPage="showPage" @addPage="addPage" :parent_id="el.id" :auth_user_id="auth_user_id" :opened="el.opened" />
       </li>
     </template>
   </draggable>
@@ -40,6 +40,9 @@ export default {
     },
     parent_id: {
       default: null
+    },
+    opened: {
+      default: false
     },
     auth_user_id: {
       type: Number
