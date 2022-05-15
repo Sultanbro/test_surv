@@ -1142,13 +1142,13 @@ export default {
         let s_index = this.tree.findIndex(t => t.id == bc.id);
 
           if(s_index != -1) {
-            item.opened = true;
+           
             if(item != null) {
               item = item.children[s_index];
             } else {
               item = this.tree[s_index]
             }
-     
+             item.opened = true;
         
         }
         
