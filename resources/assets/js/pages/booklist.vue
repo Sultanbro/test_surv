@@ -1134,8 +1134,15 @@ export default {
     },
     
     expandTree() {
+      let item = this.tree[this.tree.findIndex(t => t.id == bc.id)];
+      item.opened = true;
       this.breadcrumbs.forEach(bc => {
         console.log(bc.id + '--- ' +bc.parent_id)
+        let s_index = this.tree.findIndex(t => t.id == bc.id);
+        if(s_index != -1) {
+          item = item.children[s_index];
+          item.opened = true;
+        }
       });
     },
 
