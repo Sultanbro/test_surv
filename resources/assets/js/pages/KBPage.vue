@@ -93,7 +93,13 @@
 
     <!-- PAGE -->
     <div v-else>
-      <booklist :trees="trees" :parent_name="activeBook.title" :parent_id="activeBook.id" @back="back" :auth_user_id="auth_user_id" />
+      <booklist 
+        ref="booklist"
+        :trees="trees" 
+        :parent_name="activeBook.title" 
+        :parent_id="activeBook.id" 
+        @back="back" 
+        :auth_user_id="auth_user_id" />
     </div>
 
 
@@ -164,7 +170,7 @@
         />
 
         <div class="s-content">
-         <div class="item" v-for="item in search.items">
+         <div class="item" v-for="item in search.items" @click="showPage(item.id)" :key="item.id">
            <p>{{ item.title }}</p>
            <div class="text" v-html="item.text"></div>
          </div>
@@ -216,7 +222,7 @@ export default {
   },
 
   methods: {
-    
+
     fetchData() {
       axios
         .get("/kb/get", {})
@@ -228,6 +234,10 @@ export default {
         });
     },
 
+    showPage(id) {
+      this.$refs.booklist.showPage(id);
+    },
+    
     selectSection(book) {
       axios
         .post("kb/tree", {
