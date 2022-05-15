@@ -158,7 +158,7 @@
         <input
           type="text"
           v-model="search.input"
-          @keyup="search"
+          @keyup="searchInput"
           placeholder="Поиск по всей базе..."
           class="form-control mb-2"
         />
@@ -285,7 +285,7 @@ export default {
       window.history.replaceState({ id: "100" }, "База знаний", "/kb");
     },
     
-    search() {
+    searchInput() {
       if(this.search.input.length <= 2) return null;
       
       axios
