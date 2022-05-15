@@ -655,8 +655,6 @@ export default {
     
     let result = null
     this.tree.forEach(obj => {
-      console.log('asdasf');
-      console.log(obj);
       result = this.deepSearchId(obj, book_id)
       if (result) {
         console.log(result);
@@ -1070,11 +1068,11 @@ export default {
     },
 
     deepSearchId(obj, targetId) {
-      if (obj.id === targetId) {
+      console.log(obj.id + ' === ' + targetId)
+      if (obj.id == targetId) {
         return obj
       }
-     console.log("ASDASDASd")
-     console.log(obj)
+    
       for (let item of obj.children) {
         let check = this.deepSearchId(item, targetId)
         if (check) {
