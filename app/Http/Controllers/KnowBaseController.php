@@ -29,7 +29,7 @@ class KnowBaseController extends Controller
     }
 
     public function search(Request $request) {
-      $phrase = '%'. $request->text . '%';
+      $phrase = '%{$request->text}%';
       $items = KnowBase::where('title', 'like' , $phrase)
         ->orWhere('text', 'like', $phrase)
         ->orderBy('order')
