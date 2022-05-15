@@ -1123,10 +1123,11 @@ export default {
           this.showSearch = false;
           this.search.input = false;
           this.search.items = [];
+          this.expandTree();
         }
 
         this.setTargetBlank();
-        this.expandTree();
+        
 
         window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
       });
