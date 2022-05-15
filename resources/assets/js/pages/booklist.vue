@@ -654,16 +654,16 @@ export default {
     
     
     let result = null
-    for (let obj in this.tree) {
+    this.tree.forEach(obj => {
       console.log('asdasf');
       console.log(obj);
       result = this.deepSearchId(obj, book_id)
       if (result) {
         console.log(result);
         this.showPage(book_id);
-        break
+        return;
       }
-    }
+    });
    
 
 
