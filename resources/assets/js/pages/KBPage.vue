@@ -166,7 +166,7 @@
         <div class="s-content">
          <div class="item" v-for="item in search.items">
            <p>{{ item.title }}</p>
-           <div class="text">{{ item.title }}</div>
+           <div class="text">{{ item.text }}</div>
          </div>
         </div>
         

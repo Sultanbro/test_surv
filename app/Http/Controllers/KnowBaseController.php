@@ -29,16 +29,30 @@ class KnowBaseController extends Controller
     }
 
     public function search(Request $request) {
-      $phrase = '%{$request->text}%';
+      $phrase = '%'. $request->text . '%';
       $items = KnowBase::where('title', 'like' , $phrase)
         ->orWhere('text', 'like', $phrase)
         ->orderBy('order')
         ->get();
-        
+      
+      foreach ($items as $key => $item) {
+        $item->text = $this->cutFragment($item->text, $request->text);
+      }
+
       return [
           'items' => $items
       ];
     }
+
+    private function cutFragment($text, $fragment) {
+	    $plainText = strip_tags($text);
+  
+      $start_pos = stripos($plainText, $fragment);
+      $start_pos -= 15;
+      if($start_pos < 0) $start_pos = 0;
+
+      return '...' . mb_substr($plainText, $start_pos, 50);
+    }  
 
     public function getArchived(Request $request) {
         return [
