@@ -109,7 +109,7 @@ class KnowBaseController extends Controller
     } 
     
     private function getTopParent($id) {
-      $kb = KnowBase::find($id);
+      $kb = KnowBase::withTrashed()->find($id);
       if($kb && $kb->parent_id != null) {
         return $this->getTopParent($kb->parent_id);
       }
