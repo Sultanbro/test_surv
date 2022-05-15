@@ -158,6 +158,7 @@
         <input
           type="text"
           v-model="search.input"
+          @keyup="search"
           placeholder="Поиск по всей базе..."
           class="form-control mb-2"
         />
@@ -284,6 +285,24 @@ export default {
       window.history.replaceState({ id: "100" }, "База знаний", "/kb");
     },
     
+    search() {
+      if(this.search.input.length <= 2) return null;
+      
+      axios
+        .post("kb/search", {
+          text: this.search.input,
+        })
+        .then((response) => {
+         
+          this.search.items = response.data.items;
+         
+
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
     editAccess(book) {
 
 

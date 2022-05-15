@@ -28,6 +28,18 @@ class KnowBaseController extends Controller
         ];
     }
 
+    public function search(Request $request) {
+      $phrase = '%'. $request->text . '%';
+      $items = KnowBase::where('title', 'like' , $phrase)
+        ->orWhere('text', 'like', $phrase)
+        ->orderBy('order')
+        ->get();
+        
+      return [
+          'items' => $items
+      ];
+    }
+
     public function getArchived(Request $request) {
         return [
             'books' => KnowBase::onlyTrashed()->whereNull('parent_id')->orderBy('order')->get()->toArray(),
@@ -62,7 +74,7 @@ class KnowBaseController extends Controller
       ];
     } 
     
-    
+
     
     public function updateSection(Request $request)
     {
