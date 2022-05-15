@@ -1,5 +1,6 @@
 <template>
   <draggable 
+    v-if="opened"
     class="dragArea" 
     tag="ul"
     :handle="handle"
@@ -63,8 +64,6 @@ export default {
     toggleOpen(el) {
       this.showPage(el.id);
       el.opened = !el.opened
-      
-      
     },  
     showPage(id) {
        this.$emit('showPage', id);
