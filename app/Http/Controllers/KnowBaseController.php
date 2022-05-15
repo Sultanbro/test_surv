@@ -50,7 +50,7 @@ class KnowBaseController extends Controller
       $start_pos = stripos($plainText, $fragment);
       $start_pos -= 15;
       if($start_pos < 0) $start_pos = 0;
-
+      
       return '...' . mb_substr($plainText, $start_pos, 50);
     }  
 
