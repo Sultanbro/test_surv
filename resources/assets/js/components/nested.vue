@@ -7,7 +7,7 @@
     :group="{ name: 'g1' }"
     @end="saveOrder">
     <template v-for="el in tasks">
-        <li v-if="opened" 
+        <li 
           class="chapter"
           :id="el.id"
           :key="el.id">
