@@ -37,7 +37,7 @@ class KnowBaseController extends Controller
       
       foreach ($items as $key => $item) {
         $item->text = $this->cutFragment($item->text, $request->text);
-        $item->top_id = 0;
+        $item->top_id = $this->getTopParent($request->id)->id;
       }
 
       return [
