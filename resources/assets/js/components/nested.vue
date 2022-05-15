@@ -61,11 +61,8 @@ export default {
   },
   methods: {
     toggleOpen(el) {
-        console.log(el)
       this.showPage(el.id);
-      el.children.forEach(child => {
-          child.opened = !child.opened;
-      });
+      el.opened = !el.opened
       
       
     },  
