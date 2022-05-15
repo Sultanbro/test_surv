@@ -171,7 +171,7 @@
         />
 
         <div class="s-content">
-         <div class="item" v-for="item in search.items" @click="selectSection(item, item.id)" :key="item.id">
+         <div class="item" v-for="item in search.items" @click="selectSection(item, item.id)" >
            <p>{{ item.title }}</p>
            <div class="text" v-html="item.text"></div>
          </div>
