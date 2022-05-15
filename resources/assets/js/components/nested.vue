@@ -22,7 +22,7 @@
             </div>
             
           </div>
-          <p @click="toggleOpen(el)" class="mb-0">{{ el.title }}</p>
+          <p @click.stop="toggleOpen(el)" class="mb-0">{{ el.title }}</p>
            <div class="chapter-btns">
               <i class="fa fa-plus mr-1" @click.stop="addPage(el)"></i>
             </div>
