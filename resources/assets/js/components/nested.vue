@@ -10,6 +10,7 @@
     <template v-for="el in tasks">
         <li 
           class="chapter"
+          :class="{'opened':opened}"
           :id="el.id"
           :key="el.id">
         <div class="d-flex">

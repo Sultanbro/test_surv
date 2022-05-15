@@ -1784,7 +1784,7 @@ ul {
   font-size: 5px;
 }
 
-.chapter:hover p {
+.chapter.opened p {
   color: #28a745;
 }
 
