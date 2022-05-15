@@ -47,7 +47,7 @@ class KnowBaseController extends Controller
     private function cutFragment($text, $fragment) {
 	    $plainText = strip_tags($text);
   
-      $start_pos = stripos($plainText, $fragment);
+      $start_pos = mb_stripos($plainText, $fragment);
       $start_pos -= 15;
       if($start_pos < 0) $start_pos = 0;
       
