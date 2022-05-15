@@ -51,9 +51,9 @@
             <a href="#">База знаний</a>
             <i class="fa fa-chevron-right"></i>
             <a href="#">{{ parent_name }}</a>
-            <template v-if="activesbook != null">
+            <template v-for="(bc, bc_index) in breadcrumbs">
               <i class="fa fa-chevron-right"></i>
-              <a href="#">{{ activesbook.title }}</a>
+              <a href="#">{{ bc.title }}</a>
             </template>
           </div>
 
@@ -593,7 +593,8 @@ export default {
       seatchbooks: null,
       editors: "",
       imagegroup: [],
-      attachment: null,                                                                            
+      attachment: null,
+      breadcrumbs: []                                                                            
     }
   },
   created() {
@@ -1015,6 +1016,9 @@ export default {
       
       axios.get("/kb/get/" + id, {}).then((response) => {
         this.activesbook = response.data.book;
+
+        this.breadcrumbs = response.data.breadcrumbs;
+
         this.edit_actives_book = false;
         
         this.setTargetBlank();

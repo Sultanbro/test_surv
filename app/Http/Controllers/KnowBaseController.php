@@ -73,7 +73,7 @@ class KnowBaseController extends Controller
         ];
     }
 
-    public function getPage(Request $request, $id = null)
+    public function getPage(Request $request)
     {
       $page = KnowBase::withTrashed()->find($request->id);
 
@@ -83,11 +83,31 @@ class KnowBaseController extends Controller
       
 
       $page->questions = TestQuestion::where('testable_type', 'kb')->where('testable_id', $request->id)->get();
+      $breadcrumbs = $this->getBreadcrumbs($page);
+
       return [
-        'book' => $page
+        'book' => $page,
+        'breadcrumbs' => $breadcrumbs
       ];
     } 
     
+    private function getBreadcrumbs($page) {
+      $breadcrumbs = [];
+      $breadcrumbs[] = $page;
+      $parent_id = $page->parent_id;
+
+      while($parent_id != null) {
+        $xpage = KnowBase::withTrashed()->find($parent_id);
+        if($xpage) {
+          $breadcrumbs[] = $xpage;
+          $parent_id = $xpage->parent_id; 
+        } else {
+          $parent_id = null;
+        }
+      }
+
+      return array_reverse($breadcrumbs);
+    }
 
     
     public function updateSection(Request $request)
