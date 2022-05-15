@@ -295,12 +295,18 @@ export default {
         .then((response) => {
          
           this.search.items = response.data.items;
-         
+          this.emphasizeTexts();
 
         })
         .catch((error) => {
           alert(error);
         });
+    },
+
+    emphasizeTexts() {
+      this.search.items.forEach(item => {
+         item.text = item.text.replace(new RegExp(this.search.input,"g"), "<b>" + this.search.input +  "</b>");
+      });
     },
 
     editAccess(book) {
