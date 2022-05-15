@@ -1026,7 +1026,7 @@ export default {
         
         this.edit_actives_book = false;
         
-        if(resreshTree) {
+        if(refreshTree) {
           this.parent_id = response.data.top_parent.id;
           this.parent_name = response.data.top_parent.title;
           this.tree = response.data.tree
