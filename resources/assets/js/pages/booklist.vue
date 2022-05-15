@@ -1029,6 +1029,7 @@ export default {
         if(refreshTree) {
           this.parent_id = response.data.top_parent.id;
           this.parent_name = response.data.top_parent.title;
+          console.log(response.data.tree)
           this.tree = response.data.tree
         }
 
