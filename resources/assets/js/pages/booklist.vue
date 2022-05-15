@@ -656,7 +656,7 @@ export default {
     let result = null
     this.tree.every(obj => {
       result = this.deepSearchId(obj, book_id)
-      if (result) {
+      if (result != null) {
         console.log(result);
         this.showPage(book_id);
         return false;
