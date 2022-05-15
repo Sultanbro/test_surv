@@ -26,7 +26,7 @@
             <template v-for="(book, b_index) in books">
                   <div
                     class="section d-flex aic jcsb"
-                    :key="book.id"
+                  
                     :id="book.id"
                     @click.stop="selectSection(book)"
                   >
