@@ -651,7 +651,7 @@ export default {
     let book_id = urlParams.get('b');
     this.breadcrumbs = [{id:this.id, title: this.parent_title}];
     console.log('book_id '  + book_id)
-    console.log('this.tree '  + this.tree)
+    console.log(this.tree)
     if(book_id && this.tree.findIndex(b => b.id == book_id) != -1) {
       this.showPage(book_id)
     }
