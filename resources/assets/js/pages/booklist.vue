@@ -651,10 +651,19 @@ export default {
     let book_id = urlParams.get('b');
     this.breadcrumbs = [{id:this.id, title: this.parent_title}];
     console.log('book_id '  + book_id)
-    console.log(this.deepSearchId(this.tree, {id:book_id}))
-    if(book_id && this.deepSearchId(this.tree, {id:book_id})) {
-      this.showPage(book_id)
+    
+    
+    let result = null
+    for (obj in this.tree) {
+      result = this.deepSearchId(obj, book_id)
+      if (result) {
+        console.log(result);
+        this.showPage(book_id);
+        break
+      }
     }
+   
+
 
   },
   methods: {
@@ -1058,10 +1067,19 @@ export default {
       })
     },
 
-    deepSearchId(array, item) {
-      return array.some(function s(el) {
-        return el.id == item.id || ((el instanceof Array) && el.some(s));
-      })
+    deepSearchId(obj, targetId) {
+      if (obj.id === targetId) {
+        return obj
+      }
+     
+      for (let item of obj.children) {
+        let check = dfs(item, targetId)
+        if (check) {
+          return check
+        }
+      }
+      
+      return null
     },
 
     removeNode(arr, id) {
