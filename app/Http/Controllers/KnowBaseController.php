@@ -102,7 +102,7 @@ class KnowBaseController extends Controller
       return [
         'book' => $page,
         'breadcrumbs' => $breadcrumbs,
-        'tree' => $tree->toArray(),
+        'tree' => $trees->toArray(),
         'top_parent' => $top_parent,
       ];
     } 
