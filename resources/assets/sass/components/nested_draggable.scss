@@ -127,7 +127,9 @@ ul {
   .fa-circle {
     font-size: 5px;
   }
-
+  &:hover p{ 
+    color: #28a745;
+  }
   .chapter-btns i {
     width: 27px;
     margin-left: 5px;

@@ -1784,6 +1784,10 @@ ul {
   font-size: 5px;
 }
 
+.chapter:hover p {
+  color: #28a745;
+}
+
 .chapter .chapter-btns i {
   width: 27px;
   margin-left: 5px;
