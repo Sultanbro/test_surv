@@ -1071,7 +1071,7 @@ export default {
       if (obj.id === targetId) {
         return obj
       }
-     
+     console.log(obj)
       for (let item of obj.children) {
         let check = this.deepSearchId(item, targetId)
         if (check) {
