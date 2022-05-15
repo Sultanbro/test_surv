@@ -661,6 +661,7 @@ export default {
         this.showPage(book_id);
         return false;
       }
+      return true;
     });
    
 
