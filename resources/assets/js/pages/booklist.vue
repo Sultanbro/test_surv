@@ -1134,7 +1134,7 @@ export default {
     },
     
     expandTree() {
-      let item = this.tree[this.tree.findIndex(t => t.id == bc.id)];
+      let item = this.tree[this.tree.findIndex(t => t.id == this.id)];
       item.opened = true;
       this.breadcrumbs.forEach(bc => {
         console.log(bc.id + '--- ' +bc.parent_id)
