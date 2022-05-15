@@ -24,7 +24,7 @@
         <nested-draggable
           :tasks="tree"
           :auth_user_id="auth_user_id"
-          :opened="true"
+          :opened="false"
           @showPage="showPage"
           @addPage="addPage"
           :parent_id="id"
