@@ -64,6 +64,7 @@ export default {
   methods: {
     toggleOpen(el) {
       this.showPage(el.id);
+      console.log(el);
       el.opened = !el.opened
     },  
     showPage(id) {
