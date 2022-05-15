@@ -654,12 +654,12 @@ export default {
     
     
     let result = null
-    this.tree.forEach(obj => {
+    this.tree.every(obj => {
       result = this.deepSearchId(obj, book_id)
       if (result) {
         console.log(result);
         this.showPage(book_id);
-        return;
+        return false;
       }
     });
    
