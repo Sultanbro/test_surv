@@ -305,7 +305,7 @@ export default {
 
     emphasizeTexts() {
       this.search.items.forEach(item => {
-         item.text = item.text.replace(new RegExp(this.search.input,"g"), "<b>" + this.search.input +  "</b>");
+         item.text = item.text.replace(new RegExp(this.search.input,"gi"), "<b>" + this.search.input +  "</b>");
       });
     },
 

@@ -3585,6 +3585,10 @@ body {
   color: #ccc;
 }
 
+.modal-search .s-content .item .text b {
+  color: #51a0d6;
+}
+
 .videos {
   max-height: 500px;
   max-height: calc(100vh - 136px);
