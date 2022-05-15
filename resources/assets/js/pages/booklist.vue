@@ -658,7 +658,7 @@ export default {
       result = this.deepSearchId(obj, book_id)
       if (result != null) {
         console.log(result);
-        this.showPage(book_id);
+        this.showPage(book_id, false, true);
         return false;
       }
       return true;
