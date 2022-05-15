@@ -43,7 +43,7 @@ class KnowBase extends Model
 
     public function getOpenedAttribute()
     {
-        return $this->parent_id == null ? true : false;
+        return false;
     }
     
 }
