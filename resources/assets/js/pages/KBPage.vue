@@ -50,7 +50,7 @@
           <template v-for="(book, b_index) in archived_books">
             <div
               class="section d-flex aic jcsb"
-              :key="book.id"
+             
               v-if="[5,18,157,84].includes(auth_user_id)"
               @click.stop="selectSection(book)"
             >
