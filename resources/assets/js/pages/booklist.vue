@@ -654,7 +654,7 @@ export default {
     
     
     let result = null
-    for (obj in this.tree) {
+    for (let obj in this.tree) {
       result = this.deepSearchId(obj, book_id)
       if (result) {
         console.log(result);
