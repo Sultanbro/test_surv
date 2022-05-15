@@ -97,12 +97,13 @@ class KnowBaseController extends Controller
         foreach($trees as $tree) {
           $tree->parent_id = null;
         }
+        $trees = $trees->toArray();
       }
 
       return [
         'book' => $page,
         'breadcrumbs' => $breadcrumbs,
-        'tree' => $trees->toArray(),
+        'tree' => $trees,
         'top_parent' => $top_parent,
       ];
     } 
