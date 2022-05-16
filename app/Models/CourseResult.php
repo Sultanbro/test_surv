@@ -87,6 +87,7 @@ class CourseResult extends Model
         $arr = [];
         $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME;
         $arr['user_id'] = $user->ID;
+        $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
         $arr['progress'] = rand(0,100) . '%';
         //$arr['assigned_at'] = date('Y-m-d');
         $arr['points'] = rand(100,10000);
@@ -100,9 +101,13 @@ class CourseResult extends Model
     private static function getUserCourses($user_id) {
         $arrx = [];
 
+        $array1= array('Mathematics','Physics','Chemistry','Biology', 'Oberlivion');
+
+
         for($i=0;$i<rand(1,5);$i++) {
             $arr = [];
-            $arr['name'] = 'Название курса';
+            $arr['name'] = array_rand($array1, 1);
+            $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
             $arr['user_id'] = $user_id;
             $arr['progress'] = rand(0,100);
             //$arr['assigned_at'] = date('Y-m-d');
