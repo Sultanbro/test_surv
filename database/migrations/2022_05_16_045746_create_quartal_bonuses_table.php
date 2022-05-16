@@ -17,11 +17,13 @@ class CreateQuartalBonusesTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->integer('auth_id');
-            $table->integer('quartal');
-            $table->integer('sum');
-            $table->string('year');
+            $table->tinyInteger('quartal')->default(1);
+            $table->integer('sum')->default(0);
+            $table->integer('year');
             $table->text('text');
             $table->timestamps();
+
+            $table->index(['user_id','auth_id']);
         });
     }
 
