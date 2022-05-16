@@ -128,7 +128,7 @@ class CourseResult extends Model
 
         $points = 0;
         $progress = 0;
-        foreach ($users as $key => $user) {
+        foreach ($users['items'] as $key => $user) {
             $points += $user['points'];
         }
 
