@@ -19,7 +19,7 @@
   animation: 0.5s show_profile_menu ease;
   opacity: 0;
 }
-.profile-menu.show {
+.user .profile-menu {
   display: block;
   opacity: 1;
   left: 75px;
