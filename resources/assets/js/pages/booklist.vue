@@ -297,10 +297,10 @@
               <img src="/images/avatar.png" alt="avatar icon">
               <div class="text">
                 <p class="name">{{ activesbook.author }}</p>
-                <p class="edited">Добавлено: {{ activesbook.created_at }}</p>
+                <p class="edited">Добавлено: {{ activesbook.created }}</p>
                 <p class="edited">Изменено: &nbsp;{{ activesbook.edited_at }}</p>
               </div>
-            </div>
+            </div> 
             <div class="bp-text" v-html="activesbook.text">
             
             </div>
