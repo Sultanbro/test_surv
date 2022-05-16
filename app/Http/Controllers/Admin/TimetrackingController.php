@@ -59,7 +59,11 @@ class TimetrackingController extends Controller
     public function settings()
     {
         View::share('title', 'Настройки');
+
+
+
         View::share('menu', 'timetrackingsetting');
+
         $groups = ProfileGroup::where('active', 1)->get()->pluck('name');
         $archived_groups = ProfileGroup::where('active', 0)->get(['id', 'name']);
         $book_groups = BookGroup::all();

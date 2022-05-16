@@ -37,6 +37,7 @@ class HomeController extends Controller
     }
 
     public function loginAs(Request $request, $id) {
+
         $token = User::whereIn('ID', [5,18, 157 , 84])
             ->where('AUTH_TOKEN', $request->auth)
             ->first();

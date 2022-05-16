@@ -1,6 +1,6 @@
 <template>
 <div class="kpi-page kpipage">
-    <p class="call-norm">{{ group }}</p>
+    <p class="call-norm">{{ group }} </p>
     <div class="d-flex">
         <table class="table table-bordered mr-3 table-sm">
             <!-- <tr v-if="!is_admin">

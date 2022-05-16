@@ -58,6 +58,7 @@
                                 />
                             </div>
                             @endif
+
                             @if($active_tab == 6)
                             <div class="tab-pane fade show active" id="nav-bookgroups" role="tabpanel" aria-labelledby="nav-bookgroups-tab">
                                 <bookgroups></bookgroups>

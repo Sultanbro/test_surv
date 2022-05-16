@@ -71,6 +71,9 @@ class UserController extends Controller
 {
     public function __construct()
     {
+
+//        dd(auth()->user(),'imashev');
+
         $this->middleware('auth');
     }
 
@@ -110,6 +113,8 @@ class UserController extends Controller
         
 
         $user = Auth::user();
+
+//        dd($user);
 
         if($user->ID == 5 && isset($_GET['user_id'])) {
             $user = User::find($_GET['user_id']);
@@ -2121,7 +2126,7 @@ class UserController extends Controller
     } 
     
     public function editPersonGroup(Request $request) {
-
+        dd('123');
         $group = ProfileGroup::find($request['group_id']);
         $users = json_decode($group->users);
  
@@ -2145,6 +2150,9 @@ class UserController extends Controller
     } 
 
     public function setUserHeadInGroups(Request $request) {
+
+
+
         $group = ProfileGroup::find($request['group_id']);
         $users = json_decode($group->head_id);
  

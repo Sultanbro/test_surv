@@ -3,7 +3,7 @@
     <a class="btn btn-sm btn-primary text-white rounded" @click="toggle()">Настроить KPI</a>
 
     <sidebar
-      title="Условия расчета KPI"
+      title="Условия расчета KPI "
       :open="showKpiSidebar"
       @close="toggle()"
       width="70%"

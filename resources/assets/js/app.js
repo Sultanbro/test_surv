@@ -65,6 +65,8 @@ Vue.component('profile-kpi-button', require('./components/ProfileKpiButton.vue')
 Vue.component('profile-groups', require('./components/profile/ProfileGroups.vue')); // настройки user
 Vue.component('profile-books', require('./components/profile/ProfileBooks.vue')); // настройки user
 
+Vue.component('profile-quarter-button', require('./components/ProfileQuarterButton.vue')); // кнопка Индивид Quarter в настройках User
+
 /** 
  * Components
  */
@@ -87,6 +89,7 @@ Vue.component('top-gauges', require('./components/TopGauges.vue')); // TOП сп
  * Tables
  */
 Vue.component('t-kpi', require('./components/tables/TableKPI.vue')); // KPI
+Vue.component('t-quarter', require('./components/tables/TableQuarter.vue')); // Quarter
 Vue.component('t-decomposition', require('./components/tables/TableDecomposition.vue')); // Декомпозиция
 Vue.component('t-user-analytics', require('./components/tables/TableUserAnalytics.vue')); // Ваши показатели
 Vue.component('t-funnel', require('./components/tables/TableFunnel.vue')); // Воронка

@@ -17,7 +17,9 @@ class Admin {
      * @return mixed
      */
     public function handle($request, Closure $next) {
+
         if(!User::isUserAdmin(Auth::user()->ID)) {
+
             Auth::logout();
             return redirect('/');
         }

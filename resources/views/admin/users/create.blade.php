@@ -23,9 +23,6 @@
                     <button class="btn btn-primary mr-2 rounded" id="submitx2">Пригласить без стажировки</button>
                     <button class="btn btn-warning mr-2 rounded" id="submit_trainee">Пригласить со стажировкой</button>
                 @endif
-
-
-
                 @if(isset($user))
                 @if ( is_null($user->deleted_at))
 
@@ -67,11 +64,6 @@
 
     <div class="row">
         <div class="col-md-12">
-
-
-
-
-
             <div class="contact-information">
 
                 @if(isset($user))
@@ -81,7 +73,7 @@
                 @else
                     <form action="/timetracking/person/store" method="post" enctype="multipart/form-data"
                         class="form-horizontal" id="form" name="user_form">
-                        
+
                 @endif
                     <input class="form-control" type="hidden" id="trainee" name="is_trainee" value="false">
                     <input class="form-control" type="hidden" id="increment_provided" name="increment_provided" value="false">
@@ -170,7 +162,10 @@
                                           
                                             
                                             <profile-kpi-button :user_id="{{ $user->ID }}"/>
-                                            
+
+
+
+
                                         @endif
 
 
@@ -846,37 +841,45 @@
                                                     <input class="form-control" type="text" name="zarplata" id="zarplata" required
                                                     placeholder="Оклад" 
                                                     @if(isset($user->zarplata))
-                                                    @if($user->zarplata->zarplata == 0) value="0"
-                                                    @else  value="{{$user->zarplata->zarplata}}"
-                                                    @endif
+                                                        @if($user->zarplata->zarplata == 0) value="0"
+                                                        @else  value="{{$user->zarplata->zarplata}}"
+                                                        @endif
                                                     @else
-                                                    @if(old('zarplata') == '')  value="0"
-                                                    @else  value="{{old('zarplata')}}"
-                                                    @endif
+                                                        @if(old('zarplata') == '')  value="0"
+                                                        @else  value="{{old('zarplata')}}"
+                                                        @endif
                                                     @endif
                                                     >
                                                 </div>
-                                                
-                                                
+
+
+                                                <div class="col-sm-3">
+                                                    <select name="currency" id="currency" class="form-control form-control-sm">
+                                                        <option selected disabled> Валюта</option>
+                                                        <option value="kzt" @if(isset($user) && $user->currency == 'kzt') @endif>KZT Казахстанский тенге</option>
+                                                        <option value="rub" @if(isset($user) && $user->currency == 'rub') selected @endif>RUB Российский рубль</option>
+                                                        <option value="kgs" @if(isset($user) && $user->currency == 'kgs') selected @endif>KGS Киргизский сом</option>
+                                                        <option value="uzs" @if(isset($user) && $user->currency == 'uzs') selected @endif>UZS Узбекский сум</option>
+                                                        <option value="uah" @if(isset($user) && $user->currency == 'uah') selected @endif>UAH Украинская гривна</option>
+                                                        <option value="byn" @if(isset($user) && $user->currency == 'byn') selected @endif>BYN Белорусский рубль</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-sm-3 pl-0" >
+
+{{--                                                    <a class="btn-block btn btn-sm btn-primary text-white rounded" style="cursor: pointer">--}}
+{{--                                                        Квартальный бонус--}}
+{{--                                                    </a>--}}
+
+
+
+                                                    <profile-quarter-button :user_id="{{ $user->ID }}"/>
+
+
+                                                </div>
+
+
                                             </div>
-                                            <div class="form-group row">
-                                                <label for="currency"
-                                                        class="col-sm-3 col-form-label font-weight-bold">Валюта</label>
-                                                    <div class="col-sm-3">
-                                                        <select name="currency" id="currency" class="form-control form-control-sm">
-                                                            <option value="kzt" @if(isset($user) && $user->currency == 'kzt') selected @endif>KZT Казахстанский тенге</option>
-                                                            <option value="rub" @if(isset($user) && $user->currency == 'rub') selected @endif>RUB Российский рубль</option>
-                                                            <option value="kgs" @if(isset($user) && $user->currency == 'kgs') selected @endif>KGS Киргизский сом</option>
-                                                            <option value="uzs" @if(isset($user) && $user->currency == 'uzs') selected @endif>UZS Узбекский сум</option>
-                                                            <option value="uah" @if(isset($user) && $user->currency == 'uah') selected @endif>UAH Украинская гривна</option>
-                                                            <option value="byn" @if(isset($user) && $user->currency == 'byn') selected @endif>BYN Белорусский рубль</option>
-                                                        </select>
-                                                    </div>
-                                                
-                                            </div>
-
-
-
                                             <div class="form-group row">
                                                 <label for="kaspi" class="col-sm-3 col-form-label font-weight-bold">KASPI BANK</label>
                                                 <div class="col-sm-3">
@@ -1041,59 +1044,10 @@
 
                                 
                             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                         </div>
-
-
-
-
-
-
-
-
-
-
-
-
                         @if($errors->any())
                         <u-modal items="{{ json_encode($errors->all()) }}" title="Не сохранено" />
                         @endif
-
-
                     </form>
             </div>
         </div>
@@ -1227,6 +1181,25 @@
 </div>
 
 
+<div class="modal fade" id="bitrix_quarter_id_input" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <h6>Вы уверены что хотите востановить пользователя?</h6>
+            </div>
+            <div class="text-center mb-3 ">
+                <form action="/timetracking/recover-person">
+
+                    <button type="submit" class="btn btn-success" id="deleteUserButton">Да</button>
+                    <button type="reset" class="btn btn-primary" data-dismiss="modal">Нет</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 @include('admin.svg.icons')
 
@@ -1235,6 +1208,13 @@
 @section('scripts')
 
 <script>
+
+    function bitrix_quarter_editor(){
+        console.log('1995');
+        $('#bitrix_quarter_id_input').show();
+    }
+
+
 var counter = 0
 
 $('#submitx').click(function(e) {
@@ -1545,10 +1525,14 @@ function raf() {
 $(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
 </script>
 
+
+
 <script>
 $('#bitrix_editor').click(function() {
     $('#bitrix_id_input').slideToggle(100);
 });
+
+
 </script>
 
 <script>

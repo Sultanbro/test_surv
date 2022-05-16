@@ -17,7 +17,12 @@ use App\Models\Analytics\UserStat;
 class TestController extends Controller {
  
 	public function test() {
-	
+
+	    $a = User::get();
+
+	    dd($a);
+
+	    dd('55555');
 		$group_id = 65;
 		$date = '2022-03-28';
 		$a = AnalyticStat::getRentabilityDiff($group_id, $date);
