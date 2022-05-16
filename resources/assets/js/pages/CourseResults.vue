@@ -10,7 +10,7 @@
     </div>  
        
     <div v-if="type == BY_USER" class="by_user">
-        <p>Тут ничего нет</p>
+
         <div class="table-responsive" v-if="users.items.length > 0">
            
             <table class="table b-table table-bordered table-sm">
@@ -29,7 +29,7 @@
                         </td>
                     </tr>
                     <template v-for="course in item.courses">
-                        <tr v-if="item.expanded" style="background:antiquewhite">
+                        <tr v-if="item.expanded" class="expanded">
                             <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
                                 <div>{{ course[field.key] }}</div> 
                             </td>

@@ -4322,3 +4322,15 @@ body {
   top: 58px;
   right: 0;
 }
+
+.course-results table td {
+  padding: 5px 10px;
+}
+
+.course-results table .expanded {
+  background: #000;
+}
+
+.course-results table .expanded td {
+  padding: 5px 10px;
+}

@@ -1,3 +1,18 @@
 .course-results {
     
+
+    table {
+        td {
+            padding: 5px 10px;
+        }
+
+        .expanded {
+            background: #000;
+            
+            td {
+                padding: 5px 10px;
+            }
+        }
+    }
+
 }
