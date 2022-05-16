@@ -2617,7 +2617,8 @@ tspan:last-child {
 }
 
 .book_page .author .edited {
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 16px;
   color: #ababab;
   margin-bottom: 0;
 }
@@ -3479,7 +3480,7 @@ body {
 }
 
 .animated.fadeIn {
-  padding: 15px;
+  padding: 5px 25px 25px;
 }
 
 .right-panel .header {

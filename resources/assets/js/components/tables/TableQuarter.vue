@@ -2,6 +2,19 @@
     <div class="quarter-page">
         <p class="call-norm">{{ group }} </p>
 
+<<<<<<< HEAD
+=======
+<!--        <button @click="sayHello">clic 1</button>-->
+<!--        <button v-on:mouseover="sayHelloO">clic 2</button>-->
+
+        <span class="label label-default" v-tooltip:bottom="tooltipText" />
+
+
+
+
+<!--        <div v-show="active">Show</div>-->
+<!--        <div @mouseover="mouseOver">Hover over me!</div>-->
+>>>>>>> 968c676b9667baf337d1d469e6293d81fd9b6141
 
         <div class="d-flex">
 
