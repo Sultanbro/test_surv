@@ -156,7 +156,7 @@ class CourseResult extends Model
         
 
         return [
-            'items' => $users,
+            'items' => $groups,
             'fields' => self::getGroupFields()    
         ];
     }
