@@ -119,10 +119,9 @@ export default {
             },
 
         expandUser(item) {
+            let ex = item.expanded;
             this.users.items.forEach(i => i.expanded = false);
-            if(!item.expanded) {
-                item.expanded = true;
-            }
+            item.expanded = !ex;
             
         },
         

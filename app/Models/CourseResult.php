@@ -87,10 +87,12 @@ class CourseResult extends Model
         $arr = [];
         $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME;
         $arr['user_id'] = $user->ID;
-        $arr['progress'] = 25;
+        $arr['progress'] = rand(0,100) . '%';
         //$arr['assigned_at'] = date('Y-m-d');
         $arr['points'] = 2150;
         $arr['expanded'] = false;
+        $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+        $arr['ended_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
         $arr['courses'] = self::getUserCourses($user->ID);
         return $arr;
     }
@@ -102,10 +104,13 @@ class CourseResult extends Model
         $arr = [];
         $arr['name'] = 'Название курса';
         $arr['user_id'] = $user_id;
-        $arr['progress'] = 123;
+        $arr['progress'] = rand(0,100);
         //$arr['assigned_at'] = date('Y-m-d');
-        $arr['points'] = 23;
+        $arr['points'] = rand(0,1000);
 
+        $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+        $arr['ended_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+        
         // foreach ($variable as $key => $value) {
         //     # code...
         // }
