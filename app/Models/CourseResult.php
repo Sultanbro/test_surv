@@ -88,8 +88,8 @@ class CourseResult extends Model
         $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME;
         $arr['user_id'] = $user->ID;
         $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
-        $arr['progress'] = rand(0,100) . '%';
-  
+        $arr['progress'] = rand(0,100) . '%' ;
+        $arr['progress_number'] = rand(0,100);  
         $arr['points'] = rand(100,10000);
         $arr['expanded'] = false;
         $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
@@ -124,8 +124,76 @@ class CourseResult extends Model
         return $arrx;
     }
 
+    private static function getGroupItem($users, $group) {
+
+        $points = 0;
+        $progress = 0;
+        foreach ($users as $key => $user) {
+            $points += $user['points'];
+        }
+
+        $arr = [];
+        $arr['name'] = $group->name;
+        $arr['group_id'] = $group->id;
+        $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
+        $arr['progress'] = rand(0,100) . '%';
+        $arr['points'] = $points;
+        $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+        $arr['ended_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+        return $arr;
+    }
+
     public static function getGroups($date = null)
-    {
-        return [];
+    { 
+        $_groups = ProfileGroup::where('active', 1)->get();
+
+        $groups = [];
+
+        foreach ($_groups as $key => $group) {
+            $users = $this->getUsers($group->id, $date);
+            array_push($groups, self::getGroupItem($users, $group));
+        }
+        
+
+        return [
+            'items' => $users,
+            'fields' => self::getGroupFields()    
+        ];
+    }
+
+    private static function getGroupFields() {
+        $arr = [];
+        $arr[] = [
+            'key' => 'name',
+            'name' => 'Группа',
+            'class' => 'text-left'
+        ];
+        $arr[] = [
+            'key' => 'status',
+            'name' => 'Статус',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'points',
+            'name' => 'Набрано баллов',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'progress',
+            'name' => 'Прогресс',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'started_at',
+            'name' => 'Дата начала',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'ended_at',
+            'name' => 'Дата завершения',
+            'class' => 'text'
+        ];
+        
+        return $arr;
     }
 }

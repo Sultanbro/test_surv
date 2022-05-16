@@ -4323,8 +4323,8 @@ body {
   right: 0;
 }
 
-.course-results table td {
-  padding: 5px 10px;
+.course-results table th, .course-results table td {
+  padding: 3px 10px !important;
 }
 
 .course-results table .expanded {

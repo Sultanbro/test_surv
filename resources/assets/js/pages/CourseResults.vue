@@ -1,6 +1,6 @@
 <template>
 <div class="course-results">
-    <div class="d-flex">
+    <div class="d-flex mb-2">
         <button class="btn btn-grey mr-2 rounded"  :class="{'btn-primary': type == BY_USER}" @click="type = BY_USER">
             <span>По сотрудникам</span>
         </button>
@@ -70,6 +70,12 @@ export default {
         },
         currentGroup() {
 
+        },
+        type(val) {
+            if(val == this.BY_GROUP && this.first) {
+                this.fetchData('groups');
+                this.first = false;
+            }
         }
     },
     props: {
@@ -84,6 +90,7 @@ export default {
         return {
             data: [],
             type: BY_USER,
+            first: true,
             BY_USER: BY_USER,
             BY_GROUP: BY_GROUP,
             users: {
@@ -100,23 +107,29 @@ export default {
         this.fetchData();
     },
     methods: {
-        fetchData() {
+        fetchData(type = 'users') {
             let loader = this.$loading.show();
 
             axios
                 .post("/course-results/get", {
+                    type: type,
                     month: this.monthInfo.month,
                     year: this.monthInfo.currentYear,
                     group_id: this.currentGroup !== undefined ? this.currentGroup :  null,
                 })
                 .then((response) => {
                     
-                    this.users = response.data.users;
-                    this.groups = response.data.groups;
+                    if(type == 'users') {
+                        this.users = response.data.items;
+                    }
+                    if(type == 'groups') {
+                        this.groups = response.data.items;
+                    }
+                    
             
                     loader.hide();
                 });
-            },
+        },
 
         expandUser(item) {
             let ex = item.expanded;
