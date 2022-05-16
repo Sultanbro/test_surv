@@ -209,6 +209,25 @@ class GroupsController extends Controller
                     $item['name'] = $username;
                     $item['id'] = 0;
                     $item['dinner'] = true;
+
+                    foreach($values as $val) {
+                        if(is_null($val['data_i_vremya_sozdaniya'])) continue;
+                        //if(!property_exists($val['data_i_vremya_sozdaniya'], timestamp)) continue;
+                        
+                 
+                        
+                        
+                        try {
+                            if(is_object($val['data_i_vremya_sozdaniya'])) {
+                                $val['data_i_vremya_sozdaniya'] = $val['data_i_vremya_sozdaniya']->timestamp; 
+                            } else {
+                                $val['data_i_vremya_sozdaniya'] = Carbon::parse($val['data_i_vremya_sozdaniya'])->timestamp; 
+                            }
+                        } catch(\Exception $e) {
+                            continue;
+                        }
+                    }
+
                     $values = $values->sortBy('data_i_vremya_sozdaniya');
 
                     $_fv = $values->first();
@@ -233,16 +252,21 @@ class GroupsController extends Controller
                     $last_date = null;
                     $last_duration = 0;
                     
+                    
                     foreach($values as $val) {
                         if(is_null($val['data_i_vremya_sozdaniya'])) continue;
-                        //if(!property_exists($val['data_i_vremya_sozdaniya'], timestamp)) continue;
-                        
-                        try {
-                            $ts = $val['data_i_vremya_sozdaniya']->timestamp; 
-                        } catch(\Exception $e) {
-                            continue;
-                        }
+                        $ts = $val['data_i_vremya_sozdaniya'];
+                                // if($item['id'] == 12793) {
+                                //     if($ts - $last_date == -27470) {
 
+                                //         dump($ts);
+                                //         dump($last_date);
+                                //         dump(Carbon::createFromTimestamp($ts));
+                                //         dump(Carbon::createFromTimestamp($last_date));
+                                //     }
+                                // }
+                      
+                       
 
                         try {
                             $_duration = $val['dlitelnost_razgovora']->timestamp;
@@ -253,10 +277,12 @@ class GroupsController extends Controller
                         
 
                         if($last_date) {
-
+                            
                             if($ts - $last_date - $last_duration > 930){ // Разница больше 15 минут без разговоров
                                 $hours +=  $latest - $earliest + $last_duration;
-                                
+                                // if($item['id'] == 13047) {
+                                //     dump($hours);
+                                // }
 
                                 //if($item['id'] == 4184) dump($hours / 3600);
                                 //if($item['id'] == 4184) dump(Carbon::createFromTimestamp($earliest)->format('H:i:s'));
@@ -277,6 +303,8 @@ class GroupsController extends Controller
                             }
                         }
 
+                     
+
                         $last_date = $ts;
                         $last_duration = $duration;
 
@@ -293,7 +321,9 @@ class GroupsController extends Controller
 
                     if($diff > 11) $diff = 11;
                     $item['hours'] = $diff;
-                   
+                    
+              
+                 
 
                     array_push($items, $item);
                 }

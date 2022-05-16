@@ -2,7 +2,7 @@
 
 
 <div class="bgpanel"></div>
-<div class="panel" style="display:none;">
+<div class="panel">
     <div class="tail"></div>
     <div class="panel_head">
         <div class="panel_in active" data-tab="1">Уведомления</div>

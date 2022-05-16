@@ -1,7 +1,7 @@
 .profile-menu {
   display: none;
   position: fixed;
-  top: 5px;
+  top: 0;
   left: 60px;
   background: #272c33;
   min-width: 150px;
@@ -14,26 +14,25 @@
   font-size: 14px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   word-break: break-all;
-  border-radius: 5px;
+  border-radius: 0 5px 5px 0;
   transition: 0.5s ease all;
-  animation: 0.5s show_profile_menu ease;
   opacity: 0;
 }
-.profile-menu.show {
+.user:hover .profile-menu {
   display: block;
   opacity: 1;
-  left: 75px;
+  left: 69px;
 }
-@keyframes show_profile_menu {
-  from {
-    opacity: 0;
-    left: 60px;
-  }
-  to {
-    left: 75px;
-    opacity: 1;
-  }
-}
+// @keyframes show_profile_menu {
+//   from {
+//     opacity: 0;
+//     left: 60px;
+//   }
+//   to {
+//     left: 69px;
+//     opacity: 1;
+//   }
+// }
 @keyframes show_sub_menu {
   from {
     opacity: 0;

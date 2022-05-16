@@ -16,9 +16,16 @@ class CourseResultController extends Controller
     {   
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
 
+        if($request->type == 'users') {
+            $items = CourseResult::getUsers($request->group_id, $date);
+        }
+
+        if($request->type == 'groups') {
+            $items = CourseResult::getGroups($date);
+        }
+
         return [
-            'users' => CourseResult::getUsers($request->group_id, $date),
-            'groups' => CourseResult::getGroups($request->group_id),
+            'items' => $items,
         ];
     } 
 }

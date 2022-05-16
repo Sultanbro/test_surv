@@ -31,14 +31,14 @@ $('.dropdown-menu a.dropdown-toggle').on('click', function(e) {
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
 <script>
-$('.user').click(function(event) {
-    event.stopPropagation();
-    $('.profile-menu').toggleClass('show');
-});
-$(window).click(function() {
-    $('.profile-menu').removeClass('show');
-});
-$('.profile-menu').click(function(event){
-    event.stopPropagation();
-});
+// $('.user').click(function(event) {
+//     event.stopPropagation();
+//     $('.profile-menu').toggleClass('show');
+// });
+// $(window).click(function() {
+//     $('.profile-menu').removeClass('show');
+// });
+// $('.profile-menu').click(function(event){
+//     event.stopPropagation();
+// });
 </script>

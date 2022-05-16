@@ -69,8 +69,8 @@ class ActivityController extends Controller
                 if(in_array('srednee_vremya_razgovora', $excel->getHeading())) {
                     $table_type = 'avg_time';   // ср время разговора      
                 } 
-                
-
+              
+ 
                 if($request->group_id != 42) {
                     $missingFields = $this->getMissingFields($excel->getHeading());
 
@@ -112,20 +112,26 @@ class ActivityController extends Controller
 
                        
                         if($table_type == 'minutes') {
+                   
                             $item['name'] = $row['fio_sotrudnika'];
                             $item['date'] = $row['data'] ? $row['data']->format('Y-m-d') : ''; 
                             $item['data'] = $row['data'] ? $row['data']->format('d.m.Y') : '';
                             $item['hours'] = $this->countHours($row['minuty']); 
                             $item['id'] = $row['fio_sotrudnika'] ? $this->getPossibleUser($gusers, $row['fio_sotrudnika']) : 0;
-                        } else if($table_type == 'gatherings') {
+                        } 
+
+                        if($table_type == 'gatherings') {
                             $item['name'] = $row['menedzher'];
                             $item['gatherings'] = (int)$row['sborden_v_den'];
                             
                             $item['id'] = $row['menedzher'] ? $this->getPossibleUser($gusers, $row['menedzher']) : 0;
-                        } else {
+                        } 
+                        
+                        if($table_type == 'avg_time') { 
                             $item['name'] = $row['menedzher'];
                             $item['avg_time'] = Carbon::parse($row['srednee_vremya_razgovora'])->format('i:s');
                             $item['id'] = $row['menedzher'] ? $this->getPossibleUser($gusers, $row['menedzher']) : 0;
+                            if($row['menedzher'] == '') continue;
                         }
                         
                         
@@ -340,9 +346,15 @@ class ActivityController extends Controller
     private function getPossibleUser($users, $fullname) {
 
         $fullname = explode(' ', $fullname);
+
+        $name = '';
+        $last_name = '';
         if(count($fullname) >= 2) {
             $last_name = $fullname[0];
             $name = $fullname[1];
+        }
+        if(count($fullname) == 1) {
+            $last_name = $fullname[0];
         }
 
         try {
@@ -350,7 +362,7 @@ class ActivityController extends Controller
                 return $user->NAME == $name || $user->LAST_NAME == $last_name;
             })->first();
         } catch (\Exception $e) {
-            dd($name);
+            dd($fullname);
         }
 
         

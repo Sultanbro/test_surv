@@ -20,6 +20,7 @@ $(".panel_head .panel_in").on("click", function(e) {
 
 
 $('#toggle_panel').click(function() {
+  $(this).toggle();
   $('#noti_panel .bgpanel').toggleClass('active');
   $('#noti_panel .panel').slideToggle();
 });
@@ -303,9 +304,10 @@ $('#setRead').click(function() {
 </style>
 <style>
 .kolokolchik {
-  position: static !important;
-    float: none;
-    width: 100%;
+  position: fixed;
+  display: none;
+  left:75px;
+  top:5px;
 }
 .kolokolchik .panel {
     width: 480px;

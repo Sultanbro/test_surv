@@ -87,10 +87,13 @@ class CourseResult extends Model
         $arr = [];
         $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME;
         $arr['user_id'] = $user->ID;
-        $arr['progress'] = 25;
-        //$arr['assigned_at'] = date('Y-m-d');
-        $arr['points'] = 2150;
+        $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
+        $arr['progress'] = rand(0,100) . '%' ;
+        $arr['progress_number'] = rand(0,100);  
+        $arr['points'] = rand(100,10000);
         $arr['expanded'] = false;
+        $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+        $arr['ended_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
         $arr['courses'] = self::getUserCourses($user->ID);
         return $arr;
     }
@@ -98,25 +101,99 @@ class CourseResult extends Model
     private static function getUserCourses($user_id) {
         $arrx = [];
 
+        $array1= array('Курс для UCALS','Презентация проекта','Переговоры в продажах','Расчет OS', 'AGILE проекты');
 
-        $arr = [];
-        $arr['name'] = 'Название курса';
-        $arr['user_id'] = $user_id;
-        $arr['progress'] = 123;
-        //$arr['assigned_at'] = date('Y-m-d');
-        $arr['points'] = 23;
+        
+        for($i=0;$i<rand(1,5);$i++) {
+            $arr = [];
 
-        // foreach ($variable as $key => $value) {
-        //     # code...
-        // }
-        array_push($arrx, $arr);
-        array_push($arrx, $arr);
-        array_push($arrx, $arr);
+            $a = rand(0,1);
+            $arr['name'] = $array1[array_rand($array1, 1)];
+            $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
+            $arr['user_id'] = $user_id;
+            $arr['progress'] = rand(0,100);
+           
+            $arr['points'] = rand(0,1000);
+
+            $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+            $arr['ended_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+            array_push($arrx, $arr);
+        }
+        
+
         return $arrx;
     }
 
+    private static function getGroupItem($users, $group) {
+
+        $points = 0;
+        $progress = 0;
+        foreach ($users['items'] as $key => $user) {
+            $points += $user['points'];
+        }
+
+        $arr = [];
+        $arr['name'] = $group->name;
+        $arr['group_id'] = $group->id;
+        $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
+        $arr['progress'] = rand(0,100) . '%';
+        $arr['points'] = $points;
+        $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+        $arr['ended_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
+        return $arr;
+    }
+
     public static function getGroups($date = null)
-    {
-        return [];
+    { 
+        $_groups = ProfileGroup::where('active', 1)->get();
+
+        $groups = [];
+
+        foreach ($_groups as $key => $group) {
+            $users = self::getUsers($group->id, $date);
+            array_push($groups, self::getGroupItem($users, $group));
+        }
+        
+
+        return [
+            'items' => $groups,
+            'fields' => self::getGroupFields()    
+        ];
+    }
+
+    private static function getGroupFields() {
+        $arr = [];
+        $arr[] = [
+            'key' => 'name',
+            'name' => 'Группа',
+            'class' => 'text-left'
+        ];
+        $arr[] = [
+            'key' => 'status',
+            'name' => 'Статус',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'points',
+            'name' => 'Набрано баллов',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'progress',
+            'name' => 'Прогресс',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'started_at',
+            'name' => 'Дата начала',
+            'class' => 'text'
+        ];
+        $arr[] = [
+            'key' => 'ended_at',
+            'name' => 'Дата завершения',
+            'class' => 'text'
+        ];
+        
+        return $arr;
     }
 }
