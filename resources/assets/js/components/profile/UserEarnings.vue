@@ -4,7 +4,7 @@
         <p>Оклад </p>
         <p><b><span>{{ data.oklad }}</span></b></p>
     </div> -->
-    <div class="col-md-4 flexy">
+    <div class="col-md-3 flexy">
         <div class="filler" @click="showSalarySidebar = true" id="hoverPulse">
             <img src="/images/money1.png"
                 alt="icon"
@@ -18,8 +18,8 @@
         <p class="mb-0 font-bold">Баланс оклада<span></span></p>
         <p class="text-center">{{ data.salary }}</p>
     </div>
-    
-    <div class="col-md-4 flexy">
+
+    <div class="col-md-3 flexy">
         <div class="filler" @click="showKpiSidebar = true">
             <img src="/images/money2.png"
                 alt="icon"
@@ -33,7 +33,7 @@
         <p class="mb-0  font-bold">KPI <span></span></p>
         <p class="text-center">{{ data.kpi }}</p>
     </div>
-    <div class="col-md-4 flexy">
+    <div class="col-md-3 flexy">
         <div class="filler" @click="showBonusSidebar = true" style="top:15px">
             <img src="/images/money3.png"
                 alt="icon"
@@ -47,11 +47,25 @@
         <p class="mb-0  font-bold">Бонусы <span></span></p>
         <p class="text-center">{{ data.bonus }}</p>
     </div>
+    <div class="col-md-3 flexy">
+        <div class="filler" @click="showQuartalBonusSidebar = true" style="top:15px">
+            <img src="/images/bonus_type_2.png"
+                alt="icon"
+                class="img-fluid w-120 back">
+            <div class="front" style="height:100%">
+                <img src="/images/bonus_type_2.png"
+                    alt="icon"
+                    class="img-fluid w-120">
+            </div>
+        </div>
+        <p class="mb-0  font-bold">Квартальный Бонусы <span></span></p>
+        <p class="text-center">{{ data.bonus }}</p>
+    </div>
 
   
     
  
-     <sidebar
+    <sidebar
         title="Баланс оклада"
         :open="showSalarySidebar"
         @close="showSalarySidebar = false"
@@ -83,8 +97,6 @@
         </div>
         <p></p>
     </sidebar>
-
-   
     <sidebar
       title="KPI"
       :open="showKpiSidebar"
@@ -103,8 +115,6 @@
       
 
     </sidebar>
-
-
     <sidebar
       title="Бонусы"
       :open="showBonusSidebar"
@@ -139,6 +149,27 @@
         </div>
       </div>
     </sidebar>
+    <sidebar
+      title="Квартальный бонус"
+      :open="showQuartalBonusSidebar"
+      @close="showQuartalBonusSidebar = false"
+      width="40%"
+    >
+        <div class="mt-2">
+            <p class="font-bold">Квартальный бонус период с 01.01.2020 до 31.03.2020</p>
+            <table class="table table-bordered table-sm ue-table">
+                <tr>
+                    <td class="text-left">Сумма</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td class="text-left">Текстовый поля</td>
+                    <td>Админ группы</td>
+                </tr>
+
+            </table>
+        </div>
+    </sidebar>
 </div>
 </template>
     
@@ -151,6 +182,7 @@ export default {
     },
     data() {
         return {
+            showQuartalBonusSidebar:false,
             showBonusSidebar: false,
             showKpiSidebar: false,
             showSalarySidebar: false,

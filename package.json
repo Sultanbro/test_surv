@@ -60,6 +60,7 @@
         "vue-simple-flowchart": "^0.1.8",
         "vuedraggable": "^2.23.2",
         "vuejs-uploader": "^0.6.5",
+        "vuelidate": "^0.7.7",
         "vuetify": "^2.5.7",
         "xmlhttprequest": "^1.8.0"
     }

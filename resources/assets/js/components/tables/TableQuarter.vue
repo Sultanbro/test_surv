@@ -1,69 +1,58 @@
 <template>
     <div class="quarter-page">
         <p class="call-norm">{{ group }} </p>
-
-<<<<<<< HEAD
-=======
-<!--        <button @click="sayHello">clic 1</button>-->
-<!--        <button v-on:mouseover="sayHelloO">clic 2</button>-->
-
-        <span class="label label-default" v-tooltip:bottom="tooltipText" />
-
-
-
-
-<!--        <div v-show="active">Show</div>-->
-<!--        <div @mouseover="mouseOver">Hover over me!</div>-->
->>>>>>> 968c676b9667baf337d1d469e6293d81fd9b6141
-
         <div class="d-flex">
+             <table class="table table-bordered table-sm">
+                    <tr>
 
-            <table class="table table-bordered table-sm">
-                <tr>
+                        <th class="mark">
+                            <label @click="checkedDisabled('1')" for="quarter_1" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Первый Квартал" >Первый Квартал</label>
+                            <input  v-model="checked_quartal" value="1" type="radio" name="checked_quarter" id="quarter_1" class="position-absolute ml-3" style="margin-top:-5px">
+                        </th>
+                        <th class="mark">
+                            <label @click="checkedDisabled('2')" for="quarter_2" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Второй квартал">Второй квартал</label>
+                            <input  v-model="checked_quartal" value="2" type="radio" name="checked_quarter" id="quarter_2" class="position-absolute ml-3" style="margin-top:-5px">
+                        </th>
+                    </tr>
+                    <tr class="quarter-inputs">
+                        <th>
+                            <input disabled v-model.trim='form.sum_1'   id="input-sum-1" type="number"  value="0"  class="form-control" placeholder="Сумма">
+                            <textarea  disabled v-model.trim='form.text_1' id="input-text-1" type="text" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
+                        </th>
+                        <th>
+                            <input disabled v-model.trim='form.sum_2'  id="input-sum-2"  type="number" class="form-control" placeholder="Сумма">
+                            <textarea  disabled v-model.trim='form.text_2' id="input-text-2" type="text" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
+                        </th>
 
-                    <th class="mark">
-                        <label for="quarter_1" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Первый Квартал" >Первый Квартал</label>
+                    </tr>
+                    <tr>
+                        <th class="mark">
+                            <label @click="checkedDisabled('3')" for="quarter_3" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Третий Квартал">Третий Квартал</label>
+                            <input  v-model="checked_quartal" value="3" type="radio" name="checked_quarter" id="quarter_3" class="position-absolute ml-3" style="margin-top:-5px">
+                        </th>
+                        <th class="mark">
+                            <label @click="checkedDisabled('4')" for="quarter_4" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Четвертый квартал">Четвертый квартал</label>
+                            <input v-model="checked_quartal" value="4" type="radio" name="checked_quarter" id="quarter_4" class="position-absolute ml-3" style="margin-top:-5px">
+                        </th>
+                    </tr>
+                    <tr>
+                        <th><input disabled  v-model.trim='form.sum_3' id="input-sum-3"  type="number" class="form-control" placeholder="Сумма">
+                            <textarea  disabled v-model.trim='form.text_3' id="input-text-3" type="text" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>                        </th>
+                        <th>
+                            <input disabled v-model.trim='form.sum_4'  id="input-sum-4"  type="number" class="form-control" placeholder="Сумма">
+                            <textarea  disabled v-model.trim='form.text_4' id="input-text-4" type="text" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
 
-                        <input   type="checkbox" id="quarter_1" class="position-absolute ml-3" style="margin-top:-5px">
+                        </th>
+                    </tr>
+                </table>
+        </div>
 
-                    </th>
-                    <th class="mark">
-                        <label for="quarter_2" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Второй квартал">Второй квартал</label>
-                        <input type="checkbox" id="quarter_2" class="position-absolute ml-3" style="margin-top:-5px">
-                    </th>
-                </tr>
-                <tr class="quarter-inputs">
-                    <th>
-                        <input type="number" class="form-control" placeholder="Сумма">
-                        <input type="text" class="mt-1 form-control" placeholder="Текстовый поля">
-                    </th>
-                    <th>
-                        <input type="number" class="form-control" placeholder="Сумма">
-                        <input type="text" class="mt-1 form-control" placeholder="Текстовый поля">
-                    </th>
-
-                </tr>
-                <tr>
-                    <th class="mark">
-                        <label for="quarter_3" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Третий Квартал">Третий Квартал</label>
-                        <input type="checkbox" id="quarter_3" class="position-absolute ml-3" style="margin-top:-5px">
-                    </th>
-                    <th class="mark">
-                        <label for="quarter_4" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Четвертый квартал">Четвертый квартал</label>
-                        <input type="checkbox" id="quarter_4" class="position-absolute ml-3" style="margin-top:-5px">
-                    </th>
-                </tr>
-                <tr>
-                    <th><input type="number" class="form-control" placeholder="Сумма">
-                        <input type="text" class="mt-1 form-control" placeholder="Текстовый поля">
-                    </th>
-                    <th>
-                        <input type="number" class="form-control" placeholder="Сумма">
-                        <input type="text" class="mt-1 form-control" placeholder="Текстовый поля">
-                    </th>
-                </tr>
-
-            </table>
+        <div class="col-12 row">
+            <div class="col-6 p-0">
+                <a style="color: white;text-align: center;border-radius: unset"
+                   id="selectedQuarter" @click="selectedQuarter"
+                   class="selectedQuarter btn-block btn btn-success p-0"  >Добавить</a>
+            </div>
         </div>
     </div>
 </template>
@@ -92,32 +81,63 @@
                 default: 'common',
             },
         },
-
         data() {
-
-
                 return{
-                    name: "imashev",
                     active: false,
+                    checked_quartal:false,
+                    form:{
+                        sum_1:'',
+                        sum_2:'',
+                        sum_3:'',
+                        sum_4:'',
+                        text_1:'',
+                        text_2:'',
+                        text_3:'',
+                        text_4:'',
+                    },
+
+
 
                 }
         },
         methods:{
-            sayHello(){
-                console.log('123')
+
+            selectedQuarter() {
+                axios.post('/timetracking/quarter/store', {
+                    form:this.form,
+                    checked_quartal:this.checked_quartal,
+
+                }).then(response => {
+                    console.log(response,'kii');
+
+                })
+                    .catch(error => {
+                        console.log(error.response)
+                    });
+
+                //     .then(response => {
+                //     this.$message.success('Сохранено!');
+                // })
+                //     .catch(error => {
+                //     this.$message.error('Ошибка');
+                // })
+
             },
-            sayHelloO(){
-                this.active = false;
-                console.log('010203')
+
+            checkedDisabled(par_id){
+                for (let i = 1;i <= 4;i++){
+                    document.getElementById('input-sum-'+i).setAttribute('disabled','disabled');
+                    document.getElementById('input-text-'+i).setAttribute('disabled','disabled');
+                }
+                document.getElementById('input-sum-'+par_id).removeAttribute('disabled');
+                document.getElementById('input-text-'+par_id).removeAttribute('disabled');
+
+                document.getElementById('selectedQuarter').classList.remove('selectedQuarter');
+
             }
         },
 
-        computed: {
-            tooltipText: function() {
-                // put your logic here to change the tooltip text
-                return 'This is a computed tooltip'
-            }
-        }
+
     }
 
 
@@ -126,6 +146,9 @@
 <style lang="scss" scoped>
 
 
+    .selectedQuarter{
+        display:none;
+    }
     .mark label{
         cursor: pointer;
     }

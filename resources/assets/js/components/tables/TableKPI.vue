@@ -360,7 +360,7 @@ export default {
                 this.error = err;
                 return loader.hide();
             }
-            
+
 
 
             axios.post("/timetracking/kpi_save_individual", {
