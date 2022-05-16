@@ -16,24 +16,23 @@
   word-break: break-all;
   border-radius: 5px;
   transition: 0.5s ease all;
-  animation: 0.5s show_profile_menu ease;
   opacity: 0;
 }
-.user .profile-menu {
+.user:hover .profile-menu {
   display: block;
   opacity: 1;
-  left: 75px;
+  left: 69px;
 }
-@keyframes show_profile_menu {
-  from {
-    opacity: 0;
-    left: 60px;
-  }
-  to {
-    left: 75px;
-    opacity: 1;
-  }
-}
+// @keyframes show_profile_menu {
+//   from {
+//     opacity: 0;
+//     left: 60px;
+//   }
+//   to {
+//     left: 69px;
+//     opacity: 1;
+//   }
+// }
 @keyframes show_sub_menu {
   from {
     opacity: 0;
