@@ -13,8 +13,7 @@
 /public/mediasend/
 /public/static/profiles/
 /storage/*.key
-/storage/framework/
-/storage/!.gitignore
+/storage
 /vendor
 /.idea
 /.vscode
