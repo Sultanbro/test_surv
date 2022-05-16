@@ -150,7 +150,7 @@ class CourseResult extends Model
         $groups = [];
 
         foreach ($_groups as $key => $group) {
-            $users = $this->getUsers($group->id, $date);
+            $users = self::getUsers($group->id, $date);
             array_push($groups, self::getGroupItem($users, $group));
         }
         
