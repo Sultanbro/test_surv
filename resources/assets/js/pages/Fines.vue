@@ -16,7 +16,7 @@
                 <div class="col d-flex mb-1">
                     <input type="number" v-model.trim="fine.penalty_amount" class="form-control form-control-sm mw103">
                     <button type="button" :data-id="fine.id" title="Удалить штраф" @click="deleteFine(index)" class="btn btn-primary btn-sm">
-                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
