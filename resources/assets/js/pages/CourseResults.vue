@@ -40,17 +40,33 @@
 
             </table>
 
-
-
-
-
-
-
         </div>
     </div>
 
     <div v-else class="by_group">
-         <p>Тут тоже отвечаю</p>
+        <div class="table-responsive" v-if="groups.items.length > 0">
+           
+            <table class="table b-table table-bordered table-sm">
+
+                <tr>
+                    <th v-for="(field, index) in groups.fields" :key="index" :class="field.class">
+                        <div>{{ field.name }}</div>
+                    </th>
+                </tr>
+
+                
+                <template v-for="(item, i) in groups.items">
+                    <tr>
+                        <td v-for="(field, f) in groups.fields" :key="f" :class="field.class" @click="expandUser(item)">
+                            <div>{{ item[field.key] }}</div> 
+                        </td>
+                    </tr>
+                </template>
+                
+
+            </table>
+
+        </div>
     </div>
 
     
