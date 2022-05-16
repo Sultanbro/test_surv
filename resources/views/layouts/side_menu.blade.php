@@ -222,7 +222,7 @@
 </aside>
 
 
-<div class="kolokolchik">
+<div class="kolokolchik" id="toggle_panel">
     @include('includes.admin_notifications', [
             'unread_notifications' => $unread_notifications,
             'read_notifications' => $read_notifications,
