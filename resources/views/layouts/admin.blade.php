@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/admin/css/bootstrap.min.css">
     <link rel="stylesheet" href="/admin/css/style.css">
     <link rel="stylesheet" href="/admin/css/custom.css">
-    <link rel="stylesheet" href="/css/admin/app.css">
+    <link rel="stylesheet" href="/css/admin/app.css?4">
     <link rel="stylesheet" href="/admin/css/all.min.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
 
@@ -27,7 +27,13 @@
 
 <div id="app" class="right-panel right-panel-app d-flex">
 
-    @include('layouts.side_menu')
+    @include('layouts.side_menu', [
+                            'unread_notifications' => $unread_notifications,
+                            'read_notifications' => $read_notifications,
+                            'unread' => $unread,
+                            'head_users' => $head_users,
+                            'bonus_notification' => $bonus_notification,
+                        ])
         
     <div class="page">
 
@@ -47,13 +53,7 @@
 
                 </div>
                 <div class=" d-flex justify-content-end">
-                    @include('includes.admin_notifications', [
-                            'unread_notifications' => $unread_notifications,
-                            'read_notifications' => $read_notifications,
-                            'unread' => $unread,
-                            'head_users' => $head_users,
-                            'bonus_notification' => $bonus_notification,
-                        ])
+                   
                     <div class="user-area dropdown " style="display: flex; align-items: center;">
                         <profile user="{{json_encode(auth()->user())}}"></profile>
                     </div>
@@ -84,7 +84,7 @@
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
 <!-- <script src="/js/manifest.js"></script>
 <script src="/js/vendor.js"></script>  -->
-<script src="/js/app.js"></script>
+<script src="/js/app.js?18"></script>
 
 
 @include('includes.admin_notifications_css_js')

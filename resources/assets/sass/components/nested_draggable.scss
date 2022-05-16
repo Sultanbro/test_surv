@@ -16,7 +16,7 @@
   padding: 0 40px 0 0;
 }
 
-.nestable > .nestable-list {
+.nestable>.nestable-list {
   padding: 0;
 }
 
@@ -74,7 +74,7 @@
   right: 0;
 }
 
-.nestable-drag-layer > .nestable-list {
+.nestable-drag-layer>.nestable-list {
   position: absolute;
   top: 0;
   left: 0;
@@ -82,7 +82,7 @@
   background-color: rgba(106, 127, 233, 0.274);
 }
 
-.nestable-rtl .nestable-drag-layer > .nestable-list {
+.nestable-rtl .nestable-drag-layer>.nestable-list {
   padding: 0;
 }
 
@@ -99,6 +99,7 @@
 .dragArea {
   margin-left: 20px;
 }
+
 .handles i {
   position: relative;
   top: 1px;
@@ -106,17 +107,83 @@
   font-size: 12px;
   width: 25px;
 }
+
 .mover {
   cursor: move;
+  color: #d7d7d7 !important;
 }
+
 ul {
   list-style: none;
 }
+
+.chapter {
+  padding: 5px 0;
+  position: relative;
+
+  &:first-child {
+    margin-top: 5px;
+  }
+  .fa-circle {
+    font-size: 5px;
+  }
+  &.openegd p{ 
+    color: #28a745;
+  }
+  .chapter-btns i {
+    width: 27px;
+    margin-left: 5px;
+    font-size: 10px;
+    padding: 5px;
+    background: #c7d0d6;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      color: $hover-blue;
+    }
+  }
+
+  .chapter-btns {
+    position: absolute;
+    right: 0;
+    top: 6px;
+    text-align: center;
+    display: none;
+  }
+
+ .d-flex:hover > .chapter-btns {
+    display: flex;
+  }
+}
+
 .chapter p {
-  font-size: 14px;
+  font-size: 13px;
   word-break: break-all;
   white-space: nowrap;
+  cursor: pointer;
 }
-li.chapter:hover > div p {
+
+li.chapter:hover>div p {
   color: rgb(10, 161, 10);
+}
+
+.chapter {
+  .mover {
+    display: none;
+  }
+
+  .shower {
+    display: flex;
+  }
+}
+
+.chapter .handles:hover {
+  &>.mover {
+    display: block;
+  }
+
+  &>.shower {
+    display: none;
+  }
 }

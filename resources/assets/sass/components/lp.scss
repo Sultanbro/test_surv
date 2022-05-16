@@ -16,9 +16,15 @@
     flex-direction: column;
     height: 100%;
 
-    & > .dragArea {
-        margin-left: 0;
+    .kb-wrap {
+        height: calc(100vh - 110px);
+        overflow-y:auto;
+        overflow-x: hidden;
+        & > .dragArea {
+            margin-left: 5px;
+        }
     }
+    
     a {
         color: #262626;
         text-overflow: ellipsis;

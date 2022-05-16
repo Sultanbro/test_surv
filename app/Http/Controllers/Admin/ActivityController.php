@@ -95,7 +95,7 @@ class ActivityController extends Controller
                 
 
                 if($excel && array_key_exists('data', $excel[0])) {
-                    $date = $excel[0]['data']->format('Y-m-d');
+                    $date = Carbon::parse($excel[0]['data'])->format('Y-m-d');
                 } else {
                     $date = date('Y-m-d');
                 }
@@ -145,6 +145,7 @@ class ActivityController extends Controller
                     
                     array_push($items, $item);
                 }
+
 
                 if($group_id == 42) {
                     

@@ -521,7 +521,7 @@ class TopValue extends Model
                     $row['ed' . $i] = false;
                 }
                 
-                $rentability = $salary > 0 ?  ($proceeds * 100000) / $salary : 0;
+                $rentability = $proceeds > 0 ?  ($proceeds - $salary) / $proceeds : 0;
                 if($rentability > 0) $r_counts[$i]++;
                 $row['l' . $i] = $proceeds > 0 ? round($proceeds) : '';
                 $row['c' . $i] = $salary > 0 ? round($salary) : '';

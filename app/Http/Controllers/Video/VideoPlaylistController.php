@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 
 use Auth;
 use App\User;
+use App\Models\TestQuestion;
 use App\Models\Videos\Video;
 use App\Models\Videos\VideoCategory as Category;
 use App\Models\Videos\VideoComment as Comment;
@@ -35,8 +36,14 @@ class VideoPlaylistController extends Controller {
 	}
 
 	public function get($id) {
+
+		$pl =  Playlist::with('videos')->find($id);
+
+		foreach($pl->videos as $video) {
+			$video->questions = TestQuestion::where('testable_type', 'video')->where('testable_id', $video->id)->get();
+		}
 		return [
-			'playlist' => Playlist::with('videos')->find($id),
+			'playlist' => $pl,
 			'categories' => Category::all(),
 			'all_videos' => Video::select('id', 'title', 'links')->where('playlist_id', 0)->get(),
 		];
@@ -143,5 +150,7 @@ class VideoPlaylistController extends Controller {
 		Playlist::create($request->input());
 		return redirect(self::PAGE);
 	}
+
+	
 	
 }

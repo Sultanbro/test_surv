@@ -564,7 +564,10 @@ body.admin {
 }
 #video {
   width: 100%;
-  background: aliceblue; 
+  background: aliceblue;
+  &.w65 {
+    width: 65%;
+  } 
 }
 .admin label {
   font-weight: 700;
@@ -645,4 +648,27 @@ body {
     width: 100%;
     /* display: flex;
     flex-grow: 1; */
+}
+
+
+
+.noscrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  cursor: pointer;
+}
+
+/* Track */
+.noscrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+
+/* Handle */
+.noscrollbar::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+.noscrollbar::-webkit-scrollbar-thumb:hover {
+  background: #136a9c; 
 }

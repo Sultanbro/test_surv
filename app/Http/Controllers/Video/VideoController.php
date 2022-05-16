@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Auth;
 use App\User;
 use App\Models\Videos\Video;
+use App\Models\TestQuestion;
 use App\Models\Videos\VideoCategory as Category;
 use App\Models\Videos\VideoComment as Comment;
 use App\Models\Videos\VideoPlaylist as Playlist;
@@ -81,9 +82,35 @@ class VideoController extends Controller {
 	public function update(Request $request) {
 		$video = Video::find($request->id);
 		if($video) $video->update($request->input());
+
+		
 		return redirect(self::PAGE);
 	}
 
+	public function updateVideo(Request $request)
+    {
+		$video = Video::find($request->video['id']);
+      	foreach ($request->video['questions'] as $key => $q) {
+			$params = [
+				'order' => 0,
+				'page'=> 0,
+				'points'=> $q['points'],
+				'testable_id'=> $request->video['id'],
+				'testable_type'=> "video",
+				'text'=> $q['text'],
+				'type'=> $q['type'],
+				'variants'=> $q['variants'],
+			];
+
+			if($q['id'] != 0) {
+				$testq = TestQuestion::find($q['id']);
+				if($testq) $testq->update($params);
+			} else {
+				TestQuestion::create($params);
+			}
+		}
+    }
+	
 	public function upload(Request $request) {
 		
 		if ($request->file('file')->isValid()) {

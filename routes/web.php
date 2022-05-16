@@ -38,6 +38,8 @@ Route::post('/playlists/save-video', 'Video\VideoPlaylistController@save_video')
 Route::post('/playlists/delete-video', 'Video\VideoPlaylistController@delete_video');
 Route::post('/playlists/remove-video', 'Video\VideoPlaylistController@remove_video');
 Route::post('/playlists/save', 'Video\VideoPlaylistController@save');
+Route::post('/playlists/save-test', 'Video\VideoPlaylistController@saveTest');
+Route::post('/playlists/video/update', 'Video\VideoController@updateVideo');
 
 
 Route::get('/kb', 'KnowBaseController@index');
@@ -56,13 +58,24 @@ Route::post('/admin/courses/save', 'CourseController@save');
 Route::post('/admin/courses/create', 'CourseController@create');
 Route::post('/admin/courses/get-item', 'CourseController@getItem');
 
+Route::post('/course-results/get', 'CourseResultController@get');
+
+
 Route::get('/kb/get', 'KnowBaseController@get');
-Route::get('/kb/get/{id}', 'KnowBaseController@getPage');
+Route::post('/kb/get', 'KnowBaseController@getPage');
+Route::post('/kb/search', 'KnowBaseController@search');
+Route::get('/kb/get-archived', 'KnowBaseController@getArchived');
 Route::post('/kb/tree', 'KnowBaseController@getTree');
 
 Route::post('/kb/page/update', 'KnowBaseController@updatePage');
+Route::post('/kb/page/delete-section', 'KnowBaseController@deleteSection');
+Route::post('/kb/page/restore-section', 'KnowBaseController@restoreSection');
+Route::post('/kb/page/add-section', 'KnowBaseController@addSection');
 Route::post('/kb/page/save-order', 'KnowBaseController@saveOrder');
+Route::post('/kb/page/save-test', 'KnowBaseController@saveTest');
 Route::post('/kb/page/create', 'KnowBaseController@createPage');
+Route::post('/kb/page/delete', 'KnowBaseController@deletePage');
+Route::post('/kb/page/update-section', 'KnowBaseController@updateSection');
 
 
 

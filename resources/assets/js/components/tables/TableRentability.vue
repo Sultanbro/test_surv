@@ -38,7 +38,7 @@
                 </th>
                 <th class="font-bold text-center br1 bb1" @click="sort('r' + i)" :key="i">
                     <div class="d-flex align-items-center">
-                        Рент <i class="fa fa-sort ml-1"></i>
+                        Маржа <i class="fa fa-sort ml-1"></i>
                    </div>
                 </th>
             </template>
@@ -122,7 +122,7 @@ export default {
           
         countTop() {
             Object.keys(this.months).forEach(key => {
-                let s = this.items[0]['c' + key] / 1000;
+                let s = this.items[0]['c' + key];
                 let a = (this.items[0]['l' + key] - s) / s * 100;
                 this.tops[key] = isNaN(a) ? '' : Number(a).toFixed(1) + '%';
             });
@@ -131,10 +131,11 @@ export default {
         countRents() {
             this.items.forEach(item => {
                 for(let i = 1;i<=12;i++) {
-                    let s = item['c' + i] / 1000;
-                    let a = (item['l' + i] - s) / s * 100;
-                    item['r' + i] = isNaN(a) ? '' : Number(a).toFixed(1) + '%';
-                    item['rc' + i] = isNaN(a) ? 0 : Number(a);
+                    let l = item['l' + i];
+                    let c = item['c' + i];
+                    let a = (l- c) / l * 100;
+                    item['r' + i] = !isFinite(a)  ? '' : Number(a).toFixed(1) + '%';
+                    item['rc' + i] = !isFinite(a) ? 0 : Number(a);
                 }
             });
         },

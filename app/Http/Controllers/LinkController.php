@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use App\Book;
+use App\KnowBase;
 
 /** Just for remote link  for corp book page */
 class LinkController extends Controller
@@ -15,13 +16,13 @@ class LinkController extends Controller
         return view('home');
     }
 
-    public function opened_corp_book($d, $z, $hash) {
+    public function opened_corp_book($hash) {
 
-        $book = Book::where('hash', $hash)->first();
+        $book = KnowBase::where('hash', $hash)->first();
       
         if($book) {
           $title = $book->title;
-          $text = $book->description;
+          $text = $book->text;
         } else {
           abort(404);
         }

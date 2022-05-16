@@ -2,8 +2,8 @@
 <div class="d-flex justify-content-start" style="flex-wrap:wrap" :class="{'top': page == 'top'}" :key="skey">
     <div v-for="(group, group_index) in utility" :key="group_index" :class="wrapper_class">
         <div class="text-center font-bold mb-3 mt-2 d-flex justify-content-center" v-if="editable">
-                <a v-if="[42].includes(group.id)" :href="'/timetracking/analytics?group='+ group.id + '&active=1&load=1'" target="_blank">{{ group.name }}</a>
-                <a v-else :href="'/timetracking/an?group='+ group.id + '&active=1&load=1'" target="_blank">{{ group.name }}</a>
+               
+                <a :href="'/timetracking/an?group='+ group.id + '&active=1&load=1'" target="_blank">{{ group.name }}</a>
                 <div class=" ml-2 pointer" v-if="page == 'top' && group.gauges.length < 4" 
                     @click="showAddWindow(group.id, group_index)">
                     <i class="fa fa-plus-square"></i>

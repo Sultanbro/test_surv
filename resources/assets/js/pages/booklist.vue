@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex">
     <aside id="left-panel" class="lp">
-      <div class="btn btn-search mb-3">
+      <div class="btn btn-search mb-3" @click="showSearch = true">
         <i class="fa fa-search"></i>
         <span>Искать в базе...</span>
       </div>
@@ -10,18 +10,32 @@
         <span>Вернуться к разделам</span>
       </div>
 
-      <nested-draggable
-        :tasks="tree"
-        :key="tree_key"
-        :open="true"
-        @showPage="showPage"
-        :parent_id="parent_id"
-      />
+      <div class="kb-wrap noscrollbar">
 
-      <div class="btn-add" @click="addPage">
-        <i class="fa fa-plus"></i>
-        <span>Добавить статью</span>
+        <div class="chapter mb-3">
+          <div class="d-flex">
+            <span class="font-16 font-bold">{{ parent_title }}</span>
+            <div class="chapter-btns">
+              <i class="fa fa-plus" @click="addPageToTree"></i> 
+            </div>
+          </div>
+        </div>
+
+        <nested-draggable
+          :tasks="tree"
+          :auth_user_id="auth_user_id"
+          :opened="true"
+          @showPage="showPage"
+          @addPage="addPage"
+          :parent_id="id"
+        />
       </div>
+      
+
+      <!-- <div class="btn-add" @click="addPage" v-if="[5,18,157,84].includes(auth_user_id)">
+        <i class="fa fa-plus"></i>
+        <span>Добавить страницу</span>
+      </div> -->
 
           
     </aside>
@@ -30,19 +44,19 @@
 
     <!-- Right Panel -->
 
-    <div class="rp" style="flex: 1;padding-bottom: 50px;">
+    <div class="rp" style="flex: 1;padding-bottom: 0px;flex: 1 1 0%;height: 100vh;overflow-y: auto;">
       <div class="hat">
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">
             <a href="#">База знаний</a>
-            <template v-if="activesbook != null">
-              <i class="fa fa-caret-right"></i>
-              <a href="#">{{ activesbook.title }}</a>
+            <template v-for="(bc, bc_index) in breadcrumbs">
+              <i class="fa fa-chevron-right"></i>
+              <a href="#" @click="showPage(bc.id)">{{ bc.title }}</a>
             </template>
           </div>
 
-          <div class="control-btns">
-            <div class="d-flex justify-content-end" v-if="activesbook != null">
+          <div class="control-btns" v-if="[5,18,157,84].includes(auth_user_id)">
+            <div class="d-flex justify-content-end" :asd="auth_user_id" v-if="activesbook != null">
               <input
                 type="text"
                 :ref="'mylink' + activesbook.id"
@@ -83,7 +97,7 @@
               
               <button
                 class="form-control btn-delete btn-medium ml-2"
-                @click="deletebook"
+                @click="deletePage"
               >
                 Удалить
               </button>
@@ -105,6 +119,13 @@
                 <i class="fa fa-clone"></i>
               </button>
               
+              <button
+                class="form-control btn-danger btn-medium ml-2"
+                @click="deletePage"
+              >
+                  <i class="fa fa-trash"></i>
+              </button>
+
               <button
                 class="form-control btn-save btn-medium ml-2"
                 @click="edit_actives_book = true"
@@ -150,6 +171,8 @@
               contextmenu: true,
               spellchecker_whitelist: ['Ephox', 'Moxiecode'],
               language: 'ru',
+              convert_urls: false,
+              relative_urls: false,
               language_url: '/static/langs/ru.js',
               content_css: '/static/css/mycontent.css',
               fontsize_formats:
@@ -269,7 +292,34 @@
         </template>
 
         <template  v-if="activesbook != null && !edit_actives_book">
-          <div class="book_page" v-html="activesbook.text"></div>
+          <div class="book_page">
+            <div class="author d-flex aic mb-2">
+              <img src="/images/avatar.png" alt="avatar icon">
+              <div class="text">
+                <p class="name">{{ activesbook.author }}</p>
+                <p class="edited">{{ activesbook.edited_at }}</p>
+              </div>
+            </div>
+            <div class="bp-text" v-html="activesbook.text">
+            
+            </div>
+
+            <questions
+                  v-if="[5,18,157,84].includes(auth_user_id)"
+                  :questions="activesbook.questions"
+                  :id="activesbook.id"
+                  type="kb"
+                  mode="edit"
+                />
+            <questions
+                  v-else
+                  :questions="activesbook.questions"
+                  :id="activesbook.id"
+                  type="kb"
+                  mode="read"
+                />
+              <div class="pb-5"></div> 
+          </div>
         </template>
       </div>
 
@@ -507,6 +557,37 @@
         </div>
       </div>
     </div>
+
+
+    <b-modal
+      v-model="showSearch"
+      title="Поиск"
+      size="md"
+      dialog-class="modal-search"
+      hide-header
+      hide-footer
+    >
+
+      <div>
+        <input
+          type="text"
+          v-model="search.input"
+          @keyup="searchInput"
+          placeholder="Поиск по всей базе..."
+          class="form-control mb-2"
+        />
+
+        <div class="s-content">
+         <div class="item" v-for="item in search.items" @click="showPage(item.id, true)">
+           <p>{{ item.title }}</p>
+           <div class="text" v-html="item.text"></div>
+         </div>
+        </div>
+        
+      </div>
+      
+    </b-modal>
+
   </div>
 </template>
 
@@ -514,16 +595,22 @@
 import nestedDraggable from "../components/nested";
 export default { 
   name: "booklist",
-  props: ["trees", 'parent_id'],
+  props: ["trees", 'parent_id', 'auth_user_id', 'parent_name', 'show_page_id'],
   components: { 
     nestedDraggable,
   },
   data() {
     return {
+      id: 0,
       loader: false,
       delo: 0,
-      tree_key: 1,
+      parent_title: '',
       showActionModal: false,
+      showSearch: false,
+      search: {
+        input: '',
+        items: []
+      },
       showImageModal: false,
       showAudioModal: false,
       showPermissionModal: false,
@@ -542,16 +629,70 @@ export default {
       seatchbooks: null,
       editors: "",
       imagegroup: [],
-      attachment: null,                                                                            
+      attachment: null,
+      breadcrumbs: []                                                                            
     }
   },
-  mounted() {
+  created() {
     this.tree = this.trees;
+    this.parent_title = this.parent_name;
+    this.id = this.parent_id;
+    if(this.show_page_id != 0) {
+      this.showPage(this.show_page_id, true, true)
+    }
+  },
+
+  mounted() {
+    
     this.books = [];
 
-    console.log("trees=> ", this.tree);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let book_id = urlParams.get('b');
+    this.breadcrumbs = [{id:this.id, title: this.parent_title}];
+    console.log('book_id '  + book_id)
+    
+    
+    let result = null
+    this.tree.every(obj => {
+      result = this.deepSearchId(obj, book_id)
+      if (result != null) {
+        console.log(result);
+        this.showPage(book_id, false, true);
+        return false;
+      }
+      return true;
+    });
+   
+
+
   },
   methods: {
+    
+     searchInput() {
+      if(this.search.input.length <= 2) return null;
+      
+      axios
+        .post("kb/search", {
+          text: this.search.input,
+        })
+        .then((response) => {
+         
+          this.search.items = response.data.items;
+          this.emphasizeTexts();
+
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
+    emphasizeTexts() {
+      this.search.items.forEach(item => {
+         item.text = item.text.replace(new RegExp(this.search.input,"gi"), "<b>" + this.search.input +  "</b>");
+      });
+    },
+
     movecatt() {
       this.actives.parent_cat_id = this.selectone;
       axios
@@ -594,7 +735,7 @@ export default {
       axios
         .post("/books/order/", {
           tree: this.tree,
-          id: this.parent_id,
+          id: this.id,
         })
         .then((response) => {
           this.loader = false;
@@ -641,38 +782,38 @@ export default {
       }, 500);
     },
     copyes() {
-      if (this.delo == 0) {
-        if (this.selectone != null) {
-          let book = {
-            id: 0,
-            title: this.activesbook.title,
-            text: this.activesbook.text,
-            category_id: this.selectone,
-            order: 0,
-          };
+      // if (this.delo == 0) {
+      //   if (this.selectone != null) {
+      //     let book = {
+      //       id: 0,
+      //       title: this.activesbook.title,
+      //       text: this.activesbook.text,
+      //       category_id: this.selectone,
+      //       order: 0,
+      //     };
 
-          axios
-            .post("/page/copy/", {
-              books: book,
-            })
-            .then((response) => {
-              book.id = response.data;
-              this.books.push(book);
-              this.activebook(book);
-            });
-        }
-      } else {
-        if (this.selectone != null) {
-          this.activesbook.category_id = this.selectone;
+      //     axios
+      //       .post("/page/copy/", {
+      //         books: book,
+      //       })
+      //       .then((response) => {
+      //         book.id = response.data;
+      //         this.books.push(book);
+      //         this.activebook(book);
+      //       });
+      //   }
+      // } else {
+      //   if (this.selectone != null) {
+      //     this.activesbook.category_id = this.selectone;
 
-          axios
-            .post("/page/move/", {
-              id: this.activesbook.id,
-              catid: this.selectone,
-            })
-            .then((response) => {});
-        }
-      }
+      //     axios
+      //       .post("/page/move/", {
+      //         id: this.activesbook.id,
+      //         catid: this.selectone,
+      //       })
+      //       .then((response) => {});
+      //   }
+      // }
     },
     onEndSort(books, id) {
       let arr;
@@ -709,7 +850,7 @@ export default {
     },
     addimage(url) {
       tinymce.activeEditor.insertContent(
-        '<img alt="картинка" src="' + url + '"/>'
+        '<img alt="картинка" src="'+ url + '"/>'
       );
     },
     submit() {
@@ -735,7 +876,7 @@ export default {
     },
     copyLink(book) {
       var Url = this.$refs["mylink" + book.id];
-      Url.value = "https://admin.u-marketing.org/corp_book/" + book.hash;
+      Url.value = "http://surv.u-marketing.org/corp_book/" + book.hash;
 
       Url.select();
       document.execCommand("copy");
@@ -797,18 +938,7 @@ export default {
         });
     },
 
-    deletebook() {
-      if (confirm("Вы уверены что хотите удалить книгу?") == true) {
-        
-        axios
-          .post("/pages/delete/", {
-            id: this.activesbook.id
-          })
-          .then((response) => {
-               this.$message.info("Удалено");
-          });
-      }
-    },
+  
     deletecat(cat) {
       if (confirm("Вы уверены что хотите удалить категорию?") == true) {
         this.tree.splice(this.tree.indexOf(cat), 1);
@@ -820,14 +950,25 @@ export default {
       }
     },
 
-    addPage() {
+    addPage(book) {
       axios.post("/kb/page/create", {
-        id: this.parent_id
+        id: book.id
       }).then((response) => {
         this.activesbook = response.data;
-        this.tree.push(response.data);
-        this.edit_actives_book = true
-        this.tree_key++
+        this.edit_actives_book = true;
+        book.children.push(this.activesbook);
+        this.$message.info('Добавлена страница');
+      });
+    },
+
+    addPageToTree() {
+      axios.post("/kb/page/create", {
+        id: this.id
+      }).then((response) => {
+        this.activesbook = response.data;
+        this.edit_actives_book = true;
+        this.tree.push(this.activesbook);
+        this.$message.info('Добавлена страница');
       });
     },
 
@@ -907,6 +1048,51 @@ export default {
       this.actives = tre;
       this.activesbook = null;
     },
+
+    deletePage() {
+      if(confirm('Вы уверены?')) {
+        axios
+        .post("/kb/page/delete", {
+          id: this.activesbook.id,
+        })
+        .then((response) => {
+          this.$message.success('Удалено');
+          this.removeNode(this.tree, this.activesbook.id)
+          this.activesbook = null;
+        });
+      }
+    },
+    deepSearch(array, item) {
+      return array.some(function s(el) {
+        return el == item || ((el instanceof Array) && el.some(s));
+      })
+    },
+
+    deepSearchId(obj, targetId) {
+      console.log(obj.id + ' === ' + targetId)
+      if (obj.id == targetId) {
+        return obj
+      }
+    
+      for (let item of obj.children) {
+        let check = this.deepSearchId(item, targetId)
+        if (check) {
+          return check
+        }
+      }
+      
+      return null
+    },
+
+    removeNode(arr, id) {
+      arr.forEach((it, index) => {
+        if (it.id === id) {
+          arr.splice(index, 1)
+        }
+        this.removeNode(it.children, id)
+      })
+    },
+
     activebook(book) {
       axios
         .post("/books/get_book/", {
@@ -918,14 +1104,67 @@ export default {
         });
       this.actives = null;
     },
-    showPage(id) {
+
+    showPage(id, refreshTree = false, expand = false) {
       if(this.activesbook && this.activesbook.id == id) return '';
       
-      axios.get("/kb/get/" + id, {}).then((response) => {
+      axios.post("/kb/get", {
+        id: id,
+        refresh: refreshTree
+      }).then((response) => {
         this.activesbook = response.data.book;
+        this.breadcrumbs = response.data.breadcrumbs;
         this.edit_actives_book = false;
+        
+        if(refreshTree) {
+          this.id = response.data.top_parent.id;
+          this.parent_title = response.data.top_parent.title
+          this.tree = response.data.tree
+          this.showSearch = false;
+          this.search.input = false;
+          this.search.items = [];
+         
+        }
+
+        if(expand)  this.expandTree();
+        this.setTargetBlank();
+        
+
+        window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
+      });
+      
+    },
+    
+    expandTree() {
+      let item = null;
+      
+      this.breadcrumbs.forEach(bc => {
+        console.log(bc.id + '--- ' + bc.parent_id)
+
+        let s_index = this.tree.findIndex(t => t.id == bc.id);
+
+          if(s_index != -1) {
+           
+            if(item != null) {
+              item = item.children[s_index];
+            } else {
+              item = this.tree[s_index]
+            }
+             item.opened = true;
+        
+        }
+        
       });
     },
+
+    setTargetBlank() {
+      this.$nextTick(() => {
+        var links = document.querySelectorAll(".bp-text a");
+        links.forEach(l => l.setAttribute("target", "_blank"));
+      })
+      
+    },
+
     editorSave() {},
   },
 };

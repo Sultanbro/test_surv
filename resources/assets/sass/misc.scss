@@ -233,6 +233,27 @@ tspan:last-child {
     margin: 0 auto;
     height: 100vh;
     height: calc(100vh - 128px);
+
+    .author {
+        
+        img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 1px solid #fefefe;
+        }
+        .name {
+            font-size: 14px;
+            color:#333;
+            margin-bottom: 0;
+        }
+        .edited {
+            font-size: 13px;
+            color:#ababab;
+            margin-bottom: 0;
+        }
+    }
 }
 
 .add_cat {
@@ -282,4 +303,25 @@ tspan:last-child {
     padding-bottom: 20px;
     width: 100%;
     font-weight: 600;
+}
+
+// font
+
+.font-16 {
+    font-size: 16px;
+}
+.font-bold {
+    font-weight: 700;
+}
+
+// 
+
+nav {
+    margin: 0 -15px;
+}
+.nav-tabs a.active {
+    border: 2px solid #ddd;
+}
+.nav-tabs .nav-link.active {
+    border-color: transparent transparent #1076b0;
 }

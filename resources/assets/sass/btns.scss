@@ -67,4 +67,7 @@
 .btn-grey {
     background: #eaebef;
     border: 1px solid #dcdee5;
+    &:hover {
+        background: #d0d2d8;
+    }
 }

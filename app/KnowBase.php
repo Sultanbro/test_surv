@@ -18,6 +18,7 @@ class KnowBase extends Model
     protected $fillable = [
         'parent_id',
         'title', 
+        'user_id', // author 
         'text', 
         'is_deleted', 
         'order', 
@@ -42,7 +43,7 @@ class KnowBase extends Model
 
     public function getOpenedAttribute()
     {
-        return $this->parent_id == null ? true : false;
+        return false;
     }
     
 }

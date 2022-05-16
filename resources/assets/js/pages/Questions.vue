@@ -1,6 +1,6 @@
 <template>
   <div class="questions">
-    <div class="title" v-if="mode == 'read'">Проверочные вопросы</div>
+    <div class="title" v-if="mode == 'read' && type == 'book' || ['kb', 'video'].includes(type)">Проверочные вопросы</div>
     <div class="question mb-2" v-for="(q, q_index) in questions" :key="q_index">
       <div
         class="title d-flex jcsb"
@@ -127,6 +127,12 @@
       <p v-if="points != -1">{{ points }} баллов из {{ total }}</p>
     </template>
     <template v-if="mode == 'edit'">
+      <button
+        v-if="['kb'].includes(type)"
+        class="btn btn-success mr-2" 
+        @click="saveTest">
+          Сохранить
+      </button>
       <button class="btn" @click="addQuestion" >Добавить вопрос</button>
     </template>
   </div>
@@ -187,6 +193,7 @@ export default {
   mounted() {},
   methods: {
     prepareVariants() {
+      if(this.questions === undefined) this.questions = [];
       this.questions.forEach((q) => {
         if (q.type == 0) {
           q.variants.forEach((v) => {
@@ -306,6 +313,26 @@ export default {
         ].text;
       }
     },
+
+    saveTest() {
+      let loader = this.$loading.show();
+
+      let url = this.type == 'kb' ? "/kb/page/save-test" : "/playlists/save-test";
+
+      axios
+        .post(url, {
+          id: this.id,
+          questions: this.questions,
+        })
+        .then((response) => {
+          this.$message.success("Вопросы сохранены!");
+          loader.hide();
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+    }
   },
 };
 </script>
