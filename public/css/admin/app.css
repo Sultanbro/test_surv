@@ -1918,7 +1918,7 @@ li.chapter:hover > div p {
 .profile-menu {
   display: none;
   position: fixed;
-  top: 5px;
+  top: 0;
   left: 60px;
   background: #272c33;
   min-width: 150px;
@@ -1932,7 +1932,7 @@ li.chapter:hover > div p {
   -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
           box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   word-break: break-all;
-  border-radius: 5px;
+  border-radius: 0 5px 5px 0;
   -webkit-transition: 0.5s ease all;
   transition: 0.5s ease all;
   opacity: 0;

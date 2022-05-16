@@ -13,20 +13,11 @@
                     </a>
                 </li>
                 <li>
-                    <div class="link">
+                    <div class="link link-start">
                         <div class="kolokolchik">
                             <div id="toggle_panel" class="d-flex">
                                 <i class="far fa-bell"></i>
                                 <span>Уведомления</span>
-                            </div>
-                            <div id="noti_panel">
-                                @include('includes.admin_notifications', [
-                                        'unread_notifications' => $unread_notifications,
-                                        'read_notifications' => $read_notifications,
-                                        'unread' => $unread,
-                                        'head_users' => $head_users,
-                                        'bonus_notification' => $bonus_notification,
-                                    ])
                             </div>
                         </div>
                     </div>
@@ -229,3 +220,14 @@
 
 
 </aside>
+
+
+<div id="noti_panel">
+    @include('includes.admin_notifications', [
+            'unread_notifications' => $unread_notifications,
+            'read_notifications' => $read_notifications,
+            'unread' => $unread,
+            'head_users' => $head_users,
+            'bonus_notification' => $bonus_notification,
+        ])
+</div>
