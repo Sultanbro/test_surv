@@ -1940,7 +1940,7 @@ li.chapter:hover > div p {
   opacity: 0;
 }
 
-.profile-menu.show {
+.user .profile-menu {
   display: block;
   opacity: 1;
   left: 75px;
