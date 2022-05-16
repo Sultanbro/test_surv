@@ -1,13 +1,13 @@
 <script type="text/javascript">
 $(document).ready(function () {
     $('.tooglenotifi').click(function() {
-        $('.kolokolchik .panel').toggle();
+        $('#noti_panel .panel').toggle();
         $('.bgpanel').toggleClass('active');
     })
 });
 $(".bgpanel").on("click", function(e) {
     e.preventDefault();
-    $('.kolokolchik .panel').toggle();
+    $('#noti_panel .panel').toggle();
     $('.bgpanel').toggleClass('active');
   });
 $(".panel_head .panel_in").on("click", function(e) {
@@ -302,19 +302,19 @@ $('#setRead').click(function() {
 }
 </style>
 <style>
-.kolokolchik {
+#noti_panel {
   position: static !important;
     float: none;
     width: 100%;
 }
-.kolokolchik .panel {
+#noti_panel .panel {
     width: 480px;
     position: absolute;
     left: 0;
     top: 0;
     margin-left: 0;
 }
-.kolokolchik .panel .tail {
+#noti_panel .panel .tail {
     position: absolute;
     border: 10px solid transparent;
     top: 20px;
@@ -324,12 +324,12 @@ $('#setRead').click(function() {
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
 }
-.kolokolchik .panel .panel_body .notification_list .notification_item {
+#noti_panel .panel .panel_body .notification_list .notification_item {
     background-color: #f7fcff;
     border-radius: 5px;
     border: 1px solid #e4eef7;
 }
-.kolokolchik .panel .panel_body .notification_list .notification_item .notification-change {
+#noti_panel .panel .panel_body .notification_list .notification_item .notification-change {
   background: #459cd1;
 }
 </style>
@@ -340,10 +340,10 @@ $('#setRead').click(function() {
     .notification-text a.btn {
         color: #fff;
     }
-    .kolokolchik .panel .panel_body .notification_list .notification_item {
+    #noti_panel .panel .panel_body .notification_list .notification_item {
         overflow: unset;
     }
-    .kolokolchik .panel .panel_body .notification_list .notification_item:hover .notification-change {
+    #noti_panel .panel .panel_body .notification_list .notification_item:hover .notification-change {
 
         animation: 2s ease-in anim_pulse infinite;
     }
