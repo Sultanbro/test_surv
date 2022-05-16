@@ -1,32 +1,21 @@
 <template>
     <div class="quarter-page">
-        <p class="call-norm">{{ group }} 555 </p>
+        <p class="call-norm">{{ group }} </p>
 
-<!--        <button @click="sayHello">clic 1</button>-->
-<!--        <button v-on:mouseover="sayHelloO">clic 2</button>-->
-
-        <span class="label label-default" v-tooltip:bottom="tooltipText">
-
-
-
-
-<!--        <div v-show="active">Show</div>-->
-<!--        <div @mouseover="mouseOver">Hover over me!</div>-->
 
         <div class="d-flex">
 
             <table class="table table-bordered table-sm">
                 <tr>
-                    <div v-if="active">
-                        <h2>Hello World!</h2>
-                    </div>
+
                     <th class="mark">
-                        <label for="quarter_1" >Первый Квартал</label>
-                        <input  v-on:mouseover="active = !active" v-on:mouseout="active = active" type="checkbox" id="quarter_1" class="position-absolute ml-3" style="margin-top:-5px">
+                        <label for="quarter_1" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Первый Квартал" >Первый Квартал</label>
+
+                        <input   type="checkbox" id="quarter_1" class="position-absolute ml-3" style="margin-top:-5px">
 
                     </th>
                     <th class="mark">
-                        <label for="quarter_2" class="position-relative">Второй квартал</label>
+                        <label for="quarter_2" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Второй квартал">Второй квартал</label>
                         <input type="checkbox" id="quarter_2" class="position-absolute ml-3" style="margin-top:-5px">
                     </th>
                 </tr>
@@ -43,11 +32,11 @@
                 </tr>
                 <tr>
                     <th class="mark">
-                        <label for="quarter_3" class="position-relative">Третий Квартал</label>
+                        <label for="quarter_3" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Третий Квартал">Третий Квартал</label>
                         <input type="checkbox" id="quarter_3" class="position-absolute ml-3" style="margin-top:-5px">
                     </th>
                     <th class="mark">
-                        <label for="quarter_4" class="position-relative">Четвертый квартал</label>
+                        <label for="quarter_4" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Четвертый квартал">Четвертый квартал</label>
                         <input type="checkbox" id="quarter_4" class="position-absolute ml-3" style="margin-top:-5px">
                     </th>
                 </tr>
@@ -108,7 +97,7 @@
                 this.active = false;
                 console.log('010203')
             }
-        }
+        },
 
         computed: {
             tooltipText: function() {

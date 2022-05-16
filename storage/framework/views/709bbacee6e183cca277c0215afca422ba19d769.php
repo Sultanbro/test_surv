@@ -1,77 +1,70 @@
 
 
-<div class="kolokolchik">
-    <div class="inf">
-        <a href="#" title="Ваши уведомления" class="tooglenotifi ">
-        	<i class="fa fa-bell" aria-hidden="true"></i>
-            <div class="<?php echo e($unread?'blink-notification':''); ?>" style="border-color: #00bef6;position: absolute;top: 0;left: 0;bottom: 0;right: 0;border-radius: 50%;"></div>
-            <span class="numb" style="font-weight:800"><?php echo e($unread); ?></span>
+
+<div class="bgpanel"></div>
+<div class="panel" style="display:none;">
+    <div class="tail"></div>
+    <div class="panel_head">
+        <div class="panel_in active" data-tab="1">Уведомления</div>
+        <div class="panel_in " data-tab="2">Уведомления прочитанные</div>
+    </div>
+    <div class="panel_body">
+        <div class="panel_out active" data-id="1">
+            <div class="notification_list">
+                <?php $__currentLoopData = $unread_notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="notification_item unread_noti" id="unnoti<?php echo e($item->id); ?>">
+                        <div class="notifi_top">
+                            <!-- <div class="label-wrapper <?php echo e($item->type=='important'?'':'hidden'); ?>"><span
+                                        class="label-wrapper_text"><?php echo e($item->type=='important'?'ВАЖНОЕ':''); ?></span>
+                            </div>  -->
+                            <span class="notification-date"><?php echo e($item->formattedDate()); ?></span>
+                            <!-- <span class="notification-projectId"><?php echo e($item->formattedDate()); ?></span> -->
+                        </div>
+                        <div class="notification-title"><?php echo e($item->title); ?></div>
+                        <div class="notification-text">
+                            <?php echo $item->message; ?>
+
+                        </div>
+
+                        
+                        <a class="set-read" data-id="<?php echo e($item->id); ?>" 
+                            <?php if($item->title == 'Пропал с обучения: 1 день' || $item->title == 'Пропал с обучения: 2 день'): ?> data-comment="1"  <?php else: ?> data-comment="0" <?php endif; ?>
+                            <?php if($item->title == 'Заполните отчет'): ?> data-type="report"  <?php else: ?> data-type="empty" <?php endif; ?>>
+                            <div class="notification-change"><i class="fa fa-check"></i></div>
+                        </a>
+                    </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+        </div>
+        <div class="panel_out " data-id="2">
+            <div class="notification_list">
+                <?php $__currentLoopData = $read_notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="notification_item read_noti" >
+                        <div class="notifi_top" style="display:flex;justify-content:space-between">
+                            <!-- <div class="label-wrapper <?php echo e($item->type=='important'?'':'hidden'); ?>">
+                                <span class="label-wrapper_text"><?php echo e($item->type=='important'?'ВАЖНОЕ':''); ?></span>
+                            </div> -->
+                            <span class="notification-date"><?php echo e($item->formattedDate()); ?></span>
+                            <span class="notification-projectId"><?php echo e($item->read_at); ?></span>
+                        </div>
+                        <div class="notification-title"><?php echo e($item->title); ?></div>
+                        <div class="notification-text">
+                            <?php echo $item->message; ?>
+
+                        </div>
+                    </div>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+            </div>
+        </div>
+    </div>
+    <div class="panel_foot">
+        <a id="setRead">
+            <button><i class="fa fa-check"></i>Отметить все, как прочитанные</button>
         </a>
     </div>
-    <div class="bgpanel"></div>
-    <div class="panel" style="display:none;">
-        <div class="tail"></div>
-        <div class="panel_head">
-            <div class="panel_in active" data-tab="1">Уведомления</div>
-            <div class="panel_in " data-tab="2">Уведомления прочитанные</div>
-        </div>
-        <div class="panel_body">
-            <div class="panel_out active" data-id="1">
-                <div class="notification_list">
-                    <?php $__currentLoopData = $unread_notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div class="notification_item unread_noti" id="unnoti<?php echo e($item->id); ?>">
-                            <div class="notifi_top">
-                                <!-- <div class="label-wrapper <?php echo e($item->type=='important'?'':'hidden'); ?>"><span
-                                            class="label-wrapper_text"><?php echo e($item->type=='important'?'ВАЖНОЕ':''); ?></span>
-                                </div>  -->
-                                <span class="notification-date"><?php echo e($item->formattedDate()); ?></span>
-                                <!-- <span class="notification-projectId"><?php echo e($item->formattedDate()); ?></span> -->
-                            </div>
-                            <div class="notification-title"><?php echo e($item->title); ?></div>
-                            <div class="notification-text">
-                                <?php echo $item->message; ?>
-
-                            </div>
-
-                            
-                            <a class="set-read" data-id="<?php echo e($item->id); ?>" 
-                                <?php if($item->title == 'Пропал с обучения: 1 день' || $item->title == 'Пропал с обучения: 2 день'): ?> data-comment="1"  <?php else: ?> data-comment="0" <?php endif; ?>
-                                <?php if($item->title == 'Заполните отчет'): ?> data-type="report"  <?php else: ?> data-type="empty" <?php endif; ?>>
-                                <div class="notification-change"><i class="fa fa-check"></i></div>
-                            </a>
-                        </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </div>
-            </div>
-            <div class="panel_out " data-id="2">
-                <div class="notification_list">
-                    <?php $__currentLoopData = $read_notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div class="notification_item read_noti" >
-                            <div class="notifi_top" style="display:flex;justify-content:space-between">
-                                <!-- <div class="label-wrapper <?php echo e($item->type=='important'?'':'hidden'); ?>">
-                                    <span class="label-wrapper_text"><?php echo e($item->type=='important'?'ВАЖНОЕ':''); ?></span>
-                                </div> -->
-                                <span class="notification-date"><?php echo e($item->formattedDate()); ?></span>
-                                <span class="notification-projectId"><?php echo e($item->read_at); ?></span>
-                            </div>
-                            <div class="notification-title"><?php echo e($item->title); ?></div>
-                            <div class="notification-text">
-                                <?php echo $item->message; ?>
-
-                            </div>
-                        </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
-                </div>
-            </div>
-        </div>
-        <div class="panel_foot">
-            <a id="setRead">
-                <button><i class="fa fa-check"></i>Отметить все, как прочитанные</button>
-            </a>
-        </div>
-    </div>
 </div>
+
 
 
 
