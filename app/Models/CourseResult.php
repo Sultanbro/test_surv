@@ -89,7 +89,7 @@ class CourseResult extends Model
         $arr['user_id'] = $user->ID;
         $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
         $arr['progress'] = rand(0,100) . '%';
-        //$arr['assigned_at'] = date('Y-m-d');
+  
         $arr['points'] = rand(100,10000);
         $arr['expanded'] = false;
         $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
@@ -101,16 +101,18 @@ class CourseResult extends Model
     private static function getUserCourses($user_id) {
         $arrx = [];
 
-        $array1= array('Mathematics','Physics','Chemistry','Biology', 'Oberlivion');
+        $array1= array('Курс для UCALS','Презентация проекта','Переговоры в продажах','Расчет OS', 'AGILE проекты');
 
-
+        
         for($i=0;$i<rand(1,5);$i++) {
             $arr = [];
-            $arr['name'] = array_rand($array1, 1);
+
+            $a = rand(0,1);
+            $arr['name'] = $array1[array_rand($array1, 1)];
             $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
             $arr['user_id'] = $user_id;
             $arr['progress'] = rand(0,100);
-            //$arr['assigned_at'] = date('Y-m-d');
+           
             $arr['points'] = rand(0,1000);
 
             $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
