@@ -20,7 +20,7 @@ class CourseResultController extends Controller
             $items = CourseResult::getUsers($request->group_id, $date);
         }
 
-        if($request->type == 'users') {
+        if($request->type == 'groups') {
             $items = CourseResult::getGroups($date);
         }
 
