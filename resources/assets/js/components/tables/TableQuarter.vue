@@ -5,7 +5,7 @@
 <!--        <button @click="sayHello">clic 1</button>-->
 <!--        <button v-on:mouseover="sayHelloO">clic 2</button>-->
 
-        <span class="label label-default" v-tooltip:bottom="tooltipText">
+        <span class="label label-default" v-tooltip:bottom="tooltipText" />
 
 
 
@@ -108,7 +108,7 @@
                 this.active = false;
                 console.log('010203')
             }
-        }
+        },
 
         computed: {
             tooltipText: function() {
