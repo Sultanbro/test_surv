@@ -82,6 +82,7 @@ export default {
     name: "CourseResults", 
     watch: {
         monthInfo(val) {
+            this.first = true;
             if(this.type == this.BY_GROUP) {
                 this.fetchData('groups');
                 this.first = false;
@@ -90,6 +91,7 @@ export default {
             }
         },
         currentGroup() {
+            this.first = true;
             if(this.type == this.BY_GROUP) {
                 this.fetchData('groups');
                 this.first = false;
