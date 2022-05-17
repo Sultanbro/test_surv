@@ -1827,19 +1827,23 @@ ul {
 .chapter p span.long {
   display: none;
   position: absolute;
-  left: 0;
+  left: 25px;
   margin: 0 -5px;
   top: 0;
-  max-width: 267px;
-  z-index: 2;
+  max-width: 100%;
+  z-index: 14;
+  -webkit-transition: 1.5s 1s all ease;
+  transition: 1.5s 1s all ease;
   font-size: 13px;
   white-space: normal;
   padding: 0px 5px;
+  opacity: 0;
   background: #efefef;
   border-radius: 5px;
   -webkit-box-shadow: 0 0 5px 2px #dfdfdf inset;
           box-shadow: 0 0 5px 2px #dfdfdf inset;
   pointer-events: none;
+  word-break: break-word;
 }
 
 .chapter p:hover span.long {
