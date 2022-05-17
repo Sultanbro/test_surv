@@ -163,7 +163,7 @@ ul {
   word-break: break-all;
   white-space: nowrap;
   cursor: pointer;
-  position: relative;
+ // position: relative;
 
   span.long {
     display: none;
@@ -172,7 +172,6 @@ ul {
     margin: 0 -5px;
     top: 0;
     max-width: 267px;
-    display: block;
     z-index: 2;
     font-size: 13px;
     white-space: normal;
