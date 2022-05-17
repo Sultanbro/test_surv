@@ -14,25 +14,25 @@ class QuartalBonusController extends Controller
     public function storePersonQuartal(Request $request)
     {
 
-        $quartalBonus = new QuartalBonus();
-        $quartalBonus['user_id'] = 1;
-        $quartalBonus['auth_id'] = 1;
-        $quartalBonus['quartal'] = 1;
-        $quartalBonus['sum'] = 1;
-        $quartalBonus['year'] = 1;
-        $quartalBonus['text'] = '1';
-        $quartalBonus->save();
+        $qb = QuartalBonus::where('quartal', $request->quartal)
+            ->where('year', date('Y'))
+            ->where('user_id', $request->user_id)
+            ->first();
 
-
-         QuartalBonus::created([
-            'user_id'=>1,
+        $arr = [
+            'user_id'=> $request->user_id,
             'auth_id'=>auth()->user()->id,
-            'quartal'=>1,
-            'sum'=>1,
-            'year'=>1,
-            'text'=>'1asdasd',
-        ]);
+            'quartal'=> $request->quartal,
+            'sum'=> $request->sum,
+            'year'=> date('Y'),
+            'text'=> $request->text,
+        ];
 
+        if($qb) {
+            $qb->update($arr);
+        } else {
+            QuartalBonus::create($arr);
+        }
 
 
 
