@@ -1098,7 +1098,8 @@ export default {
     renameNode(arr, id, title) {
       arr.forEach((it, index) => {
         if (it.id === id) {
-          arr.title = title;
+          it.title = title;
+          console.log('IT title')
         }
         this.renameNode(it.children, id, title)
       })
