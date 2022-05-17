@@ -127,13 +127,13 @@
                         text: '',
                         checked: false,
                         sum: 0,
-                        quarter: $i
+                        quarter: i
                     });
                 }
 
                 this.items = arr;
             },
-            
+
             selectedQuarter() {
                 axios.post('/timetracking/quarter/store', {
                     items:this.items,
