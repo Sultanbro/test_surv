@@ -103,7 +103,7 @@ class CourseResult extends Model
         $uc = self::getUserCourses($user);
         $arr['courses'] = $uc['courses'];
 
-        $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME;
+        $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME . ' (' . $user->course_results->count() .')';
         $arr['user_id'] = $user->ID;
         $arr['status'] = $uc['totals']['status'] == 2 ? 'Начат' : 'Завершен';
         $arr['progress'] = $uc['totals']['progress'] . '%' ;
@@ -124,11 +124,11 @@ class CourseResult extends Model
         $progress = 0;
         $progress_count = 0;
 
-        $first_date = self::$courses->sort(function ($a, $b) {
+        $first_date = $user->course_results->sort(function ($a, $b) {
             return strtotime($a->started_at) < strtotime($b->started_at);
         })->first();
 
-        $last_date = self::$courses->sort(function ($a, $b) {
+        $last_date = $user->course_results->sort(function ($a, $b) {
             return strtotime($a->ended_at) < strtotime($b->ended_at);
         })->first();
 
@@ -164,8 +164,8 @@ class CourseResult extends Model
                 'points' => $points,
                 'progress' => $progress_count > 0 ? round($progress / $progress_count) : 0,
                 'status' => $status,
-                'started_at' => $first_date,
-                'ended_at' => $last_date,
+                'started_at' => $first_date ? Carbon::parse($first_date->started_at)->format('Y-m-d') : '',
+                'ended_at' => $last_date ? Carbon::parse($last_date->ended_at)->format('Y-m-d') : '',
             ]
         ];
     }
@@ -194,7 +194,7 @@ class CourseResult extends Model
         $progress = 0;
         foreach ($users['items'] as $key => $user) {
             $points += $user['points'];
-            $progress += $user['progress'];
+            $progress += $user['progress_number'];
         }
 
         $arr = [];
