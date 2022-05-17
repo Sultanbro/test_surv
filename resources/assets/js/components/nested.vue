@@ -1,14 +1,14 @@
 <template>
   <draggable 
-    v-if="opened"
     class="dragArea" 
     tag="ul"
     :handle="handle"
     :list="tasks"
     :group="{ name: 'g1' }"
     @end="saveOrder">
-    <template v-for="el in tasks">
+    <template v-for="el in tasks" >
         <li 
+          v-if="opened"
           class="chapter"
           :class="{'opened':opened}"
           :id="el.id"
@@ -78,15 +78,22 @@ export default {
       
 
         let parent_id = null;
+        console.log(event.to.parentElement.id)
         if(event.to.parentElement.nodeName != "ASIDE") {
           parent_id = event.to.parentElement.id;
+
           if(parent_id == '') {
-            parent_id = this.parent_id 
+            parent_id = this.parent_id;
+            console.log('parent_id == ""');
+          } else {
+            console.log('parent_id != ""');
           }
         } else {
+          console.log('= Aside');
           parent_id = this.parent_id
         }
 
+        console.log(parent_id);
         axios.post('/kb/page/save-order', {
           id: event.item.id,
           order: event.newIndex, // oldIndex

@@ -930,10 +930,11 @@ export default {
           title: this.activesbook.title,
           id: this.activesbook.id,
         })
-        .then((response) => {
-
+        .then((response) => { 
+        
           this.edit_actives_book = false;
           this.$message.info("Сохранено");
+          this.renameNode(this.tree, this.activesbook.id, this.activesbook.title);
           this.loader = false;
 
         });
@@ -1092,6 +1093,28 @@ export default {
         }
         this.removeNode(it.children, id)
       })
+    },
+
+    renameNode(arr, id, title) {
+      arr.forEach((it, index) => {
+        if (it.id === id) {
+          it.title = title;
+          console.log('IT title')
+        }
+        this.renameNode(it.children, id, title)
+      })
+    },
+
+    
+    recurse(arr, id, objToMerge, inAncestor = false) {
+      return arr.map(obj => {
+        const mergeThis = inAncestor || obj.id == id;
+        const merged = !mergeThis ? obj : { ...obj, config: { ...obj.config, ...objToMerge } };
+        if (merged.children) {
+          merged.children = this.recurse(merged.children, id, objToMerge, mergeThis);
+        }
+        return merged;
+      });
     },
 
     activebook(book) {
