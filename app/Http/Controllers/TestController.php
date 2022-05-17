@@ -13,19 +13,20 @@ use App\Classes\Analytics\PrCstll;
 use App\External\HeadHunter;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
+use App\Models\QuartalBonus;
 
 class TestController extends Controller {
  
 	public function test() {
 
-	    $a = User::get();
-
-	    dd($a);
-
-	    dd('55555');
-		$group_id = 65;
-		$date = '2022-03-28';
-		$a = AnalyticStat::getRentabilityDiff($group_id, $date);
+	    $a = QuartalBonus::create([
+            'user_id'=> 1,
+            'auth_id'=> 1,
+            'quartal'=> 11,
+            'sum'=> 0,
+            'year'=> date('Y'),
+            'text'=> 'sfdsdfsdf',
+        ]);
 
 		dd($a); 
 

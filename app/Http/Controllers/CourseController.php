@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\Models\Course;
 use App\Models\CourseItem;
+use App\Models\CourseResult;
+use App\Models\CourseProgress;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\KnowBase;
@@ -18,6 +20,25 @@ class CourseController extends Controller
         View::share('link', 'faq');
 
         return view('surv.courses');
+    }
+
+    public function uploadImage(Request $request) {
+        $course = Course::find($request->course_id);
+        if($course) {
+            $folder = 'courses';
+            $filename = auth()->user()->ID . '_'.time().'_'. $request->file('file')->getClientOriginalName();
+            $path = \Storage::putFileAs(
+                'public/' . $folder, $request->file('file'), $filename
+            );
+
+            $end_path = '/storage/'. $folder . '/'. $filename;;
+            $course->img = $end_path;
+            $course->save();
+            return [
+                'img' => $end_path
+            ];
+        }
+        
     }
 
     public function get(Request $request)
@@ -35,6 +56,7 @@ class CourseController extends Controller
 
         if($course) {
             $course->name = $request->course['name'];
+            $course->text = $request->course['text'];
             $course->save();
         }
 
@@ -45,7 +67,7 @@ class CourseController extends Controller
             }
         }
         
-        CourseItem::whereNotIn('id', $ids)->delete();
+        CourseItem::whereNotIn('id', $ids)->where('course_id', $request->course['id'])->delete();
 
         foreach($request->course['items'] as $index => $item) {
             if($item == null) continue;
@@ -69,7 +91,7 @@ class CourseController extends Controller
             }
         }
     }
-    
+
 
     public function getItem(Request $request)
     {   
@@ -123,5 +145,27 @@ class CourseController extends Controller
         if($course) {
             $course->delete();
         }
-    }
+    }   
+
+    public function myCourses(Request $request) {
+        View::share('menu', 'mycourse');
+        return view('admin.mycourse');
+    }   
+    
+    public function getMyCourse(Request $request) {
+        $user_id = auth()->user()->ID;
+        $active_course = CourseResult::where('user_id', $user_id)->whereIn('status', [0,2])->orderBy('status', 'desc')->first();
+        
+        // $test_results = TestResult::where('user_id', $user_id)->user_id
+
+        if($active_course) {
+            //$course_items = $active_course ? 
+        } else {
+            $CourseProgress = CourseProgress::where('user_id', $user_id)->where()->get();
+        }
+
+        
+        
+        return $active_course;
+    }   
 }

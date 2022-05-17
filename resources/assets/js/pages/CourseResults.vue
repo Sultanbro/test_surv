@@ -81,11 +81,23 @@ const BY_GROUP = 2;
 export default {
     name: "CourseResults", 
     watch: {
-        monthInfo() {
-           
+        monthInfo(val) {
+            this.first = true;
+            if(this.type == this.BY_GROUP) {
+                this.fetchData('groups');
+                this.first = false;
+            } else {
+                this.fetchData('users');
+            }
         },
         currentGroup() {
-
+            this.first = true;
+            if(this.type == this.BY_GROUP) {
+                this.fetchData('groups');
+                this.first = false;
+            } else {
+                this.fetchData('users');
+            }
         },
         type(val) {
             if(val == this.BY_GROUP && this.first) {

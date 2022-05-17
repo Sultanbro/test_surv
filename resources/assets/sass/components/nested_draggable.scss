@@ -148,7 +148,7 @@ ul {
   .chapter-btns {
     position: absolute;
     right: 0;
-    top: 3px;
+    bottom: 6px;
     text-align: center;
     display: none;
   }
@@ -163,6 +163,29 @@ ul {
   word-break: break-all;
   white-space: nowrap;
   cursor: pointer;
+ // position: relative;
+
+  span.long {
+    display: none;
+    position: absolute;
+    left: 25px;
+    margin: 0 -5px;
+    top: 0;
+    max-width: 100%;
+    z-index: 14;
+    font-size: 13px;
+    white-space: normal;
+    padding: 0px 5px;
+    background: #efefef;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 2px #dfdfdf inset;
+    pointer-events: none;
+    word-break: break-word;
+  }
+
+  &:hover span.long {
+    display: block;
+  }
 }
 
 li.chapter:hover>div p {

@@ -5,6 +5,7 @@
     :handle="handle"
     :list="tasks"
     :group="{ name: 'g1' }"
+    :id="parent_id"
     @end="saveOrder">
     <template v-for="el in tasks" >
         <li 
@@ -23,7 +24,9 @@
             </div>
             
           </div>
-          <p @click.stop="toggleOpen(el)" class="mb-0">{{ el.title }}</p>
+          <p @click.stop="toggleOpen(el)" class="mb-0">{{ el.title }}
+            <span class="long">{{ el.title }}</span>
+          </p>
            <div class="chapter-btns">
               <i class="fa fa-plus mr-1" @click.stop="addPage(el)"></i>
             </div>
@@ -74,30 +77,10 @@ export default {
       this.$emit('addPage', el);
     },
     saveOrder(event) {
-
-      
-
-        let parent_id = null;
-        console.log(event)
-        if(event.to.parentElement.nodeName != "ASIDE") {
-          parent_id = event.to.parentElement.id;
-
-          if(parent_id == '') {
-            parent_id = this.parent_id;
-            console.log('parent_id == ""');
-          } else {
-            console.log('parent_id != ""');
-          }
-        } else {
-          console.log('= Aside');
-          parent_id = this.parent_id
-        }
-
-        console.log(parent_id);
         axios.post('/kb/page/save-order', {
           id: event.item.id,
           order: event.newIndex, // oldIndex
-          parent_id: parent_id
+          parent_id: event.to.id
         })
         .then(response => {
            this.$message.success('Очередь сохранена');

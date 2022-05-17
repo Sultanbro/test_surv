@@ -7,7 +7,7 @@ $(document).ready(function () {
 });
 $(".bgpanel").on("click", function(e) {
     e.preventDefault();
-    $('.kolokolchik .panel').toggle();
+    $('#noti_panel').toggle();
     $('.bgpanel').toggleClass('active');
   });
 $(".panel_head .panel_in").on("click", function(e) {
@@ -20,9 +20,8 @@ $(".panel_head .panel_in").on("click", function(e) {
 
 
 $('#toggle_panel').click(function() {
-  $(this).toggle();
+  $('#noti_panel').toggle();
   $('#noti_panel .bgpanel').toggleClass('active');
-  $('#noti_panel .panel').slideToggle();
 });
 
 $.ajaxSetup({
@@ -308,6 +307,7 @@ $('#setRead').click(function() {
   display: none;
   left:75px;
   top:5px;
+  z-index: 13;
 }
 .kolokolchik .panel {
     width: 480px;
@@ -363,4 +363,84 @@ $('#setRead').click(function() {
             box-shadow: 0 0 0px 0 #6ecb15;
         }
     }
+
+.nn {
+  display: block;
+  margin-left: 5px;
+  text-align: center;
+  color: #fff;
+  font-style: normal;
+  font-weight: 700;
+  border-radius: 5px;
+  background: #464d57;
+  padding: 0 4px;
+  width: auto !important;
+  position: absolute;
+    right: 5px;
+    z-index: 2;
+}
+.nn-number {
+  display: block !important;
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  color:#fff;
+  padding: 0 4px;
+  border-radius: 5px;
+  font-weight: 700;
+  text-align: center;
+  background: #0672af;
+}
+</style>
+
+<style>
+ .pulse {
+  position: absolute;
+  top: -10px;
+  right: -9px;
+  height: 20px;
+  width: 20px;    
+  z-index: 10;  
+  border: 5px solid #00a3ff;
+  border-radius: 70px;
+  animation: pulse 1s ease-out infinite;
+}
+
+.marker {
+  position: absolute;
+  top: -5px;
+    right: -4px;
+  height: 10px;
+  width: 10px;  
+  border-radius: 70px;
+  background: #00a3ff;
+}
+
+
+@keyframes pulse {
+  0% {
+      -webkit-transform: scale(0);
+      opacity: 0.0;
+  }
+
+  25% {
+      -webkit-transform: scale(0.1);
+      opacity: 0.1;
+  }
+
+  50% {
+      -webkit-transform: scale(0.3);
+      opacity: 0.3;
+  }
+
+  75% {
+      -webkit-transform: scale(0.8);
+      opacity: 0.5;
+    }
+
+  100% {
+      -webkit-transform: scale(1);
+      opacity: 0.0;
+  }
+} 
 </style>

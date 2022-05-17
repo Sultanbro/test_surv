@@ -61,9 +61,12 @@ Route::post('/admin/courses/delete', 'CourseController@delete');
 Route::post('/admin/courses/save', 'CourseController@save');
 Route::post('/admin/courses/create', 'CourseController@create');
 Route::post('/admin/courses/get-item', 'CourseController@getItem');
+Route::post('/admin/courses/upload-image', 'CourseController@uploadImage');
 
 Route::post('/course-results/get', 'CourseResultController@get');
 
+Route::get('/my-courses', 'CourseController@myCourses');
+Route::get('/my-courses/get', 'CourseController@getMyCourse');
 
 Route::get('/kb/get', 'KnowBaseController@get');
 Route::post('/kb/get', 'KnowBaseController@getPage');
@@ -81,6 +84,8 @@ Route::post('/kb/page/create', 'KnowBaseController@createPage');
 Route::post('/kb/page/delete', 'KnowBaseController@deletePage');
 Route::post('/kb/page/update-section', 'KnowBaseController@updateSection');
 
+Route::get('/permissions', 'PermissionController@index');
+Route::get('/permissions/get', 'PermissionController@get');
 
 
 Route::get('/test', 'TestController@test')->name('test');

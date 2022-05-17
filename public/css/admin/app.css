@@ -1806,7 +1806,7 @@ ul {
 .chapter .chapter-btns {
   position: absolute;
   right: 0;
-  top: 3px;
+  bottom: 6px;
   text-align: center;
   display: none;
 }
@@ -1822,6 +1822,29 @@ ul {
   word-break: break-all;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.chapter p span.long {
+  display: none;
+  position: absolute;
+  left: 25px;
+  margin: 0 -5px;
+  top: 0;
+  max-width: 100%;
+  z-index: 14;
+  font-size: 13px;
+  white-space: normal;
+  padding: 0px 5px;
+  background: #efefef;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 0 5px 2px #dfdfdf inset;
+          box-shadow: 0 0 5px 2px #dfdfdf inset;
+  pointer-events: none;
+  word-break: break-word;
+}
+
+.chapter p:hover span.long {
+  display: block;
 }
 
 li.chapter:hover > div p {
@@ -2358,6 +2381,86 @@ ul.main-menu {
   border: none;
   width: 100%;
   padding: 3px 0;
+}
+
+.course .name {
+  font-size: 20px;
+  color: #262626;
+  font-weight: 600;
+  width: 100%;
+}
+
+.course .namer {
+  position: relative;
+}
+
+.course .namer i {
+  position: absolute;
+  left: -20px;
+  top: 10px;
+  display: none;
+}
+
+.course .namer:hover i {
+  display: block;
+}
+
+.course .img {
+  background: #f8f8f8;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 5px;
+  min-width: 200px;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 5px;
+}
+
+.course .img img {
+  width: 100%;
+}
+
+.course .img .btn {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
+.course textarea {
+  min-height: 200px;
+}
+
+.course .items .title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.course .dragArea {
+  background: #f8f8f8;
+  padding: 15px 30px;
+  border-radius: 5px;
+  border: 1px dashed #ccc;
+}
+
+.course .chapter i.fa-trash {
+  display: none;
+}
+
+.course .chapter:hover i.fa-trash {
+  display: block;
+}
+
+.section:hover p {
+  cursor: pointer;
 }
 
 @media (min-width: 1200px) {
@@ -3439,6 +3542,7 @@ body {
 
 .user {
   width: 100%;
+  position: relative;
 }
 
 .user img {
@@ -3462,7 +3566,7 @@ body {
 
 .right-panel .header {
   background: white;
-  z-index: 22;
+  z-index: 11;
 }
 
 .page {
@@ -3491,6 +3595,44 @@ body {
 /* Handle on hover */
 .noscrollbar::-webkit-scrollbar-thumb:hover {
   background: #136a9c;
+}
+
+.my-course {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.my-course .title {
+  color: black;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 20px;
+  margin: 5px 0;
+  display: block;
+  cursor: pointer;
+}
+
+.my-course .title:hover {
+  color: #007bff;
+}
+
+.my-course .btn-go {
+  border-radius: 50px;
+  padding: 1px 15px;
+}
+
+.my-course .btn-go i {
+  font-size: 10px;
+  position: relative;
+  top: -1px;
+}
+
+.my-course progress {
+  width: 180px;
 }
 
 .kb-sections .sections-wrap {
@@ -4305,7 +4447,7 @@ body {
 }
 
 .course-results table .expanded {
-  background: #000;
+  background: #c5c6c7;
 }
 
 .course-results table .expanded td {

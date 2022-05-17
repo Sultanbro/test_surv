@@ -621,6 +621,7 @@ body {
 }
 .user {
     width: 100%;
+    position: relative;
 }
 .user img {
     width: 100%;
@@ -638,7 +639,7 @@ body {
 
 .right-panel .header {
     background: white;
-    z-index: 22;
+    z-index: 11;
 }
 
 
@@ -671,4 +672,42 @@ body {
 /* Handle on hover */
 .noscrollbar::-webkit-scrollbar-thumb:hover {
   background: #136a9c; 
+}
+
+
+
+///@at-root
+
+.my-course {
+  display: flex;
+  justify-content: space-between;
+
+  .title {
+    color: black;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 20px;
+    margin: 5px 0;
+    display: block;
+    cursor: pointer;
+
+    &:hover {
+      color: #007bff;
+    }
+  }
+
+  .btn-go {
+    border-radius: 50px;
+    padding: 1px 15px;
+
+    i {
+      font-size: 10px;
+      position: relative;
+      top: -1px;
+    }
+  }
+
+  progress {
+    width: 180px;
+  }
 }
