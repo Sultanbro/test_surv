@@ -409,6 +409,18 @@
                                 </table>
                             </div>
 
+                            @if(isset($course))
+                            <div class="my-course">
+                                <div class="pre">Текущий курс:</div>
+                                <a href="/my-courses" class="title">{{ $course->name }}</div>
+                                <div>
+                                    <div>Пройдено: 5%</div>
+                                    <progress value="{{ $course->progress}}" max="100" id="progressBar"></progress>
+                                </div>
+                                
+                            </div>
+                            @endif
+
                             <div class="contact-information ublocx mb-3">
                                 <h5 class="mb-1">Важная информация</h5>
                                 <p style="font-size: 14px;line-height: 1em;color: #ad0000;">Пожалуйста, ознакомьтесь со следующими пунктами. Возможно среди них уже есть вопрос, который вас интересует.</p>

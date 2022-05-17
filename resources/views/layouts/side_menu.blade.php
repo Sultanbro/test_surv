@@ -2,26 +2,27 @@
 
     <div class="user pointer">
         <img src="/images/profile.jpg" alt="avatar">
-
+        @if($unread > 0)
+        <div class="nn-number" style="display:none">
+         {{ $unread}}
+         <div class="pulse"></div>
+         <div class="marker"></div>
+        </div>
+        @endif
         <!-- profile menu -->
         <div class="profile-menu">
             <ul>
                 <li>
                     <a href="#" class="link">
-                        <i class="fas fa-question-circle"></i>
+                        <i class="fas fa-user"></i>
                         <span>Мой профиль</span>
                     </a>
                 </li>
                 <li>
-                    <div class="link link-start">
-                        <div class="kolokolchik">
-                            <div id="toggle_panel" class="d-flex">
-                                <i class="far fa-bell"></i>
-                                <span>Уведомления</span>
-                            </div>
-                        </div>
-                    </div>
-
+                    <a href="#" class="link link-start" id="toggle_panel">
+                        <i class="fas fa-bell"></i>
+                        <span class="d-flex">Уведомления <i class="nn">{{ $unread }}</i></span>
+                    </a>
                 </li>
                 <li>
                     <a href="#" class="link link-start">
@@ -222,7 +223,7 @@
 </aside>
 
 
-<div class="kolokolchik" id="toggle_panel">
+<div class="kolokolchik" id="noti_panel" style="display:none;">
     @include('includes.admin_notifications', [
             'unread_notifications' => $unread_notifications,
             'read_notifications' => $read_notifications,

@@ -2383,6 +2383,86 @@ ul.main-menu {
   padding: 3px 0;
 }
 
+.course .name {
+  font-size: 20px;
+  color: #262626;
+  font-weight: 600;
+  width: 100%;
+}
+
+.course .namer {
+  position: relative;
+}
+
+.course .namer i {
+  position: absolute;
+  left: -20px;
+  top: 10px;
+  display: none;
+}
+
+.course .namer:hover i {
+  display: block;
+}
+
+.course .img {
+  background: #f8f8f8;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 5px;
+  min-width: 200px;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 5px;
+}
+
+.course .img img {
+  width: 100%;
+}
+
+.course .img .btn {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
+.course textarea {
+  min-height: 200px;
+}
+
+.course .items .title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.course .dragArea {
+  background: #f8f8f8;
+  padding: 15px 30px;
+  border-radius: 5px;
+  border: 1px dashed #ccc;
+}
+
+.course .chapter i.fa-trash {
+  display: none;
+}
+
+.course .chapter:hover i.fa-trash {
+  display: block;
+}
+
+.section:hover p {
+  cursor: pointer;
+}
+
 @media (min-width: 1200px) {
   .container-big {
     max-width: calc(100vw - 340px);
@@ -3462,6 +3542,7 @@ body {
 
 .user {
   width: 100%;
+  position: relative;
 }
 
 .user img {

@@ -5,7 +5,7 @@
 <div class="panel">
     <div class="tail"></div>
     <div class="panel_head">
-        <div class="panel_in active" data-tab="1">Уведомления</div>
+        <div class="panel_in active" data-tab="1">Уведомления @if($unread > 0){{ $unread }}@endif</div>
         <div class="panel_in " data-tab="2">Уведомления прочитанные</div>
     </div>
     <div class="panel_body">

@@ -32,20 +32,35 @@
     </button>
   </div>
 
-  <div v-if="activeCourse" class="p-3">
-    <course :id="activeCourse.id" /> 
+
+  <div class="rp" style="flex: 1 1 0%; padding-bottom: 50px;">
+    <div class="hat">
+      <div class="d-flex jsutify-content-between hat-top">
+        <div class="bc">
+          <a href="#">Курсы</a>
+          <template v-if="activeCourse">
+            <i class="fa fa-chevron-right"></i>
+            <a href="#" >{{ activeCourse.name }}</a>
+          </template>
+          <!---->
+        </div>
+        <div class="control-btns"></div>
+      </div>
+      <div><!----></div>
+    </div>
+    <div class="content mt-3">
+      <div v-if="activeCourse" class="p-3">
+        <course :id="activeCourse.id" /> 
+      </div>
+    </div>
   </div>
 
-
-
-  
     <b-modal
       v-model="modals.add_course.show"
       title="Новый курс"
       size="md"
       class="modalle"
       hide-footer
-      hide-header
     >
       <input
         type="text"
