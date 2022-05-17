@@ -110,11 +110,13 @@
             }
         },
         created() {
-            this.selector();
+            this.axios();
+
+            this.emptyArr();
         },
         methods:{
 
-            selector() {
+            emptyArr() {
 
                 let arr =[];
 
@@ -135,6 +137,8 @@
                     items:this.items,
                     user_id: this.user_id,
                 }).then(response => {
+                    this.items = response.data.items
+
                     console.log(response,'kii');
 
                 })

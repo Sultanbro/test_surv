@@ -35,6 +35,12 @@ class QuartalBonusController extends Controller
                 } else {
                     QuartalBonus::create($arr);
                 }
+            } else {
+                $qb = QuartalBonus::where('quartal', $item['quarter'])
+                ->where('year', date('Y'))
+                ->where('user_id', $request->user_id)
+                ->first();
+                if($qb) $qb->delete();
             }
 
            
