@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class QuartalBonus extends Model
 {
-    protected $table = 'quartal_bonuses';
+    protected $table = 'quartals_bonuses';
 
     public $timestamps = true;
 

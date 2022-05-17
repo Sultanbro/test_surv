@@ -1,62 +1,70 @@
 <template>
+
+
     <div class="quarter-page">
         <p class="call-norm">{{ group }} </p>
+
         <div class="d-flex">
-             <table class="table table-bordered table-sm">
-                    <tr>
 
-                        <th class="mark">
-                            <label @click="checkedDisabled('1')" for="quarter_1" v-b-popover.hover.top.html="'При активации профиль сотрудника появится условия получение квартального бонуса '"  >Первый Квартал</label>
-                            <input  @click="checkedDisabled('1')" v-model="checked_quartal" value="1" type="radio" name="checked_quarter" id="quarter_1" class="position-absolute ml-3" style="margin-top:-5px">
-                        </th>
-                        <th class="mark">
-                            <label @click="checkedDisabled('2')" for="quarter_2" v-b-popover.hover.top.html="'При активации профиль сотрудника появится условия получение квартального бонус'" title="Второй квартал">Второй квартал</label>
-                            <input @click="checkedDisabled('2')" v-model="checked_quartal" value="2" type="radio" name="checked_quarter" id="quarter_2" class="position-absolute ml-3" style="margin-top:-5px">
-                        </th>
-                    </tr>
-                    <tr class="quarter-inputs">
-                        <th>
-                            <input disabled v-model.trim='form.sum_1'   id="input-sum-1" type="number"  value="0"  class="form-control" placeholder="Сумма">
-                            <textarea  disabled v-model.trim='form.text_1' id="input-text-1"  class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
-                        </th>
-                        <th>
-                            <input disabled v-model.trim='form.sum_2'  id="input-sum-2"  type="number" class="form-control" placeholder="Сумма">
-                            <textarea  disabled v-model.trim='form.text_2' id="input-text-2"  class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
-                        </th>
 
-                    </tr>
-                    <tr>
-                        <th class="mark">
-                            <label @click="checkedDisabled('3')" for="quarter_3" v-b-popover.hover.top.html="'При активации профиль сотрудника появится условия получение квартального бонус'" >Третий Квартал</label>
-                            <input @click="checkedDisabled('3')" v-model="checked_quartal" value="3" type="radio" name="checked_quarter" id="quarter_3" class="position-absolute ml-3" style="margin-top:-5px">
-                        </th>
-                        <th class="mark">
-                            <label @click="checkedDisabled('4')" for="quarter_4" v-b-popover.hover.top.html="'При активации профиль сотрудника появится условия получение квартального бонус'" >Четвертый квартал</label>
-                            <input @click="checkedDisabled('4')" v-model="checked_quartal" value="4" type="radio" name="checked_quarter" id="quarter_4" class="position-absolute ml-3" style="margin-top:-5px">
-                        </th>
-                    </tr>
-                    <tr>
-                        <th><input disabled  v-model.trim='form.sum_3' id="input-sum-3"  type="number" class="form-control" placeholder="Сумма">
-                            <textarea  disabled v-model.trim='form.text_3' id="input-text-3" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>                        </th>
-                        <th>
-                            <input disabled v-model.trim='form.sum_4'  id="input-sum-4"  type="number" class="form-control" placeholder="Сумма">
-                            <textarea  disabled v-model.trim='form.text_4' id="input-text-4"  class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
 
-                        </th>
+            <table class="table table-bordered table-sm mark">
+
+
+
+                <thead style="background: aliceblue;color: #0077e0;">
+                    <tr>
+                        <th style="width: 25%">Период</th>
+                        <th>Сумма</th>
+                        <th>Коментарии</th>
                     </tr>
-                </table>
+                </thead>
+
+                <tr v-for="item in arr"  >
+
+
+                    <th >
+                        <!--<span style="cursor: pointer" v-b-popover.hover.right.html="'Количество сотрудников на данный момент'" >-->
+                            <!--<label v-for="item.quarter">-->
+                            <span  v-if="item.quarter == 1"> Первый </span>
+                            <span  v-if="item.quarter == 2"> Второй </span>
+                            <span  v-if="item.quarter == 3"> Третий </span>
+                            <span  v-if="item.quarter == 4"> Четвертый </span>
+                            Квартал
+                        <!--</span>-->
+                            <!--</label>-->
+                            <input v-model="item.checked" style="position: absolute;margin-top:-6px;margin-left: 10px;cursor: pointer" type="checkbox" />
+                            <p style="font-size: 14px" v-if="item.quarter == 1">Период с 01.01.{{item.year}} до 31.03.{{item.year}}</p>
+                            <p style="font-size: 14px" v-if="item.quarter == 2">Период с 01.04.{{item.year}} до 30.06.{{item.year}}</p>
+                            <p style="font-size: 14px" v-if="item.quarter == 3">Период с 01.07.{{item.year}} до 30.09.{{item.year}}</p>
+                            <p style="font-size: 14px" v-if="item.quarter == 4">Период с 01.10.{{item.year}} до 31.12.{{item.year}}</p>
+
+                    </th>
+                    <th>
+                        <div v-if="item.checked" >
+                            <input  v-model="item.sum" type="number" class="form-control mb-1" value="0"/>
+                        </div>
+                    </th>
+                    <th>
+                        <div v-if="item.checked">
+                            <textarea  v-model="item.text" class="form-control" placeholder="Коментарии"></textarea>
+                        </div>
+                    </th>
+                </tr>
+            </table>
+
+
+
         </div>
         <!--selectedQuarter-->
         <div class="col-12 p-0 row">
             <div class="col-6 pr-0">
+                <div v-if="errors.length">
+                        <p style="color: #c75f5f" v-for="error in errors">{{ error }}</p>
+                </div>
                 <a style="color: white;text-align: center;border-radius: unset"
                    id="selectedQuarter" @click="selectedQuarter"
                    class=" btn-block btn btn-success p-0"  >Активировать</a>
-            </div>
-            <div class="col-6 pr-0">
-                <a style="color: white;text-align: center;border-radius: unset"
-                   id="selectedQuarterReset"
-                   class=" btn-block btn btn-danger p-0"  >Обнулить</a>
             </div>
         </div>
     </div>
@@ -76,10 +84,7 @@
             is_admin: {
                 default: false,
             },
-            oklad: {
-                default: 0,
-            },
-            group_id: {
+            user_id: {
                 default: 0,
             },
             type: {
@@ -87,67 +92,78 @@
             },
         },
         data() {
-                return{
-                    active: false,
-                    checked_quartal:false,
-                    form:{
-                        sum_1:'',
-                        sum_2:'',
-                        sum_3:'',
-                        sum_4:'',
-                        text_1:'',
-                        text_2:'',
-                        text_3:'',
-                        text_4:'',
+            return{
+                    arr:{
+                        sum:[],
+                        text:[],
+                        quartal:[],
                     },
-
-
+                    errors: [],
+                    active: false,
 
                 }
         },
+        created(){
+            // this.arr = this.selector();
+            this.getQuartalBonuses();
+        },
         methods:{
-
-            selectedQuarter() {
-                axios.post('/timetracking/quarter/store', {
-                    form:this.form,
-                    checked_quartal:this.checked_quartal,
-
-                }).then(response => {
-                    console.log(response,'kii');
-
+            getQuartalBonuses(){
+                axios
+                    .post('/timetracking/quarter/get/quarter/', {
+                    user_id:this.user_id
                 })
-                    .catch(error => {
-                        console.log(error.response)
-                    });
-
-                //     .then(response => {
-                //     this.$message.success('Сохранено!');
-                // })
-                //     .catch(error => {
-                //     this.$message.error('Ошибка');
-                // })
+                .then(response => {
+                    this.arr = response.data[0];
+                });
 
             },
 
-            checkedDisabled(par_id){
+            selectedQuarter() {
+                this.errors = [];
 
-                console.log(this.checked_quartal);
-                console.log('imashev');
+                console.log(this.errors,'imashev kairat');
+
+                for (let i = 1;i <=4;i++){
+
+                    if (this.arr[i]['checked']){
+                        // console.log(this.arr[i]['text'],'pro');
+                        if (!this.arr[i]['text'].length > 0) {
 
 
-                for (let i = 1;i <= 4;i++){
-                    document.getElementById('input-sum-'+i).setAttribute('disabled','disabled');
-                    document.getElementById('input-text-'+i).setAttribute('disabled','disabled');
+                            // this.errors.push('Заполните коментарии');
+
+
+                            if (i == 1){
+                                this.errors[i] = 'Заполните Коментарии Первого Квартала';
+                            }else if (i == 2){
+                                this.errors[i] = 'Заполните Коментарии Второго Квартала';
+                            }else if (i == 3){
+                                this.errors[i] = 'Заполните Коментарии Третьего Квартала';
+                            }else if (i == 4){
+                                this.errors[i] = 'Заполните Коментарии Четвертого Квартала';
+                            }
+
+                        }
+                    }
                 }
-                document.getElementById('input-sum-'+par_id).removeAttribute('disabled');
-                document.getElementById('input-text-'+par_id).removeAttribute('disabled');
 
-                document.getElementById('selectedQuarter').classList.remove('selectedQuarter');
+                if (this.errors.length === 0){
+                    axios.post('/timetracking/quarter/store', {
+                        arr:this.arr,
+                        user_id:this.user_id,
+                    }).then(response => {
 
-            }
+
+                        if (response.data.success == 1){
+                            alert('Успешно изменено');
+                            console.log('1995');
+                        }
+                    })
+                }
+            },
+
         },
-
-
     }
 
 

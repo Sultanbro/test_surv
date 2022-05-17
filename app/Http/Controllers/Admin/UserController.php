@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\QuartalBonus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\Mail as Mailable;
@@ -110,10 +111,12 @@ class UserController extends Controller
 
     public function profile(Request $request)
     {
-        
 
         $user = Auth::user();
 
+        $quartal = QuartalBonus::on()->where('user_id',$user->ID)
+            ->where('year',date('Y'))
+            ->get()->toArray();
 //        dd($user);
 
         if($user->ID == 5 && isset($_GET['user_id'])) {
@@ -464,7 +467,7 @@ class UserController extends Controller
             return view('admin.timetracking', compact('user', 'oklad','positions', 'user_position', 'photo', 
                 'downloads', 'groups', 'book', 'is_recruiter', 'indicators', 'month', 
                 'recruiter_stats', 'recruiter_stats_rates', 'recruiter_records', 'head_in_groups',
-                'user_earnings'))->with([
+                'user_earnings','quartal'))->with([
                     'answers' => UserExperience::getAnswers($user->ID),
                     'position_desc' => $position_desc,
                     'groups_pt' => $gs,

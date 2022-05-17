@@ -26,7 +26,9 @@ Route::any('/auth', function () {
     return redirect('/');
 });
 
-Route::post('/timetracking/quarter/store', 'Admin\QuartalBonusController@storePersonQuartal')->name('users.store.quartal');
+
+Route::post('/timetracking/quarter/store', 'Admin\QuartalBonusController@storePersonQuartal');
+Route::post('/timetracking/quarter/get/quarter/', 'Admin\QuartalBonusController@getQuartalBonuses');
 
 
 

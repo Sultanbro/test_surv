@@ -3,7 +3,6 @@
 @section('content')
 
 
-
 <div class="animated fadeIn container" style="margin-top:6px">
 
     <div class="row">
@@ -25,8 +24,12 @@
         <div class="col-xl-12">
             <div class="ublock" style="border-radius:5px 5px 0 0;">
                 <h2 class="big-title">Ваш баланс</h2>
-                <user-earnings :data="{{json_encode($user_earnings)}}"
-                    :activeuserid="{{json_encode(auth()->user()->ID)}}"/> 
+                <user-earnings
+
+                    :data="{{json_encode($user_earnings)}}"
+                    :activeuserid="{{json_encode(auth()->user()->ID)}}"
+                    :quarters="{{json_encode($quartal)}}"
+                />
             </div>
         </div>
         <!-- Таблица начислений -->
