@@ -1,14 +1,14 @@
 <template>
   <draggable 
-    v-if="opened"
     class="dragArea" 
     tag="ul"
     :handle="handle"
     :list="tasks"
     :group="{ name: 'g1' }"
     @end="saveOrder">
-    <template v-for="el in tasks">
+    <template v-for="el in tasks" >
         <li 
+          v-if="opened"
           class="chapter"
           :class="{'opened':opened}"
           :id="el.id"
