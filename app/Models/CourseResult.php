@@ -47,9 +47,9 @@ class CourseResult extends Model
 
         foreach ($user_ids as $key => $user_id) {
             $user = User::withTrashed()
-                ->with('user_courses')
-                ->with('test_results')
+                ->with('course_results')
                 ->find($user_id);
+
             if(!$user) continue;
             
             array_push($users, self::getUserItem($user, $date));
@@ -100,61 +100,76 @@ class CourseResult extends Model
     private static function getUserItem($user, $date) {
         $arr = [];
 
+        $uc = self::getUserCourses($user);
+        $arr['courses'] = $uc['courses'];
+
         $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME;
         $arr['user_id'] = $user->ID;
-        $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
-        $arr['progress'] = rand(0,100) . '%' ;
-        $arr['progress_number'] = rand(0,100);  
-        $arr['points'] = rand(100,10000);
+        $arr['status'] = $uc['totals']['status'] == 2 ? 'Начат' : 'Завершен';
+        $arr['progress'] = $uc['totals']['progress'] . '%' ;
+        $arr['progress_number'] = $uc['totals']['progress'];  
+        $arr['points'] = $uc['totals']['points'];
         $arr['expanded'] = false;
-        $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
-        $arr['ended_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
-        $arr['courses'] = self::getUserCourses($user->ID);
+        $arr['started_at'] = $uc['totals']['started_at'];
+        $arr['ended_at'] = $uc['totals']['ended_at'];
+        
         return $arr;
     }
 
-    private static function getUserCourses($user_id) {
+    private static function getUserCourses($user) {
         $arrx = [];
 
-        
-        $courses = $user->user_courses;
+        $points = 0;
+        $status = 2;
+        $progress = 0;
+        $progress_count = 0;
 
+        $first_date = self::$courses->orderBy('started_at', 'asc')->first();
+        $last_date = self::$courses->orderBy('ended_at', 'desc')->first();
 
-        foreach($user->user_courses as $user_course) {
-            $course = self::$courses->where('id', $user_course->id)->first();
+        $status = self::$courses->where('status', 2)->first() ? 2 : 1;
 
+        foreach($user->course_results as $result) {
+
+            $course = self::$courses->where('id', $result->id)->first();
             if($course) {
-                $results = TestResult::where()->
+                $arr = [];
+                $arr['name'] = $course->name;
+                $arr['status'] = $course->status == 2 ? 'Начат' : 'Завершен';
+                $arr['user_id'] = $user->ID;
+
+                $progress += $course->progress;
+                $progress_count++;
+                $arr['progress'] = $course->progress;
+                
+                $points += $course->points;
+                $arr['points'] = $course->points;
+
+                
+                $arr['started_at'] = $course->started_at ? Carbon::parse($course->started_at)->format('d.m.Y') : '';
+                $arr['ended_at'] =  $course->ended_at ? Carbon::parse($course->ended_at)->format('d.m.Y') : '';
+                
+                array_push($arrx, $arr);
             }
-            
         }
 
-        $array1= array('Курс для UCALS','Презентация проекта','Переговоры в продажах','Расчет OS', 'AGILE проекты');
-
-        
-        for($i=0;$i<rand(1,5);$i++) {
-            $arr = [];
-
-            $a = rand(0,1);
-            $arr['name'] = $array1[array_rand($array1, 1)];
-            $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
-            $arr['user_id'] = $user_id;
-            $arr['progress'] = rand(0,100);
-           
-            $arr['points'] = rand(0,1000);
-
-            $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
-            $arr['ended_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
-            array_push($arrx, $arr);
-        }
-        
-
-        return $arrx;
+        return [
+            'courses' => $arrx,
+            'totals' => [
+                'points' => $points,
+                'progress' => $progress_count > 0 ? round($progress / $progress_count) : 0,
+                'status' => $status,
+                'started_at' => $first_date,
+                'ended_at' => $last_date,
+            ]
+        ];
     }
 
     public static function getGroups($date = null)
     { 
         $_groups = ProfileGroup::where('active', 1)->get();
+
+        self::$courses = Course::get();
 
         $groups = [];
 
@@ -162,7 +177,6 @@ class CourseResult extends Model
             $users = self::getUsers($group->id, $date);
             array_push($groups, self::getGroupItem($users, $group));
         }
-        
 
         return [
             'items' => $groups,
@@ -171,17 +185,17 @@ class CourseResult extends Model
     }
 
     private static function getGroupItem($users, $group) {
-
         $points = 0;
         $progress = 0;
         foreach ($users['items'] as $key => $user) {
             $points += $user['points'];
+            $progress += $user['progress'];
         }
 
         $arr = [];
         $arr['name'] = $group->name;
         $arr['group_id'] = $group->id;
-        $arr['progress'] = rand(0,100) . '%';
+        $arr['progress'] = $progress . '%';
         $arr['points'] = $points;
         return $arr;
     }

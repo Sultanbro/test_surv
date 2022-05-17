@@ -524,6 +524,11 @@ class User extends Authenticatable
         return (isset($user) ? $user->UF_ADMIN : 0) == 1;
     }
 
+    public function course_results()
+    {
+        return $this->hasMany(\App\Models\CourseResult::class, 'user_id');
+    }
+
     public function user_courses()
     {
         return $this->hasMany(\App\Models\UserCourse::class, 'user_id');
