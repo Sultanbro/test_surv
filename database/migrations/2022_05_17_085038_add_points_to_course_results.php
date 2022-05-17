@@ -15,7 +15,7 @@ class AddPointsToCourseResults extends Migration
     {
         Schema::table('course_results', function (Blueprint $table) {
             $table->integer('points')->after('progress');
-            $table->timestamp('started_at');
+            $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();
         });
     }
