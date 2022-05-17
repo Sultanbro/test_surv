@@ -56,17 +56,6 @@
 
 
         </div>
-
-        <div v-for="item in items">
-            <p>{{ item.quarter }} квартал</p>
-            <input type="checkbox" v-model="item.checked">
-            <div v-if="item.checked">
-                <input type="number" v-model="item.sum">
-                <textarea v-model="item.text"></textarea>
-            </div>
-        </div>
-
-
         <!--selectedQuarter-->
         <div class="col-12 p-0 row">
             <div class="col-6 pr-0">
@@ -92,17 +81,10 @@
             activeuserid: {
                 default: 0,
             },
-            user_id: {
-                default: 0,
-            },
             is_admin: {
                 default: false,
             },
-<<<<<<< HEAD
             user_id: {
-=======
-            oklad: {
->>>>>>> ca9bd50832cb224fad949023595cef684498cb41
                 default: 0,
             },
             type: {
@@ -111,7 +93,6 @@
         },
         data() {
             return{
-<<<<<<< HEAD
                     arr:{
                         sum:[],
                         text:[],
@@ -121,66 +102,16 @@
                     active: false,
 
                 }
-=======
-                active: false,
-                checked_quartal:false,
-                form:{
-                    sum_1:'',
-                    sum_2:'',
-                    sum_3:'',
-                    sum_4:'',
-                    text_1:'',
-                    text_2:'',
-                    text_3:'',
-                    text_4:'',
-                },
-                items: []
-            }
-        },
-        created() {
-            this.axios();
-
-            this.emptyArr();
->>>>>>> ca9bd50832cb224fad949023595cef684498cb41
         },
         created(){
             // this.arr = this.selector();
             this.getQuartalBonuses();
         },
         methods:{
-<<<<<<< HEAD
             getQuartalBonuses(){
                 axios
                     .post('/timetracking/quarter/get/quarter/', {
                     user_id:this.user_id
-=======
-
-            emptyArr() {
-
-                let arr =[];
-
-                for(let i=1;i<=4;i++) {
-                    arr.push({
-                        text: '',
-                        checked: false,
-                        sum: 0,
-                        quarter: i
-                    });
-                }
-
-                this.items = arr;
-            },
-
-            selectedQuarter() {
-                axios.post('/timetracking/quarter/store', {
-                    items:this.items,
-                    user_id: this.user_id,
-                }).then(response => {
-                    this.items = response.data.items
-
-                    console.log(response,'kii');
-
->>>>>>> ca9bd50832cb224fad949023595cef684498cb41
                 })
                 .then(response => {
                     this.arr = response.data[0];
