@@ -524,6 +524,16 @@ class User extends Authenticatable
         return (isset($user) ? $user->UF_ADMIN : 0) == 1;
     }
 
+    public function user_courses()
+    {
+        return $this->hasMany(\App\Models\UserCourse::class, 'user_id');
+    }
+
+    public function test_results()
+    {
+        return $this->hasMany(\App\Models\TestResult::class, 'user_id');
+    }
+
     public static function getApiKey()
     {
         $user_id = self::bitrixUser()->ID;

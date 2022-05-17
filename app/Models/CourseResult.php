@@ -9,6 +9,10 @@ use App\User;
 use App\ProfileGroup;
 use App\Models\Course;
 use App\Models\CourseResult;
+use App\Models\TestResult;
+use App\Models\UserCourse;
+use App\Models\CourseItem;
+use App\Models\TestQuestion;
 
 class CourseResult extends Model
 {
@@ -21,6 +25,9 @@ class CourseResult extends Model
         'course_id',
         'status',
         'progress', // 0 - 100
+        'points', 
+        'started_at', 
+        'ended_at', 
     ];
 
     // status
@@ -29,15 +36,22 @@ class CourseResult extends Model
     CONST STARTED = 2;
 
 
+    public static $courses;
+
     public static function getUsers($group_id, $date = null)
     {
         $user_ids = ProfileGroup::employees($group_id);
         $users = [];
 
-        foreach ($user_ids as $key => $user_id) {
-            $user = User::withTrashed()->find($user_id);
-            if(!$user) continue;
+        self::$courses = Course::get();
 
+        foreach ($user_ids as $key => $user_id) {
+            $user = User::withTrashed()
+                ->with('user_courses')
+                ->with('test_results')
+                ->find($user_id);
+            if(!$user) continue;
+            
             array_push($users, self::getUserItem($user, $date));
         }
 
@@ -85,6 +99,7 @@ class CourseResult extends Model
     
     private static function getUserItem($user, $date) {
         $arr = [];
+
         $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME;
         $arr['user_id'] = $user->ID;
         $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
@@ -100,6 +115,19 @@ class CourseResult extends Model
 
     private static function getUserCourses($user_id) {
         $arrx = [];
+
+        
+        $courses = $user->user_courses;
+
+
+        foreach($user->user_courses as $user_course) {
+            $course = self::$courses->where('id', $user_course->id)->first();
+
+            if($course) {
+                $results = TestResult::where()->
+            }
+            
+        }
 
         $array1= array('Курс для UCALS','Презентация проекта','Переговоры в продажах','Расчет OS', 'AGILE проекты');
 
@@ -124,25 +152,6 @@ class CourseResult extends Model
         return $arrx;
     }
 
-    private static function getGroupItem($users, $group) {
-
-        $points = 0;
-        $progress = 0;
-        foreach ($users['items'] as $key => $user) {
-            $points += $user['points'];
-        }
-
-        $arr = [];
-        $arr['name'] = $group->name;
-        $arr['group_id'] = $group->id;
-        $arr['status'] = rand(0,1) ? 'Начат' : 'Завершен';
-        $arr['progress'] = rand(0,100) . '%';
-        $arr['points'] = $points;
-        $arr['started_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
-        $arr['ended_at'] = Carbon::now()->subMonths(rand(0,3))->addDays(rand(0,10))->format('d.m.Y');
-        return $arr;
-    }
-
     public static function getGroups($date = null)
     { 
         $_groups = ProfileGroup::where('active', 1)->get();
@@ -161,17 +170,28 @@ class CourseResult extends Model
         ];
     }
 
+    private static function getGroupItem($users, $group) {
+
+        $points = 0;
+        $progress = 0;
+        foreach ($users['items'] as $key => $user) {
+            $points += $user['points'];
+        }
+
+        $arr = [];
+        $arr['name'] = $group->name;
+        $arr['group_id'] = $group->id;
+        $arr['progress'] = rand(0,100) . '%';
+        $arr['points'] = $points;
+        return $arr;
+    }
+
     private static function getGroupFields() {
         $arr = [];
         $arr[] = [
             'key' => 'name',
             'name' => 'Группа',
             'class' => 'text-left'
-        ];
-        $arr[] = [
-            'key' => 'status',
-            'name' => 'Статус',
-            'class' => 'text'
         ];
         $arr[] = [
             'key' => 'points',
@@ -181,16 +201,6 @@ class CourseResult extends Model
         $arr[] = [
             'key' => 'progress',
             'name' => 'Прогресс',
-            'class' => 'text'
-        ];
-        $arr[] = [
-            'key' => 'started_at',
-            'name' => 'Дата начала',
-            'class' => 'text'
-        ];
-        $arr[] = [
-            'key' => 'ended_at',
-            'name' => 'Дата завершения',
             'class' => 'text'
         ];
         

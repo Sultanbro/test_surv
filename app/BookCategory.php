@@ -76,7 +76,7 @@ class BookCategory extends Model
        
         if ($append->count())
         {
-            $append = $this->getAll($append);
+            $append = self::getAll($append);
         }
   
         return $categories->merge($append);
