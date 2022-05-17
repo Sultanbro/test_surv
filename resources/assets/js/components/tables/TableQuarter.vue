@@ -6,52 +6,57 @@
                     <tr>
 
                         <th class="mark">
-                            <label @click="checkedDisabled('1')" for="quarter_1" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Первый Квартал" >Первый Квартал</label>
+                            <label @click="checkedDisabled('1')" for="quarter_1" v-b-popover.hover.top.html="'При активации профиль сотрудника появится условия получение квартального бонуса '"  >Первый Квартал</label>
                             <input  @click="checkedDisabled('1')" v-model="checked_quartal" value="1" type="radio" name="checked_quarter" id="quarter_1" class="position-absolute ml-3" style="margin-top:-5px">
                         </th>
                         <th class="mark">
-                            <label @click="checkedDisabled('2')" for="quarter_2" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Второй квартал">Второй квартал</label>
+                            <label @click="checkedDisabled('2')" for="quarter_2" v-b-popover.hover.top.html="'При активации профиль сотрудника появится условия получение квартального бонус'" title="Второй квартал">Второй квартал</label>
                             <input @click="checkedDisabled('2')" v-model="checked_quartal" value="2" type="radio" name="checked_quarter" id="quarter_2" class="position-absolute ml-3" style="margin-top:-5px">
                         </th>
                     </tr>
                     <tr class="quarter-inputs">
                         <th>
                             <input disabled v-model.trim='form.sum_1'   id="input-sum-1" type="number"  value="0"  class="form-control" placeholder="Сумма">
-                            <textarea  disabled v-model.trim='form.text_1' id="input-text-1" type="text" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
+                            <textarea  disabled v-model.trim='form.text_1' id="input-text-1"  class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
                         </th>
                         <th>
                             <input disabled v-model.trim='form.sum_2'  id="input-sum-2"  type="number" class="form-control" placeholder="Сумма">
-                            <textarea  disabled v-model.trim='form.text_2' id="input-text-2" type="text" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
+                            <textarea  disabled v-model.trim='form.text_2' id="input-text-2"  class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
                         </th>
 
                     </tr>
                     <tr>
                         <th class="mark">
-                            <label @click="checkedDisabled('3')" for="quarter_3" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Третий Квартал">Третий Квартал</label>
+                            <label @click="checkedDisabled('3')" for="quarter_3" v-b-popover.hover.top.html="'При активации профиль сотрудника появится условия получение квартального бонус'" >Третий Квартал</label>
                             <input @click="checkedDisabled('3')" v-model="checked_quartal" value="3" type="radio" name="checked_quarter" id="quarter_3" class="position-absolute ml-3" style="margin-top:-5px">
                         </th>
                         <th class="mark">
-                            <label @click="checkedDisabled('4')" for="quarter_4" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Четвертый квартал">Четвертый квартал</label>
+                            <label @click="checkedDisabled('4')" for="quarter_4" v-b-popover.hover.top.html="'При активации профиль сотрудника появится условия получение квартального бонус'" >Четвертый квартал</label>
                             <input @click="checkedDisabled('4')" v-model="checked_quartal" value="4" type="radio" name="checked_quarter" id="quarter_4" class="position-absolute ml-3" style="margin-top:-5px">
                         </th>
                     </tr>
                     <tr>
                         <th><input disabled  v-model.trim='form.sum_3' id="input-sum-3"  type="number" class="form-control" placeholder="Сумма">
-                            <textarea  disabled v-model.trim='form.text_3' id="input-text-3" type="text" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>                        </th>
+                            <textarea  disabled v-model.trim='form.text_3' id="input-text-3" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>                        </th>
                         <th>
                             <input disabled v-model.trim='form.sum_4'  id="input-sum-4"  type="number" class="form-control" placeholder="Сумма">
-                            <textarea  disabled v-model.trim='form.text_4' id="input-text-4" type="text" class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
+                            <textarea  disabled v-model.trim='form.text_4' id="input-text-4"  class="mt-1 form-control" placeholder="Текстовый поля"></textarea>
 
                         </th>
                     </tr>
                 </table>
         </div>
-
-        <div class="col-12 row">
-            <div class="col-6 p-0">
+        <!--selectedQuarter-->
+        <div class="col-12 p-0 row">
+            <div class="col-6 pr-0">
                 <a style="color: white;text-align: center;border-radius: unset"
                    id="selectedQuarter" @click="selectedQuarter"
-                   class="selectedQuarter btn-block btn btn-success p-0"  >Добавить</a>
+                   class=" btn-block btn btn-success p-0"  >Активировать</a>
+            </div>
+            <div class="col-6 pr-0">
+                <a style="color: white;text-align: center;border-radius: unset"
+                   id="selectedQuarterReset"
+                   class=" btn-block btn btn-danger p-0"  >Обнулить</a>
             </div>
         </div>
     </div>
@@ -125,6 +130,11 @@
             },
 
             checkedDisabled(par_id){
+
+                console.log(this.checked_quartal);
+                console.log('imashev');
+
+
                 for (let i = 1;i <= 4;i++){
                     document.getElementById('input-sum-'+i).setAttribute('disabled','disabled');
                     document.getElementById('input-text-'+i).setAttribute('disabled','disabled');
