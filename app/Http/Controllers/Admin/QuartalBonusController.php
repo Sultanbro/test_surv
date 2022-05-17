@@ -21,7 +21,7 @@ class QuartalBonusController extends Controller
 
         $arr = [
             'user_id'=> $request->user_id,
-            'auth_id'=>auth()->user()->id,
+            'auth_id' => 0,
             'quartal'=> $request->quartal,
             'sum'=> $request->sum,
             'year'=> date('Y'),

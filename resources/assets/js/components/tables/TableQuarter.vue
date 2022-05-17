@@ -48,11 +48,12 @@
         </div>
 
         <div v-for="item in items">
-
+            <p>{{ item.quarter }} квартал</p>
             <input type="checkbox" v-model="item.checked">
-            <input type="number" v-model="item.sum">
-            <textarea v-model="item.text"></textarea>
-
+            <div v-if="item.checked">
+                <input type="number" v-model="item.sum">
+                <textarea v-model="item.text"></textarea>
+            </div>
         </div>
 
 
@@ -62,11 +63,6 @@
                 <a style="color: white;text-align: center;border-radius: unset"
                    id="selectedQuarter" @click="selectedQuarter"
                    class=" btn-block btn btn-success p-0"  >Активировать</a>
-            </div>
-            <div class="col-6 pr-0">
-                <a style="color: white;text-align: center;border-radius: unset"
-                   id="selectedQuarterReset"
-                   class=" btn-block btn btn-danger p-0"  >Обнулить</a>
             </div>
         </div>
     </div>
