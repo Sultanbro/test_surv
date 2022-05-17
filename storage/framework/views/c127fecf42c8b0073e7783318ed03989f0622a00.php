@@ -2,13 +2,45 @@
 
     <div class="user pointer">
         <img src="/images/profile.jpg" alt="avatar">
+
+        <!-- profile menu -->
+        <div class="profile-menu">
+            <ul>
+                <li>
+                    <a href="#" class="link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Мой профиль</span>
+                    </a>
+                </li>
+                <li>
+                    <div class="link link-start">
+                        <div class="kolokolchik">
+                            <div id="toggle_panel" class="d-flex">
+                                <i class="far fa-bell"></i>
+                                <span>Уведомления</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </li>
+                <li>
+                    <a href="#" class="link link-start">
+                        <i class="fas fa-cogs"></i>
+                        <span>Настройки</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link link-start">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Выйти</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+
+
     </div>
-
-    
-
-
-
-
 
     <ul class="main-menu">
         <li class="menu-item">
@@ -23,7 +55,7 @@
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span>Обучение</span>
             </a>
-            
+
             <ul class="sub-menu">
                 <li>
                     <a href="/upbooks" class="link">
@@ -48,9 +80,9 @@
             </a>
         </li>
 
-        
-   
-       
+
+
+
         <li class="menu-item">
             <a href="/timetracking/reports" class="side-btn <?php if($menu == 'surv'): ?> active <?php endif; ?>">
                 <i class="fas fa-calendar-alt"></i>
@@ -58,7 +90,7 @@
             </a>
 
             <ul class="sub-menu">
-           
+
                     <li>
                         <a href="/timetracking/top" class="link">
                             <i class="fas fa-chart-pie"></i>
@@ -119,18 +151,18 @@
                             <span>Контроль качества</span>
                         </a>
                     </li>
-                
-                  
+
+
                 </ul>
         </li>
-        
+
         <li class="menu-item">
             <a href="/courses" class="side-btn <?php if($menu == 'courses'): ?> active <?php endif; ?>">
                 <i class="fas fa-graduation-cap"></i>
                 <span>Курсы</span>
             </a>
         </li>
-        
+
         <li class="menu-item">
             <a href="/video_playlists" class="side-btn <?php if($menu == 'video_edit'): ?> active <?php endif; ?>">
                 <i class="fas fa-play"></i>
@@ -165,7 +197,7 @@
             </ul>
 
 
-        </li> 
+        </li>
 
         <li class="menu-item">
             <a href="/admin/upbooks" class="side-btn <?php if($menu == 'upbook_edit'): ?> active <?php endif; ?>">
@@ -174,7 +206,7 @@
             </a>
         </li>
 
-        
+
 
     </ul>
     <ul class="after-main-menu">
@@ -190,52 +222,12 @@
 </aside>
 
 
-
-
-
-
-<!-- profile menu -->
-<div class="profile-menu">
-    <ul>
-        <li>
-            <a href="#" class="link">
-                <i class="fas fa-question-circle"></i>
-                <span>Мой профиль</span>
-            </a>
-        </li>
-        <li>
-            <div class="link">
-                <div class="kolokolchik">
-                    <div id="toggle_panel" class="d-flex">
-                        <i class="far fa-bell"></i>
-                        <span>Уведомления</span>
-                    </div>
-                    <div id="noti_panel">
-                        <?php echo $__env->make('includes.admin_notifications', [
-                                'unread_notifications' => $unread_notifications,
-                                'read_notifications' => $read_notifications,
-                                'unread' => $unread,
-                                'head_users' => $head_users,
-                                'bonus_notification' => $bonus_notification,
-                            ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-                    </div>  
-                </div>
-            </div>
-           
-        </li>
-        <li>
-            <a href="#" class="link link-start">
-                <i class="fas fa-cogs"></i>
-                <span>Настройки</span>
-            </a>
-        </li>
-        <li>
-            <a href="#" class="link link-start">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Выйти</span>
-            </a>
-        </li>
-        
-    </ul>
+<div class="kolokolchik" id="toggle_panel">
+    <?php echo $__env->make('includes.admin_notifications', [
+            'unread_notifications' => $unread_notifications,
+            'read_notifications' => $read_notifications,
+            'unread' => $unread,
+            'head_users' => $head_users,
+            'bonus_notification' => $bonus_notification,
+        ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 </div>
-

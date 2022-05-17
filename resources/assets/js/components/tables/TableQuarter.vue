@@ -7,11 +7,11 @@
 
                         <th class="mark">
                             <label @click="checkedDisabled('1')" for="quarter_1" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Первый Квартал" >Первый Квартал</label>
-                            <input  v-model="checked_quartal" value="1" type="radio" name="checked_quarter" id="quarter_1" class="position-absolute ml-3" style="margin-top:-5px">
+                            <input  @click="checkedDisabled('1')" v-model="checked_quartal" value="1" type="radio" name="checked_quarter" id="quarter_1" class="position-absolute ml-3" style="margin-top:-5px">
                         </th>
                         <th class="mark">
                             <label @click="checkedDisabled('2')" for="quarter_2" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Второй квартал">Второй квартал</label>
-                            <input  v-model="checked_quartal" value="2" type="radio" name="checked_quarter" id="quarter_2" class="position-absolute ml-3" style="margin-top:-5px">
+                            <input @click="checkedDisabled('2')" v-model="checked_quartal" value="2" type="radio" name="checked_quarter" id="quarter_2" class="position-absolute ml-3" style="margin-top:-5px">
                         </th>
                     </tr>
                     <tr class="quarter-inputs">
@@ -28,11 +28,11 @@
                     <tr>
                         <th class="mark">
                             <label @click="checkedDisabled('3')" for="quarter_3" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Третий Квартал">Третий Квартал</label>
-                            <input  v-model="checked_quartal" value="3" type="radio" name="checked_quarter" id="quarter_3" class="position-absolute ml-3" style="margin-top:-5px">
+                            <input @click="checkedDisabled('3')" v-model="checked_quartal" value="3" type="radio" name="checked_quarter" id="quarter_3" class="position-absolute ml-3" style="margin-top:-5px">
                         </th>
                         <th class="mark">
                             <label @click="checkedDisabled('4')" for="quarter_4" v-b-popover.hover.top.html="'Количество сотрудников на данный момент'" title="Четвертый квартал">Четвертый квартал</label>
-                            <input v-model="checked_quartal" value="4" type="radio" name="checked_quarter" id="quarter_4" class="position-absolute ml-3" style="margin-top:-5px">
+                            <input @click="checkedDisabled('4')" v-model="checked_quartal" value="4" type="radio" name="checked_quarter" id="quarter_4" class="position-absolute ml-3" style="margin-top:-5px">
                         </th>
                     </tr>
                     <tr>
