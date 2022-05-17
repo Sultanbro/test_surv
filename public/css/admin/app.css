@@ -1824,6 +1824,10 @@ ul {
   cursor: pointer;
 }
 
+.chapter p:hover {
+  white-space: unset;
+}
+
 li.chapter:hover > div p {
   color: #0aa10a;
 }
