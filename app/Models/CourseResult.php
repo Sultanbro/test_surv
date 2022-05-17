@@ -124,8 +124,8 @@ class CourseResult extends Model
         $progress = 0;
         $progress_count = 0;
 
-        $first_date = self::$courses->orderBy('started_at', 'asc')->first();
-        $last_date = self::$courses->orderBy('ended_at', 'desc')->first();
+        $first_date = self::$courses->sortBy('started_at', 'asc')->first();
+        $last_date = self::$courses->sortBy('ended_at', 'desc')->first();
 
         $status = self::$courses->where('status', 2)->first() ? 2 : 1;
 
