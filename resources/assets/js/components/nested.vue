@@ -24,7 +24,9 @@
             </div>
             
           </div>
-          <p @click.stop="toggleOpen(el)" class="mb-0">{{ el.title }}</p>
+          <p @click.stop="toggleOpen(el)" class="mb-0">{{ el.title }}
+            <span class="long"></span>
+          </p>
            <div class="chapter-btns">
               <i class="fa fa-plus mr-1" @click.stop="addPage(el)"></i>
             </div>

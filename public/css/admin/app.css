@@ -1829,7 +1829,7 @@ ul {
   display: none;
 }
 
-.chapter p:hover span {
+.chapter p:hover span.long {
   position: absolute;
   left: 0;
   top: 0;
