@@ -1827,21 +1827,25 @@ ul {
 
 .chapter p span.long {
   display: none;
+  position: absolute;
+  left: 0;
+  margin: 0 -5px;
+  top: 0;
+  max-width: 267px;
+  display: block;
+  z-index: 2;
+  font-size: 13px;
+  white-space: normal;
+  padding: 0px 5px;
+  background: #efefef;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 0 5px 2px #dfdfdf inset;
+          box-shadow: 0 0 5px 2px #dfdfdf inset;
+  pointer-events: none;
 }
 
 .chapter p:hover span.long {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
   display: block;
-  font-size: 13px;
-  padding: 10px 0;
-  background: grey;
-  border-radius: 5px;
-  -webkit-box-shadow: 0 0 5px 2px #fefefe;
-          box-shadow: 0 0 5px 2px #fefefe;
-  pointer-events: none;
 }
 
 li.chapter:hover > div p {
