@@ -78,8 +78,7 @@ export default {
       
 
         let parent_id = null;
-        console.log(event.to.id)
-        console.log(event.to.parentElement)
+        console.log(event)
         if(event.to.parentElement.nodeName != "ASIDE") {
           parent_id = event.to.parentElement.id;
 
