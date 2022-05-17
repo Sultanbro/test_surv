@@ -14,7 +14,7 @@
       <t-quarter
               :activeuserid="activeuserid"
               group="Ежегодный  квартальный календарь"
-              :group_id="user_id"
+              :user_id="user_id"
               :is_admin="true"
               :oklad="0"
               type="individual"

@@ -46,6 +46,16 @@
                     </tr>
                 </table>
         </div>
+
+        <div v-for="item in items">
+
+            <input type="checkbox" v-model="item.checked">
+            <input type="number" v-model="item.sum">
+            <textarea v-model="item.text"></textarea>
+
+        </div>
+
+
         <!--selectedQuarter-->
         <div class="col-12 p-0 row">
             <div class="col-6 pr-0">
@@ -73,13 +83,13 @@
             activeuserid: {
                 default: 0,
             },
+            user_id: {
+                default: 0,
+            },
             is_admin: {
                 default: false,
             },
             oklad: {
-                default: 0,
-            },
-            group_id: {
                 default: 0,
             },
             type: {
@@ -87,31 +97,47 @@
             },
         },
         data() {
-                return{
-                    active: false,
-                    checked_quartal:false,
-                    form:{
-                        sum_1:'',
-                        sum_2:'',
-                        sum_3:'',
-                        sum_4:'',
-                        text_1:'',
-                        text_2:'',
-                        text_3:'',
-                        text_4:'',
-                    },
-
-
-
-                }
+            return{
+                active: false,
+                checked_quartal:false,
+                form:{
+                    sum_1:'',
+                    sum_2:'',
+                    sum_3:'',
+                    sum_4:'',
+                    text_1:'',
+                    text_2:'',
+                    text_3:'',
+                    text_4:'',
+                },
+                items: []
+            }
+        },
+        created() {
+            this.selector();
         },
         methods:{
 
+            selector() {
+
+                let arr =[];
+
+                for(let i=1;i<=4;i++) {
+                    arr.push({
+                        text: '',
+                        checked: false,
+                        sum: 0,
+                        quarter: $i
+                    });
+                }
+
+                this.items = arr;
+            },
+            
             selectedQuarter() {
                 axios.post('/timetracking/quarter/store', {
-                    form:this.form,
-                    checked_quartal:this.checked_quartal,
-
+                    items:this.items,
+                    user_id: this.user_id,
                 }).then(response => {
                     console.log(response,'kii');
 
