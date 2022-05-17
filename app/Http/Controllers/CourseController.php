@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\Models\Course;
 use App\Models\CourseItem;
+use App\Models\CourseResult;
 use App\Models\CourseProgress;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
@@ -147,12 +148,14 @@ class CourseController extends Controller
     }   
 
     public function myCourses(Request $request) {
-        return view('mycourse');
+        View::share('menu', 'mycourse');
+        return view('admin.mycourse');
     }   
     
     public function getMyCourse(Request $request) {
         $user_id = auth()->user()->ID;
-        $active_course = UserCourse::where('user_id', $user_id)->where('status', 2)->with('items')->first();
+        $active_course = CourseResult::where('user_id', $user_id)->whereIn('status', [0,2])->orderBy('status', 'desc')->first();
+        
         // $test_results = TestResult::where('user_id', $user_id)->user_id
 
         if($active_course) {

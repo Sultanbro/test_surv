@@ -1,7 +1,10 @@
 <aside class="side-menu">
 
     <div class="user pointer">
-        <img src="/images/profile.jpg" alt="avatar">
+        <a href="/">
+            <img src="/images/profile.jpg" alt="avatar">
+        </a>
+        
         @if($unread > 0)
         <div class="nn-number" style="display:none">
          {{ $unread}}
@@ -30,6 +33,14 @@
                         <span>Настройки</span>
                     </a>
                 </li>
+                @if(auth()->user() && in_array(auth()->user()->ID, [5,18]))
+                <li>
+                    <a href="#" class="link link-start">
+                        <i class="fa fa-key"></i>
+                        <span>Доступы</span>
+                    </a>
+                </li>
+                @endif
                 <li>
                     <a href="#" class="link link-start">
                         <i class="fas fa-sign-out-alt"></i>

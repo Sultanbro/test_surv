@@ -82,6 +82,8 @@ Route::post('/kb/page/create', 'KnowBaseController@createPage');
 Route::post('/kb/page/delete', 'KnowBaseController@deletePage');
 Route::post('/kb/page/update-section', 'KnowBaseController@updateSection');
 
+Route::get('/permissions', 'PermissionController@index');
+Route::get('/permissions/get', 'PermissionController@get');
 
 
 Route::get('/test', 'TestController@test')->name('test');

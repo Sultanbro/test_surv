@@ -132,6 +132,7 @@ Vue.component('analytics', require('./pages/Analytics.vue')); // hr
 Vue.component('analytics-page', require('./pages/AnalyticsPage.vue')); // аналитика
 Vue.component('course-results', require('./pages/CourseResults.vue')); // результаты по курсам
 Vue.component('my-course', require('./pages/MyCourse.vue')); // курсы мои
+Vue.component('permissions', require('./pages/Permissions.vue')); // курсы мои
 
 // Настройки
 Vue.component('userlist', require('./pages/userlist.vue')); // Сотрудники

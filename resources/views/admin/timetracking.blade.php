@@ -260,7 +260,7 @@
 
                 
                     <!-- Контактная информация -->
-                    <div class="col-xl-8">
+                    <div class="col-xl-7">
                         <div class="contact-information ublockx h-autoч">
                     
                             <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
@@ -389,7 +389,7 @@
 
 
                     <!-- План чтения книг и важная информация -->
-                    <div class="col-xl-4 pl-md-0">
+                    <div class="col-xl-5 pl-md-0">
                         <div class="wrappy">
                             <div class="contact-information ublockx mb-3">
                                 <h5 class="mb-1">План чтения книг</h5>
@@ -411,13 +411,15 @@
 
                             @if(isset($course))
                             <div class="my-course">
-                                <div class="pre">Текущий курс:</div>
-                                <a href="/my-courses" class="title">{{ $course->name }}</div>
-                                <div>
-                                    <div>Пройдено: 5%</div>
-                                    <progress value="{{ $course->progress}}" max="100" id="progressBar"></progress>
+                                <div class="mr-3">
+                                    <div class="pre">Текущий курс:</div>
+                                    <a href="/my-courses" class="title">{{ $course->course ? $course->course->name : 'Курс №' . $course->course_id }}</a>
+                                    <a href="/my-courses" class="btn-go btn-success btn mt-1 mb-3"><i class="fa fa-play mr-2"></i> Продолжить изучение</a>
                                 </div>
-                                
+                                <div>
+                                    <div>Пройдено: {{ $course->progress }}%</div>
+                                    <progress value="{{ $course->progress }}" max="100" id="progressBar"></progress>
+                                </div>
                             </div>
                             @endif
 
