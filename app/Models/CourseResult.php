@@ -139,13 +139,13 @@ class CourseResult extends Model
             $course = self::$courses->where('id', $result->id)->first();
             if($course) {
                 $arr = [];
-                $arr['name'] = $result->name;
+                $arr['name'] = $course->name;
                 $arr['status'] = $result->status == 2 ? 'Начат' : 'Завершен';
                 $arr['user_id'] = $user->ID;
 
                 $progress += $result->progress;
                 $progress_count++;
-                $arr['progress'] = $result->progress;
+                $arr['progress'] = $result->progress . '%';
                 
                 $points += $result->points;
                 $arr['points'] = $result->points;
@@ -164,8 +164,8 @@ class CourseResult extends Model
                 'points' => $points,
                 'progress' => $progress_count > 0 ? round($progress / $progress_count) : 0,
                 'status' => $status,
-                'started_at' => $first_date ? Carbon::parse($first_date->started_at)->format('Y-m-d') : '',
-                'ended_at' => $last_date ? Carbon::parse($last_date->ended_at)->format('Y-m-d') : '',
+                'started_at' => $first_date && $first_date->started_at ? Carbon::parse($first_date->started_at)->format('d.m.Y') : '',
+                'ended_at' => $last_date && $last_date->ended_at ? Carbon::parse($last_date->ended_at)->format('d.m.Y') : '',
             ]
         ];
     }
