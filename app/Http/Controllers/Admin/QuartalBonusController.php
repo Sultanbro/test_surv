@@ -25,7 +25,7 @@ class QuartalBonusController extends Controller
                 $arr =
                       [
                        'user_id'=> $request->user_id,
-                       'auth_id'=>10,
+                       'auth_id'=>auth()->user()->getAuthIdentifier(),
                        'quartal'=> $query['quarter'],
                        'sum'=> $query['sum'],
                        'year'=> date('Y'),
@@ -42,8 +42,6 @@ class QuartalBonusController extends Controller
                     ->where('user_id', $request->user_id)
                     ->delete();
             }
-
-
         }
 
 
