@@ -1752,6 +1752,7 @@ draggable
 
 .dragArea {
   margin-left: 20px;
+  min-height: 5px;
 }
 
 .handles i {
@@ -1772,7 +1773,7 @@ ul {
 }
 
 .chapter {
-  padding: 5px 0;
+  padding: 0;
   position: relative;
 }
 
@@ -1805,7 +1806,7 @@ ul {
 .chapter .chapter-btns {
   position: absolute;
   right: 0;
-  top: 6px;
+  top: 3px;
   text-align: center;
   display: none;
 }
