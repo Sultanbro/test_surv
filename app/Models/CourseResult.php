@@ -139,20 +139,20 @@ class CourseResult extends Model
             $course = self::$courses->where('id', $result->id)->first();
             if($course) {
                 $arr = [];
-                $arr['name'] = $course->name;
-                $arr['status'] = $course->status == 2 ? 'Начат' : 'Завершен';
+                $arr['name'] = $result->name;
+                $arr['status'] = $result->status == 2 ? 'Начат' : 'Завершен';
                 $arr['user_id'] = $user->ID;
 
-                $progress += $course->progress;
+                $progress += $result->progress;
                 $progress_count++;
-                $arr['progress'] = $course->progress;
+                $arr['progress'] = $result->progress;
                 
-                $points += $course->points;
-                $arr['points'] = $course->points;
+                $points += $result->points;
+                $arr['points'] = $result->points;
 
                 
-                $arr['started_at'] = $course->started_at ? Carbon::parse($course->started_at)->format('d.m.Y') : '';
-                $arr['ended_at'] =  $course->ended_at ? Carbon::parse($course->ended_at)->format('d.m.Y') : '';
+                $arr['started_at'] = $result->started_at ? Carbon::parse($result->started_at)->format('d.m.Y') : '';
+                $arr['ended_at'] =  $result->ended_at ? Carbon::parse($result->ended_at)->format('d.m.Y') : '';
                 
                 array_push($arrx, $arr);
             }
