@@ -36,7 +36,8 @@ Route::get('/learning/books', 'LearningController@books');
 Route::get('/learning/videos', 'LearningController@videos');
 Route::get('/courses', 'CourseController@index');
 
-Route::get('/playlists/get/{id}', 'Video\VideoPlaylistController@get');
+Route::get('/playlists/get', 'Video\VideoPlaylistController@get');
+Route::get('/playlists/get/{id}', 'Video\VideoPlaylistController@getPlaylist');
 Route::post('/playlists/add-video', 'Video\VideoPlaylistController@add_video');
 Route::post('/playlists/save-video', 'Video\VideoPlaylistController@save_video');
 Route::post('/playlists/delete-video', 'Video\VideoPlaylistController@delete_video');

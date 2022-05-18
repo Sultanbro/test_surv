@@ -31,11 +31,19 @@ class VideoPlaylistController extends Controller {
     }
 
 	public function index() {
-		$playlists = Playlist::paginate(10);
-		return view('videolearning.playlists.index', compact('playlists')); 
+		View::share('menu', 'video_edit');
+        View::share('link', 'video_edit');
+		return view('videolearning.playlists.index'); 
 	}
 
-	public function get($id) {
+	public function get() {
+		return [
+			'user_id' => auth()->user()->ID,
+			'playlists' => Playlist::get()
+		];
+	}
+
+	public function getPlaylist($id) {
 
 		$pl =  Playlist::with('videos')->find($id);
 
