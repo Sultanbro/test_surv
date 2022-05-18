@@ -83,7 +83,7 @@
 
 
           </div>
-          <div class="col-md-12 p-0 mt-5">
+          <div class="col-md-12 p-0 mt-4">
 
             <div class="col-md-2 offset-2">
               <p class="font-weight-bold list-checkbox">Product</p>
@@ -175,7 +175,7 @@
               </ul>
             </div>
 
-            <div class="col-md-2 p-0">
+            <div class="col-md-2">
               <p class="font-weight-bold list-checkbox">User</p>
               <ul>
                 <li>
@@ -198,7 +198,7 @@
               </ul>
             </div>
 
-            <div class="col-md-2 p-0">
+            <div class="col-md-2 pl-0">
               <p class="font-weight-bold list-checkbox">Role</p>
               <ul>
                 <li>
