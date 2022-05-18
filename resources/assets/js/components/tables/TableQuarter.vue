@@ -156,8 +156,9 @@
                             arr:this.arr,
                             user_id:this.user_id,
                         }).then(response => {
-                            if (response.data.success === 1){
+                            if (response.data.success == 1){
                                 this.$message.success('Cохранено');
+                                document.getElementById('clickQuarter').click();
                             }
                         })
                     }

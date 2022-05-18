@@ -4,7 +4,7 @@
         <p>Оклад </p>
         <p><b><span>{{ data.oklad }}</span></b></p>
     </div> -->
-    <div  class="col-md-3 flexy" v-bind:class="[activeClass]">
+    <div class="flexy"  v-bind:class="[activeClass]">
         <div class="filler" @click="showSalarySidebar = true" id="hoverPulse">
             <img src="/images/money1.png"
                 alt="icon"
@@ -18,8 +18,7 @@
         <p class="mb-0 font-bold">Баланс оклада<span></span></p>
         <p class="text-center">{{ data.salary }}</p>
     </div>
-
-    <div class="col-md-3 flexy"  v-bind:class="[activeClass]">
+    <div class="flexy"  v-bind:class="[activeClass]">
         <div class="filler" @click="showKpiSidebar = true">
             <img src="/images/money2.png"
                 alt="icon"
@@ -33,7 +32,7 @@
         <p class="mb-0  font-bold">KPI <span></span></p>
         <p class="text-center">{{ data.kpi }}</p>
     </div>
-    <div class="col-md-3 flexy"  v-bind:class="[activeClass]">
+    <div class="flexy"  v-bind:class="[activeClass]">
         <div class="filler" @click="showBonusSidebar = true" style="top:15px">
             <img src="/images/money3.png"
                 alt="icon"
@@ -47,8 +46,7 @@
         <p class="mb-0  font-bold">Бонусы <span></span></p>
         <p class="text-center">{{ data.bonus }}</p>
     </div>
-
-    <div class="col-md-3 flexy "   v-if="this.quarters.length != 0"  style="display: block"  v-bind:class="[activeClass]"  >
+    <div class="flexy"  v-bind:class="[activeClass]"  v-if="this.quarters.length != 0"  v-show="visible"  >
         <div class="filler" @click="showQuartalBonusSidebar = true" style="top:15px">
             <img src="/images/bonus_type_2.png"
                 alt="icon"
@@ -62,9 +60,6 @@
         <p class="mb-0  font-bold">Квартальные бонусы <span></span></p>
     </div>
 
-  
-    
- 
     <sidebar
         title="Баланс оклада"
         :open="showSalarySidebar"
@@ -149,7 +144,6 @@
         </div>
       </div>
     </sidebar>
-    
     <sidebar
       title="Квартальный бонус"
       :open="showQuartalBonusSidebar"
@@ -188,22 +182,16 @@ export default {
         data: Object,
         activeuserid: Number,
         quarters:[],
-        // activeClass:'1995',
+
     },
     data() {
-
         if(this.quarters.length == 0){
-            this.activeClass = 'col-md-4';
+             this.activeClass = 'col-md-4 ';
         }else{
-                this.activeClass = 'col-md-3 '
+             this.activeClass = 'col-md-3 '
         }
-
         return {
-            // styleObject: {
-            //     display:'flex',
-            //     top:'-10px',
-            //     color: 'red',
-            // },
+            visible: true,
             activeClass:this.activeClass,
             showQuartalBonusSidebar:false,
             showBonusSidebar: false,
