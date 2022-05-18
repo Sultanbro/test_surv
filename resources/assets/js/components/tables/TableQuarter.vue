@@ -2,9 +2,10 @@
 
 
     <div class="quarter-page">
-        <p class="call-norm">{{ group }} </p>
+        <p class="call-norm p-0">{{ group }} </p>
+        <span class="mb-2">При <span style="background-color:rgb(193 255 208)">активации</span> профель сотрудника появется условие получение квартального Бонуса</span>
 
-        <div class="d-flex">
+        <div class="d-flex mt-2">
 
 
 
@@ -64,7 +65,7 @@
                 </div>
                 <a style="color: white;text-align: center;border-radius: unset"
                    id="selectedQuarter" @click="selectedQuarter"
-                   class=" btn-block btn btn-success p-0"  >Активировать</a>
+                   class=" btn-block btn btn-success p-0 mt-3"  >Активировать</a>
             </div>
         </div>
     </div>
@@ -146,7 +147,9 @@
 
 
                 if (this.arr[1]['checked'] === false && this.arr[2]['checked'] === false && this.arr[3]['checked'] === false && this.arr[4]['checked'] === false){
-                    alert('выбрать хоть одного квартала')
+
+                    this.errors[5] = 'выбрать хоть одного квартала';
+                    // alert('выбрать хоть одного квартала')
                 }else{
                     if (this.errors.length === 0){
                         axios.post('/timetracking/quarter/store', {
@@ -154,8 +157,7 @@
                             user_id:this.user_id,
                         }).then(response => {
                             if (response.data.success == 1){
-                                alert('Успешно изменено');
-                                console.log('1995');
+                                alert('Успешно  (модельное окно закрыть или не надо))');
                             }
                         })
                     }
