@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="animated fadeIn user-page">
-    <div class="row">
+    <div class="mt-3">
         <div class="col-md-12 d-flex justify-content-between align-items-start">
             <a href="/timetracking/settings?tab=1" class="btn btn-rounded"
                 style="background: #a0a6ab;color: white;font-size: 14px;">
@@ -62,7 +62,7 @@
 
 
 
-    <div class="row">
+    <div class="">
         <div class="col-md-12">
             <div class="contact-information">
 

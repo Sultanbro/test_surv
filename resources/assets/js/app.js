@@ -118,6 +118,7 @@ Vue.component('page-upbooks-read', require('./pages/UpbooksRead.vue')); // кн�
 Vue.component('page-upbooks-edit', require('./pages/UpbooksEdit.vue')); // книги редактирование
 
 Vue.component('page-playlist-edit', require('./pages/PlaylistEdit.vue')); // редактирование плейлиста
+Vue.component('page-playlists', require('./pages/Playlists.vue')); // редактирование плейлиста
 
 Vue.component('booklist', require('./pages/booklist.vue')); // база знаний раздел
 Vue.component('page-kb', require('./pages/KBPage.vue')); // база знаний раздел

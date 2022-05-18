@@ -1,8 +1,14 @@
 <template>
   <div class="p-3">
     <div class="row">
-      <div class="col-lg-12">
+      <div class="col-lg-9">
         <h1 class="h3">{{ playlist.title }}</h1>
+      </div>
+      <div class="col">
+        <div class="btn btn-grey mb-3" @click="$emit('back')">
+          <i class="fa fa-arrow-left"></i>
+          <span>Вернуться к разделам</span>
+        </div>
       </div>
     </div>
 
@@ -312,14 +318,19 @@ export default {
       player: null,
     };
   },
-  watch: {},
+  watch: {
+    id(val) {
+      console.log('test')
+      this.fetchData();
+    },
+  },
 
   created() {
     this.fetchData();
   },
 
   mounted() {},
-  methods: {
+  methods: { 
     showQuestions(v_index) {
       let questions = this.playlist.videos[v_index].questions;
       if (questions == undefined) this.playlist.videos[v_index].questions = [];

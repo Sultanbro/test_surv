@@ -1,7 +1,7 @@
 @extends('layouts.admin')
-@section('title', 'Плейлист - Видео обучение')
+@section('title', 'Плейлисты - Видео обучение')
 @section('content')
-<page-playlist-edit token="{{ csrf_token() }}" :id="{{ $playlist_id}}" :auth_user_id="{{ auth()->user()->ID }}" />
+<page-playlists token="{{ csrf_token() }}" />
 @endsection
 
 @section('scripts')
