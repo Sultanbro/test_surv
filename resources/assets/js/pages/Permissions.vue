@@ -89,27 +89,27 @@
               <p class="font-weight-bold list-checkbox">Product</p>
               <ul>
                 <li>
-                   <input id="view_own_products" type="checkbox"/>
+                   <input class="per-inputs" id="view_own_products" type="checkbox" >
                    <label for="view_own_products" class="label-input" >View own products</label>
                 </li>
                 <li>
-                  <input id="view_products" type="checkbox"/>
+                  <input class="per-inputs" id="view_products" type="checkbox"/>
                   <label for="view_products" class="label-input" >View products</label>
                 </li>
                 <li>
-                  <input id="manage_own_products" type="checkbox"/>
+                  <input class="per-inputs" id="manage_own_products" type="checkbox"/>
                   <label for="manage_own_products" class="label-input">Manage own products</label>
                 </li>
                 <li>
-                  <input id="manage_products"  type="checkbox"/>
+                  <input class="per-inputs" id="manage_products"  type="checkbox"/>
                   <label for="manage_products" class="label-input">Manage products</label>
                 </li>
                 <li>
-                  <input id="force_delete_products"  type="checkbox"/>
+                  <input class="per-inputs" id="force_delete_products"  type="checkbox"/>
                   <label for="force_delete_products" class="label-input">Force Delete products</label>
                 </li>
                 <li>
-                  <input id="restore_products"  type="checkbox"/>
+                  <input class="per-inputs" id="restore_products"  type="checkbox"/>
                   <label for="restore_products" class="label-input">Restore products</label>
                 </li>
               </ul>
@@ -119,27 +119,27 @@
               <p class="font-weight-bold list-checkbox">Category</p>
               <ul>
                 <li>
-                  <input id="view_own_categories" type="checkbox"/>
+                  <input class="per-inputs" id="view_own_categories" type="checkbox"/>
                   <label for="view_own_categories" class="label-input" >View own categories</label>
                 </li>
                 <li>
-                  <input id="view_categories" type="checkbox"/>
+                  <input class="per-inputs" id="view_categories" type="checkbox"/>
                   <label for="view_categories" class="label-input" >View categories</label>
                 </li>
                 <li>
-                  <input id="manage_own_categories" type="checkbox"/>
+                  <input class="per-inputs" id="manage_own_categories" type="checkbox"/>
                   <label for="manage_own_categories" class="label-input">Manage own categories</label>
                 </li>
                 <li>
-                  <input id="manage_categories"  type="checkbox"/>
+                  <input class="per-inputs" id="manage_categories"  type="checkbox"/>
                   <label for="manage_categories" class="label-input">Manage categories</label>
                 </li>
                 <li>
-                  <input id="force_delete_categories"  type="checkbox"/>
+                  <input class="per-inputs" id="force_delete_categories"  type="checkbox"/>
                   <label for="force_delete_categories" class="label-input">Force Delete categories</label>
                 </li>
                 <li>
-                  <input id="restore_categories"  type="checkbox"/>
+                  <input class="per-inputs" id="restore_categories"  type="checkbox"/>
                   <label for="restore_categories" class="label-input">Restore categories</label>
                 </li>
               </ul>
@@ -149,27 +149,27 @@
               <p class="font-weight-bold list-checkbox">Order</p>
               <ul>
                 <li>
-                  <input id="view_own_orders" type="checkbox"/>
+                  <input class="per-inputs" id="view_own_orders" type="checkbox"/>
                   <label for="view_own_orders" class="label-input" >View own orders</label>
                 </li>
                 <li>
-                  <input id="view_orders" type="checkbox"/>
+                  <input class="per-inputs" id="view_orders" type="checkbox"/>
                   <label for="view_orders" class="label-input" >View orders</label>
                 </li>
                 <li>
-                  <input id="manage_own_orders" type="checkbox"/>
+                  <input class="per-inputs" id="manage_own_orders" type="checkbox"/>
                   <label for="manage_own_orders" class="label-input">Manage own orders</label>
                 </li>
                 <li>
-                  <input id="manage_orders"  type="checkbox"/>
+                  <input class="per-inputs" id="manage_orders"  type="checkbox"/>
                   <label for="manage_orders" class="label-input">Manage orders</label>
                 </li>
                 <li>
-                  <input id="force_delete_orders"  type="checkbox"/>
+                  <input class="per-inputs" id="force_delete_orders"  type="checkbox"/>
                   <label for="force_delete_orders" class="label-input">Force Delete orders</label>
                 </li>
                 <li>
-                  <input id="restore_orders"  type="checkbox"/>
+                  <input class="per-inputs" id="restore_orders"  type="checkbox"/>
                   <label for="restore_orders" class="label-input">Restore orders</label>
                 </li>
               </ul>
@@ -179,19 +179,19 @@
               <p class="font-weight-bold list-checkbox">User</p>
               <ul>
                 <li>
-                  <input id="view_users" type="checkbox"/>
+                  <input class="per-inputs" id="view_users" type="checkbox"/>
                   <label for="view_users" class="label-input" >View users</label>
                 </li>
                 <li>
-                  <input id="create_users" type="checkbox"/>
+                  <input class="per-inputs" id="create_users" type="checkbox"/>
                   <label for="create_users" class="label-input" >Create users</label>
                 </li>
                 <li>
-                  <input id="edit_users" type="checkbox"/>
+                  <input class="per-inputs" id="edit_users" type="checkbox"/>
                   <label for="edit_users" class="label-input">Edit user</label>
                 </li>
                 <li>
-                  <input id="delete_users"  type="checkbox"/>
+                  <input class="per-inputs" id="delete_users"  type="checkbox"/>
                   <label for="delete_users" class="label-input">Delete users</label>
                 </li>
 
@@ -202,24 +202,25 @@
               <p class="font-weight-bold list-checkbox">Role</p>
               <ul>
                 <li>
-                  <input id="view_roles" type="checkbox"/>
+                  <input class="per-inputs" id="view_roles" type="checkbox"/>
                   <label for="view_roles" class="label-input" >View roles</label>
                 </li>
                 <li>
-                  <input id="create_roles" type="checkbox"/>
+                  <input class="per-inputs" id="create_roles" type="checkbox"/>
                   <label for="create_roles" class="label-input" >Create roles</label>
                 </li>
                 <li>
-                  <input id="edit_roles" type="checkbox"/>
+                  <input class="per-inputs" id="edit_roles" type="checkbox"/>
                   <label for="edit_roles" class="label-input">Editroles</label>
                 </li>
                 <li>
-                  <input id="delete_roles"  type="checkbox"/>
+                  <input class="per-inputs" id="delete_roles"  type="checkbox"/>
                   <label for="delete_roles" class="label-input">Delete roles</label>
                 </li>
 
               </ul>
             </div>
+
           </div>
         </div>
       </div>
@@ -249,6 +250,9 @@
   .list-checkbox ul li{
     list-style: none;
     float: left;
+  }
+  .per-inputs{
+    cursor: pointer;
   }
   .columnContent{
     padding-top: 25px;
