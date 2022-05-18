@@ -88,7 +88,7 @@ Route::get('/permissions/get', 'PermissionController@get');
 
 Route::get('/test', 'TestController@test')->name('test');
 Route::get('/wami', 'TestController@send_whatsapp');
-Route::get('/', 'Admin\UserController@profile');
+Route::any('/', 'Admin\UserController@profile');
 
 
 

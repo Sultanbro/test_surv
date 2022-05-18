@@ -160,7 +160,7 @@ class NpsController extends Controller
         if ($request->isMethod('post')) {
             $user = Auth::user();
 
-            $prev_month = Carbon::now()->subDays(10)->day(1)->format('Y-m-d');
+            $prev_month = Carbon::now()->subDays(28)->day(1)->format('Y-m-d');
 
             foreach($request->rooks as $rook) {
                 if($rook['grade'] != 0) {

@@ -19,6 +19,7 @@ class KnowBase extends Model
         'parent_id',
         'title', 
         'user_id', // author 
+        'editor_id', // 
         'text', 
         'is_deleted', 
         'order', 
