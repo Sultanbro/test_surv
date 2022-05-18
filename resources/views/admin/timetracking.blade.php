@@ -413,6 +413,7 @@
                             </div>
 
                             @if(isset($course))
+
                             <div class="my-course">
                                 <div class="mr-3">
                                     <div class="pre">Текущий курс:</div>

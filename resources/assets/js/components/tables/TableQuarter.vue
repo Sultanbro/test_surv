@@ -15,7 +15,7 @@
                 <thead style="background: aliceblue;color: #0077e0;">
                     <tr>
                         <th style="width: 25%">Период</th>
-                        <th>Сумма</th>
+                        <th style="width: 25%">Сумма</th>
                         <th>Коментарии</th>
                     </tr>
                 </thead>
@@ -58,7 +58,7 @@
         </div>
         <!--selectedQuarter-->
         <div class="col-12 p-0 row">
-            <div class="col-6 pr-0">
+            <div class="col-6 p-0 ml-3">
                 <div v-if="errors.length">
                         <p style="color: #c75f5f" v-for="error in errors">{{ error }}</p>
                 </div>
@@ -122,18 +122,14 @@
             selectedQuarter() {
                 this.errors = [];
 
-                console.log(this.errors,'imashev kairat');
+                // console.log(this.errors,'imashev kairat');
 
                 for (let i = 1;i <=4;i++){
 
                     if (this.arr[i]['checked']){
                         // console.log(this.arr[i]['text'],'pro');
                         if (!this.arr[i]['text'].length > 0) {
-
-
                             // this.errors.push('Заполните коментарии');
-
-
                             if (i == 1){
                                 this.errors[i] = 'Заполните Коментарии Первого Квартала';
                             }else if (i == 2){
@@ -148,19 +144,27 @@
                     }
                 }
 
-                if (this.errors.length === 0){
-                    axios.post('/timetracking/quarter/store', {
-                        arr:this.arr,
-                        user_id:this.user_id,
-                    }).then(response => {
 
-
-                        if (response.data.success == 1){
-                            alert('Успешно изменено');
-                            console.log('1995');
-                        }
-                    })
+                if (this.arr[1]['checked'] === false && this.arr[2]['checked'] === false && this.arr[3]['checked'] === false && this.arr[4]['checked'] === false){
+                    alert('выбрать хоть одного квартала')
+                }else{
+                    if (this.errors.length === 0){
+                        axios.post('/timetracking/quarter/store', {
+                            arr:this.arr,
+                            user_id:this.user_id,
+                        }).then(response => {
+                            if (response.data.success == 1){
+                                alert('Успешно изменено');
+                                console.log('1995');
+                            }
+                        })
+                    }
                 }
+
+
+
+
+
             },
 
         },
