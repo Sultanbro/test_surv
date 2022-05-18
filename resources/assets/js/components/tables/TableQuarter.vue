@@ -156,8 +156,8 @@
                             arr:this.arr,
                             user_id:this.user_id,
                         }).then(response => {
-                            if (response.data.success == 1){
-                                alert('Успешно  (модельное окно закрыть или не надо))');
+                            if (response.data.success === 1){
+                                this.$message.success('Cохранено');
                             }
                         })
                     }
