@@ -223,11 +223,11 @@ tspan:last-child {
     display: block;
 }
 
-/**
+/** 
   Booklist.vue
 */
 
-.book_page {
+.book_page { 
     padding: 20px;
     max-width: 1000px;
     margin: 0 auto;
@@ -249,10 +249,16 @@ tspan:last-child {
             margin-bottom: 0;
         }
         .edited {
-            font-size: 12px;
-            line-height: 16px;
-            color:#ababab;
+            font-size: 14px;
+            line-height: 21px;
+            color:#656565;
             margin-bottom: 0;
+            span {
+                width: 70px;
+                display: inline-block;
+                color: #275ba7;
+                margin-right: 5px;
+            }
         }
     }
 }

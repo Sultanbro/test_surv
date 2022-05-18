@@ -6,10 +6,10 @@
     :list="tasks"
     :group="{ name: 'g1' }"
     :id="parent_id"
-    @end="saveOrder">
+    @end="saveOrder"
+    >
     <template v-for="el in tasks" >
         <li 
-          v-if="opened"
           class="chapter"
           :class="{'opened':opened}"
           :id="el.id"

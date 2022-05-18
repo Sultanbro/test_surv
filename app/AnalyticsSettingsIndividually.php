@@ -63,8 +63,8 @@ class AnalyticsSettingsIndividually extends Model
         
 
         /////////////////////////
-        if(in_array($activity->id, [55,56,57,58,59,60,61,62])) {
-
+        if($activity->type == 'quality') {
+           
             $act = Activity::find($activity->id);
            
             $at = QualityRecordMonthlyStat::where([
@@ -94,7 +94,7 @@ class AnalyticsSettingsIndividually extends Model
                 return $result;
             }
         }
-      
+     
         if($group_id == 48) { 
          
             $total = 0;
@@ -145,6 +145,11 @@ class AnalyticsSettingsIndividually extends Model
                     if($activity->plan_unit == 'minutes') {
                         if($user && $user->full_time == 0) $daily_plan = $daily_plan / 2;
                         $result = $total / ((float)$daily_plan * $workdays) * 100;
+
+                        // dump($daily_plan);
+                        // dump($workdays);
+                        // dump($result);
+                        // dd($total);
                     } 
 
                     if($activity->plan_unit == 'less_sum') {
@@ -161,11 +166,11 @@ class AnalyticsSettingsIndividually extends Model
                         $total = $result;
                     } 
                     
-
+                  
                     
                 } 
             }
-            
+        
 
             if($return_value_and_percent) {
                 return [
@@ -177,7 +182,7 @@ class AnalyticsSettingsIndividually extends Model
             }
 
         }
-        
+       
         ///////////////////////////////
 
         $total = 0;

@@ -263,6 +263,7 @@ class UserStat extends Model
      */
     public static function getActivityProgress(int $user_id, int $group_id, Activity $activity, string $date = '', $return_value_and_percent = false)
     {
+       
         if($date == '') {
             $date = Carbon::now()->day(1)->format('Y-m-d');
         }
@@ -297,7 +298,7 @@ class UserStat extends Model
         
         /////////////////////////
         if($activity->type == 'quality') {
-
+           
             $act = Activity::find($activity->id);
            
             $at = QualityRecordMonthlyStat::where([
@@ -315,8 +316,8 @@ class UserStat extends Model
             } else {
                 $result = 0;
             }
-            
-            
+           
+           
             if($return_value_and_percent) {
                 return [
                     'value' => (int)$total,

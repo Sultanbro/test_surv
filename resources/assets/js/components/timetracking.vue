@@ -409,10 +409,11 @@ export default {
 
 <style lang="scss" scoped>
 @media screen and (max-width: 1026px) {
-  .time-start-panel {
-    display: none;
-  }
+   .listbtn button {
+      font-size: 10px;
+    }
 }
+
 
 .listbtn {
   display: flex;
@@ -428,6 +429,8 @@ export default {
     border-radius: 20px;
     margin-right: 10px;
     padding: 6px 30px;
+
+  
   }
 
   button:nth-child(1) {

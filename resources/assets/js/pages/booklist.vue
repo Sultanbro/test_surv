@@ -7,7 +7,7 @@
       </div>
       <div class="btn btn-grey mb-3" @click="$emit('back')">
         <i class="fa fa-arrow-left"></i>
-        <span>Вернуться к разделам</span>
+        <span>Вернуться к разделам</span> 
       </div>
 
       <div class="kb-wrap noscrollbar">
@@ -86,12 +86,12 @@
               >
                 <i class="fas fa-volume-up"></i>
               </button>
-              <button
+              <!-- <button
                 class="form-control btn-action btn-medium ml-2"
                 @click="showActionModal = true"
               >
                 Действие
-              </button>
+              </button> -->
 
               
               
@@ -293,12 +293,11 @@
 
         <template  v-if="activesbook != null && !edit_actives_book">
           <div class="book_page">
-            <div class="author d-flex aic mb-2 justify-end">
+            <div class="author d-flex aic mb-4 justify-end">
               <img src="/images/avatar.png" alt="avatar icon">
               <div class="text">
-                <p class="name">{{ activesbook.author }}</p>
-                <p class="edited">Добавлено: {{ activesbook.created }}</p>
-                <p class="edited">Изменено: &nbsp;{{ activesbook.edited_at }}</p>
+                <p class="edited"><span>Cоздано:</span> {{ activesbook.created }} {{ activesbook.author }}</p>
+                <p class="edited"><span>Изменено:</span> {{ activesbook.edited_at }} {{ activesbook.editor }}</p>
               </div>
             </div> 
             <div class="bp-text" v-html="activesbook.text">

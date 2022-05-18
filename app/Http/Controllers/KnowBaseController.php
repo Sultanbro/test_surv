@@ -82,7 +82,10 @@ class KnowBaseController extends Controller
         $page = KnowBase::withTrashed()->find($request->id);
 
         $user = User::withTrashed()->find($page->user_id);
+        $editor = User::withTrashed()->find($page->editor_id);
+
         $page->author = $user ? $user->LAST_NAME . ' ' . $user->NAME : 'Неизвестный';
+        $page->editor = $editor ? $editor->LAST_NAME . ' ' . $editor->NAME : 'Неизвестный';
         $page->edited_at = Carbon::parse($page->updated_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->created = Carbon::parse($page->created_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
 
@@ -145,7 +148,7 @@ class KnowBaseController extends Controller
         $page = KnowBase::find($request->id);
         if ($page) {
             $page->title = $request->title;
-            $page->user_id = Auth::user()->ID;
+            $page->editor_id = Auth::user()->ID;
             $page->save();
         }
 
@@ -157,7 +160,7 @@ class KnowBaseController extends Controller
         if ($page) {
             $page->text = $request->text ?? '';
             $page->title = $request->title ?? 'Без названия';
-            $page->user_id = Auth::user()->ID;
+            $page->editor_id = Auth::user()->ID;
             $page->save();
         }
 
@@ -168,23 +171,25 @@ class KnowBaseController extends Controller
 
         $page = KnowBase::find($request->id);
         if ($page) {
-            $page->order = $request->order;
             $page->parent_id = $request->parent_id;
+            $page->order = $request->order;
             $page->save();
+        }
 
-            $pages = KnowBase::where('parent_id', 0)
-                ->where('id', '!=', $request->id)
-                ->where('order', '>=', $request->order)
-                ->orderBy('order', 'asc')
-                ->get();
+        $pages = KnowBase::where('parent_id', $request->parent_id)
+            ->where('id', '!=', $request->id)
+            ->orderBy('order', 'asc')
+            ->get();
 
-            $order = $request->order;
-            foreach ($pages as $page) {
+        $order = 0;
+        foreach ($pages as $page) {
+            if($order == $request->order) {
                 $order++;
-                $page->order = $order;
+            } 
+            $page->order = $order;
                 $page->save();
-            }
-
+            $order++;
+         
         }
 
     }
@@ -198,6 +203,7 @@ class KnowBaseController extends Controller
             'title' => 'Новая страница',
             'text' => '',
             'user_id' => Auth::user()->ID,
+            'editor_id' => Auth::user()->ID,
             'order' => $order,
             'parent_id' => $request->id,
             'hash' => md5(uniqid() . mt_rand()),
@@ -218,6 +224,7 @@ class KnowBaseController extends Controller
             'title' => $request->name,
             'text' => '',
             'user_id' => Auth::user()->ID,
+            'editor_id' => Auth::user()->ID,
             'order' => $kb ? $kb->order + 1 : 0,
             'parent_id' => null,
             'hash' => 'cat',

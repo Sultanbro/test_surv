@@ -16,38 +16,23 @@
         <div class="profile-menu">
             <ul>
                 <li>
-                    <a href="#" class="link">
-                        <i class="fas fa-user"></i>
-                        <span>Мой профиль</span>
-                    </a>
-                </li>
-                <li>
                     <a href="#" class="link link-start" id="toggle_panel">
                         <i class="fas fa-bell"></i>
                         <span class="d-flex">Уведомления <i class="nn">{{ $unread }}</i></span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="link link-start">
+                    <a href="/timetracking/settings" class="link link-start">
                         <i class="fas fa-cogs"></i>
-                        <span>Настройки</span>
+                        <span>Настройки</span> 
                     </a>
                 </li>
-                @if(auth()->user() && in_array(auth()->user()->ID, [5,18]))
                 <li>
-                    <a href="#" class="link link-start">
-                        <i class="fa fa-key"></i>
-                        <span>Доступы</span>
-                    </a>
-                </li>
-                @endif
-                <li>
-                    <a href="#" class="link link-start">
+                    <a href="/logout" class="link link-start">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Выйти</span>
                     </a>
                 </li>
-
             </ul>
         </div>
 

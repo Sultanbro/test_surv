@@ -128,8 +128,9 @@ ul {
   .fa-circle {
     font-size: 5px;
   }
-  &.openegd p{ 
-    color: #28a745;
+  display: none;
+  &.opened { 
+    display: block;
   }
   .chapter-btns i {
     width: 27px;

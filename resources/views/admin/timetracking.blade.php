@@ -5,7 +5,7 @@
 
 <div class="animated fadeIn container" style="margin-top:6px">
 
-    <div class="row">
+    <div class="">
         <div class="col-xl-12">
             <div class="fast-links">
                 <a href="#how_earn_more">Как можно зарабатывать больше</a>
@@ -20,7 +20,7 @@
         </div>
     </div>
     <!-- Картинки с заработком: сумма начислений, крi, бонусы -->
-    <div class="row non-pillar">
+    <div class=" non-pillar">
         <div class="col-xl-12">
             <div class="ublock" style="border-radius:5px 5px 0 0;">
                 <h2 class="big-title">Ваш баланс</h2>
@@ -41,12 +41,12 @@
     </div>
     
 
-
+ 
     
     <!-- Как можно зарабатывать больше -->
-    <div id="how_earn_more" class="row mt-27" style="margin: 0;margin-top:25px">
+    <div id="how_earn_more" class="p-3">
         
-        <div class="col-xl-12 ublock">
+        <div class="col-xl-12 ublock mt-3">
             <h2 class="big-title">Как можно зарабатывать больше</h2>
             <div class="boxes">
 
@@ -255,8 +255,8 @@
     </div>
 
     
-    <div id="personal_info" class="row non-pillar mt-27">
-        <div class="col-xl-12">
+    <div id="personal_info" class=" rw non-pillar px-3">
+        <div class="col-xl-12 mt-3">
             <div class="ublock">
                 <h2 class="big-title">Ваша личная информация</h2>
                 <div class="row">
@@ -446,8 +446,8 @@
 
 @if(count($head_in_groups) > 0)
     <!-- Группы руководителя -->
-    <div id="your_grades" class="row">
-        <div class="col-xl-12">
+    <div id="your_grades" class="p-3">
+        <div class="col-xl-12 mt-3">
             <div class="contact-information ublock mt-27">
                 <h2>Вот как стажеры оценили ваше обучение</h2>
 
@@ -459,7 +459,7 @@
 
     @if($is_recruiter)
     <!-- Информация для рекрутера -->
-    <div id="recruiter_info" class="row">
+    <div id="recruiter_info" >
        
         <div class="col-xl-12 mt-3 mb-3">
             <div class="ublock">
@@ -480,7 +480,7 @@
 
     @elseif(count(json_decode($activities)) > 0)
     <!-- Информация -->
-    <div id="personal_indicators" class="row">
+    <div id="personal_indicators" class="">
 
         <div class="col-xl-12 mt-27 mb-3">
             <div class="ublock">

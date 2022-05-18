@@ -139,7 +139,11 @@ class Kpi extends Model
                 } else if(in_array($kpi_indicator->group_id, [48])) { 
                     $kpi_indicator->completed =  AnalyticsSettingsIndividually::getTotalActivityProgress($user_id, $activity, $date);
                 } else {
-                    $kpi_indicator->completed = UserStat::getTotalActivityProgress($user_id, $activity, $date);
+                    $kpi_indicator->completed = 0;
+                    if($activity) {
+                        $kpi_indicator->completed = UserStat::getTotalActivityProgress($user_id, $activity, $date);
+                    }
+                    
                    
                 }
                 
@@ -155,7 +159,7 @@ class Kpi extends Model
 
             //$activity->sum_prem = $kpi_100 * $activity->ud_ves / 100;
             
-            if($activity->plan_unit == 'less_sum') {
+            if($activity && $activity->plan_unit == 'less_sum') {
                 $nijn_porok = 0;
                 $kpi_80_99 = $kpi_100;
             }
@@ -224,10 +228,11 @@ class Kpi extends Model
 
            
             $xdate = Carbon::parse($date)->timestamp;
-
+       
             if(in_array($group_id, [48])) { 
                 $completed =  AnalyticsSettingsIndividually::getActivityProgress($user_id, $group_id, $activity, $date);
             } else {
+                
                 $completed = UserStat::getActivityProgress($user_id, $group_id, $activity, $date);
             }
             

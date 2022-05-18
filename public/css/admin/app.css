@@ -1775,6 +1775,7 @@ ul {
 .chapter {
   padding: 0;
   position: relative;
+  display: none;
 }
 
 .chapter:first-child {
@@ -1785,8 +1786,8 @@ ul {
   font-size: 5px;
 }
 
-.chapter.openegd p {
-  color: #28a745;
+.chapter.opened {
+  display: block;
 }
 
 .chapter .chapter-btns i {
@@ -2671,7 +2672,7 @@ tspan:last-child {
   display: block;
 }
 
-/**
+/** 
   Booklist.vue
 */
 .book_page {
@@ -2697,10 +2698,17 @@ tspan:last-child {
 }
 
 .book_page .author .edited {
-  font-size: 12px;
-  line-height: 16px;
-  color: #ababab;
+  font-size: 14px;
+  line-height: 21px;
+  color: #656565;
   margin-bottom: 0;
+}
+
+.book_page .author .edited span {
+  width: 70px;
+  display: inline-block;
+  color: #275ba7;
+  margin-right: 5px;
 }
 
 .add_cat {
@@ -3536,6 +3544,10 @@ body {
   max-width: calc(100vw - 85px);
 }
 
+nav {
+  margin: 0;
+}
+
 body {
   background: #fff;
 }
@@ -3561,7 +3573,7 @@ body {
 }
 
 .animated.fadeIn {
-  padding: 5px 25px 25px;
+  padding: 5px 0 0;
 }
 
 .right-panel .header {

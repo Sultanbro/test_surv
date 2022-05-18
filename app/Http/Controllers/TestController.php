@@ -19,14 +19,7 @@ class TestController extends Controller {
  
 	public function test() {
 
-	    $a = QuartalBonus::create([
-            'user_id'=> 1,
-            'auth_id'=> 1,
-            'quartal'=> 11,
-            'sum'=> 0,
-            'year'=> date('Y'),
-            'text'=> 'sfdsdfsdf',
-        ]);
+	    $a = \App\Kpi::userKpi(6293, '', 1);
 
 		dd($a); 
 

@@ -19,6 +19,7 @@ class KnowBase extends Model
         'parent_id',
         'title', 
         'user_id', // author 
+        'editor_id', // 
         'text', 
         'is_deleted', 
         'order', 
@@ -33,7 +34,7 @@ class KnowBase extends Model
     
     public function children()
     {
-        return $this->hasMany(self::class, 'parent_id')->with('children');
+        return $this->hasMany(self::class, 'parent_id')->orderBy('order')->with('children');
     }
 
     public function parent()
