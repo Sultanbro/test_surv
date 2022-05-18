@@ -361,24 +361,41 @@ class QualityController extends Controller
 
             if($record) {
 
-
-
-                ////// total count 
                 $total = 0;
-                foreach ($request->param_values as $key => $pv) {
-                    $param = QualityParamValue::find($pv['id']);
-                    if($param) {
-                        $param->value = $pv['value'];
-                        $param->save();
-                    } else {
-                        QualityParamValue::create([
-                            'param_id' => $pv['param_id'],
-                            'value' => $pv['value'],
-                            'record_id' => $record->id,
-                        ]);
+                if(count($request->param_values) > 0 && array_key_exists('id', $request->param_values[0])) {
+                     ////// total count 
+                   
+                    foreach ($request->param_values as $key => $pv) {
+                        $param = QualityParamValue::find($pv['id']);
+                        
+                        if($param) {
+                            $param->value = $pv['value'];
+                            $param->save();
+                        } else {
+                            QualityParamValue::create([
+                                'param_id' => $pv['param_id'],
+                                'value' => $pv['value'],
+                                'record_id' => $record->id,
+                            ]);
+                        }
+                        $total += (int)$pv['value'];
                     }
-                    $total += (int)$pv['value'];
+                } else {
+
+                    QualityParamValue::where('record_id', $record->id)->delete();
+                    
+                    
+                    foreach ($request->param_values as $key => $pv) {
+                         QualityParamValue::create([
+                                'param_id' => $pv['param_id'],
+                                'value' => $pv['value'],
+                                'record_id' => $record->id,
+                            ]);
+                       
+                        $total += (int)$pv['value'];
+                    }
                 }
+               
 
                 if($total > 100) {
                     $total = 100;

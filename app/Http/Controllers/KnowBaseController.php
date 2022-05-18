@@ -168,23 +168,27 @@ class KnowBaseController extends Controller
 
         $page = KnowBase::find($request->id);
         if ($page) {
-            $page->order = $request->order;
             $page->parent_id = $request->parent_id;
+            $page->order = $request->order;
             $page->save();
+        }
 
-            $pages = KnowBase::where('parent_id', 0)
-                ->where('id', '!=', $request->id)
-                ->where('order', '>=', $request->order)
-                ->orderBy('order', 'asc')
-                ->get();
+        $pages = KnowBase::where('parent_id', $request->parent_id)
+            ->where('id', '!=', $request->id)
+            ->orderBy('order', 'asc')
+            ->get();
 
-            $order = $request->order;
-            foreach ($pages as $page) {
-                $order++;
+        $order = 0;
+        foreach ($pages as $page) {
+            if($order != $request->order) {
                 $page->order = $order;
                 $page->save();
+              
+            } else {
+                $order++;
             }
-
+            $order++;
+         
         }
 
     }

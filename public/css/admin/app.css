@@ -3536,6 +3536,10 @@ body {
   max-width: calc(100vw - 85px);
 }
 
+nav {
+  margin: 0;
+}
+
 body {
   background: #fff;
 }
@@ -3561,7 +3565,7 @@ body {
 }
 
 .animated.fadeIn {
-  padding: 5px 25px 25px;
+  padding: 5px 0 0;
 }
 
 .right-panel .header {
