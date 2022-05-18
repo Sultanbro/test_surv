@@ -9,7 +9,7 @@
         <div class="lp">
           <h1 class="page-title">Плейлисты</h1>
 
-          
+           
           <div
             class="section d-flex aic jcsb my-2"
             v-for="(cat, index) in categories" 

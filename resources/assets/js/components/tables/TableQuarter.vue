@@ -17,7 +17,7 @@
                     <tr>
                         <th style="width: 25%">Период</th>
                         <th style="width: 25%">Сумма</th>
-                        <th>Коментарии</th>
+                        <th>Комментарии</th>
                     </tr>
                 </thead>
 
@@ -48,7 +48,7 @@
                     </th>
                     <th>
                         <div v-if="item.checked">
-                            <textarea  v-model="item.text" class="form-control" placeholder="Коментарии"></textarea>
+                            <textarea  v-model="item.text" class="form-control" placeholder="Комментарии"></textarea>
                         </div>
                     </th>
                 </tr>
@@ -132,13 +132,13 @@
                         if (!this.arr[i]['text'].length > 0) {
                             // this.errors.push('Заполните коментарии');
                             if (i == 1){
-                                this.errors[i] = 'Заполните Коментарии Первого Квартала';
+                                this.errors[i] = 'Заполните Комментарии Первого Квартала';
                             }else if (i == 2){
-                                this.errors[i] = 'Заполните Коментарии Второго Квартала';
+                                this.errors[i] = 'Заполните Комментарии Второго Квартала';
                             }else if (i == 3){
-                                this.errors[i] = 'Заполните Коментарии Третьего Квартала';
+                                this.errors[i] = 'Заполните Комментарии Третьего Квартала';
                             }else if (i == 4){
-                                this.errors[i] = 'Заполните Коментарии Четвертого Квартала';
+                                this.errors[i] = 'Заполните Комментарии Четвертого Квартала';
                             }
 
                         }
@@ -157,7 +157,8 @@
                             user_id:this.user_id,
                         }).then(response => {
                             if (response.data.success == 1){
-                                alert('Успешно  (модельное окно закрыть или не надо))');
+                                this.$message.success('Cохранено');
+                                document.getElementById('clickQuarter').click();
                             }
                         })
                     }
