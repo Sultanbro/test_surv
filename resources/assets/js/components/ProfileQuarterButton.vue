@@ -16,7 +16,6 @@
               group="Ежегодный  квартальный календарь"
               :user_id="user_id"
               :is_admin="true"
-              :oklad="0"
               type="individual"
       />
 

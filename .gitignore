@@ -13,11 +13,6 @@
 /public/mediasend/
 /public/static/profiles/
 /storage/*.key
-<<<<<<< HEAD
-/storage/framework/
-/storage/!.gitignore
-=======
->>>>>>> 4da2fae4da2822d3b57fb6e072d0a4f331208a0d
 /storage
 /vendor
 /.idea

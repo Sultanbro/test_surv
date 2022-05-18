@@ -7,7 +7,7 @@
       </div>
       <div class="btn btn-grey mb-3" @click="$emit('back')">
         <i class="fa fa-arrow-left"></i>
-        <span>Вернуться к разделам</span>
+        <span>Вернуться к разделам</span> 
       </div>
 
       <div class="kb-wrap noscrollbar">
