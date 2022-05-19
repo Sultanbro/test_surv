@@ -3727,8 +3727,7 @@ body {
 
 .videos {
   max-height: 500px;
-  max-height: calc(100vh - 136px);
-  padding-bottom: 30px;
+  max-height: calc(100vh - 180px);
   overflow: hidden;
   overflow-y: auto;
 }
@@ -3948,6 +3947,31 @@ body {
   margin-bottom: 50px;
   font-size: 16px;
   font-weight: 600;
+}
+
+.textarea {
+  min-height: 250px;
+}
+
+.poster_count div {
+  width: 250px;
+  overflow: hidden;
+}
+
+.poster_count div img {
+  width: 100%;
+}
+
+.playlist .title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.playlist .text {
+  font-size: 16px;
+  margin-bottom: 15px;
 }
 
 .upbook-read-page {

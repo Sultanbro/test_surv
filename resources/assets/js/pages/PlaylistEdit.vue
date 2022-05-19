@@ -1,11 +1,14 @@
 <template>
-  <div class="p-3">
-    <div class="row">
-      <div class="col-lg-9">
-        <h1 class="h3">{{ playlist.title }}</h1>
+  <div class="video-playlist">
+    <div class="d-flex jcsb mb-4">
+      <div class="s">
+        <h5 class="mb-0">{{ playlist.title }}</h5>
       </div>
-      <div class="col">
-        <div class="btn btn-grey mb-3" @click="$emit('back')">
+      <div class="d-flex align-items-start">
+
+        <button class="btn btn-success mr-3" @click="savePlaylist">Сохранить</button>
+
+        <div class="btn btn-grey" @click="$emit('back')">
           <i class="fa fa-arrow-left"></i>
           <span>Вернуться к разделам</span>
         </div>
@@ -14,9 +17,60 @@
 
    
     <div class="row">
+
+          <div class="col-lg-6">
+        <div class="d-flex justify-content-between">
+          <p class="mr-2">Количество видео: {{ playlist.videos.length }}</p>
+          <div class="d-flex align-items-start">
+            <!-- <button
+              class="btn btn-sm mr-2"
+              @click="modals.addVideo.show = true"
+            >
+              Добавить
+            </button> -->
+            <button class="btn btn-sm" @click="modals.upload.show = true">
+              Загрузить видео
+            </button>
+          </div>
+        </div>
+        <div>
+          <label for="title">Название</label>
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              v-model="playlist.title"
+              name="title"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="playlist_id">Категория</label>
+            <select
+              name="category_id"
+              class="form-control"
+              v-model="playlist.category_id"
+            >
+              <option v-for="cat in categories" :value="cat.id" :key="cat.id">
+                {{ cat.title }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="text">Описание</label>
+          <textarea
+            name="text"
+            class="form-control textarea"
+            required
+            v-model="playlist.text"
+          ></textarea>
+        </div>
+      </div>
+
       <div class="col-lg-6">
         <draggable
-          class="videos  mb-4"
+          class="videos"
           tag="div"
           handle=".fa-bars"
           :list="playlist.videos"
@@ -52,61 +106,9 @@
           </template>
         </draggable>
       </div>
-      <div class="col-lg-6">
-        <div class="d-flex justify-content-between">
-          <p class="mr-2">Количество видео: {{ playlist.videos.length }}</p>
-          <div class="d-flex">
-            <button
-              class="btn btn-sm mr-2"
-              @click="modals.addVideo.show = true"
-            >
-              Добавить
-            </button>
-            <button class="btn btn-sm" @click="modals.upload.show = true">
-              Загрузить видео
-            </button>
-          </div>
-        </div>
-        <div>
-          <label for="title">Название</label>
-          <div class="form-group">
-            <input
-              type="text"
-              class="form-control"
-              v-model="playlist.title"
-              name="title"
-            />
-          </div>
+  
+    </div>
 
-          <div class="form-group">
-            <label for="playlist_id">Категория</label>
-            <select
-              name="category_id"
-              class="form-control"
-              v-model="playlist.category_id"
-            >
-              <option v-for="cat in categories" :value="cat.id" :key="cat.id">
-                {{ cat.title }}
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="text">Текст</label>
-          <textarea
-            name="text"
-            class="form-control"
-            required
-            v-model="playlist.text"
-          ></textarea>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <button class="btn btn-primary" @click="savePlaylist">Сохранить</button>
-      </div>
-    </div>
 
 
 
@@ -183,7 +185,7 @@
             <input
               type="text"
               class="form-control"
-              v-model="modals.upload.file.video.title"
+              v-model="modals.upload.file.model.title"
             />
           </div>
           <div class="col-md-12">
@@ -264,9 +266,6 @@
             </div>
 
 
-          <div class="d-flex mt-3">
-            <button class="btn mr-1" @click="updateVideo">Сохранить</button>
-          </div>
         </div>
       </div>
     </sidebar>
@@ -289,8 +288,8 @@ export default {
       playlist: {
         id: 1,
         category_id: 1,
-        title: "test",
-        text: "<b>tesxt text</b>",
+        title: "Плейлист",
+        text: "<b>Плейлист</b>",
         videos: [],
       },
       modals: {
@@ -364,7 +363,7 @@ export default {
     deleteVideo() {
       axios
         .post("/playlists/delete-video", {
-          id: this.modals.upload.file.video.id,
+          id: this.modals.upload.file.model.id,
         })
         .then((response) => {
           this.$message.success("Файл удален");
@@ -386,7 +385,7 @@ export default {
       axios
         .post("/playlists/save-video", {
           id: this.playlist.id,
-          video: this.modals.upload.file.video,
+          video: this.modals.upload.file.model,
           //size: this.modals.upload.file.size,
         })
         .then((response) => {
@@ -532,7 +531,8 @@ export default {
           playlist: this.playlist,
         })
         .then((response) => {
-          window.location.href = "/video_playlists";
+          this.$message.success('Сохранено');
+          this.$emit('back');
         })
         .catch((error) => {
           alert(error);

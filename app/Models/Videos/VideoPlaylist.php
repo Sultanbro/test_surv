@@ -18,6 +18,7 @@ class VideoPlaylist extends Model
         'title',
         'category_id',
         'text',
+        'img',
     ];
 
 

@@ -82,6 +82,7 @@ export default {
             this.findFile(file).status = 'success'
             let res = JSON.parse(event);
             file.name = res.filename;
+            file.title = res.filename;
             file.path = res.path;
             file.model = res.model;
             this.$emit('onupload', file);

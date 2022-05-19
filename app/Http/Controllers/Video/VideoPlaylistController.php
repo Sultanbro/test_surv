@@ -39,7 +39,7 @@ class VideoPlaylistController extends Controller {
 	public function get() {
 		return [
 			'user_id' => auth()->user()->ID,
-			'playlists' => Playlist::get()
+			'categories' => Category::with('playlists')->get()
 		];
 	}
 
@@ -71,6 +71,17 @@ class VideoPlaylistController extends Controller {
 			'video' => $video,
 			'was_in_playlist' => $was_in_playlist
 		]; 
+	}	
+
+
+	public function add(Request $request) {
+		$pl = Playlist::create([
+			'title' =>$request->title, 
+			'category_id' => $request->cat_id,
+			'text' => ' ',
+		]);
+		
+		return $pl;
 	}	
 
 	public function save_video(Request $request) {
@@ -152,6 +163,11 @@ class VideoPlaylistController extends Controller {
 		$playlist = Playlist::find($id);
 		if($playlist) $playlist->delete();
 		return redirect(self::PAGE);
+	}
+
+	public function delete(Request $request) {
+		$playlist = Playlist::find($request->id);
+		if($playlist) $playlist->delete();
 	}
 
 	public function store(Request $request) {

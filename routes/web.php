@@ -43,9 +43,12 @@ Route::post('/playlists/save-video', 'Video\VideoPlaylistController@save_video')
 Route::post('/playlists/delete-video', 'Video\VideoPlaylistController@delete_video');
 Route::post('/playlists/remove-video', 'Video\VideoPlaylistController@remove_video');
 Route::post('/playlists/save', 'Video\VideoPlaylistController@save');
+Route::post('/playlists/delete', 'Video\VideoPlaylistController@delete');
 Route::post('/playlists/save-test', 'Video\VideoPlaylistController@saveTest');
 Route::post('/playlists/video/update', 'Video\VideoController@updateVideo');
-
+Route::post('/playlists/add-cat', 'Video\VideoCategoryController@add'); 
+Route::post('/playlists/add', 'Video\VideoPlaylistController@add'); 
+Route::post('/playlists/delete-cat', 'Video\VideoCategoryController@delete'); 
 
 Route::get('/kb', 'KnowBaseController@index');
 Route::get('/upbooks', 'UpbookController@index');

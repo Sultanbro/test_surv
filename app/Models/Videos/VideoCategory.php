@@ -20,6 +20,6 @@ class VideoCategory extends Model
 
     public function playlists()
     {
-        return $this->hasMany('App\Models\Videos\VideoPlaylist');
+        return $this->hasMany('App\Models\Videos\VideoPlaylist', 'category_id', 'id');
     }
 }
