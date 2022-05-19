@@ -48,7 +48,9 @@ class VideoPlaylistController extends Controller {
 		$pl =  Playlist::with('videos')->find($id);
 
 		foreach($pl->videos as $video) {
-			$video->questions = TestQuestion::where('testable_type', 'video')->where('testable_id', $video->id)->get();
+			$video->questions = TestQuestion::where('testable_type', 'App\Models\Videos\Video')
+				->where('testable_id', $video->id)
+				->get();
 		}
 		return [
 			'playlist' => $pl,

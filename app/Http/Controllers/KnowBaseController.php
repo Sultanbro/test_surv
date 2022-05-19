@@ -89,7 +89,7 @@ class KnowBaseController extends Controller
         $page->edited_at = Carbon::parse($page->updated_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->created = Carbon::parse($page->created_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
 
-        $page->questions = TestQuestion::where('testable_type', 'kb')->where('testable_id', $request->id)->get();
+        $page->questions = TestQuestion::where('testable_type', 'App\Knowbase')->where('testable_id', $request->id)->get();
         $breadcrumbs = $this->getBreadcrumbs($page);
 
         $trees = [];
@@ -268,7 +268,7 @@ class KnowBaseController extends Controller
                 'page' => 0,
                 'points' => $q['points'],
                 'testable_id' => $request->id,
-                'testable_type' => "kb",
+                'testable_type' => "App\Knowbase",
                 'text' => $q['text'],
                 'type' => $q['type'],
                 'variants' => $q['variants'],
