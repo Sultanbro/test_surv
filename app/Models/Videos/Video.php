@@ -23,6 +23,12 @@ class Video extends Model
         'order'
     ];
 
+    public function questions()
+    {
+        return $this->morphMany('App\Models\TestQuestion', 'testable');
+    }
+    
+    
     public function comments()
     {
         return $this->hasMany('App\Models\Videos\VideoComment');

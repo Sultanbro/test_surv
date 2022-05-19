@@ -18,6 +18,11 @@ class Book extends Model
         'link',
         'img',
     ];
+
+    public function questions()
+    {
+        return $this->morphMany('App\Models\TestQuestion', 'testable');
+    }
     
     public static function withGroups(int $group_id = 0) {
         $books = Book::all();
