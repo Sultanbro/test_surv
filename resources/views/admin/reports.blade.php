@@ -18,7 +18,7 @@
                         <a class="nav-item nav-link" id="nav-quality-tab" href="/timetracking/quality-control">ОКК</a>
                     </div>
                 </nav>
-                <div id="app">
+                <div class="col-md-12">
                     <t-report :groups="{{json_encode($groups)}}" :fines="{{json_encode($fines)}}" :years="{{json_encode($years)}}" activeuserid="{{json_encode(auth()->user()->ID)}}" activeuserpos="{{json_encode(auth()->user()->position_id)}}"></t-report>
                 </div>
             </div>

@@ -11,6 +11,8 @@ use App\Models\CourseProgress;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\KnowBase;
+use App\User;
+use DB;
 
 class CourseController extends Controller
 {
@@ -90,6 +92,16 @@ class CourseController extends Controller
                 CourseItem::create($arr);
             }
         }
+
+        foreach($request->course['users'] as $index => $user) {
+            $cr = CourseResult::where('user_id', $user['ID'])->where('course_id', $request->course['id'])->first();
+            if(!$cr) CourseResult::create([
+                'user_id' => $user['ID'],
+                'course_id' => $request->course['id'],
+                'status' => CourseResult::INITIAL,
+                'points' => 0
+            ]);
+        }
     }
 
 
@@ -126,9 +138,20 @@ class CourseController extends Controller
             ]);
         }
 
+        $course = Course::with('items')->find($request->id);
+        
+        $course_users = CourseResult::where('course_id', $request->id)->get(['user_id'])->pluck('user_id')->toArray();
+        $course->users = User::withTrashed()->whereIn('ID', $course_users)->get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
+
+        $users = User::get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
+
+        foreach($users as $user) {
+            if($user->EMAIL == '') $user->EMAIL = 'x'; 
+        }
         return [
-            'course' => Course::with('items')->find($request->id),
+            'course' => $course,
             'all_items' => $all_items,
+            'users' => $users
         ];
     }
 
@@ -147,25 +170,5 @@ class CourseController extends Controller
         }
     }   
 
-    public function myCourses(Request $request) {
-        View::share('menu', 'mycourse');
-        return view('admin.mycourse');
-    }   
-    
-    public function getMyCourse(Request $request) {
-        $user_id = auth()->user()->ID;
-        $active_course = CourseResult::where('user_id', $user_id)->whereIn('status', [0,2])->orderBy('status', 'desc')->first();
-        
-        // $test_results = TestResult::where('user_id', $user_id)->user_id
-
-        if($active_course) {
-            //$course_items = $active_course ? 
-        } else {
-            $CourseProgress = CourseProgress::where('user_id', $user_id)->where()->get();
-        }
-
-        
-        
-        return $active_course;
-    }   
+  
 }

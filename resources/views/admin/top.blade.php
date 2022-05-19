@@ -3,8 +3,8 @@
 @section('content')
 
 <div class="animated fadeIn">
-    <div class="row">
-        <div class="col-md-12">
+    <div class="">
+        <div class="col-md-12  mb-3">
             <nav>
                 <div class="nav nav-tabs" id="nav-tab">
                     <a class="nav-item nav-link active" id="nav-top-tab" href="/timetracking/top">TOП</a>
@@ -19,10 +19,12 @@
             </nav>    
         </div>
         
-        <div class="col-md-12 top-page">
-            <page-top :data="{{json_encode($data)}}" activeuserid="{{json_encode(auth()->user()->ID)}}" />
-        </div>
+       
+    </div>
+
+    <div class="px-3 top-page mt-3">
+        <page-top :data="{{json_encode($data)}}" activeuserid="{{json_encode(auth()->user()->ID)}}" />
     </div>
 </div>
-
+ 
 @endsection

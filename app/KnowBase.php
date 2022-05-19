@@ -46,5 +46,22 @@ class KnowBase extends Model
     {
         return false;
     }
+
+    public static function getArray(&$arr, $kb) {
+        foreach ($kb->children as $key => $child) {
+            array_push($arr, [
+                'parent_id' => $child->parent_id,
+                'title' => $child->parent_id, 
+                'user_id'=> $child->user_id, 
+                'editor_id'=> $child->editor_id, 
+                'text'=> $child->text, 
+                'is_deleted'=> $child->is_deleted, 
+                'order'=> $child->order, 
+                'hash'=> $child->hash, 
+            ]);
+            
+            self::getArray($arr, $child);
+        }
+    }
     
 }

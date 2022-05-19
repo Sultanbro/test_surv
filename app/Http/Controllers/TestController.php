@@ -10,25 +10,30 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Classes\Analytics\Impl;
 use App\Classes\Analytics\PrCstll;
-use App\External\HeadHunter;
+use App\External\HeadHunter\HeadHunter;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
 use App\Models\QuartalBonus;
+use App\KnowBase;
 
 class TestController extends Controller {
  
 	public function test() {
 
-	    $a = \App\Kpi::userKpi(6293, '', 1);
+		$kb = KnowBase::with('children')->find(3);
+		$arr = [];
+		KnowBase::getArray($arr, $kb);
 
-		dd($a); 
+		$kb = KnowBase::with('questions')->find(284);
+
+		dd($kb); 
 
 	}  
 
 	public function hhRefresher() {
 		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
 		$hh = new HeadHunter();
-		$hh->auth_code = 'T1D4JV4BSSPS2T0CO5745QK3FGMOLNLHAQ46BQCPMJL93LI9RSR3QAULFR60667P';
+		$hh->auth_code = 'PFJT7Q17953OMBNR48N60J2F2M023LNBG8V3K7GSAJB6TF40QDGU82GKQ5LU07ND';
 		dd($hh->refreshAccessToken());
 		
 	}

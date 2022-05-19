@@ -467,13 +467,12 @@ class UserController extends Controller
 //            dd('asd1');
 
 
-//            $mycourse = \App\Models\CourseResult::whereIn('status', [0,2])
-//                ->where('user_id', $user->ID)
-//                ->orderBy('status', 'desc')
-//                ->with('course')
-//                ->first();
+           $mycourse = \App\Models\CourseResult::whereIn('status', [0,2])
+               ->where('user_id', $user->ID)
+               ->orderBy('status', 'desc')
+               ->with('course')
+               ->first();
 
-            $mycourse = null;
 
 
 

@@ -120,7 +120,7 @@ export default {
         .then((response) => {
 
           console.log(response.data);
-          //this.items = response.data.courses;
+          this.items = response.data.items;
          
           loader.hide();
         })

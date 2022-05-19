@@ -50,6 +50,10 @@ Route::post('/playlists/add-cat', 'Video\VideoCategoryController@add');
 Route::post('/playlists/add', 'Video\VideoPlaylistController@add'); 
 Route::post('/playlists/delete-cat', 'Video\VideoCategoryController@delete'); 
 
+
+Route::get('/cabinet', 'CabinetController@index');
+
+
 Route::get('/kb', 'KnowBaseController@index');
 Route::get('/upbooks', 'UpbookController@index');
 Route::get('/admin/upbooks', 'UpbookController@edit');
@@ -69,8 +73,8 @@ Route::post('/admin/courses/upload-image', 'CourseController@uploadImage');
 
 Route::post('/course-results/get', 'CourseResultController@get');
 
-Route::get('/my-courses', 'CourseController@myCourses');
-Route::get('/my-courses/get', 'CourseController@getMyCourse');
+Route::get('/my-courses', 'MyCourseController@myCourses');
+Route::get('/my-courses/get', 'MyCourseController@getMyCourse');
 
 Route::get('/kb/get', 'KnowBaseController@get');
 Route::post('/kb/get', 'KnowBaseController@getPage');

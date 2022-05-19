@@ -66,7 +66,7 @@
         @end="saveOrder"
       >
         <template v-for="(el, e_index) in course.items">
-          <li class="chapter" :id="el.id">
+          <li class="chapter opened" :id="el.id">
             <div class="d-flex aic mb-2">
               <div class="handles">
                 <i class="fa fa-bars mover"></i>
@@ -81,6 +81,33 @@
           </li>
         </template>
       </draggable>
+
+
+      <div class="mt-3">
+        Курс проходят:
+
+        <multiselect
+              v-model="course.users"
+              :options="users"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="true"
+              :preserve-search="true"
+              placeholder="Выберите"
+              label="EMAIL"
+              track-by="EMAIL"
+              :taggable="true"
+              :limit="3"
+              :limit-text="limitText"
+              @tag="addTag"
+            >
+            </multiselect>
+
+     
+        </multiselect>
+        <div v-for="user in course.users">{{ user }}</div>
+       
+      </div>
     </div>
   </div>
 </template>
@@ -96,6 +123,7 @@ export default {
       file: null,
       newItem: null,
       all_items: [],
+      users: [],
       course: {
         id: 0,
         items: [],
@@ -120,6 +148,7 @@ export default {
         .then((response) => {
           this.course = response.data.course;
           this.all_items = response.data.all_items;
+          this.users = response.data.users;
         })
         .catch((error) => {
           alert(error);
@@ -138,6 +167,15 @@ export default {
         this.course.items.push(this.all_items[this.newItem]);
         this.newItem = null;
       }
+    },
+
+    addTag(newTag) {
+      console.log(newTag)
+      const tag = {
+        EMAIL: newTag,
+        ID: newTag,
+      };
+      this.users.push(tag);
     },
 
     uploadFile() {
@@ -180,6 +218,10 @@ export default {
       this.file = files[0];
       this.uploadFile();
     },
+
+    limitText(count) {
+      return `и еще ${count}`
+    }
   },
 };
 </script>

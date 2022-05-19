@@ -3,9 +3,9 @@
 @section('content')
 
 <div class="animated fadeIn">
-  <div class="row">
+  <div class="">
   
-    <div class="col-md-12">
+    <div class="col-md-12 mb-3">
       <nav>
         <div class="nav nav-tabs" id="nav-tab">
           @if(auth()->user()->ID == 18 || auth()->user()->ID == 5)
@@ -20,7 +20,7 @@
           <a class="nav-item nav-link active" id="nav-quality-tab" href="/timetracking/quality-control">ОКК</a>
         </div>
       </nav>
-      <div id="app">
+      <div class="col-md-12">
         <t-quality activeuserid="{{ auth()->user()->ID }}" :groups="{{ json_encode($groups)}}"></t-quality>
       </div>
 

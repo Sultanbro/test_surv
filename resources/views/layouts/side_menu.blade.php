@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/timetracking/settings" class="link link-start">
+                    <a href="/cabinet" class="link link-start">
                         <i class="fas fa-cogs"></i>
                         <span>Настройки</span> 
                     </a>
@@ -165,35 +165,6 @@
                 <i class="fas fa-play"></i>
                 <span>Видеокурсы</span>
             </a>
-
-            <ul class="sub-menu">
-                <li>
-                    <a href="/video_playlists" class="link">
-                        <i class="fas fa-film"></i>
-                        <span>Плейлисты</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/videos" class="link">
-                        <i class="fa fa-file-video"></i>
-                        <span>Видеофайлы</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/video_categories" class="link">
-                        <i class="fas fa-list"></i>
-                        <span>Категории</span>
-                    </a>
-                </li>
-                <!-- <li>
-                    <a href="/video_groups" class="link">
-                        <i class="far fa-folder-open"></i>
-                        <span>Группы</span>
-                    </a>
-                </li> -->
-            </ul>
-
-
         </li>
 
         <li class="menu-item">
