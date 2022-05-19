@@ -73,8 +73,9 @@ Route::post('/admin/courses/upload-image', 'CourseController@uploadImage');
 
 Route::post('/course-results/get', 'CourseResultController@get');
 
-Route::get('/my-courses', 'MyCourseController@myCourses');
-Route::get('/my-courses/get', 'MyCourseController@getMyCourse');
+Route::get('/my-courses', 'MyCourseController@index');
+Route::get('/my-courses/get', 'MyCourseController@getCourses');
+Route::get('/my-courses/get/{id}', 'MyCourseController@getMyCourse');
 
 Route::get('/kb/get', 'KnowBaseController@get');
 Route::post('/kb/get', 'KnowBaseController@getPage');

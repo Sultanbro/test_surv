@@ -29,7 +29,7 @@ class VideoPlaylist extends Model
 
     public function videos()
     {
-        return $this->hasMany('App\Models\Videos\Video', 'playlist_id', 'id')->orderBy('order', 'asc');
+        return $this->hasMany('App\Models\Videos\Video', 'playlist_id', 'id')->with('questions')->orderBy('order', 'asc');
     }
 
     public function groups()

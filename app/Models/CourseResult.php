@@ -33,7 +33,8 @@ class CourseResult extends Model
     // status
     CONST INITIAL = 0;
     CONST COMPLETED = 1;
-    CONST STARTED = 2;
+    CONST ACTIVE = 2;
+    CONST CANCELED = 3;
 
 
     public static $courses;

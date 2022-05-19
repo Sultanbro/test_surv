@@ -103,7 +103,17 @@ class AnalyticsController extends Controller
         $year = $request->year;
         $date = Carbon::createFromDate($year, $month, 1);
 
+        $group = ProfileGroup::find($group_id);
+        $currentUser = User::bitrixUser();
+        $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
+        // Доступ к группе
+        if (!$group || !in_array($currentUser->ID, $group_editors) && $currentUser->ID != 18) {
+            return [
+                'error' => 'access',
+            ];
+        }
         
+
         $ac = AnalyticColumn::where('group_id', $group_id)->first();
         $ar = AnalyticRow::where('group_id', $group_id)->first();
         if(!$ac || !$ar) return [
@@ -134,6 +144,7 @@ class AnalyticsController extends Controller
         $fired_percent = $ff['percent'];
         $fired_number_prev = $ffp['fired'];
         $fired_number = $ff['fired'];
+
 
         return [
             'decomposition' => DecompositionValue::table($group_id, $date->format('Y-m-d')),

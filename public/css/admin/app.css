@@ -4523,3 +4523,26 @@ body {
 .course-results table .expanded td {
   padding: 5px 10px;
 }
+
+.mycourse .course-item .title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  background: #c4c6c8;
+}
+
+.mycourse .course-item .title.disabled {
+  background: #5a6673;
+}
+
+.mycourse .course-item.active .title {
+  color: green;
+}
+
+.mycourse .fixed-height {
+  height: 90vh;
+  height: calc(100vh - 36px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: 1px solid #eee;
+}

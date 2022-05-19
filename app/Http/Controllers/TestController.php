@@ -15,18 +15,20 @@ use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
 use App\Models\QuartalBonus;
 use App\KnowBase;
+use App\Models\Books\Book;
 
 class TestController extends Controller {
  
 	public function test() {
 
-		$kb = KnowBase::with('children')->find(3);
-		$arr = [];
-		KnowBase::getArray($arr, $kb);
+		// $kb = KnowBase::with('children','questions')->find(3);
+		// $arr = [];
+		// KnowBase::getArray($arr, $kb);
 
-		$kb = KnowBase::with('questions')->find(284);
+		$book = Book::with('questions')->find(15);
+		$book->questions = $book->questions->groupBy('page');
 
-		dd($kb); 
+		dd($book); 
 
 	}  
 

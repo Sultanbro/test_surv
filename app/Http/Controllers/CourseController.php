@@ -118,7 +118,7 @@ class CourseController extends Controller
             array_push($all_items, [
                 'item_id' => $book->id,
                 'title' => 'Книга: ' .$book->title,
-                'item_model'=> 'book'
+                'item_model'=> 'App\Models\Books\Book'
             ]);
         }
 
@@ -126,7 +126,7 @@ class CourseController extends Controller
             array_push($all_items, [
                 'item_id' => $video->id,
                 'title' => 'Видео: ' .$video->title,
-                'item_model'=> 'video'
+                'item_model'=> 'App\Models\Videos\Video'
             ]);
         }
 
@@ -134,7 +134,7 @@ class CourseController extends Controller
             array_push($all_items, [
                 'item_id' => $kb->id,
                 'title' => 'БЗ: ' . $kb->title,
-                'item_model'=> 'kb'
+                'item_model'=> 'App\KnowBase'
             ]);
         }
 
