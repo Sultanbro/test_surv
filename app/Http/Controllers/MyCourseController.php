@@ -106,6 +106,7 @@ class MyCourseController extends Controller
             
 
             $title = $pl->title;
+            
             foreach ($pl->videos as $key => $video) {
                 $fp = $progresses->where('item_id', $video->id)->first();
                 $steps[] = [
@@ -130,6 +131,16 @@ class MyCourseController extends Controller
             $title = $book->title;
 
             $pages = $book->questions->groupBy('page');
+
+
+            $steps[] = [
+                'id' => $course_item->item_id,
+                'title' => 'Введение',
+                'type' => 'book',
+                'link' => $book->link,
+                'questions' => [],
+                'status' => 1
+            ];
 
             foreach ($pages as $page => $test) {
                 

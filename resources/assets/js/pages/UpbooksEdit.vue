@@ -204,6 +204,7 @@ export default {
   name: "UpbookEdit",
   props: {
     token: String,
+    can_edit: Boolean,
     access: String // read edit
   },
   data() {
@@ -211,6 +212,7 @@ export default {
       activeBook: null,
       activeCategory: null,
       categories: [],
+      mode: 'read',
       modals: {
         add_category: {
           show: false,
@@ -229,6 +231,10 @@ export default {
     };
   },
   created() {
+    if(this.can_edit) {
+      this.mode = 'edit';
+    } 
+
     this.fetchData();
   },
   methods: {

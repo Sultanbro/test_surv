@@ -177,6 +177,30 @@ class VideoPlaylistController extends Controller {
 		return redirect(self::PAGE);
 	}
 
-	
+	public function saveTest(Request $request)
+    {
+        foreach ($request->questions as $key => $q) {
+            $params = [
+                'order' => 0,
+                'page' => 0,
+                'points' => $q['points'],
+                'testable_id' => $request->id,
+                'testable_type' => "App\Models\Videos\Video",
+                'text' => $q['text'],
+                'type' => $q['type'],
+                'variants' => $q['variants'],
+            ];
+
+            if ($q['id'] != 0) {
+                $testq = TestQuestion::find($q['id']);
+                if ($testq) {
+                    $testq->update($params);
+                }
+
+            } else {
+                TestQuestion::create($params);
+            }
+        }
+    }
 	
 }

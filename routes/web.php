@@ -52,6 +52,8 @@ Route::post('/playlists/delete-cat', 'Video\VideoCategoryController@delete');
 
 
 Route::get('/cabinet', 'CabinetController@index');
+Route::get('/cabinet/get', 'CabinetController@get');
+Route::post('/cabinet/save', 'CabinetController@save');
 
 
 Route::get('/kb', 'KnowBaseController@index');

@@ -1,5 +1,5 @@
 <template>
-  <div class="questions">
+  <div class="questions" :class="{'hide': mode == 'read' && (questions === undefined || questions.length == 0)}">
     <div class="title" v-if="mode == 'read' && type == 'book' || ['kb', 'video'].includes(type)">Проверочные вопросы</div>
     <div class="question mb-2" v-for="(q, q_index) in questions" :key="q_index">
       <div
@@ -97,7 +97,7 @@
           </div>
 
           <button class="btn btn-success" @click="saveQuestion(q_index)">
-            Сохранить
+            Сохранить вопрос
           </button>
           <button
             class="btn mr-1"
@@ -124,11 +124,11 @@
         </button>
       </div>
 
-      <p v-if="points != -1">{{ points }} баллов из {{ total }}</p>
+      <p v-if="points != -1" class="mt-3">Вы набрали: {{ points }} баллов из {{ total }}</p>
     </template>
     <template v-if="mode == 'edit'">
       <button
-        v-if="['kb'].includes(type)"
+        v-if="['kb','video'].includes(type)"
         class="btn btn-success mr-2" 
         @click="saveTest">
           Сохранить
@@ -239,6 +239,10 @@ export default {
           q.result = true;
         }
       });
+
+      if(this.points == this.totals) {
+        this.$emit('passed');
+      }
     },
 
     addVariant(q_index, v_index = -1) {

@@ -215,7 +215,7 @@
     >
       <div class="fast-edit">
         <div v-if="activeVideo !== null">
-          <div id="video" class="mb-3 w65"></div>
+          <vue-core-video-player :src="activeVideo.links"  class="mb-3 w65"></vue-core-video-player>
 
           <div class="row mb-2">
             <div class="col-md-4">
@@ -257,7 +257,6 @@
 
            <div class="vid">
                 <questions
-                    v-if="[5, 18, 157, 84].includes(auth_user_id)"
                     :questions="activeVideo.questions"
                     :id="activeVideo.id"
                     type="video"
@@ -314,7 +313,6 @@ export default {
           show: false,
         },
       },
-      player: null,
     };
   },
   watch: {
@@ -494,20 +492,11 @@ export default {
     showVideoSettings(video) {
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
-      this.player = new Playerjs({
-        id: "video",
-        poster: "",
-        file: video.links,
-      });
+
     },
 
     closeSidebar() {
       this.sidebars.edit_video.show = false;
-      this.player = new Playerjs({
-        id: "video",
-        poster: "",
-        file: '',
-      });
     },
 
     fetchData() {

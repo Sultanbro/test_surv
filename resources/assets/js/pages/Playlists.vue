@@ -20,13 +20,13 @@
 
             <i
               class="fa fa-trash ml-2"
-              v-if="cat.id != 0"
+              v-if="cat.id != 0 && mode == 'edit'"
               @click.stop="deleteCat(index)"
             ></i>
             </div>
             
 
-          <button class="btn-add" @click="showAddCategory = true">
+          <button class="btn-add" @click="showAddCategory = true" v-if="mode == 'edit'">
             Добавить категорию
           </button>
 
@@ -48,7 +48,12 @@
                 </template>
                 <!---->
               </div>
-              <div class="control-btns"></div>
+              <div class="control-btns" >
+                <div class="mode_changer" v-if="can_edit">
+                  <i class="fa fa-edit" @click="mode = 'edit'" :class="{'active': mode == 'edit'}" />
+                  <i class="fa fa-eye" @click="mode = 'read'" :class="{'active': mode == 'read'}" />
+                </div>
+              </div>
             </div>
             <div><!----></div> 
           </div>
@@ -58,11 +63,20 @@
 
               <div v-if="activePlaylist != null" class="">
                 <page-playlist-edit 
+                  v-if="mode == 'edit'"
                   ref="playlist"
                   @back="back" 
                   :token="token"
                   :id="activePlaylist.id"
                   :auth_user_id="user_id" />
+
+                <page-playlist-read
+                  v-if="mode == 'read'"
+                  ref="playlist"
+                  @back="back" 
+                  :id="activePlaylist.id"
+                  :auth_user_id="user_id"
+                  />
               </div>
 
               <div v-else>
@@ -74,7 +88,7 @@
                     </div>
 
                     
-                    <button class="btn-add mt-0 ml-2 mb-3" @click="showAddPlaylist = true">
+                    <button class="btn-add mt-0 ml-2 mb-3" @click="showAddPlaylist = true"  v-if="mode == 'edit'">
                       Добавить плейлист
                     </button>
                   </div>
@@ -98,7 +112,7 @@
                           <td>
                             <div class="title">  {{ playlist.title }}</div>
                             <div class="text">  {{ playlist.text }}</div>
-                               <div class="d-flex">
+                               <div class="d-flex"  v-if="mode == 'edit'"> 
                                 <i
                                   class="fa fa-cogs"
                                   v-if="playlist.id != 0"
@@ -171,23 +185,26 @@
 <script>
 export default {
   name: "Playlists",
-  props: ['token'],
+  props: ['token', 'can_edit'],
   data: function() {
     return {
       categories: [],
       user_id: 0,
+      mode: 'read',
       activeCat: null,
       newcat: '',
       newPlaylist: '',
       activePlaylist: null,
       showAddPlaylist: false,
       showAddCategory: false,
-
     };
   },
   watch: {},
 
   created() {
+    if(this.can_edit) {
+      this.mode = 'edit';
+    } 
     this.fetchData();
   },
 

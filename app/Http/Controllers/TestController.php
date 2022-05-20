@@ -28,7 +28,7 @@ class TestController extends Controller {
 		$book = Book::with('questions')->find(15);
 		$book->questions = $book->questions->groupBy('page');
 
-		dd($book); 
+		dd(Auth::user()); 
 
 	}  
 

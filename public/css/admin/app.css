@@ -1807,7 +1807,7 @@ ul {
 .chapter .chapter-btns {
   position: absolute;
   right: 0;
-  bottom: 6px;
+  top: 3px;
   text-align: center;
   display: none;
 }
@@ -2277,10 +2277,14 @@ ul.main-menu {
   padding: 30px;
   max-width: 100%;
   background: #ffffff;
-  border: 1px solid #d7d7d7;
+  border: 1px dashed  #d7d7d7;
   border-radius: 5px;
   -webkit-box-shadow: 0 0 5px 1px #e9ebef;
           box-shadow: 0 0 5px 1px #e9ebef;
+}
+
+.questions.hide {
+  display: none;
 }
 
 .questions > .title {
@@ -3679,6 +3683,54 @@ body {
 
 .my-course progress {
   width: 180px;
+}
+
+.mode_changer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  border: 1px solid #dcdee5;
+  background: #eaebef;
+  border-radius: 5px;
+}
+
+.mode_changer i {
+  cursor: pointer;
+  padding: 6px;
+}
+
+.mode_changer i.active {
+  color: #007bff;
+  background: #bbd6ff;
+}
+
+.video-title {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 5px 15px;
+  margin-bottom: 5px;
+  background: #eaebef;
+}
+
+.video-title.active {
+  background: #2490ff;
+}
+
+.video-title.disabled {
+  background: #5c5f64;
+  color: #c8c8c8;
+}
+
+.video-tit {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.video-list {
+  overflow: hidden;
+  overflow-y: auto;
+  height: calc(100vh - 130px);
 }
 
 .kb-sections .sections-wrap {

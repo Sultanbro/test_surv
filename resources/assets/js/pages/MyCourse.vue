@@ -89,7 +89,7 @@
                       <div v-if="item.status == 2">
                           <div
                             class="section d-flex aic jcsb my-2"
-                            @click="selectStep(step)"
+                            @click="selectStep(step, item)"
                             v-for="(step, i) in item.steps"
                           >
                             <p class="mb-0">{{ step.title }}</p>
@@ -102,36 +102,39 @@
 
 
 
-            <div class="col-md-9 fixed-height py-3 ">
+            <div class="fixed-height ">
               <div v-if="activeStep">
 
 
                   <div v-if="activeStep.type == 'book'">
-                    EEEEEE NOOOOOOOOOO
+                    <page-upbooks-read :activeBook="activeStep" mode="read"  />
                   </div>
 
 
 
                   <div v-if="activeStep.type == 'video'">
-                      <div id="video" class="mb-3 w65"></div>
+                      <vue-core-video-player :src="activeStep.links"  class="mb-3 w65"></vue-core-video-player>
                   </div>
 
 
 
-                  <div v-if="activeStep.type == 'kb'">
+                  <div v-if="activeStep.type == 'kb'" class="py-3 ">
                       <div class="text-container" v-html="activeStep.text"></div>
                   </div>
 
                  
+                  <div class="py-3">
+                    <questions
+                      :questions="activeStep.questions"
+                      :id="activeStep.id"
+                      :type="activeStep.type"
+                      @passed="setStepStatus"
+                      mode="read"
+                      />
 
-                  <questions
-                    :questions="activeStep.questions"
-                    :id="activeStep.id"
-                    :type="activeStep.type"
-                    mode="read"
-                  />
+                      <button class="btn btn-primary mt-3" @click="nextStep"> Перейти к следующему</button>
+                  </div>  
                   
-                  <button class="btn btn-primary mt-3" @click="nextStep"> Перейти к следующему</button>
               </div>
             </div>
 
@@ -159,6 +162,7 @@ export default {
       test: "dsa",
       items: [],
       courses: [],
+      activeCourseItem: null,
       activeCourse: null,
       activeStep: null,
     };
@@ -196,27 +200,50 @@ export default {
     },
 
   selectCourseItem(i) {
-    this.activeCourse
+   
+    
   },
+    
+    setStepStatus() {
+      let index = this.activeCourseItem.steps.findIndex(s => s.id == this.activeStep.id);
+      this.activeCourseItem.steps[index].status = 1;
+    },
 
-    selectStep(step) {
+    selectStep(step, item) {
+      this.activeCourseItem = item;
       this.activeStep = step;
-
-        if(this.activeStep.type == 'video') {
-          this.player = new Playerjs({
-            id: "video",
-            poster: "",
-            file: this.player.links,
-          });
-        }
-        
-      
-
     },
 
+ 
     nextStep() {
-      alert('next step')
+      let index = this.activeCourseItem.steps.findIndex(s => s.id == this.activeStep.id);
+      
+      this.$message.info(index);
+      this.$message.info(this.activeCourseItem.steps[index]);
+      if(this.activeCourseItem.steps[index].status != 1) {
+        this.$message.info('Ответьте на вопросы правильно!');
+        return ;
+      }
+   
+
+      if(this.activeCourseItem.steps.length - 1  == index) {
+         
+        let c_index = this.items.findIndex(s => s.id == this.activeCourseItem.id);
+        if(this.items.length - 1 == c_index) {
+          this.$message.info('Конец курса!');
+          return;
+        } else {
+          this.activeCourseItem = this.items[c_index + 1 ];
+          this.activeStep = this.activeCourseItem.steps[0];
+        }
+
+      } else {
+        this.activeCourseItem.steps[index + 1];
+      }
+
+     
     },
+
     getCourse(id) {
       let loader = this.$loading.show();
 

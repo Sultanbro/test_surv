@@ -713,3 +713,50 @@ body {
     width: 180px;
   }
 }
+
+.mode_changer {
+  display: flex;
+  border: 1px solid #dcdee5;
+  background: #eaebef;
+  border-radius: 5px;
+
+  i {
+    cursor: pointer;
+    padding: 6px;
+  }
+  i.active {
+    color: #007bff;
+    background: #bbd6ff;
+    
+  }
+}
+
+
+.video-title {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 5px 15px;
+  margin-bottom: 5px;
+  background: #eaebef;
+
+  &.active {
+    background: #2490ff;
+  }
+
+  &.disabled {
+    background: #5c5f64;
+    color: #c8c8c8;
+  }
+}
+
+.video-tit {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.video-list {
+  overflow: hidden;
+    overflow-y: auto;
+    height: calc(100vh - 130px);
+}
