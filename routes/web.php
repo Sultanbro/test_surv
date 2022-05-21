@@ -153,6 +153,12 @@ Route::any('/timetracking/settings/positions/save', 'Admin\TimetrackingControlle
 Route::post('/timetracking/settings/positions/add', 'Admin\TimetrackingController@addPosition');
 Route::post('/timetracking/settings/positions/delete', 'Admin\TimetrackingController@deletePosition');
 
+
+Route::post('/timetracking/settings/add/check', 'Admin\CheckListController@store'); /// добавление Чек листа
+Route::get('/timetracking/settings/list/check', 'Admin\CheckListController@listViewCheck'); /// список Чек листов
+Route::post('/timetracking/settings/delete/check', 'Admin\CheckListController@deleteCheck'); /// удаление Чек листа по ИД
+
+
 Route::post('timetracking/settings/get_time_addresses', 'Admin\TimetrackingController@getTimeAddresses');
 Route::post('timetracking/settings/save_time_addresses', 'Admin\TimetrackingController@saveTimeAddresses');
 

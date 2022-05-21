@@ -23,14 +23,34 @@ class TestController extends Controller {
 		$a = \App\User::find(5)->toArray();
 		//array_push($a, [1231]);
 
+<<<<<<< HEAD
 		
 		dd($a);
+=======
+<<<<<<< HEAD
+        $average1 = collect([5,3,2,1,4])->sort()->values();
+
+        dd($average1);
+
+
+        $collection = collect($average1->toArray());
+
+        dd($collection);
+
+
+
+        dd($average1,$average1->toArray(),'colliction');
+
+	    $a = \App\Kpi::userKpi(6293, '', 1);
+=======
+>>>>>>> b387a1795921429dbc519a7ee35499d70afea958
 		// $kb = KnowBase::with('children','questions')->find(3);
 		// $arr = [];
 		// KnowBase::getArray($arr, $kb);
 		//$storagePath  = \Storage::disk('dispos')->get($temp_path);
 		//dd($storagePath);
 		
+>>>>>>> dcdd8f6f6df3830733edb070e5289974dedb924e
 
 
 		dd(\Storage::exists('public/' . '/Evgenii-jigilin-master-zvonka.pdf')); 

@@ -10,7 +10,7 @@
                 <div id="app">
 
                     <div class="default-tab">
-                        <nav class="normal">
+                        <nav class="normal mt-4">
                             <div class="nav nav-tabs set-tabs" id="nav-tab" role="tablist">
                                 <a class="nav-item nav-link @if($active_tab == 1) active @endif" id="nav-person-tab" href="/timetracking/settings?tab=1#nav-person"  aria-controls="nav-person" aria-selected="false">Сотрудники</a>
 
@@ -21,6 +21,7 @@
                                 <a class="nav-item nav-link @if($active_tab == 5) active @endif" id="nav-notifications-tab"  href="/timetracking/settings?tab=5#nav-notifications" aria-controls="nav-notifications" aria-selected="false">Уведомления</a>
                                 <a class="nav-item nav-link @if($active_tab == 6) active @endif" id="nav-bookgroups-tab"  href="/timetracking/settings?tab=6#nav-bookgroups" aria-controls="nav-bookgroups" aria-selected="false">Обучение</a>
                                 <a class="nav-item nav-link @if($active_tab == 7) active @endif" id="nav-permissions-tab"  href="/timetracking/settings?tab=7#nav-permissions" aria-controls="nav-permissions" aria-selected="false">Доступы</a>
+                                <a class="nav-item nav-link @if($active_tab == 8) active @endif" id="nav-checkList-tab"  href="/timetracking/settings?tab=8#nav-checkList" aria-controls="nav-checkList" aria-selected="false">Чек Лист</a>
                                 @endif
                             </div>
                         </nav>
@@ -59,17 +60,27 @@
                                 />
                             </div>
                             @endif
-
                             @if($active_tab == 6)
                             <div class="tab-pane fade show active   p-4" id="nav-bookgroups" role="tabpanel" aria-labelledby="nav-bookgroups-tab">
                                 <bookgroups></bookgroups>
                             </div>
                             @endif
-
                             @if($active_tab == 7)
                             <div class="tab-pane fade show active" id="nav-permisssions" role="tabpanel" aria-labelledby="nav-permisssions-tab">
                                 <permissions />
                             </div>
+                            @endif
+
+                            @if($active_tab == 8)
+
+
+                                    <div class="tab-pane fade show active   p-4" id="checkList" role="tabpanel" aria-labelledby="nav-checkList-tab">
+                                        <check-list
+                                                          groups="{{json_encode($groups) }}"
+                                                         :allusers="{{json_encode($tab5['users'])}}"
+                                                         :positions="{{json_encode($positions)}}"
+                                        />
+                                    </div>
                             @endif
                         </div>
                     </div>
