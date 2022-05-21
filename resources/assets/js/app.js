@@ -142,6 +142,11 @@ Vue.component('groups', require('./pages/groups.vue')); // Группы
 Vue.component('fines', require('./pages/Fines.vue')); // штрафы table
 Vue.component('s-notifications', require('./pages/Notifications.vue')); // Уведомления
 Vue.component('bookgroups', require('./pages/bookgroups.vue')); // обучение книги
+Vue.component('check-list', require('./pages/checkList.vue')); // чек лист
+
+
+
+
 
 const app = new Vue({
   el: '.right-panel-app'

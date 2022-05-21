@@ -112,11 +112,16 @@ class UserController extends Controller
     public function profile(Request $request)
     {
 
+
         $user = Auth::user();
 
         $quartal = QuartalBonus::on()->where('user_id',$user->ID)
             ->where('year',date('Y'))
             ->get()->toArray();
+        $quarter_bonus = QuartalBonus::on()->where('user_id',$user->ID)
+            ->where('year',date('Y'))->sum('sum');
+
+
 //        dd($user);
 
         if($user->ID == 5 && isset($_GET['user_id'])) {
@@ -403,6 +408,7 @@ class UserController extends Controller
             // prepare user_earnigs 
             $oklads = number_format(round((float)$oklad * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency);
             $user_earnings = [
+                'quarter_bonus' => $quarter_bonus.' '. strtoupper($user->currency),
                 'oklad' => round((float)$oklad * $currency_rate, 0),
                 'bonus' => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
                 'kpis' => $kpis,

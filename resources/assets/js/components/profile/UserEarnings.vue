@@ -46,6 +46,7 @@
         <p class="mb-0  font-bold">Бонусы <span></span></p>
         <p class="text-center">{{ data.bonus }}</p>
     </div>
+
     <div class="flexy"  v-bind:class="[activeClass]"  v-if="this.quarters.length != 0"  v-show="visible"  >
         <div class="filler" @click="showQuartalBonusSidebar = true" style="top:15px">
             <img src="/images/bonus_type_2.png"
@@ -57,7 +58,8 @@
                     class="img-fluid w-120">
             </div>
         </div>
-        <p class="mb-0  font-bold">Квартальные бонусы <span></span></p>
+        <p class="mb-0  font-bold">Квартальная премия <span></span></p>
+        <p class="text-center">{{ data.quarter_bonus }}</p>
     </div>
 
     <sidebar
@@ -145,7 +147,7 @@
       </div>
     </sidebar>
     <sidebar
-      title="Квартальный бонус"
+      title="Квартальная премия"
       :open="showQuartalBonusSidebar"
       @close="showQuartalBonusSidebar = false"
       width="40%"
@@ -153,10 +155,10 @@
 
         <div v-if="this.quarters.length > 0">
             <div class="mt-2"  v-for="quarter in this.quarters">
-                <p class="font-bold mb-0" v-if="quarter.quartal === 1">Квартальные бонусы период с 01.01.2020 до 31.03.{{quarter.year}}</p>
-                <p class="font-bold mb-0" v-if="quarter.quartal === 2">Квартальные бонусы период с 01.03.2020 до 31.06.{{quarter.year}}</p>
-                <p class="font-bold mb-0" v-if="quarter.quartal === 3">Квартальные бонусы период с 01.06.2020 до 31.09.{{quarter.year}}</p>
-                <p class="font-bold mb-0" v-if="quarter.quartal === 4">Квартальные бонусы период с 01.09.2020 до 31.12.{{quarter.year}}</p>
+                <p class="font-bold mb-0" v-if="quarter.quartal === 1">Квартальная премия период с 01.01.2020 до 31.03.{{quarter.year}}</p>
+                <p class="font-bold mb-0" v-if="quarter.quartal === 2">Квартальная премия период с 01.03.2020 до 31.06.{{quarter.year}}</p>
+                <p class="font-bold mb-0" v-if="quarter.quartal === 3">Квартальная премия период с 01.06.2020 до 31.09.{{quarter.year}}</p>
+                <p class="font-bold mb-0" v-if="quarter.quartal === 4">Квартальная премия период с 01.09.2020 до 31.12.{{quarter.year}}</p>
                 <table class="table table-bordered table-sm ue-table">
                     <tr class="colspan">
                         <td class="text-left" style="width: 30%">Сумма</td>
@@ -183,6 +185,7 @@ export default {
         activeuserid: Number,
         quarters:[],
 
+
     },
     data() {
         if(this.quarters.length == 0){
@@ -202,6 +205,7 @@ export default {
     },
     created() {
 
+        console.log(this.data,'imasheev')
     },
     methods: {
         

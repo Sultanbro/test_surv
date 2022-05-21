@@ -64,7 +64,13 @@ class TimetrackingController extends Controller
 
         View::share('menu', 'timetrackingsetting');
 
-        $groups = ProfileGroup::where('active', 1)->get()->pluck('name');
+        $groups = ProfileGroup::where('active', 1)->get()->pluck('name','id');
+
+
+
+
+
+
         $archived_groups = ProfileGroup::where('active', 0)->get(['id', 'name']);
         $book_groups = BookGroup::all();
         
@@ -74,7 +80,7 @@ class TimetrackingController extends Controller
 
         $array = [];
         foreach ($_positions as $key => $position) {
-            $array[] = $position->position;
+            $array[$position->id] = $position->position;
         }
         $positions = $array;
 
@@ -1122,6 +1128,9 @@ class TimetrackingController extends Controller
         $_notification_templates = NotificationTemplate::where('type', NotificationTemplate::USER)->select('title','id')->get()->toArray();
 
         $need_group = NotificationTemplate::where('type', NotificationTemplate::USER)->pluck('need_group','id')->toArray();
+
+
+
         return [
             NotificationTemplate::USER => $_users,
             NotificationTemplate::GROUP => $_groups,

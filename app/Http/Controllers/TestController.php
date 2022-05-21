@@ -19,6 +19,19 @@ class TestController extends Controller {
  
 	public function test() {
 
+        $average1 = collect([5,3,2,1,4])->sort()->values();
+
+        dd($average1);
+
+
+        $collection = collect($average1->toArray());
+
+        dd($collection);
+
+
+
+        dd($average1,$average1->toArray(),'colliction');
+
 	    $a = \App\Kpi::userKpi(6293, '', 1);
 
 		dd($a); 

@@ -3,11 +3,9 @@
 
     <div class="quarter-page">
         <p class="call-norm p-0">{{ group }} </p>
-        <span class="mb-2">При <span style="background-color:rgb(193 255 208)">активации</span> профель сотрудника появется условие получение квартального Бонуса</span>
+        <span class="mb-2">При <span style="background-color:rgb(193 255 208)">активации</span> в профиле у сотрудника появятся условия получения квартальной Премии</span>
 
         <div class="d-flex mt-2">
-
-
 
             <table class="table table-bordered table-sm mark">
 
@@ -141,6 +139,7 @@
                                 this.errors[i] = 'Заполните Комментарии Четвертого Квартала';
                             }
 
+
                         }
                     }
                 }
@@ -157,7 +156,7 @@
                             user_id:this.user_id,
                         }).then(response => {
                             if (response.data.success == 1){
-                                this.$message.success('Cохранено');
+                                this.$message.success('Изменения сохранены');
                                 document.getElementById('clickQuarter').click();
                             }
                         })

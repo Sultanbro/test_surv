@@ -72,6 +72,8 @@
                     console.log(error)
                 });
             },
+
+
             addFine() {
                 this.fines.push({
                     id: 0,
@@ -79,6 +81,8 @@
                     penalty_amount: 0
                 });
             },
+
+
             saveFines() {
                 if (this.validateFields() && !this.preloaderShow) {
                     this.alert.show = false;
@@ -101,6 +105,7 @@
                     });
                 }
             },
+
             deleteFine(index) {
                 this.fines.splice(index, 1)
             },

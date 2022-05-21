@@ -13,7 +13,7 @@ class CreateQuartalBonusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('quartals_bonuses', function (Blueprint $table) {
+        Schema::create('quartal_bonuses', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
             $table->integer('auth_id');
