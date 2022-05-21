@@ -57,8 +57,9 @@
           </div>
 
           <div class="mode_changer" v-if="can_edit">
-            <i class="fa fa-edit" @click="$emit('toggleMode', 'edit')" :class="{'active': mode == 'edit'}" />
-            <i class="fa fa-eye" @click="$emit('toggleMode', 'read')" :class="{'active': mode == 'read'}" />
+            <i class="fa fa-edit"
+              @click="$emit('toggleMode')"
+              :class="{'active': mode == 'edit'}" />
           </div>
 
           <div class="control-btns" v-if="can_edit">

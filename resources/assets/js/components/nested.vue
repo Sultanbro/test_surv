@@ -32,7 +32,7 @@
               <i class="fa fa-plus mr-1" @click.stop="addPage(el)"></i>
             </div>
         </div>
-        <nested-draggable :tasks="el.children" @showPage="showPage" @addPage="addPage" :parent_id="el.id" :auth_user_id="auth_user_id" :opened="el.opened" />
+        <nested-draggable :tasks="el.children" @showPage="showPage" @addPage="addPage" :parent_id="el.id" :auth_user_id="auth_user_id" :opened="el.opened"  :mode="mode" />
       </li>
     </template>
   </draggable>

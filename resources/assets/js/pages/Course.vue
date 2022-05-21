@@ -166,7 +166,7 @@ export default {
       if (this.newItem !== null) {
         this.course.items.push(this.all_items[this.newItem]);
         this.newItem = null;
-      }
+      } 
     },
 
     addTag(newTag) {

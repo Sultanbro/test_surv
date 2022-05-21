@@ -65,6 +65,7 @@ Route::post('/admin/upbooks/category/delete', 'UpbookController@deleteCategory')
 Route::post('/admin/upbooks/tests/get', 'UpbookController@getTests');
 Route::post('/admin/upbooks/save', 'UpbookController@save');
 Route::post('/admin/upbooks/update', 'UpbookController@update');
+Route::post('/admin/upbooks/delete', 'UpbookController@delete');
 
 Route::get('/admin/courses/get', 'CourseController@get');
 Route::post('/admin/courses/delete', 'CourseController@delete');

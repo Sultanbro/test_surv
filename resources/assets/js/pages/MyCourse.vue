@@ -59,7 +59,13 @@
           </template>
           <!---->
         </div>
-        <div class="control-btns"></div>
+        <div class="control-btns">
+
+            <div v-if="activeStep">
+              <button class="btn btn-primary py-0" @click="nextStep"> Перейти к следующему</button>
+            </div>
+
+        </div>
       </div>
       <div><!----></div>
     </div>
@@ -132,7 +138,7 @@
                       mode="read"
                       />
 
-                      <button class="btn btn-primary mt-3" @click="nextStep"> Перейти к следующему</button>
+                      
                   </div>  
                   
               </div>
@@ -179,9 +185,16 @@ export default {
   },
   mounted() {},
   methods: {
+    setStart() {
+      if(this.items.length > 0 && this.items[0].steps.length > 0) {
+        this.activeCourseItem = this.items[0];
+        this.activeStep = this.items[0].steps[0];
+      }
+    },
     selectCourse(i) {
       this.items = [];
       this.activeCourse = this.courses[i];
+
     },
 
     fetchData() {
@@ -258,7 +271,7 @@ export default {
           let b = urlParams.get("id");
           let uri = "/my-courses?id=" + id;
           window.history.replaceState({}, "Мои курсы", uri);
-
+          this.setStart();
           loader.hide();
         })
         .catch((error) => {

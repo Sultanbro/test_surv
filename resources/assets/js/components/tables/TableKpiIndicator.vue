@@ -58,7 +58,7 @@
                     <b-input type="number" min="0" v-if="is_admin" class="form-control number_input mr-2" v-model="kpi_indicator.daily_plan"  />
                     <div style="display:inline-block" @click="showInput = !showInput"><i  class="fa fa-check"></i></div>
                 </div>
-                <div v-else>{{ plan }} <div style="display:inline-block" @click="showInput = !showInput"><i  class="fa fa-pencil"></i></div></div>
+                <div v-else>{{ plan }} <div style="display:inline-block" @click="showInput = !showInput"><i  class="fa fa-edit"></i></div></div>
             </div>
             <span v-else>{{ plan }}</span>
             

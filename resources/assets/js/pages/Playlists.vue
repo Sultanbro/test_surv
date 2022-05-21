@@ -50,8 +50,7 @@
               </div>
               <div class="control-btns" >
                 <div class="mode_changer" v-if="can_edit">
-                  <i class="fa fa-edit" @click="mode = 'edit'" :class="{'active': mode == 'edit'}" />
-                  <i class="fa fa-eye" @click="mode = 'read'" :class="{'active': mode == 'read'}" />
+                  <i class="fa fa-edit"  @click="toggleMode" :class="{'active': mode == 'edit'}" />
                 </div>
               </div>
             </div>
@@ -337,6 +336,10 @@ export default {
           alert(error);
         });
     },
+
+    toggleMode() {
+      this.mode = (this.mode == 'read') ? 'edit' : 'read';
+    }
     
   },
 };

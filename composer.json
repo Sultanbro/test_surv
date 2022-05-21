@@ -19,6 +19,7 @@
         "setasign/fpdi": "^2.2",
         "setasign/fpdi-tcpdf": "^2.2",
         "setasign/tfpdf": "^1.25",
+        "spatie/pdf-to-image": "^2.2",
         "vsmoraes/laravel-pdf": "^2.0"
     },
     "require-dev": {

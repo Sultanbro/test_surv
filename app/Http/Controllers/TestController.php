@@ -24,11 +24,12 @@ class TestController extends Controller {
 		// $kb = KnowBase::with('children','questions')->find(3);
 		// $arr = [];
 		// KnowBase::getArray($arr, $kb);
+		//$storagePath  = \Storage::disk('dispos')->get($temp_path);
+		//dd($storagePath);
+		
 
-		$book = Book::with('questions')->find(15);
-		$book->questions = $book->questions->groupBy('page');
 
-		dd(Auth::user()); 
+		dd(\Storage::exists('public/' . '/Evgenii-jigilin-master-zvonka.pdf')); 
 
 	}  
 

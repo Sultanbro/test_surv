@@ -32,15 +32,11 @@ class UpbookController extends Controller
     public function admin_get(Request $request)
     {   
 
-        $cats = BookGroup::get();
+        $cats = BookGroup::with('books')->get();
 
-        $books_with_cats = [];
-        foreach ($cats as $key => $cat) {
-            $books_with_cats = array_merge($books_with_cats, json_decode($cat->books, true));
-            $cat->books = Book::whereIn('id', json_decode($cat->books, true))->get();
-        }
+     
 
-        $nocat_books = Book::whereNotIn('id', array_unique($books_with_cats))->get();
+        $nocat_books = Book::where('group_id', 0)->get();
 
         if($nocat_books->count() > 0) {
             $cat = new BookGroup();
@@ -96,17 +92,35 @@ class UpbookController extends Controller
         if($b) {
             $b->title = $request->book['title'];
             $b->author = $request->book['author'];
+            $b->group_id = $request->book['group_id'];
             $b->save();
 
-            $cat = BookGroup::find($request->cat_id);
-            if($cat) {
-                $books = json_decode($cat->books, true);
-                array_push($books, $b->id);
-                $cat->books = json_encode(array_unique($books));
-                $cat->save();
-            }
+        
         }
     }
+
+    public function delete(Request $request) {
+        $book = Book::find($request->id);
+
+       
+        if($book) {
+            if($book->link && $book->link != '') {
+                $str = $book->link;
+                $replaceWith = '';
+                $findStr = '\/storage';
+                $link = preg_replace('/' . $findStr . '/', $replaceWith, $str, 1);
+
+                if(\Storage::exists('public/' . $link)){
+                    \Storage::delete('public/' . $link);
+                }
+
+            }
+           
+           $book->delete();
+
+        
+        }
+    }   
 
     public function update(Request $request)
     {
@@ -114,15 +128,9 @@ class UpbookController extends Controller
         if($b) {
             $b->title = $request->book['title'];
             $b->author = $request->book['author'];
+            $b->group_id = $request->book['group_id'];
             $b->save();
 
-            $cat = BookGroup::find($request->cat_id);
-            if($cat) {
-                $books = json_decode($cat->books, true);
-                array_push($books, $b->id);
-                $cat->books = json_encode(array_unique($books));
-                $cat->save();
-            }
 
 
             foreach ($request->tests as $key => $test) {
