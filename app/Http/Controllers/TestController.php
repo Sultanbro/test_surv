@@ -20,7 +20,11 @@ use App\Models\Books\Book;
 class TestController extends Controller {
  
 	public function test() {
+		$a = \App\User::find(5)->toArray();
+		//array_push($a, [1231]);
 
+		
+		dd($a);
 		// $kb = KnowBase::with('children','questions')->find(3);
 		// $arr = [];
 		// KnowBase::getArray($arr, $kb);

@@ -20,7 +20,7 @@
                 <option value="0" selected>-</option>
                 <option v-for="group in this.groups" :value="group.id" :key="group.id">{{ group.name }}</option>
             </select>
-            <div v-else>{{ kpi_indicator.groups.find(x => x.id == kpi_indicator.group_id) !== unedfined ? kpi_indicator.groups.find(x => x.id == kpi_indicator.group_id).name : kpi_indicator.group_id }}</div>
+            <div v-else>{{ kpi_indicator.groups.find(x => x.id == kpi_indicator.group_id) !== undefined ? kpi_indicator.groups.find(x => x.id == kpi_indicator.group_id).name : kpi_indicator.group_id }}</div>
         </td>
     
         <td v-if="is_admin">

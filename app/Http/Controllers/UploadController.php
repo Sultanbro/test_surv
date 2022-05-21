@@ -5,9 +5,9 @@ use Illuminate\Http\Response;
 
 use Illuminate\Support\Facades\File;
 
-use Dilab\Network\SimpleRequest;
-use Dilab\Network\SimpleResponse;
-use Dilab\Resumable;
+use App\Packages\Dilab\Network\SimpleRequest;
+use App\Packages\Dilab\Network\SimpleResponse;
+use App\Packages\Dilab\Resumable;
 use Storage;
 use App\Models\Videos\Video;
 use App\Models\Books\Book;
@@ -20,8 +20,11 @@ class UploadController extends Controller
      * @return Response
      */
     public function resumableUpload()
-    {
-        $tmpPath    = storage_path().'/tmp';
+    {   
+
+       
+
+        $tmpPath    = storage_path().'/';
         $uploadPath = storage_path().'/app/public/uploads';
         if(!File::exists($tmpPath)) {
             File::makeDirectory($tmpPath, $mode = 0777, true, true);
@@ -40,7 +43,7 @@ class UploadController extends Controller
 
 
         $result = $resumable->process();
-        
+      
         switch($result) {
             case 200:
                 return response([
@@ -113,6 +116,7 @@ class UploadController extends Controller
                 ], 204);
                 break;
             default:
+          
                 return response([
                     'message' => 'An error occurred',
                 ], 404);
