@@ -11,7 +11,7 @@
         "doctrine/dbal": "2.13.*",
         "fideloper/proxy": "~3.3",
         "guzzlehttp/guzzle": "^6.3",
-        "laravel/framework": "5.5.*",
+        "laravel/framework": "8.*",
         "laravel/tinker": "~1.0",
         "maatwebsite/excel": "2.*",
         "predis/predis": "^1.1",
@@ -19,6 +19,7 @@
         "setasign/fpdi": "^2.2",
         "setasign/fpdi-tcpdf": "^2.2",
         "setasign/tfpdf": "^1.25",
+        "spatie/pdf-to-image": "^2.2",
         "vsmoraes/laravel-pdf": "^2.0"
     },
     "require-dev": {

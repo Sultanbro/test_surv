@@ -122,7 +122,7 @@ ul {
   padding: 0;
   position: relative;
 
-  &:first-child {
+  &:first-child { 
     margin-top: 5px;
   }
   .fa-circle {
@@ -149,7 +149,7 @@ ul {
   .chapter-btns {
     position: absolute;
     right: 0;
-    bottom: 6px;
+    top: 3px;
     text-align: center;
     display: none;
   }

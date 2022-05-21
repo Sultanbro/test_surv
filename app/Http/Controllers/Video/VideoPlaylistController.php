@@ -39,7 +39,7 @@ class VideoPlaylistController extends Controller {
 	public function get() {
 		return [
 			'user_id' => auth()->user()->ID,
-			'playlists' => Playlist::get()
+			'categories' => Category::with('playlists')->get()
 		];
 	}
 
@@ -48,7 +48,9 @@ class VideoPlaylistController extends Controller {
 		$pl =  Playlist::with('videos')->find($id);
 
 		foreach($pl->videos as $video) {
-			$video->questions = TestQuestion::where('testable_type', 'video')->where('testable_id', $video->id)->get();
+			$video->questions = TestQuestion::where('testable_type', 'App\Models\Videos\Video')
+				->where('testable_id', $video->id)
+				->get();
 		}
 		return [
 			'playlist' => $pl,
@@ -71,6 +73,17 @@ class VideoPlaylistController extends Controller {
 			'video' => $video,
 			'was_in_playlist' => $was_in_playlist
 		]; 
+	}	
+
+
+	public function add(Request $request) {
+		$pl = Playlist::create([
+			'title' =>$request->title, 
+			'category_id' => $request->cat_id,
+			'text' => ' ',
+		]);
+		
+		return $pl;
 	}	
 
 	public function save_video(Request $request) {
@@ -154,11 +167,40 @@ class VideoPlaylistController extends Controller {
 		return redirect(self::PAGE);
 	}
 
+	public function delete(Request $request) {
+		$playlist = Playlist::find($request->id);
+		if($playlist) $playlist->delete();
+	}
+
 	public function store(Request $request) {
 		Playlist::create($request->input());
 		return redirect(self::PAGE);
 	}
 
-	
+	public function saveTest(Request $request)
+    {
+        foreach ($request->questions as $key => $q) {
+            $params = [
+                'order' => 0,
+                'page' => 0,
+                'points' => $q['points'],
+                'testable_id' => $request->id,
+                'testable_type' => "App\Models\Videos\Video",
+                'text' => $q['text'],
+                'type' => $q['type'],
+                'variants' => $q['variants'],
+            ];
+
+            if ($q['id'] != 0) {
+                $testq = TestQuestion::find($q['id']);
+                if ($testq) {
+                    $testq->update($params);
+                }
+
+            } else {
+                TestQuestion::create($params);
+            }
+        }
+    }
 	
 }

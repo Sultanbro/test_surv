@@ -13,10 +13,12 @@ class Course extends Model
 
     protected $fillable = [
         'name',
+        'img',
+        'text',
     ];
 
     public function items()
     {
-        return $this->hasMany(CourseItem::class, 'course_id');
+        return $this->hasMany(CourseItem::class, 'course_id')->orderBy('order');
     }
 }

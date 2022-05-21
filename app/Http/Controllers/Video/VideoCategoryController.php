@@ -59,9 +59,15 @@ class VideoCategoryController extends Controller {
 		return redirect(self::PAGE);
 	}
 
-	public function store(Request $request) {
-		Category::create($request->input());
-		return redirect(self::PAGE);
+	public function add(Request $request) {
+		return Category::create([
+			'title' => $request->title,
+			'parent_id' => null
+		]); 
+	}
+
+	public function delete(Request $request) {
+		$cat = Category::find($request->id)->delete();
 	}
 
 }

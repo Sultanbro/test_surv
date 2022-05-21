@@ -34,7 +34,7 @@ class KnowBase extends Model
     
     public function children()
     {
-        return $this->hasMany(self::class, 'parent_id')->orderBy('order')->with('children');
+        return $this->hasMany(self::class, 'parent_id')->orderBy('order')->with('children','questions');
     }
 
     public function parent()
@@ -45,6 +45,24 @@ class KnowBase extends Model
     public function getOpenedAttribute()
     {
         return false;
+    }
+
+    public static function getArray(&$arr, $kb) {
+        foreach ($kb->children as $key => $child) {
+            array_push($arr, [
+                'id' => $child->id,
+                'parent_id' => $child->parent_id,
+                'title' => $child->title, 
+                'user_id'=> $child->user_id, 
+                'editor_id'=> $child->editor_id, 
+                'text'=> $child->text, 
+                'is_deleted'=> $child->is_deleted, 
+                'order'=> $child->order, 
+                'hash'=> $child->hash, 
+            ]);
+            
+            self::getArray($arr, $child);
+        }
     }
     
 }

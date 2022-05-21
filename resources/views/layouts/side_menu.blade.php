@@ -21,12 +21,14 @@
                         <span class="d-flex">Уведомления <i class="nn">{{ $unread }}</i></span>
                     </a>
                 </li>
+                @if(auth()->user()->is_admin)
                 <li>
-                    <a href="/timetracking/settings" class="link link-start">
+                    <a href="/cabinet" class="link link-start">
                         <i class="fas fa-cogs"></i>
                         <span>Настройки</span> 
                     </a>
                 </li>
+                @endif
                 <li>
                     <a href="/logout" class="link link-start">
                         <i class="fas fa-sign-out-alt"></i>
@@ -61,7 +63,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/videolearning" class="link">
+                    <a href="/video_playlists" class="link">
                         <i class="fas fa-play"></i>
                         <span>Смотреть видео</span>
                     </a>
@@ -79,7 +81,7 @@
 
 
 
-
+        @if(auth()->user()->is_admin)
         <li class="menu-item">
             <a href="/timetracking/reports" class="side-btn @if($menu == 'surv') active @endif">
                 <i class="fas fa-calendar-alt"></i>
@@ -152,48 +154,21 @@
 
                 </ul>
         </li>
+        @endif
 
+        @if(auth()->user()->is_admin)
         <li class="menu-item">
             <a href="/courses" class="side-btn @if($menu == 'courses') active @endif">
                 <i class="fas fa-graduation-cap"></i>
                 <span>Курсы</span>
             </a>
         </li>
-
+        
         <li class="menu-item">
             <a href="/video_playlists" class="side-btn @if($menu == 'video_edit') active @endif">
                 <i class="fas fa-play"></i>
                 <span>Видеокурсы</span>
             </a>
-
-            <ul class="sub-menu">
-                <li>
-                    <a href="/video_playlists" class="link">
-                        <i class="fas fa-film"></i>
-                        <span>Плейлисты</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/videos" class="link">
-                        <i class="fa fa-file-video"></i>
-                        <span>Видеофайлы</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/video_categories" class="link">
-                        <i class="fas fa-list"></i>
-                        <span>Категории</span>
-                    </a>
-                </li>
-                <!-- <li>
-                    <a href="/video_groups" class="link">
-                        <i class="far fa-folder-open"></i>
-                        <span>Группы</span>
-                    </a>
-                </li> -->
-            </ul>
-
-
         </li>
 
         <li class="menu-item">
@@ -202,10 +177,11 @@
                 <span>Книги</span>
             </a>
         </li>
-
+        @endif
 
 
     </ul>
+    @if(auth()->user()->is_admin)
     <ul class="after-main-menu">
         <li class="menu-item">
             <a href="/timetracking/settings" class="side-btn @if($menu == 'settings') active @endif">
@@ -214,7 +190,7 @@
             </a>
         </li>
     </ul>
-
+    @endif
 
 </aside>
 

@@ -43,8 +43,17 @@ Route::post('/playlists/save-video', 'Video\VideoPlaylistController@save_video')
 Route::post('/playlists/delete-video', 'Video\VideoPlaylistController@delete_video');
 Route::post('/playlists/remove-video', 'Video\VideoPlaylistController@remove_video');
 Route::post('/playlists/save', 'Video\VideoPlaylistController@save');
+Route::post('/playlists/delete', 'Video\VideoPlaylistController@delete');
 Route::post('/playlists/save-test', 'Video\VideoPlaylistController@saveTest');
 Route::post('/playlists/video/update', 'Video\VideoController@updateVideo');
+Route::post('/playlists/add-cat', 'Video\VideoCategoryController@add'); 
+Route::post('/playlists/add', 'Video\VideoPlaylistController@add'); 
+Route::post('/playlists/delete-cat', 'Video\VideoCategoryController@delete'); 
+
+
+Route::get('/cabinet', 'CabinetController@index');
+Route::get('/cabinet/get', 'CabinetController@get');
+Route::post('/cabinet/save', 'CabinetController@save');
 
 
 Route::get('/kb', 'KnowBaseController@index');
@@ -56,6 +65,7 @@ Route::post('/admin/upbooks/category/delete', 'UpbookController@deleteCategory')
 Route::post('/admin/upbooks/tests/get', 'UpbookController@getTests');
 Route::post('/admin/upbooks/save', 'UpbookController@save');
 Route::post('/admin/upbooks/update', 'UpbookController@update');
+Route::post('/admin/upbooks/delete', 'UpbookController@delete');
 
 Route::get('/admin/courses/get', 'CourseController@get');
 Route::post('/admin/courses/delete', 'CourseController@delete');
@@ -66,8 +76,9 @@ Route::post('/admin/courses/upload-image', 'CourseController@uploadImage');
 
 Route::post('/course-results/get', 'CourseResultController@get');
 
-Route::get('/my-courses', 'CourseController@myCourses');
-Route::get('/my-courses/get', 'CourseController@getMyCourse');
+Route::get('/my-courses', 'MyCourseController@index');
+Route::get('/my-courses/get', 'MyCourseController@getCourses');
+Route::get('/my-courses/get/{id}', 'MyCourseController@getMyCourse');
 
 Route::get('/kb/get', 'KnowBaseController@get');
 Route::post('/kb/get', 'KnowBaseController@getPage');

@@ -3,8 +3,8 @@
 @section('content')
 
 <div class="animated fadeIn">
-    <div class="row">
-        <div class="col-md-12">
+    <div class="roxw">
+        <div class="col-md-12 mb-3">
             <nav>
                 <div class="nav nav-tabs" id="nav-tab">
                     @if(auth()->user()->ID == 18 || auth()->user()->ID == 5)

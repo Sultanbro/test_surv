@@ -412,13 +412,13 @@
                                 </table>
                             </div>
 
-                            @if(isset($course))
+                            @if(isset($course) && $course->course)
 
                             <div class="my-course">
                                 <div class="mr-3">
                                     <div class="pre">Текущий курс:</div>
-                                    <a href="/my-courses" class="title">{{ $course->course ? $course->course->name : 'Курс №' . $course->course_id }}</a>
-                                    <a href="/my-courses" class="btn-go btn-success btn mt-1 mb-3"><i class="fa fa-play mr-2"></i> Продолжить изучение</a>
+                                    <a href="/my-courses?id={{$course->course_id}}" class="title">{{ $course->course->name }}</a>
+                                    <a href="/my-courses?id={{$course->course_id}}" class="btn-go btn-success btn mt-1 mb-3"><i class="fa fa-play mr-2"></i> Продолжить изучение</a>
                                 </div>
                                 <div>
                                     <div>Пройдено: {{ $course->progress }}%</div>

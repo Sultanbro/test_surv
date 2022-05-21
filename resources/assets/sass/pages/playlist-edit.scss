@@ -1,7 +1,6 @@
 .videos {
     max-height: 500px;
-    max-height: calc(100vh - 136px);
-    padding-bottom: 30px;
+    max-height: calc(100vh - 180px);
     overflow: hidden;
     overflow-y: auto;
 }
@@ -206,4 +205,8 @@
     margin-bottom: 50px;
     font-size: 16px;
     font-weight: 600;
+}
+
+.textarea {
+    min-height: 250px;
 }

@@ -14,10 +14,16 @@ class Book extends Model
 
     protected $fillable = [
         'title',
+        'group_id',
         'author',
         'link',
         'img',
     ];
+
+    public function questions()
+    {
+        return $this->morphMany('App\Models\TestQuestion', 'testable');
+    }
     
     public static function withGroups(int $group_id = 0) {
         $books = Book::all();

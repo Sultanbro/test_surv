@@ -1807,7 +1807,7 @@ ul {
 .chapter .chapter-btns {
   position: absolute;
   right: 0;
-  bottom: 6px;
+  top: 3px;
   text-align: center;
   display: none;
 }
@@ -2277,10 +2277,14 @@ ul.main-menu {
   padding: 30px;
   max-width: 100%;
   background: #ffffff;
-  border: 1px solid #d7d7d7;
+  border: 1px dashed  #d7d7d7;
   border-radius: 5px;
   -webkit-box-shadow: 0 0 5px 1px #e9ebef;
           box-shadow: 0 0 5px 1px #e9ebef;
+}
+
+.questions.hide {
+  display: none;
 }
 
 .questions > .title {
@@ -2426,7 +2430,8 @@ ul.main-menu {
 }
 
 .course .img img {
-  width: 100%;
+  max-height: 100%;
+  max-width: 300px;
 }
 
 .course .img .btn {
@@ -2462,6 +2467,39 @@ ul.main-menu {
 
 .section:hover p {
   cursor: pointer;
+}
+
+.multiselect__tag {
+  position: relative;
+  display: inline-block;
+  padding: 3px 32px 4px 10px !important;
+  border-radius: 3px;
+  line-height: 18px;
+  margin-right: 10px;
+  color: #4f4f4f;
+  font-size: 14px;
+  background: #e8ecee;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  font-weight: 400;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+.multiselect__tag-icon {
+  font-weight: 400;
+  width: 28px;
+  line-height: 25px;
+  border-radius: 0px;
+}
+
+.multiselect__tag-icon:hover {
+  background: #8098a8;
+}
+
+.multiselect__tag-icon:after {
+  font-size: 18px;
 }
 
 @media (min-width: 1200px) {
@@ -3647,6 +3685,54 @@ body {
   width: 180px;
 }
 
+.mode_changer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  border: 1px solid #dcdee5;
+  background: #eaebef;
+  border-radius: 5px;
+}
+
+.mode_changer i {
+  cursor: pointer;
+  padding: 6px;
+}
+
+.mode_changer i.active {
+  color: #007bff;
+  background: #bbd6ff;
+}
+
+.video-title {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 5px 15px;
+  margin-bottom: 5px;
+  background: #eaebef;
+}
+
+.video-title.active {
+  background: #2490ff;
+}
+
+.video-title.disabled {
+  background: #5c5f64;
+  color: #c8c8c8;
+}
+
+.video-tit {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.video-list {
+  overflow: hidden;
+  overflow-y: auto;
+  height: calc(100vh - 130px);
+}
+
 .kb-sections .sections-wrap {
   height: calc(100vh - 94px);
   overflow-y: auto;
@@ -3727,8 +3813,7 @@ body {
 
 .videos {
   max-height: 500px;
-  max-height: calc(100vh - 136px);
-  padding-bottom: 30px;
+  max-height: calc(100vh - 180px);
   overflow: hidden;
   overflow-y: auto;
 }
@@ -3950,6 +4035,31 @@ body {
   font-weight: 600;
 }
 
+.textarea {
+  min-height: 250px;
+}
+
+.poster_count div {
+  width: 250px;
+  overflow: hidden;
+}
+
+.poster_count div img {
+  width: 100%;
+}
+
+.playlist .title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.playlist .text {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
 .upbook-read-page {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -4030,6 +4140,7 @@ body {
   padding: 0;
   border-radius: 5px;
   background-size: cover;
+  background-size: 100%;
   background-position: center;
   position: relative;
   cursor: pointer;
@@ -4045,12 +4156,18 @@ body {
   top: 0;
   left: 0;
   padding: 15px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .upbooks-page .box .cover p.title {
@@ -4464,4 +4581,27 @@ body {
 
 .course-results table .expanded td {
   padding: 5px 10px;
+}
+
+.mycourse .course-item .title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  background: #c4c6c8;
+}
+
+.mycourse .course-item .title.disabled {
+  background: #5a6673;
+}
+
+.mycourse .course-item.active .title {
+  color: green;
+}
+
+.mycourse .fixed-height {
+  height: 90vh;
+  height: calc(100vh - 36px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: 1px solid #eee;
 }

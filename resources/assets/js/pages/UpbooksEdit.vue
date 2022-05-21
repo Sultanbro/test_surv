@@ -118,6 +118,14 @@
           placeholder="Название автора..."
           class="form-control mt-2 mb-2"
         />
+        <select
+          class="form-control mb-2"
+          v-model="modals.upload_book.file.model.group_id"
+        >
+          <option v-for="cat in categories" :value="cat.id" :key="cat.id">
+            {{ cat.name }}
+          </option>
+        </select>
         <button class="btn btn-primary rounded m-auto" @click="saveBook">
           <span>Сохранить</span>
         </button>
@@ -130,7 +138,6 @@
       size="xl"
       class="modalle"
       hide-footer
-      hide-header
     >
       <div v-if="modals.edit_book.item != null" class="p-3">
         <input
@@ -145,6 +152,15 @@
           placeholder="Название автора..."
           class="form-control mb-2"
         />
+
+          <select
+          class="form-control mb-2"
+          v-model="modals.edit_book.item.group_id"
+        >
+          <option v-for="cat in categories" :value="cat.id" :key="cat.id">
+            {{ cat.name }}
+          </option>
+        </select>
 
         <div class="tests mb-2" v-if="modals.edit_book.tests.length > 0">
           <div class="row">
@@ -204,6 +220,7 @@ export default {
   name: "UpbookEdit",
   props: {
     token: String,
+    can_edit: Boolean,
     access: String // read edit
   },
   data() {
@@ -211,6 +228,7 @@ export default {
       activeBook: null,
       activeCategory: null,
       categories: [],
+      mode: 'read',
       modals: {
         add_category: {
           show: false,
@@ -229,6 +247,10 @@ export default {
     };
   },
   created() {
+    if(this.can_edit) {
+      this.mode = 'edit';
+    } 
+
     this.fetchData();
   },
   methods: {
@@ -320,11 +342,35 @@ export default {
       console.log("onupload");
       console.log(item);
       this.modals.upload_book.file = item;
+      this.modals.upload_book.file.model.group_id = this.activeCategory.id
     },
 
     deleteBook(i) {
       if (confirm("Вы уверены удалить книгу?")) {
-      }
+
+        let loader = this.$loading.show();
+
+        axios
+          .post("/admin/upbooks/delete", {
+            id: this.activeCategory.books[i].id
+          })
+          .then((response) => {
+            let c = this.categories.findIndex(i => i.id == this.activeCategory.id);
+            this.$message.success("Книга успешно удалена!");
+
+            if(c != -1) {
+              this.categories[c].books.splice(i, 1);
+            }
+
+            loader.hide();
+          })
+          .catch((error) => {
+            loader.hide();
+            alert(error);
+          });
+        }
+
+      
     },
 
     editBook(book) {
@@ -353,7 +399,6 @@ export default {
       axios
         .post("/admin/upbooks/save", {
           book: this.modals.upload_book.file.model,
-          cat_id: this.activeCategory.id,
         })
         .then((response) => {
           this.activeCategory.books.push(this.modals.upload_book.file.model);
@@ -387,9 +432,19 @@ export default {
           cat_id: this.activeCategory.id,
         })
         .then((response) => {
+          let b = this.activeCategory.books.findIndex(i => i.id == this.modals.edit_book.item.id);
+          let c = this.categories.findIndex(i => i.id == this.activeCategory.id);
+          let nc = this.categories.findIndex(i => i.id == this.modals.edit_book.item.group_id);
+          if(b != -1 && c != -1 && nc != -1) {
+            this.categories[c].books.splice(b, 1);
+            this.categories[nc].books.push(this.modals.edit_book.item);
+          }
+
+
           this.modals.edit_book.show = false;
           this.modals.edit_book.item = null;
           this.modals.edit_book.tests = [];
+
 
           this.$message.success("Сохранено");
           loader.hide();

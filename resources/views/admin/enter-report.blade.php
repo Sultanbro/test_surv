@@ -3,8 +3,8 @@
 @section('content')
 
     <div class="animated fadeIn">
-        <div class="">
-            <div class="c">
+        <div class="rowx">
+            <div class="col-md-12 mb-3">
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab">
                         @if(auth()->user()->ID == 18 || auth()->user()->ID == 5)
@@ -20,14 +20,14 @@
                     </div>
                 </nav> 
             </div>
-            <div class="col-md-12">
+       
 
-                <div id="app">
+                <div class="col-md-12 ">
                     <t-coming :groups="{{json_encode($groups)}}" :years="{{json_encode($years)}}" activeuserid="{{json_encode(auth()->user()->ID)}}"></t-coming>
                     
                 </div>
 
-            </div>
+        
 
 
         </div>

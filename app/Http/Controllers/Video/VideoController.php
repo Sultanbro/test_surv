@@ -96,7 +96,7 @@ class VideoController extends Controller {
 				'page'=> 0,
 				'points'=> $q['points'],
 				'testable_id'=> $request->video['id'],
-				'testable_type'=> "video",
+				'testable_type'=> "App\Models\Videos\Video",
 				'text'=> $q['text'],
 				'type'=> $q['type'],
 				'variants'=> $q['variants'],

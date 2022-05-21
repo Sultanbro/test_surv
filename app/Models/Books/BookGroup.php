@@ -24,6 +24,11 @@ class BookGroup extends Model
     {
         return $this->morphMany('App\Models\TestQuestion', 'testable');
     }
+
+    public function books()
+    {
+        return $this->hasMany('App\Models\Books\Book', 'group_id', 'id');
+    }
     
     public static function getBooks($group_id)
     {   

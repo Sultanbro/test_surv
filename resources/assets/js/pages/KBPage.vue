@@ -30,12 +30,12 @@
                     :id="book.id"
                     @click.stop="selectSection(book)"
                   >
-                    <div class="d-flex aic">
-                      <i class="fa fa-bars mover mr-2"></i>
+                    <div class="d-flex aic"  >
+                      <i class="fa fa-bars mover mr-2" v-if="mode == 'edit'"></i>
                       <p>{{ book.title }}</p>
                     </div>
                     
-                    <div class="section-btns">
+                    <div class="section-btns"  v-if="mode == 'edit'">
                       <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
                       <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
                     </div>
@@ -63,18 +63,18 @@
           </template>
         </div>
 
-
-        <div class="d-flex jscb" v-if="!showArchive">
-          <div class="btn btn-grey w-full mr-1" @click="getArchivedBooks" v-if="[5,18,157,84].includes(auth_user_id)">
-            <i class="fa fa-trash"></i>
-            <span>Архив</span>
-          </div>
-          <div class="btn btn-grey w-full" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
-            <i class="fa fa-plus"></i>
-            <span>Добавить</span>
+        <div  v-if="mode == 'edit'">
+          <div class="d-flex jscb" v-if="!showArchive">
+            <div class="btn btn-grey w-full mr-1" @click="getArchivedBooks" v-if="[5,18,157,84].includes(auth_user_id)">
+              <i class="fa fa-trash"></i>
+              <span>Архив</span>
+            </div>
+            <div class="btn btn-grey w-full" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
+              <i class="fa fa-plus"></i>
+              <span>Добавить</span>
+            </div>
           </div>
         </div>
-        
       </aside>
       <div class="rp" style="flex: 1 1 0%; padding-bottom: 50px;">
         <div class="hat">
@@ -83,7 +83,13 @@
               <a href="#">База знаний</a>
               <!---->
             </div>
-            <div class="control-btns"><!----></div>
+            <div class="control-btns">
+              <div class="mode_changer" v-if="can_edit">
+                  <i class="fa fa-edit"
+                    @click="toggleMode"
+                    :class="{'active': mode == 'edit'}" />
+                </div>
+            </div>
           </div>
           <div><!----></div>
         </div>
@@ -96,10 +102,13 @@
       <booklist 
         ref="booklist"
         :trees="trees" 
+        :can_edit="can_edit"
         :parent_name="activeBook.title" 
         :parent_id="activeBook.id"
         :show_page_id="show_page_id"
         @back="back" 
+        @toggleMode="toggleMode" 
+        :mode="mode"
         :auth_user_id="auth_user_id" />
     </div>
 
@@ -187,11 +196,13 @@
 export default {
   name: "KBPage",
   props: {
-    auth_user_id: Number 
+    auth_user_id: Number,
+    can_edit: Boolean 
   },
   data: function() {
     return {
       books: [],
+      mode: 'read',
       archived_books: [],
       trees: [],
       section: 0,
@@ -212,6 +223,10 @@ export default {
   watch: {},
 
   created() {
+    if(this.can_edit) {
+      this.mode = 'edit';
+    } 
+    
     this.fetchData();
 
     // бывор группы
@@ -419,7 +434,9 @@ export default {
     },
 
 
-
+    toggleMode() {
+      this.mode = (this.mode == 'read') ? 'edit' : 'read';
+    }
 
 
     

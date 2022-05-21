@@ -12,7 +12,7 @@
 
       <div class="kb-wrap noscrollbar">
 
-        <div class="chapter mb-3">
+        <div class="chapter opened mb-3">
           <div class="d-flex">
             <span class="font-16 font-bold">{{ parent_title }}</span>
             <div class="chapter-btns">
@@ -23,6 +23,7 @@
 
         <nested-draggable
           :tasks="tree"
+          :mode="mode"
           :auth_user_id="auth_user_id"
           :opened="true"
           @showPage="showPage"
@@ -55,7 +56,16 @@
             </template>
           </div>
 
-          <div class="control-btns" v-if="[5,18,157,84].includes(auth_user_id)">
+          <div class="mode_changer" v-if="can_edit">
+            <i class="fa fa-edit"
+              @click="$emit('toggleMode')"
+              :class="{'active': mode == 'edit'}" />
+          </div>
+
+          <div class="control-btns" v-if="can_edit">
+
+           
+
             <div class="d-flex justify-content-end" :asd="auth_user_id" v-if="activesbook != null">
               <input
                 type="text"
@@ -111,7 +121,10 @@
             </template>
 
             <template v-else>
+
+     
               <button
+              v-if="mode == 'edit'"
                 class="form-control btn-action btn-medium ml-2"
                 title="Поделиться ссылкой"
                 @click="copyLink(activesbook)"
@@ -120,6 +133,7 @@
               </button>
               
               <button
+              v-if="mode == 'edit'"
                 class="form-control btn-danger btn-medium ml-2"
                 @click="deletePage"
               >
@@ -127,11 +141,14 @@
               </button>
 
               <button
+              v-if="mode == 'edit'"
                 class="form-control btn-save btn-medium ml-2"
                 @click="edit_actives_book = true"
               >
                 Редактировать
               </button>
+
+            
             </template>
              
 
@@ -305,18 +322,10 @@
             </div>
 
             <questions
-                  v-if="[5,18,157,84].includes(auth_user_id)"
                   :questions="activesbook.questions"
                   :id="activesbook.id"
                   type="kb"
-                  mode="edit"
-                />
-            <questions
-                  v-else
-                  :questions="activesbook.questions"
-                  :id="activesbook.id"
-                  type="kb"
-                  mode="read"
+                  :mode="mode"
                 />
               <div class="pb-5"></div> 
           </div>
@@ -595,7 +604,7 @@
 import nestedDraggable from "../components/nested";
 export default { 
   name: "booklist",
-  props: ["trees", 'parent_id', 'auth_user_id', 'parent_name', 'show_page_id'],
+  props: ["trees", 'parent_id', 'auth_user_id', 'parent_name', 'show_page_id', 'can_edit', 'mode'],
   components: { 
     nestedDraggable,
   },
@@ -634,6 +643,7 @@ export default {
     }
   },
   created() {
+
     this.tree = this.trees;
     this.parent_title = this.parent_name;
     this.id = this.parent_id;

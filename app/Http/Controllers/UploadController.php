@@ -22,7 +22,7 @@ class UploadController extends Controller
     public function resumableUpload()
     {
         $tmpPath    = storage_path().'/tmp';
-        $uploadPath = storage_path().'/app/public';
+        $uploadPath = storage_path().'/app/public/uploads';
         if(!File::exists($tmpPath)) {
             File::makeDirectory($tmpPath, $mode = 0777, true, true);
         }
@@ -58,26 +58,44 @@ class UploadController extends Controller
              
                 
                 $newFilename = date('YmdHis') . '_' . $filename;
-                Storage::move('public/' . $filename, 'public/' . $newFilename);
-
+                
+                
                 if($format == 'application/pdf') { // Загружена книга
+                    $path = 'books';
+                    
+
+                    // // get first page of book
+                    // $pdf = new \Spatie\PdfToImage\Pdf(storage_path(). '/app/public/uploads/' .$filename);
+                    // $pdf->saveImage(public_path().'/images/bookcovers/' . $newFilename);
+                    
+                    Storage::move('public/uploads/' . $filename, 'public/'. $path .'/' .$newFilename);
+
+                 //   '/images/bookcovers/' . $newFilename
+
                     $model = Book::create([
                         'title' => $newFilename,
-                        'link' => '/storage/' . $newFilename,
+                        'link' => '/storage/' . $path .'/' .$newFilename,
                         'author' => 'Неизвестный',
                         'img' => '',
+                        'group_id' => 0,
                     ]);
+
                 } else {
+                    $path = 'videos';
                     $model = Video::create([
                         'title' => $newFilename,
-                        'links' => '/storage/' . $newFilename,
+                        'links' => '/storage/' . $path .'/'. $newFilename,
                         'duration' => 0,
                         'views' => 0,
                         'playlist_id' => 0,
                         'group_id' => 0,
                         'order' => 0
                     ]);
+
+                    Storage::move('public/uploads/' . $filename, 'public/'. $path .'/' .$newFilename);
                 }
+
+               
                 
 
                 

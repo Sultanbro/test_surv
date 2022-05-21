@@ -16,7 +16,8 @@
           :key="el.id">
         <div class="d-flex">
           <div class="handles d-flex aic" >
-            <i class="fa fa-bars mover"></i>
+            <i class="fa fa-bars mover" v-if="mode == 'edit'"></i>
+            <i class="fa fa-circle mover" v-else></i>
             <div class="shower">
               <i class="fa fa-chevron-down pointer" v-if="el.children.length > 0 && el.opened"></i>
               <i class="fa fa-chevron-right pointer" v-else-if="el.children.length > 0"></i>
@@ -27,11 +28,11 @@
           <p @click.stop="toggleOpen(el)" class="mb-0">{{ el.title }}
             <span class="long">{{ el.title }}</span>
           </p>
-           <div class="chapter-btns">
+           <div class="chapter-btns" v-if="mode == 'edit'">
               <i class="fa fa-plus mr-1" @click.stop="addPage(el)"></i>
             </div>
         </div>
-        <nested-draggable :tasks="el.children" @showPage="showPage" @addPage="addPage" :parent_id="el.id" :auth_user_id="auth_user_id" :opened="el.opened" />
+        <nested-draggable :tasks="el.children" @showPage="showPage" @addPage="addPage" :parent_id="el.id" :auth_user_id="auth_user_id" :opened="el.opened"  :mode="mode" />
       </li>
     </template>
   </draggable>
@@ -51,6 +52,9 @@ export default {
     },
     auth_user_id: {
       type: Number
+    },
+    mode: {
+      type: String
     }
   },
   data() {

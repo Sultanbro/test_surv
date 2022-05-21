@@ -46,7 +46,7 @@
 
 
 
-
+      <b>Это верстка неактуальная</b>
       <div class="col-12 columnContent " >
         <div class="row">
           <div class="col-md-2 columnInnerLeft">
@@ -280,45 +280,7 @@ export default {
   },
   mounted() {},
   methods: {
-    selectCourse(i) {
-      this.activeCourse = this.courses[i];
-    },
-
-    editAccess(i) {
-      alert('Видимость и назначение курса группам');
-    },
-
-    createCourse() {
-      if (this.modals.add_course.name.length <= 2) {
-        alert("Слишком короткое название!");
-        return "";
-      }
-
-      let loader = this.$loading.show();
-
-      axios
-        .post("/admin/courses/create", {
-          name: this.modals.add_course.name,
-        })
-        .then((response) => {
-          this.modals.add_course.show = false;
-          this.modals.add_course.name = "";
-
-          this.courses.push({
-            id: response.data.id,
-            name: response.data.name,
-            items: [],
-          });
-
-          this.$message.success("Курс успешно создан!");
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
-
+ 
     fetchData() {
       let loader = this.$loading.show();
 
