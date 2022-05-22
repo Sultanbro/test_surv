@@ -1,0 +1,15 @@
+.right-menu {
+  width: 50px;
+  position: fixed;
+  right: 0;
+  height: 100vh;
+  flex-direction: column; 
+  background: #5b6574;
+  border-left: 1px solid #edeff0;
+  z-index: 12;
+
+  .wrapper {
+    height: 100%;
+    overflow: hidden;
+  }
+}

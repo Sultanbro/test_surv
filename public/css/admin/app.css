@@ -2273,6 +2273,25 @@ ul.main-menu {
   background: #404854;
 }
 
+.right-menu {
+  width: 50px;
+  position: fixed;
+  right: 0;
+  height: 100vh;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  background: #5b6574;
+  border-left: 1px solid #edeff0;
+  z-index: 12;
+}
+
+.right-menu .wrapper {
+  height: 100%;
+  overflow: hidden;
+}
+
 .questions {
   padding: 30px;
   max-width: 100%;
@@ -3621,6 +3640,7 @@ body {
 
 .page {
   padding-left: 70px;
+  padding-right: 50px;
   width: 100%;
   /* display: flex;
     flex-grow: 1; */
