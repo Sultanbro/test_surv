@@ -1,7 +1,7 @@
 <aside class="side-menu">
 
     <div class="user pointer">
-        <a href="/">
+        <a href="/profile">
             <img src="/images/profile.jpg" alt="avatar">
         </a>
         
@@ -43,7 +43,7 @@
 
     <ul class="main-menu">
         <li class="menu-item">
-            <a href="/" class="side-btn @if($menu == 'profile') active @endif">
+            <a href="/profile" class="side-btn @if($menu == 'profile') active @endif">
                 <i class="far fa-address-card"></i>
                 <span>Мой профиль</span>
             </a>

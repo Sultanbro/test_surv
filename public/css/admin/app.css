@@ -2278,13 +2278,58 @@ ul.main-menu {
   position: fixed;
   right: 0;
   height: 100vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-  background: #5b6574;
+  background: #f8f8f8;
   border-left: 1px solid #edeff0;
   z-index: 12;
+}
+
+.right-menu .btn-rm {
+  width: 40px;
+  height: 40px;
+  margin: 5px;
+  border-radius: 5px;
+  background: #272c33;
+  cursor: pointer;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-size: 18px;
+}
+
+.right-menu .btn-rm:hover {
+  background: #2f89bc;
+}
+
+.right-menu .btn-rm img {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.right-menu .btn-rm i {
+  color: #fff;
+}
+
+.right-menu .chat {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  padding-top: 15px;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 .right-menu .wrapper {
@@ -2784,10 +2829,6 @@ tspan:last-child {
   transition: -webkit-transform 0s;
   transition: transform 0s;
   transition: transform 0s, -webkit-transform 0s;
-}
-
-#app .rp {
-  min-width: calc(100vw - 377px);
 }
 
 .content {

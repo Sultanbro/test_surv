@@ -18,22 +18,27 @@ class Admin {
      * @return mixed
      */
     public function handle($request, Closure $next) {
+        
+        if($request->getPathInfo() == '/logout' || !Auth::user()) {
+            return $next($request);
+        }
 
-        if(!Auth::user()) return $next($request);
         if(!User::isUserAdmin(Auth::user()->ID)) {
-
             Auth::logout();
             return redirect('/');
         }
 
         $admin = AdminModel::where('owner_id', 18)->first();
 
-        if(Auth::user() && $admin && $admin->users != null && (in_array(Auth::user()->ID,$admin->users) || Auth::user()->ID == $admin->owner_id)) {
+        
+        if($admin && $admin->users != null && (in_array(Auth::user()->ID,$admin->users) || Auth::user()->ID == $admin->owner_id)) {
+         
             Auth::user()->is_admin = true;
         } else {
             Auth::user()->is_admin = false;
         }
-
+    
+      
         return $next($request);
     }
 }

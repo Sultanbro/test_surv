@@ -48,18 +48,13 @@
 
 
                     </div>
+             
+                    <div style="margin: 10px;display:flex;justify-content:center">
+                        <a href="/register" class="active">Регистрация </a>
+                    </div>
 
                     <div class="tab-row fade-tabset">
-                        <ul class="tabset">
-                            <li><a href="#tab-30" class="@if(!isset($_GET['tab'])) active @endif">Вход</a></li>
-
-                            @if ($_SERVER['HTTP_HOST'] == 'cp.u-marketing.org')
-                            <li><a href="#tab-31"
-                                    class="@if(isset($_GET['tab']) && $_GET['tab'] == 'register') active  @endif">Регистрация</a>
-                            </li>
-                            @endif
-
-                        </ul>
+                      
                         <div class="tab-content">
                             <div id="tab-30" class="tab @if(!isset($_GET['tab'])) active @else js-tab-hidden  @endif">
                                 <form class="form-horizontal" method="POST" action="{{ route('login') }}">
@@ -100,73 +95,7 @@
                                     </div>
                                 </form>
                             </div>
-                            <div id="tab-31"
-                                class="tab @if(isset($_GET['tab']) && $_GET['tab'] == 'register') active @else js-tab-hidden @endif">
-
-                                <form class="form-registration" id="registration" action="{{ route('register') }}"
-                                    method="post">
-                                    <div class="form-subregistration">
-                                        {{ csrf_field() }}
-                                        <div class="message">
-                                        </div>
-                                        @if ($errors->has('email'))
-                                        <div class="message">
-                                            Пользователь с таким email существует
-                                        </div>
-                                        @endif
-
-                                        <div class="form-registration-row form-registration-star">
-                                            <input type="email" name="email" placeholder="olegivanov@mail.ru" required>
-
-                                        </div>
-                                        <div class="form-registration-row">
-                                            <input type="text" name="name" placeholder="Ваше имя" required>
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <input type="text" name="phone" placeholder="Телефон" required>
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <input type="password" name="password" placeholder="Введите пароль"
-                                                required>
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <input type="password" name="password_confirmation"
-                                                placeholder="Повторите пароль" required>
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <select name="currency" required class="chosen-select">
-                                                <option value="">Выберите Валюту</option>
-                                                <option value="kzt">KZT</option>
-                                                <option value="rub">RUB</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <select name="timezone" required class="chosen-select">
-                                                <option value="">Выберите таймзону</option>
-                                                @foreach(\App\Setting::TIMEZONES as $offset => $timezone)
-                                                <option value="{{$offset}}">{{$timezone}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <br>
-                                        <input type="submit" value="Зарегистрироваться" class="btn-form-registarion">
-
-                                    </div>
-                                    <div class="form-subregistration-text">
-                                        <label for="pravila" class="control control-checkbox"
-                                            style="font-weight: normal;">
-                                            <input type="checkbox" name="pravila" id="pravila" checked="checked">
-                                            <div class="control_indicator"></div>
-                                            Я согласен(а) с правилами использования сервиса
-                                        </label>
-                                        <p>Регистрируясь, я подтверждаю, что принимаю Пользовательское соглашение,
-                                            ознакомлен с договором оферты и Политикой конфеденциальности.
-                                        </p>
-                                    </div>
-                                </form>
-
-                            </div>
+                    
                             <div id="forgetPass" class="js-tab-hidden">
 
                                 <form class="form-registration" id="forget" action="#">
@@ -193,7 +122,7 @@
         <div id="sub-footer">
             <div class="sub-footer">
                 <div class="col-lg-12 col-md-2 col-sm-2 col-xs-12">
-                    <p class="copy">© 2022 surv.u-marketing.org</p>
+                    <p class="copy">© 2022 joytron.org</p>
                 </div>
 
             </div>

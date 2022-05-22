@@ -62,8 +62,9 @@ Route::any('/auth', function () {
     return redirect('/');
 });
 
+Route::get('/', [HomeController::class, 'index']);
+Route::any('/profile', [UserController::class, 'profile']);
 
-Route::any('/', [UserController::class, 'profile']);
 Route::any('/notifications/set-read/', [UserController::class, 'setNotiRead']);
 Route::any('/notifications/set-read-all/', [UserController::class, 'setNotiReadAll']);
 Route::post('/corp_book/set-read/', [UserController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
