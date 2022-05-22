@@ -80,6 +80,7 @@ return [
     'failed' => [
         'database' => env('DB_CONNECTION', 'mysql'),
         'table' => null,
+        'driver' => 'database-uuids'
     ],
 
 ];

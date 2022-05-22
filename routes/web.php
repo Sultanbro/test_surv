@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\UploadController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,10 +15,17 @@
 |
  */
 Auth::routes();
-Route::get('logout', 'Auth\LoginController@logout')->name('logout');
-Route::post('/file/upload', 'UploadController@resumableUpload');
+
+
+Route::any('/', [UserController::class, 'profile']);
+
+
+Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::post('/file/upload', [UploadController::class, 'resumableUpload']);
 
 /* Самостоятельная отметка стажеров */
+
 Route::get('/autocheck/{id}', 'Admin\TraineeController@autocheck'); // cтраница со ссылками для отметки стажерами
 Route::post('/autocheck/{id}', 'Admin\TraineeController@save'); //
 Route::get('/autochecker', 'Admin\TraineeController@autochecker');  // включить возможность отметки
@@ -102,7 +113,7 @@ Route::get('/permissions/get', 'PermissionController@get');
 
 Route::get('/test', 'TestController@test')->name('test');
 Route::get('/wami', 'TestController@send_whatsapp');
-Route::any('/', 'Admin\UserController@profile');
+
 
 
 
