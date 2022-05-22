@@ -13,7 +13,6 @@
 * composer update
 * npm run prod
 * add database.php to config
-* 
 
 ## Задачи, которые нужно согласовать
 
