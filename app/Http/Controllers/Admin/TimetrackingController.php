@@ -58,6 +58,8 @@ class TimetrackingController extends Controller
 
     public function settings()
     {
+
+
         View::share('title', 'Настройки');
 
 
@@ -92,7 +94,11 @@ class TimetrackingController extends Controller
         }
         
         $roles = Auth::user()->roles ? Auth::user()->roles : [];
-        
+
+
+
+//        dd($roles);
+
         if(array_key_exists('page22', $roles) && $roles['page22'] == 'on') {} 
         elseif(array_key_exists('persons', $roles) && $roles['persons'] == 'on' && $active_tab == 1) {} 
         else {

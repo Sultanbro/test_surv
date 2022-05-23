@@ -63,7 +63,7 @@
                 </div>
                 <a style="color: white;text-align: center;border-radius: unset"
                    id="selectedQuarter" @click="selectedQuarter"
-                   class=" btn-block btn btn-success p-0 mt-3"  >Активировать</a>
+                   class=" btn-block btn btn-success p-0 mt-3"  >Сохранить</a>
             </div>
         </div>
     </div>
@@ -147,7 +147,10 @@
 
                 if (this.arr[1]['checked'] === false && this.arr[2]['checked'] === false && this.arr[3]['checked'] === false && this.arr[4]['checked'] === false){
 
-                    this.errors[5] = 'выбрать хоть одного квартала';
+                    // this.$message.success('Изменения сохранены');
+                    document.getElementById('clickQuarter').click();
+                    
+                    // this.errors[5] = 'выбрать хоть одного квартала';
                     // alert('выбрать хоть одного квартала')
                 }else{
                     if (this.errors.length === 0){
