@@ -14,7 +14,12 @@ class AddNameToCourseItems extends Migration
     public function up()
     {
         Schema::table('course_items', function (Blueprint $table) {
-            $table->string('name');
+            $table->increments('id');
+            $table->string('course_id');
+            $table->integer('item_id');
+            $table->integer('item_model');
+            $table->string('order');
+            $table->string('title');
         });
     }
 
