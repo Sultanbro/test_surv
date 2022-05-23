@@ -14,7 +14,7 @@ class AddPointsToTestQuestions extends Migration
     public function up()
     {
         Schema::table('test_questions', function (Blueprint $table) {
-            $table->tinyInteger('points')->after('order')->default(0);
+            $table->tinyInteger('points')->after('order',0);
         });
     }
 

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Notification;
 use App\UserNotification;
 use App\User;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        //  Instead of Tailwind 
+        Paginator::useBootstrap();
+
         \View::composer('layouts.admin', function($view) {
 
             if(!\Auth::guest()) {

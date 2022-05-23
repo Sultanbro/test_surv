@@ -18,17 +18,24 @@ class Admin {
      * @return mixed
      */
     public function handle($request, Closure $next) {
+        
+        if($request->getPathInfo() == '/logout' || !Auth::user()) {
+            return $next($request);
+        }
 
+<<<<<<< HEAD
 
         if(!Auth::user()) return $next($request);
+=======
+>>>>>>> ca8840394c6d7bce637bee9f22b98bddf01f0acd
         if(!User::isUserAdmin(Auth::user()->ID)) {
-
             Auth::logout();
             return redirect('/');
         }
 
         $admin = AdminModel::where('owner_id', 18)->first();
 
+<<<<<<< HEAD
 
 
 //        if(Auth::user() && (in_array(Auth::user()->ID,$admin->users) || Auth::user()->ID == $admin->owner_id)) {
@@ -37,6 +44,17 @@ class Admin {
 //            Auth::user()->is_admin = false;
 //        }
 
+=======
+        
+        if($admin && $admin->users != null && (in_array(Auth::user()->ID,$admin->users) || Auth::user()->ID == $admin->owner_id)) {
+         
+            Auth::user()->is_admin = true;
+        } else {
+            Auth::user()->is_admin = false;
+        }
+    
+      
+>>>>>>> ca8840394c6d7bce637bee9f22b98bddf01f0acd
         return $next($request);
     }
 }

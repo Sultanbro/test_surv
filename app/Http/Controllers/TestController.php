@@ -20,8 +20,18 @@ use App\Models\Books\Book;
 class TestController extends Controller {
  
 	public function test() {
+		$a = \App\User::find(5)->toArray();
+		//array_push($a, [1231]);
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+		
+		dd($a);
+=======
+<<<<<<< HEAD
+>>>>>>> ca8840394c6d7bce637bee9f22b98bddf01f0acd
         $average1 = collect([5,3,2,1,4])->sort()->values();
 
         dd($average1);
@@ -36,7 +46,12 @@ class TestController extends Controller {
         dd($average1,$average1->toArray(),'colliction');
 
 	    $a = \App\Kpi::userKpi(6293, '', 1);
+<<<<<<< HEAD
 
+=======
+=======
+>>>>>>> b387a1795921429dbc519a7ee35499d70afea958
+>>>>>>> ca8840394c6d7bce637bee9f22b98bddf01f0acd
 		// $kb = KnowBase::with('children','questions')->find(3);
 		// $arr = [];
 		// KnowBase::getArray($arr, $kb);
