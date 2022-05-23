@@ -151,7 +151,8 @@
                                                 <i class="fa fa-cog pointer" title="Редактировать" id="bitrix_editor"></i>
                                             </p>
                                             @endif
-                                           
+
+
                                             <input type="text" 
                                                 style="display:none;"
                                                 class="form-control form-control-sm"
@@ -159,7 +160,8 @@
                                                 value="{{ $user->bitrix_id }}"
                                                 name="bitrix_id"
                                                 placeholder="ID профиля в битриксе">
-                                          
+
+
                                             
                                             <profile-kpi-button :user_id="{{ $user->ID }}"/>
 
@@ -866,16 +868,9 @@
                                                 </div>
 
                                                 <div class="col-sm-3 pl-0" >
-
-{{--                                                    <a class="btn-block btn btn-sm btn-primary text-white rounded" style="cursor: pointer">--}}
-{{--                                                        Квартальный бонус--}}
-{{--                                                    </a>--}}
-
-
-
-                                                    <profile-quarter-button :user_id="{{ $user->ID }}"/>
-
-
+                                                    @if(isset($user))
+                                                        <profile-quarter-button :user_id="{{ $user->ID }}"/>
+                                                    @endif
                                                 </div>
 
 

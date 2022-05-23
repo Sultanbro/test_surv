@@ -20,10 +20,17 @@ use App\Models\Books\Book;
 class TestController extends Controller {
  
 	public function test() {
-		$a = \App\User::find(5)->toArray();
 
-
-		$a = (new HeadHunter)->getManagers();
 		dd($a);
 	}  
+
+	public function hhRefresher() {
+		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
+		$hh = new HeadHunter();
+		$hh->auth_code = 'PFJT7Q17953OMBNR48N60J2F2M023LNBG8V3K7GSAJB6TF40QDGU82GKQ5LU07ND';
+		dd($hh->refreshAccessToken());
+
+	}
+
+
 }

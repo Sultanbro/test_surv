@@ -405,6 +405,7 @@ class UserController extends Controller
                 }
             }
 
+
             // prepare user_earnigs 
             $oklads = number_format(round((float)$oklad * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency);
             $user_earnings = [
