@@ -62,7 +62,21 @@ Route::any('/auth', function () {
     return redirect('/');
 });
 
-Route::get('/', [HomeController::class, 'index']);
+
+
+Route::domain('joytron.org')->group(function () {
+    Route::get('/', [HomeController::class, 'index']);
+});
+
+Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+
+
+Route::domain('{account}.{joytron}.org')->group(function () {
+    
+Route::any('/', function () {
+    return redirect('/login');
+});
+
 Route::any('/profile', [UserController::class, 'profile']);
 
 Route::any('/notifications/set-read/', [UserController::class, 'setNotiRead']);
@@ -378,10 +392,13 @@ Route::any('/books/password/', [BpartnersController::class, 'password']);
 
 
 // Controllers with one method
-Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+
 Route::post('/file/upload', [UploadController::class, 'resumableUpload']);
 Route::get('/corp_book/{id}', [LinkController::class, 'opened_corp_book']);
 Route::any('/timetracking/analytics/funnels', [LeadController::class, 'funnel_segment']);
 Route::post('/timetracking/user-fine', [UserFineController::class, 'update']);
 Route::post('/user/save/answer', [ProfileController::class, 'saveAnswer']);
 Route::post('/position/save/desc', [PositionController::class, 'savePositionDesc']);
+
+
+});

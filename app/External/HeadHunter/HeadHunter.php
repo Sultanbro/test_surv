@@ -25,9 +25,10 @@ class HeadHunter {
 	CONST REDIRECT_URI = 'https://bpartners.kz/';  
 
 	CONST COMPANY_ID = 2520517;   // TOO OKtrening  ID в HeadHuntere
-	CONST MANAGER_ID = 7208380;   // Искомый менеджер. Амиров Олжас o_amir4@mail.ru. Подтягиваем только его вакансии
-	CONST MANAGER_ID_2 = 5401857;   // Искомый менеджер. Денис Тастемиров
+	CONST MANAGER_ID = 7618556;   // Искомый менеджер. Амиров Олжас o_amir4@mail.ru. Подтягиваем только его вакансии
+	CONST MANAGER_ID_2 = 7700035;   // Искомый менеджер. Денис Тастемиров
 
+    CONST MANAGERS = [7618556, 7700035];
     CONST SEGMENT = '1462'; // Сегмент в битриксе
 
     /**
