@@ -184,7 +184,13 @@
 <script>
 export default {
   name: "Playlists",
-  props: ['token', 'can_edit'],
+  props: {
+    token: String,
+    can_edit: {
+      type: Boolean,
+      default: false
+    } 
+  },
   data: function() {
     return {
       categories: [],

@@ -607,7 +607,7 @@ export default {
   props: ["trees", 'parent_id', 'auth_user_id', 'parent_name', 'show_page_id', 'can_edit', 'mode'],
   components: { 
     nestedDraggable,
-  },
+  }, 
   data() {
     return {
       id: 0,

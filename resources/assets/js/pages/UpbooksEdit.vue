@@ -219,8 +219,13 @@ export default {
   components: { Questions },
   name: "UpbookEdit",
   props: {
-    token: String,
-    can_edit: Boolean,
+    token: {
+      type: String
+    },
+    can_edit: {
+      type: Boolean,
+      default: false
+    },
     access: String // read edit
   },
   data() {

@@ -196,8 +196,13 @@
 export default {
   name: "KBPage",
   props: {
-    auth_user_id: Number,
-    can_edit: Boolean 
+    auth_user_id: {
+      type:Number
+    },
+   can_edit: {
+      type: Boolean,
+      default: false
+    } 
   },
   data: function() {
     return {

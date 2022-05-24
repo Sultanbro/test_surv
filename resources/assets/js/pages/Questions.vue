@@ -97,7 +97,7 @@
           </div>
 
           <button class="btn btn-success" @click="saveQuestion(q_index)">
-            Сохранить вопрос
+            Проверить вопрос
           </button>
           <button
             class="btn mr-1"
@@ -177,6 +177,7 @@ export default {
   },
   created() {
     this.prepareVariants();
+    // this.mode = 'edit';
     if (this.mode == "read") {
       this.questions.forEach((q) => {
         q.editable = true;

@@ -62,7 +62,7 @@ Route::any('/auth', function () {
     return redirect('/');
 });
 
-
+Route::get('/', [HomeController::class, 'index']);
 
 Route::domain('joytron.org')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
@@ -71,11 +71,9 @@ Route::domain('joytron.org')->group(function () {
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 
-Route::domain('{account}.{joytron}.org')->group(function () {
+Route::domain('{account}.joytron.org')->group(function () {
     
-Route::any('/', function () {
-    return redirect('/login');
-});
+
 
 Route::any('/profile', [UserController::class, 'profile']);
 
