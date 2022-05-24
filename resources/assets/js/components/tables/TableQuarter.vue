@@ -149,7 +149,7 @@
 
                     // this.$message.success('Изменения сохранены');
                     document.getElementById('clickQuarter').click();
-                    
+
                     // this.errors[5] = 'выбрать хоть одного квартала';
                     // alert('выбрать хоть одного квартала')
                 }else{

@@ -1,11 +1,11 @@
 <template>
   <div>
     <a id="clickQuarter" class="btn-block btn btn-sm btn-primary text-white rounded" @click="toggle()">
-      Квартальные бонусы
+      Квартальная премия
     </a>
 
     <sidebar
-        title="Квартальные бонусы"
+        title="Квартальная премия"
         :open="showKpiSidebar"
         @close="toggle()"
         width="70%"

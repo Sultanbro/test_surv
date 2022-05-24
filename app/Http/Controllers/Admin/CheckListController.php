@@ -18,12 +18,25 @@ class CheckListController extends Controller
 
         if (isset($request['valueGroups']) && !empty($request['valueGroups'])){
 
+
+
             foreach ($request['valueGroups'] as $group){
 
 
                 $profileGroups = ProfileGroup::on()->find($group['code']);
 
-                return $profileGroups;
+
+                if (!empty($profileGroups['users'])){
+
+
+
+                    foreach (json_decode($profileGroups['users']) as $profile_users_id){
+
+                      $
+
+                    }
+
+                }
 
 
             }
