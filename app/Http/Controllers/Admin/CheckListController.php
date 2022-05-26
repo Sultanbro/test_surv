@@ -32,7 +32,7 @@ class CheckListController extends Controller
 
                     foreach (json_decode($profileGroups['users']) as $profile_users_id){
 
-                      $
+                      
 
                     }
 
