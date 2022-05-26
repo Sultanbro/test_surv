@@ -78,17 +78,17 @@ Route::get('/', [HomeController::class, 'index']);
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 
-Route::domain('{account}.{joytron}.org')->group(function () {
+//Route::domain('{account}.{joytron}.org')->group(function () {
+
+//
+//Route::any('/', function () {
+//    return redirect('/login');
+//});
 
 
-Route::any('/', function () {
-    return redirect('/login');
-});
 
 
-
-
-Route::domain('{account}.jobtron.org')->group(function () {
+//Route::domain('{account}.jobtron.org')->group(function () {
     
 
 
@@ -424,4 +424,4 @@ Route::post('/user/save/answer', [ProfileController::class, 'saveAnswer']);
 Route::post('/position/save/desc', [PositionController::class, 'savePositionDesc']);
 
 
-});
+//});

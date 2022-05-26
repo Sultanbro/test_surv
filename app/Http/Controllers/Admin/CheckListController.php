@@ -68,8 +68,7 @@ class CheckListController extends Controller
                 $check_users['item_id'] = $profileGroups['id'];
                 $check_users->save();
 
-<<<<<<< HEAD
-=======
+
                 if (!empty($profileGroups['users'])){
 
 
@@ -81,7 +80,7 @@ class CheckListController extends Controller
                     }
 
                 }
->>>>>>> 26f8d061d807c337e490f7c72e4f3c3df45ab3a9
+
 
 
             }
