@@ -92,4 +92,14 @@ class QuartalBonusController extends Controller
 
 
     }
+
+
+    public function deleteQuartal(Request $request)
+    {
+        if (QuartalBonus::on()->where('user_id',$request['user_id'])->delete()){
+
+            return response(['success'=> '1']);
+        }
+
+    }
 }

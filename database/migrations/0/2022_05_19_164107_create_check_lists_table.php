@@ -15,8 +15,8 @@ class CreateCheckListsTable extends Migration
     {
         Schema::create('check_lists', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('user_name');
-            $table->string('user_last_name');
+            $table->string('title');
+            $table->string('check_users_id');
             $table->integer('user_id');
             $table->integer('auth_id');
             $table->string('auth_name');
