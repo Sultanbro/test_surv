@@ -62,12 +62,17 @@ Route::any('/auth', function () {
     return redirect('/');
 });
 
+// Route::get('/login', [LoginController::class, 'in dex'])->name('login');
+Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
+
+Route::get('/', [HomeController::class, 'index']);
 
 Route::domain('joytron.org')->group(function () {
 
 });
 
+<<<<<<< HEAD
 Route::get('/', [HomeController::class, 'index']);
 
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
@@ -79,6 +84,14 @@ Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 //Route::any('/', function () {
 //    return redirect('/login');
 //});
+=======
+
+
+
+Route::domain('{account}.jobtron.org')->group(function () {
+    
+
+>>>>>>> 26f8d061d807c337e490f7c72e4f3c3df45ab3a9
 
 Route::any('/profile', [UserController::class, 'profile']);
 

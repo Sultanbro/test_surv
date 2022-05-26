@@ -68,6 +68,20 @@ class CheckListController extends Controller
                 $check_users['item_id'] = $profileGroups['id'];
                 $check_users->save();
 
+<<<<<<< HEAD
+=======
+                if (!empty($profileGroups['users'])){
+
+
+
+                    foreach (json_decode($profileGroups['users']) as $profile_users_id){
+
+                      
+
+                    }
+
+                }
+>>>>>>> 26f8d061d807c337e490f7c72e4f3c3df45ab3a9
 
 
             }
