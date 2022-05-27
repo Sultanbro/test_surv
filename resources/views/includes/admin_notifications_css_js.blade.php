@@ -305,7 +305,7 @@ $('#setRead').click(function() {
 .kolokolchik {
   position: fixed;
   display: none;
-  left:75px;
+  right:470px;
   top:5px;
   z-index: 13;
 }
@@ -382,8 +382,8 @@ $('#setRead').click(function() {
 .nn-number {
   display: block !important;
   position: absolute;
-  right: 5px;
-  bottom: 5px;
+  right: 7px;
+    top: 9px;
   color:#fff;
   padding: 0 4px;
   border-radius: 5px;

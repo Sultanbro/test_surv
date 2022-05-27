@@ -20,6 +20,18 @@ use App\Models\Books\Book;
 class TestController extends Controller {
  
 	public function test() {
+		//$a = \Storage::disk('ftp')->allFiles(); //->exists('/video/sp_1.mp4'); 
+
+	
+		for ($i = 1; $i <=16; $i++) {
+            //$file = new File($chunkFile);
+            $file = \Storage::disk('local')->get('test' .$i);
+			dump($i); 
+            \Storage::disk('local')->append('aaaaa.mp4', $file);
+
+         
+        }
+
 
 		dd($a);
 	}  

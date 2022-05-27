@@ -66,17 +66,31 @@ Route::any('/auth', function () {
 // Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 
+
 Route::get('/', [HomeController::class, 'index']);
 
+
+
+Route::get('/', [HomeController::class, 'index']);
+//
 Route::domain('joytron.org')->group(function () {
-    Route::get('/', [HomeController::class, 'index']);
+
 });
 
 
 
+//Route::get('/', [HomeController::class, 'index']);
 
-Route::domain('{account}.jobtron.org')->group(function () {
-    
+Route::get('/', [HomeController::class, 'index']);
+
+
+Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+
+
+Route::domain('{account}.{joytron}.org')->group(function () {
+
+
+
 
 
 Route::any('/profile', [UserController::class, 'profile']);
@@ -89,7 +103,7 @@ Route::post('/timetracking/change-password', [UserController::class, 'changePass
 Route::any('/timetracking/get-persons', [UserController::class, 'getpersons']);
 Route::get('/timetracking/create-person', [UserController::class, 'createPerson'])->name('users.create');
 Route::post('/timetracking/person/store', [UserController::class, 'storePerson'])->name('users.store');
-Route::get('/timetracking/edit-person', [UserController::class, 'editperson'])->name('users.edit'); 
+Route::get('/timetracking/edit-person', [UserController::class, 'editperson'])->name('users.edit');
 Route::post('/timetracking/person/update', [UserController::class, 'updatePerson'])->name('users.update');
 Route::post('/timetracking/edit-person/group', [UserController::class, 'editPersonGroup']); // Удалять добавлять пользователя в группы
 Route::post('/timetracking/edit-person/head_in_groups', [UserController::class, 'setUserHeadInGroups']); // Удалять добавлять пользователя руководителем групп
@@ -110,7 +124,8 @@ Route::get('/estimate_trainer', [HomeController::class, 'estimate_trainer']);  /
 Route::any('/efd', [HomeController::class, 'estimate_first_day']);  // анкета
 
 
-Route::post('/timetracking/quarter/store', [QuartalBonusController::class, 'storePersonQuartal']);
+Route::post('/timetracking/quarter/store', [QuartalBonusController::class, 'storePersonQuartal']); /// добавление квартала
+Route::post('/timetracking/quarter/delete', [QuartalBonusController::class, 'deleteQuartal']); /// удаление квартала
 Route::post('/timetracking/quarter/get/quarter/', [QuartalBonusController::class, 'getQuartalBonuses']);
 
 Route::get('/learning/books', [LearningController::class, 'books']);
@@ -132,9 +147,9 @@ Route::post('/course-results/get', [CourseResultController::class, 'get']);
 
 
 // @TODO DELETE USELESS ROUTES AND CONTROLLERS
-Route::any('/videolearning/{id?}', [VideolearningController::class, 'list'])->name('videos.playlists');  
-Route::any('/videolearning/playlists/{id}', [VideolearningController::class, 'playlist'])->name('videos.playlist'); 
-Route::post('/videos/views', [VideolearningController::class, 'views'])->name('videos.views'); 
+Route::any('/videolearning/{id?}', [VideolearningController::class, 'list'])->name('videos.playlists');
+Route::any('/videolearning/playlists/{id}', [VideolearningController::class, 'playlist'])->name('videos.playlist');
+Route::post('/videos/views', [VideolearningController::class, 'views'])->name('videos.views');
 
 Route::get('/playlists/get', [VideoPlaylistController::class, 'get']);
 Route::get('/playlists/get/{id}', [VideoPlaylistController::class, 'getPlaylist']);
@@ -145,17 +160,17 @@ Route::post('/playlists/remove-video', [VideoPlaylistController::class, 'remove_
 Route::post('/playlists/save', [VideoPlaylistController::class, 'save']);
 Route::post('/playlists/delete', [VideoPlaylistController::class, 'delete']);
 Route::post('/playlists/save-test', [VideoPlaylistController::class, 'saveTest']);
-Route::post('/playlists/add', [VideoPlaylistController::class, 'add']); 
-Route::get('/video_playlists', [VideoPlaylistController::class, 'index']); 
+Route::post('/playlists/add', [VideoPlaylistController::class, 'add']);
+Route::get('/video_playlists', [VideoPlaylistController::class, 'index']);
 
-Route::post('/playlists/delete-cat', [VideoCategoryController::class, 'delete']); 
-Route::post('/playlists/add-cat', [VideoCategoryController::class, 'add']); 
+Route::post('/playlists/delete-cat', [VideoCategoryController::class, 'delete']);
+Route::post('/playlists/add-cat', [VideoCategoryController::class, 'add']);
 
 Route::post('/playlists/video/update', [VideoController::class, 'updateVideo']);
-Route::post('/videos/upload', [VideoController::class, 'upload'])->name('videos.upload'); 
-Route::post('/videos/add_comment', [VideoController::class, 'add_comment'])->name('videos.add_comment'); 
-Route::post('/videos/get_comment', [VideoController::class, 'get_comment'])->name('videos.get_comment'); 
-Route::post('/videos/upload_progress', [VideoController::class, 'upload_progress'])->name('videos.upload_progress'); 
+Route::post('/videos/upload', [VideoController::class, 'upload'])->name('videos.upload');
+Route::post('/videos/add_comment', [VideoController::class, 'add_comment'])->name('videos.add_comment');
+Route::post('/videos/get_comment', [VideoController::class, 'get_comment'])->name('videos.get_comment');
+Route::post('/videos/upload_progress', [VideoController::class, 'upload_progress'])->name('videos.upload_progress');
 
 // Настройка субдомена
 Route::get('/cabinet', [CabinetController::class, 'index'] );
@@ -225,6 +240,12 @@ Route::get('/user/delete/{id}', [IndexController::class, 'deleteUser']);
 Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
 Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
 Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
+Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
+Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
+Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
+Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
+
+
 
 
 Route::post('/timetracking/settings/groups/importexcel', [GroupsController::class, 'import']);
@@ -316,7 +337,7 @@ Route::any('/timetracking/quality-control/change-type', [QualityController::clas
 Route::any('/timetracking/quality-control/exportall', [QualityController::class, 'exportAllExcel']);
 Route::post('/timetracking/quality-control/save', [QualityController::class, 'saveRecord']);
 Route::post('/timetracking/quality-control/saveweekly', [QualityController::class, 'saveWeeklyRecord']);
-Route::post('/timetracking/quality-control/delete', [QualityController::class, 'deleteRecord']); 
+Route::post('/timetracking/quality-control/delete', [QualityController::class, 'deleteRecord']);
 Route::post('/timetracking/quality-control/records', [QualityController::class, 'getRecords']);
 Route::post('/timetracking/quality-control/crits/save', [QualityController::class, 'saveCrits']);
 

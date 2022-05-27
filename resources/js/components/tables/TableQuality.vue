@@ -45,6 +45,9 @@
         ></group-premission>
       </div>
     </div>
+
+
+
     <h4 class="d-flex align-items-center">
       <div class="mr-2 mt-2">{{ groupName }}</div>
     </h4>
@@ -123,6 +126,7 @@
                   </tr>
                 </table>
               </div>
+
             </a-tab-pane>
             <a-tab-pane tab="Месяц" key="2">
               <div class="table-responsive my-table">
@@ -455,11 +459,112 @@
                 ></pagination>
               </div>
             </a-tab-pane>
+
           </a-tabs>
         </a-tab-pane>
         <a-tab-pane tab="Прогресс по курсам" key="2">
-            
+
             <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
+
+        </a-tab-pane>
+
+        <a-tab-pane tab="Чек Лист" key="3">
+
+
+          <div class="col-md-12 p-0">
+            <div class="col-md-6 p-0">
+              <div>
+                 <button @click="viewStaticCheck('w')" type="button" class="btn btn-light p-2 pl-4 pr-4" style="background-color: white;color: rgb(24 144 255);border: 1px solid #e8e8e8">Неделя</button>
+                 <button @click="viewStaticCheck('m')" type="button" class="btn btn-light p-2 pl-4 pr-4" style="color: #999999;border: 1px solid #e8e8e8">Месяц</button>
+              </div>
+            </div>
+
+            <div v-if="viewStaticButton.weekCheck" class="table-responsive my-table">
+              <table class="table b-table table-bordered table-sm">
+                <tr>
+                  <th class="b-table-sticky-column text-left t-name wd">
+                    <div>Сотрудник</div>
+                  </th>
+                  <template v-for="(field, key) in fields">
+                    <th >
+
+                      <div>{{ field.name }}</div>
+                    </th>
+                  </template>
+                </tr>
+               <template v-for="( check_r,index ) in check_result">
+                 <tr :key="index">
+                   <th class="b-table-sticky-column text-left t-name wd">
+                     {{ check_r.name }}
+                   </th>
+                   <template v-for="(field, key) in fields">
+                     <td :class="field.klass" :key="key">
+                       <template v-if="currentGroup == check_r.gr_id" >
+
+                         <div v-if="field.name == 'Итог' ">
+                           {{check_r.total_day}}
+                         </div>
+
+                         <template v-for="(checked_day,index) in check_r.day">
+
+
+
+                           <template v-if="index == field.name">
+                             {{checked_day}}
+                           </template>
+
+                         </template>
+                       </template>
+                     </td>
+                   </template>
+                 </tr>
+               </template>
+              </table>
+            </div>
+
+            <div v-if="viewStaticButton.montheCheck" class="table-responsive my-table mt-5">
+              <table class="table b-table table-sm table-bordered">
+                <tr>
+                  <th class="b-table-sticky-column text-left t-name wd">
+                    <div>Сотрудник</div>
+                  </th>
+                  <template v-for="(field, key) in monthFields">
+                    <th :class="field.klass">
+                      <div>{{ field.name }}</div>
+                    </th>
+                  </template>
+                </tr>
+                <template v-for="( check_r,index ) in check_result">
+                  <tr :key="index">
+                    <th class="b-table-sticky-column text-left t-name wd">
+                      {{ check_r.name }}
+                    </th>
+                    <template v-for="(field, key) in monthFields">
+                      <td :class="field.klass" :key="key">
+
+                        <template v-if="currentGroup == check_r.gr_id" >
+
+                          <div v-if="field.name == 'Итог' ">
+                            {{check_r.total_month}}
+                          </div>
+                          <template v-for="(checked_m,index) in check_r.month">
+                            <template v-if="index == field.key">
+                              {{checked_m}}
+                            </template>
+
+                          </template>
+                        </template>
+
+
+
+
+                      </td>
+                    </template>
+                  </tr>
+                </template>
+              </table>
+            </div>
+          </div>
 
         </a-tab-pane>
       </a-tabs>
@@ -615,13 +720,38 @@ export default {
         to: 100,
         total: 4866,
       },
+
+      viewStaticButton:{
+          weekCheck:true,
+          montheCheck:false
+      },
     };
   },
 
   created() {
     this.fetchData();
+
   },
   methods: {
+
+    viewStaticCheck(type){
+
+        console.log(this.fields,'day');
+        console.log(this.monthFields,'mont');
+        // console.log(this.currentGroup,'щзешщт')
+        // console.log(this.fields,'fields')
+        console.log(this.check_result,'result');
+        // console.log(this.items,'items')
+        if (type == 'w'){
+            this.viewStaticButton.weekCheck = true
+            this.viewStaticButton.montheCheck = false
+        }else if(type == 'm'){
+            this.viewStaticButton.weekCheck = false
+            this.viewStaticButton.montheCheck = true
+        }
+
+      }  ,
+
     watchChanges(values, oldValues) {
       const index = values.findIndex(function (v, i) {
         return v !== oldValues[i];
@@ -709,10 +839,20 @@ export default {
         })
         .then((response) => {
           if (response.data.error && response.data.error == "access") {
+
+
+
             this.hasPermission = false;
             loader.hide();
             return;
           }
+
+
+
+
+
+          this.check_result = response.data.check_users;
+
           this.hasPermission = true;
           this.items = response.data.items;
           this.records = response.data.records;
@@ -722,6 +862,8 @@ export default {
           this.records = response.data.records;
           this.can_add_records = response.data.can_add_records;
           this.params = response.data.params;
+
+
 
           this.$message.success("Записи загружены");
           this.normalizeItems();

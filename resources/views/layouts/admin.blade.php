@@ -24,7 +24,6 @@
 <body>
 
 
-
 <div id="app" class="right-panel right-panel-app d-flex">
 
     @include('layouts.side_menu', [
@@ -34,10 +33,12 @@
                             'head_users' => $head_users,
                             'bonus_notification' => $bonus_notification,
                         ])
-    @include('layouts.right_menu')    
+    @include('layouts.right_menu', [
+        'unread' => $unread,
+    ])    
     <div class="page">
 
-        <div id="header" class="header" style="display:none">
+        <div id="header" class="header" style="display:none;min-height:70px;padding: 10px 10px">
 
             <div class="header-menu d-flex justify-content-between">
 

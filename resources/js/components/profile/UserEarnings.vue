@@ -47,8 +47,8 @@
         <p class="text-center">{{ data.bonus }}</p>
     </div>
 
-    <div class="flexy"  v-bind:class="[activeClass]"  v-if="this.quarters.length != 0"  v-show="visible"  >
-        <div class="filler" @click="showQuartalBonusSidebar = true" style="top:15px">
+    <div class="flexy"   v-bind:class="[activeClass]"  v-if="this.quarters.length != 0"  v-show="visible"  style="margin-top: 11px">
+        <div class="filler" @click="showQuartalBonusSidebar = true" style="top: 10px;left: 15px;">
             <img src="/images/bonus_type_2.png"
                 alt="icon"
                 class="img-fluid w-120 back">

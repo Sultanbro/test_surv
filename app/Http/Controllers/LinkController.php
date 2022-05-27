@@ -16,9 +16,9 @@ class LinkController extends Controller
         return view('home');
     }
 
-    public function opened_corp_book($hash) {
+    public function opened_corp_book(Request $request) { 
 
-        $book = KnowBase::where('hash', $hash)->first();
+        $book = KnowBase::where('hash', $request->id)->first();
       
         if($book) {
           $title = $book->title;

@@ -1379,6 +1379,8 @@ class TimetrackingController extends Controller
             'description' => $description,
             'date' => $enter
         ]);
+
+
     }
 
     public function enterreport(Request $request)

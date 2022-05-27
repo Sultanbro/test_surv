@@ -70,6 +70,7 @@ Vue.component('profile-groups', require('./components/profile/ProfileGroups.vue'
 Vue.component('profile-books', require('./components/profile/ProfileBooks.vue')); // настройки user
 
 Vue.component('profile-quarter-button', require('./components/ProfileQuarterButton.vue')); // кнопка Индивид Quarter в настройках User
+Vue.component('auth-check-list', require('./components/auth_check_list.vue')); // кнопка у кого есть Чек Лист список Чек Листов (Fixed)
 
 /** 
  * Components
@@ -140,6 +141,7 @@ Vue.component('course-results', require('./pages/CourseResults.vue')); // рез
 Vue.component('my-course', require('./pages/MyCourse.vue')); // курсы мои
 Vue.component('permissions', require('./pages/Permissions.vue')); // курсы мои
 Vue.component('cabinet', require('./pages/Cabinet.vue')); // курсы мои
+
 
 // Настройки
 Vue.component('userlist', require('./pages/userlist.vue')); // Сотрудники

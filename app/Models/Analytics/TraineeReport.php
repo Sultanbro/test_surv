@@ -88,6 +88,7 @@ class TraineeReport extends Model
 
     public static function formAnswers($data)
     {   
+        if($data == null) $data = [];
         $count[1] = 0;
         $count[2] = 0;
         $count[3] = 0;

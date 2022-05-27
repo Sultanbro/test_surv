@@ -5,22 +5,11 @@
             <img src="/images/profile.jpg" alt="avatar">
         </a>
         
-        @if($unread > 0)
-        <div class="nn-number" style="display:none">
-         {{ $unread}}
-         <div class="pulse"></div>
-         <div class="marker"></div>
-        </div>
-        @endif
+       
         <!-- profile menu -->
         <div class="profile-menu">
             <ul>
-                <li>
-                    <a href="#" class="link link-start" id="toggle_panel">
-                        <i class="fas fa-bell"></i>
-                        <span class="d-flex">Уведомления <i class="nn">{{ $unread }}</i></span>
-                    </a>
-                </li>
+       
                 @if(auth()->user()->is_admin)
                 <li>
                     <a href="/cabinet" class="link link-start">

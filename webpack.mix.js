@@ -11,6 +11,37 @@ const mix = require('laravel-mix');
  |
  */
 
+
+
 mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/admin.scss', 'public/css/admin/app.css')   
-    .sourceMaps();
+    .sass('resources/sass/admin.scss', 'public/css/admin/app.css');
+
+// mix.js('resources/assets/js/app.js', 'public/js')
+//     //.js('resources/assets/js/profile.js', 'public/js')
+//     //.js('resources/assets/js/surv.js', 'public/js')
+//     // .extract([
+//     //     'vue',
+//     //     //'jquery',
+//     //     'bootstrap-vue',
+//     //     'moment',
+//     //     'select2',
+//     //     'vgauge',
+//     //     'axios',
+//     //     'v-mask',
+//     //     'vue-loading-overlay',
+//     //     'vuedraggable',
+//     //     'vue-multiselect',
+//     //     'vue-select',
+//     //     'collect.js',
+//     //     'lodash',
+//     //     'bootstrap-sass',
+//     // ])
+//     .sass('resources/assets/sass/admin.scss', 'public/css/admin/app.css')
+//     //.sass('public/static/new/css/style.scss', 'public/static/new/css')
+//     .options({
+//         processCssUrls: false
+//     });
+
+// mix.js('resources/js/app.js', 'public/js')
+//     .sass('resources/sass/admin.scss', 'public/css/admin/app.css');
+

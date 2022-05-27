@@ -88,6 +88,13 @@ class User extends Authenticatable
 
     ];
 
+
+
+    public function getCheckList()
+    {
+        return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'ID');
+    }
+
     public $remember_token = true;
 
     protected $rememberTokenName = 'AUTH_TOKEN';

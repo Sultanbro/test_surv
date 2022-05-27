@@ -9,15 +9,17 @@ class CheckList extends Model
 
     public $timestamps = true;
 
+    protected $casts = [
+        'active_check_text' => 'array',
+    ];
+
     protected $fillable = [
-        'user_name',
-        'user_last_name',
-        'user_id',
+        'title',
         'auth_id',
         'auth_name',
         'auth_last_name',
-        'active_check_text',
         'count_view',
-        'role_check',
+        'item_type',
+        'item_id',
     ];
 }
