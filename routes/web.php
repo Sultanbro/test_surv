@@ -62,17 +62,25 @@ Route::any('/auth', function () {
     return redirect('/');
 });
 
+// Route::get('/login', [LoginController::class, 'in dex'])->name('login');
+Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+
+
 Route::get('/', [HomeController::class, 'index']);
 
 Route::domain('joytron.org')->group(function () {
-    Route::get('/', [HomeController::class, 'index']);
+
 });
+
+
+Route::get('/', [HomeController::class, 'index']);
 
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 
 Route::domain('{account}.{joytron}.org')->group(function () {
     
+
 
 
 Route::any('/profile', [UserController::class, 'profile']);
@@ -106,7 +114,8 @@ Route::get('/estimate_trainer', [HomeController::class, 'estimate_trainer']);  /
 Route::any('/efd', [HomeController::class, 'estimate_first_day']);  // анкета
 
 
-Route::post('/timetracking/quarter/store', [QuartalBonusController::class, 'storePersonQuartal']);
+Route::post('/timetracking/quarter/store', [QuartalBonusController::class, 'storePersonQuartal']); /// добавление квартала
+Route::post('/timetracking/quarter/delete', [QuartalBonusController::class, 'deleteQuartal']); /// удаление квартала
 Route::post('/timetracking/quarter/get/quarter/', [QuartalBonusController::class, 'getQuartalBonuses']);
 
 Route::get('/learning/books', [LearningController::class, 'books']);
@@ -221,6 +230,12 @@ Route::get('/user/delete/{id}', [IndexController::class, 'deleteUser']);
 Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
 Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
 Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
+Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
+Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
+Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
+Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
+
+
 
 
 Route::post('/timetracking/settings/groups/importexcel', [GroupsController::class, 'import']);

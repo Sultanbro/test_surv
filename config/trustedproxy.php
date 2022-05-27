@@ -45,7 +45,10 @@ return [
      *
      * @link https://symfony.com/doc/current/deployment/proxies.html
      */
+<<<<<<< HEAD
    // 'headers' => Illuminate\Http\Request::HEADER_X_FORWARDED_ALL,
+=======
+>>>>>>> 33bec348b4994e7b0d2294be060eaa91d8842bd2
     'headers' => Illuminate\Http\Request::HEADER_X_FORWARDED_FOR,
 
 ];
