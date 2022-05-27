@@ -24,8 +24,7 @@ use DB;
 use Illuminate\Http\Request;
 use View;
 use App\Models\Analytics\Activity;
-use App\Models\CheckUsers;
-use App\Models\CheckReports;
+
 
 class QualityController extends Controller
 {
@@ -56,9 +55,9 @@ class QualityController extends Controller
 
         $groups2 = ProfileGroup::on()->get();
 
-<<<<<<< HEAD
+
         $groups = $groups->merge($groups2);
-=======
+
         $groups3 = ProfileGroup::on()->get();
 
         $groups = $groups->merge($groups3);
@@ -70,7 +69,7 @@ class QualityController extends Controller
 
 
 
->>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
+
 
 
 
@@ -293,40 +292,6 @@ class QualityController extends Controller
 
         $q_params = QualityParam::where('group_id', $group->id)->where('active', 1)->get();
 
-<<<<<<< HEAD
-        $check_users =CheckUsers::on()->select('name','last_name','check_users_id')
-            ->distinct()->get()->toArray();
-        if (!empty($check_users)) {
-            foreach ($check_users as $keys => $check_user) {
-                $allUserReports = CheckReports::on()->where('check_users_id', $check_user['check_users_id'])
-                    ->where('year', $request->year)->where('month', $request->month)
-                    ->where('item_id', $request->group_id)
-                    ->get()->toArray();
-
-
-                $dayCountCheck = CheckReports::on()->where('check_users_id', $check_user['check_users_id'])
-                    ->where('year', $request->year)->where('month', $request->month)
-                    ->where('item_id', $request->group_id)
-                    ->sum('count_check');
-                $dayCountCheckAuth = CheckReports::on()->where('check_users_id', $check_user['check_users_id'])
-                    ->where('year', $request->year)->where('month', $request->month)
-                    ->where('item_id', $request->group_id)
-                    ->sum('count_check_auth');
-
-                $monthCountCheck = CheckReports::on()->where('check_users_id', $check_user['check_users_id'])
-                    ->where('year', $request->year)->where('item_id', $request->group_id)->sum('count_check');
-
-                $monthCountCheckAuth = CheckReports::on()->where('check_users_id', $check_user['check_users_id'])
-                    ->where('year', $request->year)->where('item_id', $request->group_id)->sum('count_check_auth');
-
-
-                foreach ($allUserReports as $allUserReport) {
-                    $check_users[$keys]['day'][$allUserReport['day']] = $allUserReport['count_check_auth'] . '/' . $allUserReport['count_check'];
-                    $check_users[$keys]['month'][$allUserReport['month']] = $dayCountCheckAuth . '/' . $dayCountCheck;
-                    $check_users[$keys]['gr_id'] = $allUserReport['item_id'];
-                    $check_users[$keys]['total_day'] = $dayCountCheckAuth . '/' . $dayCountCheck;
-                    $check_users[$keys]['total_month'] = $monthCountCheckAuth . '/' . $monthCountCheck;
-=======
 
         $check_users =CheckUsers::on()->select('name','last_name','check_users_id')
             ->distinct()->get()->toArray();
@@ -361,15 +326,12 @@ class QualityController extends Controller
                     $check_users[$keys]['gr_id'] = $allUserReport['item_id'];
                     $check_users[$keys]['total_day'] = $dayCountCheckAuth .'/' .$dayCountCheck;
                     $check_users[$keys]['total_month'] = $monthCountCheckAuth.'/' .$monthCountCheck;
->>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
                 }
             }
         }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
+
         return response()->json([
             'items' => $items,
             'records' => $group->quality == 'local' ? $records : $null_records,
@@ -378,11 +340,7 @@ class QualityController extends Controller
             'avg_month' => $group->quality == 'local' ? $avg_month : 0,
             'can_add_records' => $group->quality == 'local' ? true : false,
             'params' => $q_params,
-<<<<<<< HEAD
             'check_users' => $check_users,
-=======
-            'check_users'=>$check_users
->>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
         ]);
     }
     /**

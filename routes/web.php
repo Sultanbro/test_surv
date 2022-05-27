@@ -64,12 +64,11 @@ Route::any('/auth', function () {
 
 // Route::get('/login', [LoginController::class, 'in dex'])->name('login');
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
-<<<<<<< HEAD
-=======
+
 
 
 Route::get('/', [HomeController::class, 'index']);
->>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
+
 
 
 Route::get('/', [HomeController::class, 'index']);
@@ -79,16 +78,16 @@ Route::domain('joytron.org')->group(function () {
 });
 
 
-<<<<<<< HEAD
+
 //Route::get('/', [HomeController::class, 'index']);
-=======
+
 Route::get('/', [HomeController::class, 'index']);
->>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
+
 
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 
-//Route::domain('{account}.{joytron}.org')->group(function () {
+Route::domain('{account}.{joytron}.org')->group(function () {
 
 
 
@@ -425,4 +424,4 @@ Route::post('/user/save/answer', [ProfileController::class, 'saveAnswer']);
 Route::post('/position/save/desc', [PositionController::class, 'savePositionDesc']);
 
 
-//});
+});

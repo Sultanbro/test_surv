@@ -14,16 +14,12 @@ use Artisan;
 
 class CheckListController extends Controller
 {
-    public function store(Request $request)
-    {
+    public function store(Request $request){
        if ($request['countView'] < 11 && $request['countView'] != 0){
 
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
            if (isset($request['valueGroups']) && !empty($request['valueGroups'])){
 
                foreach ($request['valueGroups'] as $keys => $group){
@@ -87,8 +83,7 @@ class CheckListController extends Controller
 
 
 
-<<<<<<< HEAD
-=======
+
                     foreach (json_decode($profileGroups['users']) as $profile_users_id){
 
                       
@@ -99,10 +94,8 @@ class CheckListController extends Controller
 
 
 
->>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
             }
         }
-    }
 
     public function saveReports($checkList= null,$dataBaseUser=null,$request=null,$profileGroups=null)
     {
