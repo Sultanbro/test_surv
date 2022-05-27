@@ -24,7 +24,6 @@
 <body>
 
 
-
 <div id="app" class="right-panel right-panel-app d-flex">
 
     @include('layouts.side_menu', [
@@ -39,7 +38,7 @@
     ])    
     <div class="page">
 
-        <div id="header" class="header" style="display:none">
+        <div id="header" class="header" style="display:none;min-height:70px;padding: 10px 10px">
 
             <div class="header-menu d-flex justify-content-between">
 

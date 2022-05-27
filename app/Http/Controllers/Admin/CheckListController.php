@@ -20,7 +20,10 @@ class CheckListController extends Controller
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
            if (isset($request['valueGroups']) && !empty($request['valueGroups'])){
 
                foreach ($request['valueGroups'] as $keys => $group){
@@ -84,6 +87,19 @@ class CheckListController extends Controller
 
 
 
+<<<<<<< HEAD
+=======
+                    foreach (json_decode($profileGroups['users']) as $profile_users_id){
+
+                      
+
+                    }
+
+                }
+
+
+
+>>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f
             }
         }
     }

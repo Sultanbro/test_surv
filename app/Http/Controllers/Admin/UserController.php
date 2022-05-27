@@ -251,7 +251,9 @@ class UserController extends Controller
             /* recruiter */
             $rec_group = ProfileGroup::find(48);
 
-            
+
+
+
             if($rec_group->users == null) {
                 $rec_group->users = '[]';
             }

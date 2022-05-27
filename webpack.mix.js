@@ -1,4 +1,4 @@
-let mix = require('laravel-mix');
+const mix = require('laravel-mix');
 
 /*
  |--------------------------------------------------------------------------
@@ -11,6 +11,7 @@ let mix = require('laravel-mix');
  |
  */
 
+<<<<<<< HEAD
 
 mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/admin.scss', 'public/css/admin/app.css');
@@ -40,3 +41,7 @@ mix.js('resources/js/app.js', 'public/js')
 //     .options({
 //         processCssUrls: false
 //     });
+=======
+mix.js('resources/js/app.js', 'public/js')
+    .sass('resources/sass/admin.scss', 'public/css/admin/app.css');
+>>>>>>> 5b26750c052ee6a29442da6747fdd34515c72a1f

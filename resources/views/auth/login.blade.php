@@ -54,19 +54,19 @@
                     </div>
 
                     <div class="tab-row fade-tabset">
-                      
+                       
                         <div class="tab-content">
                             <div id="tab-30" class="tab @if(!isset($_GET['tab'])) active @else js-tab-hidden  @endif">
                                 <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                                     {{ csrf_field() }}
                                     <div class="form-subregistration">
                                         <div class="form-registration-row">
-                                            <input id="email" type="email" class="form-control" name="email"
-                                                value="{{ old('email') }}" required autofocus
+                                            <input id="username" type="text" class="form-control" name="username"
+                                                value="{{ old('username') }}" required autofocus
                                                 placeholder="olegivanov@mail.ru">
-                                            @if ($errors->has('email'))
+                                            @if ($errors->has('username'))
                                             <span class="help-block">
-                                                <strong>{{ $errors->first('email') }}</strong>
+                                                <strong>{{ $errors->first('username') }}</strong>
                                             </span>
                                             @endif
                                         </div>

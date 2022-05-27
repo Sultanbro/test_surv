@@ -3,9 +3,9 @@
 @section('content')
 
 <div class="animated fadeIn">
-  <div class="">
+  <div class="row">
   
-    <div class="col-md-12 mb-3">
+    <div class="col-md-12 mt-4 mb-3">
       <nav>
         <div class="nav nav-tabs" id="nav-tab">
           @if(auth()->user()->ID == 18 || auth()->user()->ID == 5)
@@ -21,7 +21,12 @@
         </div>
       </nav>
       <div class="col-md-12">
-        <t-quality activeuserid="{{ auth()->user()->ID }}" :groups="{{ json_encode($groups)}}"></t-quality>
+
+
+        {{--{{dd($check_users[0]->getReports())}}--}}
+
+        <t-quality activeuserid="{{ auth()->user()->ID }}" :groups="{{ json_encode($groups)}}" ></t-quality>
+
       </div>
 
     </div>

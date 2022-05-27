@@ -2,6 +2,7 @@
 @section('content')
 
 
+UUUUUUUURA
 
 
 <section class="py-4 hero">
@@ -10,6 +11,7 @@
         <div class="col-md-6">
           <div class="cover__content">
           <!-- <img src="/images/logomail.png" class="log" alt=""> -->
+              <h1 class="pretitle text-left font-bold mb-2 leading-1 text-36">Сервис контроля рабочего времени сотрудников</h1>
               <h1 class="pretitle text-left font-bold mb-2 leading-1 text-36">Сервис контроля рабочего времени сотрудников</h1>
                 <p class="text-lg mb-4">Контроль рабочего времени по сотрудникам, Дашборды, База знаний, Регламенты</p>
               
