@@ -52,6 +52,11 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+  
+        if ($exception instanceof \Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedOnDomainException) {
+            return redirect(config('app.url') . '/login');
+        }
+
         if ($this->isHttpException($exception)) 
         {
             /** @var HttpExceptionInterface $exception */

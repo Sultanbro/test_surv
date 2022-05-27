@@ -192,7 +192,7 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
-
+        App\Providers\TenancyServiceProvider::class, // <-- here
 
     ],
 
