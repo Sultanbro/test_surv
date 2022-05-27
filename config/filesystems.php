@@ -65,13 +65,13 @@ return [
 
         'ftp' => [
             'driver'   => 'ftp',
-            'host'     => '185.48.149.174',
-            'username' => 'umarketing',
-            'password' => 'asdasd',
-            'root' => '/uploads/video',
-            'port'     => 50021,
+            'host'     => 'storage.oblako.kz',
+            'username' => 'O4493.O4493_admin',
+            'password' => 'nzxk4iNukQWx',
+            'root' => '/',
+            'port'     => 21,
             'passive'  => true,
-            'ssl'      => true,
+            'ssl'      => false, 
             'timeout'  => 900,
         ],
         

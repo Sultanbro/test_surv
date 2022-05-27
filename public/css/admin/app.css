@@ -2307,6 +2307,7 @@ ul.main-menu {
       -ms-flex-align: center;
           align-items: center;
   font-size: 18px;
+  position: relative;
 }
 
 .right-menu .btn-rm:hover {

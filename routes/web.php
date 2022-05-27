@@ -71,7 +71,7 @@ Route::domain('joytron.org')->group(function () {
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 
-Route::domain('{account}.joytron.org')->group(function () {
+Route::domain('{account}.{joytron}.org')->group(function () {
     
 
 

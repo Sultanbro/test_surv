@@ -5,9 +5,16 @@
 <div class="btn-rm">
     <i class="fa fa-question"></i>
 </div>
-
-<div class="btn-rm">
+  
+<div class="btn-rm" id="toggle_panel">
     <i class="fa fa-bell"></i>
+    @if($unread > 0)
+    <div class="nn-number" style="display:none">
+       
+        <div class="pulse"></div>
+        <div class="marker"></div>
+    </div>
+    @endif
 </div>
 
 <div class="btn-rm">

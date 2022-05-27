@@ -34,7 +34,9 @@
                             'head_users' => $head_users,
                             'bonus_notification' => $bonus_notification,
                         ])
-    @include('layouts.right_menu')    
+    @include('layouts.right_menu', [
+        'unread' => $unread,
+    ])    
     <div class="page">
 
         <div id="header" class="header" style="display:none">
