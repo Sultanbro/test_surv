@@ -249,7 +249,7 @@ class UserController extends Controller
             
 
             /* recruiter */
-            $rec_group = ProfileGroup::find(54);
+            $rec_group = ProfileGroup::find(48);
 
 
 
