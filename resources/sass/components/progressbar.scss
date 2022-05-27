@@ -1,0 +1,54 @@
+/**
+    Progress Bar component
+*/
+$greydark: #c0cac9;
+$black: #333;
+$screen: #eff3f4;
+$pink:  #007bff;
+$grey: #dedfe0;
+
+.active {
+    label {
+      color: #3a3a3a  !important;
+    }
+    .tracker-bar {
+      background: #98d3f5 !important;
+    }
+  }
+  .progress-bar {background: transparent;
+    width: 100%;
+    label {
+        color: grey;
+        margin-bottom: 0;
+        text-transform: none;
+        font-size: 12px;
+        line-height: 24px;
+    }
+    .info {
+      font-size: 17px;
+      justify-content: space-between;
+      display: flex;
+      color: grey;
+      text-transform: uppercase;
+      position: absolute;
+      .percentage {
+        font-weight: bolder;
+        margin-left: 10px;
+      }
+    }
+    .background-bar {
+      background: #ebebeb;
+      width: 100%;
+      height: 24px;
+      text-align: left;
+      padding: 0 10px;
+    }
+  
+    .tracker-bar {
+      background: #98d3f5 ;
+      height: 24px;
+      width: 0;
+      transition: width 0.5s linear;
+      margin-top: -24px;
+    }
+  }

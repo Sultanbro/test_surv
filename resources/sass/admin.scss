@@ -1,0 +1,36 @@
+@import "fonts";
+@import "my-table";
+@import "basics";
+@import "table";
+@import "variables";
+$hover-blue: #007bff;
+// @import '~bootstrap/scss/bootstrap.scss';
+// @import '~bootstrap-vue/src/index.scss';
+
+@import "~select2/src/scss/core.scss";// Select2
+@import "~vue-multiselect/dist/vue-multiselect.min.css";// 
+
+ 
+@import "btns";
+@import "breadcrumbs"; 
+
+@import "analytics/layoff_quiz";
+@import "components/progressbar";
+@import "components/rating";
+@import "components/loader";
+@import "components/nested_draggable";
+@import "components/tinymce";
+@import "components/lp";
+@import "components/profile-menu";  
+@import "components/second-menu";
+@import "components/side-menu";
+@import "components/right-menu";
+@import "components/questions";
+@import "components/courses";
+@import "components/multiselect";
+
+@import "misc";
+@import "nonsorted";
+
+
+

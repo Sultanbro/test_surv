@@ -10,9 +10,9 @@
       </div>
       <div class="col-2">
         <select
-          class="form-control"
-          v-model="monthInfo.currentMonth"
-          @change="fetchData"
+                class="form-control"
+                v-model="monthInfo.currentMonth"
+                @change="fetchData"
         >
           <option v-for="month in $moment.months()" :value="month" :key="month">
             {{ month }}
@@ -32,19 +32,22 @@
         </div>
       </div>
       <div
-        class="col-2"
-        v-if="
+              class="col-2"
+              v-if="
           Number(activeuserid) == 18 ||
           Number(activeuserid) == 5 ||
           Number(activeuserid) == 157
         "
       >
         <group-premission
-          :currentGroup="currentGroup"
-          page="analytic"
+                :currentGroup="currentGroup"
+                page="analytic"
         ></group-premission>
       </div>
     </div>
+
+
+
     <h4 class="d-flex align-items-center">
       <div class="mr-2 mt-2">{{ groupName }}</div>
     </h4>
@@ -56,9 +59,9 @@
 
               <div class="mb-3">
                 <button
-                  class="btn btn-success rounded change-type"
-                  @click="change_type()"
-                  v-if="
+                        class="btn btn-success rounded change-type"
+                        @click="change_type()"
+                        v-if="
                     Number(activeuserid) == 18 ||
                     Number(activeuserid) == 5 ||
                     Number(activeuserid) == 157
@@ -68,9 +71,9 @@
                   <span v-else>Перевести на Ручную оценку</span>
                 </button>
                 <button
-                  class="btn btn-success rounded change-type ml-2"
-                  @click="showCritWindow = true"
-                  v-if="can_add_records && [5, 18, 157].includes(Number(activeuserid))"
+                        class="btn btn-success rounded change-type ml-2"
+                        @click="showCritWindow = true"
+                        v-if="can_add_records && [5, 18, 157].includes(Number(activeuserid))"
                 >
                   <span>Критерии</span>
                 </button>
@@ -94,24 +97,24 @@
                       <div>
                         {{ item.name }}
                         <b-badge
-                          variant="success"
-                          v-if="item.groupName == 'Просрочники'"
-                          >{{ item.groupName }}</b-badge
+                                variant="success"
+                                v-if="item.groupName == 'Просрочники'"
+                        >{{ item.groupName }}</b-badge
                         >
                         <b-badge variant="primary" v-else>{{
                           item.groupName
-                        }}</b-badge>
+                          }}</b-badge>
                       </div>
                     </td>
                     <template v-for="(field, key) in fields">
                       <td :class="field.klass" :key="key">
                         <input
-                          v-if="field.type == 'day' && can_add_records != true"
-                          type="number"
-                          :title="field.key + ' :' + item.name"
-                          class="form-control cell-input"
-                          @change="updateWeekValue(item, field.key)"
-                          v-model="item.weeks[field.key]"
+                                v-if="field.type == 'day' && can_add_records != true"
+                                type="number"
+                                :title="field.key + ' :' + item.name"
+                                class="form-control cell-input"
+                                @change="updateWeekValue(item, field.key)"
+                                v-model="item.weeks[field.key]"
                         />
                         <div v-else>
                           <div v-if="item.weeks[field.key] != 0">
@@ -123,6 +126,7 @@
                   </tr>
                 </table>
               </div>
+
             </a-tab-pane>
             <a-tab-pane tab="Месяц" key="2">
               <div class="table-responsive my-table">
@@ -142,13 +146,13 @@
                       <div>
                         {{ item.name }}
                         <b-badge
-                          variant="success"
-                          v-if="item.groupName == 'Просрочники'"
-                          >{{ item.groupName }}</b-badge
+                                variant="success"
+                                v-if="item.groupName == 'Просрочники'"
+                        >{{ item.groupName }}</b-badge
                         >
                         <b-badge variant="primary" v-else>{{
                           item.groupName
-                        }}</b-badge>
+                          }}</b-badge>
                       </div>
                     </td>
 
@@ -162,23 +166,23 @@
               </div>
             </a-tab-pane>
             <a-tab-pane
-              tab="Оценка переговоров"
-              key="3"
-              @change="changeTab"
-              v-if="can_add_records"
+                    tab="Оценка переговоров"
+                    key="3"
+                    @change="changeTab"
+                    v-if="can_add_records"
             >
               <div class="row">
                 <div class="col-6 col-md-3">
                   <select
-                    class="form-control"
-                    v-model="filters.currentEmployee"
-                    @change="filterRecords"
+                          class="form-control"
+                          v-model="filters.currentEmployee"
+                          @change="filterRecords"
                   >
                     <option :value="0">Выберите сотрудника</option>
                     <option
-                      v-for="item in items"
-                      :value="item.id"
-                      :key="item.id"
+                            v-for="item in items"
+                            :value="item.id"
+                            :key="item.id"
                     >
                       {{ item.name }}
                     </option>
@@ -186,15 +190,15 @@
                 </div>
                 <div class="col-2 col-md-1 d-flex align-items-center">
                   <select
-                    class="form-control"
-                    v-model="currentDay"
-                    @change="fetchData"
+                          class="form-control"
+                          v-model="currentDay"
+                          @change="fetchData"
                   >
                     <option value="0">Все дни</option>
                     <option
-                      v-for="day in this.monthInfo.daysInMonth"
-                      :value="day"
-                      :key="day"
+                            v-for="day in this.monthInfo.daysInMonth"
+                            :value="day"
+                            :key="day"
                     >
                       {{ day }}
                     </option>
@@ -205,9 +209,9 @@
                     <i class="fa fa-plus"></i> Добавить запись
                   </b-button>
                   <b-button
-                    variant="success"
-                    @click="exportData()"
-                    class="mr-1"
+                          variant="success"
+                          @click="exportData()"
+                          class="mr-1"
                   >
                     <i class="far fa-file-excel"></i> 20
                   </b-button>
@@ -234,7 +238,7 @@
 
               <div class="table-responsive my-table">
                 <table
-                  class="table b-table table-sm table-bordered records-table"
+                        class="table b-table table-sm table-bordered records-table"
                 >
                   <tr>
                     <th class="b-table-sticky-column text-left t-name wd">
@@ -252,7 +256,7 @@
                   <!-- RECORDS -->
                   <template v-for="(record, index) in records.data">
                     <tr
-                      :class="{
+                            :class="{
                         selected: record.editable,
                         changed: record.changed,
                       }"
@@ -265,18 +269,18 @@
 
                       <template v-if="currentGroup == 42">
                         <td
-                          class="text-left segment-width"
-                          v-if="record.editable"
+                                class="text-left segment-width"
+                                v-if="record.editable"
                         >
                           <div>
                             <select
-                              v-model="record.segment_id"
-                              class="form-control text-center sg"
-                              @change="statusChanged(record)"
+                                    v-model="record.segment_id"
+                                    class="form-control text-center sg"
+                                    @change="statusChanged(record)"
                             >
                               <option
-                                :value="index"
-                                v-for="(segm, index) in segment"
+                                      :value="index"
+                                      v-for="(segm, index) in segment"
                               >
                                 {{ segm }}
                               </option>
@@ -284,9 +288,9 @@
                           </div>
                         </td>
                         <td
-                          v-else
-                          class="text-center segment-width"
-                          @click="editMode(record)"
+                                v-else
+                                class="text-center segment-width"
+                                @click="editMode(record)"
                         >
                           <div>
                             {{ segment[record.segment_id] }}
@@ -297,18 +301,18 @@
                       <td class="text-center phoner" v-if="record.editable">
                         <div>
                           <input
-                            type="text"
-                            v-model="record.phone"
-                            class="form-control text-center"
-                            @focus="$event.target.select()"
-                            @change="statusChanged(record)"
+                                  type="text"
+                                  v-model="record.phone"
+                                  class="form-control text-center"
+                                  @focus="$event.target.select()"
+                                  @change="statusChanged(record)"
                           />
                         </div>
                       </td>
                       <td
-                        class="text-center phoner"
-                        v-else
-                        @click="editMode(record)"
+                              class="text-center phoner"
+                              v-else
+                              @click="editMode(record)"
                       >
                         <div>
                           {{ record.phone }}
@@ -319,18 +323,18 @@
                         <td class="text-center" v-if="record.editable">
                           <div>
                             <input
-                              type="text"
-                              v-model="record.dayOfDelay"
-                              class="form-control text-center"
-                              @focus="$event.target.select()"
-                              @change="statusChanged(record)"
+                                    type="text"
+                                    v-model="record.dayOfDelay"
+                                    class="form-control text-center"
+                                    @focus="$event.target.select()"
+                                    @change="statusChanged(record)"
                             />
                           </div>
                         </td>
                         <td
-                          class="text-center"
-                          v-else
-                          @click="editMode(record)"
+                                class="text-center"
+                                v-else
+                                @click="editMode(record)"
                         >
                           <div>
                             {{ record.dayOfDelay }}
@@ -341,11 +345,11 @@
                       <td class="text-center" v-if="record.editable">
                         <div>
                           <input
-                            type="text"
-                            v-model="record.interlocutor"
-                            class="form-control text-center"
-                            @focus="$event.target.select()"
-                            @change="statusChanged(record)"
+                                  type="text"
+                                  v-model="record.interlocutor"
+                                  class="form-control text-center"
+                                  @focus="$event.target.select()"
+                                  @change="statusChanged(record)"
                           />
                         </div>
                       </td>
@@ -358,13 +362,13 @@
                       <td class="text-center" v-if="record.editable">
                         <div>
                           <input
-                            type="date"
-                            v-model="record.date"
-                            class="form-control text-center"
-                            placeholder="dd-mm-yyyy"
-                            min="1997-01-01"
-                            max="2030-12-31"
-                            @change="statusChanged(record)"
+                                  type="date"
+                                  v-model="record.date"
+                                  class="form-control text-center"
+                                  placeholder="dd-mm-yyyy"
+                                  min="1997-01-01"
+                                  max="2030-12-31"
+                                  @change="statusChanged(record)"
                           />
                         </div>
                       </td>
@@ -378,18 +382,18 @@
                         <td class="text-center params" v-if="record.editable">
                           <div>
                             <input
-                              type="number"
-                              v-model="record['param' + pk]"
-                              class="form-control text-center"
-                              @change="changeStat(record)"
-                              @focus="$event.target.select()"
+                                    type="number"
+                                    v-model="record['param' + pk]"
+                                    class="form-control text-center"
+                                    @change="changeStat(record)"
+                                    @focus="$event.target.select()"
                             />
                           </div>
                         </td>
                         <td
-                          class="text-center params"
-                          v-else
-                          @click="editMode(record)"
+                                class="text-center params"
+                                v-else
+                                @click="editMode(record)"
                         >
                           <div>
                             {{ record["param" + pk] }}
@@ -406,11 +410,11 @@
                       <td class="text-left" v-if="record.editable">
                         <div>
                           <input
-                            type="text"
-                            v-model="record.comments"
-                            class="form-control"
-                            @focus="$event.target.select()"
-                            @change="statusChanged(record)"
+                                  type="text"
+                                  v-model="record.comments"
+                                  class="form-control"
+                                  @focus="$event.target.select()"
+                                  @change="statusChanged(record)"
                           />
                         </div>
                       </td>
@@ -423,10 +427,10 @@
                       <td class="actions" @click="editMode(record)">
                         <div>
                           <b-button
-                            v-if="record.editable"
-                            variant="success"
-                            size="sm"
-                            @click="saveRecord(record)"
+                                  v-if="record.editable"
+                                  variant="success"
+                                  size="sm"
+                                  @click="saveRecord(record)"
                           >
                             <i class="fa fa-save"></i>
                           </b-button>
@@ -435,9 +439,9 @@
                       <td class="actions" @click="editMode(record)">
                         <div>
                           <b-button
-                            variant="danger"
-                            size="sm"
-                            @click="deleteRecordModal(record, index)"
+                                  variant="danger"
+                                  size="sm"
+                                  @click="deleteRecordModal(record, index)"
                           >
                             <i class="fa fa-trash"></i>
                           </b-button>
@@ -449,17 +453,118 @@
               </div>
               <div>
                 <pagination
-                  :data="records"
-                  @pagination-change-page="getResults"
-                  :limit="3"
+                        :data="records"
+                        @pagination-change-page="getResults"
+                        :limit="3"
                 ></pagination>
               </div>
             </a-tab-pane>
+
           </a-tabs>
         </a-tab-pane>
         <a-tab-pane tab="Прогресс по курсам" key="2">
-            
-            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
+
+          <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
+
+        </a-tab-pane>
+
+        <a-tab-pane tab="Чек Лист" key="3">
+
+
+          <div class="col-md-12 p-0">
+            <div class="col-md-6 p-0">
+              <div>
+                <button @click="viewStaticCheck('w')" type="button" class="btn btn-light p-2 pl-4 pr-4" style="background-color: white;color: rgb(24 144 255);border: 1px solid #e8e8e8">Неделя</button>
+                <button @click="viewStaticCheck('m')" type="button" class="btn btn-light p-2 pl-4 pr-4" style="color: #999999;border: 1px solid #e8e8e8">Месяц</button>
+              </div>
+            </div>
+
+            <div v-if="viewStaticButton.weekCheck" class="table-responsive my-table">
+              <table class="table b-table table-bordered table-sm">
+                <tr>
+                  <th class="b-table-sticky-column text-left t-name wd">
+                    <div>Сотрудник</div>
+                  </th>
+                  <template v-for="(field, key) in fields">
+                    <th >
+
+                      <div>{{ field.name }}</div>
+                    </th>
+                  </template>
+                </tr>
+                <template v-for="( check_r,index ) in check_result">
+                  <tr :key="index">
+                    <th class="b-table-sticky-column text-left t-name wd">
+                      {{ check_r.name }}
+                    </th>
+                    <template v-for="(field, key) in fields">
+                      <td :class="field.klass" :key="key">
+                        <template v-if="currentGroup == check_r.gr_id" >
+
+                          <div v-if="field.name == 'Итог' ">
+                            {{check_r.total_day}}
+                          </div>
+
+                          <template v-for="(checked_day,index) in check_r.day">
+
+
+
+                            <template v-if="index == field.name">
+                              {{checked_day}}
+                            </template>
+
+                          </template>
+                        </template>
+                      </td>
+                    </template>
+                  </tr>
+                </template>
+              </table>
+            </div>
+
+            <div v-if="viewStaticButton.montheCheck" class="table-responsive my-table mt-5">
+              <table class="table b-table table-sm table-bordered">
+                <tr>
+                  <th class="b-table-sticky-column text-left t-name wd">
+                    <div>Сотрудник</div>
+                  </th>
+                  <template v-for="(field, key) in monthFields">
+                    <th :class="field.klass">
+                      <div>{{ field.name }}</div>
+                    </th>
+                  </template>
+                </tr>
+                <template v-for="( check_r,index ) in check_result">
+                  <tr :key="index">
+                    <th class="b-table-sticky-column text-left t-name wd">
+                      {{ check_r.name }}
+                    </th>
+                    <template v-for="(field, key) in monthFields">
+                      <td :class="field.klass" :key="key">
+
+                        <template v-if="currentGroup == check_r.gr_id" >
+
+                          <div v-if="field.name == 'Итог' ">
+                            {{check_r.total_month}}
+                          </div>
+                          <template v-for="(checked_m,index) in check_r.month">
+                            <template v-if="index == field.key">
+                              {{checked_m}}
+                            </template>
+
+                          </template>
+                        </template>
+
+
+
+
+                      </td>
+                    </template>
+                  </tr>
+                </template>
+              </table>
+            </div>
+          </div>
 
         </a-tab-pane>
       </a-tabs>
@@ -479,18 +584,18 @@
         </div>
         <div class="d-flex">
           <b-button
-            class="mt-3 mr-1"
-            variant="danger"
-            block
-            @click="deleteRecord"
-            >Удалить</b-button
+                  class="mt-3 mr-1"
+                  variant="danger"
+                  block
+                  @click="deleteRecord"
+          >Удалить</b-button
           >
           <b-button
-            variant="primary"
-            class="mt-3 ml-1"
-            block
-            @click="$bvModal.hide('delete-modal')"
-            >Отмена</b-button
+                  variant="primary"
+                  class="mt-3 ml-1"
+                  block
+                  @click="$bvModal.hide('delete-modal')"
+          >Отмена</b-button
           >
         </div>
       </div>
@@ -498,24 +603,24 @@
 
     <!-- Modal Create activity -->
     <a-modal
-      v-model="showCritWindow"
-      title="Критерии оценки"
-      @ok="showCritWindow = false"
-      :width="400"
-      class="modalle"
+            v-model="showCritWindow"
+            title="Критерии оценки"
+            @ok="showCritWindow = false"
+            :width="400"
+            class="modalle"
     >
       <div class="row">
         <div class="col-12 d-flex mb-1" v-for="crit in params">
           <b-form-checkbox
-            v-model="crit.active"
-            :value="1"
-            :unchecked-value="0"
+                  v-model="crit.active"
+                  :value="1"
+                  :unchecked-value="0"
           >
           </b-form-checkbox>
           <input
-            type="text"
-            v-model="crit.name"
-            class="form-control form-control-sm"
+                  type="text"
+                  v-model="crit.name"
+                  class="form-control form-control-sm"
           />
         </div>
 
@@ -533,736 +638,772 @@
 </template>
 
 <script>
-export default {
-  name: "TableQuality",
-  props: {
-    activeuserid: String,
-    groups: Array,
-  },
-  data() {
-    return {
-      fields: [],
-      monthFields: [],
-      recordFields: [],
-      filters: {
-        currentEmployee: 0,
-        fromDate: moment().format("YYYY-MM-DD"),
-        toDate: moment().format("YYYY-MM-DD"),
-      },
-      can_add_records: false, // like kaspi
-      fieldsNumber: 15,
-      pageNumber: 1,
-      currentDay: new Date().getDate(),
-      avgDay: 0,
-      avgMonth: 0,
-      showCritWindow: false,
-      newRecord: {
-        id: 0,
-        employee_id: 0,
-        name: "",
-        segment: "1-5",
-        segment_id: 1,
-        interlocutor: "Клиент",
-        phone: "",
-        dayOfDelay: moment().format("YYYY-MM-DD"),
-        date: moment().format("YYYY-MM-DD"),
-        param1: 0,
-        param2: 0,
-        param3: 100,
-        param4: 0,
-        param5: 0,
-        comments: "",
-        changed: true,
-      },
-      records_unique: 0,
-      records: {
-        data: [],
-      },
-      deletingElementIndex: 0,
-      currentGroup: 42,
-      groupName: "Контроль качества",
-      monthInfo: {},
-      user_ids: {},
-      years: [2020, 2021, 2022],
-      currentYear: new Date().getFullYear(),
-      hasPermission: false,
-      dataLoaded: true,
-      segment: {
-        1: "1-5",
-        2: "Нап",
-        3: "3160",
-        4: "6190",
-        5: "ОВД",
-        6: "1-5 RED",
-        7: "Нап RED",
-        10: "ОВД RED",
-        11: "6_30 RED",
-        12: "6_30",
-      },
-      message: null,
-      loader: null,
-      items: [],
-      params: [],
-      pagination: {
-        current_page: 1,
-        first_page_url: "",
-        from: 1,
-        last_page: 1,
-        last_page_url: "",
-        next_page_url: "",
-        per_page: 100,
-        prev_page_url: null,
-        to: 100,
-        total: 4866,
-      },
-    };
-  },
-
-  created() {
-    this.fetchData();
-  },
-  methods: {
-    watchChanges(values, oldValues) {
-      const index = values.findIndex(function (v, i) {
-        return v !== oldValues[i];
-      });
-      console.log(this.records.data[index]);
-      this.records.data[index].changed = true;
-    },
-
-    getResults(page = 1) {
-      this.fetchItems("/timetracking/quality-control/records?page=" + page);
-    },
-
-    fetchData() {
-      let loader = this.$loading.show();
-
-      this.setDates();
-
-      this.fetchItems();
-
-      loader.hide();
-    },
-
-    normalizeItems() {
-      if (this.items.length > 0) {
-        this.newRecord.employee_id = this.items[0].id;
-        this.newRecord.name = this.items[0].name;
-      }
-
-      this.records.data.forEach((record, index) => {
-        record.segment = this.segment[record.segment_id];
-        record.changed = false;
-
-        this.params.forEach((param, key) => {
-          record["param" + key] = 0;
-        });
-
-        record.param_values.forEach((item, key) => {
-          this.params.forEach((param, key) => {
-            if (item.param_id == param.id) {
-              record["param" + key] = item.value;
-            }
-          });
-        });
-      });
-    },
-
-    addParam() {
-      this.params.push({
-        name: "Новый критерий",
-        id: -1,
-        active: 0,
-      });
-    },
-
-    saveParam() {
-      let loader = this.$loading.show();
-
-      axios
-        .post("/timetracking/quality-control/crits/save", {
-          crits: this.params,
-          group_id: this.currentGroup,
-        })
-        .then((response) => {
-          console.log(response);
-          this.$message.success("Сохранено!!");
-          this.fetchData();
-          loader.hide();
-        })
-        .catch(function (e) {
-          loader.hide();
-          alert(e);
-        });
-    },
-
-    fetchItems($url = "/timetracking/quality-control/records") {
-      let loader = this.$loading.show();
-
-      axios
-        .post($url, {
-          day: this.currentDay,
-          month: this.monthInfo.month,
-          year: this.currentYear,
-          employee_id: this.filters.currentEmployee,
-          group_id: this.currentGroup,
-        })
-        .then((response) => {
-          if (response.data.error && response.data.error == "access") {
-            this.hasPermission = false;
-            loader.hide();
-            return;
-          }
-          this.hasPermission = true;
-          this.items = response.data.items;
-          this.records = response.data.records;
-          this.records_unique = response.data.records_unique;
-          this.avgDay = response.data.avg_day;
-          this.avgMonth = response.data.avg_month;
-          this.records = response.data.records;
-          this.can_add_records = response.data.can_add_records;
-          this.params = response.data.params;
-
-          this.$message.success("Записи загружены");
-          this.normalizeItems();
-          this.createUserIdList();
-          this.setWeeksTable();
-          this.setMonthsTable();
-
-          this.setRecordsTable();
-          this.calcTotalWeekField();
-
-          loader.hide();
-        });
-    },
-
-    chooseEmployee(record) {
-      var name = this.items.filter((item) => {
-        return record.employee_id == item.id;
-      });
-      record["name"] = name[0]["name"];
-    },
-
-    setDates() {
-      this.setYear();
-      this.setMonth();
-    },
-
-    filterRecords() {
-      this.fetchItems();
-    },
-    setWeeksTable() {
-      this.setWeeksTableFields();
-    },
-
-    setMonthsTable() {
-      this.setMonthsTableFields();
-    },
-
-    statusChanged(record) {
-      record.changed = true;
-    },
-
-    createUserIdList() {
-      this.items.forEach((item, index) => {
-        this.user_ids[item.id] = item.name;
-      });
-    },
-
-    editRecordModal(record) {
-      this.newRecord.id = record.id;
-      this.newRecord.name = record.name;
-      this.newRecord.interlocutor = record.interlocutor;
-      this.newRecord.employee_id = record.employee_id;
-      this.newRecord.phone = record.phone;
-      this.newRecord.dayOfDelay = record.dayOfDelay;
-      this.newRecord.date = record.date;
-      this.newRecord.param1 = record.param1;
-      this.newRecord.param2 = record.param2;
-      this.newRecord.param3 = record.param3;
-      this.newRecord.param4 = record.param4;
-      this.newRecord.param5 = record.param5;
-      this.newRecord.total = record.total;
-      this.newRecord.comments = record.comments;
-      this.$bvModal.show("bv-modal");
-    },
-
-    addRecord() {
-      if (this.filters.currentEmployee == 0)
-        return this.$message.info("Выберите сотрудника!");
-
-      if (this.records.data.length != 0) this.records.data[0].editable = false;
-
-      let obj = {
-        id: 0,
-        employee_id: this.filters.currentEmployee,
-        name: this.user_ids[this.filters.currentEmployee],
-        segment_id: 1,
-        phone: "",
-        interlocutor: "Клиент",
-        dayOfDelay: 0,
-        date: moment().format("YYYY-MM-DD"),
-      };
-
-      let param_values = [];
-      this.params.forEach((param, key) => {
-        param_values.push({
-          param_id: param.id,
-          value: 0,
-          record_id: 0,
-        });
-        obj["param" + key] = 0;
-      });
-
-      obj["param_values"] = param_values;
-      obj["comments"] = "";
-      obj["changed"] = true;
-      obj["editable"] = true;
-      this.records.data.unshift(obj);
-    },
-
-    saveRecord(record) {
-      let loader = this.$loading.show();
-
-      if (record.phone.length == 0) {
-        this.$message.error("Укажите телефон!!!");
-        loader.hide();
-        return;
-      }
-
-      let obj = {
-        id: record.id,
-        employee_id: record.employee_id,
-        segment_id: record.segment_id,
-        phone: record.phone,
-        interlocutor: record.interlocutor,
-        dayOfDelay: record.dayOfDelay,
-        date: record.date,
-        param_values: record.param_values,
-      };
-
-      // this.params.forEach((param, key) => {
-      //     obj['param' + key] = 0;
-      // });
-
-      obj["comments"] = record.comments;
-      obj["group_id"] = this.currentGroup;
-
-      axios
-        .post("/timetracking/quality-control/save", obj)
-        .then((response) => {
-          console.log(response);
-          if (response.data.method == "save") {
-            record.id = response.data.id;
-            record.total = response.data.total;
-            record.segment = this.segment[record.segment_id];
-            record.name = this.user_ids[record.employee_id];
-            // this.records.data.shift()
-            // this.records.data.unshift(record)
-            this.$message.success("Сохранено");
-          }
-          if (response.data.method == "update") {
-            this.$message.success("Изменено");
-          }
-          record.changed = false;
-          this.$bvModal.hide("bv-modal");
-          loader.hide();
-        })
-        .catch(function (e) {
-          loader.hide();
-          alert(e);
-        });
-    },
-
-    deleteRecordModal(record, index) {
-      this.deletingElementIndex = index;
-      this.newRecord.id = record.id;
-      this.newRecord.name = record.name;
-      this.newRecord.interlocutor = record.interlocutor;
-      this.newRecord.employee_id = record.employee_id;
-      this.newRecord.phone = record.phone;
-      this.newRecord.dayOfDelay = record.dayOfDelay;
-      this.newRecord.date = record.date;
-      this.newRecord.param1 = record.param1;
-      this.newRecord.param2 = record.param2;
-      this.newRecord.param3 = record.param3;
-      this.newRecord.param4 = record.param4;
-      this.newRecord.param5 = record.param5;
-      this.newRecord.total = record.total;
-      this.newRecord.comments = record.comments;
-      this.$bvModal.show("delete-modal");
-    },
-
-    deleteRecord() {
-      let loader = this.$loading.show();
-
-      axios
-        .post("/timetracking/quality-control/delete", {
-          id: this.newRecord.id,
-        })
-        .then((response) => {
-          this.$message.info("Запись #" + this.newRecord.id + " удалена");
-          this.$bvModal.hide("delete-modal");
-
-          // ES6 Func
-          let index = this.records.data.findIndex(
-            (x) => x.id === this.newRecord.id
-          );
-          this.records.data.splice(index, 1);
-
-          this.newRecord.id = 0;
-          loader.hide();
-        });
-    },
-
-    setRecordsTable() {
-      this.setRecordsTableFields();
-      if (this.records.data.length > 0) this.records.data[0].editable = true;
-    },
-
-    editMode(item) {
-      this.records.data.forEach((record, index) => {
-        record.editable = false;
-      });
-      item.editable = true;
-    },
-
-    setRecordsTableFields() {
-      let fieldsArray = [];
-      let order = 1;
-
-      if (this.currentGroup == 42) {
-        fieldsArray.push({
-          key: "segment",
-          name: "Сегмент",
-          type: "select",
-          order: order++,
-          klass: " text-center px-1 segment-width",
-        });
-      }
-
-      fieldsArray.push({
-        key: "phone",
-        name: "Номер",
-        typ: "text",
-        order: order++,
-        klass: " text-center px-1 phoner",
-      });
-
-      if (this.currentGroup == 42) {
-        fieldsArray.push({
-          key: "dayOfDelay",
-          name: "День просрочки",
-          type: "date",
-          order: order++,
-          klass: " text-center px-1 ",
-        });
-      }
-
-      fieldsArray.push({
-        key: "interlocutor",
-        name: "Собеседник",
-        type: "text",
-        order: order++,
-        klass: " text-center px-1 ",
-      });
-
-      fieldsArray.push({
-        key: "date",
-        name: "Дата прослушки",
-        type: "date",
-        order: order++,
-        klass: " text-center px-1 ",
-      });
-
-      this.params.forEach((param, k) => {
-        fieldsArray.push({
-          key: "param" + k,
-          name: param.name,
-          type: "number",
-          order: order++,
-          klass: "text-center px-1 arg number",
-        });
-      });
-
-      fieldsArray.push({
-        key: "total",
-        name: "Сумма оценки",
-        type: "auto",
-        order: order++,
-        klass: " text-center px-1 number",
-      });
-
-      fieldsArray.push({
-        key: "comments",
-        name: "Комментарии",
-        type: "text",
-        order: order++,
-        klass: " text-center px-1 comments",
-      });
-
-      this.recordFields = fieldsArray;
-    },
-
-    setMonthsTableFields() {
-      let fieldsArray = [];
-      let order = 1;
-
-      fieldsArray.push({
-        key: "total",
-        name: "Итог",
-        order: order++,
-        klass: " text-center px-1 t-total",
-      });
-
-      fieldsArray.push({
-        key: "quantity",
-        name: "N",
-        order: order++,
-        klass: " text-center px-1 t-quantity",
-      });
-
-      for (let i = 1; i <= 12; i++) {
-        if (i.length == 1) i = "0" + i;
-
-        fieldsArray.push({
-          key: i,
-          name: moment(this.currentYear + "-" + i + "-01").format("MMMM"),
-          order: order++,
-          klass: "text-center px-1 month",
-        });
-      }
-
-      this.monthFields = fieldsArray;
-    },
-
-    calcTotalWeekField() {
-      let weekly_totals = [];
-
-      this.fields.forEach((field) => {
-        let total = 0;
-        let count = 0;
-        let key = field.key;
-        this.items.forEach((item, index) => {
-          if (item.weeks[key] !== undefined && Number(item.weeks[key]) > 0) {
-            total += Number(item.weeks[key]);
-            count++;
-          }
-        });
-
-        weekly_totals[key] = count > 0 ? Number(total / count).toFixed(0) : 0;
-      });
-
-      this.items.unshift({
-        id: 0,
-        name: "",
-        months: {},
-        weeks: weekly_totals,
-      });
-    },
-
-    setWeeksTableFields() {
-      let fieldsArray = [];
-      let weekNumber = 1;
-      let order = 1;
-
-      fieldsArray.push({
-        key: "total",
-        name: "Итог",
-        order: order++,
-        klass: " text-center px-1 t-total",
-      });
-
-      for (let i = 1; i <= this.monthInfo.daysInMonth; i++) {
-        let m = this.monthInfo.month.toString();
-        let d = i;
-        if (d.toString().length == 1) d = "0" + d;
-        if (m.length == 1) m = "0" + m;
-        //console.log(this.currentYear + '-' + m + '-' + d)
-
-        let date = moment(this.currentYear + "-" + m + "-" + d);
-        let dow = date.day();
-
-        fieldsArray.push({
-          key: i,
-          name: i,
-          order: order++,
-          klass: "text-center px-1",
-          type: "day",
-        });
-
-        if (dow == 0) {
-          fieldsArray.push({
-            key: "avg" + weekNumber,
-            name: "Ср. " + weekNumber,
-            order: order++,
-            klass: "text-center px-1 averages",
-            type: "avg",
-          });
-          weekNumber++;
-        }
-
-        if (dow != 0 && i == this.monthInfo.daysInMonth) {
-          fieldsArray.push({
-            key: "avg" + weekNumber,
-            name: "Ср. " + weekNumber,
-            order: order++,
-            klass: "text-center px-1 averages",
-            type: "avg",
-          });
-        }
-      }
-
-      this.fields = fieldsArray;
-    },
-
-    updateWeekValue(item, key) {
-      console.log(key);
-      console.log(item);
-
-      let loader = this.$loading.show();
-
-      axios
-        .post("/timetracking/quality-control/saveweekly", {
-          day: key,
-          month: this.monthInfo.month,
-          year: this.currentYear,
-          total: item.weeks[key],
-          user_id: item.id,
-          group_id: this.currentGroup,
-        })
-        .then((response) => {
-          console.log(response);
-          this.$message.success("Сохранено");
-          loader.hide();
-        })
-        .catch(function (e) {
-          loader.hide();
-          alert(e);
-        });
-    },
-
-    changeStat(record) {
-      this.params.forEach((param, k) => {
-        if (record["param" + k] < 0) record["param" + k] = 0;
-        if (record["param" + k] > 100) record["param" + k] = 100;
-
-        if (record.param_values[k] !== undefined) {
-          record.param_values[k].value = Number(record["param" + k]);
-        } else {
-          record.param_values[k] = {
-            id: 0,
-            param_id: param.id,
-            record_id: record.id,
-            value: Number(record["param" + k]),
-          };
-        }
-
-        // r//ecord['param' + k] = Number(record.param_values[k].value);
-        total += Number(record["param" + k]);
-      });
-
-      record.changed = true;
-
-      let total = 0;
-
-      this.params.forEach((param, k) => {
-        record.param_values[k].value = Number(record["param" + k]);
-        total += Number(record["param" + k]);
-      });
-
-      if (Number(total) > 100) total = 100;
-      record.total = Number(total);
-      //if(this.params.length > 0) record.total = Number(Number(total / this.params.length).toFixed(0));
-      //record.total = Number(record.param1) + Number(record.param2) + Number(record.param3) + Number(record.param4) + Number(record.param5)
-    },
-
-    setYear() {
-      this.currentYear = this.currentYear
-        ? this.currentYear
-        : this.$moment().format("YYYY");
-    },
-
-    setMonth() {
-      this.monthInfo.currentMonth = this.monthInfo.currentMonth
-        ? this.monthInfo.currentMonth
-        : this.$moment().format("MMMM");
-      this.monthInfo.month = this.$moment(
-        this.monthInfo.currentMonth,
-        "MMMM"
-      ).format("M");
-
-      let currentMonth = this.$moment(this.monthInfo.currentMonth, "MMMM");
-      //Расчет выходных дней
-      this.monthInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
-      this.monthInfo.weekDays = currentMonth.weekdayCalc(
-        currentMonth.startOf("month").toString(),
-        currentMonth.endOf("month").toString(),
-        [6]
-      ); //Колличество выходных
-      this.monthInfo.daysInMonth = new Date(
-        this.currentYear,
-        this.$moment(this.monthInfo.currentMonth, "MMMM").format("M"),
-        0
-      ).getDate(); //Колличество дней в месяце
-      this.monthInfo.workDays =
-        this.monthInfo.daysInMonth - this.monthInfo.weekDays; //Колличество рабочих дней
-    },
-
-    toFloat(number) {
-      return Number(number).toFixed(0);
-    },
-
-    // ucalls or local grades
-    change_type() {
-      let e = null;
-
-      if (this.can_add_records) {
-        e = confirm("Перевести в автоматическую оценку с U-calls?");
-      } else {
-        e = confirm("Перевести в ручную оценку?");
-      }
-
-      if (e) {
-        let loader = this.$loading.show();
-        axios
-          .post("/timetracking/quality-control/change-type", {
-            type: this.can_add_records ? "ucalls" : "local",
-            group_id: this.currentGroup,
-          })
-          .then((response) => {
-            this.$message.success("Сохранено!");
+    export default {
+        name: "TableQuality",
+        props: {
+            activeuserid: String,
+            groups: Array,
+        },
+        data() {
+            return {
+                fields: [],
+                monthFields: [],
+                recordFields: [],
+                filters: {
+                    currentEmployee: 0,
+                    fromDate: moment().format("YYYY-MM-DD"),
+                    toDate: moment().format("YYYY-MM-DD"),
+                },
+                can_add_records: false, // like kaspi
+                fieldsNumber: 15,
+                pageNumber: 1,
+                currentDay: new Date().getDate(),
+                avgDay: 0,
+                avgMonth: 0,
+                showCritWindow: false,
+                newRecord: {
+                    id: 0,
+                    employee_id: 0,
+                    name: "",
+                    segment: "1-5",
+                    segment_id: 1,
+                    interlocutor: "Клиент",
+                    phone: "",
+                    dayOfDelay: moment().format("YYYY-MM-DD"),
+                    date: moment().format("YYYY-MM-DD"),
+                    param1: 0,
+                    param2: 0,
+                    param3: 100,
+                    param4: 0,
+                    param5: 0,
+                    comments: "",
+                    changed: true,
+                },
+                records_unique: 0,
+                records: {
+                    data: [],
+                },
+                deletingElementIndex: 0,
+                currentGroup: 42,
+                groupName: "Контроль качества",
+                monthInfo: {},
+                user_ids: {},
+                years: [2020, 2021, 2022],
+                currentYear: new Date().getFullYear(),
+                hasPermission: false,
+                dataLoaded: true,
+                segment: {
+                    1: "1-5",
+                    2: "Нап",
+                    3: "3160",
+                    4: "6190",
+                    5: "ОВД",
+                    6: "1-5 RED",
+                    7: "Нап RED",
+                    10: "ОВД RED",
+                    11: "6_30 RED",
+                    12: "6_30",
+                },
+                message: null,
+                loader: null,
+                items: [],
+                params: [],
+                pagination: {
+                    current_page: 1,
+                    first_page_url: "",
+                    from: 1,
+                    last_page: 1,
+                    last_page_url: "",
+                    next_page_url: "",
+                    per_page: 100,
+                    prev_page_url: null,
+                    to: 100,
+                    total: 4866,
+                },
+
+                viewStaticButton:{
+                    weekCheck:true,
+                    montheCheck:false
+                },
+            };
+        },
+
+        created() {
             this.fetchData();
-            loader.hide();
-          })
-          .catch(function (e) {
-            loader.hide();
-            alert(e);
-          });
-      }
-    },
 
-    exportData() {
-      var link = "/timetracking/quality-control/export";
-      link += "?group_id=" + this.currentGroup;
-      link += "&day=" + this.currentDay;
-      link += "&month=" + this.monthInfo.month;
-      link += "&year=" + this.currentYear;
-      window.location.href = link;
-    },
+        },
+        methods: {
 
-    exportAll() {
-      var link = "/timetracking/quality-control/exportall";
-      link += "?month=" + this.monthInfo.month;
-      link += "&group_id=" + this.currentGroup;
-      link += "&year=" + this.currentYear;
-      window.location.href = link;
-    },
+            viewStaticCheck(type){
 
-    changeTab() {
-      console.log("tab changed");
-    },
-  },
-};
+                console.log(this.fields,'day');
+                console.log(this.monthFields,'mont');
+                // console.log(this.currentGroup,'щзешщт')
+                // console.log(this.fields,'fields')
+                console.log(this.check_result,'result');
+                // console.log(this.items,'items')
+                if (type == 'w'){
+                    this.viewStaticButton.weekCheck = true
+                    this.viewStaticButton.montheCheck = false
+                }else if(type == 'm'){
+                    this.viewStaticButton.weekCheck = false
+                    this.viewStaticButton.montheCheck = true
+                }
+
+            }  ,
+
+            watchChanges(values, oldValues) {
+                const index = values.findIndex(function (v, i) {
+                    return v !== oldValues[i];
+                });
+                console.log(this.records.data[index]);
+                this.records.data[index].changed = true;
+            },
+
+            getResults(page = 1) {
+                this.fetchItems("/timetracking/quality-control/records?page=" + page);
+            },
+
+            fetchData() {
+                let loader = this.$loading.show();
+
+                this.setDates();
+
+                this.fetchItems();
+
+                loader.hide();
+            },
+
+            normalizeItems() {
+                if (this.items.length > 0) {
+                    this.newRecord.employee_id = this.items[0].id;
+                    this.newRecord.name = this.items[0].name;
+                }
+
+                this.records.data.forEach((record, index) => {
+                    record.segment = this.segment[record.segment_id];
+                    record.changed = false;
+
+                    this.params.forEach((param, key) => {
+                        record["param" + key] = 0;
+                    });
+
+                    record.param_values.forEach((item, key) => {
+                        this.params.forEach((param, key) => {
+                            if (item.param_id == param.id) {
+                                record["param" + key] = item.value;
+                            }
+                        });
+                    });
+                });
+            },
+
+            addParam() {
+                this.params.push({
+                    name: "Новый критерий",
+                    id: -1,
+                    active: 0,
+                });
+            },
+
+            saveParam() {
+                let loader = this.$loading.show();
+
+                axios
+                    .post("/timetracking/quality-control/crits/save", {
+                        crits: this.params,
+                        group_id: this.currentGroup,
+                    })
+                    .then((response) => {
+                        console.log(response);
+                        this.$message.success("Сохранено!!");
+                        this.fetchData();
+                        loader.hide();
+                    })
+                    .catch(function (e) {
+                        loader.hide();
+                        alert(e);
+                    });
+            },
+
+            fetchItems($url = "/timetracking/quality-control/records") {
+                let loader = this.$loading.show();
+
+                axios
+                    .post($url, {
+                        day: this.currentDay,
+                        month: this.monthInfo.month,
+                        year: this.currentYear,
+                        employee_id: this.filters.currentEmployee,
+                        group_id: this.currentGroup,
+                    })
+                    .then((response) => {
+                        if (response.data.error && response.data.error == "access") {
+
+
+
+                            this.hasPermission = false;
+                            loader.hide();
+                            return;
+                        }
+
+
+
+
+
+                        this.check_result = response.data.check_users;
+
+                        this.hasPermission = true;
+                        this.items = response.data.items;
+                        this.records = response.data.records;
+                        this.records_unique = response.data.records_unique;
+                        this.avgDay = response.data.avg_day;
+                        this.avgMonth = response.data.avg_month;
+                        this.records = response.data.records;
+                        this.can_add_records = response.data.can_add_records;
+                        this.params = response.data.params;
+
+
+
+                        this.$message.success("Записи загружены");
+                        this.normalizeItems();
+                        this.createUserIdList();
+                        this.setWeeksTable();
+                        this.setMonthsTable();
+
+                        this.setRecordsTable();
+                        this.calcTotalWeekField();
+
+                        loader.hide();
+                    });
+            },
+
+            chooseEmployee(record) {
+                var name = this.items.filter((item) => {
+                    return record.employee_id == item.id;
+                });
+                record["name"] = name[0]["name"];
+            },
+
+            setDates() {
+                this.setYear();
+                this.setMonth();
+            },
+
+            filterRecords() {
+                this.fetchItems();
+            },
+            setWeeksTable() {
+                this.setWeeksTableFields();
+            },
+
+            setMonthsTable() {
+                this.setMonthsTableFields();
+            },
+
+            statusChanged(record) {
+                record.changed = true;
+            },
+
+            createUserIdList() {
+                this.items.forEach((item, index) => {
+                    this.user_ids[item.id] = item.name;
+                });
+            },
+
+            editRecordModal(record) {
+                this.newRecord.id = record.id;
+                this.newRecord.name = record.name;
+                this.newRecord.interlocutor = record.interlocutor;
+                this.newRecord.employee_id = record.employee_id;
+                this.newRecord.phone = record.phone;
+                this.newRecord.dayOfDelay = record.dayOfDelay;
+                this.newRecord.date = record.date;
+                this.newRecord.param1 = record.param1;
+                this.newRecord.param2 = record.param2;
+                this.newRecord.param3 = record.param3;
+                this.newRecord.param4 = record.param4;
+                this.newRecord.param5 = record.param5;
+                this.newRecord.total = record.total;
+                this.newRecord.comments = record.comments;
+                this.$bvModal.show("bv-modal");
+            },
+
+            addRecord() {
+                if (this.filters.currentEmployee == 0)
+                    return this.$message.info("Выберите сотрудника!");
+
+                if (this.records.data.length != 0) this.records.data[0].editable = false;
+
+                let obj = {
+                    id: 0,
+                    employee_id: this.filters.currentEmployee,
+                    name: this.user_ids[this.filters.currentEmployee],
+                    segment_id: 1,
+                    phone: "",
+                    interlocutor: "Клиент",
+                    dayOfDelay: 0,
+                    date: moment().format("YYYY-MM-DD"),
+                };
+
+                let param_values = [];
+                this.params.forEach((param, key) => {
+                    param_values.push({
+                        param_id: param.id,
+                        value: 0,
+                        record_id: 0,
+                    });
+                    obj["param" + key] = 0;
+                });
+
+                obj["param_values"] = param_values;
+                obj["comments"] = "";
+                obj["changed"] = true;
+                obj["editable"] = true;
+                this.records.data.unshift(obj);
+            },
+
+            saveRecord(record) {
+                let loader = this.$loading.show();
+
+                if (record.phone.length == 0) {
+                    this.$message.error("Укажите телефон!!!");
+                    loader.hide();
+                    return;
+                }
+
+                let obj = {
+                    id: record.id,
+                    employee_id: record.employee_id,
+                    segment_id: record.segment_id,
+                    phone: record.phone,
+                    interlocutor: record.interlocutor,
+                    dayOfDelay: record.dayOfDelay,
+                    date: record.date,
+                    param_values: record.param_values,
+                };
+
+                // this.params.forEach((param, key) => {
+                //     obj['param' + key] = 0;
+                // });
+
+                obj["comments"] = record.comments;
+                obj["group_id"] = this.currentGroup;
+
+                axios
+                    .post("/timetracking/quality-control/save", obj)
+                    .then((response) => {
+                        console.log(response);
+                        if (response.data.method == "save") {
+                            record.id = response.data.id;
+                            record.total = response.data.total;
+                            record.segment = this.segment[record.segment_id];
+                            record.name = this.user_ids[record.employee_id];
+                            // this.records.data.shift()
+                            // this.records.data.unshift(record)
+                            this.$message.success("Сохранено");
+                        }
+                        if (response.data.method == "update") {
+                            this.$message.success("Изменено");
+                        }
+                        record.changed = false;
+                        this.$bvModal.hide("bv-modal");
+                        loader.hide();
+                    })
+                    .catch(function (e) {
+                        loader.hide();
+                        alert(e);
+                    });
+            },
+
+            deleteRecordModal(record, index) {
+                this.deletingElementIndex = index;
+                this.newRecord.id = record.id;
+                this.newRecord.name = record.name;
+                this.newRecord.interlocutor = record.interlocutor;
+                this.newRecord.employee_id = record.employee_id;
+                this.newRecord.phone = record.phone;
+                this.newRecord.dayOfDelay = record.dayOfDelay;
+                this.newRecord.date = record.date;
+                this.newRecord.param1 = record.param1;
+                this.newRecord.param2 = record.param2;
+                this.newRecord.param3 = record.param3;
+                this.newRecord.param4 = record.param4;
+                this.newRecord.param5 = record.param5;
+                this.newRecord.total = record.total;
+                this.newRecord.comments = record.comments;
+                this.$bvModal.show("delete-modal");
+            },
+
+            deleteRecord() {
+                let loader = this.$loading.show();
+
+                axios
+                    .post("/timetracking/quality-control/delete", {
+                        id: this.newRecord.id,
+                    })
+                    .then((response) => {
+                        this.$message.info("Запись #" + this.newRecord.id + " удалена");
+                        this.$bvModal.hide("delete-modal");
+
+                        // ES6 Func
+                        let index = this.records.data.findIndex(
+                            (x) => x.id === this.newRecord.id
+                        );
+                        this.records.data.splice(index, 1);
+
+                        this.newRecord.id = 0;
+                        loader.hide();
+                    });
+            },
+
+            setRecordsTable() {
+                this.setRecordsTableFields();
+                if (this.records.data.length > 0) this.records.data[0].editable = true;
+            },
+
+            editMode(item) {
+                this.records.data.forEach((record, index) => {
+                    record.editable = false;
+                });
+                item.editable = true;
+            },
+
+            setRecordsTableFields() {
+                let fieldsArray = [];
+                let order = 1;
+
+                if (this.currentGroup == 42) {
+                    fieldsArray.push({
+                        key: "segment",
+                        name: "Сегмент",
+                        type: "select",
+                        order: order++,
+                        klass: " text-center px-1 segment-width",
+                    });
+                }
+
+                fieldsArray.push({
+                    key: "phone",
+                    name: "Номер",
+                    typ: "text",
+                    order: order++,
+                    klass: " text-center px-1 phoner",
+                });
+
+                if (this.currentGroup == 42) {
+                    fieldsArray.push({
+                        key: "dayOfDelay",
+                        name: "День просрочки",
+                        type: "date",
+                        order: order++,
+                        klass: " text-center px-1 ",
+                    });
+                }
+
+                fieldsArray.push({
+                    key: "interlocutor",
+                    name: "Собеседник",
+                    type: "text",
+                    order: order++,
+                    klass: " text-center px-1 ",
+                });
+
+                fieldsArray.push({
+                    key: "date",
+                    name: "Дата прослушки",
+                    type: "date",
+                    order: order++,
+                    klass: " text-center px-1 ",
+                });
+
+                this.params.forEach((param, k) => {
+                    fieldsArray.push({
+                        key: "param" + k,
+                        name: param.name,
+                        type: "number",
+                        order: order++,
+                        klass: "text-center px-1 arg number",
+                    });
+                });
+
+                fieldsArray.push({
+                    key: "total",
+                    name: "Сумма оценки",
+                    type: "auto",
+                    order: order++,
+                    klass: " text-center px-1 number",
+                });
+
+                fieldsArray.push({
+                    key: "comments",
+                    name: "Комментарии",
+                    type: "text",
+                    order: order++,
+                    klass: " text-center px-1 comments",
+                });
+
+                this.recordFields = fieldsArray;
+            },
+
+            setMonthsTableFields() {
+                let fieldsArray = [];
+                let order = 1;
+
+                fieldsArray.push({
+                    key: "total",
+                    name: "Итог",
+                    order: order++,
+                    klass: " text-center px-1 t-total",
+                });
+
+                fieldsArray.push({
+                    key: "quantity",
+                    name: "N",
+                    order: order++,
+                    klass: " text-center px-1 t-quantity",
+                });
+
+                for (let i = 1; i <= 12; i++) {
+                    if (i.length == 1) i = "0" + i;
+
+                    fieldsArray.push({
+                        key: i,
+                        name: moment(this.currentYear + "-" + i + "-01").format("MMMM"),
+                        order: order++,
+                        klass: "text-center px-1 month",
+                    });
+                }
+
+                this.monthFields = fieldsArray;
+            },
+
+            calcTotalWeekField() {
+                let weekly_totals = [];
+
+                this.fields.forEach((field) => {
+                    let total = 0;
+                    let count = 0;
+                    let key = field.key;
+                    this.items.forEach((item, index) => {
+                        if (item.weeks[key] !== undefined && Number(item.weeks[key]) > 0) {
+                            total += Number(item.weeks[key]);
+                            count++;
+                        }
+                    });
+
+                    weekly_totals[key] = count > 0 ? Number(total / count).toFixed(0) : 0;
+                });
+
+                this.items.unshift({
+                    id: 0,
+                    name: "",
+                    months: {},
+                    weeks: weekly_totals,
+                });
+            },
+
+            setWeeksTableFields() {
+                let fieldsArray = [];
+                let weekNumber = 1;
+                let order = 1;
+
+                fieldsArray.push({
+                    key: "total",
+                    name: "Итог",
+                    order: order++,
+                    klass: " text-center px-1 t-total",
+                });
+
+                for (let i = 1; i <= this.monthInfo.daysInMonth; i++) {
+                    let m = this.monthInfo.month.toString();
+                    let d = i;
+                    if (d.toString().length == 1) d = "0" + d;
+                    if (m.length == 1) m = "0" + m;
+                    //console.log(this.currentYear + '-' + m + '-' + d)
+
+                    let date = moment(this.currentYear + "-" + m + "-" + d);
+                    let dow = date.day();
+
+                    fieldsArray.push({
+                        key: i,
+                        name: i,
+                        order: order++,
+                        klass: "text-center px-1",
+                        type: "day",
+                    });
+
+                    if (dow == 0) {
+                        fieldsArray.push({
+                            key: "avg" + weekNumber,
+                            name: "Ср. " + weekNumber,
+                            order: order++,
+                            klass: "text-center px-1 averages",
+                            type: "avg",
+                        });
+                        weekNumber++;
+                    }
+
+                    if (dow != 0 && i == this.monthInfo.daysInMonth) {
+                        fieldsArray.push({
+                            key: "avg" + weekNumber,
+                            name: "Ср. " + weekNumber,
+                            order: order++,
+                            klass: "text-center px-1 averages",
+                            type: "avg",
+                        });
+                    }
+                }
+
+                this.fields = fieldsArray;
+            },
+
+            updateWeekValue(item, key) {
+                console.log(key);
+                console.log(item);
+
+                let loader = this.$loading.show();
+
+                axios
+                    .post("/timetracking/quality-control/saveweekly", {
+                        day: key,
+                        month: this.monthInfo.month,
+                        year: this.currentYear,
+                        total: item.weeks[key],
+                        user_id: item.id,
+                        group_id: this.currentGroup,
+                    })
+                    .then((response) => {
+                        console.log(response);
+                        this.$message.success("Сохранено");
+                        loader.hide();
+                    })
+                    .catch(function (e) {
+                        loader.hide();
+                        alert(e);
+                    });
+            },
+
+            changeStat(record) {
+                this.params.forEach((param, k) => {
+                    if (record["param" + k] < 0) record["param" + k] = 0;
+                    if (record["param" + k] > 100) record["param" + k] = 100;
+
+                    if (record.param_values[k] !== undefined) {
+                        record.param_values[k].value = Number(record["param" + k]);
+                    } else {
+                        record.param_values[k] = {
+                            id: 0,
+                            param_id: param.id,
+                            record_id: record.id,
+                            value: Number(record["param" + k]),
+                        };
+                    }
+
+                    // r//ecord['param' + k] = Number(record.param_values[k].value);
+                    total += Number(record["param" + k]);
+                });
+
+                record.changed = true;
+
+                let total = 0;
+
+                this.params.forEach((param, k) => {
+                    record.param_values[k].value = Number(record["param" + k]);
+                    total += Number(record["param" + k]);
+                });
+
+                if (Number(total) > 100) total = 100;
+                record.total = Number(total);
+                //if(this.params.length > 0) record.total = Number(Number(total / this.params.length).toFixed(0));
+                //record.total = Number(record.param1) + Number(record.param2) + Number(record.param3) + Number(record.param4) + Number(record.param5)
+            },
+
+            setYear() {
+                this.currentYear = this.currentYear
+                    ? this.currentYear
+                    : this.$moment().format("YYYY");
+            },
+
+            setMonth() {
+                this.monthInfo.currentMonth = this.monthInfo.currentMonth
+                    ? this.monthInfo.currentMonth
+                    : this.$moment().format("MMMM");
+                this.monthInfo.month = this.$moment(
+                    this.monthInfo.currentMonth,
+                    "MMMM"
+                ).format("M");
+
+                let currentMonth = this.$moment(this.monthInfo.currentMonth, "MMMM");
+                //Расчет выходных дней
+                this.monthInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
+                this.monthInfo.weekDays = currentMonth.weekdayCalc(
+                    currentMonth.startOf("month").toString(),
+                    currentMonth.endOf("month").toString(),
+                    [6]
+                ); //Колличество выходных
+                this.monthInfo.daysInMonth = new Date(
+                    this.currentYear,
+                    this.$moment(this.monthInfo.currentMonth, "MMMM").format("M"),
+                    0
+                ).getDate(); //Колличество дней в месяце
+                this.monthInfo.workDays =
+                    this.monthInfo.daysInMonth - this.monthInfo.weekDays; //Колличество рабочих дней
+            },
+
+            toFloat(number) {
+                return Number(number).toFixed(0);
+            },
+
+            // ucalls or local grades
+            change_type() {
+                let e = null;
+
+                if (this.can_add_records) {
+                    e = confirm("Перевести в автоматическую оценку с U-calls?");
+                } else {
+                    e = confirm("Перевести в ручную оценку?");
+                }
+
+                if (e) {
+                    let loader = this.$loading.show();
+                    axios
+                        .post("/timetracking/quality-control/change-type", {
+                            type: this.can_add_records ? "ucalls" : "local",
+                            group_id: this.currentGroup,
+                        })
+                        .then((response) => {
+                            this.$message.success("Сохранено!");
+                            this.fetchData();
+                            loader.hide();
+                        })
+                        .catch(function (e) {
+                            loader.hide();
+                            alert(e);
+                        });
+                }
+            },
+
+            exportData() {
+                var link = "/timetracking/quality-control/export";
+                link += "?group_id=" + this.currentGroup;
+                link += "&day=" + this.currentDay;
+                link += "&month=" + this.monthInfo.month;
+                link += "&year=" + this.currentYear;
+                window.location.href = link;
+            },
+
+            exportAll() {
+                var link = "/timetracking/quality-control/exportall";
+                link += "?month=" + this.monthInfo.month;
+                link += "&group_id=" + this.currentGroup;
+                link += "&year=" + this.currentYear;
+                window.location.href = link;
+            },
+
+            changeTab() {
+                console.log("tab changed");
+            },
+        },
+    };
 </script>
-

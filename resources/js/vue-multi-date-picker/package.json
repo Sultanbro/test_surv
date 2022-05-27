@@ -1,0 +1,66 @@
+{
+  "_args": [
+    [
+      "vue-multi-date-picker@1.5.0",
+      "C:\\xampp\\htdocs\\lara"
+    ]
+  ],
+  "_from": "vue-multi-date-picker@1.5.0",
+  "_id": "vue-multi-date-picker@1.5.0",
+  "_inBundle": false,
+  "_integrity": "sha512-KEybGKRPR8Acf693b5PMEvRLKOJFDquoDHvFSGmjkMyoGtbFaBVcnfdBHbwZaLupw6cjmuxmdFQRNuCwrK88Hg==",
+  "_location": "/vue-multi-date-picker",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "vue-multi-date-picker@1.5.0",
+    "name": "vue-multi-date-picker",
+    "escapedName": "vue-multi-date-picker",
+    "rawSpec": "1.5.0",
+    "saveSpec": null,
+    "fetchSpec": "1.5.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/vue-multi-date-picker/-/vue-multi-date-picker-1.5.0.tgz",
+  "_spec": "1.5.0",
+  "_where": "C:\\xampp\\htdocs\\lara",
+  "author": {
+    "name": "fangchaozeng",
+    "email": "1014336691@qq.com"
+  },
+  "bugs": {
+    "url": "https://github.com/zhaokuohaha/vue-multi-date-picker/issues"
+  },
+  "dependencies": {
+    "vue": "^2.3.3"
+  },
+  "description": "A date picker for vue2.x support multi selection",
+  "devDependencies": {
+    "babel-core": "^6.0.0",
+    "babel-loader": "^6.0.0",
+    "babel-preset-env": "^1.5.1",
+    "cross-env": "^3.0.0",
+    "css-loader": "^0.25.0",
+    "file-loader": "^0.9.0",
+    "vue-loader": "^12.1.0",
+    "vue-template-compiler": "^2.3.3",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5"
+  },
+  "homepage": "https://github.com/zhaokuohaha/vue-multi-date-picker#readme",
+  "main": "src/lib/index.js",
+  "name": "vue-multi-date-picker",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/zhaokuohaha/vue-multi-date-picker.git"
+  },
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot"
+  },
+  "version": "1.5.0"
+}

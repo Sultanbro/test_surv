@@ -1,0 +1,25 @@
+.bc {
+    width: 100%;
+    display: flex;
+    margin-left: 2.5px;
+    align-items: center;
+  }
+.bc a {
+    font-size: 12px;
+    color: #858585;
+    display: block;
+    margin-right: 10px;
+}
+.bc a:last-child {
+    color: #000;
+}
+.bc i {
+    font-size: 8px;
+    color: #ccc;
+    position: relative;
+    margin-right: 10px;
+    top: 1px;
+}
+.bc a:hover {
+    color: #ddd;
+}
