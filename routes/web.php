@@ -63,7 +63,7 @@ Route::any('/auth', function () {
 });
 
 // Route::get('/login', [LoginController::class, 'in dex'])->name('login');
-Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+// Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 
 

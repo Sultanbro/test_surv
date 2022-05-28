@@ -58,6 +58,11 @@ $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
 );
 
+// Uncomment for creating migrations
+// $app->withFacades();
+// $app->register(\KitLoong\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
+
+
 $response->send();
 
 $kernel->terminate($request, $response);
