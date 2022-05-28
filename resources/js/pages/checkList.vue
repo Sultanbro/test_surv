@@ -36,7 +36,7 @@
 
                         <tr v-for="arrCheckList of arrCheckLists">
                             <td >
-                                <a href="#"   @click="editCheck(arrCheckList.id)">
+                                <a href="#"   @click="editCheck(arrCheckList.id,arrCheckList.type)">
                                  {{arrCheckList.title}}
                                 </a>
                             </td>
@@ -83,7 +83,7 @@
                 title="Создать чек лист"
                 :open="showCheckSideBar"
                 @close="showCheckSideBar = false"
-                width="60%"
+                width="65%"
         >
 
           <div class="col-md-12 p-0">
@@ -105,10 +105,14 @@
               </div>
               <div class="row" v-if="click_show.gr">
                   <div class="col-md-11" style="margin-top: -10px;margin-bottom: 10px;">
+                      <!--:options="cars"-->
+                      <!--:selectable="car => car.disabled"-->
                       <div>
                           <!--<label class="typo__label">Tagging</label>-->
-                          <multiselect v-model="valueGroups" tag-placeholder="Add this as new tag" placeholder="Выбрать группы"
-                                       label="name" track-by="code" :options="groups_arr" :multiple="true" :taggable="true">
+                          <multiselect v-model="valueGroups"     tag-placeholder="Add this as new tag" placeholder="Выбрать группы"
+                                       label="name" track-by="code" :options="groups_arr"
+                                       :multiple="true" :taggable="true"
+                                        >
                           </multiselect>
 
                       </div>
@@ -159,13 +163,12 @@
                       <!--<textarea class="form-control btn-block"></textarea>-->
                   </div>
               </div>
-
               <div class="row" v-if="click_show.us">
                   <div class="col-md-11" style="margin-top: -10px;margin-bottom: 10px;">
                       <div>
                           <!--<label class="typo__label">Tagging</label>-->
-                          <multiselect  tag-placeholder="Add this as new tag" placeholder="Выбрать сотрудников"
-                                       label="name" track-by="code" :options="groups_arr" :multiple="true" :taggable="true">
+                          <multiselect v-model="valueUsers"  tag-placeholder="Add this as new tag" placeholder="Выбрать сотрудников"
+                                       label="name" track-by="code" :options="allusers_arr" :multiple="true" :taggable="true">
                           </multiselect>
 
                       </div>
@@ -209,9 +212,8 @@
                                 <i class="fa fa-trash" aria-hidden="true"></i>
                       </button>
                   </div>
+
                   <div class="col-md-12 mt-3">
-
-
                       <div v-if="errors.show" class="alert mb-3 alert-danger p-2" >
                           <span v-if="this.errors.message">
                               {{ this.errors.message}}
@@ -274,8 +276,10 @@
         },
         data() {
             return{
+                valueFindGr:[],
                 valueGroups:[],
                 valuePositions:[],
+                valueUsers:[],
                 groups_arr:[],
                 allusers_arr:[],
                 positions_arr:[],
@@ -303,6 +307,7 @@
                     us:false
                 }
 
+
             }
         },
         // computed:{
@@ -312,6 +317,8 @@
         //     },
         // },
         created(){
+
+
             this.addCheckList()
             this.viewCheckList()
         },
@@ -320,11 +327,7 @@
             // this.allusers_arr = JSON.parse(this.allusers);
             this.positions_arr = this.positions;
 
-
-
-
-
-            if (Object.keys(JSON.parse(this.groups)).length > 0){
+            if (Object.keys(JSON.parse(this.groups)).length > 0) {
                 this.groups_arr = JSON.parse(this.groups);
                 const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
                     code: arr[0],
@@ -333,22 +336,28 @@
                 this.groups_arr = arrayFailedGr
             }
 
-            if (Object.keys(this.positions_arr).length > 0){
 
-                const arrayFailedPs = Object.entries(this.positions_arr).map((arr) => ({
+            if (Object.keys(this.positions_arr).length > 0) {
+                // this.groups_arr = JSON.parse(this.positions_arr);
+
+                const arrayFailedGr = Object.entries(this.positions_arr).map((arr) => ({
                     code: arr[0],
                     name: arr[1],
                 }));
-                this.positions_arr = arrayFailedPs
+                this.positions_arr = arrayFailedGr
             }
 
+            if (this.allusers) {
+                for (let i = 0; i < this.allusers.length; i++) {
+                    if (this.allusers[i]['name'].length > 1) {
+                        this.allusers_arr[i] = {
+                            name: this.allusers[i]['name'] + '  ' + this.allusers[i]['last_name'],
+                            code: this.allusers[i]['id']
+                        }
+                    }
+                }
+            }
 
-
-
-
-
-
-            // console.log(this.positions_arr,'pos')
         },
         methods:{
             addNewCheckModalShow(){
@@ -379,6 +388,7 @@
 
                 this.validateInput(arrCheckInput,this.countView,this.valueGroups)
 
+                // console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
 
 
                 if (this.errors.save){
@@ -387,41 +397,70 @@
                         valueGroups:this.valueGroups,
                         countView:this.countView,
                         arrCheckInput:arrCheckInput,
+                        valueFindGr:this.valueFindGr
                     }).then(response => {
+                        console.log(response);
+                        if (response.data.type == 1){
+                            this.$message.error('Ошибка');
+                            this.errors.show = true;
+                            this.errors.message = response.data.item;
+                        }else {
+                            this.$message.success('Успешно изменен');
+                            this.errors.show = false;
+                            this.showCheckSideBar = false;
+                            this.viewCheckList()
+                        }
 
 
-
-                        this.$message.success('Успешно изменен');
-                        this.errors.show = false;
-                        this.showCheckSideBar = false;
-                        this.viewCheckList()
                     })
                 }
 
 
             },
-            editCheck(check_id){
+            editCheck(check_id,type){
                 this.addButton = false
                 this.editButton = true
                 this.showCheckSideBar = true
                 this.check_id = check_id
                 this.errors.show = false
 
-
                 axios.post('/timetracking/settings/edit/check', {
-                    check_id:check_id
+                    check_id:check_id,
+                    type:type,
                 }).then(response => {
 
+                    console.log(type,'type');
+                    console.log(check_id,'imasheev');
+                    console.log(response,'imasheevsdf');
+
+                    this.valueFindGr = response.data.item_id;
 
 
-                    this.countView = response.data.count_view
+                    this.countView = response.data.count_view;
                     this.arrCheckInput = JSON.parse(response.data['active_check_text'])
-                    this.valueGroups = JSON.parse(response.data['role_check'])
 
-                    if (this.valueGroups.length > 0){
-                        this.click_show.gr = true
-                    }
 
+
+
+
+
+
+                    
+                    if (response.data.item_type == 1){
+                        this.valueGroups = [{name:response.data.title,code:response.data.item_id}];
+                        this.click_show.gr = true;
+                        this.click_show.ps = false
+                        this.valuePositions = null;
+                    }else if (response.data.item_type == 2){
+                        this.valuePositions = [{name:response.data.title,code:response.data.item_id}];
+                        this.click_show.ps = true;
+                        this.click_show.gr = false;
+                        this.valueGroups = null;
+                    }else if (response.data.item_type == 3){
+
+
+                        this.click_show.us = true
+                    };
 
                 })
 
@@ -443,6 +482,7 @@
 
 
             },
+
             viewCheckList(){
                 axios.get('/timetracking/settings/list/check', {
                 }).then(response => {
@@ -452,7 +492,7 @@
             saveCheckList(){
                 this.saveButton = true
                 this.errors.save_checkbox = false
-                this.validateInput(this.arrCheckInput,this.countView,this.valueGroups)
+                this.validateInput(this.arrCheckInput,this.countView,this.valueGroups,this.valuePositions)
 
 
                 if (this.click_show.gr == true || this.click_show.ps == true || this.click_show.us == true){
@@ -475,11 +515,16 @@
 
 
 
+
+
                 if (this.errors.save &&  this.errors.save_checkbox){
                     axios.post('/timetracking/settings/add/check', {
                         valueGroups:this.valueGroups,
+                        valuePositions:this.valuePositions,
                         countView:this.countView,
                         arrCheckInput:this.arrCheckInput,
+                        valueUsers:this.valueUsers,
+                        checked:this.click_show,
                     }).then(response => {
                         if (response.data.success == false){
                             this.$message.error('Уже существует вы можете от отредактировать');
@@ -517,10 +562,11 @@
 
             },
 
-            validateInput(array_check_input,count_view,value_groups){
+            validateInput(array_check_input,count_view,value_groups,valuePositions){
                 // console.log(array_check_input,count_view,value_groups,'fuckk')
                 this.countView = count_view,
                 this.valueGroups = value_groups,
+                this.valuePositions = valuePositions,
                 this.arrCheckInput = array_check_input
                 this.errors.save = false
 

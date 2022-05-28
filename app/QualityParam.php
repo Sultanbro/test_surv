@@ -16,4 +16,6 @@ class QualityParam extends Model
         'active',
     ];
 
+
+
 }

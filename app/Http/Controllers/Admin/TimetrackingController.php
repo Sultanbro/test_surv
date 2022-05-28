@@ -60,6 +60,7 @@ class TimetrackingController extends Controller
     {
 
 
+
         View::share('title', 'Настройки');
 
 
@@ -127,12 +128,20 @@ class TimetrackingController extends Controller
 
             $positions = Position::select('position as name', 'id')->get()->toArray();
             $tab5['positions'] = array_values($positions);    
-        
+
+
+
         }
+
+        /// временно
+        $getUsers = User::on()->limit(45)->select('id','name','last_name')->get()->toArray();
+
+
+
 
         $groupsWithId = ProfileGroup::select('name','id')->get();
         return view(
-            'admin.settingtimetracking')
+            'admin.settingtimetracking',compact('getUsers'))
             ->with('positions', $positions)
             ->with('groups',$groups)
             ->with('archived_groups',$archived_groups)

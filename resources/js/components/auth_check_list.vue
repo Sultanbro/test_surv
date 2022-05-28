@@ -29,7 +29,7 @@
                         <div class="col-12 p-0" v-for="(val,ind) in item.check_input">
                             <div class="col-md-4 ">
                                 <div class="position-absolute" style="margin-left: -15px;">
-                                    <b-form-checkbox  v-model="val.checked"></b-form-checkbox>
+                                    <b-form-checkbox  ></b-form-checkbox>
                                 </div>
                                 <label style="cursor: pointer"  class="ml-3">{{val.text}}</label>
                             </div>
@@ -92,18 +92,33 @@
                 axios.post('/timetracking/settings/auth/check/user/send', {
                     auth_check:this.auth_check
                 }).then(response => {
-                    this.auth_check= response.data
-                    this.showAuthUserCheck= false
+
+                    console.log(response,'imks')
+
+                    this.auth_check = [];
+                    this.viewCheck();
+                    // this.auth_check= response.data
+
+
+                    // this.showAuthUserCheck= false
                     this.$message.success('Успешно выполнено');
                 })
 
             },
 
             viewCheck(){
+
+
+
                 axios.post('/timetracking/settings/auth/check/user', {
                     auth_check:this.auth_check_list
                 }).then(response => {
+
+
+
                     // this.auth_check= response.data
+
+
                     for (let i = 0;i < response.data.length;i++){
                         this.auth_check.push({
                             title: response.data[i][0]['title'],
