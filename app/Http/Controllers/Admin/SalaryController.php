@@ -341,7 +341,7 @@ class SalaryController extends Controller
                 'deactivate_date',
                  DB::raw("CONCAT(last_name,' ',name) as full_name"),
                  'user_type',
-                'users.DATE_REGISTER',
+                'users.created_at',
                  'full_time',
                  'users.working_day_id',
                  'users.working_time_id',

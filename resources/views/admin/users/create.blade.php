@@ -417,7 +417,7 @@
                                                                     <span>Дата регистрации</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->DATE_REGISTER)->format('d.m.Y')}}</span>
+                                                                    <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
                                                                 </td>
                                                             </tr>
                                                         @if($user->applied_at != null && $user->is_trainee == 0)
@@ -436,7 +436,7 @@
                                                                     <span>Дата принятия на работу</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->DATE_REGISTER)->format('d.m.Y')}}</span>
+                                                                    <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
                                                                 </td>
                                                             </tr>
                                                         @endif

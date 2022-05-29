@@ -778,7 +778,7 @@ class User extends Authenticatable
         } 
         
         if($user_applied_at == null) {
-            $user_applied_at = $this->DATE_REGISTER; 
+            $user_applied_at = $this->created_at; 
         }
         
         return $user_applied_at;

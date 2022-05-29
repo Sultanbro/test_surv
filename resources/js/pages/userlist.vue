@@ -97,7 +97,7 @@ can<template>
       <template slot="cell(groups)" slot-scope="row">
         <b-badge variant="primary" class="mr-1" v-for="group_id in row.value" :key="group_id">{{groups[group_id]}}</b-badge>
       </template>
-      <template slot="cell(DATE_REGISTER)" slot-scope="row">
+      <template slot="cell(created_at)" slot-scope="row">
         {{ row.value }}
       </template>
       <template slot="cell(full_time)" slot-scope="row">
@@ -406,7 +406,7 @@ export default {
           sortable: true
         },
         {
-          key: 'DATE_REGISTER',
+          key: 'created_at',
           label: 'Дата регистрации',
           sortable: true,
         },
@@ -449,7 +449,7 @@ export default {
       currentPage: 1,
       perPage: 20,
       pageOptions: [5, 10, 15],
-      sortBy: 'DATE_REGISTER',
+      sortBy: 'created_at',
       sortDesc: true,
       sortDirection: 'desc',
       can_login_users: [],

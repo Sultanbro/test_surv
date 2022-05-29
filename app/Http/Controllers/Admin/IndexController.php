@@ -655,7 +655,7 @@ class IndexController extends Controller
                 $where = " AND users.ID IN (".implode(',', $user_ids).") ";
             }
 
-            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS users.ID, users.DATE_REGISTER, users.email, CAST(users.UF_BALANCE AS  DECIMAL(12,2)) UF_BALANCE, balance_daily_report.*
+            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS users.ID, users.created_at, users.email, CAST(users.UF_BALANCE AS  DECIMAL(12,2)) UF_BALANCE, balance_daily_report.*
 								   FROM users
 								   LEFT JOIN balance_daily_report ON balance_daily_report.user_id = users.ID
 								   WHERE (balance_daily_report.yearmonth=".$year.$month." OR balance_daily_report.yearmonth IS NULL)
@@ -674,7 +674,7 @@ class IndexController extends Controller
                 $data[] = [
                     '<input class="delete-checkbox" type="checkbox" value="'.$user->id.'">',
                     $user->id,
-                    $user->DATE_REGISTER,
+                    $user->created_at,
                     $user->email.' <a  target="_blank" href="/login-as/'.$user->id.'">Вход</a> <a href="/balance/update/'.$user->id.'">Добавить баланс</a> <a href="/user/delete/'.$user->id.'" onclick="return confirm(\'Удалить?\')">Удалить</a>',
                     $user->d1_balance,
                     $user->d2_balance,
@@ -723,7 +723,7 @@ class IndexController extends Controller
             return response()->json($sending);
         }
 
-        $users = DB::select("SELECT users.ID, users.DATE_REGISTER, users.email FROM users");
+        $users = DB::select("SELECT users.ID, users.created_at, users.email FROM users");
 
         View::share('title', 'Баланс пользователей');
 
@@ -885,7 +885,7 @@ class IndexController extends Controller
         $partner_users = [];
 
         foreach ($users as $key =>$user){
-            $counts = PartnerUsers::where('partner_id', (isset($user->partner) && !empty($user->partner)) ? $user->partner->id : '0')->with('user:ID,name,email,DATE_REGISTER')->count();
+            $counts = PartnerUsers::where('partner_id', (isset($user->partner) && !empty($user->partner)) ? $user->partner->id : '0')->with('user:ID,name,email,created_at')->count();
             if ($counts <> 0) {
                 $partner_users[$user->id] = $counts;
             }
@@ -900,7 +900,7 @@ class IndexController extends Controller
     public function partnerView(Request $request, $domain, $tld, $id) {
 
         $partner = Partner::where('id', $id)->with('user:ID,name,email')->firstOrFail();
-        $partner_users = PartnerUsers::where('partner_id', $id)->with('user:ID,name,email,DATE_REGISTER')->get();
+        $partner_users = PartnerUsers::where('partner_id', $id)->with('user:ID,name,email,created_at')->get();
         $partner_info = PartnerInfo::where('partner_id', $id)->first();
         $invoices = PartnerInvoice::where('partner_id', $id)->with('partner.user:ID,name')->with('partnerUser.user:ID,name')->get();
         $files = PartnerFile::where('partner_id', $id)->get();
@@ -973,7 +973,7 @@ class IndexController extends Controller
     public function partnerPay(Request $request)
     {
 
-        $partner_users = PartnerUsers::where('partner_id', $request->partner_id)->with('user:ID,name,email,DATE_REGISTER')->get();
+        $partner_users = PartnerUsers::where('partner_id', $request->partner_id)->with('user:ID,name,email,created_at')->get();
 
         $amount = $request->amount;
 
@@ -1476,7 +1476,7 @@ class IndexController extends Controller
         $stat_error = $this->getQuantity(-1, $request);
 
 
-        $users = DB::select("SELECT users.ID, users.DATE_REGISTER, users.email FROM users");
+        $users = DB::select("SELECT users.ID, users.created_at, users.email FROM users");
 
         return view('admin.autocalls.index')
             ->with('autocalls', $autocalls)

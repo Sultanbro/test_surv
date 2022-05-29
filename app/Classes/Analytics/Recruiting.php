@@ -452,9 +452,9 @@ class Recruiting
             // $applied_users_without = User::withTrashed()
             //     ->where('UF_ADMIN', 1)
             //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            //     ->whereYear('users.DATE_REGISTER', $date->year)
-            //     ->whereMonth('users.DATE_REGISTER', $date->month)
-            //     ->whereDay('users.DATE_REGISTER', $i)
+            //     ->whereYear('users.created_at', $date->year)
+            //     ->whereMonth('users.created_at', $date->month)
+            //     ->whereDay('users.created_at', $i)
             //     ->get([
             //         'users.full_time as full_time',
             //         'ud.id as tid',

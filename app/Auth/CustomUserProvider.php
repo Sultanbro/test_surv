@@ -15,8 +15,8 @@ class CustomUserProvider extends EloquentUserProvider
 			return false;
 		}
 
-		$salt = substr($user->PASSWORD, 0, (strlen($user->PASSWORD) - 32));
-		$realPassword = substr($user->PASSWORD, -32);
+		$salt = substr($user->password, 0, (strlen($user->password) - 32));
+		$realPassword = substr($user->password, -32);
 		$password = md5($salt.$plain);
 
 		///dd(User::get());.

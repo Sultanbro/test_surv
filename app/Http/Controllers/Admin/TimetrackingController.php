@@ -827,7 +827,7 @@ class TimetrackingController extends Controller
             $date_for_register = Carbon::parse($date); 
             $date_for_fire = Carbon::parse($date)->startOfMonth();
             $d_users = User::onlyTrashed()->where('UF_ADMIN', 1)
-                //->whereDate('DATE_REGISTER', '<', $date_for_register)
+                //->whereDate('created_at', '<', $date_for_register)
                 ->whereDate('deleted_at', '>=', $date_for_fire)
                 ->get();
             
@@ -929,7 +929,7 @@ class TimetrackingController extends Controller
             if($user_applied_at && $user_applied_at->applied) {
                 $user_applied_at = $user_applied_at->applied;
             } else {
-                $user_applied_at = $user->DATE_REGISTER;
+                $user_applied_at = $user->created_at;
             }
 
             if($user_applied_at && Carbon::parse($user_applied_at)->month == $request->month && Carbon::parse($user_applied_at)->year == $request->year) {

@@ -26,7 +26,7 @@ class CreateBUserCallibroTable extends Migration
             $table->string('email')->nullable();
             $table->double('bonus', 8, 2)->default(0);
             $table->dateTime('LAST_LOGIN')->nullable();
-            $table->dateTime('DATE_REGISTER');
+            $table->dateTime('created_at');
             $table->char('LID', 2)->nullable();
             $table->string('PERSONAL_PROFESSION')->nullable();
             $table->string('PERSONAL_WWW')->nullable();

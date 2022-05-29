@@ -225,7 +225,7 @@ class UserController extends Controller
                 
                 $salt = User::randString(8);
                 $password = $salt.md5($salt.$request->password);
-                $user->PASSWORD = $password;
+                $user->password = $password;
                 $user->save();
 
                 Auth::logout();
@@ -620,7 +620,7 @@ class UserController extends Controller
         if(!empty($request->password) && $request->password == $request->repassword) {
             $salt = User::randString(8);
             $password = $salt.md5($salt.$request->password);
-            $user->PASSWORD = $password;
+            $user->password = $password;
             $user->save();
 
             Auth::logout();
@@ -652,8 +652,8 @@ class UserController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1);
 
-            if ($request['start_date']) $users = $users->whereDate('DATE_REGISTER', '>=', $request['start_date']);
-            if ($request['end_date']) $users = $users->whereDate('DATE_REGISTER', '<=', $request['end_date']);
+            if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
+            if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deactivate_date', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deactivate_date', '<=', $request['end_date_deactivate']);
 
@@ -726,8 +726,8 @@ class UserController extends Controller
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 1);
             
-            if ($request['start_date']) $users = $users->whereDate('DATE_REGISTER', '>=', $request['start_date']);
-            if ($request['end_date']) $users = $users->whereDate('DATE_REGISTER', '<=', $request['end_date']);
+            if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
+            if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['start_date_deactivate']) $users = $users->whereDate('deactivate_date', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deactivate_date', '<=', $request['end_date_deactivate']);
             
@@ -739,8 +739,8 @@ class UserController extends Controller
                 ->where('is_trainee', 0);
             
            // $trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
-            if ($request['start_date']) $users = $users->whereDate('DATE_REGISTER', '>=', $request['start_date']);
-            if ($request['end_date']) $users = $users->whereDate('DATE_REGISTER', '<=', $request['end_date']);
+            if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
+            if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['segment']) $users = $users->where('segment', $request['segment']);
 
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
@@ -758,7 +758,7 @@ class UserController extends Controller
             'users.full_time', 
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"), 
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
-            'users.DATE_REGISTER',
+            'users.created_at',
             'users.deactivate_date',
             'users.last_group',
             'users.position_id',
@@ -806,7 +806,7 @@ class UserController extends Controller
             
             
             // if(is_null($user->has_trainee)) {
-            //     $user->applied = $user->DATE_REGISTER;
+            //     $user->applied = $user->created_at;
             // } else if(time() - Carbon::parse($user->applied)->timestamp <= 60) {
                 
             //         $users->applied = null;
@@ -825,7 +825,7 @@ class UserController extends Controller
             } 
             
 
-            $user->DATE_REGISTER = Carbon::parse($user->DATE_REGISTER)->addHours(6)->format('Y-m-d H:i:s');
+            $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
     
             if($user->applied) {
                 $user->applied = Carbon::parse($user->applied)->addHours(6)->format('Y-m-d H:i:s');
@@ -912,7 +912,7 @@ class UserController extends Controller
                     5 => $user->full_time == 1 ? 'Full-time' : 'Part-time', 
                     6 => $segment, 
                     7 => array_key_exists($user->position_id, $positions) ? $positions[$user->position_id] : $user->position_id, 
-                    8 => $user->DATE_REGISTER, 
+                    8 => $user->created_at, 
                     9 => $user->applied, 
                     10 => $user->deactivate_date, 
                     11 => $user->fire_cause, 
@@ -1129,7 +1129,7 @@ class UserController extends Controller
                 if($user->trainee) {
                     $user->applied_at = $user->applied;
                 } else {
-                    $user->applied_at = $user->DATE_REGISTER;
+                    $user->applied_at = $user->created_at;
                 }
 
                 if($user->is_trainee){
@@ -1258,7 +1258,7 @@ class UserController extends Controller
         /*==============================================================*/
         $original_password = User::generateRandomString();
         $salt = User::randString(8);
-        $user_password = $salt . md5($salt . $original_password);
+        $user_password = \Hash::make('12345');
         $activate_key = User::generateRandomString(24);
 
         $data = [
@@ -1321,13 +1321,9 @@ class UserController extends Controller
                 'name' => $request['name'],
                 'last_name' => $request['last_name'],
                 'description' => $request['description'],
-                'ACTIVE' => 'N',
-                'PASSWORD' => $user_password,
-                'DATE_REGISTER' => DB::raw('NOW()'),
-                'UF_BALANCE' => 250,
+                'password' => \Hash::make('12345'),
+                'created_at' => DB::raw('NOW()'),
                 'position_id' => $request['position'],
-                'UF_ADMIN' => 1,
-                'roles' => $this->roles,
                 'user_type' => $request->user_type,
                 'timezone' => 6,
                 'bitrhday' => $request['birthday'],
@@ -1335,10 +1331,6 @@ class UserController extends Controller
                 'working_day_id' => (int)$request['working_days'],
                 'working_time_id' => (int)$request['working_times'],
                 'phone' => $request['phone'],
-                'phone_1' => $request['phone_1'],
-                'phone_2' => $request['phone_2'],
-                'phone_3' => $request['phone_3'],
-                'phone_4' => $request['phone_4'],
                 'full_time' => $request['full_time'],
                 'work_start' => $request['work_start_time'],
                 'work_end' => $request['work_start_end'],
@@ -1351,13 +1343,8 @@ class UserController extends Controller
                 'name' => $request['name'],
                 'last_name' => $request['last_name'],
                 'description' => $request['description'],
-                'ACTIVE' => 'N',
-                'PASSWORD' => $user_password,
-                'DATE_REGISTER' => DB::raw('NOW()'),
-                'UF_BALANCE' => 250,
+                'password' => \Hash::make('12345'),
                 'position_id' => $request['position'],
-                'UF_ADMIN' => 1,
-                'roles' => $this->roles,
                 'user_type' => $request->user_type,
                 'timezone' => 6,
                 'bitrhday' => $request['birthday'],
@@ -1365,10 +1352,6 @@ class UserController extends Controller
                 'working_day_id' => (int)$request['working_days'],
                 'working_time_id' => (int)$request['working_times'],
                 'phone' => $request['phone'],
-                'phone_1' => $request['phone_1'],
-                'phone_2' => $request['phone_2'],
-                'phone_3' => $request['phone_3'],
-                'phone_4' => $request['phone_4'],
                 'full_time' => $request['full_time'],
                 'work_start' => $request['work_start_time'],
                 'work_end' => $request['work_start_end'],
@@ -1397,7 +1380,7 @@ class UserController extends Controller
 
         if($request->is_trainee == 'true')  {
             $is_trainee = 1;
-            // $user->DATE_REGISTER = null;
+            // $user->created_at = null;
             // $user->save();
             $trainee = Trainee::where('user_id', $user->id)->first();
             if(!$trainee) Trainee::create(['user_id' => $user->id]);
@@ -1734,7 +1717,7 @@ class UserController extends Controller
         
         if($request->new_pwd != '') {
             $salt = User::randString(8);
-            $user->PASSWORD = $salt . md5($salt . $request->new_pwd);
+            $user->password = $salt . md5($salt . $request->new_pwd);
         } 
 
         $user->save();
@@ -2401,7 +2384,7 @@ class UserController extends Controller
             ->setEncryption('ssl')
             //->setUsername(env('MAIL_FROM_ADDRESS', 'no-reply@u-marketing.org'))
             ->setUsername('no-repl@u-marketing.org')
-            ->setPassword('Asd123102030!'); //env('MAIL_PASSWORD', 'Asd123102030!!'));
+            ->setPassword('Asd123102030!'); //env('MAIL_password', 'Asd123102030!!'));
 
         $mailer = app(Mailer::class);
         $mailer->setSwiftMailer(new Swift_Mailer($transport));

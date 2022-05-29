@@ -48,7 +48,7 @@ class SalaryIndexation extends Command
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             //->where('users.id', 5) // При запуске на прод убрать
-            ->select('users.id', 'ud.applied', 'ud.is_trainee','users.DATE_REGISTER', 'users.position_id')
+            ->select('users.id', 'ud.applied', 'ud.is_trainee','users.created_at', 'users.position_id')
             ->get();
 
         foreach($users as $user) {
@@ -65,7 +65,7 @@ class SalaryIndexation extends Command
             $step = $ih ? $ih->step : 0; // На каком шаге индексации сейчас
 
             if($days_from_applied == 0 && $user->is_trainee == 0) { // Если это не стажер и нет даты принятия (Старые пользователи)
-                $days_from_applied = Carbon::parse($user->DATE_REGISTER)->diff(now())->days;
+                $days_from_applied = Carbon::parse($user->created_at)->diff(now())->days;
             }
             
             $index_value = $this->getIndexValue($user->position_id);

@@ -772,18 +772,14 @@ class GroupAnalyticsController extends Controller
             $uname = strlen($lead->name) > 50 ? mb_substr($lead->name, 0, 49) : $lead->name;
             if(!$user) {
                 
+                 
                 $user = User::create([
                     'email' => $email,
                     'name' => $uname,
                     'last_name' => '',
                     'description' => $email,
-                    'ACTIVE' => 'Y',
-                    'PASSWORD' => 'opvLOUSe0200af69ff75617c3574485ba1da8f5d', // 12345
-                    'DATE_REGISTER' => DB::raw('NOW()'),
-                    'UF_BALANCE' => 0,
+                    'password' => \Hash::make('12345'),
                     'position_id' => 32, // Оператор
-                    'UF_ADMIN' => 1,
-                    'roles' => null,
                     'user_type' => $user_type,
                     'timezone' => 6,
                     'bitrhday' => now(),
@@ -792,10 +788,6 @@ class GroupAnalyticsController extends Controller
                     'working_time_id' => 2,
                     'full_time' => $full_time,
                     'phone' => $lead->phone,
-                    'phone_1' => $lead->phone_2,
-                    'phone_2' => $lead->phone_3,
-                    'phone_3' => null,
-                    'phone_4' => null,
                     'work_start' => null,
                     'work_end' => null,
                     'segment' => $lead->segment,
@@ -880,10 +872,8 @@ class GroupAnalyticsController extends Controller
                     //
                 } else {
                     $user->update([
-                        'UF_ADMIN' => 1,
-                        'ACTIVE' => 'Y',
                         'description' => $lead->name,
-                        'phone_1' => $lead->phone,
+                        'phone' => $lead->phone, // ????????????
                         'position_id' => 32, // Оператор
                         'program_id' => 2,
                         'full_time' => $full_time,

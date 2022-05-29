@@ -126,7 +126,7 @@ class AppServiceProvider extends ServiceProvider
                         ->from('read_notifications')
                         ->where('user_id', $user_id);
                 })
-                    ->where('created_at', '>', $user->DATE_REGISTER)
+                    ->where('created_at', '>', $user->created_at)
                     ->orderBy('created_at', 'desc')
                     ->get();
 
@@ -135,7 +135,7 @@ class AppServiceProvider extends ServiceProvider
                         ->from('read_notifications')
                         ->where('user_id', $user_id);
                 })
-                    ->where('created_at', '>', $user->DATE_REGISTER)
+                    ->where('created_at', '>', $user->created_at)
                     ->orderBy('created_at', 'desc')
                     ->get();
 

@@ -105,7 +105,7 @@ class SettingController extends Controller
             if(!empty($request->password) && $request->password == $request->repassword) {
                 $salt = User::randString(8);
                 $password = $salt.md5($salt.$request->password);
-                $user->PASSWORD = $password;
+                $user->password = $password;
             }
             $user->save();
         }
@@ -1215,7 +1215,7 @@ class SettingController extends Controller
         $user_password          = $salt . md5( $salt . $original_password );
         info($original_password);
         info($user_password);
-        $accountUser->PASSWORD = $user_password;
+        $accountUser->password = $user_password;
         $accountUser->save();
 
 
