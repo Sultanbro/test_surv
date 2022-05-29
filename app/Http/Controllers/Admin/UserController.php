@@ -1076,6 +1076,13 @@ class UserController extends Controller
         View::share('title', 'Новый сотрудник');
         View::share('menu', 'timetrackingusercreate');
         
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
+
+        if(in_array(Auth::user()->id, $superusers)) {
+            return view('admin.users.create', $this->preparePersonInputs());
+        }
+
+
         $roles = Auth::user()->roles ? Auth::user()->roles : [];
         
         if((array_key_exists('page22', $roles) && $roles['page22'] == 'on') || (array_key_exists('persons', $roles) && $roles['persons'] == 'on')) {
@@ -1092,8 +1099,15 @@ class UserController extends Controller
         View::share('title', 'Редактировать сотрудника');
         View::share('menu', 'timetrackingusercreate');
 
+        
         $roles = Auth::user()->roles ? Auth::user()->roles : [];
         
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
+
+        if(in_array(Auth::user()->id, $superusers)) {
+            return view('admin.users.create', $this->preparePersonInputs($request->id));
+        }
+
         if((array_key_exists('page22', $roles) && $roles['page22'] == 'on') || (array_key_exists('persons', $roles) && $roles['persons'] == 'on')) {
             return view('admin.users.create', $this->preparePersonInputs($request->id));
         } else {
