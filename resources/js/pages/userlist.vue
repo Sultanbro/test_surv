@@ -1,4 +1,4 @@
-can<template>
+<template>
 <div>
 
   <div class="row mb-2">
@@ -75,12 +75,12 @@ can<template>
           {{ row.value}}
         </a>
         <a v-else
-          :href="'/timetracking/edit-person?id='+row.item.ID" target="_blank">
+          :href="'/timetracking/edit-person?id='+row.item.id" target="_blank">
           {{ row.value}}
         </a>
       </template>
       <template slot="cell(email)" slot-scope="row">
-        <a :href="'/timetracking/edit-person?id='+row.item.ID" target="_blank">{{ row.value}}</a>
+        <a :href="'/timetracking/edit-person?id='+row.item.id" target="_blank">{{ row.value}}</a>
       </template>
       
       <template slot="cell(segment)" slot-scope="data">
