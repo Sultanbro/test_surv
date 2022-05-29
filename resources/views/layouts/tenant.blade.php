@@ -35,10 +35,10 @@ table td {
             {{ auth()->id() }} {{ auth()->user()->email }} 
             
             <form action="/logout">
-                <a class="btn btn-primary">
+                <button class="btn btn-primary">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Выйти</span>
-                </a>
+                </button>
                 @csrf
             </form>
         </div>   

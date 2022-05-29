@@ -20,10 +20,10 @@
                 @endif
                 <li>
                     <form action="/logout">
-                        <a class="link link-start">
+                        <button class="link link-start">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Выйти</span>
-                        </a>
+                        </button>
                         @csrf
                     </form>
                 </li>

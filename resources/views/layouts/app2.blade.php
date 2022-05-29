@@ -90,10 +90,10 @@ unicode-range: U+000-5FF; /* Latin glyphs */
         @auth
      
         <form action="/logout">
-            <a class="btn btn-primary rounded">
+            <button class="btn btn-primary rounded">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Выйти</span>
-            </a>
+            </button>
             @csrf
         </form>
         
