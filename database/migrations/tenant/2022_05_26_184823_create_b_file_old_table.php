@@ -22,8 +22,8 @@ class CreateBFileOldTable extends Migration
             $table->bigInteger('FILE_SIZE')->nullable();
             $table->string('CONTENT_TYPE')->nullable()->default('IMAGE');
             $table->string('SUBDIR')->nullable();
-            $table->string('FILE_NAME');
-            $table->string('ORIGINAL_NAME')->nullable();
+            $table->string('FILE_name');
+            $table->string('ORIGINAL_name')->nullable();
             $table->string('DESCRIPTION')->nullable();
             $table->string('HANDLER_ID', 50)->nullable();
             $table->string('EXTERNAL_ID', 50)->nullable()->index('IX_B_FILE_EXTERNAL_ID');

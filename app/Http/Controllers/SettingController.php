@@ -92,8 +92,8 @@ class SettingController extends Controller
 
         if ($request->isMethod('post')) {
             $user = User::find(Auth::user()->id);
-            $user->NAME = $request->name;
-            $user->LAST_NAME = $request->last_name;
+            $user->name = $request->name;
+            $user->last_name = $request->last_name;
             $user->PHONE = $request->phone;
             $user->CITY = $request->city;
             $user->ADDRESS = $request->address;

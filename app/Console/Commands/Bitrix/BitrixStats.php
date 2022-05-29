@@ -245,7 +245,7 @@ class BitrixStats extends Command
 
 
 
-            $this->line('------' . $user->LAST_NAME . ' ' . $user->NAME . ' ' . $user->email);
+            $this->line('------' . $user->last_name . ' ' . $user->name . ' ' . $user->email);
 
 
         }

@@ -97,7 +97,7 @@ class Recruiting
         $user = User::withTrashed()->find($user_id);
         if($user) {
             return [
-                'name' => $user->NAME . ' ' . $user->LAST_NAME,
+                'name' => $user->name . ' ' . $user->last_name,
                 'id' => $user->id,
                 'records' => [
                     ['headers' => 'План наборов с ожиданием 7 гудков','plan' => '200','fact' => '0','conversion' => '',], 
@@ -756,7 +756,7 @@ class Recruiting
             }
             
             // $arr
-            $arr['name'] = $user->NAME . ' ' . $user->LAST_NAME;
+            $arr['name'] = $user->name . ' ' . $user->last_name;
             $arr['out']['value'] = $calls; //Исх 
             $arr['out']['plan'] = $data[self::I_CALL_PLAN]['plan'] ? $data[self::I_CALL_PLAN]['plan'] * $workDays : 0;
             $arr['out']['percent'] = isset($data[self::I_CALL_PLAN]['plan']) ? number_format((float)($calls / ($data[self::I_CALL_PLAN]['plan'] * $workDays)) * 100, 1, '.', '') : 10; 
@@ -917,7 +917,7 @@ class Recruiting
                 }
 
                 array_push($hrs, [
-                    'name' => $user->NAME . ' ' . $user->LAST_NAME,
+                    'name' => $user->name . ' ' . $user->last_name,
                     'id' => $user->id,
                     'deleted' => false,
                     'workdays' => $workdays,
@@ -1682,7 +1682,7 @@ class Recruiting
                 ||
                 $rl->rating1 && array_key_exists('date', $rl->rating1) && $rl->rating1['date'] > $start && $rl->rating1['date'] < $end) {
                     $ratings_dates[] = [
-                        'name' => $user->LAST_NAME . ' ' . $user->NAME,
+                        'name' => $user->last_name . ' ' . $user->name,
                         'rating' => $rl->rating1 && array_key_exists('rating', $rl->rating1) ?  $rl->rating1['rating'] : '-',
                         'rating_date' => $rl->rating1 && array_key_exists('date', $rl->rating1) ?  date('d.m.Y', $rl->rating1['date']) : '-',
                         'rating2' => $rl->rating2 && array_key_exists('rating', $rl->rating2) ?  $rl->rating2['rating'] : '-',

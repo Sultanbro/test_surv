@@ -109,7 +109,7 @@ class CourseResult extends Model
         $uc = self::getUserCourses($user);
         $arr['courses'] = $uc['courses'];
 
-        $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME . ' (' . $user->course_results->count() .')';
+        $arr['name'] = $user->last_name . ' ' . $user->name . ' (' . $user->course_results->count() .')';
         $arr['user_id'] = $user->id;
         $arr['status'] = $uc['totals']['status'] == 2 ? 'Начат' : 'Завершен';
         $arr['progress'] = $uc['totals']['progress'] . '%' ;

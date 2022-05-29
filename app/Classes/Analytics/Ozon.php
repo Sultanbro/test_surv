@@ -185,7 +185,7 @@ class Ozon
 
             TimetrackingHistory::create([
                 'author_id' => Auth::user()->id,
-                'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
+                'author' => Auth::user()->name.' '.Auth::user()->last_name,
                 'user_id' => $user_id,
                 'description' => 'Изменено время с Аналитики на ' . $hours,
                 'date' => $carbon_date->format('Y-m-d')

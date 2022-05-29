@@ -181,7 +181,7 @@ class Lead extends Model
             $skype->resp = '';
             if($skype->resp_id != '0' && $skype->resp_id != NULL && $skype->resp_id != '') {
                 $resp_user = User::withTrashed()->where('email', $skype->resp_id)->first();
-                $skype->resp = $resp_user ? $resp_user->LAST_NAME . '<br>' . $resp_user->NAME : $skype->resp_id; 
+                $skype->resp = $resp_user ? $resp_user->last_name . '<br>' . $resp_user->name : $skype->resp_id; 
             }
             
         }

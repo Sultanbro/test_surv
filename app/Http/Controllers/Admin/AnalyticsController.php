@@ -404,7 +404,7 @@ class AnalyticsController extends Controller
                     TimetrackingHistory::create([
                         'user_id' => $tt->user_id,
                         'author_id' => Auth::user()->id,
-                        'author' => Auth::user()->LAST_NAME . ' ' . Auth::user()->NAME,
+                        'author' => Auth::user()->last_name . ' ' . Auth::user()->name,
                         'date' => $date,
                         'description' => $desc,
                     ]);
@@ -661,7 +661,7 @@ class AnalyticsController extends Controller
         //         ->get(['id', 'email', 'name', 'surname', DB::raw("CONCAT(surname,' ',name) as full_name")]);
         
         $this->users = User::withTrashed()->whereIn('id', json_decode($group->users))
-        ->get(['ID as id', 'email as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);;
+        ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);;
 
         /****************************** */
         /******==================================== */

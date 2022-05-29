@@ -62,7 +62,7 @@ class ProfileGroup extends Model
 
         if (json_last_error() === JSON_ERROR_NONE && is_array($user_ids) && count($user_ids)) {
             $user_ids = array_unique($user_ids);
-            return User::selectRaw("*,CONCAT(NAME,' ',LAST_NAME) as full_name")->whereIn('id', $user_ids)->get();
+            return User::selectRaw("*,CONCAT(name,' ',last_name) as full_name")->whereIn('id', $user_ids)->get();
         }
 
         return null;
@@ -199,8 +199,8 @@ class ProfileGroup extends Model
             $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $users)
                 ->where('is_trainee', 0)
-                ->orderBy('LAST_NAME', 'asc')
-                ->select(['users.id','users.LAST_NAME', 'users.NAME']);
+                ->orderBy('last_name', 'asc')
+                ->select(['users.id','users.last_name', 'users.name']);
                 
             if(count($positions) > 0) $users->whereIn('position_id', $positions);
             $users = $users->get()
@@ -247,8 +247,8 @@ class ProfileGroup extends Model
         $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->whereIn('users.id', $users)
             ->where('is_trainee', 0)
-            ->orderBy('LAST_NAME', 'asc')
-            ->select(['users.id','users.LAST_NAME', 'users.NAME'])
+            ->orderBy('last_name', 'asc')
+            ->select(['users.id','users.last_name', 'users.name'])
             ->get()
             ->pluck('id')
             ->toArray();
@@ -295,8 +295,8 @@ class ProfileGroup extends Model
                 ->where('is_trainee', 0)
                 ->whereYear('ud.applied', $date->year)
                 ->whereMonth('ud.applied', $date->year)
-                ->orderBy('LAST_NAME', 'asc')
-                ->select(['users.id','users.LAST_NAME', 'users.NAME']);
+                ->orderBy('last_name', 'asc')
+                ->select(['users.id','users.last_name', 'users.name']);
                 
             if(count($positions) > 0) $users->whereIn('position_id', $positions);
             $users = $users->get()
@@ -340,8 +340,8 @@ class ProfileGroup extends Model
         $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->whereIn('users.id', $users)
             ->where('is_trainee', 1)
-            ->orderBy('LAST_NAME', 'asc')
-            ->select(['users.id','users.LAST_NAME', 'users.NAME'])
+            ->orderBy('last_name', 'asc')
+            ->select(['users.id','users.last_name', 'users.name'])
             ->get()
             ->pluck('id')
             ->toArray();

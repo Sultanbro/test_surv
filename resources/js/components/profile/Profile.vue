@@ -7,7 +7,7 @@
             
             <div class="d-flex align-items-center flex-column u-2">
                 <div class="u-email">{{ u.email }}</div>
-                <div class="u-name">{{ u.LAST_NAME + ' ' + u.NAME }}</div>        
+                <div class="u-name">{{ u.last_name + ' ' + u.name }}</div>        
             </div>
         </a>
         <a class="nav-link exit" title="Выход" href="/logout">

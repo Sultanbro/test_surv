@@ -91,7 +91,7 @@ export default {
       console.log(newTag)
       const tag = {
         email: newTag,
-        ID: newTag,
+        id: newTag,
       };
       this.users.push(tag);
     },

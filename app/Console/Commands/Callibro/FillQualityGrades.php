@@ -86,7 +86,7 @@ class FillQualityGrades extends Command
                 $account = new Callibro($user->email);
                 if(!$account->account) continue;
 
-                $this->line($user->LAST_NAME . ' ' . $user->NAME);
+                $this->line($user->last_name . ' ' . $user->name);
                 $grades = $account->call_grades([
                     'date' => $this->date,
                     'dialer_id' => $group['dialer_id'],
@@ -135,7 +135,7 @@ class FillQualityGrades extends Command
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0)
                 ->whereIn('users.id', $user_ids)
-                ->select(['users.id', 'users.email', 'users.NAME', 'users.LAST_NAME'])
+                ->select(['users.id', 'users.email', 'users.name', 'users.last_name'])
                 ->get();
     }
 

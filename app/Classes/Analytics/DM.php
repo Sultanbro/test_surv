@@ -312,7 +312,7 @@ class DM
 
             TimetrackingHistory::create([
                 'author_id' => Auth::user()->id,
-                'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
+                'author' => Auth::user()->name.' '.Auth::user()->last_name,
                 'user_id' => $user_id,
                 'description' => 'Изменено время с Аналитики на ' . $value_for_21,
                 'date' => $carbon_date->format('Y-m-d')
@@ -389,7 +389,7 @@ class DM
 
             TimetrackingHistory::create([
                 'author_id' => Auth::user()->id,
-                'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
+                'author' => Auth::user()->name.' '.Auth::user()->last_name,
                 'user_id' => $user_id,
                 'description' => 'Изменено время с Аналитики на ' . $value_for_21,
                 'date' => $carbon_date->format('Y-m-d')
@@ -424,7 +424,7 @@ class DM
 
         TimetrackingHistory::create([
             'author_id' => Auth::user()->id,
-            'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
+            'author' => Auth::user()->name.' '.Auth::user()->last_name,
             'user_id' => $user_id,
             'description' => 'Изменено время с Аналитики на ' . $value,
             'date' => $carbon_date->format('Y-m-d')

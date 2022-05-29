@@ -70,7 +70,7 @@ class NotifyManagersAboutForeigners extends Command
           
             if($phone && strlen($phone) >= 11 && !in_array($code, ['77', '87'])) {
                 $groups = $user->inGroups();
-                $msg_fragment = $user->PHONE . ' : ' .$user->NAME . ' ' . $user->LAST_NAME . '<br>';
+                $msg_fragment = $user->PHONE . ' : ' .$user->name . ' ' . $user->last_name . '<br>';
 
                 if($groups) {
 

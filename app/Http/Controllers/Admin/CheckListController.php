@@ -45,8 +45,8 @@ class CheckListController extends Controller
                         $checkList = new CheckList();
                         $checkList['title'] = $profileGroups->name;
                         $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                        $checkList['auth_name'] = auth()->user()->NAME;
-                        $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
+                        $checkList['auth_name'] = auth()->user()->name;
+                        $checkList['auth_last_name'] = auth()->user()->last_name;
                         $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
                         $checkList['count_view'] = $request['countView'];
                         $checkList['item_type'] = 1;
@@ -68,8 +68,8 @@ class CheckListController extends Controller
                            $checkList = new CheckList();
                            $checkList['title'] = $profileGroups['position'];
                            $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                           $checkList['auth_name'] = auth()->user()->NAME;
-                           $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
+                           $checkList['auth_name'] = auth()->user()->name;
+                           $checkList['auth_last_name'] = auth()->user()->last_name;
                            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
                            $checkList['count_view'] = $request['countView'];
                            $checkList['item_type'] = 2;
@@ -94,10 +94,10 @@ class CheckListController extends Controller
                        $profileUsers = User::on()->find($group['code']);
                        if (!empty($profileUsers)) {
                            $checkList = new CheckList();
-                           $checkList['title'] = $profileUsers['LAST_NAME'].' '.$profileUsers['NAME'];
+                           $checkList['title'] = $profileUsers['last_name'].' '.$profileUsers['name'];
                            $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                           $checkList['auth_name'] = auth()->user()->NAME;
-                           $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
+                           $checkList['auth_name'] = auth()->user()->name;
+                           $checkList['auth_last_name'] = auth()->user()->last_name;
                            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
                            $checkList['count_view'] = $request['countView'];
                            $checkList['item_type'] = 3;
@@ -119,8 +119,8 @@ class CheckListController extends Controller
 
         if (!empty($positionUser)){
                 $check_users = new CheckUsers();
-                $check_users['name'] = $positionUser['NAME'];
-                $check_users['last_name'] = $positionUser['LAST_NAME'];
+                $check_users['name'] = $positionUser['name'];
+                $check_users['last_name'] = $positionUser['last_name'];
                 $check_users['check_list_id'] = $checkListId['id'];
                 $check_users['check_users_id'] = $positionUser['id'];
                 $check_users['check_reports_id'] = $this->saveReports($checkListId,$positionUser,$request,$positionUser,$type);
@@ -139,8 +139,8 @@ class CheckListController extends Controller
         if (!empty($positionUsers)){
             foreach ($positionUsers as $positionUser){
                 $check_users = new CheckUsers();
-                $check_users['name'] = $positionUser['NAME'];
-                $check_users['last_name'] = $positionUser['LAST_NAME'];
+                $check_users['name'] = $positionUser['name'];
+                $check_users['last_name'] = $positionUser['last_name'];
                 $check_users['check_list_id'] = $checkListId['id'];
                 $check_users['check_users_id'] = $positionUser['id'];
                 $check_users['check_reports_id'] = $this->saveReports($checkListId,$positionUser,$request,$profileGroups,$type);
@@ -164,8 +164,8 @@ class CheckListController extends Controller
                     $dataBaseUser = User::on()->find($profile_users_id);
                     if (!empty($dataBaseUser)){
                         $check_users = new CheckUsers();
-                        $check_users['name'] = $dataBaseUser['NAME'];
-                        $check_users['last_name'] = $dataBaseUser['LAST_NAME'];
+                        $check_users['name'] = $dataBaseUser['name'];
+                        $check_users['last_name'] = $dataBaseUser['last_name'];
                         $check_users['check_list_id'] = $checkList->id;
                         $check_users['check_users_id'] = $dataBaseUser['id'];
                         $check_users['check_reports_id'] = $this->saveReports($checkList,$dataBaseUser,$request,$profileGroups,$type);
@@ -243,8 +243,8 @@ class CheckListController extends Controller
             }
             $checkList = CheckList::on()->find($request['check_id']);
             $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-            $checkList['auth_name'] = auth()->user()->NAME;
-            $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
+            $checkList['auth_name'] = auth()->user()->name;
+            $checkList['auth_last_name'] = auth()->user()->last_name;
             $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
             $checkList['count_view'] = $request['countView'];
             $checkList->save();
@@ -282,8 +282,8 @@ class CheckListController extends Controller
                     $checkList = new CheckList();
                     $checkList['title'] = $profileGroups->name;
                     $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                    $checkList['auth_name'] = auth()->user()->NAME;
-                    $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
+                    $checkList['auth_name'] = auth()->user()->name;
+                    $checkList['auth_last_name'] = auth()->user()->last_name;
                     $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
                     $checkList['count_view'] = $request['countView'];
                     $checkList['item_type'] = 1;

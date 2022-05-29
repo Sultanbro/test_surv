@@ -170,7 +170,7 @@ class SetAbsent extends Command
         $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $targetUser->id;
 
         $abs_msg = 'Система: '. $group_name .'  Стажер не был на обучении: <br> <a href="' . $editPersonLink . '" target="_blank">';
-        $abs_msg .= $targetUser->LAST_NAME . ' ' . $targetUser->NAME  . ' </a>';
+        $abs_msg .= $targetUser->last_name . ' ' . $targetUser->name  . ' </a>';
         $abs_msg .= '<br><a href="/timetracking/analytics/skypes/' . $targetUser->lead_id . '" target="_blank" class="btn btn-primary mr-2 mt-2 rounded btn-sm">Перейти в сделку</a>';
         $abs_msg .= '<a class="btn btn-primary mt-2 rounded btn-sm transfer-training" data-userid="' . $targetUser->id . '">Перенести обучение</a>';
 

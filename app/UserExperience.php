@@ -70,11 +70,11 @@ class UserExperience extends Model
         $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->whereIn('users.id', $user_ids)
             ->where('is_trainee', 0)
-            ->get(['users.id','users.NAME','users.LAST_NAME']);
+            ->get(['users.id','users.name','users.last_name']);
 
         foreach ($users as $key => $user) {
             $skill = [];
-            $skill['name'] = $user->LAST_NAME . ' ' . $user->NAME; 
+            $skill['name'] = $user->last_name . ' ' . $user->name; 
             $skill['text'] = '';
             $skill['head'] = false;
 

@@ -82,7 +82,7 @@ class UserFineController extends Controller
                 $fine = Fine::find($item);
                 $history = [
                     'user_id' => $request['user_id'],
-                    'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
+                    'author' => Auth::user()->name.' '.Auth::user()->last_name,
                     'author_id' => Auth::user()->id,
                     'date' => $request['date'],
                     'description' => isset($comment) ? 'Удален штраф №'.$item." ".$fine->name.', причина: '.$comment : 'Штраф'
@@ -114,7 +114,7 @@ class UserFineController extends Controller
 
                 $history = [
                     'user_id' => $request['user_id'],
-                    'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
+                    'author' => Auth::user()->name.' '.Auth::user()->last_name,
                     'author_id' => Auth::user()->id,
                     'date' => $request['date'],
                     'description' => isset($comment) ? 'Штраф, причина: '.$comment : 'Штраф'

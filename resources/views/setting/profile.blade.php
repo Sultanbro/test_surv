@@ -15,8 +15,8 @@
                     <div class="edit-subrow-foto">
                         <div><img src="/images/foto-1.png" alt="foto"></div>
                     </div>
-                    <input type="text" name="name" placeholder="Имя" value="{{$user->NAME}}">
-                    <input type="text" name="last_name" placeholder="Фамилия" value="{{$user->LAST_NAME}}">
+                    <input type="text" name="name" placeholder="Имя" value="{{$user->name}}">
+                    <input type="text" name="last_name" placeholder="Фамилия" value="{{$user->last_name}}">
                 </div>
                 <div class="edit-row">
                     <label class="item-10">Телефон</label>

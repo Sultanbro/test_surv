@@ -112,7 +112,7 @@ class Timetracking extends Model
                 $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
             }
         ])->whereIn('id', array_unique($users_ids))
-        ->orderBy('LAST_NAME', 'asc')
+        ->orderBy('last_name', 'asc')
             ->get(['id', 'email', DB::raw("CONCAT(last_name,' ',name) as full_name"), 'user_type', 'working_time_id', 'full_time']);
 
         return $users;
@@ -135,7 +135,7 @@ class Timetracking extends Model
             'trackHistory' => function ($q) use ($request, $year) {
                 $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $request->month)->whereYear('date', $year);
             }
-        ])->whereIn('id', array_unique($users_ids))->orderBy('LAST_NAME', 'asc')
+        ])->whereIn('id', array_unique($users_ids))->orderBy('last_name', 'asc')
 
             //->get(['id', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name"), 'user_type', 'working_time_id']);
 
@@ -185,7 +185,7 @@ class Timetracking extends Model
         TimetrackingHistory::create([
             'user_id' => $employee_id,
             'author_id' => Auth::user()->id,
-            'author' => Auth::user()->LAST_NAME . ' ' . Auth::user()->NAME,
+            'author' => Auth::user()->last_name . ' ' . Auth::user()->name,
             'date' => $date,
             'description' => 'Изменено время с аналитики на ' .$total_hours . ' минут',
         ]);

@@ -391,12 +391,12 @@ export default {
           label: 'Email'
         },
         {
-          key: 'LAST_NAME',
+          key: 'last_name',
           label: 'Фамилия',
           sortable: true
         },
         {
-          key: 'NAME',
+          key: 'name',
           label: 'Имя',
           sortable: true
         },
@@ -515,25 +515,25 @@ export default {
 
   
       this.filtered = this.items.filter((el, index) => {
-        if (el.FULLNAME == null)  el.FULLNAME = "" 
-        if (el.FULLNAME2 == null)  el.FULLNAME2 = "" 
-        if (el.LAST_NAME == null)  el.LAST_NAME = "" 
-        if (el.NAME == null)  el.NAME = "" 
+        if (el.fullname == null)  el.fullname = "" 
+        if (el.fullname2 == null)  el.fullname2 = "" 
+        if (el.last_name == null)  el.last_name = "" 
+        if (el.name == null)  el.name = "" 
 
         if(Number(this.filter.group) !== 0) {
           return el.groups.includes(Number(this.filter.group)) 
                 && (el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.FULLNAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.FULLNAME2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.LAST_NAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.NAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+                || el.fullname.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+                || el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+                || el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+                || el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.ID.toString().indexOf(this.filter.email.toLowerCase()) > -1)
         } else {
           return el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.FULLNAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.FULLNAME2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.LAST_NAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.NAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+                || el.fullname.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+                || el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+                || el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+                || el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.ID.toString().indexOf(this.filter.email.toLowerCase()) > -1
         }
 

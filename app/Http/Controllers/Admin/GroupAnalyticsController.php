@@ -239,9 +239,9 @@ class GroupAnalyticsController extends Controller
             ->get([
                 'ID as id',
                 'email as email',
-                'NAME as name',
-                'LAST_NAME as surname',
-                DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")
+                'name as name',
+                'last_name as surname',
+                DB::raw("CONCAT(last_name,' ',name) as full_name")
             ]);
     
         $result = [];
@@ -436,9 +436,9 @@ class GroupAnalyticsController extends Controller
                 if($check) {
                     $_decoded = json_decode($check->data);
                     $_decoded->group = $group_name;
-                    $_decoded->name = $localUser->NAME;
-                    $_decoded->lastname = $localUser->LAST_NAME;
-                    $_decoded->fullname = trim($localUser->LAST_NAME . ' ' . $localUser->NAME);
+                    $_decoded->name = $localUser->name;
+                    $_decoded->lastname = $localUser->last_name;
+                    $_decoded->fullname = trim($localUser->last_name . ' ' . $localUser->name);
                     $_decoded->email = $localUser->email;
                     $_decoded->full_time = $localUser->full_time;
                     $_decoded->id = $localUser->id;
@@ -447,9 +447,9 @@ class GroupAnalyticsController extends Controller
                     array_push($records, $_decoded);
                 } else {
                     array_push($records, [
-                        'name' => $localUser->NAME,
-                        'lastname' => $localUser->LAST_NAME,
-                        'fullname' => trim($localUser->LAST_NAME . ' ' . $localUser->NAME),
+                        'name' => $localUser->name,
+                        'lastname' => $localUser->last_name,
+                        'fullname' => trim($localUser->last_name . ' ' . $localUser->name),
                         'email' => $localUser->email,
                         'group' => $group_name,
                         'full_time' => $localUser->full_time,
@@ -774,8 +774,8 @@ class GroupAnalyticsController extends Controller
                 
                 $user = User::create([
                     'email' => $email,
-                    'NAME' => $uname,
-                    'LAST_NAME' => '',
+                    'name' => $uname,
+                    'last_name' => '',
                     'DESCRIPTION' => $email,
                     'ACTIVE' => 'Y',
                     'PASSWORD' => 'opvLOUSe0200af69ff75617c3574485ba1da8f5d', // 12345
@@ -1074,7 +1074,7 @@ class GroupAnalyticsController extends Controller
         $msg .= $user->PHONE;
         if($user->phone_1) $msg .= ', ' . $user->phone_1;
         if($user->phone_2) $msg .= ', ' . $user->phone_2;
-        $msg .= ' : ' . $user->LAST_NAME . ' ' . $user->NAME . '<br>';
+        $msg .= ' : ' . $user->last_name . ' ' . $user->name . '<br>';
         return $msg;
     }
 
@@ -1120,7 +1120,7 @@ class GroupAnalyticsController extends Controller
                 ->where('UF_ADMIN', 1)
                 ->whereIn('email', $users_emails)
                 ->orderBy('full_name')
-                ->get(['ID as id', 'email as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);
+                ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);
             
             $this->users = $group_accounts;
 
@@ -1315,7 +1315,7 @@ class GroupAnalyticsController extends Controller
                     TimetrackingHistory::create([
                         'user_id' => $tt->user_id,
                         'author_id' => Auth::user()->id,
-                        'author' => Auth::user()->LAST_NAME . ' ' . Auth::user()->NAME,
+                        'author' => Auth::user()->last_name . ' ' . Auth::user()->name,
                         'date' => $date,
                         'description' => $desc,
                     ]);
@@ -1380,7 +1380,7 @@ class GroupAnalyticsController extends Controller
                     TimetrackingHistory::create([
                         'user_id' => $tt->user_id,
                         'author_id' => Auth::user()->id,
-                        'author' => Auth::user()->LAST_NAME . ' ' . Auth::user()->NAME,
+                        'author' => Auth::user()->last_name . ' ' . Auth::user()->name,
                         'date' => $date,
                         'description' => $desc,
                     ]);
@@ -1572,8 +1572,8 @@ class GroupAnalyticsController extends Controller
                 if($check) {
                     $_decoded = json_decode($check->data);
                     $_decoded->group = $group_name;
-                    $_decoded->name = $localUser->NAME;
-                    $_decoded->lastname = $localUser->LAST_NAME;
+                    $_decoded->name = $localUser->name;
+                    $_decoded->lastname = $localUser->last_name;
                     $_decoded->email = $localUser->email;
                     $_decoded->full_time = $localUser->full_time;
                     $_decoded->fired = $fired;
@@ -1581,8 +1581,8 @@ class GroupAnalyticsController extends Controller
                     array_push($records, $_decoded);
                 } else {
                     array_push($records, [
-                        'name' => $localUser->NAME,
-                        'lastname' => $localUser->LAST_NAME,
+                        'name' => $localUser->name,
+                        'lastname' => $localUser->last_name,
                         'email' => $localUser->email,
                         'group' => $group_name,
                         'full_time' => $localUser->full_time,
@@ -1750,7 +1750,7 @@ class GroupAnalyticsController extends Controller
             
             $user_info = User::withTrashed()->find($user);
 
-            $user_item['name'] = $user_info->LAST_NAME . ' ' . $user_info->NAME;
+            $user_item['name'] = $user_info->last_name . ' ' . $user_info->name;
             $user_item['email'] = $user_info->email;
             
             $user_item['kpi'] = Kpi::userKpi($user_info->id, $date);
@@ -1906,7 +1906,7 @@ class GroupAnalyticsController extends Controller
         //         ->get(['id', 'email', 'name', 'surname', DB::raw("CONCAT(surname,' ',name) as full_name")]);
         
         $this->users = User::withTrashed()->whereIn('id', json_decode($group->users))
-        ->get(['ID as id', 'email as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);;
+        ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);;
 
         /****************************** */
         /******==================================== */

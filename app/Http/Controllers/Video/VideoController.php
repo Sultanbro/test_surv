@@ -222,7 +222,7 @@ class VideoController extends Controller {
 
 		foreach($comments as $comment) {
 			$_user = $users->where('id', $comment->user_id)->first();
-			$comment->user = $_user->NAME . ' ' . $_user->LAST_NAME;
+			$comment->user = $_user->name . ' ' . $_user->last_name;
 		}
 		
 		if($v) {

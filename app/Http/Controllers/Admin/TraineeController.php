@@ -89,8 +89,8 @@ class TraineeController extends Controller
             ->where('ud.is_trainee', 1)
             ->where('UF_ADMIN', 1) 
             ->whereIn('users.id', json_decode($group->users, true))
-            ->select(DB::raw("CONCAT_WS(' ', LAST_NAME, NAME) as name"), 'users.ID as id')->get()->sortBy('name')->toArray();
-       // $users = User::where('UF_ADMIN', 1)->select(DB::raw("CONCAT_WS(' ', LAST_NAME, NAME) as name"), 'ID as id')->get()->sortBy('name')->toArray();
+            ->select(DB::raw("CONCAT_WS(' ', last_name, name) as name"), 'users.ID as id')->get()->sortBy('name')->toArray();
+       // $users = User::where('UF_ADMIN', 1)->select(DB::raw("CONCAT_WS(' ', last_name, name) as name"), 'ID as id')->get()->sortBy('name')->toArray();
 
         foreach($users as $key => $user) {
             $users[$key]['id'] = $this->numhash($user['id']);
@@ -112,7 +112,7 @@ class TraineeController extends Controller
         $user_id = $this->numhash($request->user_id);
 
         $user = User::find($user_id);
-        $user = $user ? $user->LAST_NAME . ' ' . $user->NAME : '';
+        $user = $user ? $user->last_name . ' ' . $user->name : '';
 
         if($group && $group->checktime && Carbon::parse($group->checktime)->timestamp - time() >= 0) {
             // $users = $group->checktime_users;

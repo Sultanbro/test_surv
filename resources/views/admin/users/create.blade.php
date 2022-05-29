@@ -105,7 +105,7 @@
 
                                     <div class="mt-2 font-weight-bold font-sm " style="width:100%">
                                         
-                                        @if(isset($user)) {{$user->LAST_NAME}} {{$user->NAME }} @else Новый сотрудник @endif
+                                        @if(isset($user)) {{$user->last_name}} {{$user->name }} @else Новый сотрудник @endif
                                         
                                     </div>
                                     @if(isset($user)) 
@@ -196,7 +196,7 @@
                                                 <div class="col-sm-8">
                                                     <input class="form-control" type="text" name="name" id="firstName" required
                                                         placeholder="Имя сотрудника"
-                                                        @if(isset($user)) value="{{$user->NAME}}"
+                                                        @if(isset($user)) value="{{$user->name}}"
                                                         @else value="{{old('name')}}"
                                                         @endif
                                                         >
@@ -208,7 +208,7 @@
                                                 <div class="col-sm-8">
                                                     <input class="form-control" type="text" name="last_name" id="lastName" required
                                                         placeholder="Фамилия сотрудника"
-                                                        @if(isset($user)) value="{{$user->LAST_NAME}}"
+                                                        @if(isset($user)) value="{{$user->last_name}}"
                                                         @else value="{{old('last_name')}}"
                                                         @endif
                                                         >

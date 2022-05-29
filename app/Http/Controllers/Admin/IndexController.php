@@ -766,8 +766,8 @@ class IndexController extends Controller
             $mmTo    = env( 'MEDIASEND_SUPPORT_email', 'u-support@u-marketing.org' );
             $subject = 'Пополнение баланса админсистратором пользователю '.$user->email;
             $data = [
-                'who' => Auth::user()->id.' '.Auth::user()->NAME.' '.Auth::user()->email,
-                'name' => $user->NAME,
+                'who' => Auth::user()->id.' '.Auth::user()->name.' '.Auth::user()->email,
+                'name' => $user->name,
                 'email' => $user->email,
                 'amount' => $request->balance,
                 'idUser' => $user->id
@@ -814,7 +814,7 @@ class IndexController extends Controller
 
     public function bonus(Request $request)
     {
-        $users = DB::select("SELECT users.ID, users.email, users.NAME, users.bonus FROM users");
+        $users = DB::select("SELECT users.ID, users.email, users.name, users.bonus FROM users");
 
         View::share('title', 'Бонус пользователей');
 
@@ -871,7 +871,7 @@ class IndexController extends Controller
             $user->save();
         }
 
-        $users = User::select('id', 'email', 'NAME', 'max_sessions')->get();
+        $users = User::select('id', 'email', 'name', 'max_sessions')->get();
 
         View::share('title', 'Лимит линий');
 
@@ -880,12 +880,12 @@ class IndexController extends Controller
 
     public function partner(Request $request)
     {
-        $users = User::select('id', 'email', 'NAME')->with('partner')->get();
+        $users = User::select('id', 'email', 'name')->with('partner')->get();
 
         $partner_users = [];
 
         foreach ($users as $key =>$user){
-            $counts = PartnerUsers::where('partner_id', (isset($user->partner) && !empty($user->partner)) ? $user->partner->id : '0')->with('user:ID,NAME,email,DATE_REGISTER')->count();
+            $counts = PartnerUsers::where('partner_id', (isset($user->partner) && !empty($user->partner)) ? $user->partner->id : '0')->with('user:ID,name,email,DATE_REGISTER')->count();
             if ($counts <> 0) {
                 $partner_users[$user->id] = $counts;
             }
@@ -899,10 +899,10 @@ class IndexController extends Controller
 
     public function partnerView(Request $request, $domain, $tld, $id) {
 
-        $partner = Partner::where('id', $id)->with('user:ID,NAME,email')->firstOrFail();
-        $partner_users = PartnerUsers::where('partner_id', $id)->with('user:ID,NAME,email,DATE_REGISTER')->get();
+        $partner = Partner::where('id', $id)->with('user:ID,name,email')->firstOrFail();
+        $partner_users = PartnerUsers::where('partner_id', $id)->with('user:ID,name,email,DATE_REGISTER')->get();
         $partner_info = PartnerInfo::where('partner_id', $id)->first();
-        $invoices = PartnerInvoice::where('partner_id', $id)->with('partner.user:ID,NAME')->with('partnerUser.user:ID,NAME')->get();
+        $invoices = PartnerInvoice::where('partner_id', $id)->with('partner.user:ID,name')->with('partnerUser.user:ID,name')->get();
         $files = PartnerFile::where('partner_id', $id)->get();
 
         if ($request->isMethod('post')) {
@@ -923,7 +923,7 @@ class IndexController extends Controller
             }
         }
 
-        View::share('title', 'Партнер '.$partner->user->NAME);
+        View::share('title', 'Партнер '.$partner->user->name);
         $callibro_rates = PartnerRate::where('partner_id', $id)->where('service', 'callibro')->first();
         $ivr_rates = PartnerRate::where('partner_id', $id)->where('service', 'ivr')->first();
         $sms_rates = PartnerRate::where('partner_id', $id)->where('service', 'sms')->first();
@@ -973,7 +973,7 @@ class IndexController extends Controller
     public function partnerPay(Request $request)
     {
 
-        $partner_users = PartnerUsers::where('partner_id', $request->partner_id)->with('user:ID,NAME,email,DATE_REGISTER')->get();
+        $partner_users = PartnerUsers::where('partner_id', $request->partner_id)->with('user:ID,name,email,DATE_REGISTER')->get();
 
         $amount = $request->amount;
 
@@ -1029,9 +1029,9 @@ class IndexController extends Controller
             'address' => 'partner@u-marketing.org',
             'name' => 'Mediasend',
         ];
-        $subject = 'Выплата Партнеру '.$user->NAME;
+        $subject = 'Выплата Партнеру '.$user->name;
         $data = [
-            'name' => $user->NAME,
+            'name' => $user->name,
             'type' => $request->type,
             'amount' => $request->amount,
         ];
@@ -1043,29 +1043,29 @@ class IndexController extends Controller
 
     public function partnerPayments(Request $request, $domain, $tld, $partner_user)
     {
-        $user = PartnerUsers::where('id', $partner_user)->with('user:ID,NAME')->with('partner.user:ID,NAME')->first();
+        $user = PartnerUsers::where('id', $partner_user)->with('user:ID,name')->with('partner.user:ID,name')->first();
 
         $payments = PartnerPayment::where('partner_id', $user->partner->id)->where('partner_user', $partner_user)->get();
 
-        View::share('title', 'Выплаты партнеру '.$user->partner->user->NAME.' за пользователя '.$user->user->NAME);
+        View::share('title', 'Выплаты партнеру '.$user->partner->user->name.' за пользователя '.$user->user->name);
 
         return view('admin.partner-payments')->with('payments', $payments);
     }
 
     public function partnerPurchases(Request $request, $domain, $tld, $partner_user) {
 
-        $user = PartnerUsers::where('id', $partner_user)->with('user:ID,NAME')->with('partner.user:ID,NAME')->first();
+        $user = PartnerUsers::where('id', $partner_user)->with('user:ID,name')->with('partner.user:ID,name')->first();
 
         $purchases = Payment::where('id_user', $user->user->id)->orderBy('time', 'DESC')->get();
 
-        $title = 'Покупки пользователя '.$user->user->NAME;
+        $title = 'Покупки пользователя '.$user->user->name;
 
         return view('admin.partner-purchases')->with('title', $title)->with('purchases', $purchases);
     }
 
     public function partnerTransactions(Request $request, $domain, $tld, $partner_user) {
 
-        $user = PartnerUsers::where('id', $partner_user)->with('user:ID,NAME')->with('partner.user:ID,NAME')->first();
+        $user = PartnerUsers::where('id', $partner_user)->with('user:ID,name')->with('partner.user:ID,name')->first();
 
         $transactions = [];
 
@@ -1096,14 +1096,14 @@ class IndexController extends Controller
             ];
         }
 
-        $title = 'Покупки пользователя '.$user->user->NAME;
+        $title = 'Покупки пользователя '.$user->user->name;
 
         return view('admin.partner-transactions')->with('title', $title)->with('transactions', $transactions);
     }
 
     public function partnerInvoices(Request $request) {
 
-        $invoices = PartnerInvoice::with('partner.user:ID,NAME')->with('partnerUser.user:ID,NAME')->get();
+        $invoices = PartnerInvoice::with('partner.user:ID,name')->with('partnerUser.user:ID,name')->get();
 
         $title = 'Счета на оплату';
 
@@ -1188,7 +1188,7 @@ class IndexController extends Controller
 
     public function rentNumbers(Request $request) {
 
-        $users = User::select('id', 'email', 'NAME')->with('partner')->get();
+        $users = User::select('id', 'email', 'name')->with('partner')->get();
 
         return view('admin.rent-numbers')->with('users', $users);
     }
@@ -1312,7 +1312,7 @@ class IndexController extends Controller
       View::share('title', 'Права пользователям');
 
       if (in_array(Auth::user()->id, [5,18])) {
-        $users = User::select('id', 'email', 'NAME')->get();
+        $users = User::select('id', 'email', 'name')->get();
       } else {
         return redirect()->back();
       }

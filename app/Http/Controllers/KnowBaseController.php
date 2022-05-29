@@ -84,8 +84,8 @@ class KnowBaseController extends Controller
         $user = User::withTrashed()->find($page->user_id);
         $editor = User::withTrashed()->find($page->editor_id);
 
-        $page->author = $user ? $user->LAST_NAME . ' ' . $user->NAME : 'Неизвестный';
-        $page->editor = $editor ? $editor->LAST_NAME . ' ' . $editor->NAME : 'Неизвестный';
+        $page->author = $user ? $user->last_name . ' ' . $user->name : 'Неизвестный';
+        $page->editor = $editor ? $editor->last_name . ' ' . $editor->name : 'Неизвестный';
         $page->edited_at = Carbon::parse($page->updated_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->created = Carbon::parse($page->created_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
 

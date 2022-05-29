@@ -20,8 +20,8 @@ class CreateBUserOldTable extends Migration
             $table->string('PASSWORD', 50);
             $table->string('CHECKWORD', 50)->nullable();
             $table->char('ACTIVE', 1)->default('Y');
-            $table->string('NAME', 50)->nullable();
-            $table->string('LAST_NAME', 50)->nullable();
+            $table->string('name', 50)->nullable();
+            $table->string('last_name', 50)->nullable();
             $table->string('email')->nullable();
             $table->double('bonus', 8, 2)->default(0);
             $table->dateTime('LAST_LOGIN')->nullable();
@@ -66,7 +66,7 @@ class CreateBUserOldTable extends Migration
             $table->date('PERSONAL_BIRTHDAY')->nullable();
             $table->string('EXTERNAL_AUTH_ID')->nullable();
             $table->dateTime('CHECKWORD_TIME')->nullable();
-            $table->string('SECOND_NAME', 50)->nullable();
+            $table->string('SECOND_name', 50)->nullable();
             $table->string('CONFIRM_CODE', 8)->nullable();
             $table->integer('LOGIN_ATTEMPTS')->nullable();
             $table->dateTime('LAST_ACTIVITY_DATE')->nullable();

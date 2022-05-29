@@ -66,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
 
 
 
-                $head_users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, LAST_NAME, NAME) as name"), 'ID as id')->get()->toArray();
+                $head_users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
 
 
                 $superusers = [5,18];

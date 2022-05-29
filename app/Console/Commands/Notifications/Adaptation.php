@@ -74,7 +74,7 @@ class Adaptation extends Command
                 if($groups->count() == 0) continue;
 
                 $msg_fragment =  $send_day . ' день <br>';
-                $msg_fragment .=  '<a href="https://admin.u-marketing.org/timetracking/edit-person?id=' . $user->id . '">' . $user->LAST_NAME . ' ' . $user->NAME . '</a><br>';
+                $msg_fragment .=  '<a href="https://admin.u-marketing.org/timetracking/edit-person?id=' . $user->id . '">' . $user->last_name . ' ' . $user->name . '</a><br>';
                 $msg_fragment .=  $groups[0]->name;
 
                 $timestamp = now(); 

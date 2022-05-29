@@ -95,7 +95,7 @@ class QualityController extends Controller
         }
 
         $user_ids = $this->employees($request->group_id);
-        $raw_items = User::whereIn('id', $user_ids)->orderBy('LAST_NAME', 'asc')->select(['id','LAST_NAME', 'NAME'])->get();
+        $raw_items = User::whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id','last_name', 'name'])->get();
 
         $items = [];
         
@@ -105,7 +105,7 @@ class QualityController extends Controller
         foreach($raw_items as $raw_item) {
             $item = [];
 
-            $item['name'] = $raw_item->LAST_NAME. ' ' . $raw_item->NAME;
+            $item['name'] = $raw_item->last_name. ' ' . $raw_item->name;
             $item['id'] = $raw_item->id;
             
             // FETCHING WEEKS DATA
@@ -259,7 +259,7 @@ class QualityController extends Controller
             
                 
                 $_user = User::withTrashed()->find($record->employee_id);
-                $record->name = $_user->LAST_NAME . ' ' . $_user->NAME;
+                $record->name = $_user->last_name . ' ' . $_user->name;
 
                 
                 $record->dayOfDelay = $record->day_of_delay;
@@ -501,7 +501,7 @@ class QualityController extends Controller
                 $_user = $record->user;
                 $params = json_decode($record->params);
                 $data['records'][] = [
-                    0 => $_user->LAST_NAME . ' ' . $_user->NAME,
+                    0 => $_user->last_name . ' ' . $_user->name,
                     1 => $record->phone, 
                     2 => strval($record->day_of_delay), 
                     3 => $record->interlocutor, 
@@ -636,7 +636,7 @@ class QualityController extends Controller
 
 
                 $arr = [
-                    0 => $_user->LAST_NAME . ' ' . $_user->NAME,
+                    0 => $_user->last_name . ' ' . $_user->name,
                     1 => $segments[$record->segment_id], 
                     2 => $record->phone, 
                     3 => strval($record->day_of_delay), 

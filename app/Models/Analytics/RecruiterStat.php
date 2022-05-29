@@ -95,7 +95,7 @@ class RecruiterStat extends Model
             $xusers = User::withTrashed()->whereIn('id', $users)->get();
             foreach($xusers as $user) {
                 $arr[$user->id] = [
-                    'name' => $user->LAST_NAME . ' ' . $user->NAME,
+                    'name' => $user->last_name . ' ' . $user->name,
                     'agrees' => 0,
                     '_agrees' => 0, // для сортировки
                     'show' => false,
@@ -234,7 +234,7 @@ class RecruiterStat extends Model
             $max_leads = $records->where('user_id', $user_id)->max('leads');
             if($max_leads > 0) {
                 $arr[$user_id] = [
-                    'name' => $user  ? $user->LAST_NAME . ' ' . $user->NAME : $user_id,
+                    'name' => $user  ? $user->last_name . ' ' . $user->name : $user_id,
                     'count' => $max_leads,
                     'user_id' => $user_id
                 ];
@@ -266,7 +266,7 @@ class RecruiterStat extends Model
         // foreach($users as $user_id) {
         //     $user = User::withTrashed()->find($user_id);
         //     $arr[$user_id] = [
-        //         'name' => $user  ? $user->LAST_NAME . ' ' . $user->NAME : $user_id,
+        //         'name' => $user  ? $user->last_name . ' ' . $user->name : $user_id,
         //         'count' => $records->where('user_id', $user_id)->max('leads'),
         //         'user_id' => $user_id
         //     ];

@@ -154,7 +154,7 @@ class UserDescription extends Model
 
                 if($ratings['quantity'] > 0) {
                     array_push($ratings_heads, [
-                        'name' => $user->LAST_NAME . ' ' .$user->NAME,
+                        'name' => $user->last_name . ' ' .$user->name,
                         'group' => $hgs->count() > 0 ? $hgs[0]->name : '---',
                         'quantity' => $ratings['quantity'],
                         'avg' => $ratings['avg'],

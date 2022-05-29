@@ -72,8 +72,8 @@ class CheckLate extends Command
 
         $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
-            ->orderBy('LAST_NAME', 'asc')
-            ->select(['users.id','users.LAST_NAME', 'users.NAME', 'users.working_time_id', 'users.work_start'])
+            ->orderBy('last_name', 'asc')
+            ->select(['users.id','users.last_name', 'users.name', 'users.working_time_id', 'users.work_start'])
             ->get();
 
      
@@ -89,7 +89,7 @@ class CheckLate extends Command
         
         $workStart = $this->user->work_starts_at(); // Время начала смены для юзера
         
-        dump($this->user->LAST_NAME . ' ' . $this->user->NAME . ' ' . $workStart);
+        dump($this->user->last_name . ' ' . $this->user->name . ' ' . $workStart);
 
         $dateTimeStart = Timetracking::where('user_id', $this->user->id) // Время начала работы, первый enter
             ->whereDate('enter', $this->date)

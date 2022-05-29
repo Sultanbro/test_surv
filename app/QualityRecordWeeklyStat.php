@@ -28,8 +28,8 @@ class QualityRecordWeeklyStat extends Model
         $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->whereIn('users.id', $user_ids)
             ->where('is_trainee', 0)
-            ->orderBy('LAST_NAME', 'asc')
-            ->select(['users.id','users.LAST_NAME', 'users.NAME'])
+            ->orderBy('last_name', 'asc')
+            ->select(['users.id','users.last_name', 'users.name'])
             ->get();
 
         $items = [];
@@ -40,7 +40,7 @@ class QualityRecordWeeklyStat extends Model
         foreach($users as $user) {
             $item = [];
 
-            $item['name'] = $user->LAST_NAME. ' ' . $user->NAME;
+            $item['name'] = $user->last_name. ' ' . $user->name;
             $item['id'] = $user->id;
             
             // FETCHING WEEKS DATA

@@ -89,7 +89,7 @@ class Conversion extends Command
 
                 $aggrees = Eurasian::getAggrees($user->email, $this->date);
 
-                $this->line($user->id . ' '.  $user->LAST_NAME . ' ' . $user->NAME);
+                $this->line($user->id . ' '.  $user->last_name . ' ' . $user->name);
 
                 if($aggrees == 0) {
                     $conversion = 0; 
@@ -120,7 +120,7 @@ class Conversion extends Command
 
                 $aggrees = HomeCredit::getAggrees($user->email, $this->date);
                 
-                $this->line($user->id . ' '.  $user->LAST_NAME . ' ' . $user->NAME);
+                $this->line($user->id . ' '.  $user->last_name . ' ' . $user->name);
                     
                 if($aggrees == 0) {
                     $conversion = 0; 

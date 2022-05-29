@@ -118,8 +118,8 @@ class LeadController extends Controller {
                 $lead->month_3 = '';
             }
             
-            if($lead->NAME) {
-                $lead->name = $lead->LAST_NAME . ' ' . $lead->NAME;
+            if($lead->name) {
+                $lead->name = $lead->last_name . ' ' . $lead->name;
             }
         }
 

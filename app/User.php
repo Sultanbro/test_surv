@@ -407,7 +407,7 @@ class User extends Authenticatable
             $daytype->save();
         }
 
-        $authorName = $authUser->NAME . ' ' . $authUser->LAST_NAME;
+        $authorName = $authUser->name . ' ' . $authUser->last_name;
         $history = TimetrackingHistory::create([
             'user_id' => $user_id,
             'author_id' => $authUser->id,

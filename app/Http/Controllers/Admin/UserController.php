@@ -167,8 +167,8 @@ class UserController extends Controller
                     //     $account = Account::create([
                     //         'password' => User::randString(16),
                     //         'owner_uid' => 5,
-                    //         'name' => $user->NAME,
-                    //         'surname' => $user->LAST_NAME,
+                    //         'name' => $user->name,
+                    //         'surname' => $user->last_name,
                     //         'email' => $new_email,
                     //         'status' => Account::ACTIVE_STATUS,
                     //         'role' => [Account::OPERATOR],
@@ -753,8 +753,8 @@ class UserController extends Controller
             'users.email',  
             'users.user_type',
             'users.segment as segment',
-            'users.LAST_NAME',
-            'users.NAME', 
+            'users.last_name',
+            'users.name', 
             'users.full_time', 
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"), 
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
@@ -905,7 +905,7 @@ class UserController extends Controller
                 
                 $data['records'][] = [
                     0 => $user->id,
-                    1 => $user->LAST_NAME . ' ' . $user->NAME, 
+                    1 => $user->last_name . ' ' . $user->name, 
                     2 => $user->email, 
                     3 => $grs, 
                     4 => $user->user_type == 'office' ? 'Офисный' : 'Удаленный', 
@@ -1281,8 +1281,8 @@ class UserController extends Controller
             if ($user->deleted_at != null) {  // Ранее уволен
                 $text = '<p>Нужно ввести другую почту, так как сотрудник c таким email ранее был уволен:</p>';
                 $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
-                $text .= '<tr><td><b>Имя:</b></td><td>'.$user->NAME.'</td></tr>';
-                $text .= '<tr><td><b>Фамилия:</b></td><td>'.$user->LAST_NAME.'</td></tr>';
+                $text .= '<tr><td><b>Имя:</b></td><td>'.$user->name.'</td></tr>';
+                $text .= '<tr><td><b>Фамилия:</b></td><td>'.$user->last_name.'</td></tr>';
                 $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $user->id .'" target="_blank"> '. $user->email .'</a></td></tr>';
                 $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($user->deactivate_date)->setTimezone('Asia/Dacca').'</td></tr>';
                 $text .= '</table>'; 
@@ -1290,7 +1290,7 @@ class UserController extends Controller
             }
             
             if($user->UF_ADMIN == 1) { // Есть ли сотрудник
-                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->id . '"   target="_blank">' . $user->LAST_NAME . ' ' . $user->NAME . '</a>';
+                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->id . '"   target="_blank">' . $user->last_name . ' ' . $user->name . '</a>';
                 return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
             } 
             // else {
@@ -1318,8 +1318,8 @@ class UserController extends Controller
         //$user_password = 'opvLOUSe0200af69ff75617c3574485ba1da8f5d'; // 12345
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
             $user->update([
-                'NAME' => $request['name'],
-                'LAST_NAME' => $request['last_name'],
+                'name' => $request['name'],
+                'last_name' => $request['last_name'],
                 'DESCRIPTION' => $request['description'],
                 'ACTIVE' => 'N',
                 'PASSWORD' => $user_password,
@@ -1348,8 +1348,8 @@ class UserController extends Controller
         } else { // Не было никакого полльзователя с таким email
             $user = User::create([
                 'email' => strtolower($request['email']),
-                'NAME' => $request['name'],
-                'LAST_NAME' => $request['last_name'],
+                'name' => $request['name'],
+                'last_name' => $request['last_name'],
                 'DESCRIPTION' => $request['description'],
                 'ACTIVE' => 'N',
                 'PASSWORD' => $user_password,
@@ -1430,7 +1430,7 @@ class UserController extends Controller
 
             TimetrackingHistory::create([
                 'author_id' => Auth::user()->id,
-                'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
+                'author' => Auth::user()->name.' '.Auth::user()->last_name,
                 'user_id' => $user->id,
                 'description' => 'Принятие на работу без стажировки',
                 'date' => date('Y-m-d')
@@ -1676,8 +1676,8 @@ class UserController extends Controller
             if ($oldUser->deleted_at != null) {  // Ранее уволен
                 $text = '<p>Нужно ввести другую почту, так как сотрудник c таким email ранее был уволен:</p>';
                 $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
-                $text .= '<tr><td><b>Имя:</b></td><td>'.$oldUser->NAME.'</td></tr>';
-                $text .= '<tr><td><b>Фамилия:</b></td><td>'.$oldUser->LAST_NAME.'</td></tr>';
+                $text .= '<tr><td><b>Имя:</b></td><td>'.$oldUser->name.'</td></tr>';
+                $text .= '<tr><td><b>Фамилия:</b></td><td>'.$oldUser->last_name.'</td></tr>';
                 $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $oldUser->id .'" target="_blank"> '. $oldUser->email .'</a></td></tr>';
                 $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($oldUser->deactivate_date)->setTimezone('Asia/Dacca').'</td></tr>';
                 $text .= '</table>'; 
@@ -1685,7 +1685,7 @@ class UserController extends Controller
             }
             
             if($oldUser->UF_ADMIN == 1) { // Есть ли сотрудник
-                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->LAST_NAME . ' ' . $oldUser->NAME . '</a>';
+                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->last_name . ' ' . $oldUser->name . '</a>';
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             } else {
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors('Пользователь не является сотрудником, пожалуйста, обратитесь в тех.поддержку');
@@ -1710,8 +1710,8 @@ class UserController extends Controller
 
         $user->UF_ADMIN = 1; // Доступ в админку
         $user->email = strtolower($request['email']);
-        $user->NAME = $request['name'];
-        $user->LAST_NAME = $request['last_name'];
+        $user->name = $request['name'];
+        $user->last_name = $request['last_name'];
         $user->PHONE = $request['phone'];
         $user->phone_1 = $request['phone_1'];
         $user->phone_2 = $request['phone_2'];
@@ -1822,7 +1822,7 @@ class UserController extends Controller
 
             TimetrackingHistory::create([
                 'author_id' => Auth::user()->id,
-                'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
+                'author' => Auth::user()->name.' '.Auth::user()->last_name,
                 'user_id' => $user->id,
                 'description' => 'Принятие на работу стажера',
                 'date' => date('Y-m-d')
@@ -1850,7 +1850,7 @@ class UserController extends Controller
                 $segment = $seg ? $seg->name : '';
 
                 $msg_fragment = '<a href="https://admin.u-marketing.org/timetracking/edit-person?id=';
-                $msg_fragment .= $user->id .'">' . $user->LAST_NAME . ' ' . $user->NAME . '</a>';
+                $msg_fragment .= $user->id .'">' . $user->last_name . ' ' . $user->name . '</a>';
                 $msg_fragment .= '<br/>Дата принятия: ' . Carbon::parse($ud->applied)->format('d.m.Y');
                 $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: '. $comment;
 

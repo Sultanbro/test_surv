@@ -273,7 +273,7 @@ class RecruiterStats extends Command
             ]);
         }
         
-        $this->line('------' . $admin_user->LAST_NAME . ' ' . $admin_user->NAME . ' ' . $admin_user->email);
+        $this->line('------' . $admin_user->last_name . ' ' . $admin_user->name . ' ' . $admin_user->email);
     }
 
     

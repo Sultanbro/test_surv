@@ -69,7 +69,7 @@
 
             <div class="col-md-4">
                 <select class="form-control" v-model="item.id">
-                    <option :value="user.ID" v-for="user in users">{{ user.LAST_NAME }} {{ user.NAME }} ID {{ user.ID }}</option>
+                    <option :value="user.ID" v-for="user in users">{{ user.last_name }} {{ user.name }} ID {{ user.ID }}</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -212,9 +212,9 @@ export default {
                     if(response.data.items.length > 0) _this.showStepTwo = true;
                     _this.users = response.data.users
                     _this.users.push({
-                        ID: 0,
-                        NAME: '',
-                        LAST_NAME: '',
+                        id: 0,
+                        name: '',
+                        last_name: '',
                     })
                     _this.date = response.data.date
                     _this.filename = response.data.filename

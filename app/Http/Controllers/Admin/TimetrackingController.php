@@ -123,7 +123,7 @@ class TimetrackingController extends Controller
         
         if($active_tab == 5) {
 
-            $users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, LAST_NAME, NAME) as name"), 'ID as id')->get()->toArray();
+            $users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
             $tab5['users'] = array_values($users);
 
             $positions = Position::select('position as name', 'id')->get()->toArray();
@@ -525,7 +525,7 @@ class TimetrackingController extends Controller
             $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->first();
             if ($group->users != null) {
                 $users = json_decode($group->users);
-                $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
+                $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
             $book_groups = BookGroup::whereIn('id', json_decode($group->book_groups))->get();
 
@@ -538,7 +538,7 @@ class TimetrackingController extends Controller
             
             $bonus = Bonus::where('group_id', $group->id)->first();
         } else {
-            $users = User::get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
+            $users = User::get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
 
             foreach($users as $user) {
                 if($user->email == '') $user->email = 'x'; 
@@ -680,7 +680,7 @@ class TimetrackingController extends Controller
 
         $timestamp = now();
 
-        $msg = '<a href="' . $editPersonLink . '" target="_blank">' . $user->LAST_NAME . ' ' . $user->NAME  . ' </a><br> ';
+        $msg = '<a href="' . $editPersonLink . '" target="_blank">' . $user->last_name . ' ' . $user->name  . ' </a><br> ';
         $msg .= 'Рабочий график: ' . $request->schedule;
 
         $notification_receivers = NotificationTemplate::getReceivers(7);
@@ -711,7 +711,7 @@ class TimetrackingController extends Controller
         ///////////////////////////////////// 
         TimetrackingHistory::create([
             'author_id' => User::bitrixUser()->id,
-            'author' => User::bitrixUser()->NAME.' '.User::bitrixUser()->LAST_NAME,
+            'author' => User::bitrixUser()->name.' '.User::bitrixUser()->last_name,
             'user_id' => $request->user_id,
             'description' => 'Заявка на принятие на работу стажера',
             'date' => date('Y-m-d')
@@ -1066,7 +1066,7 @@ class TimetrackingController extends Controller
 
             $author = Auth::user();
             $description = 'часов работы c ' . number_format(floatval($request->before / 60), 2, '.', '') . ' на ' . number_format(floatval($request->minutes / 60), 2, '.', '');
-            $authorName = '' . ($author->NAME) . ' ' . ($author->LAST_NAME) . '';
+            $authorName = '' . ($author->name) . ' ' . ($author->last_name) . '';
 
             $history = TimetrackingHistory::create([
                 'author_id' => Auth::user()->id,
@@ -1111,7 +1111,7 @@ class TimetrackingController extends Controller
 
         foreach($_users as $record) {
             $users = json_decode($record->ids,true);
-            $selected = User::select(DB::raw("CONCAT_WS(' ',ID, LAST_NAME, NAME) as name"),'id')->whereIn("id", $users)->get();
+            $selected = User::select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"),'id')->whereIn("id", $users)->get();
             $record->selectedGroups = $selected->toArray();
         }
 
@@ -1136,7 +1136,7 @@ class TimetrackingController extends Controller
         $_notifications = User::withTrashed()
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.notifications', '!=', '[]')
-            ->select(DB::raw("CONCAT_WS(' ',users.ID, users.LAST_NAME, users.NAME) as name"), 'users.ID as id')
+            ->select(DB::raw("CONCAT_WS(' ',users.ID, users.last_name, users.name) as name"), 'users.ID as id')
             ->get()->toArray();
         
         //$_notification_templates = NotificationTemplate::where('type', NotificationTemplate::USER)->select('id', 'title as name')->get()->toArray();
@@ -1334,14 +1334,14 @@ class TimetrackingController extends Controller
     {
         if($request->page == 'page-top') {
             $users = [];
-            $users = User::where('roles', 'like', '%"page-top":"on"%')->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
+            $users = User::where('roles', 'like', '%"page-top":"on"%')->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
         } else {
             $group = ProfileGroup::find($request['group_id']);
 
             $editors_id = json_decode($group->editors_id);
             if (is_array($editors_id) && count($editors_id)) {
 
-                $users = User::whereIn('id', $editors_id)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
+                $users = User::whereIn('id', $editors_id)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             } else {
                 $users = [];
             }
@@ -1383,7 +1383,7 @@ class TimetrackingController extends Controller
 
         TimetrackingHistory::create([
             'author_id' => User::bitrixUser()->id,
-            'author' => User::bitrixUser()->NAME.' '.User::bitrixUser()->LAST_NAME,
+            'author' => User::bitrixUser()->name.' '.User::bitrixUser()->last_name,
             'user_id' => $request->user_id,
             'description' => $description,
             'date' => $enter
@@ -1422,7 +1422,7 @@ class TimetrackingController extends Controller
                 ];
             }
 
-            $users = User::withTrashed()->selectRaw("*,CONCAT(NAME,' ',LAST_NAME) as full_name")->with(['timetracking' => function ($q) use ($request) {
+            $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")->with(['timetracking' => function ($q) use ($request) {
                 $q->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
                     ->orderBy('date')
                     ->whereMonth('enter', $request->month)
@@ -1763,7 +1763,7 @@ class TimetrackingController extends Controller
             $daytype->save();
         }
         
-        $authorName = $user->NAME . ' ' . $user->LAST_NAME;
+        $authorName = $user->name . ' ' . $user->last_name;
         $desc = isset($request['comment']) ? $description . '. Причина: ' . $request['comment'] : $description;
 
         $history = TimetrackingHistory::create([
@@ -1863,7 +1863,7 @@ class TimetrackingController extends Controller
                 $group_name = $g ? '(' . $g->name . ')' : '';
 
                 $abs_msg = $authorName . ': '. $group_name .'  Стажер не был на обучении: <br> <a href="' . $editPersonLink . '" target="_blank">';
-                $abs_msg .= $targetUser->LAST_NAME . ' ' . $targetUser->NAME  . ' </a>';
+                $abs_msg .= $targetUser->last_name . ' ' . $targetUser->name  . ' </a>';
                 $abs_msg .= '<br><a href="/timetracking/analytics/skypes/' . $lead_id . '" target="_blank" class="btn btn-primary mr-2 mt-2 rounded btn-sm">Перейти в сделку</a>';
                 $abs_msg .= '<a class="btn btn-primary mt-2 rounded btn-sm transfer-training" data-userid="' . $targetUser->id . '">Перенести обучение</a>';
 
@@ -2175,7 +2175,7 @@ class TimetrackingController extends Controller
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.notifications', '!=', '[]')
             ->where('users.id', $request->user_id)
-            ->select(DB::raw("CONCAT_WS(' ',users.ID, users.LAST_NAME, users.NAME) as name"), 'users.ID as id', 'ud.notifications as notifications')
+            ->select(DB::raw("CONCAT_WS(' ',users.ID, users.last_name, users.name) as name"), 'users.ID as id', 'ud.notifications as notifications')
             ->first();
     
         $notifications = [];
@@ -2305,14 +2305,14 @@ class TimetrackingController extends Controller
                     ->where('ud.is_trainee', 0)
                     ->where('UF_ADMIN', 1)
                     ->whereIn('users.id', json_decode($group->users)) 
-                    ->get(['users.id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
+                    ->get(['users.id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
 
             $time_exceptions = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1)
                 ->whereIn('users.id', $group->time_exceptions) 
-                ->get(['users.id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
+                ->get(['users.id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
         } 
         
         

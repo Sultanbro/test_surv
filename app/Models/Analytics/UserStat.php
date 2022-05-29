@@ -140,9 +140,9 @@ class UserStat extends Model
                 
                
                 $item = [
-                    'name' => $localUser->NAME,
-                    'lastname' => $localUser->LAST_NAME,
-                    'fullname' => trim($localUser->LAST_NAME . ' ' . $localUser->NAME),
+                    'name' => $localUser->name,
+                    'lastname' => $localUser->last_name,
+                    'fullname' => trim($localUser->last_name . ' ' . $localUser->name),
                     'email' => $localUser->email,
                     'full_time' => $localUser->full_time,
                     'id' => $localUser->id,

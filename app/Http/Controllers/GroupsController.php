@@ -77,7 +77,7 @@ class GroupsController extends Controller
 
                 TimetrackingHistory::create([
                     'author_id' => Auth::user()->id,
-                    'author' => Auth::user()->LAST_NAME .' '. Auth::user()->NAME,
+                    'author' => Auth::user()->last_name .' '. Auth::user()->name,
                     'user_id' => $item['id'],
                     'date' => $date,
                     'description' => 'Импорт из EXCEL файла: '. $minutes .' минут ('. $request->filename .') '. $add_text
@@ -199,7 +199,7 @@ class GroupsController extends Controller
                     $gusers = $this->groupUsers(35);
                     $gusers2 = $this->groupUsers(42);
                     $gusers = $gusers->merge($gusers2);
-                    $gusers = $gusers->sortBy('NAME');
+                    $gusers = $gusers->sortBy('name');
                 }
                 
                 $items = [];
@@ -234,7 +234,7 @@ class GroupsController extends Controller
                     
                     if($_fv) {
                         
-                        $possible_user = $gusers->where('NAME' , $_fv['imya_sotrudnika'])->where('LAST_NAME',$_fv['familiya_sotrudnika'])->first();
+                        $possible_user = $gusers->where('name' , $_fv['imya_sotrudnika'])->where('last_name',$_fv['familiya_sotrudnika'])->first();
                         
                         if($possible_user) {
                             $item['id'] = $possible_user->id;
@@ -396,7 +396,7 @@ class GroupsController extends Controller
     
         $users = array_unique($users);
 
-        $_users = User::whereIn('id', $users)->orderBy('LAST_NAME', 'asc')->get();
+        $_users = User::whereIn('id', $users)->orderBy('last_name', 'asc')->get();
         return $_users;
     }
 

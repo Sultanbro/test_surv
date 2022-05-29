@@ -4,7 +4,7 @@
 <tr>
   <td>{{$user->id}}</td>
   <td>{{$user->email}}</td>
-  <td>{{$user->NAME}}</td>
+  <td>{{$user->name}}</td>
   <td>{{$user->UF_ADMIN}}</td>
 
 

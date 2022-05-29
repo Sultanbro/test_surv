@@ -141,9 +141,9 @@ class CourseController extends Controller
         $course = Course::with('items')->find($request->id);
         
         $course_users = CourseResult::where('course_id', $request->id)->get(['user_id'])->pluck('user_id')->toArray();
-        $course->users = User::withTrashed()->whereIn('id', $course_users)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME) as email")]);
+        $course->users = User::withTrashed()->whereIn('id', $course_users)->get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
 
-        $users = User::get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME) as email")]);
+        $users = User::get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
 
         foreach($users as $user) {
             if($user->email == '') $user->email = 'x'; 

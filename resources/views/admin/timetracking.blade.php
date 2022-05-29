@@ -277,7 +277,7 @@
                                                                     padding: 15px;">
                                         <div >
                                             <div class="d-flex">
-                                                <p class="user-name">{{$user->LAST_NAME}} {{$user->NAME}}  <b> Ваш ID: {{$user->id}}</b></p>
+                                                <p class="user-name">{{$user->last_name}} {{$user->name}}  <b> Ваш ID: {{$user->id}}</b></p>
                                             </div>
                                             <div class="user-groups" style="font-size:14px">Название группы:
                                             <div class="mb-2 d-flex" style="font-size:12px">
@@ -468,7 +468,7 @@
                     <t-recruiter-stats :data="{{ $recruiter_stats }}" daysInMonth="{{ date('d') }}" :rates="{{ $recruiter_stats_rates }}"></t-recruiter-stats>
                 </div>
                 <div class="ublocxk mb-4">
-                    <t-recruting-user :month="{{json_encode($month)}}"  :records="{{ json_encode($recruiter_records) }}" name="{{auth()->user()->LAST_NAME . ' ' . auth()->user()->NAME}}"></t-recruting-user>
+                    <t-recruting-user :month="{{json_encode($month)}}"  :records="{{ json_encode($recruiter_records) }}" name="{{auth()->user()->last_name . ' ' . auth()->user()->name}}"></t-recruting-user>
                 </div> 
                 <div class="ublocxk">
                 <g-recruting :records="{{ $indicators }}" :isAnalyticsPage="false"></g-recruting>

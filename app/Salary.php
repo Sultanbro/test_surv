@@ -92,7 +92,7 @@ class Salary extends Model
                 },
             ])
         ->whereIn('users.id', $user_ids)
-        ->oldest('users.LAST_NAME')
+        ->oldest('users.last_name')
         ->get();
 
      
@@ -330,7 +330,7 @@ class Salary extends Model
             $text .= self::addSpace($total_bonuses, 7);
             $text .= ' • K ' ;
             $text .= self::addSpace($kpi, 7);
-            $text .= '      '. $user->LAST_NAME . ' '. $user->NAME;
+            $text .= '      '. $user->last_name . ' '. $user->name;
             
 
             $avans = self::selectRaw('sum(ROUND(paid,0)) as total')

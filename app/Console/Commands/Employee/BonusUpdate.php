@@ -236,7 +236,7 @@ class BonusUpdate extends Command
                     $has_text = true;
                     $user = User::withTrashed()->find($best_bonus->user_id);
                     if($user) {
-                        $msg .= '<b>' . $user->NAME . ' ' . $user->LAST_NAME . '</b>: <br> <b>' . $best_bonus->amount . ' KZT </b>'  . $best_bonus->comment . '<br><br>';
+                        $msg .= '<b>' . $user->name . ' ' . $user->last_name . '</b>: <br> <b>' . $best_bonus->amount . ' KZT </b>'  . $best_bonus->comment . '<br><br>';
                     }
                 }
 
@@ -255,7 +255,7 @@ class BonusUpdate extends Command
                     $user = User::withTrashed()->find($bonus->user_id);
 
                     if($user) {
-                        $msg .= $user->NAME . ' ' . $user->LAST_NAME . ': ' . $bonus->amount . ' KZT '  . $bonus->comment . '<br>';
+                        $msg .= $user->name . ' ' . $user->last_name . ': ' . $bonus->amount . ' KZT '  . $bonus->comment . '<br>';
                     }
 
                 }

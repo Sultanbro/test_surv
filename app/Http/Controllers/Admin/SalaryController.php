@@ -84,7 +84,7 @@ class SalaryController extends Controller
             $approval = SalaryApproval::where('group_id', $group->id)->where('date', $date)->first();
             if($approval) {
                 $user = User::withTrashed()->find($approval->user_id);
-                $group->salary_approved_by = $user ? $user->LAST_NAME . ' ' . $user->NAME : $approval->user_id;
+                $group->salary_approved_by = $user ? $user->last_name . ' ' . $user->name : $approval->user_id;
                 $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
                 $group->salary_approved = 1;
             } else {
@@ -243,7 +243,7 @@ class SalaryController extends Controller
 
             if($approval) {
                 $user = User::withTrashed()->find($approval->user_id);
-                $group->salary_approved_by = $user ? $user->LAST_NAME . ' ' . $user->NAME : $approval->user_id;
+                $group->salary_approved_by = $user ? $user->last_name . ' ' . $user->name : $approval->user_id;
                 $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
                 $group->salary_approved = 1;
 
@@ -645,7 +645,7 @@ class SalaryController extends Controller
             if($type == 'avans') $text = 'аванс';
             if($type == 'bonus') $text = 'бонус';
 
-            $author = Auth::user()->LAST_NAME . ' ' . Auth::user()->NAME;
+            $author = Auth::user()->last_name . ' ' . Auth::user()->name;
             UserNotification::create([
                 'user_id' => $user_id,
                 'about_id' => $user_id,
@@ -662,13 +662,13 @@ class SalaryController extends Controller
         $history = TimetrackingHistory::create([
             'user_id' => $user_id,
             'author_id' => $editor->id,
-            'author' => $editor->LAST_NAME . ' ' . $editor->NAME,
+            'author' => $editor->last_name . ' ' . $editor->name,
             'date' => $date,
             'description' => 'Добавлен <b>' . $type . '</b> на сумму ' . $amount . '<br> Комментарии: ' . $comment
         ]);
 
         return json_encode([
-            'author' => Auth::user()->LAST_NAME . ' '.  Auth::user()->NAME,
+            'author' => Auth::user()->last_name . ' '.  Auth::user()->name,
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'description' => 'Добавлен <b>' . $type . '</b> на сумму ' . $amount . '<br> Комментарии: ' . $comment,
             'day' => $request->day,
