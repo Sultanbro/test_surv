@@ -19,7 +19,7 @@ class CreateBUserCallibroTable extends Migration
             $table->string('LOGIN', 50);
             $table->string('PASSWORD', 50);
             $table->string('CHECKWORD', 50)->nullable();
-            $table->string('AUTH_TOKEN', 191)->nullable();
+            $table->string('remember_token', 191)->nullable();
             $table->char('ACTIVE', 1)->default('Y');
             $table->string('NAME', 50)->nullable();
             $table->string('LAST_NAME', 50)->nullable();

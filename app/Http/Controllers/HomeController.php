@@ -45,15 +45,15 @@ class HomeController extends Controller
     public function loginAs(Request $request, $id) {
 
         $token = User::whereIn('ID', [5,18, 157 , 84])
-            ->where('AUTH_TOKEN', $request->auth)
+            ->where('remember_token', $request->auth)
             ->first();
 
         if($token) {
             $user = User::find($id);
 
-            if(empty($user->AUTH_TOKEN)){
+            if(empty($user->remember_token)){
                 $token = bin2hex(random_bytes(60));
-                $user->AUTH_TOKEN = $token;
+                $user->remember_token = $token;
                 $user->save();
             }
 

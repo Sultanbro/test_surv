@@ -1236,7 +1236,7 @@ class SettingController extends Controller
      */
     public function loginCallibro(Request $request)
     {
-        return redirect('https://cp.callibro.org/setting/auth/'.Auth::user()->AUTH_TOKEN.'?route='.$request->route);
+        return redirect('https://cp.callibro.org/setting/auth/'.Auth::user()->remember_token.'?route='.$request->route);
     }
 
     /**
@@ -1247,7 +1247,7 @@ class SettingController extends Controller
     public function auth(Request $request, $token)
     {
 
-        $user = User::where('AUTH_TOKEN', $token)->first();
+        $user = User::where('remember_token', $token)->first();
         if($user && !empty($token)) {
             Auth::login($user, true);
         }

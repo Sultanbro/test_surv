@@ -14,7 +14,7 @@ class UserAuth extends Migration
     public function up()
     {
         Schema::table('b_user', function (Blueprint $table) {
-            $table->string('AUTH_TOKEN', 191)->after('CHECKWORD')->nullable();
+            $table->string('remember_token', 191)->after('CHECKWORD')->nullable();
 
         });
     }

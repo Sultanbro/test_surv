@@ -709,7 +709,7 @@ class Salary extends Model
         $_agrees = array_column($data['users'], 'worked_days');
         array_multisort($_agrees, SORT_DESC, $data['users']); 
 
-        $data['auth_token'] = Auth::user()->AUTH_TOKEN;
+        $data['auth_token'] = Auth::user()->remember_token;
 
         return $data;
     }

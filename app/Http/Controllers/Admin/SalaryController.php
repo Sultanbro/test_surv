@@ -167,7 +167,7 @@ class SalaryController extends Controller
 
         $data['users'] = $arr['users'];
         $data['total_resources'] = $arr['total_resources'];
-        $data['auth_token'] = Auth::user()->AUTH_TOKEN;
+        $data['auth_token'] = Auth::user()->remember_token;
         $data['year'] = $request['year'];
     
 
@@ -565,7 +565,7 @@ class SalaryController extends Controller
         $_agrees = array_column($data['users'], 'worked_days');
         array_multisort($_agrees, SORT_DESC, $data['users']); 
 
-        $data['auth_token'] = Auth::user()->AUTH_TOKEN;
+        $data['auth_token'] = Auth::user()->remember_token;
 
         return $data;
     }

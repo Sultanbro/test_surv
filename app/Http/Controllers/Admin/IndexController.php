@@ -1295,12 +1295,12 @@ class IndexController extends Controller
         if(User::isUserAdmin(Auth::user()->ID)) {
             $user = User::find($id);
 
-            if(empty($user->AUTH_TOKEN)){
+            if(empty($user->remember_token)){
                 $token = bin2hex(random_bytes(60));
-                $user->AUTH_TOKEN = $token;
+                $user->remember_token = $token;
                 $user->save();
             }
-            return redirect('https://cp.u-marketing.org/setting/auth/'.$user->AUTH_TOKEN);
+            return redirect('https://cp.u-marketing.org/setting/auth/'.$user->remember_token);
         }
 
         return redirect('/');
