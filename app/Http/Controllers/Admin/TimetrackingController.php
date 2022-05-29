@@ -1401,12 +1401,19 @@ class TimetrackingController extends Controller
     public function enterreport(Request $request)
     {
 
+
         $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
         
-        if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-        else {
-            return redirect('/');
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
+
+        if(!in_array(Auth::user()->id, $superusers)) {
+            if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
+            else {
+                return redirect('/');
+            }
         }
+
+        
         
         View::share('title', 'Время прихода');
         View::share('menu', 'timetrackingenters');
