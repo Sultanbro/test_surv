@@ -98,7 +98,7 @@ class SettingController extends Controller
             $user->CITY = $request->city;
             $user->ADDRESS = $request->address;
             $user->COMPANY = $request->company_name;
-            $user->DESCRIPTION = $request->company_desc;
+            $user->description = $request->company_desc;
             $user->BALANCE_NOTIFY = $request->balance_notice;
             $user->timezone = $request->timezone;
 

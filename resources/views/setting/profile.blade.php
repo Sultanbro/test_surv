@@ -66,7 +66,7 @@
                 </div>
                 <div class="edit-row">
                     <label class="item-lh">Описание деятельности компаниии</label>
-                    <div><textarea cols="5" name="company_desc" rows="5">{{$user->DESCRIPTION}}</textarea></div>
+                    <div><textarea cols="5" name="company_desc" rows="5">{{$user->description}}</textarea></div>
                 </div>
                 <div class="edit-row">
                     <span><em><label class="item-lh">Порог уведомлений о балансе</label></em></span>

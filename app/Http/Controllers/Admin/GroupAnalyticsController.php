@@ -776,7 +776,7 @@ class GroupAnalyticsController extends Controller
                     'email' => $email,
                     'name' => $uname,
                     'last_name' => '',
-                    'DESCRIPTION' => $email,
+                    'description' => $email,
                     'ACTIVE' => 'Y',
                     'PASSWORD' => 'opvLOUSe0200af69ff75617c3574485ba1da8f5d', // 12345
                     'DATE_REGISTER' => DB::raw('NOW()'),
@@ -882,7 +882,7 @@ class GroupAnalyticsController extends Controller
                     $user->update([
                         'UF_ADMIN' => 1,
                         'ACTIVE' => 'Y',
-                        'DESCRIPTION' => $lead->name,
+                        'description' => $lead->name,
                         'phone_1' => $lead->phone,
                         'position_id' => 32, // Оператор
                         'program_id' => 2,

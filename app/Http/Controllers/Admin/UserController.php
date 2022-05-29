@@ -766,7 +766,7 @@ class UserController extends Controller
             'users.phone_1',
             'users.phone_2',
             'users.birthday',
-            'users.DESCRIPTION',
+            'users.description',
             'users.working_day_id',
             'users.working_time_id',
             'users.work_start',
@@ -920,7 +920,7 @@ class UserController extends Controller
                     13 => $user->phone_1, 
                     14 => $user->phone_2, 
                     15 => $user->birthday, 
-                    16 => $user->DESCRIPTION, 
+                    16 => $user->description, 
                     17 => $user->program_id == 1 ? "U-Calls" : 'Другое', 
                     18 => $user->working_day_id == 1 ? '5-2' : '6-1', 
                     19 => $user->working_time_id == 1 ? 8 : 9, 
@@ -1320,7 +1320,7 @@ class UserController extends Controller
             $user->update([
                 'name' => $request['name'],
                 'last_name' => $request['last_name'],
-                'DESCRIPTION' => $request['description'],
+                'description' => $request['description'],
                 'ACTIVE' => 'N',
                 'PASSWORD' => $user_password,
                 'DATE_REGISTER' => DB::raw('NOW()'),
@@ -1350,7 +1350,7 @@ class UserController extends Controller
                 'email' => strtolower($request['email']),
                 'name' => $request['name'],
                 'last_name' => $request['last_name'],
-                'DESCRIPTION' => $request['description'],
+                'description' => $request['description'],
                 'ACTIVE' => 'N',
                 'PASSWORD' => $user_password,
                 'DATE_REGISTER' => DB::raw('NOW()'),
@@ -1719,7 +1719,7 @@ class UserController extends Controller
         $user->phone_4 = $request['phone_4'];
         $user->birthday = $request['birthday'];
         $user->full_time = $request['full_time'];
-        $user->DESCRIPTION = $request['description'];
+        $user->description = $request['description'];
         $user->currency = $request['currency'];
         $user->ACTIVE = 'Y';
         $user->position_id = $request['position'];

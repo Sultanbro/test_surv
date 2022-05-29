@@ -391,7 +391,7 @@
                                                     class="col-sm-4 col-form-label font-weight-bold">Дополнительно</label>
                                                 <div class="col-sm-8">
                                                     <textarea rows="3" name="description" class="form-control"
-                                                        id="description">@if(isset($user)) {{$user->DESCRIPTION}}  @endif</textarea>
+                                                        id="description">@if(isset($user)) {{$user->description}}  @endif</textarea>
                                                 </div>
                                             </div>
 
