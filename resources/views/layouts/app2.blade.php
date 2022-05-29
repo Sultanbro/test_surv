@@ -1,7 +1,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<title>JOYTRON</title>
+<title>JOBTRON</title>
 <meta name="keywords" content="программа, сервис, голосовые, сообщения, рассылка, voice, обзвон, номера, телефоны, информатор, автообзвон, автопрозвон, автоинформатор, ивтоинформатор, информирование, звонки, автоматический, реклама, sip" />
 <meta name="description" content="joytron.org - сервис автообзвона и голосовых рассылок. Автоматический обзвон" />
 
@@ -85,7 +85,7 @@ unicode-range: U+000-5FF; /* Latin glyphs */
  <div class="header mb-5">
   <div class="container">
     <div class="d-flex jcsb">
-      <div class="logox">Joytron</div>
+      <div class="logox">JOB TRON</div>
       <div class="ml-3 d-flex align-items-start" style="align-items:center">
         @auth
      
