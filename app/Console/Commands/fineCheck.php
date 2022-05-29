@@ -70,7 +70,7 @@ class FineCheck extends Command
 
 
             $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('UF_ADMIN', 1)
+                
                 ->where('ud.is_trainee',0)
                 ->whereIn('users.id', $usersArray)
                 ->get(); // Берем данные о полователях

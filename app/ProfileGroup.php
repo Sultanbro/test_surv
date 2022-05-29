@@ -213,7 +213,7 @@ class ProfileGroup extends Model
             if($date) {
                 $date = Carbon::parse($date);
                 $x_users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                    ->where('UF_ADMIN', 1)
+                    
                     ->where('is_trainee', 0)
                     ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
                     
@@ -258,7 +258,7 @@ class ProfileGroup extends Model
             $date = Carbon::parse($date);
             $x_users = User::withTrashed()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('UF_ADMIN', 1)
+                
                 ->where('is_trainee', 0)
                 ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
                 ->get(['users.id','users.last_group']);
@@ -309,7 +309,7 @@ class ProfileGroup extends Model
             if($date) {
                 $date = Carbon::parse($date);
                 $x_users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                    ->where('UF_ADMIN', 1)
+                    
                     ->where('is_trainee', 0)
                     ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
                     
@@ -351,7 +351,7 @@ class ProfileGroup extends Model
             $date = Carbon::parse($date);
             $x_users = User::withTrashed()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('UF_ADMIN', 1)
+                
                 ->where('is_trainee', 1)
                 ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
                 ->get(['users.id','users.last_group']);

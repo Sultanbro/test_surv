@@ -111,7 +111,7 @@ class TimetrackingController extends Controller
                 return redirect('/');
             }
         }
-        
+
         $corpbooks = [];
         if($active_tab == 3) {
             if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
@@ -813,7 +813,7 @@ class TimetrackingController extends Controller
         if($request->user_types == 0) { // Действующие
             $_user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
-                ->where('UF_ADMIN', 1)
+                
                 ->whereIn('users.id', $users_ids)
                 ->get()
                 ->pluck('id')
@@ -838,7 +838,7 @@ class TimetrackingController extends Controller
             $date = $year . '-' . $request->month . '-01';
             $date_for_register = Carbon::parse($date); 
             $date_for_fire = Carbon::parse($date)->startOfMonth();
-            $d_users = User::onlyTrashed()->where('UF_ADMIN', 1)
+            $d_users = User::onlyTrashed()
                 //->whereDate('created_at', '<', $date_for_register)
                 ->whereDate('deleted_at', '>=', $date_for_fire)
                 ->get();
@@ -854,7 +854,7 @@ class TimetrackingController extends Controller
             
             $_user_ids = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
-                ->where('UF_ADMIN', 1)
+                
                 ->whereIn('users.id', $_user_ids)
                 ->get()
                 ->pluck('id')
@@ -865,7 +865,7 @@ class TimetrackingController extends Controller
 
             $_user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 1)
-                ->where('UF_ADMIN', 1)
+                
                 ->whereIn('users.id', $users_ids)
                 ->get()
                 ->pluck('id')
@@ -2322,14 +2322,14 @@ class TimetrackingController extends Controller
             if($group->users != null) {
                 $time_exceptions_options = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('ud.is_trainee', 0)
-                    ->where('UF_ADMIN', 1)
+                    
                     ->whereIn('users.id', json_decode($group->users)) 
                     ->get(['users.id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
 
             $time_exceptions = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
-                ->where('UF_ADMIN', 1)
+                
                 ->whereIn('users.id', $group->time_exceptions) 
                 ->get(['users.id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
         } 

@@ -73,7 +73,7 @@ class EstimateTrainer extends Command
     {
         $user_ids = ProfileGroup::employees($group->id);
         $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('UF_ADMIN', 1)
+            
             ->where('is_trainee', 0)
             ->whereIn('users.id', $user_ids) 
             ->whereIn('position_id', [45,55]) // Руководитель, старший специалист группы
@@ -92,7 +92,7 @@ class EstimateTrainer extends Command
             if($this->hasSuperiors($group)) {
                 $gr_users = ProfileGroup::employees($group->id);
                 $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                    ->where('UF_ADMIN', 1)
+                    
                     ->where('is_trainee', 0)
                     ->whereIn('users.id', $gr_users)
                     ->whereNotIn('position_id', [45,55]) // Руководитель, старший специалист группы

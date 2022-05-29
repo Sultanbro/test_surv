@@ -77,7 +77,7 @@ class NpsController extends Controller
         $users = [];
 
         $_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('UF_ADMIN', 1)
+            
             ->where('is_trainee', 0)
             ->whereIn('position_id', [45,55]) // Руководитель, старший специалист группы
             ->get(['users.id', 'users.name', 'users.last_name', 'users.position_id']);
@@ -230,7 +230,7 @@ class NpsController extends Controller
         foreach($groups as $group) {
             $group_users = ProfileGroup::employees($group->id);
             $_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('UF_ADMIN', 1)
+                
                 ->where('is_trainee', 0)
                 ->whereIn('users.id', $group_users)
                 ->where('position_id', $position_id) // Руководитель, старший специалист группы

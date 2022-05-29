@@ -1070,7 +1070,7 @@ class IntellectController extends Controller {
             
             
             
-            $users = User::withTrashed()->where('UF_ADMIN', 1)->get();
+            $users = User::withTrashed()->get();
             
             foreach($users as $user) {
                 $phone = Phone::normalize($user->phone);

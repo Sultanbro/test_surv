@@ -155,7 +155,7 @@ class HomeController extends Controller
         
         if($request->has('phone') && $request->phone != '') {
             
-            $users = User::withTrashed()->where('UF_ADMIN', 1)->get();
+            $users = User::withTrashed()->get();
             
             foreach($users as $user) {
                 $phone = Phone::normalize($user->phone);

@@ -406,19 +406,19 @@ class Salary extends Model
             $users = User::withTrashed()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
-                ->where('UF_ADMIN', 1);
+                ;
         }
 
 
         if($user_types == 0) {// Действующие
             $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
-                ->where('UF_ADMIN', 1);
+                ;
         } 
 
         if($user_types == 1) {// Уволенные
 
-            $x_users = User::withTrashed()->where('UF_ADMIN', 1)
+            $x_users = User::withTrashed()
                 ->whereDate('deleted_at', '>=', $date->format('Y-m-d'))
                 ->get(['id','last_group']);
 
@@ -436,13 +436,13 @@ class Salary extends Model
 
             $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                  ->where('ud.is_trainee', 0)
-                ->where('UF_ADMIN', 1);
+                ;
         } 
 
         if($user_types == 2) {// Стажеры
             $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 1)
-                ->where('UF_ADMIN', 1);
+                ;
         } 
         
         $users = $users->with([

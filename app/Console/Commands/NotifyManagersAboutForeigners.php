@@ -54,7 +54,7 @@ class NotifyManagersAboutForeigners extends Command
 
         $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
-            ->where('UF_ADMIN', 1)
+            
             ->get();
       
         foreach($users as $user) {

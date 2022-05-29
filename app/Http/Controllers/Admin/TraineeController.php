@@ -87,7 +87,7 @@ class TraineeController extends Controller
         
         $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 1)
-            ->where('UF_ADMIN', 1) 
+             
             ->whereIn('users.id', json_decode($group->users, true))
             ->select(DB::raw("CONCAT_WS(' ', last_name, name) as name"), 'users.ID as id')->get()->sortBy('name')->toArray();
        // $users = User::where('UF_ADMIN', 1)->select(DB::raw("CONCAT_WS(' ', last_name, name) as name"), 'ID as id')->get()->sortBy('name')->toArray();

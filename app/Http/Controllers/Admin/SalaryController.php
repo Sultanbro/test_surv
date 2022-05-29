@@ -175,7 +175,7 @@ class SalaryController extends Controller
 
         // // FIRED USER TOTAL IN GROUP
 
-        // $x_users = User::withTrashed()->where('UF_ADMIN', 1)
+        // $x_users = User::withTrashed()
         //     ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
         //     ->get(['id','last_group']);
 
@@ -271,12 +271,12 @@ class SalaryController extends Controller
         if($user_types == 0) {// Действующие
             $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
-                ->where('UF_ADMIN', 1);
+                ;
         } 
 
         if($user_types == 1) {// Уволенные
 
-            $x_users = User::withTrashed()->where('UF_ADMIN', 1)
+            $x_users = User::withTrashed()
                 ->whereDate('deleted_at', '>=', $date->format('Y-m-d'))
                 ->get(['id','last_group']);
 
@@ -294,13 +294,13 @@ class SalaryController extends Controller
 
             $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                  ->where('ud.is_trainee', 0)
-                ->where('UF_ADMIN', 1);
+                ;
         } 
 
         if($user_types == 2) {// Стажеры
             $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 1)
-                ->where('UF_ADMIN', 1);
+                ;
         } 
         
         $users = $users->with([
@@ -729,14 +729,14 @@ class SalaryController extends Controller
 
         $working_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
-            ->where('UF_ADMIN', 1)
+            
             ->whereIn('users.id', $users_ids);
 
 
 
             /////////////
 
-            $x_users = User::withTrashed()->where('UF_ADMIN', 1)
+            $x_users = User::withTrashed()
                 ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
                 ->get(['id','last_group']);
 
@@ -764,7 +764,7 @@ class SalaryController extends Controller
 
             // $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             //      ->where('ud.is_trainee', 0)
-            //     ->where('UF_ADMIN', 1);
+            //     ;
 
         //  me(User::withTrashed()->whereIn('users.id', array_unique($old_users))->get()->toArray());
        

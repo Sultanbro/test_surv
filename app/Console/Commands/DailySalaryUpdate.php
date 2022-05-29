@@ -65,7 +65,7 @@ class DailySalaryUpdate extends Command
         
         $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->select(['users.id'])
-            ->where('UF_ADMIN', 1)
+            
             ->where('ud.is_trainee', 0)
             ->get()
             ->pluck('id') 
@@ -73,7 +73,7 @@ class DailySalaryUpdate extends Command
         
         $users2 = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->select(['users.id'])
-            ->where('UF_ADMIN', 1)
+            
             ->where('ud.is_trainee', 0)
             ->whereDate('deleted_at', '>=', $argDate)
             ->get()

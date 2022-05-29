@@ -90,7 +90,7 @@ class GroupAnalyticsController extends Controller
                 return redirect('timetracking/user/' . \Auth::user()->id);
             }
         }
-        
+
         $currentUser = User::bitrixUser();
 
         $kaspi_42 = ProfileGroup::find(42);
@@ -209,7 +209,7 @@ class GroupAnalyticsController extends Controller
 
         $users_ids = json_decode($group->users);
         //////
-        $x_users = User::withTrashed()->where('UF_ADMIN', 1)
+        $x_users = User::withTrashed()
             ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
             ->get(['id','last_group']);
 
@@ -238,7 +238,7 @@ class GroupAnalyticsController extends Controller
         $users_ids = array_unique(array_values($users_ids)); 
 
         $this->users = User::withTrashed()
-            ->where('UF_ADMIN', 1)
+            
             ->whereIn('id', array_unique($users_ids))
             ->orderBy('full_name')
             ->get([
@@ -404,7 +404,7 @@ class GroupAnalyticsController extends Controller
                 
                 $localUser = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('ud.is_trainee', 0)
-                    ->where('UF_ADMIN', 1)
+                    
                     ->where('email', $user->email)
                     ->first();
 
@@ -1114,7 +1114,7 @@ class GroupAnalyticsController extends Controller
                 ->whereIn('user_id', $users_ids)->get();
             
             $group_accounts = User::withTrashed()
-                ->where('UF_ADMIN', 1)
+                
                 ->whereIn('email', $users_emails)
                 ->orderBy('full_name')
                 ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);
@@ -1521,7 +1521,7 @@ class GroupAnalyticsController extends Controller
                 $localUser = User::withTrashed()
                         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                         ->where('ud.is_trainee', 0)
-                        ->where('UF_ADMIN', 1)
+                        
                         ->where('email', $user->email)
                         ->first();
                 if(!$localUser) {

@@ -132,7 +132,7 @@ class FillQualityGrades extends Command
 
         return User::withTrashed()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('UF_ADMIN', 1)
+                
                 ->where('is_trainee', 0)
                 ->whereIn('users.id', $user_ids)
                 ->select(['users.id', 'users.email', 'users.name', 'users.last_name'])
