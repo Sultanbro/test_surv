@@ -36,6 +36,6 @@ Route::get('/projects/edit/{id}', [TenantController::class, 'edit']);
 Route::post('/projects/save', [TenantController::class, 'save']);
 Route::post('/projects/update', [TenantController::class, 'update']);
 
-Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 

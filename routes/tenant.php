@@ -72,14 +72,17 @@ Route::middleware([
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    \Auth::routes();
+    \Auth::routes(); 
    
 
 
 
 
     Route::any('/', [UserController::class, 'profile']);
-    Route::any('/profile', [UserController::class, 'profile']);
+    Route::any('/profile', [UserController::class, 'profile']); 
+
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+
 
     Route::any('/notifications/set-read/', [UserController::class, 'setNotiRead']);
     Route::any('/notifications/set-read-all/', [UserController::class, 'setNotiReadAll']);

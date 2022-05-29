@@ -2019,6 +2019,9 @@ li.chapter:hover > div p {
   display: flex;
   color: #fff;
   text-align: center;
+  width: 100%;
+  border-left: none;
+  background: transparent;
   text-decoration: none !important;
   -webkit-user-select: none;
      -moz-user-select: none;
