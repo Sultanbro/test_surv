@@ -77,7 +77,7 @@
                 @foreach($all_notifications as $notification)
                     <tr>
                         <td>{{$notification->created_at}}</td>
-                        <td>{{$notification->user->EMAIL}}</td>
+                        <td>{{$notification->user->email}}</td>
                         <td>{{$notification->message}}</td>
                         <td>{{$notification->type=='important'?'Важный':'Обычный'}}</td>
                         <td>{{$notification->read}}/{{$notification->total_sent}}</td>

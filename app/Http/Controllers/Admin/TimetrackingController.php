@@ -525,7 +525,7 @@ class TimetrackingController extends Controller
             $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->first();
             if ($group->users != null) {
                 $users = json_decode($group->users);
-                $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+                $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
             }
             $book_groups = BookGroup::whereIn('id', json_decode($group->book_groups))->get();
 
@@ -538,10 +538,10 @@ class TimetrackingController extends Controller
             
             $bonus = Bonus::where('group_id', $group->id)->first();
         } else {
-            $users = User::get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+            $users = User::get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
 
             foreach($users as $user) {
-                if($user->EMAIL == '') $user->EMAIL = 'x'; 
+                if($user->email == '') $user->email = 'x'; 
             }
         }
 
@@ -740,7 +740,7 @@ class TimetrackingController extends Controller
         $whatsapp = new IC();
         $wphone = Phone::normalize($user->PHONE);
         $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-        //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->EMAIL . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+        //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
         $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
             if($lead && $lead->deal_id != 0) {
@@ -1334,14 +1334,14 @@ class TimetrackingController extends Controller
     {
         if($request->page == 'page-top') {
             $users = [];
-            $users = User::where('roles', 'like', '%"page-top":"on"%')->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+            $users = User::where('roles', 'like', '%"page-top":"on"%')->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
         } else {
             $group = ProfileGroup::find($request['group_id']);
 
             $editors_id = json_decode($group->editors_id);
             if (is_array($editors_id) && count($editors_id)) {
 
-                $users = User::whereIn('id', $editors_id)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+                $users = User::whereIn('id', $editors_id)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
             } else {
                 $users = [];
             }
@@ -1748,7 +1748,7 @@ class TimetrackingController extends Controller
             $daytype = DayType::create([
                 'user_id' => $request->user_id,
                 'type' => $request->type,
-                'email' => $targetUser->EMAIL,
+                'email' => $targetUser->email,
                 'date' => $date,
                 'admin_id' => $user->id,
             ]);
@@ -2305,14 +2305,14 @@ class TimetrackingController extends Controller
                     ->where('ud.is_trainee', 0)
                     ->where('UF_ADMIN', 1)
                     ->whereIn('users.id', json_decode($group->users)) 
-                    ->get(['users.id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+                    ->get(['users.id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
             }
 
             $time_exceptions = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1)
                 ->whereIn('users.id', $group->time_exceptions) 
-                ->get(['users.id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+                ->get(['users.id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',email) as email")]);
         } 
         
         

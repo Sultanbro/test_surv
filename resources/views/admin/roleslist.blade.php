@@ -19,7 +19,7 @@
 
                 <tr>
                   <td>{{$user->id}}</td>
-                  <td><a href="/userroles/update/{{$user->id}}">{{$user->EMAIL}}</a></td>
+                  <td><a href="/userroles/update/{{$user->id}}">{{$user->email}}</a></td>
                   <td>{{$user->NAME}}</td>
                 </tr>
                 @endforeach

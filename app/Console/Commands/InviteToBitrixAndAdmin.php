@@ -86,7 +86,7 @@ class InviteToBitrixAndAdmin extends Command
                 continue; 
             }
             $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-            $whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->EMAIL . ' %0aПароль: 12345.');
+            $whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.');
             usleep(10000000); // 10 sec
             
             // $trainee = $trainees->where('user_id', $user->id)->first();

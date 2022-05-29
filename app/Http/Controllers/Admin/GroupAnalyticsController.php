@@ -238,7 +238,7 @@ class GroupAnalyticsController extends Controller
             ->orderBy('full_name')
             ->get([
                 'ID as id',
-                'EMAIL as email',
+                'email as email',
                 'NAME as name',
                 'LAST_NAME as surname',
                 DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")
@@ -400,7 +400,7 @@ class GroupAnalyticsController extends Controller
                 $localUser = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('ud.is_trainee', 0)
                     ->where('UF_ADMIN', 1)
-                    ->where('EMAIL', $user->email)
+                    ->where('email', $user->email)
                     ->first();
 
                 if(!$localUser) {
@@ -439,7 +439,7 @@ class GroupAnalyticsController extends Controller
                     $_decoded->name = $localUser->NAME;
                     $_decoded->lastname = $localUser->LAST_NAME;
                     $_decoded->fullname = trim($localUser->LAST_NAME . ' ' . $localUser->NAME);
-                    $_decoded->email = $localUser->EMAIL;
+                    $_decoded->email = $localUser->email;
                     $_decoded->full_time = $localUser->full_time;
                     $_decoded->id = $localUser->id;
                     $_decoded->fired = $fired;
@@ -450,7 +450,7 @@ class GroupAnalyticsController extends Controller
                         'name' => $localUser->NAME,
                         'lastname' => $localUser->LAST_NAME,
                         'fullname' => trim($localUser->LAST_NAME . ' ' . $localUser->NAME),
-                        'email' => $localUser->EMAIL,
+                        'email' => $localUser->email,
                         'group' => $group_name,
                         'full_time' => $localUser->full_time,
                         'id' => $localUser->id,
@@ -760,7 +760,7 @@ class GroupAnalyticsController extends Controller
                 $full_time = 1;
             }
             
-            $user = User::withTrashed()->where('EMAIL', $email)->first();
+            $user = User::withTrashed()->where('email', $email)->first();
 
             $currency = Phone::getCurrency($lead->phone);
             $user_type = $lead->skyped ? 'remote' : 'office';
@@ -773,7 +773,7 @@ class GroupAnalyticsController extends Controller
             if(!$user) {
                 
                 $user = User::create([
-                    'EMAIL' => $email,
+                    'email' => $email,
                     'NAME' => $uname,
                     'LAST_NAME' => '',
                     'DESCRIPTION' => $email,
@@ -1106,7 +1106,7 @@ class GroupAnalyticsController extends Controller
         } 
         
         $result = array_unique($users_ids);
-        $users_emails = User::find(array_unique($result))->pluck('EMAIL');
+        $users_emails = User::find(array_unique($result))->pluck('email');
 
 
         if (isset($users_ids)) {
@@ -1118,9 +1118,9 @@ class GroupAnalyticsController extends Controller
             
             $group_accounts = User::withTrashed()
                 ->where('UF_ADMIN', 1)
-                ->whereIn('EMAIL', $users_emails)
+                ->whereIn('email', $users_emails)
                 ->orderBy('full_name')
-                ->get(['ID as id', 'EMAIL as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);
+                ->get(['ID as id', 'email as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);
             
             $this->users = $group_accounts;
 
@@ -1525,7 +1525,7 @@ class GroupAnalyticsController extends Controller
                         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                         ->where('ud.is_trainee', 0)
                         ->where('UF_ADMIN', 1)
-                        ->where('EMAIL', $user->email)
+                        ->where('email', $user->email)
                         ->first();
                 if(!$localUser) {
                     continue;
@@ -1574,7 +1574,7 @@ class GroupAnalyticsController extends Controller
                     $_decoded->group = $group_name;
                     $_decoded->name = $localUser->NAME;
                     $_decoded->lastname = $localUser->LAST_NAME;
-                    $_decoded->email = $localUser->EMAIL;
+                    $_decoded->email = $localUser->email;
                     $_decoded->full_time = $localUser->full_time;
                     $_decoded->fired = $fired;
                     $_decoded->applied_from = $applied_from;
@@ -1583,7 +1583,7 @@ class GroupAnalyticsController extends Controller
                     array_push($records, [
                         'name' => $localUser->NAME,
                         'lastname' => $localUser->LAST_NAME,
-                        'email' => $localUser->EMAIL,
+                        'email' => $localUser->email,
                         'group' => $group_name,
                         'full_time' => $localUser->full_time,
                         'id' => $localUser->id,
@@ -1751,7 +1751,7 @@ class GroupAnalyticsController extends Controller
             $user_info = User::withTrashed()->find($user);
 
             $user_item['name'] = $user_info->LAST_NAME . ' ' . $user_info->NAME;
-            $user_item['email'] = $user_info->EMAIL;
+            $user_item['email'] = $user_info->email;
             
             $user_item['kpi'] = Kpi::userKpi($user_info->id, $date);
             $user_item['employee_id'] = $user_info->id;
@@ -1906,7 +1906,7 @@ class GroupAnalyticsController extends Controller
         //         ->get(['id', 'email', 'name', 'surname', DB::raw("CONCAT(surname,' ',name) as full_name")]);
         
         $this->users = User::withTrashed()->whereIn('id', json_decode($group->users))
-        ->get(['ID as id', 'EMAIL as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);;
+        ->get(['ID as id', 'email as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);;
 
         /****************************** */
         /******==================================== */

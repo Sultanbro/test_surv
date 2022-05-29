@@ -115,7 +115,7 @@ class RecruiterStats extends Command
             if($ud) {
                 $this->bitrix_user = $ud->bitrix_id;
             } else {
-                $bitrix_user = $this->bitrix->searchUser($admin_user->EMAIL);
+                $bitrix_user = $this->bitrix->searchUser($admin_user->email);
                 if(!$bitrix_user) continue;
 
                 $this->bitrix_user = $bitrix_user['id'];
@@ -273,7 +273,7 @@ class RecruiterStats extends Command
             ]);
         }
         
-        $this->line('------' . $admin_user->LAST_NAME . ' ' . $admin_user->NAME . ' ' . $admin_user->EMAIL);
+        $this->line('------' . $admin_user->LAST_NAME . ' ' . $admin_user->NAME . ' ' . $admin_user->email);
     }
 
     

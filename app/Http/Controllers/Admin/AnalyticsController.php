@@ -661,7 +661,7 @@ class AnalyticsController extends Controller
         //         ->get(['id', 'email', 'name', 'surname', DB::raw("CONCAT(surname,' ',name) as full_name")]);
         
         $this->users = User::withTrashed()->whereIn('id', json_decode($group->users))
-        ->get(['ID as id', 'EMAIL as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);;
+        ->get(['ID as id', 'email as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);;
 
         /****************************** */
         /******==================================== */

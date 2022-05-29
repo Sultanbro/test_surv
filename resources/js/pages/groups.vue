@@ -201,8 +201,8 @@
               :clear-on-select="false"
               :preserve-search="true"
               placeholder="Выберите"
-              label="EMAIL"
-              track-by="EMAIL"
+              label="email"
+              track-by="email"
               :taggable="true"
               @tag="addTag"
             >
@@ -343,8 +343,8 @@
                   :clear-on-select="false"
                   :preserve-search="true"
                   placeholder="Выберите, кого не связывать"
-                  label="EMAIL"
-                  track-by="EMAIL"
+                  label="email"
+                  track-by="email"
                   :taggable="true"
                   @tag="addExceptionTag"
                 >
@@ -499,7 +499,7 @@ export default {
     
     addTag(newTag) {
       const tag = {
-        EMAIL: newTag,
+        email: newTag,
         ID: newTag,
       };
       this.options.push(tag);
@@ -508,7 +508,7 @@ export default {
 
     addExceptionTag(newTag) {
       const tag = {
-        EMAIL: newTag,
+        email: newTag,
         ID: newTag,
       };
       this.time_exceptions_options.push(tag);

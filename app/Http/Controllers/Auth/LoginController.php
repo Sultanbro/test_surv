@@ -67,11 +67,11 @@ class LoginController extends Controller
 
         if(is_numeric($login)){
             $field = 'PHONE';
-        } elseif (filter_var($login, FILTER_VALIDATE_EMAIL)) {
-            $field = 'EMAIL';
+        } elseif (filter_var($login, FILTER_VALIDATE_email)) {
+            $field = 'email';
         } 
         else {
-            $field = 'EMAIL';
+            $field = 'email';
         }
 
         request()->merge([$field => $login]);
@@ -105,8 +105,8 @@ class LoginController extends Controller
             return redirect($link);
         } else {
             return back()->withErrors([
-                'EMAIL' => 'The provided credentials do not match our records.',
-            ])->onlyInput('EMAIL');
+                'email' => 'The provided credentials do not match our records.',
+            ])->onlyInput('email');
         }   
         
      

@@ -12261,7 +12261,7 @@ var render = function() {
           { staticClass: "d-flex align-items-center flex-column u-2" },
           [
             _c("div", { staticClass: "u-email" }, [
-              _vm._v(_vm._s(_vm.u.EMAIL))
+              _vm._v(_vm._s(_vm.u.email))
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "u-name" }, [

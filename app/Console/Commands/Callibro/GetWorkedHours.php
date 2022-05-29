@@ -89,13 +89,13 @@ class GetWorkedHours extends Command
            // if($user->position_id != 32) continue; // Не оператор
             
             if($group_id == 53) { // Eurasian
-                $minutes = Eurasian::getWorkedMinutes($user->EMAIL, $this->date);
+                $minutes = Eurasian::getWorkedMinutes($user->email, $this->date);
                 if($minutes == 0) continue; // Не записывать ноль
                 if($minutes > 0 && $user->program_id == 1) {
-                    $hours = Callibro::getWorkedHours($user->EMAIL, $this->date);
+                    $hours = Callibro::getWorkedHours($user->email, $this->date);
                     $this->updateHours($user->id, $minutes, $hours);
                 }
-                $aggrees = Eurasian::getAggrees($user->EMAIL, $this->date);
+                $aggrees = Eurasian::getAggrees($user->email, $this->date);
 
                 $this->saveASI([
                     'date' => $this->startOfMonth,
@@ -116,9 +116,9 @@ class GetWorkedHours extends Command
             }
 
             if($group_id == 57) { // Home credit
-                $minutes = HomeCredit::getWorkedMinutes($user->EMAIL, $this->date);
+                $minutes = HomeCredit::getWorkedMinutes($user->email, $this->date);
                 if($minutes == 0) continue; // Не записывать ноль
-                $aggrees = HomeCredit::getAggrees($user->EMAIL, $this->date);
+                $aggrees = HomeCredit::getAggrees($user->email, $this->date);
 
                 $this->saveASI([
                     'date' => $this->startOfMonth,
@@ -247,7 +247,7 @@ class GetWorkedHours extends Command
 
         $add_minutes = $this->getAdditionalMinutes(); // для home
         foreach ($users as $key => $user) {
-            $total_hours = Callibro::getWorkedHours($user->EMAIL, $this->date);
+            $total_hours = Callibro::getWorkedHours($user->email, $this->date);
 
             $tt = Timetracking::whereDate('enter', $this->date)
                 ->where('user_id', $user->id)

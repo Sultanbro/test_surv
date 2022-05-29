@@ -225,7 +225,7 @@ class SettingController extends Controller
             $country = $request->country;
 
             $user = User::bitrixUser();
-            $email = $user->EMAIL;
+            $email = $user->email;
             $idUser = $user->id;
 
             // генерация счета на оплату
@@ -295,7 +295,7 @@ class SettingController extends Controller
         $fields['WMI_FAIL_URL'] = 'https://bpartners.kz/pay/index.php?status=1';
         $fields['WMI_MERCHANT_ID'] = '134668659835';
         $fields['WMI_CURRENCY_ID'] = '398';
-        $fields['WMI_CUSTOMER_EMAIL'] = $email;
+        $fields['WMI_CUSTOMER_email'] = $email;
         $fields['phone'] = $phone; 
         $fields['name'] = $name;
         
@@ -504,7 +504,7 @@ class SettingController extends Controller
             if($request->action == 'createOrder'){
                 $amount = $request->amount;
                 $phone = $request->phone;
-                $email = $user->EMAIL;
+                $email = $user->email;
             }
             else if($request->action  == 'linkPay'){
                 $amount = $request->amount;
@@ -703,7 +703,7 @@ class SettingController extends Controller
             $amount = $request->amount;
             $payment_amount = $request->amount;
             $phone = $request->phone;
-            $email = $user->EMAIL;
+            $email = $user->email;
 
             if($amount > 0){
 
@@ -821,7 +821,7 @@ class SettingController extends Controller
             $user = User::find($idUser);
             $user->notify_sent = 0;  // сбросим уведомления баланса на 0,
             $user->save();
-            $email = $user->EMAIL;
+            $email = $user->email;
             $amount = $payment->amount;
 
             $balance = User::balanceByUser($idUser);

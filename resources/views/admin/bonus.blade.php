@@ -18,7 +18,7 @@
                     @foreach($users as $user)
                         <tr>
                             <td>{{$user->id}}</td>
-                            <td>{{$user->EMAIL}}</td>
+                            <td>{{$user->email}}</td>
                             <td>{{$user->NAME}}</td>
                             <td>{{$user->bonus}}</td>
                             <td><a href="/bonus/update/{{$user->id}}">Добавить бонус</a></td>

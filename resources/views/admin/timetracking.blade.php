@@ -361,7 +361,7 @@
                                                 </td>
                                                 <td>
                                                     <input  type="email" name="email" required placeholder="Email"
-                                                        value="{{$user->EMAIL}}" class="changers" />
+                                                        value="{{$user->email}}" class="changers" />
                                                 </td>
                                                 <td >
                                                     <p class="name pr-1 ml-2" >Новый пароль</p>

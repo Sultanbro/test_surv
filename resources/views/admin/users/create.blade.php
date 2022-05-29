@@ -110,7 +110,7 @@
                                     </div>
                                     @if(isset($user)) 
                                     <div class="mt-0 mb-3 font-sm text-center " style="width:100%">
-                                    {{$user->EMAIL}}
+                                    {{$user->email}}
                                     </div>
                                     @endif
                                     <div class="mt-0 mb-3 font-sm text-ceer " style="width:100%">
@@ -221,7 +221,7 @@
                                                     <div class="col-sm-8">
                                                         <input class="form-control" type="email" name="email" id="email" required
                                                             placeholder="Email"
-                                                            value="{{ $user->EMAIL }}">
+                                                            value="{{ $user->email }}">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">

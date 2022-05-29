@@ -107,10 +107,10 @@ class IndexController extends Controller
 
 
         if($type=='user') {
-            $stats = DB::select("SELECT IFNULL(users.EMAIL, 0) as EMAIL, gate, SUM(count) as count, DAY(day) as day
+            $stats = DB::select("SELECT IFNULL(users.email, 0) as email, gate, SUM(count) as count, DAY(day) as day
 							FROM sms_gate_daily_report
 							LEFT JOIN users ON users.ID = user_id
-							WHERE  YEAR(day) = ? AND MONTH(day) = ?  GROUP BY EMAIL, gate, day  ORDER BY gate", [$year,$month]);
+							WHERE  YEAR(day) = ? AND MONTH(day) = ?  GROUP BY email, gate, day  ORDER BY gate", [$year,$month]);
 
 
             $gates = [];
@@ -126,8 +126,8 @@ class IndexController extends Controller
                 ];
             }
             foreach ($stats as $stat) {
-                if(!isset($gates[$stat->EMAIL][$stat->day])) {
-                    $gates[$stat->EMAIL][$stat->day] = [
+                if(!isset($gates[$stat->email][$stat->day])) {
+                    $gates[$stat->email][$stat->day] = [
                         SmsDailyReport::$beeline => 0,
                         SmsDailyReport::$beeline_gate => 0,
                         SmsDailyReport::$kcell => 0,
@@ -146,8 +146,8 @@ class IndexController extends Controller
                         SmsDailyReport::$altel_gate => 0,
                     ];
                 }
-                if(!isset($gates['TOTAL'][$stat->EMAIL])) {
-                    $gates['TOTAL'][$stat->EMAIL] = [
+                if(!isset($gates['TOTAL'][$stat->email])) {
+                    $gates['TOTAL'][$stat->email] = [
                         SmsDailyReport::$beeline => 0,
                         SmsDailyReport::$beeline_gate => 0,
                         SmsDailyReport::$kcell => 0,
@@ -159,38 +159,38 @@ class IndexController extends Controller
 
 
                 if($stat->gate == SmsDailyReport::$beeline) {
-                    $gates[$stat->EMAIL][$stat->day][SmsDailyReport::$beeline] += $stat->count;
+                    $gates[$stat->email][$stat->day][SmsDailyReport::$beeline] += $stat->count;
                     $gates['TOTAL'][$stat->day][SmsDailyReport::$beeline] += $stat->count;
-                    $gates['TOTAL'][$stat->EMAIL][SmsDailyReport::$beeline] += $stat->count;
+                    $gates['TOTAL'][$stat->email][SmsDailyReport::$beeline] += $stat->count;
                     $gates['TOTAL'][SmsDailyReport::$beeline] += $stat->count;
 
                 } else if($stat->gate == SmsDailyReport::$beeline_gate) {
-                    $gates[$stat->EMAIL][$stat->day][SmsDailyReport::$beeline_gate] += $stat->count;
+                    $gates[$stat->email][$stat->day][SmsDailyReport::$beeline_gate] += $stat->count;
                     $gates['TOTAL'][$stat->day][SmsDailyReport::$beeline_gate] += $stat->count;
                     $gates['TOTAL'][SmsDailyReport::$beeline_gate] += $stat->count;
 
                 } else if($stat->gate == SmsDailyReport::$kcell) {
-                    $gates[$stat->EMAIL][$stat->day][SmsDailyReport::$kcell] += $stat->count;
+                    $gates[$stat->email][$stat->day][SmsDailyReport::$kcell] += $stat->count;
                     $gates['TOTAL'][$stat->day][SmsDailyReport::$kcell] += $stat->count;
-                    $gates['TOTAL'][$stat->EMAIL][SmsDailyReport::$kcell] += $stat->count;
+                    $gates['TOTAL'][$stat->email][SmsDailyReport::$kcell] += $stat->count;
                     $gates['TOTAL'][SmsDailyReport::$kcell] += $stat->count;
 
                 }else if($stat->gate == SmsDailyReport::$kcell_gate) {
-                    $gates[$stat->EMAIL][$stat->day][SmsDailyReport::$kcell_gate] += $stat->count;
+                    $gates[$stat->email][$stat->day][SmsDailyReport::$kcell_gate] += $stat->count;
                     $gates['TOTAL'][$stat->day][SmsDailyReport::$kcell_gate] += $stat->count;
-                    $gates['TOTAL'][$stat->EMAIL][SmsDailyReport::$kcell_gate] += $stat->count;
+                    $gates['TOTAL'][$stat->email][SmsDailyReport::$kcell_gate] += $stat->count;
                     $gates['TOTAL'][SmsDailyReport::$kcell_gate] += $stat->count;
 
                 } else if($stat->gate == SmsDailyReport::$tele2_gate) {
-                    $gates[$stat->EMAIL][$stat->day][SmsDailyReport::$tele2_gate] += $stat->count;
+                    $gates[$stat->email][$stat->day][SmsDailyReport::$tele2_gate] += $stat->count;
                     $gates['TOTAL'][$stat->day][SmsDailyReport::$tele2_gate] += $stat->count;
-                    $gates['TOTAL'][$stat->EMAIL][SmsDailyReport::$tele2_gate] += $stat->count;
+                    $gates['TOTAL'][$stat->email][SmsDailyReport::$tele2_gate] += $stat->count;
                     $gates['TOTAL'][SmsDailyReport::$tele2_gate] += $stat->count;
 
                 } else if($stat->gate == SmsDailyReport::$altel_gate) {
-                    $gates[$stat->EMAIL][$stat->day][SmsDailyReport::$altel_gate] += $stat->count;
+                    $gates[$stat->email][$stat->day][SmsDailyReport::$altel_gate] += $stat->count;
                     $gates['TOTAL'][$stat->day][SmsDailyReport::$altel_gate] += $stat->count;
-                    $gates['TOTAL'][$stat->EMAIL][SmsDailyReport::$altel_gate] += $stat->count;
+                    $gates['TOTAL'][$stat->email][SmsDailyReport::$altel_gate] += $stat->count;
                     $gates['TOTAL'][SmsDailyReport::$altel_gate] += $stat->count;
 
                 }
@@ -322,7 +322,7 @@ class IndexController extends Controller
                         $colum = 'id';
                         break;
                     case 1:
-                        $colum = 'EMAIL';
+                        $colum = 'email';
                         break;
                 }
 
@@ -342,14 +342,14 @@ class IndexController extends Controller
             $where = '';
 
             if($search) {
-                $where = " AND users.EMAIL like '%".trim($search)."%' ";
+                $where = " AND users.email like '%".trim($search)."%' ";
             }
 
             if(!empty($user_ids)) {
                 $where = " AND users.ID IN (".implode(',', $user_ids).") ";
             }
 
-            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS users.ID, users.EMAIL, sip_daily_report.*
+            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS users.ID, users.email, sip_daily_report.*
 								   FROM users
 								   LEFT JOIN sip_daily_report ON sip_daily_report.user_id = users.ID
 								   WHERE sip_daily_report.yearmonth=".$year.$month."
@@ -359,7 +359,7 @@ class IndexController extends Controller
             foreach ($users as $user) {
                 $data[] = [
                     $user->id,
-                    $user->EMAIL,
+                    $user->email,
                     round($user->d1_seconds/60),
                     round($user->d2_seconds/60),
                     round($user->d3_seconds/60),
@@ -405,7 +405,7 @@ class IndexController extends Controller
             return response()->json($sending);
         }
 
-        $users = DB::select("SELECT users.ID, users.EMAIL FROM users");
+        $users = DB::select("SELECT users.ID, users.email FROM users");
 
 
         return view('admin.sip')->with('year', $year)->with('month', $month)->with('show_days', $show_days)->with('users', $users)->with('user_ids', $user_ids);
@@ -621,7 +621,7 @@ class IndexController extends Controller
                   break;
 
                   case 1:
-                  $colum = 'EMAIL';
+                  $colum = 'email';
                   break;
                         /*case 2:
 					    $colum = 'UF_BALANCE';
@@ -648,14 +648,14 @@ class IndexController extends Controller
             $where = '';
 
             if($search) {
-                $where = " AND users.EMAIL like '%".trim($search)."%' ";
+                $where = " AND users.email like '%".trim($search)."%' ";
             }
 
             if(!empty($user_ids)) {
                 $where = " AND users.ID IN (".implode(',', $user_ids).") ";
             }
 
-            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS users.ID, users.DATE_REGISTER, users.EMAIL, CAST(users.UF_BALANCE AS  DECIMAL(12,2)) UF_BALANCE, balance_daily_report.*
+            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS users.ID, users.DATE_REGISTER, users.email, CAST(users.UF_BALANCE AS  DECIMAL(12,2)) UF_BALANCE, balance_daily_report.*
 								   FROM users
 								   LEFT JOIN balance_daily_report ON balance_daily_report.user_id = users.ID
 								   WHERE (balance_daily_report.yearmonth=".$year.$month." OR balance_daily_report.yearmonth IS NULL)
@@ -675,7 +675,7 @@ class IndexController extends Controller
                     '<input class="delete-checkbox" type="checkbox" value="'.$user->id.'">',
                     $user->id,
                     $user->DATE_REGISTER,
-                    $user->EMAIL.' <a  target="_blank" href="/login-as/'.$user->id.'">Вход</a> <a href="/balance/update/'.$user->id.'">Добавить баланс</a> <a href="/user/delete/'.$user->id.'" onclick="return confirm(\'Удалить?\')">Удалить</a>',
+                    $user->email.' <a  target="_blank" href="/login-as/'.$user->id.'">Вход</a> <a href="/balance/update/'.$user->id.'">Добавить баланс</a> <a href="/user/delete/'.$user->id.'" onclick="return confirm(\'Удалить?\')">Удалить</a>',
                     $user->d1_balance,
                     $user->d2_balance,
                     $user->d3_balance,
@@ -723,7 +723,7 @@ class IndexController extends Controller
             return response()->json($sending);
         }
 
-        $users = DB::select("SELECT users.ID, users.DATE_REGISTER, users.EMAIL FROM users");
+        $users = DB::select("SELECT users.ID, users.DATE_REGISTER, users.email FROM users");
 
         View::share('title', 'Баланс пользователей');
 
@@ -763,12 +763,12 @@ class IndexController extends Controller
 
 
             $template = 'admin.balance_email';
-            $mmTo    = env( 'MEDIASEND_SUPPORT_EMAIL', 'u-support@u-marketing.org' );
-            $subject = 'Пополнение баланса админсистратором пользователю '.$user->EMAIL;
+            $mmTo    = env( 'MEDIASEND_SUPPORT_email', 'u-support@u-marketing.org' );
+            $subject = 'Пополнение баланса админсистратором пользователю '.$user->email;
             $data = [
-                'who' => Auth::user()->id.' '.Auth::user()->NAME.' '.Auth::user()->EMAIL,
+                'who' => Auth::user()->id.' '.Auth::user()->NAME.' '.Auth::user()->email,
                 'name' => $user->NAME,
-                'email' => $user->EMAIL,
+                'email' => $user->email,
                 'amount' => $request->balance,
                 'idUser' => $user->id
             ];
@@ -777,7 +777,7 @@ class IndexController extends Controller
 
             // маркер в getrecpons об оплате админом и сумма баланса
             GetResponceApi::ChangedFieldsVal(array(
-                'email' => $user->EMAIL,
+                'email' => $user->email,
                 'fields' => array(
                     [
                         "customFieldId" => 'enKb0', // admin_payament
@@ -814,7 +814,7 @@ class IndexController extends Controller
 
     public function bonus(Request $request)
     {
-        $users = DB::select("SELECT users.ID, users.EMAIL, users.NAME, users.bonus FROM users");
+        $users = DB::select("SELECT users.ID, users.email, users.NAME, users.bonus FROM users");
 
         View::share('title', 'Бонус пользователей');
 
@@ -833,7 +833,7 @@ class IndexController extends Controller
             $quantity = ($request->bonus + $user->bonus); // старое значение и новое
 
             GetResponceApi::ChangedFieldsVal(array(
-            'email' => $user->EMAIL,
+            'email' => $user->email,
             'fields' => array(
                     [
                         "customFieldId" => "bEuJa", // pole_bonus
@@ -871,7 +871,7 @@ class IndexController extends Controller
             $user->save();
         }
 
-        $users = User::select('id', 'EMAIL', 'NAME', 'max_sessions')->get();
+        $users = User::select('id', 'email', 'NAME', 'max_sessions')->get();
 
         View::share('title', 'Лимит линий');
 
@@ -880,12 +880,12 @@ class IndexController extends Controller
 
     public function partner(Request $request)
     {
-        $users = User::select('id', 'EMAIL', 'NAME')->with('partner')->get();
+        $users = User::select('id', 'email', 'NAME')->with('partner')->get();
 
         $partner_users = [];
 
         foreach ($users as $key =>$user){
-            $counts = PartnerUsers::where('partner_id', (isset($user->partner) && !empty($user->partner)) ? $user->partner->id : '0')->with('user:ID,NAME,EMAIL,DATE_REGISTER')->count();
+            $counts = PartnerUsers::where('partner_id', (isset($user->partner) && !empty($user->partner)) ? $user->partner->id : '0')->with('user:ID,NAME,email,DATE_REGISTER')->count();
             if ($counts <> 0) {
                 $partner_users[$user->id] = $counts;
             }
@@ -899,8 +899,8 @@ class IndexController extends Controller
 
     public function partnerView(Request $request, $domain, $tld, $id) {
 
-        $partner = Partner::where('id', $id)->with('user:ID,NAME,EMAIL')->firstOrFail();
-        $partner_users = PartnerUsers::where('partner_id', $id)->with('user:ID,NAME,EMAIL,DATE_REGISTER')->get();
+        $partner = Partner::where('id', $id)->with('user:ID,NAME,email')->firstOrFail();
+        $partner_users = PartnerUsers::where('partner_id', $id)->with('user:ID,NAME,email,DATE_REGISTER')->get();
         $partner_info = PartnerInfo::where('partner_id', $id)->first();
         $invoices = PartnerInvoice::where('partner_id', $id)->with('partner.user:ID,NAME')->with('partnerUser.user:ID,NAME')->get();
         $files = PartnerFile::where('partner_id', $id)->get();
@@ -931,7 +931,7 @@ class IndexController extends Controller
     }
 
     public function partnerUpdate(Request $request, $domain, $tld, $id) {
-        $partner = Partner::where('user_id', $id)->with('user:ID,EMAIL')->first();
+        $partner = Partner::where('user_id', $id)->with('user:ID,email')->first();
 
         if ($partner === null) {
             $partner = Partner::create(['user_id' => $id, 'is_active' => 1]);
@@ -947,7 +947,7 @@ class IndexController extends Controller
 
         if($partner->is_active) {
             $template = 'admin.partner_activation_email';
-            $mmTo = $partner->user->EMAIL;
+            $mmTo = $partner->user->email;
             $subject = 'Добро пожаловать в команду единомышленников “U-Marketing.org”!';
             $from = [
                 'address' => 'partner@u-marketing.org',
@@ -973,7 +973,7 @@ class IndexController extends Controller
     public function partnerPay(Request $request)
     {
 
-        $partner_users = PartnerUsers::where('partner_id', $request->partner_id)->with('user:ID,NAME,EMAIL,DATE_REGISTER')->get();
+        $partner_users = PartnerUsers::where('partner_id', $request->partner_id)->with('user:ID,NAME,email,DATE_REGISTER')->get();
 
         $amount = $request->amount;
 
@@ -1024,7 +1024,7 @@ class IndexController extends Controller
         $user = Partner::with('user')->find($request->partner_id)->user;
 
         $template = 'admin.payment_email';
-        $mmTo = $user->EMAIL;
+        $mmTo = $user->email;
         $from = [
             'address' => 'partner@u-marketing.org',
             'name' => 'Mediasend',
@@ -1188,7 +1188,7 @@ class IndexController extends Controller
 
     public function rentNumbers(Request $request) {
 
-        $users = User::select('id', 'EMAIL', 'NAME')->with('partner')->get();
+        $users = User::select('id', 'email', 'NAME')->with('partner')->get();
 
         return view('admin.rent-numbers')->with('users', $users);
     }
@@ -1243,7 +1243,7 @@ class IndexController extends Controller
 
             if($request->preview == 'preview') {
 
-                $user_email = auth()->user()->EMAIL;
+                $user_email = auth()->user()->email;
 
                 $template = 'admin.notification_email';
                 $subject = 'Новое уведомление.';
@@ -1259,7 +1259,7 @@ class IndexController extends Controller
 
             } else {
 
-                $users = User::select('EMAIL')->get()->pluck('EMAIL');
+                $users = User::select('email')->get()->pluck('email');
 
                 $notification->total_sent = $users->count();
 
@@ -1275,7 +1275,7 @@ class IndexController extends Controller
             }
         }
 
-        $all_notifications = Notification::with('user:ID,EMAIL')->orderBy('created_at', 'desc')->get();
+        $all_notifications = Notification::with('user:ID,email')->orderBy('created_at', 'desc')->get();
         return view('admin.notification', ['all_notifications' => $all_notifications]);
     }
 
@@ -1312,7 +1312,7 @@ class IndexController extends Controller
       View::share('title', 'Права пользователям');
 
       if (in_array(Auth::user()->id, [5,18])) {
-        $users = User::select('id', 'EMAIL', 'NAME')->get();
+        $users = User::select('id', 'email', 'NAME')->get();
       } else {
         return redirect()->back();
       }
@@ -1476,7 +1476,7 @@ class IndexController extends Controller
         $stat_error = $this->getQuantity(-1, $request);
 
 
-        $users = DB::select("SELECT users.ID, users.DATE_REGISTER, users.EMAIL FROM users");
+        $users = DB::select("SELECT users.ID, users.DATE_REGISTER, users.email FROM users");
 
         return view('admin.autocalls.index')
             ->with('autocalls', $autocalls)

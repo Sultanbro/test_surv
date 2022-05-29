@@ -94,8 +94,8 @@
               :clear-on-select="true"
               :preserve-search="true"
               placeholder="Выберите"
-              label="EMAIL"
-              track-by="EMAIL"
+              label="email"
+              track-by="email"
               :taggable="true"
               :limit="3"
               :limit-text="limitText"
@@ -172,7 +172,7 @@ export default {
     addTag(newTag) {
       console.log(newTag)
       const tag = {
-        EMAIL: newTag,
+        email: newTag,
         ID: newTag,
       };
       this.users.push(tag);

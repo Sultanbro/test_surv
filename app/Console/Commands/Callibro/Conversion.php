@@ -84,10 +84,10 @@ class Conversion extends Command
            // if($user->position_id != 32) continue; // Не оператор
             
             if($group_id == 53) { // Eurasian
-                $closed = Eurasian::getClosedCards($this->date,$user->EMAIL);
+                $closed = Eurasian::getClosedCards($this->date,$user->email);
                 if($closed == -1) continue; // Не записывать так как нет аккаунта
 
-                $aggrees = Eurasian::getAggrees($user->EMAIL, $this->date);
+                $aggrees = Eurasian::getAggrees($user->email, $this->date);
 
                 $this->line($user->id . ' '.  $user->LAST_NAME . ' ' . $user->NAME);
 
@@ -115,10 +115,10 @@ class Conversion extends Command
 
             if($group_id == 57) { // Home credit
            
-                $closed = HomeCredit::getClosedCards($this->date,$user->EMAIL);
+                $closed = HomeCredit::getClosedCards($this->date,$user->email);
                 if($closed == -1) continue; // Не записывать так как нет аккаунта
 
-                $aggrees = HomeCredit::getAggrees($user->EMAIL, $this->date);
+                $aggrees = HomeCredit::getAggrees($user->email, $this->date);
                 
                 $this->line($user->id . ' '.  $user->LAST_NAME . ' ' . $user->NAME);
                     

@@ -110,7 +110,7 @@ class BitrixStats extends Command
             if($ud) {
                 $this->bitrix_user = $ud->bitrix_id;
             } else {
-                $bitrix_user = $this->bitrix->searchUser($admin_user->EMAIL);
+                $bitrix_user = $this->bitrix->searchUser($admin_user->email);
                 if(!$bitrix_user) continue;
 
                 $this->bitrix_user = $bitrix_user['id'];
@@ -245,7 +245,7 @@ class BitrixStats extends Command
 
 
 
-            $this->line('------' . $user->LAST_NAME . ' ' . $user->NAME . ' ' . $user->EMAIL);
+            $this->line('------' . $user->LAST_NAME . ' ' . $user->NAME . ' ' . $user->email);
 
 
         }

@@ -46,7 +46,7 @@
                 </div>
                 <div class="edit-row">
                     <label class="item-12">E-mail</label>
-                    <div><input type="text" value="{{$user->EMAIL}}" disabled=""></div>
+                    <div><input type="text" value="{{$user->email}}" disabled=""></div>
                 </div>
                 <div class="edit-row">
                     <label class="item-13">Город</label>

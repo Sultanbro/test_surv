@@ -79,7 +79,7 @@ can<template>
           {{ row.value}}
         </a>
       </template>
-      <template slot="cell(EMAIL)" slot-scope="row">
+      <template slot="cell(email)" slot-scope="row">
         <a :href="'/timetracking/edit-person?id='+row.item.ID" target="_blank">{{ row.value}}</a>
       </template>
       
@@ -387,7 +387,7 @@ export default {
           label: 'id'
         },
         {
-          key: 'EMAIL',
+          key: 'email',
           label: 'Email'
         },
         {
@@ -522,14 +522,14 @@ export default {
 
         if(Number(this.filter.group) !== 0) {
           return el.groups.includes(Number(this.filter.group)) 
-                && (el.EMAIL.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+                && (el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.FULLNAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.FULLNAME2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.LAST_NAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.NAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.ID.toString().indexOf(this.filter.email.toLowerCase()) > -1)
         } else {
-          return el.EMAIL.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+          return el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.FULLNAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.FULLNAME2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.LAST_NAME.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1

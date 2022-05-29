@@ -326,7 +326,7 @@ class User extends Authenticatable
 
             if($request->day && $request->month) $user->deactivate_date = Carbon::createFromDate(date('Y'), $request->month, $request->day); // ->format('Y-m-d');
 
-            $email = $user->EMAIL;
+            $email = $user->email;
             $user->save();
 
 
@@ -395,7 +395,7 @@ class User extends Authenticatable
             $daytype = DayType::create([
                 'user_id' => $user_id,
                 'type' => 4, // Уволен
-                'email' => $targetUser->EMAIL,
+                'email' => $targetUser->email,
                 'date' => date('Y-m-d'),
                 'admin_id' => $authUser->id,
             ]);
@@ -455,7 +455,7 @@ class User extends Authenticatable
 
     public static function userByEmail($user_email)
     {
-        $user = User::whereRaw('LOWER(TRIM(EMAIL)) = "' . strtolower(trim($user_email)) . '"')->first();
+        $user = User::whereRaw('LOWER(TRIM(email)) = "' . strtolower(trim($user_email)) . '"')->first();
         return $user;
     }
 

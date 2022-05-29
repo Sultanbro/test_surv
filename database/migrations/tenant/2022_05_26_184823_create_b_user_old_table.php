@@ -22,7 +22,7 @@ class CreateBUserOldTable extends Migration
             $table->char('ACTIVE', 1)->default('Y');
             $table->string('NAME', 50)->nullable();
             $table->string('LAST_NAME', 50)->nullable();
-            $table->string('EMAIL')->nullable();
+            $table->string('email')->nullable();
             $table->double('bonus', 8, 2)->default(0);
             $table->dateTime('LAST_LOGIN')->nullable();
             $table->dateTime('DATE_REGISTER');

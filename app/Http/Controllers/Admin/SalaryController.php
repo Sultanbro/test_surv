@@ -337,7 +337,7 @@ class SalaryController extends Controller
         ])->whereIn('users.id', array_unique($users_ids))
             ->get([
                 'users.id', 
-                'users.EMAIL', 
+                'users.email', 
                 'deactivate_date',
                  DB::raw("CONCAT(last_name,' ',name) as full_name"),
                  'user_type',

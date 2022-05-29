@@ -91,14 +91,14 @@ class SetAbsent extends Command
                             if($daytype) {
                                 $daytype->update([
                                     'type' => 2,
-                                    'email' => $user->EMAIL,
+                                    'email' => $user->email,
                                     'admin_id' => 1,
                                 ]);
                             } else {
                                 $daytype = DayType::create([
                                     'user_id' => $user->id,
                                     'type' => 2,
-                                    'email' => $user->EMAIL,
+                                    'email' => $user->email,
                                     'date' => Carbon::now()->format('Y-m-d'),
                                     'admin_id' => 1,
                                 ]);

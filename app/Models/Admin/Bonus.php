@@ -187,7 +187,7 @@ class Bonus extends Model
         if(!$user) return 0;
 
         $account = DB::connection('callibro')->table('call_account')
-            ->where('email', $user->EMAIL)
+            ->where('email', $user->email)
             ->first();
 
         if(!$account) return 0;

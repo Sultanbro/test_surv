@@ -83,7 +83,7 @@ class FillQualityGrades extends Command
             $this->line($group['name']);
             $this->line('========');
             foreach($users as $user) {
-                $account = new Callibro($user->EMAIL);
+                $account = new Callibro($user->email);
                 if(!$account->account) continue;
 
                 $this->line($user->LAST_NAME . ' ' . $user->NAME);
@@ -135,7 +135,7 @@ class FillQualityGrades extends Command
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0)
                 ->whereIn('users.id', $user_ids)
-                ->select(['users.id', 'users.EMAIL', 'users.NAME', 'users.LAST_NAME'])
+                ->select(['users.id', 'users.email', 'users.NAME', 'users.LAST_NAME'])
                 ->get();
     }
 

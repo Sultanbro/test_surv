@@ -32,7 +32,7 @@ table td {
     <div class="row">
         <div class="col-12 card mb-3">
         <div class="d-flex justify-content-between">
-            {{ auth()->id() }} {{ auth()->user()->EMAIL }} 
+            {{ auth()->id() }} {{ auth()->user()->email }} 
             <a class="btn btn-primary " href="/logout">Выйти</a>
         </div>   
         

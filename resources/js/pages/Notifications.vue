@@ -474,7 +474,7 @@ export default {
         },
         addTag(newTag) {
             const tag = {
-                EMAIL: newTag,
+                email: newTag,
                 ID: newTag
             }
             //this.options.push(tag)

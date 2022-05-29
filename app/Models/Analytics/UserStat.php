@@ -143,7 +143,7 @@ class UserStat extends Model
                     'name' => $localUser->NAME,
                     'lastname' => $localUser->LAST_NAME,
                     'fullname' => trim($localUser->LAST_NAME . ' ' . $localUser->NAME),
-                    'email' => $localUser->EMAIL,
+                    'email' => $localUser->email,
                     'full_time' => $localUser->full_time,
                     'id' => $localUser->id,
                     'fired' => $fired,

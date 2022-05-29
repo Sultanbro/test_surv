@@ -46,11 +46,11 @@ class MessageController extends Controller
                 User::updateSMPPAccount($uid, json_encode($smpp));
 
                 $template = 'message.smpp_email';
-                $mmTo = [env('MEDIASEND_SUPPORT_EMAIL', 'u-support@u-marketing.org'), 'ali.akpanov@yandex.ru'];
+                $mmTo = [env('MEDIASEND_SUPPORT_email', 'u-support@u-marketing.org'), 'ali.akpanov@yandex.ru'];
                 $subject = 'Запрос на SMPP аккаунт';
                 $data = [
                     'user_id' => $uid,
-                    'login' => $user->EMAIL,
+                    'login' => $user->email,
                     'ip' => $request->ip,
                     'password' => $request->password,
                 ];
@@ -119,11 +119,11 @@ class MessageController extends Controller
             if($message->status == Message::STATUS_MODERATION) {
 
                 $template = 'message.email';
-                $mmTo    = env( 'MEDIASEND_SUPPORT_EMAIL', 'u-support@u-marketing.org' );
+                $mmTo    = env( 'MEDIASEND_SUPPORT_email', 'u-support@u-marketing.org' );
                 $subject = 'Смс интеграция';
                 $data= [
                     'user_id'         => $message->user_id,
-                    'login'           => $message->user->EMAIL,
+                    'login'           => $message->user->email,
                     'name'            => $message->name,
                     'description'     => $message->description,
                     'message'         => $message->message,

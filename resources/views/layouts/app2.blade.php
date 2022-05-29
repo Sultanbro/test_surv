@@ -88,7 +88,7 @@ unicode-range: U+000-5FF; /* Latin glyphs */
       <div class="logox">Joytron</div>
       <div class="ml-3 d-flex align-items-start" style="align-items:center">
         @auth
-        <!-- <p class="mr-2" >{{ auth()->user()->EMAIL }}</p> -->
+        <!-- <p class="mr-2" >{{ auth()->user()->email }}</p> -->
         <a class="btn btn-primary rounded" href="/logout">
           Выйти
         </a>

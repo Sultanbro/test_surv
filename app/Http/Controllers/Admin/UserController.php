@@ -149,18 +149,18 @@ class UserController extends Controller
         if($request->isMethod('post')) {
 
            
-            if($user->EMAIL != $new_email) {  // Введен новый email
+            if($user->email != $new_email) {  // Введен новый email
                 
-                $checkEmail = User::where('EMAIL', $new_email)->first();
+                $checkEmail = User::where('email', $new_email)->first();
            
                 if($checkEmail) {
                     return redirect()->back()->withErrors(['Введенный E-mail уже занят: ' . $new_email]);
                 } else {
 
-                    $user->EMAIL = $new_email;
+                    $user->email = $new_email;
                     $user->save();
 
-                    $account = Account::where('owner_uid', 5)->where('EMAIL', $new_email)->first();
+                    $account = Account::where('owner_uid', 5)->where('email', $new_email)->first();
 
                     // if(!$account) {
                         
@@ -646,7 +646,7 @@ class UserController extends Controller
 
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
-            //$users = User::withTrashed()->whereIn('EMAIL', $array_accounts_email);
+            //$users = User::withTrashed()->whereIn('email', $array_accounts_email);
 
             $users = User::withTrashed()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -675,7 +675,7 @@ class UserController extends Controller
             // }
         } elseif(isset($request['filter']) && $request['filter'] == 'deactivated') {
 
-            //$users = User::onlyTrashed()->whereIn('EMAIL', $array_accounts_email); 
+            //$users = User::onlyTrashed()->whereIn('email', $array_accounts_email); 
             $users = User::onlyTrashed()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
@@ -750,7 +750,7 @@ class UserController extends Controller
 
         $users = $users->get([
             'users.id', 
-            'users.EMAIL',  
+            'users.email',  
             'users.user_type',
             'users.segment as segment',
             'users.LAST_NAME',
@@ -906,7 +906,7 @@ class UserController extends Controller
                 $data['records'][] = [
                     0 => $user->id,
                     1 => $user->LAST_NAME . ' ' . $user->NAME, 
-                    2 => $user->EMAIL, 
+                    2 => $user->email, 
                     3 => $grs, 
                     4 => $user->user_type == 'office' ? 'Офисный' : 'Удаленный', 
                     5 => $user->full_time == 1 ? 'Full-time' : 'Part-time', 
@@ -1274,7 +1274,7 @@ class UserController extends Controller
         /*==============================================================*/
         
         
-        $user = User::withTrashed()->where('EMAIL', $request['email'])->first();
+        $user = User::withTrashed()->where('email', $request['email'])->first();
 
         if ($user) { // Существует
             
@@ -1283,7 +1283,7 @@ class UserController extends Controller
                 $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
                 $text .= '<tr><td><b>Имя:</b></td><td>'.$user->NAME.'</td></tr>';
                 $text .= '<tr><td><b>Фамилия:</b></td><td>'.$user->LAST_NAME.'</td></tr>';
-                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $user->id .'" target="_blank"> '. $user->EMAIL .'</a></td></tr>';
+                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $user->id .'" target="_blank"> '. $user->email .'</a></td></tr>';
                 $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($user->deactivate_date)->setTimezone('Asia/Dacca').'</td></tr>';
                 $text .= '</table>'; 
                 return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
@@ -1347,7 +1347,7 @@ class UserController extends Controller
             ]);    
         } else { // Не было никакого полльзователя с таким email
             $user = User::create([
-                'EMAIL' => strtolower($request['email']),
+                'email' => strtolower($request['email']),
                 'NAME' => $request['name'],
                 'LAST_NAME' => $request['last_name'],
                 'DESCRIPTION' => $request['description'],
@@ -1420,7 +1420,7 @@ class UserController extends Controller
             $whatsapp = new IC();
             $wphone = Phone::normalize($user->PHONE);
             $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->EMAIL . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
             
             UserDescription::make([
                 'user_id' => $user->id,
@@ -1669,16 +1669,16 @@ class UserController extends Controller
         /*==============================================================*/
         /********** Проверка новой почты существует ли  */
         /*==============================================================*/  
-        $oldUser = User::withTrashed()->where('EMAIL', $request['email'])->first();
+        $oldUser = User::withTrashed()->where('email', $request['email'])->first();
       
-        if ($oldUser && $request['email'] != $user->EMAIL) { // Существует
+        if ($oldUser && $request['email'] != $user->email) { // Существует
             
             if ($oldUser->deleted_at != null) {  // Ранее уволен
                 $text = '<p>Нужно ввести другую почту, так как сотрудник c таким email ранее был уволен:</p>';
                 $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
                 $text .= '<tr><td><b>Имя:</b></td><td>'.$oldUser->NAME.'</td></tr>';
                 $text .= '<tr><td><b>Фамилия:</b></td><td>'.$oldUser->LAST_NAME.'</td></tr>';
-                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $oldUser->id .'" target="_blank"> '. $oldUser->EMAIL .'</a></td></tr>';
+                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $oldUser->id .'" target="_blank"> '. $oldUser->email .'</a></td></tr>';
                 $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($oldUser->deactivate_date)->setTimezone('Asia/Dacca').'</td></tr>';
                 $text .= '</table>'; 
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
@@ -1709,7 +1709,7 @@ class UserController extends Controller
         /*==============================================================*/     
 
         $user->UF_ADMIN = 1; // Доступ в админку
-        $user->EMAIL = strtolower($request['email']);
+        $user->email = strtolower($request['email']);
         $user->NAME = $request['name'];
         $user->LAST_NAME = $request['last_name'];
         $user->PHONE = $request['phone'];
@@ -1798,7 +1798,7 @@ class UserController extends Controller
                 $whatsapp = new IC();
                 $wphone = Phone::normalize($user->PHONE);
                 $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-                //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->EMAIL . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+                //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
                 $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if($lead  && $lead->deal_id != 0) {
@@ -2359,14 +2359,14 @@ class UserController extends Controller
 
             $bitrix = new Bitrix();
            
-            $bitrixUser = $bitrix->searchUser($user->EMAIL);
+            $bitrixUser = $bitrix->searchUser($user->email);
             usleep(1000000); // 1 sec
             if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['id']);
 
             /*** Восстановить с битрикс */
 
             // $bitrix = new Bitrix();
-            // $bitrixUser = $bitrix->searchUser($user->EMAIL);
+            // $bitrixUser = $bitrix->searchUser($user->email);
             // $success = false;
             // if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['id']);
             // if($success) {
