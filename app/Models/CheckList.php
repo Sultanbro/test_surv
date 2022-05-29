@@ -22,4 +22,7 @@ class CheckList extends Model
         'item_type',
         'item_id',
     ];
+
+
+
 }

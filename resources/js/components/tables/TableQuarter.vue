@@ -103,6 +103,10 @@
                 }
         },
         created(){
+
+
+            console.log(this.arr,'iks');
+
             // this.arr = this.selector();
             this.getQuartalBonuses();
         },

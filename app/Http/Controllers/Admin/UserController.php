@@ -106,6 +106,11 @@ class UserController extends Controller
         return view('test');
     }
 
+    function quarter(\DateTime $dateTime){
+        return (int) ceil($dateTime->format('n') / 3);
+    }
+
+
     public function profile(Request $request)
     {
 
@@ -113,14 +118,26 @@ class UserController extends Controller
 
         $user = Auth::user();
 
+
+        $d1 = date('Y-m-d');
+        $kv = intval((date('m', strtotime($d1)) + 2)/3);
+
         $quartal = QuartalBonus::on()->where('user_id',$user->ID)
             ->where('year',date('Y'))
+            ->where('quartal',$kv)
             ->get()->toArray();
+
         $quarter_bonus = QuartalBonus::on()->where('user_id',$user->ID)
-            ->where('year',date('Y'))->sum('sum');
+            ->where('year',date('Y'))
+            ->where('quartal',$kv)
+            ->sum('sum');
 
 
-//        dd($user);
+
+
+
+
+
 
         if($user->ID == 5 && isset($_GET['user_id'])) {
             $user = User::find($_GET['user_id']);
@@ -479,7 +496,6 @@ class UserController extends Controller
                ->orderBy('status', 'desc')
                ->with('course')
                ->first();
-
 
 
 

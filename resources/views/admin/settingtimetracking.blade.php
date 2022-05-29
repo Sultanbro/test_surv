@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 @section('title', 'Настройки')
 @section('content')
-
     <div class="animated fadeIn">
         <div class="">
  
@@ -77,7 +76,7 @@
                                     <div class="tab-pane fade show active   p-4" id="checkList" role="tabpanel" aria-labelledby="nav-checkList-tab">
                                         <check-list
                                                           groups="{{json_encode($groups) }}"
-                                                         :allusers="{{json_encode($tab5['users'])}}"
+                                                         :allusers="{{json_encode($getUsers)}}"
                                                          :positions="{{json_encode($positions)}}"
                                         />
                                     </div>
