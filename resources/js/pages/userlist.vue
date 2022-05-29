@@ -383,7 +383,7 @@ export default {
           label: '№'
         },
         {
-          key: 'ID',
+          key: 'id',
           label: 'id'
         },
         {

@@ -115,7 +115,7 @@ class BonusUpdate extends Command
             $user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
                 ->whereIn('b_user.ID', $user_ids)
                 ->where('is_trainee', 0)
-                ->get(['b_user.ID'])->pluck('ID')->toArray();
+                ->get(['b_user.ID'])->pluck('id')->toArray();
 
             // Обнулить award
             $salaries = Salary::where('date', $this->date)

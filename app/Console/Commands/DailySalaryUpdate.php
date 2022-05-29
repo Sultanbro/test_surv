@@ -68,7 +68,7 @@ class DailySalaryUpdate extends Command
             ->where('UF_ADMIN', 1)
             ->where('ud.is_trainee', 0)
             ->get()
-            ->pluck('ID') 
+            ->pluck('id') 
             ->toArray(); 
         
         $users2 = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
@@ -77,7 +77,7 @@ class DailySalaryUpdate extends Command
             ->where('ud.is_trainee', 0)
             ->whereDate('deactivate_date', '>=', $argDate)
             ->get()
-            ->pluck('ID') 
+            ->pluck('id') 
             ->toArray();
 
         $users = array_unique(array_merge($users, $users2));

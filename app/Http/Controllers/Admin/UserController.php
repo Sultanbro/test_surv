@@ -693,7 +693,7 @@ class UserController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
                 ->where('is_trainee', 0)
                 ->get(['b_user.ID'])
-                ->pluck('ID')
+                ->pluck('id')
                 ->toArray();
 
             $downloads = Downloads::whereIn('user_id', array_unique($users_1))
@@ -850,7 +850,7 @@ class UserController extends Controller
             $data['records'] = [];
 
             $headings = [
-                'ID',
+                'id',
                 'ФИО',
                 'Email',
                 'Группы',
@@ -1654,7 +1654,7 @@ class UserController extends Controller
 
         //if(Auth::user()->id == 5) dd($request->all());
         $id = $request['id'];
-        $user = User::with('zarplata')->where('ID', $id)->withTrashed()->first();
+        $user = User::with('zarplata')->where('id', $id)->withTrashed()->first();
         $photo = Photo::where('user_id', $id)->first();
         $downloads = Downloads::where('user_id', $id)->first();
       
@@ -2235,7 +2235,7 @@ class UserController extends Controller
     public function deleteUser(Request $request)
     {
         $user = User::where([
-            'ID' => $request->id,
+            'id' => $request->id,
             'UF_ADMIN' => 1,
         ])->first();
         
@@ -2361,14 +2361,14 @@ class UserController extends Controller
            
             $bitrixUser = $bitrix->searchUser($user->EMAIL);
             usleep(1000000); // 1 sec
-            if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
+            if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['id']);
 
             /*** Восстановить с битрикс */
 
             // $bitrix = new Bitrix();
             // $bitrixUser = $bitrix->searchUser($user->EMAIL);
             // $success = false;
-            // if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
+            // if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['id']);
             // if($success) {
             //     // Восстановлен в битрикс
             // } else {

@@ -92,7 +92,7 @@ class RecruiterStat extends Model
         }
 
         if(count($users) > 0) {
-            $xusers = User::withTrashed()->whereIn('ID', $users)->get();
+            $xusers = User::withTrashed()->whereIn('id', $users)->get();
             foreach($xusers as $user) {
                 $arr[$user->id] = [
                     'name' => $user->LAST_NAME . ' ' . $user->NAME,

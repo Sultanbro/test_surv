@@ -101,7 +101,7 @@ class CheckListController extends Controller
                            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
                            $checkList['count_view'] = $request['countView'];
                            $checkList['item_type'] = 3;
-                           $checkList['item_id'] = $profileUsers['ID'];
+                           $checkList['item_id'] = $profileUsers['id'];
                            $checkList->save();
                            $this->saveUsers($profileUsers, $checkList, $request, 3);
                        }
@@ -122,11 +122,11 @@ class CheckListController extends Controller
                 $check_users['name'] = $positionUser['NAME'];
                 $check_users['last_name'] = $positionUser['LAST_NAME'];
                 $check_users['check_list_id'] = $checkListId['id'];
-                $check_users['check_users_id'] = $positionUser['ID'];
+                $check_users['check_users_id'] = $positionUser['id'];
                 $check_users['check_reports_id'] = $this->saveReports($checkListId,$positionUser,$request,$positionUser,$type);
                 $check_users['count_view'] = $request['countView'];
                 $check_users['item_type'] = $type;
-                $check_users['item_id'] = $positionUser['ID'];
+                $check_users['item_id'] = $positionUser['id'];
                 $check_users->save();
         }
 
@@ -142,7 +142,7 @@ class CheckListController extends Controller
                 $check_users['name'] = $positionUser['NAME'];
                 $check_users['last_name'] = $positionUser['LAST_NAME'];
                 $check_users['check_list_id'] = $checkListId['id'];
-                $check_users['check_users_id'] = $positionUser['ID'];
+                $check_users['check_users_id'] = $positionUser['id'];
                 $check_users['check_reports_id'] = $this->saveReports($checkListId,$positionUser,$request,$profileGroups,$type);
                 $check_users['count_view'] = $request['countView'];
                 $check_users['item_type'] = $type;
@@ -167,7 +167,7 @@ class CheckListController extends Controller
                         $check_users['name'] = $dataBaseUser['NAME'];
                         $check_users['last_name'] = $dataBaseUser['LAST_NAME'];
                         $check_users['check_list_id'] = $checkList->id;
-                        $check_users['check_users_id'] = $dataBaseUser['ID'];
+                        $check_users['check_users_id'] = $dataBaseUser['id'];
                         $check_users['check_reports_id'] = $this->saveReports($checkList,$dataBaseUser,$request,$profileGroups,$type);
                         $check_users['count_view'] = $request['countView'];
                         $check_users['item_type'] = $type;
@@ -184,14 +184,14 @@ class CheckListController extends Controller
 
         $check_reports_save = new CheckReports();
         $check_reports_save['check_id'] = $checkList->id ?? $checkList['id'];
-        $check_reports_save['check_users_id'] = $dataBaseUser['ID'];
+        $check_reports_save['check_users_id'] = $dataBaseUser['id'];
         $check_reports_save['year'] = date('Y');
         $check_reports_save['month'] = date('n');
         $check_reports_save['day'] = date('d');
         $check_reports_save['count_check'] = count($request['arrCheckInput']);
         $check_reports_save['count_check_auth'] = 0;
         $check_reports_save['item_type'] = $type;
-        $check_reports_save['item_id'] = $profileGroups['id'] ?? $profileGroups['ID'];
+        $check_reports_save['item_id'] = $profileGroups['id'] ?? $profileGroups['id'];
         $check_reports_save->save();
 
         return $check_reports_save->id;

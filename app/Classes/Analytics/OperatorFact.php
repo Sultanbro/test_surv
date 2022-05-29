@@ -59,7 +59,7 @@ class OperatorFact
 
         
         $user_ids = json_decode(ProfileGroup::find($this->group_id)->users);
-        $user_ids = User::withTrashed()->whereIn('ID', $user_ids)->where('position_id', 32)->get()->pluck('ID')->toArray();
+        $user_ids = User::withTrashed()->whereIn('id', $user_ids)->where('position_id', 32)->get()->pluck('id')->toArray();
 
         for ($i = 1; $i <= Carbon::parse($this->date)->daysInMonth; $i++) {
 

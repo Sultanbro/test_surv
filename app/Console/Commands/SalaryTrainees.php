@@ -55,7 +55,7 @@ class SalaryTrainees extends Command
 			$users = array_unique($users);
 		}
 
-		// $workers = User::whereIn('ID', $users)->get()->pluck('ID')->toArray();
+		// $workers = User::whereIn('id', $users)->get()->pluck('id')->toArray();
         
         // dump(count($workers));
 		// $trainees = Trainee::whereNull('applied')->whereIn('user_id', $workers)->get()->toArray();

@@ -396,7 +396,7 @@ class GroupsController extends Controller
     
         $users = array_unique($users);
 
-        $_users = User::whereIn('ID', $users)->orderBy('LAST_NAME', 'asc')->get();
+        $_users = User::whereIn('id', $users)->orderBy('LAST_NAME', 'asc')->get();
         return $_users;
     }
 

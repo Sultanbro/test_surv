@@ -45,7 +45,7 @@ class DeleteUser extends Command
 
         foreach ($delete_plans as $plan) {
             $user = User::where([
-                'ID' => $plan->user_id,
+                'id' => $plan->user_id,
                 'UF_ADMIN' => 1,
             ])->first();
 

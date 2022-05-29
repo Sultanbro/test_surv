@@ -26,7 +26,7 @@ class QualityRecord extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User', 'employee_id', 'ID')->withTrashed();
+        return $this->belongsTo('App\User', 'employee_id', 'id')->withTrashed();
     }
 
     public function param_values()

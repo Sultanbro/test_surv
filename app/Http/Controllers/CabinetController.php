@@ -20,14 +20,14 @@ class CabinetController extends Controller
 
     public function get()
     {
-        $users = User::get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
+        $users = User::get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
 
         foreach($users as $user) {
             if($user->EMAIL == '') $user->EMAIL = 'x'; 
         }
 
         $admin = Admin::where('owner_id', 18)->first(); 
-        $admins = User::withTrashed()->whereIn('ID', $admin->users)->get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
+        $admins = User::withTrashed()->whereIn('id', $admin->users)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
 
         return [
             'users' => $users,
@@ -39,7 +39,7 @@ class CabinetController extends Controller
     {
         $admins = [];
         foreach($request->admins as $index => $user) {
-            $admins[] = $user['ID'];
+            $admins[] = $user['id'];
         }
         $admin = Admin::where('owner_id', 18)->first(); 
         $admin->users = array_unique($admins);

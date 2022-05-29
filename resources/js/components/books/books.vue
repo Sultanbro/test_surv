@@ -115,7 +115,7 @@ export default {
             fields: [
                 {
                     key: 'id',
-                    label: 'ID'
+                    label: 'id'
                 },
                 {
                     key: 'title',

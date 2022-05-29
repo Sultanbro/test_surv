@@ -204,7 +204,7 @@ class ProfileGroup extends Model
                 
             if(count($positions) > 0) $users->whereIn('position_id', $positions);
             $users = $users->get()
-                ->pluck('ID')
+                ->pluck('id')
                 ->toArray();
         }  
         
@@ -250,7 +250,7 @@ class ProfileGroup extends Model
             ->orderBy('LAST_NAME', 'asc')
             ->select(['b_user.ID','b_user.LAST_NAME', 'b_user.NAME'])
             ->get()
-            ->pluck('ID')
+            ->pluck('id')
             ->toArray();
 
             $fired_users = [];
@@ -300,7 +300,7 @@ class ProfileGroup extends Model
                 
             if(count($positions) > 0) $users->whereIn('position_id', $positions);
             $users = $users->get()
-                ->pluck('ID')
+                ->pluck('id')
                 ->toArray();
         }  
         
@@ -343,7 +343,7 @@ class ProfileGroup extends Model
             ->orderBy('LAST_NAME', 'asc')
             ->select(['b_user.ID','b_user.LAST_NAME', 'b_user.NAME'])
             ->get()
-            ->pluck('ID')
+            ->pluck('id')
             ->toArray();
 
             $fired_users = [];

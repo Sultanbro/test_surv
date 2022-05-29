@@ -97,7 +97,7 @@ class EstimateTrainer extends Command
                     ->whereIn('b_user.ID', $gr_users)
                     ->whereNotIn('position_id', [45,55]) // Руководитель, старший специалист группы
                     ->get(['b_user.ID'])
-                    ->pluck('ID')
+                    ->pluck('id')
                     ->toArray();
 
                 $user_ids = array_merge($user_ids, $users);  

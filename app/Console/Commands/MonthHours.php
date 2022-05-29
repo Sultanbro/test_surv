@@ -96,7 +96,7 @@ class MonthHours extends Command
                         // вот здесь мне надо брать либо время профиля, либо время группы
                         $userProfile = DB::table('b_user')
                             ->select('*')
-                            ->where('ID', '=', $user->user_id)
+                            ->where('id', '=', $user->user_id)
                             ->first();
 
                         if (!is_null($userProfile)) {

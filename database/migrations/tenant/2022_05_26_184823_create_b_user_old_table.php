@@ -14,7 +14,7 @@ class CreateBUserOldTable extends Migration
     public function up()
     {
         Schema::create('b_user_old', function (Blueprint $table) {
-            $table->integer('ID', true);
+            $table->integer('id', true);
             $table->timestamp('TIMESTAMP_X')->useCurrentOnUpdate()->useCurrent();
             $table->string('LOGIN', 50);
             $table->string('PASSWORD', 50);

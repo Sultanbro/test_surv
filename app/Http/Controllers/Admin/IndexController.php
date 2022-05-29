@@ -319,7 +319,7 @@ class IndexController extends Controller
                 $colum = '';
                 switch ($column_index) {
                     case 0:
-                        $colum = 'ID';
+                        $colum = 'id';
                         break;
                     case 1:
                         $colum = 'EMAIL';
@@ -617,7 +617,7 @@ class IndexController extends Controller
                 $colum = '';
                 switch ($column_index) {
                   case 0:
-                  $colum = 'ID';
+                  $colum = 'id';
                   break;
 
                   case 1:
@@ -733,7 +733,7 @@ class IndexController extends Controller
     public function deleteUser(Request $request, $domain, $tld, $id) {
 
         if($id == 'all') {
-            DB::table('b_user')->whereIn('ID', $request->checked)->delete();
+            DB::table('b_user')->whereIn('id', $request->checked)->delete();
 
             return response()->json([
                 'success' => true
@@ -866,12 +866,12 @@ class IndexController extends Controller
     public function maxSession(Request $request)
     {
         if($request->isMethod('post')) {
-            $user = User::where('ID', $request->user_id)->first();
+            $user = User::where('id', $request->user_id)->first();
             $user->max_sessions = $request->max_sessions;
             $user->save();
         }
 
-        $users = User::select('ID', 'EMAIL', 'NAME', 'max_sessions')->get();
+        $users = User::select('id', 'EMAIL', 'NAME', 'max_sessions')->get();
 
         View::share('title', 'Лимит линий');
 
@@ -880,7 +880,7 @@ class IndexController extends Controller
 
     public function partner(Request $request)
     {
-        $users = User::select('ID', 'EMAIL', 'NAME')->with('partner')->get();
+        $users = User::select('id', 'EMAIL', 'NAME')->with('partner')->get();
 
         $partner_users = [];
 
@@ -1188,7 +1188,7 @@ class IndexController extends Controller
 
     public function rentNumbers(Request $request) {
 
-        $users = User::select('ID', 'EMAIL', 'NAME')->with('partner')->get();
+        $users = User::select('id', 'EMAIL', 'NAME')->with('partner')->get();
 
         return view('admin.rent-numbers')->with('users', $users);
     }
@@ -1312,7 +1312,7 @@ class IndexController extends Controller
       View::share('title', 'Права пользователям');
 
       if (in_array(Auth::user()->id, [5,18])) {
-        $users = User::select('ID', 'EMAIL', 'NAME')->get();
+        $users = User::select('id', 'EMAIL', 'NAME')->get();
       } else {
         return redirect()->back();
       }

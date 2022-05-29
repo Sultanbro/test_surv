@@ -70,7 +70,7 @@ class User extends Authenticatable
 
     public function getCheckList()
     {
-        return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'ID');
+        return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'id');
     }
 
     
@@ -156,7 +156,7 @@ class User extends Authenticatable
 
     public function user_description()
     {
-       return $this->hasOne('App\UserDescription', 'user_id', 'ID');
+       return $this->hasOne('App\UserDescription', 'user_id', 'id');
     } 
 
     public function integration_token(String $server)
@@ -182,7 +182,7 @@ class User extends Authenticatable
             $user_balance = self::balanceByUser($user_id);
             $user_balance -= $amount;
 
-            User::where('ID', $user_id)
+            User::where('id', $user_id)
                 ->update(['UF_BALANCE' => $user_balance]);
             //DB::update('UPDATE b_uts_user SET UF_BALANCE = ? WHERE VALUE_ID = ?', [$user_balance, $user_id]);
         }
@@ -348,7 +348,7 @@ class User extends Authenticatable
                 $bitrix_id = $ud->bitrix_id;
             } else {
                 $bitrixUser = $bitrix->searchUser($email);
-                if($bitrixUser) $bitrix_id = $bitrixUser['ID'];
+                if($bitrixUser) $bitrix_id = $bitrixUser['id'];
             }
             
             /** Увольнение с Битрикс */
@@ -368,7 +368,7 @@ class User extends Authenticatable
                 $wphone = Phone::normalize($user->PHONE);
                 if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://admin.u-marketing.org/quiz_after_fire?phone='. $wphone);
                     
-                if($bitrixUser['ID'] != 0) {
+                if($bitrixUser['id'] != 0) {
                     $ud->bitrix_id = 0;
                     $ud->save();
                 }
@@ -427,7 +427,7 @@ class User extends Authenticatable
             $user_balance = self::balanceByUser($user_id);
             $user_balance += $payment;
 
-            User::where('ID', $user_id)
+            User::where('id', $user_id)
                 ->update(['UF_BALANCE' => $user_balance]);
 
             //DB::update('UPDATE b_uts_user SET UF_BALANCE = ? WHERE VALUE_ID = ?', [$user_balance, $user_id]);
@@ -523,8 +523,8 @@ class User extends Authenticatable
         $user_id = self::bitrixUser()->id;
         $apiKey = md5($user_id . 'api.mediasend' . '_salt');
 
-        if (User::where('ID', $user_id)->whereNull('UF_API_KEY')->count() > 0) {
-            User::where('ID', $user_id)
+        if (User::where('id', $user_id)->whereNull('UF_API_KEY')->count() > 0) {
+            User::where('id', $user_id)
                 ->update(['UF_API_KEY' => $apiKey]);
         }
 
@@ -559,7 +559,7 @@ class User extends Authenticatable
 
     public static function updateSipAccount($user_id, $sip_acc)
     {
-        User::where('ID', $user_id)
+        User::where('id', $user_id)
             ->update(['UF_SIP_ACC' => $sip_acc]);
         //DB::update('UPDATE b_uts_user SET UF_SIP_ACC = ? WHERE VALUE_ID = ?', [$sip_acc, $user_id]);
         return true;
@@ -576,7 +576,7 @@ class User extends Authenticatable
     public static function updateSMPPAccount($user_id, $smpp)
     {
 
-        User::where('ID', $user_id)
+        User::where('id', $user_id)
             ->update(['UF_SMPP' => $smpp]);
 
         //DB::update('UPDATE b_uts_user SET UF_SMPP = ? WHERE VALUE_ID = ?', [$smpp, $user_id]);
@@ -674,17 +674,17 @@ class User extends Authenticatable
 
     public function partner()
     {
-        return $this->hasOne('App\Partner', 'user_id', 'ID');
+        return $this->hasOne('App\Partner', 'user_id', 'id');
     }
 
     public function zarplata()
     {
-        return $this->hasOne('App\Zarplata', 'user_id', 'ID');
+        return $this->hasOne('App\Zarplata', 'user_id', 'id');
     }
 
     public function downloads()
     {
-        return $this->hasOne('App\Downloads', 'user_id', 'ID');
+        return $this->hasOne('App\Downloads', 'user_id', 'id');
     }
 
     public function salaries()
@@ -766,7 +766,7 @@ class User extends Authenticatable
 
     public function timetracking()
     {
-        return $this->hasMany('App\Timetracking', 'user_id', 'ID');
+        return $this->hasMany('App\Timetracking', 'user_id', 'id');
     }
 
     public function applied_at()
@@ -788,12 +788,12 @@ class User extends Authenticatable
 
     public function trackHistory()
     {
-        return $this->hasMany('App\TimetrackingHistory', 'user_id', 'ID')->orderBy('id', 'DESC');
+        return $this->hasMany('App\TimetrackingHistory', 'user_id', 'id')->orderBy('id', 'DESC');
     }
 
     public function obtainedBonuses()
     {
-        return $this->hasMany('App\Models\Admin\ObtainedBonus', 'user_id', 'ID')->orderBy('id', 'DESC');
+        return $this->hasMany('App\Models\Admin\ObtainedBonus', 'user_id', 'id')->orderBy('id', 'DESC');
     }
 
     public static function set_timezone_of($user_id)

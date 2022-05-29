@@ -420,7 +420,7 @@ class Salary extends Model
 
             $x_users = User::withTrashed()->where('UF_ADMIN', 1)
                 ->whereDate('deactivate_date', '>=', $date->format('Y-m-d'))
-                ->get(['ID','last_group']);
+                ->get(['id','last_group']);
 
             $fired_users = [];
             foreach($x_users as $d_user) {

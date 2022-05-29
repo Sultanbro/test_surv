@@ -94,9 +94,9 @@ class CourseController extends Controller
         }
 
         foreach($request->course['users'] as $index => $user) {
-            $cr = CourseResult::where('user_id', $user['ID'])->where('course_id', $request->course['id'])->first();
+            $cr = CourseResult::where('user_id', $user['id'])->where('course_id', $request->course['id'])->first();
             if(!$cr) CourseResult::create([
-                'user_id' => $user['ID'],
+                'user_id' => $user['id'],
                 'course_id' => $request->course['id'],
                 'status' => CourseResult::INITIAL,
                 'points' => 0
@@ -141,9 +141,9 @@ class CourseController extends Controller
         $course = Course::with('items')->find($request->id);
         
         $course_users = CourseResult::where('course_id', $request->id)->get(['user_id'])->pluck('user_id')->toArray();
-        $course->users = User::withTrashed()->whereIn('ID', $course_users)->get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
+        $course->users = User::withTrashed()->whereIn('id', $course_users)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
 
-        $users = User::get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
+        $users = User::get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME) as EMAIL")]);
 
         foreach($users as $user) {
             if($user->EMAIL == '') $user->EMAIL = 'x'; 

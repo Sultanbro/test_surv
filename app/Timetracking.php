@@ -38,7 +38,7 @@ class Timetracking extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User', 'user_id', 'ID')->withTrashed();
+        return $this->belongsTo('App\User', 'user_id', 'id')->withTrashed();
     }
 
     public function scopeRunning($query)
@@ -113,7 +113,7 @@ class Timetracking extends Model
             }
         ])->whereIn('id', array_unique($users_ids))
         ->orderBy('LAST_NAME', 'asc')
-            ->get(['ID', 'email', DB::raw("CONCAT(last_name,' ',name) as full_name"), 'user_type', 'working_time_id', 'full_time']);
+            ->get(['id', 'email', DB::raw("CONCAT(last_name,' ',name) as full_name"), 'user_type', 'working_time_id', 'full_time']);
 
         return $users;
     }
@@ -137,9 +137,9 @@ class Timetracking extends Model
             }
         ])->whereIn('id', array_unique($users_ids))->orderBy('LAST_NAME', 'asc')
 
-            //->get(['ID', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name"), 'user_type', 'working_time_id']);
+            //->get(['id', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name"), 'user_type', 'working_time_id']);
 
-            ->select(['ID', 'email', 'deactivate_date', DB::raw("CONCAT(last_name,' ',name) as full_name"), 'user_type', 'working_time_id', 'program_id', 'full_time', 'weekdays'])
+            ->select(['id', 'email', 'deactivate_date', DB::raw("CONCAT(last_name,' ',name) as full_name"), 'user_type', 'working_time_id', 'program_id', 'full_time', 'weekdays'])
             ->paginate($perPage);
 
         return $users;
@@ -150,7 +150,7 @@ class Timetracking extends Model
 
         $users = ProfileGroup::employees($group_id);
         
-        $users = User::withTrashed()->whereIn('ID', $users)->where('position_id', 32)->get(['ID'])->toArray();
+        $users = User::withTrashed()->whereIn('id', $users)->where('position_id', 32)->get(['id'])->toArray();
         $total_hours =  self::select(
                 DB::raw('SUM(total_hours) as total_hours')
             ) 

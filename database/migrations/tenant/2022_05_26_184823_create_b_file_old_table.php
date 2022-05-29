@@ -14,7 +14,7 @@ class CreateBFileOldTable extends Migration
     public function up()
     {
         Schema::create('b_file_old', function (Blueprint $table) {
-            $table->integer('ID', true);
+            $table->integer('id', true);
             $table->timestamp('TIMESTAMP_X')->useCurrentOnUpdate()->useCurrent();
             $table->string('MODULE_ID', 50)->nullable();
             $table->integer('HEIGHT')->nullable();

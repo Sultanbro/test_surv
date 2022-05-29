@@ -36,7 +36,7 @@ class BitrixAuth {
 
         $user_id = $_SESSION["SESS_AUTH"]["USER_ID"];
 
-        $user = User::where('ID', $user_id)->first();
+        $user = User::where('id', $user_id)->first();
         if(!$user) {
             return redirect('/auth');
         }

@@ -44,7 +44,7 @@ class NpsController extends Controller
         View::share('menu', 'timetrackingnps');
 
         $superusers = [5,18, 157];
-        $users = User::where('roles', 'like', '%"page-nps":"on"%')->pluck('ID')->toArray();
+        $users = User::where('roles', 'like', '%"page-nps":"on"%')->pluck('id')->toArray();
         $users = array_unique(array_merge($users, $superusers));
 
         $has_access = in_array(Auth::user()->id, $users);
@@ -62,7 +62,7 @@ class NpsController extends Controller
     public function fetch(Request $request)
     {
         $superusers = [5,18];
-        $users = User::where('roles', 'like', '%"page-top":"nps"%')->pluck('ID')->toArray();
+        $users = User::where('roles', 'like', '%"page-top":"nps"%')->pluck('id')->toArray();
         $users = array_unique(array_merge($users, $superusers));
 
         $has_access = in_array(Auth::user()->id, $users);

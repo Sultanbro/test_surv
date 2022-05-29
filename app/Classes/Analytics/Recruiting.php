@@ -483,7 +483,7 @@ class Recruiting
             // Удалить после 11.12.2021
             // $trainees = Trainee::whereNull('applied')->pluck('user_id')->toArray();
             // $fired = User::withTrashed()
-            //     ->whereNotIn('ID', $trainees)
+            //     ->whereNotIn('id', $trainees)
             //     ->whereDate('deactivate_date', $date->day($i)->format('Y-m-d'))
             //     ->get();
             

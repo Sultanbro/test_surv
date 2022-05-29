@@ -175,7 +175,7 @@ class SalaryController extends Controller
 
         // $x_users = User::withTrashed()->where('UF_ADMIN', 1)
         //     ->whereDate('deactivate_date', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
-        //     ->get(['ID','last_group']);
+        //     ->get(['id','last_group']);
 
         // $fired_users = [];
         // foreach($x_users as $d_user) {
@@ -276,7 +276,7 @@ class SalaryController extends Controller
 
             $x_users = User::withTrashed()->where('UF_ADMIN', 1)
                 ->whereDate('deactivate_date', '>=', $date->format('Y-m-d'))
-                ->get(['ID','last_group']);
+                ->get(['id','last_group']);
 
             $fired_users = [];
             foreach($x_users as $d_user) {
@@ -736,7 +736,7 @@ class SalaryController extends Controller
 
             $x_users = User::withTrashed()->where('UF_ADMIN', 1)
                 ->whereDate('deactivate_date', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
-                ->get(['ID','last_group']);
+                ->get(['id','last_group']);
 
             $fired_users = [];
             foreach($x_users as $d_user) {
@@ -770,7 +770,7 @@ class SalaryController extends Controller
             ///////////
       
 
-        $working_users = $working_users->get()->pluck('ID')->toArray();
+        $working_users = $working_users->get()->pluck('id')->toArray();
         
         $headings = [
             'ФИО', // 0
@@ -1004,7 +1004,7 @@ class SalaryController extends Controller
                         b_user.currency as currency,
                         CONCAT('KASPI', '') as card
                         ")
-            ->groupBy('ID', 'PHONE', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary', 
+            ->groupBy('id', 'PHONE', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary', 
             'card_kaspi', 'card_jysan', 'jysan', 'kaspi','kaspi_cardholder','jysan_cardholder', 'card', 'program_id', 'birthday','currency', 'working_day_id')
             ->get();
         

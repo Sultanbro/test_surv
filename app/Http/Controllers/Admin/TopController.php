@@ -55,7 +55,7 @@ class TopController extends Controller
         View::share('menu', 'timetrackingtop');
 
         $superusers = [5,18];
-        $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('ID')->toArray();
+        $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('id')->toArray();
         $users = array_unique(array_merge($users, $superusers));
     
         $has_access = in_array(Auth::user()->id, $users);
@@ -82,7 +82,7 @@ class TopController extends Controller
     public function fetch(Request $request)
     {   
         $superusers = [5,18];
-        $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('ID')->toArray();
+        $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('id')->toArray();
         $users = array_unique(array_merge($users, $superusers));
         
         

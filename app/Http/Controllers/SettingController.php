@@ -405,7 +405,7 @@ class SettingController extends Controller
        
 
         // if (count($result['result'])) { // Если есть лид то 
-        //     $lead_id = $result['result'][0]['ID'];
+        //     $lead_id = $result['result'][0]['id'];
 
 
         //     //    редактируем
@@ -1190,7 +1190,7 @@ class SettingController extends Controller
 
             $file->move( "users", $file_name );
 
-            User::where('ID', $uid)
+            User::where('id', $uid)
                 ->update(['UF_LOGO' => '/users/'.$file_name]);
 
             //$file_id = DB::table('b_file')->insertGetId(['SUBDIR' =>  "/users",'FILE_NAME' => $file_name, 'ORIGINAL_NAME'=>$file->getClientOriginalName()]);

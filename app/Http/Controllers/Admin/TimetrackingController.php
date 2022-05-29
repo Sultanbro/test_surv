@@ -525,7 +525,7 @@ class TimetrackingController extends Controller
             $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->first();
             if ($group->users != null) {
                 $users = json_decode($group->users);
-                $users = User::whereIn('ID', $users)->get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+                $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
             }
             $book_groups = BookGroup::whereIn('id', json_decode($group->book_groups))->get();
 
@@ -538,7 +538,7 @@ class TimetrackingController extends Controller
             
             $bonus = Bonus::where('group_id', $group->id)->first();
         } else {
-            $users = User::get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+            $users = User::get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
 
             foreach($users as $user) {
                 if($user->EMAIL == '') $user->EMAIL = 'x'; 
@@ -585,7 +585,7 @@ class TimetrackingController extends Controller
         $users_id = [];
         $groups = ProfileGroup::where('active', 1)->get();
         foreach ($request['users'] as $user) {
-            $users_id[] = $user['ID'];
+            $users_id[] = $user['id'];
         }
         //
         $book_groups = [];
@@ -804,7 +804,7 @@ class TimetrackingController extends Controller
                 ->where('UF_ADMIN', 1)
                 ->whereIn('b_user.ID', $users_ids)
                 ->get()
-                ->pluck('ID')
+                ->pluck('id')
                 ->toArray();
             
             // foreach($users_ids as $user_id) {
@@ -821,7 +821,7 @@ class TimetrackingController extends Controller
         }
         
         if($request->user_types == 1) { // Уволенныне
-            $_user_ids = User::onlyTrashed()->whereIn('ID', $users_ids)->pluck('ID')->toArray();
+            $_user_ids = User::onlyTrashed()->whereIn('id', $users_ids)->pluck('id')->toArray();
             //////////////////////
             $date = $year . '-' . $request->month . '-01';
             $date_for_register = Carbon::parse($date); 
@@ -845,7 +845,7 @@ class TimetrackingController extends Controller
                 ->where('UF_ADMIN', 1)
                 ->whereIn('b_user.ID', $_user_ids)
                 ->get()
-                ->pluck('ID')
+                ->pluck('id')
                 ->toArray();
         }
 
@@ -856,7 +856,7 @@ class TimetrackingController extends Controller
                 ->where('UF_ADMIN', 1)
                 ->whereIn('b_user.ID', $users_ids)
                 ->get()
-                ->pluck('ID')
+                ->pluck('id')
                 ->toArray();
             
         }
@@ -1089,7 +1089,7 @@ class TimetrackingController extends Controller
 
         $userProfile = DB::table('b_user')
                         ->select('*')
-                        ->where('ID', '=', $day->user_id)
+                        ->where('id', '=', $day->user_id)
                         ->first();
         
         $workStart = $userProfile->work_start;
@@ -1265,7 +1265,7 @@ class TimetrackingController extends Controller
             }
 
             foreach ($request->users as $_user) {
-                $user = User::find($_user['ID']);
+                $user = User::find($_user['id']);
                 if($user) {
                     if($user->roles) {
                         $arr = $user->roles;
@@ -1283,9 +1283,9 @@ class TimetrackingController extends Controller
             $editors_id = [];
 
             foreach ($request->users as $user) {
-                $editors_id[] = $user['ID'];
+                $editors_id[] = $user['id'];
                 
-                $user = User::find($user['ID']);
+                $user = User::find($user['id']);
                 if($user) {
                     if($user->roles) {
                         $arr = $user->roles;
@@ -1334,14 +1334,14 @@ class TimetrackingController extends Controller
     {
         if($request->page == 'page-top') {
             $users = [];
-            $users = User::where('roles', 'like', '%"page-top":"on"%')->get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+            $users = User::where('roles', 'like', '%"page-top":"on"%')->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
         } else {
             $group = ProfileGroup::find($request['group_id']);
 
             $editors_id = json_decode($group->editors_id);
             if (is_array($editors_id) && count($editors_id)) {
 
-                $users = User::whereIn('ID', $editors_id)->get(['ID', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+                $users = User::whereIn('id', $editors_id)->get(['id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
             } else {
                 $users = [];
             }
@@ -2333,7 +2333,7 @@ class TimetrackingController extends Controller
 
             $users = [];
             foreach ($request->time_exceptions as $key => $te) {
-                array_push($users, $te['ID']);
+                array_push($users, $te['id']);
             }
             $group->time_exceptions = $users;
             $group->save();

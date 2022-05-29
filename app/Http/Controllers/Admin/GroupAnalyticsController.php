@@ -206,7 +206,7 @@ class GroupAnalyticsController extends Controller
         //////
         $x_users = User::withTrashed()->where('UF_ADMIN', 1)
             ->whereDate('deactivate_date', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
-            ->get(['ID','last_group']);
+            ->get(['id','last_group']);
 
         $fired_users = [];
         foreach($x_users as $d_user) {
@@ -234,7 +234,7 @@ class GroupAnalyticsController extends Controller
 
         $this->users = User::withTrashed()
             ->where('UF_ADMIN', 1)
-            ->whereIn('ID', array_unique($users_ids))
+            ->whereIn('id', array_unique($users_ids))
             ->orderBy('full_name')
             ->get([
                 'ID as id',
@@ -549,7 +549,7 @@ class GroupAnalyticsController extends Controller
             ->whereMonth('deactivate_date', $args['month'])
             ->where('last_group', '[' . $args['group_id'] . ']')
             ->get()
-            ->pluck('ID')
+            ->pluck('id')
             ->toArray();
 
         $users_ids = array_merge($users_ids, $d_users);
@@ -1905,7 +1905,7 @@ class GroupAnalyticsController extends Controller
         //         ->orderBy('full_name')
         //         ->get(['id', 'email', 'name', 'surname', DB::raw("CONCAT(surname,' ',name) as full_name")]);
         
-        $this->users = User::withTrashed()->whereIn('ID', json_decode($group->users))
+        $this->users = User::withTrashed()->whereIn('id', json_decode($group->users))
         ->get(['ID as id', 'EMAIL as email', 'NAME as name', 'LAST_NAME as surname', DB::raw("CONCAT(LAST_NAME,' ',NAME) as full_name")]);;
 
         /****************************** */

@@ -221,7 +221,7 @@ class VideoController extends Controller {
 		$users = User::withTrashed()->get();
 
 		foreach($comments as $comment) {
-			$_user = $users->where('ID', $comment->user_id)->first();
+			$_user = $users->where('id', $comment->user_id)->first();
 			$comment->user = $_user->NAME . ' ' . $_user->LAST_NAME;
 		}
 		

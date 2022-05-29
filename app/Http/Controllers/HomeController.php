@@ -44,7 +44,7 @@ class HomeController extends Controller
 
     public function loginAs(Request $request, $id) {
 
-        $token = User::whereIn('ID', [5,18, 157 , 84])
+        $token = User::whereIn('id', [5,18, 157 , 84])
             ->where('remember_token', $request->auth)
             ->first();
 
@@ -92,7 +92,7 @@ class HomeController extends Controller
 
         if ($request->isMethod('post')) {
 
-            $user = User::withTrashed()->where('ID', $request->phone)->first();
+            $user = User::withTrashed()->where('id', $request->phone)->first();
 
             $answers = [
                 '1' => $request->q1,

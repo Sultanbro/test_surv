@@ -821,7 +821,7 @@ class IntellectController extends Controller {
         
         $fields = [ 
             'filter' => $filter,
-            'select' => ['ID']
+            'select' => ['id']
         ];
         
         $query = http_build_query($fields);

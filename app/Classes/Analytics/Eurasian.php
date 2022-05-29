@@ -103,7 +103,7 @@ class Eurasian
 
         ///
         $user_ids = json_decode(ProfileGroup::find(53)->users);
-        $user_ids_1 = User::withTrashed()->whereIn('ID', $user_ids)->where('position_id',32)->where('program_id', 1)->get()->pluck('ID')->toArray();
+        $user_ids_1 = User::withTrashed()->whereIn('id', $user_ids)->where('position_id',32)->where('program_id', 1)->get()->pluck('id')->toArray();
 
         for($i = 1; $i <= $date->daysInMonth; $i++) {
 

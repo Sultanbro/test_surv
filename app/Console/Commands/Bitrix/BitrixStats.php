@@ -113,7 +113,7 @@ class BitrixStats extends Command
                 $bitrix_user = $this->bitrix->searchUser($admin_user->EMAIL);
                 if(!$bitrix_user) continue;
 
-                $this->bitrix_user = $bitrix_user['ID'];
+                $this->bitrix_user = $bitrix_user['id'];
                 $ud = UserDescription::where('user_id', $user_id)->first();
                 if($ud) {
                     $ud->bitrix_id = $this->bitrix_user;

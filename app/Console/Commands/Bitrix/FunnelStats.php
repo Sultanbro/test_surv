@@ -312,7 +312,7 @@ class FunnelStats extends Command
         foreach($leads as $lead) {
            // dump($lead->invite_at . '  == ' . $lead->day_second);
             if($lead->user_id != 0) {
-                $user = User::where('ID', $lead->user_id)->first();
+                $user = User::where('id', $lead->user_id)->first();
 
                 if($user) {
                     $daytype = DayType::whereIn('type', [5,7])

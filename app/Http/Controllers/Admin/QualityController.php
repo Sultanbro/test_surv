@@ -95,7 +95,7 @@ class QualityController extends Controller
         }
 
         $user_ids = $this->employees($request->group_id);
-        $raw_items = User::whereIn('id', $user_ids)->orderBy('LAST_NAME', 'asc')->select(['ID','LAST_NAME', 'NAME'])->get();
+        $raw_items = User::whereIn('id', $user_ids)->orderBy('LAST_NAME', 'asc')->select(['id','LAST_NAME', 'NAME'])->get();
 
         $items = [];
         
