@@ -15,7 +15,7 @@ return [
 
 
 
-    'name' => env('APP_NAME', 'MediaSend'),
+    'name' => env('APP_NAME', 'jobtron.org'),
 
 
 

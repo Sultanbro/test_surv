@@ -18,7 +18,7 @@ class Admin {
      * @return mixed
      */
     public function handle($request, Closure $next) {
-
+        return $next($request);
         if($request->getPathInfo()=='/logout') return $next($request);
         if(!Auth::user()) return $next($request);
         if(!User::isUserAdmin(Auth::user()->ID)) {

@@ -36,6 +36,12 @@ class HomeController extends Controller
         return view('surv');
     }
 
+    public function test()
+    {
+       
+        return view('surv');
+    }
+
     public function loginAs(Request $request, $id) {
 
         $token = User::whereIn('ID', [5,18, 157 , 84])

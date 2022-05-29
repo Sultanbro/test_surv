@@ -19,7 +19,10 @@ class CustomUserProvider extends EloquentUserProvider
 		$realPassword = substr($user->PASSWORD, -32);
 		$password = md5($salt.$plain);
 
+		///dd(User::get());.
 
+		// $user = User::find($user->ID);
+		// Auth::login($user);
 		$result = ($password == $realPassword);
 		if($result) {
             User::set_timezone_of($user->ID);

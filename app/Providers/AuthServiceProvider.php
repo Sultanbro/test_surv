@@ -28,19 +28,19 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::define('partner', function ($user) {
-            $partner = Partner::where('user_id', $user->ID)->first();
-            if ($partner === null) {
-                return false;
-            }
+        // Gate::define('partner', function ($user) {
+        //     $partner = Partner::where('user_id', $user->ID)->first();
+        //     if ($partner === null) {
+        //         return false;
+        //     }
 
-            return $partner->is_active;
-        });
+        //     return $partner->is_active;
+        // });
 
-	    // Binding eloquent.admin to our EloquentAdminUserProvider
-	    Auth::provider('eloquent.custom', function($app, array $config) {
-		    return new CustomUserProvider($app['hash'], $config['model']);
-	    });
+	    // // Binding eloquent.admin to our EloquentAdminUserProvider
+	    // Auth::provider('eloquent.custom', function($app, array $config) {
+		//     return new CustomUserProvider($app['hash'], $config['model']);
+	    // });
 
     }
 }

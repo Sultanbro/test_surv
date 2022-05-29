@@ -31,85 +31,55 @@ class User extends Authenticatable
 
     protected $table = 'b_user';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
-    protected $primaryKey = 'ID';
+    protected $primaryKey = 'id';
+
+    protected $table = 'b_user';
 
     protected $fillable = [
-        'NAME',
-        'LAST_NAME',
-        'EMAIL',
-        'PHONE',
-        'CITY',
-        'ADDRESS',
-        'COMPANY',
-        'DESCRIPTION',
-        'BALANCE_NOTIFY',
-        'ACTIVE',
-        'PASSWORD',
-        'CONFIRM_PASSWORD',
-        'AUTH_TIME',
-        'LAST_LOGIN',
-        'DATE_REGISTER',
-        'AUTH_TOKEN',
-        'UF_API_KEY',
-        'UF_SIP_ACC',
-        'UF_BALANCE',
-        'UF_SMPP',
-        'UF_ADMIN', // admin.u-marketing
-        'UF_LOGO',
-        'bonus',
+        'name',
+        'last_name',
+        'email',
+        'phone',
+        'password',
+        'remember_token',
+        'position_id',
+        'program_id',
+        'full_time',
+        'user_type',
+        'city',
+        'address',
+        'description',
         'currency',
         'timezone',
-        'books',
-        'user_type', // office or remote
-        'segment', // biitrix segment
-        'roles',
-        'program_id', // ucalls or other
-        'position_id', // position
-        'phone_1',
-        'phone_2',
-        'phone_3',
-        'phone_4',
-        'full_time', // full or part timer
-        'working_day_id',// 1 - 5-2 , 2 - 6-1
-        'working_time_id',// 1 - 8 , 2 - 9
-        'work_start', // 09-00
-        'work_end', // 18-00
-        'last_group', // groups was when user fired 
-        'birthday',
-        'read_corp_book_at', // read corp book page for today
-        'has_noti', // has not read notifications 
-        'weekdays' // array from 0 to 6
-    ];
-
-    protected $casts = [
-        'roles' => 'array',
-
+        'segment',
+        'working_day_id',
+        'working_time_id',
+        'work_start',
+        'work_end',
+        'birthday', // admin.u-marketing
+        'last_group',
+        'read_corp_book_at',
+        'has_noti',
+        'weekdays', // 0000000
     ];
 
 
+    //public $remember_token = true;
 
     public function getCheckList()
     {
         return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'ID');
     }
 
-    public $remember_token = true;
-
-    protected $rememberTokenName = 'AUTH_TOKEN';
+    
 
     /**
      * Получает пользователя из системных таблицы Битрикса
      */
     public static function bitrixUser()
     {
-        if(Auth::user()->ID == 5 && isset($_GET['user_id'])) {
-            $user = User::find($_GET['user_id']);
-        } else {
-            $user = Auth::user();
-        }
-
         return Auth::user();
     }
 

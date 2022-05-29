@@ -17,19 +17,19 @@ class UserActivity
     public function handle($request, Closure $next)
     {
         \Debugbar::disable();
-        if (Auth::check()) {
-            $user = Auth::user();
-            $user->LAST_LOGIN = date('Y-m-d H:i:s');
-            $user->reminder_sent = 0;
-            $user->audio_reminder_sent = 0;
-            $user->save();
+        // if (Auth::check()) {
+        //     $user = Auth::user();
+        //     $user->LAST_LOGIN = date('Y-m-d H:i:s');
+        //     $user->reminder_sent = 0;
+        //     $user->audio_reminder_sent = 0;
+        //     $user->save();
 
-            // if($user->ID != 5) { // Али Акпанов Показать debugbar
-            //     \Debugbar::disable();
-            // }
-        } else {
-            \Debugbar::disable();
-        }
+        //     // if($user->ID != 5) { // Али Акпанов Показать debugbar
+        //     //     \Debugbar::disable();
+        //     // }
+        // } else {
+        //     \Debugbar::disable();
+        // }
 
         
         return $next($request);

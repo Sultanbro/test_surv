@@ -70,13 +70,47 @@ class LoginController extends Controller
         } elseif (filter_var($login, FILTER_VALIDATE_EMAIL)) {
             $field = 'EMAIL';
         } 
-        // else {
-        //     $field = 'username';
-        // }
+        else {
+            $field = 'EMAIL';
+        }
 
         request()->merge([$field => $login]);
 
         return $field;
+    }
+
+
+    public function login(Request $request)
+    {   
+        $field = $this->username();
+
+        $request[$field] = $request->username;
+
+        $credentials = [
+            $field => $request[$field],
+            'password' => $request->password,
+        ];
+        
+       
+
+        if (\Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            if(request()->getHost() == config('app.name')) {
+                $link = '/';
+            } else {
+                $link = $this->redirectTo;
+            }
+
+            return redirect($link);
+        } else {
+            return back()->withErrors([
+                'EMAIL' => 'The provided credentials do not match our records.',
+            ])->onlyInput('EMAIL');
+        }   
+        
+     
+       
     }
 }
 

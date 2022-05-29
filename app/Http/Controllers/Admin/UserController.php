@@ -72,9 +72,6 @@ class UserController extends Controller
 {
     public function __construct()
     {
-
-//        dd(auth()->user(),'imashev');
-
         $this->middleware('auth');
     }
 
@@ -112,6 +109,7 @@ class UserController extends Controller
     public function profile(Request $request)
     {
 
+       
 
         $user = Auth::user();
 
@@ -941,7 +939,7 @@ class UserController extends Controller
         return [
             'users' => $users,
             'can_login_users' => [5,18],
-            'auth_token' => Auth::user()->AUTH_TOKEN,
+            'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->ID,
             'segments' => Segment::pluck('name', 'id'),
             'groups' => [0 => 'Выберите группу'] + $groups,
