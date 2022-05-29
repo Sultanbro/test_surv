@@ -131,11 +131,11 @@ class FillQualityGrades extends Command
         $user_ids = json_decode(ProfileGroup::find($group_id)->users);
 
         return User::withTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0)
-                ->whereIn('b_user.ID', $user_ids)
-                ->select(['b_user.ID', 'b_user.EMAIL', 'b_user.NAME', 'b_user.LAST_NAME'])
+                ->whereIn('users.id', $user_ids)
+                ->select(['users.id', 'b_user.EMAIL', 'b_user.NAME', 'b_user.LAST_NAME'])
                 ->get();
     }
 

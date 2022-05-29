@@ -45,10 +45,10 @@ class SalaryIndexation extends Command
     {
         // Приняты в BP
         $users = User::where('UF_ADMIN', 1)
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
-            //->where('b_user.ID', 5) // При запуске на прод убрать
-            ->select('b_user.ID', 'ud.applied', 'ud.is_trainee','b_user.DATE_REGISTER', 'b_user.position_id')
+            //->where('users.id', 5) // При запуске на прод убрать
+            ->select('users.id', 'ud.applied', 'ud.is_trainee','b_user.DATE_REGISTER', 'b_user.position_id')
             ->get();
 
         foreach($users as $user) {

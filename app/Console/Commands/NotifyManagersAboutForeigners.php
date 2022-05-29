@@ -52,7 +52,7 @@ class NotifyManagersAboutForeigners extends Command
         $from = Carbon::now()->subDays(7)->format('Y-m-d'); // с Предыдущего понедельника
 		$to = Carbon::now()->subDays(3)->format('Y-m-d'); // по Предыдущую пятницу
 
-        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->where('UF_ADMIN', 1)
             ->get();

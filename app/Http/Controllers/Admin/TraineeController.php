@@ -85,10 +85,10 @@ class TraineeController extends Controller
         $group = ProfileGroup::find($id);
         if(!$group) abort(404);
         
-        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 1)
             ->where('UF_ADMIN', 1) 
-            ->whereIn('b_user.ID', json_decode($group->users, true))
+            ->whereIn('users.id', json_decode($group->users, true))
             ->select(DB::raw("CONCAT_WS(' ', LAST_NAME, NAME) as name"), 'b_user.ID as id')->get()->sortBy('name')->toArray();
        // $users = User::where('UF_ADMIN', 1)->select(DB::raw("CONCAT_WS(' ', LAST_NAME, NAME) as name"), 'ID as id')->get()->sortBy('name')->toArray();
 

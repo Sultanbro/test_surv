@@ -545,7 +545,7 @@ class UserController extends Controller
             $indicators['info']['applied'] = $arr[RM::S_APPLIED]['fact']; 
             $indicators['info']['remain_apply'] = $arr[RM::S_APPLIED]['plan'] - $arr[RM::S_APPLIED]['fact']; 
 
-            $x_count = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $x_count = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1)
                 ->get()
@@ -554,7 +554,7 @@ class UserController extends Controller
             $indicators['info']['working'] = $x_count;
 
             $training_users = Trainee::whereNull('applied')->pluck('user_id')->toArray();
-            $t_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $t_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 1)
                 ->where('UF_ADMIN', 1)
                 ->get();
@@ -649,7 +649,7 @@ class UserController extends Controller
             //$users = User::withTrashed()->whereIn('EMAIL', $array_accounts_email);
 
             $users = User::withTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1);
 
             if ($request['start_date']) $users = $users->whereDate('DATE_REGISTER', '>=', $request['start_date']);
@@ -677,7 +677,7 @@ class UserController extends Controller
 
             //$users = User::onlyTrashed()->whereIn('EMAIL', $array_accounts_email); 
             $users = User::onlyTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0);
             
@@ -685,14 +685,14 @@ class UserController extends Controller
             if ($request['end_date_deactivate']) $users = $users->whereDate('deactivate_date', '<=', $request['end_date_deactivate']);
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
             // $trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
-            // $users = $users->whereNotIn('b_user.ID', $trainees);
+            // $users = $users->whereNotIn('users.id', $trainees);
             
         } elseif(isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
             $users_1 = User::where('UF_ADMIN', 1)
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
-                ->get(['b_user.ID'])
+                ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
 
@@ -704,7 +704,7 @@ class UserController extends Controller
             $users_1 = array_diff($users_1 ,array_unique($downloads));
             
             $users = User::where('UF_ADMIN', 1)
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
                 ->where(function($query){
                     $query->whereNull('b_user.position_id')
@@ -717,12 +717,12 @@ class UserController extends Controller
                             ->orWhereNull('b_user.working_time_id');
                 })
                 ->orWhere('is_trainee', 0)
-                ->whereIn('b_user.ID', array_values($users_1));
+                ->whereIn('users.id', array_values($users_1));
             
 
         } elseif(isset($request['filter']) && $request['filter'] == 'trainees') {
 
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 1);
             
@@ -734,7 +734,7 @@ class UserController extends Controller
             
         } else {
 
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0);
             
@@ -749,7 +749,7 @@ class UserController extends Controller
 
 
         $users = $users->get([
-            'b_user.ID', 
+            'users.id', 
             'b_user.EMAIL',  
             'b_user.user_type',
             'b_user.segment as segment',
@@ -1115,9 +1115,9 @@ class UserController extends Controller
         $arr = compact('positions', 'groups', 'timezones', 'programs', 'workingDays', 'workingTimes', 'corpbooks');
 
         if($id != 0) {
-            $user = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $user = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->withTrashed()
-                ->where('b_user.ID', $id)
+                ->where('users.id', $id)
                 ->with(['zarplata', 'downloads', 'user_description'])
                 ->first();
             

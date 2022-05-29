@@ -271,8 +271,8 @@ class FunnelStats extends Command
         //     $hired = array_key_exists('total', $hired) ? $hired['total'] : 0;
         
         $hired_users = User::withTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-            ->leftJoin('bitrix_leads as bl', 'bl.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->leftJoin('bitrix_leads as bl', 'bl.user_id', '=', 'users.id')
             ->where('bl.segment', $segment_id)
             ->where('b_user.UF_ADMIN', 1)
             ->where('ud.is_trainee', 0)

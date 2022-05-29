@@ -267,7 +267,7 @@ class SalaryController extends Controller
         $date = Carbon::parse($date)->day(1);
 
         if($user_types == 0) {// Действующие
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1);
         } 
@@ -290,13 +290,13 @@ class SalaryController extends Controller
 
             $users_ids = $fired_users;
 
-            $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                  ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1);
         } 
 
         if($user_types == 2) {// Стажеры
-            $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 1)
                 ->where('UF_ADMIN', 1);
         } 
@@ -334,9 +334,9 @@ class SalaryController extends Controller
                     ->whereYear('enter', $date->year)
                     ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
             },
-        ])->whereIn('b_user.ID', array_unique($users_ids))
+        ])->whereIn('users.id', array_unique($users_ids))
             ->get([
-                'b_user.ID', 
+                'users.id', 
                 'b_user.EMAIL', 
                 'deactivate_date',
                  DB::raw("CONCAT(last_name,' ',name) as full_name"),
@@ -725,10 +725,10 @@ class SalaryController extends Controller
 
         // if(Auth::user()->id == 5) dump(now());
 
-        $working_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $working_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->where('UF_ADMIN', 1)
-            ->whereIn('b_user.ID', $users_ids);
+            ->whereIn('users.id', $users_ids);
 
 
 
@@ -760,11 +760,11 @@ class SalaryController extends Controller
             $fired_users = array_merge($fired_users, $fired_users_2);
             $fired_users = array_unique(array_values($fired_users));
 
-            // $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            // $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             //      ->where('ud.is_trainee', 0)
             //     ->where('UF_ADMIN', 1);
 
-        //  me(User::withTrashed()->whereIn('b_user.ID', array_unique($old_users))->get()->toArray());
+        //  me(User::withTrashed()->whereIn('users.id', array_unique($old_users))->get()->toArray());
        
 
             ///////////
@@ -981,9 +981,9 @@ class SalaryController extends Controller
     
         $users = User::join('working_times as wt', 'wt.id', '=', 'b_user.working_time_id')
             ->join('working_days as wd', 'wd.id', '=', 'b_user.working_day_id')
-            ->join('zarplata as z', 'z.user_id', '=', 'b_user.ID')
-            ->leftjoin('timetracking as t', 't.user_id', '=', 'b_user.ID')
-            ->whereIn('b_user.ID', array_unique($users_ids))
+            ->join('zarplata as z', 'z.user_id', '=', 'users.id')
+            ->leftjoin('timetracking as t', 't.user_id', '=', 'users.id')
+            ->whereIn('users.id', array_unique($users_ids))
             ->withTrashed()
             ->selectRaw("b_user.ID as ID,
                         b_user.PHONE as PHONE,

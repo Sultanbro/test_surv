@@ -54,10 +54,10 @@ class Bonus extends Model
         $awards = []; // bonuses
         $comments = []; // bonuses
         
-        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-            ->whereIn('b_user.ID', $user_ids)
+        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->whereIn('users.id', $user_ids)
             ->where('is_trainee', 0)
-            ->get(['b_user.ID'])->pluck('id')->toArray();
+            ->get(['users.id'])->pluck('id')->toArray();
 
         foreach ($users as $user_id) { //  fill $awards array
             $awards[$user_id] = 0;

@@ -76,11 +76,11 @@ class NpsController extends Controller
 
         $users = [];
 
-        $_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
             ->whereIn('position_id', [45,55]) // Руководитель, старший специалист группы
-            ->get(['b_user.ID', 'b_user.NAME', 'b_user.LAST_NAME', 'b_user.position_id']);
+            ->get(['users.id', 'b_user.NAME', 'b_user.LAST_NAME', 'b_user.position_id']);
 
         foreach($_users as $user) {
 
@@ -229,12 +229,12 @@ class NpsController extends Controller
 
         foreach($groups as $group) {
             $group_users = ProfileGroup::employees($group->id);
-            $_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0)
-                ->whereIn('b_user.ID', $group_users)
+                ->whereIn('users.id', $group_users)
                 ->where('position_id', $position_id) // Руководитель, старший специалист группы
-                ->get(['b_user.ID', 'b_user.NAME', 'b_user.LAST_NAME']);
+                ->get(['users.id', 'b_user.NAME', 'b_user.LAST_NAME']);
 
             foreach($_users as $user) {
                 if(!in_array($user->id, $user_ids)) {

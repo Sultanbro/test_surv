@@ -112,10 +112,10 @@ class BonusUpdate extends Command
              */
             $group = ProfileGroup::find($this->argument('group_id'));
             $user_ids = json_decode($group->users);
-            $user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-                ->whereIn('b_user.ID', $user_ids)
+            $user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', $user_ids)
                 ->where('is_trainee', 0)
-                ->get(['b_user.ID'])->pluck('id')->toArray();
+                ->get(['users.id'])->pluck('id')->toArray();
 
             // Обнулить award
             $salaries = Salary::where('date', $this->date)

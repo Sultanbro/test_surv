@@ -72,12 +72,12 @@ class EstimateTrainer extends Command
 	public function hasSuperiors($group)
     {
         $user_ids = ProfileGroup::employees($group->id);
-        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
-            ->whereIn('b_user.ID', $user_ids) 
+            ->whereIn('users.id', $user_ids) 
             ->whereIn('position_id', [45,55]) // Руководитель, старший специалист группы
-            ->get(['b_user.ID'])
+            ->get(['users.id'])
             ->count();
 
 		return $users > 0;
@@ -91,12 +91,12 @@ class EstimateTrainer extends Command
         foreach($groups as $group) {
             if($this->hasSuperiors($group)) {
                 $gr_users = ProfileGroup::employees($group->id);
-                $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('UF_ADMIN', 1)
                     ->where('is_trainee', 0)
-                    ->whereIn('b_user.ID', $gr_users)
+                    ->whereIn('users.id', $gr_users)
                     ->whereNotIn('position_id', [45,55]) // Руководитель, старший специалист группы
-                    ->get(['b_user.ID'])
+                    ->get(['users.id'])
                     ->pluck('id')
                     ->toArray();
 

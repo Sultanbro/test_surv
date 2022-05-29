@@ -57,10 +57,10 @@ class MarkTrainees extends Command
 			$users = array_unique($users);
 		}
 
-        $trainees = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $trainees = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('b_user.UF_ADMIN', 1)
             ->where('ud.is_trainee',1)
-            ->whereIn('b_user.ID', $users);
+            ->whereIn('users.id', $users);
 
         if(date('w') == '6') {
             $trainees->where('working_day_id', 2); // 6-1

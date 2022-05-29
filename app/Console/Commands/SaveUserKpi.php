@@ -53,9 +53,9 @@ class SaveUserKpi extends Command
         
         $date = $this->argument('date') ?? date('Y-m-d');
         
-        $users =  User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $users =  User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
-            ->select(['b_user.ID','b_user.LAST_NAME', 'b_user.NAME'])
+            ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME'])
             ->get();
 
         $date = Carbon::parse($date)->day(1)->format('Y-m-d');

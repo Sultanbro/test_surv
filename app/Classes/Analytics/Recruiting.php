@@ -435,7 +435,7 @@ class Recruiting
             // Приняты в BP
             $applied_users_with = User::withTrashed()
                 ->where('UF_ADMIN', 1)
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereYear('ud.applied', $date->year)
                 ->whereMonth('ud.applied', $date->month)
                 ->whereDay('ud.applied', $i)
@@ -451,7 +451,7 @@ class Recruiting
             
             // $applied_users_without = User::withTrashed()
             //     ->where('UF_ADMIN', 1)
-            //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             //     ->whereYear('b_user.DATE_REGISTER', $date->year)
             //     ->whereMonth('b_user.DATE_REGISTER', $date->month)
             //     ->whereDay('b_user.DATE_REGISTER', $i)
@@ -488,7 +488,7 @@ class Recruiting
             //     ->get();
             
             $fired = User::withTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->whereDate('deactivate_date', $date->day($i)->format('Y-m-d'))
                 ->get();
@@ -574,7 +574,7 @@ class Recruiting
             } else {
                // $x_trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
                 
-                $x_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                $x_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('UF_ADMIN', 1)
                     ->where('ud.is_trainee', 0)->get();
                 
@@ -602,7 +602,7 @@ class Recruiting
        
         $quizes = User::onlyTrashed()
                 ->where('UF_ADMIN', 1)
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('quiz_after_fire', '!=', '[]')
                 ->whereDate('deactivate_date', '>=', $start)
                 ->whereDate('deactivate_date', '<=', $end)
@@ -1018,7 +1018,7 @@ class Recruiting
         $causes = [];
 
         $uds = User::onlyTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->where('b_user.UF_ADMIN', 1)
             ->whereYear('ud.fire_date', $date['year'])
@@ -1050,7 +1050,7 @@ class Recruiting
      */
     public static function staff($year) {
 
-        $users_on = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $users_on = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('ud.is_trainee', 0)
             ->whereYear('applied', $year)
@@ -1060,7 +1060,7 @@ class Recruiting
             })->toArray();
         
         $users_off = User::onlyTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
             ->whereYear('deactivate_date', $year)
@@ -1130,11 +1130,11 @@ class Recruiting
         for ($i=1; $i <=12; $i++) { 
 
             $users = User::onlyTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
                 ->whereMonth('deactivate_date', $i)
                 ->whereYear('deactivate_date', $year)
-                ->get(['b_user.ID', 'b_user.deactivate_date']);
+                ->get(['users.id', 'b_user.deactivate_date']);
 
             $staff[0]['m'.$i] = 0;
             $staff[1]['m'.$i] = 0;
@@ -1228,16 +1228,16 @@ class Recruiting
 
                 if($pgu) {
                     $assigneds = User::withTrashed()
-                        ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-                        ->whereIn('b_user.ID', $pgu->assigned)
+                        ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                        ->whereIn('users.id', $pgu->assigned)
                         ->where('is_trainee', 0)
                         ->get();
                     foreach ($assigneds as $us) {
                         $assigned += $us->full_time == 1 ? 1 : 0.5;
                     }
 
-                    $fireds = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-                        ->whereIn('b_user.ID', $pgu->fired)
+                    $fireds = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                        ->whereIn('users.id', $pgu->fired)
                         ->where('is_trainee', 0)
                         ->get();
 
@@ -1284,8 +1284,8 @@ class Recruiting
 
         if($pgu) {
             $assigned = User::withTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-                ->whereIn('b_user.ID', $pgu->assigned)
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', $pgu->assigned)
                 ->where('is_trainee', 0)
                 ->get()
                 ->count();
@@ -1293,8 +1293,8 @@ class Recruiting
             //     $assigned += $us->full_time == 1 ? 1 : 0.5;
             // }
 
-            $fired = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-                ->whereIn('b_user.ID', $pgu->fired)
+            $fired = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', $pgu->fired)
                 ->where('is_trainee', 0)
                 ->get()
                 ->count();
@@ -1346,37 +1346,37 @@ class Recruiting
         } 
         
         $users_off_prev = User::onlyTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
-            ->whereIn('b_user.ID', $prev_employees)
+            ->whereIn('users.id', $prev_employees)
             ->get();
         
         $users_off = User::onlyTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
-            ->whereIn('b_user.ID', $employees_fired)
+            ->whereIn('users.id', $employees_fired)
             ->get();
 
-        $users_on = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $users_on = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('ud.is_trainee', 0)
-            ->whereIn('b_user.ID', $employees)
+            ->whereIn('users.id', $employees)
             ->get();
         
         $applied_users = User::withTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
-            ->whereIn('b_user.ID', array_merge($employees, $prev_employees))
+            ->whereIn('users.id', array_merge($employees, $prev_employees))
             ->whereYear('ud.applied', $date->year)
             ->whereMonth('ud.applied', $date->month)
             ->get(); 
 
-        $users_a = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $users_a = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
-            ->whereIn('b_user.ID', $prev_employees)
+            ->whereIn('users.id', $prev_employees)
             ->get();
 
         $working_prev =  0;
@@ -1384,9 +1384,9 @@ class Recruiting
             $working_prev += $u['full_time'] == 1 ? 1 : 0.5;
         }
 
-        $users_b = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+        $users_b = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
-            ->whereIn('b_user.ID', $employees)
+            ->whereIn('users.id', $employees)
             ->get();
 
         $working =  0;
@@ -1431,10 +1431,10 @@ class Recruiting
         $employees = array_merge(ProfileGroup::employees($group_id, $date, 1), ProfileGroup::employees($group_id, $date, 2));
 
         $users_off = User::withTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
-            ->whereIn('b_user.ID', $employees)
+            ->whereIn('users.id', $employees)
             ->whereYear('ud.applied', $date->year)
             ->whereMonth('ud.applied', $date->month)
             ->get()->count();
@@ -1452,10 +1452,10 @@ class Recruiting
         $employees = array_merge(ProfileGroup::employees($group_id, $date, 1), ProfileGroup::employees($group_id, $date, 2));
 
         $users_off = User::onlyTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
-            ->whereIn('b_user.ID', $employees)
+            ->whereIn('users.id', $employees)
             ->whereYear('deactivate_date', $date->year)
             ->whereMonth('deactivate_date', $date->month)
             ->get()->count();
@@ -1484,10 +1484,10 @@ class Recruiting
             $item['sent'] = $leads->count();
 
             $item['working'] = User::withTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0)
-                ->whereIn('b_user.ID', $leads->pluck('user_id')->toArray())
+                ->whereIn('users.id', $leads->pluck('user_id')->toArray())
                 ->get()
                 ->count();
                 

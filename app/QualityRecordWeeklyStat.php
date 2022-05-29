@@ -25,11 +25,11 @@ class QualityRecordWeeklyStat extends Model
     public static function table($user_ids, $date) {
         $date = Carbon::parse($date);
 
-        $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-            ->whereIn('b_user.ID', $user_ids)
+        $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->whereIn('users.id', $user_ids)
             ->where('is_trainee', 0)
             ->orderBy('LAST_NAME', 'asc')
-            ->select(['b_user.ID','b_user.LAST_NAME', 'b_user.NAME'])
+            ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME'])
             ->get();
 
         $items = [];

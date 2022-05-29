@@ -61,7 +61,7 @@ class Salary extends Model
         // //
 
         $users = User::withTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0) 
             ->with([
                 'salaries' => function ($q) use ($month) {
@@ -91,7 +91,7 @@ class Salary extends Model
                       
                 },
             ])
-        ->whereIn('b_user.ID', $user_ids)
+        ->whereIn('users.id', $user_ids)
         ->oldest('b_user.LAST_NAME')
         ->get();
 
@@ -404,14 +404,14 @@ class Salary extends Model
 
         if($user_types == -1) { // one person
             $users = User::withTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1);
         }
 
 
         if($user_types == 0) {// Действующие
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1);
         } 
@@ -434,13 +434,13 @@ class Salary extends Model
 
             $users_ids = $fired_users;
 
-            $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                  ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1);
         } 
 
         if($user_types == 2) {// Стажеры
-            $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 1)
                 ->where('UF_ADMIN', 1);
         } 
@@ -478,9 +478,9 @@ class Salary extends Model
                     ->whereYear('enter', $date->year)
                     ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
             },
-        ])->whereIn('b_user.ID', array_unique($users_ids))
+        ])->whereIn('users.id', array_unique($users_ids))
             ->get([
-                'b_user.ID', 
+                'users.id', 
                 'b_user.EMAIL', 
                 'deactivate_date',
                  DB::raw("CONCAT(last_name,' ',name) as full_name"),

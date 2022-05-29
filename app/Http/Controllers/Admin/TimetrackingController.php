@@ -799,10 +799,10 @@ class TimetrackingController extends Controller
          */
 
         if($request->user_types == 0) { // Действующие
-            $_user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $_user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1)
-                ->whereIn('b_user.ID', $users_ids)
+                ->whereIn('users.id', $users_ids)
                 ->get()
                 ->pluck('id')
                 ->toArray();
@@ -840,10 +840,10 @@ class TimetrackingController extends Controller
                 } 
             } 
             
-            $_user_ids = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $_user_ids = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1)
-                ->whereIn('b_user.ID', $_user_ids)
+                ->whereIn('users.id', $_user_ids)
                 ->get()
                 ->pluck('id')
                 ->toArray();
@@ -851,10 +851,10 @@ class TimetrackingController extends Controller
 
         if($request->user_types == 2) { // Стажеры
 
-            $_user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $_user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 1)
                 ->where('UF_ADMIN', 1)
-                ->whereIn('b_user.ID', $users_ids)
+                ->whereIn('users.id', $users_ids)
                 ->get()
                 ->pluck('id')
                 ->toArray();
@@ -1134,7 +1134,7 @@ class TimetrackingController extends Controller
         $_others = NotificationTemplate::where('type', NotificationTemplate::OTHER)->get();        
 
         $_notifications = User::withTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.notifications', '!=', '[]')
             ->select(DB::raw("CONCAT_WS(' ',b_user.ID, b_user.LAST_NAME, b_user.NAME) as name"), 'b_user.ID as id')
             ->get()->toArray();
@@ -2172,9 +2172,9 @@ class TimetrackingController extends Controller
     public function getUserNotifications(Request $request) {
       
         $user = User::withTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.notifications', '!=', '[]')
-            ->where('b_user.ID', $request->user_id)
+            ->where('users.id', $request->user_id)
             ->select(DB::raw("CONCAT_WS(' ',b_user.ID, b_user.LAST_NAME, b_user.NAME) as name"), 'b_user.ID as id', 'ud.notifications as notifications')
             ->first();
     
@@ -2301,18 +2301,18 @@ class TimetrackingController extends Controller
             }
 
             if($group->users != null) {
-                $time_exceptions_options = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                $time_exceptions_options = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('ud.is_trainee', 0)
                     ->where('UF_ADMIN', 1)
-                    ->whereIn('b_user.ID', json_decode($group->users)) 
-                    ->get(['b_user.ID', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+                    ->whereIn('users.id', json_decode($group->users)) 
+                    ->get(['users.id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
             }
 
-            $time_exceptions = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+            $time_exceptions = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->where('UF_ADMIN', 1)
-                ->whereIn('b_user.ID', $group->time_exceptions) 
-                ->get(['b_user.ID', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
+                ->whereIn('users.id', $group->time_exceptions) 
+                ->get(['users.id', DB::raw("CONCAT(NAME,' ',LAST_NAME,'-',EMAIL) as EMAIL")]);
         } 
         
         

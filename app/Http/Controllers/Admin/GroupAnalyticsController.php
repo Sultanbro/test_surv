@@ -397,7 +397,7 @@ class GroupAnalyticsController extends Controller
 
             foreach($this->users as $user) {
                 
-                $localUser = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                $localUser = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('ud.is_trainee', 0)
                     ->where('UF_ADMIN', 1)
                     ->where('EMAIL', $user->email)
@@ -1522,7 +1522,7 @@ class GroupAnalyticsController extends Controller
             foreach($this->users as $user) {
                 
                 $localUser = User::withTrashed()
-                        ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                        ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                         ->where('ud.is_trainee', 0)
                         ->where('UF_ADMIN', 1)
                         ->where('EMAIL', $user->email)

@@ -196,11 +196,11 @@ class ProfileGroup extends Model
 
         if($user_types == 0 || $user_types == 1) {
             $users = json_decode($group->users);
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-                ->whereIn('b_user.ID', $users)
+            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', $users)
                 ->where('is_trainee', 0)
                 ->orderBy('LAST_NAME', 'asc')
-                ->select(['b_user.ID','b_user.LAST_NAME', 'b_user.NAME']);
+                ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME']);
                 
             if(count($positions) > 0) $users->whereIn('position_id', $positions);
             $users = $users->get()
@@ -212,13 +212,13 @@ class ProfileGroup extends Model
             $fired_users = [];
             if($date) {
                 $date = Carbon::parse($date);
-                $x_users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                $x_users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('UF_ADMIN', 1)
                     ->where('is_trainee', 0)
                     ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
                     
                     if(count($positions) > 0) $x_users->whereIn('position_id', $positions);
-                    $x_users = $x_users->get(['b_user.ID','b_user.last_group']);
+                    $x_users = $x_users->get(['users.id','b_user.last_group']);
             
                 foreach($x_users as $d_user) {
                     if($d_user->last_group) { 
@@ -244,11 +244,11 @@ class ProfileGroup extends Model
       
         $users = json_decode($this->users);
 
-        $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-            ->whereIn('b_user.ID', $users)
+        $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->whereIn('users.id', $users)
             ->where('is_trainee', 0)
             ->orderBy('LAST_NAME', 'asc')
-            ->select(['b_user.ID','b_user.LAST_NAME', 'b_user.NAME'])
+            ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME'])
             ->get()
             ->pluck('id')
             ->toArray();
@@ -257,11 +257,11 @@ class ProfileGroup extends Model
         if($date) {
             $date = Carbon::parse($date);
             $x_users = User::withTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0)
                 ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
-                ->get(['b_user.ID','b_user.last_group']);
+                ->get(['users.id','b_user.last_group']);
 
           
             foreach($x_users as $d_user) {
@@ -290,13 +290,13 @@ class ProfileGroup extends Model
 
         if($user_types == 0 || $user_types == 1) {
             $users = json_decode($group->users);
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-                ->whereIn('b_user.ID', $users)
+            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', $users)
                 ->where('is_trainee', 0)
                 ->whereYear('ud.applied', $date->year)
                 ->whereMonth('ud.applied', $date->year)
                 ->orderBy('LAST_NAME', 'asc')
-                ->select(['b_user.ID','b_user.LAST_NAME', 'b_user.NAME']);
+                ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME']);
                 
             if(count($positions) > 0) $users->whereIn('position_id', $positions);
             $users = $users->get()
@@ -308,13 +308,13 @@ class ProfileGroup extends Model
             $fired_users = [];
             if($date) {
                 $date = Carbon::parse($date);
-                $x_users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                $x_users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('UF_ADMIN', 1)
                     ->where('is_trainee', 0)
                     ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
                     
                     if(count($positions) > 0) $x_users->whereIn('position_id', $positions);
-                    $x_users = $x_users->get(['b_user.ID','b_user.last_group']);
+                    $x_users = $x_users->get(['users.id','b_user.last_group']);
             
                 foreach($x_users as $d_user) {
                     if($d_user->last_group) { 
@@ -337,11 +337,11 @@ class ProfileGroup extends Model
     {
         $users = json_decode($this->users);
 
-        $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
-            ->whereIn('b_user.ID', $users)
+        $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->whereIn('users.id', $users)
             ->where('is_trainee', 1)
             ->orderBy('LAST_NAME', 'asc')
-            ->select(['b_user.ID','b_user.LAST_NAME', 'b_user.NAME'])
+            ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME'])
             ->get()
             ->pluck('id')
             ->toArray();
@@ -350,11 +350,11 @@ class ProfileGroup extends Model
         if($date) {
             $date = Carbon::parse($date);
             $x_users = User::withTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'b_user.ID')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 1)
                 ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
-                ->get(['b_user.ID','b_user.last_group']);
+                ->get(['users.id','b_user.last_group']);
 
 
           
