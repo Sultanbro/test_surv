@@ -19,7 +19,7 @@
                 </li>
                 @endif
                 <li>
-                    <form action="/logout">
+                    <form action="/logout" method="POST">
                         <button class="link link-start">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Выйти</span>
