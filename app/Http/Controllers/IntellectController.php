@@ -253,7 +253,7 @@ class IntellectController extends Controller {
             if($trainee) {
                 $user = User::withTrashed()->find($trainee->user_id);
                 if($user) {
-                    if($phone) $user->PHONE   = Phone::normalize($phone);
+                    if($phone) $user->phone   = Phone::normalize($phone);
                     if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
                     if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
                     $user->save();
@@ -362,7 +362,7 @@ class IntellectController extends Controller {
                 if($trainee) {
                     $user = User::withTrashed()->find($trainee->user_id);
                     if($user) {
-                        if($phone) $user->PHONE     = Phone::normalize($phone);
+                        if($phone) $user->phone     = Phone::normalize($phone);
                         if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
                         if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
                         $user->save();
@@ -445,7 +445,7 @@ class IntellectController extends Controller {
                     $user = User::withTrashed()->find($trainee->user_id);
                     if($user) {
 
-                        if($phone) $user->PHONE     = Phone::normalize($phone);
+                        if($phone) $user->phone     = Phone::normalize($phone);
                         if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
                         if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
 
@@ -1073,7 +1073,7 @@ class IntellectController extends Controller {
             $users = User::withTrashed()->where('UF_ADMIN', 1)->get();
             
             foreach($users as $user) {
-                $phone = Phone::normalize($user->PHONE);
+                $phone = Phone::normalize($user->phone);
                 if($phone == Phone::normalize($request->phone)) {
                     $ud = UserDescription::where('user_id', $user->id)->first();
                     if(!$ud) {

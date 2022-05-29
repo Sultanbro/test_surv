@@ -33,7 +33,7 @@ class CreateBUserOldTable extends Migration
             $table->char('PERSONAL_GENDER', 1)->nullable();
             $table->string('PERSONAL_BIRTHDATE', 50)->nullable();
             $table->integer('PERSONAL_PHOTO')->nullable();
-            $table->string('PERSONAL_PHONE')->nullable();
+            $table->string('PERSONAL_phone')->nullable();
             $table->string('PERSONAL_FAX')->nullable();
             $table->string('PERSONAL_MOBILE')->nullable();
             $table->string('PERSONAL_PAGER')->nullable();
@@ -48,7 +48,7 @@ class CreateBUserOldTable extends Migration
             $table->string('WORK_DEPARTMENT')->nullable();
             $table->string('WORK_POSITION')->nullable();
             $table->string('WORK_WWW')->nullable();
-            $table->string('WORK_PHONE')->nullable();
+            $table->string('WORK_phone')->nullable();
             $table->string('WORK_FAX')->nullable();
             $table->string('WORK_PAGER')->nullable();
             $table->text('WORK_STREET')->nullable();

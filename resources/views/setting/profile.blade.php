@@ -20,7 +20,7 @@
                 </div>
                 <div class="edit-row">
                     <label class="item-10">Телефон</label>
-                    <div><input type="text" name="phone" value="{{$user->PHONE}}"></div>
+                    <div><input type="text" name="phone" value="{{$user->phone}}"></div>
                 </div>
                 <div class="edit-row">
                     <label class="item-11">Часовой пояс</label>

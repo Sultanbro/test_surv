@@ -66,7 +66,7 @@ class LoginController extends Controller
         $login = request()->input('username');
 
         if(is_numeric($login)){
-            $field = 'PHONE';
+            $field = 'phone';
         } elseif (filter_var($login, FILTER_VALIDATE_email)) {
             $field = 'email';
         } 

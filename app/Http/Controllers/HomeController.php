@@ -158,7 +158,7 @@ class HomeController extends Controller
             $users = User::withTrashed()->where('UF_ADMIN', 1)->get();
             
             foreach($users as $user) {
-                $phone = Phone::normalize($user->PHONE);
+                $phone = Phone::normalize($user->phone);
                 if($phone == Phone::normalize($request->phone)) {
                     $ud = UserDescription::where('user_id', $user->id)->first();
                     if(!$ud) {

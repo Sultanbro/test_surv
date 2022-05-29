@@ -65,12 +65,12 @@ class NotifyManagersAboutForeigners extends Command
             //     continue;
             // }
 
-            $phone = Phone::normalize($user->PHONE ?? '0');
+            $phone = Phone::normalize($user->phone ?? '0');
             $code = substr($phone,0,2);
           
             if($phone && strlen($phone) >= 11 && !in_array($code, ['77', '87'])) {
                 $groups = $user->inGroups();
-                $msg_fragment = $user->PHONE . ' : ' .$user->name . ' ' . $user->last_name . '<br>';
+                $msg_fragment = $user->phone . ' : ' .$user->name . ' ' . $user->last_name . '<br>';
 
                 if($groups) {
 

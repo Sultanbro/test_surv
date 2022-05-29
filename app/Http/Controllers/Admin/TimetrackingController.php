@@ -738,7 +738,7 @@ class TimetrackingController extends Controller
         // Приглашение в битрикс
 
         $whatsapp = new IC();
-        $wphone = Phone::normalize($user->PHONE);
+        $wphone = Phone::normalize($user->phone);
         $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
         //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
@@ -1807,7 +1807,7 @@ class TimetrackingController extends Controller
                 if($trainee->lead_id != 0) {
                     $lead_id = $trainee->lead_id;
                 } else { 
-                    $lead = Lead::where('phone', Phone::normalize($targetUser->PHONE))->orderBy('id', 'desc')->first();
+                    $lead = Lead::where('phone', Phone::normalize($targetUser->phone))->orderBy('id', 'desc')->first();
                     if($lead) {
                         $lead_id = $lead->lead_id;
                     } else {
@@ -1954,7 +1954,7 @@ class TimetrackingController extends Controller
                 if($trainee->lead_id != 0) {
                     $lead_id = $trainee->lead_id;
                 } else {
-                    $lead = Lead::where('phone', $targetUser->PHONE)->orderBy('id', 'desc')->first();
+                    $lead = Lead::where('phone', $targetUser->phone)->orderBy('id', 'desc')->first();
                     if($lead) {
                         $lead_id = $lead->lead_id;
                     } else {
@@ -2034,7 +2034,7 @@ class TimetrackingController extends Controller
                 if($trainee->lead_id != 0) {
                     $lead_id = $trainee->lead_id;
                 } else {
-                    $lead = Lead::where('phone', $targetUser->PHONE)->orderBy('id', 'desc')->first();
+                    $lead = Lead::where('phone', $targetUser->phone)->orderBy('id', 'desc')->first();
                     if($lead) {
                         $lead_id = $lead->lead_id;
                     } else {

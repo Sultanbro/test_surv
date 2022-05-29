@@ -708,7 +708,7 @@ class UserController extends Controller
                 ->where('is_trainee', 0)
                 ->where(function($query){
                     $query->whereNull('users.position_id')
-                            ->orWhereNull('users.PHONE')
+                            ->orWhereNull('users.phone')
                             ->orWhereNull('users.phone_1')
                             ->orWhereNull('users.phone_2')
                             ->orWhereNull('users.phone_3')
@@ -762,7 +762,7 @@ class UserController extends Controller
             'users.deactivate_date',
             'users.last_group',
             'users.position_id',
-            'users.PHONE',
+            'users.phone',
             'users.phone_1',
             'users.phone_2',
             'users.birthday',
@@ -916,7 +916,7 @@ class UserController extends Controller
                     9 => $user->applied, 
                     10 => $user->deactivate_date, 
                     11 => $user->fire_cause, 
-                    12 => $user->PHONE, 
+                    12 => $user->phone, 
                     13 => $user->phone_1, 
                     14 => $user->phone_2, 
                     15 => $user->birthday, 
@@ -1334,7 +1334,7 @@ class UserController extends Controller
                 'program_id' => (int)$request['program_type'],
                 'working_day_id' => (int)$request['working_days'],
                 'working_time_id' => (int)$request['working_times'],
-                'PHONE' => $request['phone'],
+                'phone' => $request['phone'],
                 'phone_1' => $request['phone_1'],
                 'phone_2' => $request['phone_2'],
                 'phone_3' => $request['phone_3'],
@@ -1364,7 +1364,7 @@ class UserController extends Controller
                 'program_id' => (int)$request['program_type'],
                 'working_day_id' => (int)$request['working_days'],
                 'working_time_id' => (int)$request['working_times'],
-                'PHONE' => $request['phone'],
+                'phone' => $request['phone'],
                 'phone_1' => $request['phone_1'],
                 'phone_2' => $request['phone_2'],
                 'phone_3' => $request['phone_3'],
@@ -1418,7 +1418,7 @@ class UserController extends Controller
             $is_trainee = 0;
 
             $whatsapp = new IC();
-            $wphone = Phone::normalize($user->PHONE);
+            $wphone = Phone::normalize($user->phone);
             $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
             //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
             
@@ -1712,7 +1712,7 @@ class UserController extends Controller
         $user->email = strtolower($request['email']);
         $user->name = $request['name'];
         $user->last_name = $request['last_name'];
-        $user->PHONE = $request['phone'];
+        $user->phone = $request['phone'];
         $user->phone_1 = $request['phone_1'];
         $user->phone_2 = $request['phone_2'];
         $user->phone_3 = $request['phone_3'];
@@ -1796,7 +1796,7 @@ class UserController extends Controller
                 $trainee->save();
 
                 $whatsapp = new IC();
-                $wphone = Phone::normalize($user->PHONE);
+                $wphone = Phone::normalize($user->phone);
                 $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
                 //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
@@ -2302,7 +2302,7 @@ class UserController extends Controller
                 if($trainee->lead_id != 0 && $trainee->lead_id) {
                     $lead = Lead::where('lead_id', $trainee->lead_id)->orderBy('id', 'desc')->first();
                 } else {
-                    $lead = Lead::where('phone', $user->PHONE)->orderBy('id', 'desc')->first();
+                    $lead = Lead::where('phone', $user->phone)->orderBy('id', 'desc')->first();
                 }
                 
                 if($lead) {

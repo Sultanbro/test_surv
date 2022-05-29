@@ -166,7 +166,7 @@ export default {
                     if(response.data.items.length > 0) _this.showStepTwo = true;
                     _this.users = response.data.users
                     _this.users.push({
-                        ID: 0,
+                        id: 0,
                         name: '',
                         last_name: '',
                     })

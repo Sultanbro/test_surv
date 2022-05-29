@@ -19,7 +19,7 @@ class UserAddFields extends Migration
             $table->string('COMPANY')->nullable()->after('email');
             $table->text('ADDRESS')->nullable()->after('email');
             $table->string('CITY')->nullable()->after('email');
-            $table->string('PHONE')->nullable()->after('email');
+            $table->string('phone')->nullable()->after('email');
         });
     }
 

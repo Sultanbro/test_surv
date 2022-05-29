@@ -77,7 +77,7 @@ class InviteToBitrixAndAdmin extends Command
            
        
             $x++;
-            $wphone = Phone::normalize($user->PHONE);
+            $wphone = Phone::normalize($user->phone);
             //dump($user->id . '   == ' . $wphone);
 
             

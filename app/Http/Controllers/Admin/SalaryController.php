@@ -986,7 +986,7 @@ class SalaryController extends Controller
             ->whereIn('users.id', array_unique($users_ids))
             ->withTrashed()
             ->selectRaw("users.ID as ID,
-                        users.PHONE as PHONE,
+                        users.phone as phone,
                         users.program_id as program_id,
                         CONCAT(users.last_name,' ',users.name) as full_name,
                         users.working_time_id as working_time_id,
@@ -1004,7 +1004,7 @@ class SalaryController extends Controller
                         users.currency as currency,
                         CONCAT('KASPI', '') as card
                         ")
-            ->groupBy('id', 'PHONE', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary', 
+            ->groupBy('id', 'phone', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary', 
             'card_kaspi', 'card_jysan', 'jysan', 'kaspi','kaspi_cardholder','jysan_cardholder', 'card', 'program_id', 'birthday','currency', 'working_day_id')
             ->get();
         
@@ -1342,7 +1342,7 @@ class SalaryController extends Controller
                         0 => $user->full_name, // Действующие
                         1 => $cardholder, // Card Holder name
                         2 => $user->birthday ? floor((strtotime(now()) - strtotime($user->birthday)) / 3600 / 24 / 365) : '', // Возраст
-                        3 => $user->PHONE ? ' +' . Phone::normalize($user->PHONE) : '', 
+                        3 => $user->phone ? ' +' . Phone::normalize($user->phone) : '', 
                         4 => $cards, // Номер карты 
                         5 => $workedDays, // отработанные дни
                         6 => $workDays, // рабочие дни
@@ -1367,7 +1367,7 @@ class SalaryController extends Controller
                         0 => $user->full_name, // Действующие
                         1 => $cardholder, // Card Holder name
                         2 => $user->birthday ? floor((strtotime(now()) - strtotime($user->birthday)) / 3600 / 24 / 365) : '', // Возраст
-                        3 => $user->PHONE ? ' +' . Phone::normalize($user->PHONE) : '', 
+                        3 => $user->phone ? ' +' . Phone::normalize($user->phone) : '', 
                         4 => $cards, // Номер карты 
                         5 => $workedDays, // отработанные дни
                         6 => $workDays, // рабочие дни

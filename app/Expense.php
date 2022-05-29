@@ -32,7 +32,7 @@ class Expense extends Model {
         $user = User::find($user_id);
 
         if ($user->notify_sent <= 0 && $user->UF_BALANCE < 2000 && $user->UF_BALANCE > 100 && $user->currency == 'kzt'){
-          $phone = $user->PHONE;
+          $phone = $user->phone;
           $out = array();
           $url = 'https://cp.u-marketing.org';
           if(!empty($phone)){
@@ -55,7 +55,7 @@ class Expense extends Model {
           $user->save();
         } else if ($user->notify_sent <= 1 && $user->UF_BALANCE < 100 && $user->currency == 'kzt') {
 
-          $phone = $user->PHONE;
+          $phone = $user->phone;
           $out = array();
           $url = 'https://cp.u-marketing.org';
           if(!empty($phone)){

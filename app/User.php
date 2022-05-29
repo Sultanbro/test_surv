@@ -361,11 +361,11 @@ class User extends Authenticatable
             }
 
                 
-            if($user->PHONE && $ud) {
+            if($user->phone && $ud) {
 
 
                 $whatsapp = new IC();
-                $wphone = Phone::normalize($user->PHONE);
+                $wphone = Phone::normalize($user->phone);
                 if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://admin.u-marketing.org/quiz_after_fire?phone='. $wphone);
                     
                 if($bitrixUser['id'] != 0) {

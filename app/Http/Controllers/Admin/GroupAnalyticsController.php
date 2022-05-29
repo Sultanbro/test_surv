@@ -791,7 +791,7 @@ class GroupAnalyticsController extends Controller
                     'working_day_id' => 2,
                     'working_time_id' => 2,
                     'full_time' => $full_time,
-                    'PHONE' => $lead->phone,
+                    'phone' => $lead->phone,
                     'phone_1' => $lead->phone_2,
                     'phone_2' => $lead->phone_3,
                     'phone_3' => null,
@@ -1071,7 +1071,7 @@ class GroupAnalyticsController extends Controller
      * Сформировать сообщение для руководителя на ватсап
      */
     private function msgForGroupLeader(String $msg, User $user) {
-        $msg .= $user->PHONE;
+        $msg .= $user->phone;
         if($user->phone_1) $msg .= ', ' . $user->phone_1;
         if($user->phone_2) $msg .= ', ' . $user->phone_2;
         $msg .= ' : ' . $user->last_name . ' ' . $user->name . '<br>';

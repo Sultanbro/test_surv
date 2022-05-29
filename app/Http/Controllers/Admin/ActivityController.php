@@ -359,7 +359,7 @@ class ActivityController extends Controller
 
         try {
             $user = $users->filter(function ($user) use ($name, $last_name) {
-                return $user->NAME == $name || $user->LAST_NAME == $last_name;
+                return $user->name == $name || $user->last_name == $last_name;
             })->first();
         } catch (\Exception $e) {
             dd($fullname);
@@ -378,7 +378,7 @@ class ActivityController extends Controller
             $users = array_unique($users);
         } 
 
-        $_users = User::whereIn('id', $users)->orderBy('LAST_NAME', 'asc')->get();
+        $_users = User::whereIn('id', $users)->orderBy('last_name', 'asc')->get();
         return $_users;
     }
 

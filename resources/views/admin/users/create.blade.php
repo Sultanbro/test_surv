@@ -771,7 +771,7 @@
                                                 <label for="phone" class="col-sm-4 col-form-label font-weight-bold">Мобильный <span class="red">*</span></label>
                                                 <div class="col-sm-8">
                                                     <input class="form-control" class="form-control mr-1 col-sm-8" type="text"
-                                                    value="@if(isset($user)){{$user->PHONE}}@else{{old('phone')}}@endif"
+                                                    value="@if(isset($user)){{$user->phone}}@else{{old('phone')}}@endif"
                                                     name="phone" id="phone" placeholder="Телефон">
                                                 </div>
                                             </div>

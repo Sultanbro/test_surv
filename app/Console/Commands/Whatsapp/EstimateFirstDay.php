@@ -98,7 +98,7 @@ class EstimateFirstDay extends Command
         $user = User::find($user_id);
         
         if($user) {
-            $phone = Phone::normalize($user->PHONE);
+            $phone = Phone::normalize($user->phone);
             if($phone) {
                 Whatsapp::send($phone, $this->msg($user->id));
                 $this->line('Sent: ' . $phone);

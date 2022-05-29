@@ -94,7 +94,7 @@ class SettingController extends Controller
             $user = User::find(Auth::user()->id);
             $user->name = $request->name;
             $user->last_name = $request->last_name;
-            $user->PHONE = $request->phone;
+            $user->phone = $request->phone;
             $user->CITY = $request->city;
             $user->ADDRESS = $request->address;
             $user->COMPANY = $request->company_name;
@@ -891,7 +891,7 @@ class SettingController extends Controller
             Log::info('Transaction Cancelled');
             $idUser = $payment->id_user; // id пользователя
             $user = User::find($idUser);
-            $phone = $user->PHONE;
+            $phone = $user->phone;
 
             if ($phone <> '') {
                 $out = array();
@@ -1145,7 +1145,7 @@ class SettingController extends Controller
 
                 $idUser = $request->userID; // id пользователя
                 $user = User::find($idUser);
-                $phone = $user->PHONE;
+                $phone = $user->phone;
 
                 if ($phone <> '') {
                     $out = array();
