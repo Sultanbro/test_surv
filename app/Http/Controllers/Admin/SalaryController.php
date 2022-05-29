@@ -337,14 +337,14 @@ class SalaryController extends Controller
         ])->whereIn('users.id', array_unique($users_ids))
             ->get([
                 'users.id', 
-                'b_user.EMAIL', 
+                'users.EMAIL', 
                 'deactivate_date',
                  DB::raw("CONCAT(last_name,' ',name) as full_name"),
                  'user_type',
-                'b_user.DATE_REGISTER',
+                'users.DATE_REGISTER',
                  'full_time',
-                 'b_user.working_day_id',
-                 'b_user.working_time_id',
+                 'users.working_day_id',
+                 'users.working_time_id',
                  'headphones_amount',
                  'headphones_date'
             ]);
@@ -979,19 +979,19 @@ class SalaryController extends Controller
 
     private function getSheet($users_ids, $date, $group_id) {
     
-        $users = User::join('working_times as wt', 'wt.id', '=', 'b_user.working_time_id')
-            ->join('working_days as wd', 'wd.id', '=', 'b_user.working_day_id')
+        $users = User::join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
+            ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
             ->leftjoin('timetracking as t', 't.user_id', '=', 'users.id')
             ->whereIn('users.id', array_unique($users_ids))
             ->withTrashed()
-            ->selectRaw("b_user.ID as ID,
-                        b_user.PHONE as PHONE,
-                        b_user.program_id as program_id,
-                        CONCAT(b_user.last_name,' ',b_user.name) as full_name,
-                        b_user.working_time_id as working_time_id,
-                        b_user.working_day_id as working_day_id,
-                        b_user.birthday as birthday,
+            ->selectRaw("users.ID as ID,
+                        users.PHONE as PHONE,
+                        users.program_id as program_id,
+                        CONCAT(users.last_name,' ',users.name) as full_name,
+                        users.working_time_id as working_time_id,
+                        users.working_day_id as working_day_id,
+                        users.birthday as birthday,
                         wd.name as workDay,
                         wt.time as workTime,
                         z.zarplata as salary,
@@ -1001,7 +1001,7 @@ class SalaryController extends Controller
                         z.card_jysan as card_jysan,
                         z.kaspi as kaspi,
                         z.jysan as jysan,
-                        b_user.currency as currency,
+                        users.currency as currency,
                         CONCAT('KASPI', '') as card
                         ")
             ->groupBy('id', 'PHONE', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary', 

@@ -13,7 +13,7 @@ class AddNotifySentToBUser extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->tinyInteger('notify_sent')->default(0)->after('BALANCE_NOTIFY');
         });
     }
@@ -25,7 +25,7 @@ class AddNotifySentToBUser extends Migration
      */
     public function down()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('notify_sent');
         });
     }

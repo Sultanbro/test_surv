@@ -13,7 +13,7 @@ class AddMaxSessionToUserTable extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->integer('max_sessions')->nullable();
         });
     }
@@ -25,7 +25,7 @@ class AddMaxSessionToUserTable extends Migration
      */
     public function down()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('max_sessions');
         });
     }

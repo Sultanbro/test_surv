@@ -80,7 +80,7 @@ class NpsController extends Controller
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
             ->whereIn('position_id', [45,55]) // Руководитель, старший специалист группы
-            ->get(['users.id', 'b_user.NAME', 'b_user.LAST_NAME', 'b_user.position_id']);
+            ->get(['users.id', 'users.NAME', 'users.LAST_NAME', 'users.position_id']);
 
         foreach($_users as $user) {
 
@@ -234,7 +234,7 @@ class NpsController extends Controller
                 ->where('is_trainee', 0)
                 ->whereIn('users.id', $group_users)
                 ->where('position_id', $position_id) // Руководитель, старший специалист группы
-                ->get(['users.id', 'b_user.NAME', 'b_user.LAST_NAME']);
+                ->get(['users.id', 'users.NAME', 'users.LAST_NAME']);
 
             foreach($_users as $user) {
                 if(!in_array($user->id, $user_ids)) {

@@ -200,7 +200,7 @@ class ProfileGroup extends Model
                 ->whereIn('users.id', $users)
                 ->where('is_trainee', 0)
                 ->orderBy('LAST_NAME', 'asc')
-                ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME']);
+                ->select(['users.id','users.LAST_NAME', 'users.NAME']);
                 
             if(count($positions) > 0) $users->whereIn('position_id', $positions);
             $users = $users->get()
@@ -218,7 +218,7 @@ class ProfileGroup extends Model
                     ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
                     
                     if(count($positions) > 0) $x_users->whereIn('position_id', $positions);
-                    $x_users = $x_users->get(['users.id','b_user.last_group']);
+                    $x_users = $x_users->get(['users.id','users.last_group']);
             
                 foreach($x_users as $d_user) {
                     if($d_user->last_group) { 
@@ -248,7 +248,7 @@ class ProfileGroup extends Model
             ->whereIn('users.id', $users)
             ->where('is_trainee', 0)
             ->orderBy('LAST_NAME', 'asc')
-            ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME'])
+            ->select(['users.id','users.LAST_NAME', 'users.NAME'])
             ->get()
             ->pluck('id')
             ->toArray();
@@ -261,7 +261,7 @@ class ProfileGroup extends Model
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0)
                 ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
-                ->get(['users.id','b_user.last_group']);
+                ->get(['users.id','users.last_group']);
 
           
             foreach($x_users as $d_user) {
@@ -296,7 +296,7 @@ class ProfileGroup extends Model
                 ->whereYear('ud.applied', $date->year)
                 ->whereMonth('ud.applied', $date->year)
                 ->orderBy('LAST_NAME', 'asc')
-                ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME']);
+                ->select(['users.id','users.LAST_NAME', 'users.NAME']);
                 
             if(count($positions) > 0) $users->whereIn('position_id', $positions);
             $users = $users->get()
@@ -314,7 +314,7 @@ class ProfileGroup extends Model
                     ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
                     
                     if(count($positions) > 0) $x_users->whereIn('position_id', $positions);
-                    $x_users = $x_users->get(['users.id','b_user.last_group']);
+                    $x_users = $x_users->get(['users.id','users.last_group']);
             
                 foreach($x_users as $d_user) {
                     if($d_user->last_group) { 
@@ -341,7 +341,7 @@ class ProfileGroup extends Model
             ->whereIn('users.id', $users)
             ->where('is_trainee', 1)
             ->orderBy('LAST_NAME', 'asc')
-            ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME'])
+            ->select(['users.id','users.LAST_NAME', 'users.NAME'])
             ->get()
             ->pluck('id')
             ->toArray();
@@ -354,7 +354,7 @@ class ProfileGroup extends Model
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 1)
                 ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
-                ->get(['users.id','b_user.last_group']);
+                ->get(['users.id','users.last_group']);
 
 
           

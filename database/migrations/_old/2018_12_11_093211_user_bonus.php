@@ -13,7 +13,7 @@ class UserBonus extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->float('bonus')->after('email')->default(0);
         });
 

@@ -13,7 +13,7 @@ class UserAddFields extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->string('BALANCE_NOTIFY')->nullable()->after('EMAIL');
             $table->text('DESCRIPTION')->nullable()->after('EMAIL');
             $table->string('COMPANY')->nullable()->after('EMAIL');

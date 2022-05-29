@@ -13,7 +13,7 @@ class AddReminderSentToUser extends Migration
      */
     public function up()
     {   
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->tinyInteger('reminder_sent')->default(0);
         });
     }
@@ -25,7 +25,7 @@ class AddReminderSentToUser extends Migration
      */
     public function down()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('reminder_sent');
         });
     }

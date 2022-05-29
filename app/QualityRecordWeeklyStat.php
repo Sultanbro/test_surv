@@ -29,7 +29,7 @@ class QualityRecordWeeklyStat extends Model
             ->whereIn('users.id', $user_ids)
             ->where('is_trainee', 0)
             ->orderBy('LAST_NAME', 'asc')
-            ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME'])
+            ->select(['users.id','users.LAST_NAME', 'users.NAME'])
             ->get();
 
         $items = [];

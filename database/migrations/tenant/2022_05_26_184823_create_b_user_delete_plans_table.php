@@ -13,7 +13,7 @@ class CreateBUserDeletePlansTable extends Migration
      */
     public function up()
     {
-        Schema::create('b_user_delete_plans', function (Blueprint $table) {
+        Schema::create('users_delete_plans', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
             $table->timestamp('delete_time')->useCurrentOnUpdate()->useCurrent();
@@ -29,6 +29,6 @@ class CreateBUserDeletePlansTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('b_user_delete_plans');
+        Schema::dropIfExists('users_delete_plans');
     }
 }

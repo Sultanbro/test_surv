@@ -94,7 +94,7 @@ class MonthHours extends Command
         //                TelegramBot::send($user);
 
                         // вот здесь мне надо брать либо время профиля, либо время группы
-                        $userProfile = DB::table('b_user')
+                        $userProfile = DB::table('users')
                             ->select('*')
                             ->where('id', '=', $user->user_id)
                             ->first();

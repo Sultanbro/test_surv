@@ -92,7 +92,7 @@ class Salary extends Model
                 },
             ])
         ->whereIn('users.id', $user_ids)
-        ->oldest('b_user.LAST_NAME')
+        ->oldest('users.LAST_NAME')
         ->get();
 
      
@@ -481,14 +481,14 @@ class Salary extends Model
         ])->whereIn('users.id', array_unique($users_ids))
             ->get([
                 'users.id', 
-                'b_user.EMAIL', 
+                'users.EMAIL', 
                 'deactivate_date',
                  DB::raw("CONCAT(last_name,' ',name) as full_name"),
                  'user_type',
-                'b_user.DATE_REGISTER',
+                'users.DATE_REGISTER',
                  'full_time',
-                 'b_user.working_day_id',
-                 'b_user.working_time_id',
+                 'users.working_day_id',
+                 'users.working_time_id',
                  'headphones_amount',
                  'headphones_date'
             ]);

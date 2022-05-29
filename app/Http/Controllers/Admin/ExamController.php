@@ -77,8 +77,8 @@ class ExamController extends Controller
             ];
         }
 
-        $users = User::whereIn('b_user.id', array_unique($users_ids))
-            ->get(['b_user.id', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name")]);
+        $users = User::whereIn('users.id', array_unique($users_ids))
+            ->get(['users.id', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name")]);
 
         $currentDate = Carbon::now();
         foreach ($users as $user) {
@@ -123,7 +123,7 @@ class ExamController extends Controller
         }
 
         $request->validate([
-            'user_id' => 'exists:b_user,ID',
+            'user_id' => 'exists:users,ID',
             'success' => 'numeric|between:1,2'
         ]);
         

@@ -707,14 +707,14 @@ class UserController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
                 ->where(function($query){
-                    $query->whereNull('b_user.position_id')
-                            ->orWhereNull('b_user.PHONE')
-                            ->orWhereNull('b_user.phone_1')
-                            ->orWhereNull('b_user.phone_2')
-                            ->orWhereNull('b_user.phone_3')
-                            ->orWhereNull('b_user.birthday')
-                            ->orWhereNull('b_user.working_day_id')
-                            ->orWhereNull('b_user.working_time_id');
+                    $query->whereNull('users.position_id')
+                            ->orWhereNull('users.PHONE')
+                            ->orWhereNull('users.phone_1')
+                            ->orWhereNull('users.phone_2')
+                            ->orWhereNull('users.phone_3')
+                            ->orWhereNull('users.birthday')
+                            ->orWhereNull('users.working_day_id')
+                            ->orWhereNull('users.working_time_id');
                 })
                 ->orWhere('is_trainee', 0)
                 ->whereIn('users.id', array_values($users_1));
@@ -750,28 +750,28 @@ class UserController extends Controller
 
         $users = $users->get([
             'users.id', 
-            'b_user.EMAIL',  
-            'b_user.user_type',
-            'b_user.segment as segment',
-            'b_user.LAST_NAME',
-            'b_user.NAME', 
-            'b_user.full_time', 
-            DB::raw("CONCAT(b_user.last_name,' ',b_user.name) as FULLNAME"), 
-            DB::raw("CONCAT(b_user.name,' ',b_user.last_name) as FULLNAME2"),
-            'b_user.DATE_REGISTER',
-            'b_user.deactivate_date',
-            'b_user.last_group',
-            'b_user.position_id',
-            'b_user.PHONE',
-            'b_user.phone_1',
-            'b_user.phone_2',
-            'b_user.birthday',
-            'b_user.DESCRIPTION',
-            'b_user.working_day_id',
-            'b_user.working_time_id',
-            'b_user.work_start',
-            'b_user.work_end',
-            'b_user.program_id',
+            'users.EMAIL',  
+            'users.user_type',
+            'users.segment as segment',
+            'users.LAST_NAME',
+            'users.NAME', 
+            'users.full_time', 
+            DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"), 
+            DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
+            'users.DATE_REGISTER',
+            'users.deactivate_date',
+            'users.last_group',
+            'users.position_id',
+            'users.PHONE',
+            'users.phone_1',
+            'users.phone_2',
+            'users.birthday',
+            'users.DESCRIPTION',
+            'users.working_day_id',
+            'users.working_time_id',
+            'users.work_start',
+            'users.work_end',
+            'users.program_id',
             'ud.fire_cause',
             'ud.applied',
         ]);

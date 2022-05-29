@@ -13,7 +13,7 @@ class AddWorkingTimesToUserTable extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->time('work_start')->after('working_time_id');
             $table->time('work_end')->after('work_start');
         });
@@ -26,7 +26,7 @@ class AddWorkingTimesToUserTable extends Migration
      */
     public function down()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('work_start');
             $table->dropColumn('work_end');
         });

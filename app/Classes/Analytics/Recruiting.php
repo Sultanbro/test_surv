@@ -452,11 +452,11 @@ class Recruiting
             // $applied_users_without = User::withTrashed()
             //     ->where('UF_ADMIN', 1)
             //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            //     ->whereYear('b_user.DATE_REGISTER', $date->year)
-            //     ->whereMonth('b_user.DATE_REGISTER', $date->month)
-            //     ->whereDay('b_user.DATE_REGISTER', $i)
+            //     ->whereYear('users.DATE_REGISTER', $date->year)
+            //     ->whereMonth('users.DATE_REGISTER', $date->month)
+            //     ->whereDay('users.DATE_REGISTER', $i)
             //     ->get([
-            //         'b_user.full_time as full_time',
+            //         'users.full_time as full_time',
             //         'ud.id as tid',
             //         'ud.applied as applied',
             //     ]);
@@ -1020,7 +1020,7 @@ class Recruiting
         $uds = User::onlyTrashed()
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
-            ->where('b_user.UF_ADMIN', 1)
+            ->where('users.UF_ADMIN', 1)
             ->whereYear('ud.fire_date', $date['year'])
             ->whereMonth('ud.fire_date', $date['month'])
             ->get()
@@ -1134,7 +1134,7 @@ class Recruiting
                 ->where('is_trainee', 0)
                 ->whereMonth('deactivate_date', $i)
                 ->whereYear('deactivate_date', $year)
-                ->get(['users.id', 'b_user.deactivate_date']);
+                ->get(['users.id', 'users.deactivate_date']);
 
             $staff[0]['m'.$i] = 0;
             $staff[1]['m'.$i] = 0;

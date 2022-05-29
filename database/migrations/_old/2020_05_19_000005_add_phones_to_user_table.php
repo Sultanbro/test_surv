@@ -13,7 +13,7 @@ class AddPhonesToUserTable extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->char('phone_1')->after('PHONE')->nullable();
             $table->char('phone_2')->after('phone_1')->nullable();
             $table->char('phone_3')->after('phone_2')->nullable();
@@ -28,7 +28,7 @@ class AddPhonesToUserTable extends Migration
      */
     public function down()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('phone_1');
             $table->dropColumn('phone_2');
             $table->dropColumn('phone_3');

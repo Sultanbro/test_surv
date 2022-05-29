@@ -18,8 +18,8 @@ class TimezoneTimestamp extends Migration
             $table->timestamp('start_time')->nullable()->change();
         });*/
         DB::statement("ALTER TABLE `b_contacts` CHANGE `date` `date` TIMESTAMP NULL ");
-        DB::statement("ALTER TABLE `b_user` CHANGE `LAST_LOGIN` `LAST_LOGIN` TIMESTAMP NULL ");
-        DB::statement("ALTER TABLE `b_user` CHANGE `DATE_REGISTER` `DATE_REGISTER` TIMESTAMP NULL ");
+        DB::statement("ALTER TABLE `users` CHANGE `LAST_LOGIN` `LAST_LOGIN` TIMESTAMP NULL ");
+        DB::statement("ALTER TABLE `users` CHANGE `DATE_REGISTER` `DATE_REGISTER` TIMESTAMP NULL ");
         DB::statement("ALTER TABLE `b_statistics` CHANGE `date` `date` TIMESTAMP NULL ");
 
         //DB::statement('ALTER TABLE `calls` MODIFY `operator_time` TIMESTAMP NULL;');

@@ -135,7 +135,7 @@ class FillQualityGrades extends Command
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0)
                 ->whereIn('users.id', $user_ids)
-                ->select(['users.id', 'b_user.EMAIL', 'b_user.NAME', 'b_user.LAST_NAME'])
+                ->select(['users.id', 'users.EMAIL', 'users.NAME', 'users.LAST_NAME'])
                 ->get();
     }
 

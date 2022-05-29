@@ -13,7 +13,7 @@ class AddColumnToUser extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->softDeletes();
         });
     }
@@ -25,7 +25,7 @@ class AddColumnToUser extends Migration
      */
     public function down()
     {
-        Schema::table('eb_user', function ($table) {
+        Schema::table('eusers', function ($table) {
             $table->dropSoftDeletes();
         });
     }

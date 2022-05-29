@@ -73,7 +73,7 @@ class CheckLate extends Command
         $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->orderBy('LAST_NAME', 'asc')
-            ->select(['users.id','b_user.LAST_NAME', 'b_user.NAME', 'b_user.working_time_id', 'b_user.work_start'])
+            ->select(['users.id','users.LAST_NAME', 'users.NAME', 'users.working_time_id', 'users.work_start'])
             ->get();
 
      

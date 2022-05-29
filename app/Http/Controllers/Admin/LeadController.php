@@ -40,7 +40,7 @@ class LeadController extends Controller {
         
         if(array_key_exists($request->type, $segments)) {
             $leads = Lead::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'bitrix_leads.user_id')
-			->leftJoin('b_user as u', 'u.ID', '=', 'bitrix_leads.user_id')
+			->leftJoin('users as u', 'u.ID', '=', 'bitrix_leads.user_id')
             ->where([
                 'bitrix_leads.segment' => $segments[$request->type]
             ])

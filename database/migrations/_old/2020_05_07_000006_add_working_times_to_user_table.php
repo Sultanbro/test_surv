@@ -13,7 +13,7 @@ class AddWorkingTimesToUserTable extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->unsignedInteger('working_time_id')->after('working_day_id')->default(1)->nullable();
             $table->foreign('working_time_id')->references('id')->on('working_times');
         });
@@ -26,7 +26,7 @@ class AddWorkingTimesToUserTable extends Migration
      */
     public function down()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('working_time_id');
         });
     }

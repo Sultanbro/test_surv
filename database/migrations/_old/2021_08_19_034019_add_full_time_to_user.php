@@ -13,7 +13,7 @@ class AddFullTimeToUser extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->tinyInteger('full_time')->after('phone_4')->default(0);
         });
     }

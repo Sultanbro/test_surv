@@ -13,7 +13,7 @@ class AddProgramToUserTable extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->unsignedInteger('program_id')->after('user_type')->nullable();
             $table->foreign('program_id')->references('id')->on('program');
         });
@@ -26,7 +26,7 @@ class AddProgramToUserTable extends Migration
      */
     public function down()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('program_id');
         });
     }

@@ -48,7 +48,7 @@ class SalaryIndexation extends Command
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             //->where('users.id', 5) // При запуске на прод убрать
-            ->select('users.id', 'ud.applied', 'ud.is_trainee','b_user.DATE_REGISTER', 'b_user.position_id')
+            ->select('users.id', 'ud.applied', 'ud.is_trainee','users.DATE_REGISTER', 'users.position_id')
             ->get();
 
         foreach($users as $user) {

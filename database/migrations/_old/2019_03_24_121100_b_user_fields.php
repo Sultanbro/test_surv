@@ -13,7 +13,7 @@ class BUserFields extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->text('UF_API_KEY')->nullable();
             $table->text('UF_SIP_ACC')->nullable();
             $table->text('UF_BALANCE')->nullable();

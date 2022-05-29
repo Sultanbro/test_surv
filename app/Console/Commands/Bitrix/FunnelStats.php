@@ -274,7 +274,7 @@ class FunnelStats extends Command
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->leftJoin('bitrix_leads as bl', 'bl.user_id', '=', 'users.id')
             ->where('bl.segment', $segment_id)
-            ->where('b_user.UF_ADMIN', 1)
+            ->where('users.UF_ADMIN', 1)
             ->where('ud.is_trainee', 0)
             ->whereDate('bl.created_at', '>=', $start)
             ->whereDate('bl.created_at', '<=', $end)

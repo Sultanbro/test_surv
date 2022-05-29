@@ -13,7 +13,7 @@ class CreateBUserCallibroTable extends Migration
      */
     public function up()
     {
-        Schema::create('b_user_callibro', function (Blueprint $table) {
+        Schema::create('users_callibro', function (Blueprint $table) {
             $table->integer('id', true);
             $table->timestamp('TIMESTAMP_X')->useCurrentOnUpdate()->useCurrent();
             $table->string('LOGIN', 50);
@@ -89,6 +89,6 @@ class CreateBUserCallibroTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('b_user_callibro');
+        Schema::dropIfExists('users_callibro');
     }
 }

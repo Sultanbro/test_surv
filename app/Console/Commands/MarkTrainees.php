@@ -58,7 +58,7 @@ class MarkTrainees extends Command
 		}
 
         $trainees = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('b_user.UF_ADMIN', 1)
+            ->where('users.UF_ADMIN', 1)
             ->where('ud.is_trainee',1)
             ->whereIn('users.id', $users);
 

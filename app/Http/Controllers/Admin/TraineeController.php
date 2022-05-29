@@ -89,7 +89,7 @@ class TraineeController extends Controller
             ->where('ud.is_trainee', 1)
             ->where('UF_ADMIN', 1) 
             ->whereIn('users.id', json_decode($group->users, true))
-            ->select(DB::raw("CONCAT_WS(' ', LAST_NAME, NAME) as name"), 'b_user.ID as id')->get()->sortBy('name')->toArray();
+            ->select(DB::raw("CONCAT_WS(' ', LAST_NAME, NAME) as name"), 'users.ID as id')->get()->sortBy('name')->toArray();
        // $users = User::where('UF_ADMIN', 1)->select(DB::raw("CONCAT_WS(' ', LAST_NAME, NAME) as name"), 'ID as id')->get()->sortBy('name')->toArray();
 
         foreach($users as $key => $user) {

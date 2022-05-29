@@ -13,7 +13,7 @@ class AddCurrencyToUser extends Migration
      */
     public function up()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->string('currency')->default('kzt')->after('max_sessions');
         });
     }
@@ -25,7 +25,7 @@ class AddCurrencyToUser extends Migration
      */
     public function down()
     {
-        Schema::table('b_user', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('currency');
         });
     }

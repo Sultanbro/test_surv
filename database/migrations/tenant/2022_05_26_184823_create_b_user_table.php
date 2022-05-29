@@ -13,7 +13,7 @@ class CreateBUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('b_user', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('email')->nullable()->unique();
             $table->string('phone')->nullable()->unique();
@@ -52,6 +52,6 @@ class CreateBUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('b_user');
+        Schema::dropIfExists('users');
     }
 }

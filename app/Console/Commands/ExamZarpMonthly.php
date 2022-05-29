@@ -46,13 +46,13 @@ class ExamZarpMonthly extends Command
 
         $users = User::Join('exams', function($q) use ($previousMonth)
             {
-                $q->on('b_user.id', '=', 'exams.user_id')
+                $q->on('users.id', '=', 'exams.user_id')
                     ->where('exams.month', $previousMonth->format("m"))
                     ->where('exams.year', $previousMonth->format("Y"))
                     ->where('exams.bonus', 1)
                     ->where('exams.success', 1);
             })
-            ->get(['b_user.id as id','exams.id as exam_id']);
+            ->get(['users.id as id','exams.id as exam_id']);
 
         foreach ($users as $user) {
 

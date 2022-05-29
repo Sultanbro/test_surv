@@ -13,7 +13,7 @@ class CreateBUserOldTable extends Migration
      */
     public function up()
     {
-        Schema::create('b_user_old', function (Blueprint $table) {
+        Schema::create('users_old', function (Blueprint $table) {
             $table->integer('id', true);
             $table->timestamp('TIMESTAMP_X')->useCurrentOnUpdate()->useCurrent();
             $table->string('LOGIN', 50);
@@ -88,6 +88,6 @@ class CreateBUserOldTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('b_user_old');
+        Schema::dropIfExists('users_old');
     }
 }

@@ -1087,7 +1087,7 @@ class TimetrackingController extends Controller
     // Проверка не начинал ли сотрудник работу ранее рабочего времени
     public static function checkStartOfDay($request, $day) {
 
-        $userProfile = DB::table('b_user')
+        $userProfile = DB::table('users')
                         ->select('*')
                         ->where('id', '=', $day->user_id)
                         ->first();
@@ -1136,7 +1136,7 @@ class TimetrackingController extends Controller
         $_notifications = User::withTrashed()
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.notifications', '!=', '[]')
-            ->select(DB::raw("CONCAT_WS(' ',b_user.ID, b_user.LAST_NAME, b_user.NAME) as name"), 'b_user.ID as id')
+            ->select(DB::raw("CONCAT_WS(' ',users.ID, users.LAST_NAME, users.NAME) as name"), 'users.ID as id')
             ->get()->toArray();
         
         //$_notification_templates = NotificationTemplate::where('type', NotificationTemplate::USER)->select('id', 'title as name')->get()->toArray();
@@ -1729,7 +1729,7 @@ class TimetrackingController extends Controller
     {
         $request->validate([
             //'type' => 'in:' . implode(',', array_values(DayType::DAY_TYPES)),
-            'user_id' => 'exists:b_user,ID',
+            'user_id' => 'exists:users,ID',
         ]);
 
         $user = User::bitrixUser();
@@ -2175,7 +2175,7 @@ class TimetrackingController extends Controller
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.notifications', '!=', '[]')
             ->where('users.id', $request->user_id)
-            ->select(DB::raw("CONCAT_WS(' ',b_user.ID, b_user.LAST_NAME, b_user.NAME) as name"), 'b_user.ID as id', 'ud.notifications as notifications')
+            ->select(DB::raw("CONCAT_WS(' ',users.ID, users.LAST_NAME, users.NAME) as name"), 'users.ID as id', 'ud.notifications as notifications')
             ->first();
     
         $notifications = [];

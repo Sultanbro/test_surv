@@ -29,13 +29,13 @@ class User extends Authenticatable
     const USER_TYPE_OFFICE = 'office';
     const USER_TYPE_REMOTE = 'remote';
 
-    protected $table = 'b_user';
+    protected $table = 'users';
 
     public $timestamps = true;
 
     protected $primaryKey = 'id';
 
-    protected $table = 'b_user';
+    protected $table = 'users';
 
     protected $fillable = [
         'name',
@@ -443,13 +443,13 @@ class User extends Authenticatable
      */
     public static function updateBonus($bonus, $user_id)
     {
-        DB::update('UPDATE b_user SET bonus = bonus + ? WHERE ID = ?', [$bonus, $user_id]);
+        DB::update('UPDATE users SET bonus = bonus + ? WHERE ID = ?', [$bonus, $user_id]);
         return true;
     }
 
     public static function substractBonus($cost, $user_id)
     {
-        DB::update('UPDATE b_user SET bonus = bonus - ? WHERE ID = ?', [$cost, $user_id]);
+        DB::update('UPDATE users SET bonus = bonus - ? WHERE ID = ?', [$cost, $user_id]);
         return true;
     }
 

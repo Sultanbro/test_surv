@@ -107,9 +107,9 @@ class IndexController extends Controller
 
 
         if($type=='user') {
-            $stats = DB::select("SELECT IFNULL(b_user.EMAIL, 0) as EMAIL, gate, SUM(count) as count, DAY(day) as day
+            $stats = DB::select("SELECT IFNULL(users.EMAIL, 0) as EMAIL, gate, SUM(count) as count, DAY(day) as day
 							FROM sms_gate_daily_report
-							LEFT JOIN b_user ON b_user.ID = user_id
+							LEFT JOIN users ON users.ID = user_id
 							WHERE  YEAR(day) = ? AND MONTH(day) = ?  GROUP BY EMAIL, gate, day  ORDER BY gate", [$year,$month]);
 
 
@@ -342,16 +342,16 @@ class IndexController extends Controller
             $where = '';
 
             if($search) {
-                $where = " AND b_user.EMAIL like '%".trim($search)."%' ";
+                $where = " AND users.EMAIL like '%".trim($search)."%' ";
             }
 
             if(!empty($user_ids)) {
-                $where = " AND b_user.ID IN (".implode(',', $user_ids).") ";
+                $where = " AND users.ID IN (".implode(',', $user_ids).") ";
             }
 
-            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS b_user.ID, b_user.EMAIL, sip_daily_report.*
-								   FROM b_user
-								   LEFT JOIN sip_daily_report ON sip_daily_report.user_id = b_user.ID
+            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS users.ID, users.EMAIL, sip_daily_report.*
+								   FROM users
+								   LEFT JOIN sip_daily_report ON sip_daily_report.user_id = users.ID
 								   WHERE sip_daily_report.yearmonth=".$year.$month."
 								    ".$where.$order."
 								   LIMIT ? OFFSET ?", [$limit,$offset ]);
@@ -405,7 +405,7 @@ class IndexController extends Controller
             return response()->json($sending);
         }
 
-        $users = DB::select("SELECT b_user.ID, b_user.EMAIL FROM b_user");
+        $users = DB::select("SELECT users.ID, users.EMAIL FROM users");
 
 
         return view('admin.sip')->with('year', $year)->with('month', $month)->with('show_days', $show_days)->with('users', $users)->with('user_ids', $user_ids);
@@ -648,16 +648,16 @@ class IndexController extends Controller
             $where = '';
 
             if($search) {
-                $where = " AND b_user.EMAIL like '%".trim($search)."%' ";
+                $where = " AND users.EMAIL like '%".trim($search)."%' ";
             }
 
             if(!empty($user_ids)) {
-                $where = " AND b_user.ID IN (".implode(',', $user_ids).") ";
+                $where = " AND users.ID IN (".implode(',', $user_ids).") ";
             }
 
-            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS b_user.ID, b_user.DATE_REGISTER, b_user.EMAIL, CAST(b_user.UF_BALANCE AS  DECIMAL(12,2)) UF_BALANCE, balance_daily_report.*
-								   FROM b_user
-								   LEFT JOIN balance_daily_report ON balance_daily_report.user_id = b_user.ID
+            $users = DB::select("SELECT SQL_CALC_FOUND_ROWS users.ID, users.DATE_REGISTER, users.EMAIL, CAST(users.UF_BALANCE AS  DECIMAL(12,2)) UF_BALANCE, balance_daily_report.*
+								   FROM users
+								   LEFT JOIN balance_daily_report ON balance_daily_report.user_id = users.ID
 								   WHERE (balance_daily_report.yearmonth=".$year.$month." OR balance_daily_report.yearmonth IS NULL)
 								    ".$where.$order."
 								   LIMIT ? OFFSET ?", [$limit,$offset ]);
@@ -723,7 +723,7 @@ class IndexController extends Controller
             return response()->json($sending);
         }
 
-        $users = DB::select("SELECT b_user.ID, b_user.DATE_REGISTER, b_user.EMAIL FROM b_user");
+        $users = DB::select("SELECT users.ID, users.DATE_REGISTER, users.EMAIL FROM users");
 
         View::share('title', 'Баланс пользователей');
 
@@ -733,7 +733,7 @@ class IndexController extends Controller
     public function deleteUser(Request $request, $domain, $tld, $id) {
 
         if($id == 'all') {
-            DB::table('b_user')->whereIn('id', $request->checked)->delete();
+            DB::table('users')->whereIn('id', $request->checked)->delete();
 
             return response()->json([
                 'success' => true
@@ -814,7 +814,7 @@ class IndexController extends Controller
 
     public function bonus(Request $request)
     {
-        $users = DB::select("SELECT b_user.ID, b_user.EMAIL, b_user.NAME, b_user.bonus FROM b_user");
+        $users = DB::select("SELECT users.ID, users.EMAIL, users.NAME, users.bonus FROM users");
 
         View::share('title', 'Бонус пользователей');
 
@@ -1476,7 +1476,7 @@ class IndexController extends Controller
         $stat_error = $this->getQuantity(-1, $request);
 
 
-        $users = DB::select("SELECT b_user.ID, b_user.DATE_REGISTER, b_user.EMAIL FROM b_user");
+        $users = DB::select("SELECT users.ID, users.DATE_REGISTER, users.EMAIL FROM users");
 
         return view('admin.autocalls.index')
             ->with('autocalls', $autocalls)
