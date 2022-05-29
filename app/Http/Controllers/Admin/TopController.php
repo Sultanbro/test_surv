@@ -40,11 +40,7 @@ class TopController extends Controller
         View::share('title', 'ТОП');
         $this->middleware('auth');
 
-        $left = [42];
-        $right = ProfileGroup::whereNotIn('id', $left)->where('has_analytics', 1)->get()->pluck('id')->toArray();
-        $groups = array_unique(array_merge($left, $right));
-
-        $this->groups = $groups;
+        
     }
 
     /**
@@ -159,6 +155,12 @@ class TopController extends Controller
                 $total_row[$date->format('d.m')] = 0;
             }
 
+            
+            $left = [42];
+            $right = ProfileGroup::whereNotIn('id', $left)->where('has_analytics', 1)->get()->pluck('id')->toArray();
+            $groups = array_unique(array_merge($left, $right));
+
+            $this->groups = $groups;
             
 
             
