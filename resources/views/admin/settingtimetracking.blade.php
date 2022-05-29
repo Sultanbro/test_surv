@@ -13,7 +13,7 @@
                             <div class="nav nav-tabs set-tabs" id="nav-tab" role="tablist">
                                 <a class="nav-item nav-link @if($active_tab == 1) active @endif" id="nav-person-tab" href="/timetracking/settings?tab=1#nav-person"  aria-controls="nav-person" aria-selected="false">Сотрудники</a>
 
-                                @if(isset(auth()->user()->roles['page22']) && auth()->user()->roles['page22'] =='on')
+                            
                                 <a class="nav-item nav-link @if($active_tab == 2) active @endif" id="nav-home-tab"  href="/timetracking/settings?tab=2#nav-home"  aria-controls="nav-home" aria-selected="true">Должности</a>
                                 <a class="nav-item nav-link @if($active_tab == 3) active @endif" id="nav-profile-tab"  href="/timetracking/settings?tab=3#nav-profile"  aria-controls="nav-profile" aria-selected="false">Группы</a>
                                 <a class="nav-item nav-link @if($active_tab == 4) active @endif" id="nav-fines-tab"  href="/timetracking/settings?tab=4#nav-fines"  aria-controls="nav-fines" aria-selected="false">Штрафы</a>
@@ -21,7 +21,7 @@
                                 <a class="nav-item nav-link @if($active_tab == 6) active @endif" id="nav-bookgroups-tab"  href="/timetracking/settings?tab=6#nav-bookgroups" aria-controls="nav-bookgroups" aria-selected="false">Обучение</a>
                                 <a class="nav-item nav-link @if($active_tab == 7) active @endif" id="nav-permissions-tab"  href="/timetracking/settings?tab=7#nav-permissions" aria-controls="nav-permissions" aria-selected="false">Доступы</a>
                                 <a class="nav-item nav-link @if($active_tab == 8) active @endif" id="nav-checkList-tab"  href="/timetracking/settings?tab=8#nav-checkList" aria-controls="nav-checkList" aria-selected="false">Чек Лист</a>
-                                @endif
+                               
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
