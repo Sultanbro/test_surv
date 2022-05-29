@@ -484,13 +484,13 @@ class Recruiting
             // $trainees = Trainee::whereNull('applied')->pluck('user_id')->toArray();
             // $fired = User::withTrashed()
             //     ->whereNotIn('id', $trainees)
-            //     ->whereDate('deactivate_date', $date->day($i)->format('Y-m-d'))
+            //     ->whereDate('deleted_at', $date->day($i)->format('Y-m-d'))
             //     ->get();
             
             $fired = User::withTrashed()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
-                ->whereDate('deactivate_date', $date->day($i)->format('Y-m-d'))
+                ->whereDate('deleted_at', $date->day($i)->format('Y-m-d'))
                 ->get();
 
             $f_count = 0;
@@ -604,8 +604,8 @@ class Recruiting
                 ->where('UF_ADMIN', 1)
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('quiz_after_fire', '!=', '[]')
-                ->whereDate('deactivate_date', '>=', $start)
-                ->whereDate('deactivate_date', '<=', $end)
+                ->whereDate('deleted_at', '>=', $start)
+                ->whereDate('deleted_at', '<=', $end)
                 ->where('is_trainee', 0)
                 ->get();
              
@@ -1063,10 +1063,10 @@ class Recruiting
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
-            ->whereYear('deactivate_date', $year)
+            ->whereYear('deleted_at', $year)
             ->get()
             ->groupBy(function($item) {
-                return (int)Carbon::createFromFormat('Y-m-d  H:i:s', $item->deactivate_date)->format('m');
+                return (int)Carbon::createFromFormat('Y-m-d  H:i:s', $item->deleted_at)->format('m');
             })->toArray();
 
         $staff = [];
@@ -1132,9 +1132,9 @@ class Recruiting
             $users = User::onlyTrashed()
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
-                ->whereMonth('deactivate_date', $i)
-                ->whereYear('deactivate_date', $year)
-                ->get(['users.id', 'users.deactivate_date']);
+                ->whereMonth('deleted_at', $i)
+                ->whereYear('deleted_at', $year)
+                ->get(['users.id', 'users.deleted_at']);
 
             $staff[0]['m'.$i] = 0;
             $staff[1]['m'.$i] = 0;
@@ -1456,8 +1456,8 @@ class Recruiting
             ->where('UF_ADMIN', 1)
             ->where('is_trainee', 0)
             ->whereIn('users.id', $employees)
-            ->whereYear('deactivate_date', $date->year)
-            ->whereMonth('deactivate_date', $date->month)
+            ->whereYear('deleted_at', $date->year)
+            ->whereMonth('deleted_at', $date->month)
             ->get()->count();
 
         return $users_off;

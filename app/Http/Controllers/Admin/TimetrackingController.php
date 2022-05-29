@@ -979,11 +979,11 @@ class TimetrackingController extends Controller
 
     // Проверка не уволен ли сотрудник
     private function showFiredEmployee($user, $month, $year) {
-        if($user->deactivate_date == '0000-00-00 00:00:00' || $user->deactivate_date == null) { // Проверка не уволен ли сотрудник
+        if($user->deleted_at == '0000-00-00 00:00:00' || $user->deleted_at == null) { // Проверка не уволен ли сотрудник
             return true;
         } else {
             
-            $dt1 = Carbon::parse($user->deactivate_date); // День увольнения
+            $dt1 = Carbon::parse($user->deleted_at); // День увольнения
             $dt2 = Carbon::create($year, $month, 30, 0, 0, 0); // Выбранный период
 
             if($dt1 >= $dt2) {

@@ -419,7 +419,7 @@ class Salary extends Model
         if($user_types == 1) {// Уволенные
 
             $x_users = User::withTrashed()->where('UF_ADMIN', 1)
-                ->whereDate('deactivate_date', '>=', $date->format('Y-m-d'))
+                ->whereDate('deleted_at', '>=', $date->format('Y-m-d'))
                 ->get(['id','last_group']);
 
             $fired_users = [];
@@ -482,7 +482,7 @@ class Salary extends Model
             ->get([
                 'users.id', 
                 'users.email', 
-                'deactivate_date',
+                'deleted_at',
                  DB::raw("CONCAT(last_name,' ',name) as full_name"),
                  'user_type',
                 'users.created_at',

@@ -215,7 +215,7 @@ class ProfileGroup extends Model
                 $x_users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('UF_ADMIN', 1)
                     ->where('is_trainee', 0)
-                    ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
+                    ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
                     
                     if(count($positions) > 0) $x_users->whereIn('position_id', $positions);
                     $x_users = $x_users->get(['users.id','users.last_group']);
@@ -260,7 +260,7 @@ class ProfileGroup extends Model
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0)
-                ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
+                ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
                 ->get(['users.id','users.last_group']);
 
           
@@ -311,7 +311,7 @@ class ProfileGroup extends Model
                 $x_users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('UF_ADMIN', 1)
                     ->where('is_trainee', 0)
-                    ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
+                    ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
                     
                     if(count($positions) > 0) $x_users->whereIn('position_id', $positions);
                     $x_users = $x_users->get(['users.id','users.last_group']);
@@ -353,7 +353,7 @@ class ProfileGroup extends Model
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 1)
-                ->whereDate('deactivate_date', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
+                ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
                 ->get(['users.id','users.last_group']);
 
 

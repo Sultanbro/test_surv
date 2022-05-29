@@ -128,7 +128,7 @@ class UserStat extends Model
                 $localUser = User::withTrashed()->find($user_id);
                 if(!$localUser) continue;
 
-                if($localUser->deactivate_date && $localUser->deactivate_date != '0000-00-00 00:00:00') {
+                if($localUser->deleted_at && $localUser->deleted_at != '0000-00-00 00:00:00') {
                     $fired = 1;
                 } else {
                     $fired = 0;

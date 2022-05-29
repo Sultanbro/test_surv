@@ -205,7 +205,7 @@ class GroupAnalyticsController extends Controller
         $users_ids = json_decode($group->users);
         //////
         $x_users = User::withTrashed()->where('UF_ADMIN', 1)
-            ->whereDate('deactivate_date', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
+            ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
             ->get(['id','last_group']);
 
         $fired_users = [];
@@ -425,7 +425,7 @@ class GroupAnalyticsController extends Controller
                     ->where('group_id', $request->group_id)
                     ->first();
                 
-                if($localUser->deactivate_date && $localUser->deactivate_date != '0000-00-00 00:00:00') {
+                if($localUser->deleted_at && $localUser->deleted_at != '0000-00-00 00:00:00') {
                     $fired = 1;
                 } else {
                     $fired = 0;
@@ -545,8 +545,8 @@ class GroupAnalyticsController extends Controller
         
         /** Уволенные */
         $d_users = User::withTrashed()
-            ->whereYear('deactivate_date', $args['year'])
-            ->whereMonth('deactivate_date', $args['month'])
+            ->whereYear('deleted_at', $args['year'])
+            ->whereMonth('deleted_at', $args['month'])
             ->where('last_group', '[' . $args['group_id'] . ']')
             ->get()
             ->pluck('id')
@@ -1548,7 +1548,7 @@ class GroupAnalyticsController extends Controller
 
                     ///////////////////////////////
 
-                if($localUser->deactivate_date && $localUser->deactivate_date != '0000-00-00 00:00:00') {
+                if($localUser->deleted_at && $localUser->deleted_at != '0000-00-00 00:00:00') {
                     $fired = 1;
                 } else {
                     $fired = 0;

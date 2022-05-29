@@ -124,7 +124,7 @@ class User extends Authenticatable
         }   
         
         $date = Carbon::parse($this->applied_at())->timestamp;
-        $fired = Carbon::parse($this->deactivate_date)->timestamp;
+        $fired = Carbon::parse($this->deleted_at)->timestamp;
 
         $diff = ($fired - $date) / 86400;
         return (int)$diff;
@@ -317,12 +317,12 @@ class User extends Authenticatable
         
         
         if ($user) {
-            $user->deactivate_date = Carbon::now();
+            $user->deleted_at = Carbon::now();
             $user->last_group = json_encode($_groups);
 
             
 
-            if($request->day && $request->month) $user->deactivate_date = Carbon::createFromDate(date('Y'), $request->month, $request->day); // ->format('Y-m-d');
+            if($request->day && $request->month) $user->deleted_at = Carbon::createFromDate(date('Y'), $request->month, $request->day); // ->format('Y-m-d');
 
             $email = $user->email;
             $user->save();

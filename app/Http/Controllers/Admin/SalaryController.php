@@ -100,11 +100,11 @@ class SalaryController extends Controller
 
     // Проверка не уволен ли сотрудник
     private function showFiredEmployee($user, $month, $year) {
-        if($user->deactivate_date == '0000-00-00 00:00:00' || $user->deactivate_date == null) { // Проверка не уволен ли сотрудник
+        if($user->deleted_at == '0000-00-00 00:00:00' || $user->deleted_at == null) { // Проверка не уволен ли сотрудник
             return true;
         } else {
             
-            $dt1 = Carbon::parse($user->deactivate_date); // День увольнения
+            $dt1 = Carbon::parse($user->deleted_at); // День увольнения
             $dt2 = Carbon::create($year, $month, 30, 0, 0, 0); // Выбранный период
 
             if($dt1 >= $dt2) {
@@ -174,7 +174,7 @@ class SalaryController extends Controller
         // // FIRED USER TOTAL IN GROUP
 
         // $x_users = User::withTrashed()->where('UF_ADMIN', 1)
-        //     ->whereDate('deactivate_date', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
+        //     ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
         //     ->get(['id','last_group']);
 
         // $fired_users = [];
@@ -275,7 +275,7 @@ class SalaryController extends Controller
         if($user_types == 1) {// Уволенные
 
             $x_users = User::withTrashed()->where('UF_ADMIN', 1)
-                ->whereDate('deactivate_date', '>=', $date->format('Y-m-d'))
+                ->whereDate('deleted_at', '>=', $date->format('Y-m-d'))
                 ->get(['id','last_group']);
 
             $fired_users = [];
@@ -338,7 +338,7 @@ class SalaryController extends Controller
             ->get([
                 'users.id', 
                 'users.email', 
-                'deactivate_date',
+                'deleted_at',
                  DB::raw("CONCAT(last_name,' ',name) as full_name"),
                  'user_type',
                 'users.created_at',
@@ -735,7 +735,7 @@ class SalaryController extends Controller
             /////////////
 
             $x_users = User::withTrashed()->where('UF_ADMIN', 1)
-                ->whereDate('deactivate_date', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
+                ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
                 ->get(['id','last_group']);
 
             $fired_users = [];

@@ -75,7 +75,7 @@ class DailySalaryUpdate extends Command
             ->select(['users.id'])
             ->where('UF_ADMIN', 1)
             ->where('ud.is_trainee', 0)
-            ->whereDate('deactivate_date', '>=', $argDate)
+            ->whereDate('deleted_at', '>=', $argDate)
             ->get()
             ->pluck('id') 
             ->toArray();

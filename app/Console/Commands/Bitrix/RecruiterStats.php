@@ -106,7 +106,7 @@ class RecruiterStats extends Command
 
             if(!$admin_user) {
                 $admin_user = User::withTrashed()->find($user_id);
-                if(!($admin_user && time() - Carbon::parse($admin_user->deactivate_date)->timestamp < 3600 * 24)) {
+                if(!($admin_user && time() - Carbon::parse($admin_user->deleted_at)->timestamp < 3600 * 24)) {
                     continue;
                 }
             }

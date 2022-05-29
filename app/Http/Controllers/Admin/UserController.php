@@ -664,8 +664,8 @@ class UserController extends Controller
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
-            if ($request['start_date_deactivate']) $users = $users->whereDate('deactivate_date', '>=', $request['start_date_deactivate']);
-            if ($request['end_date_deactivate']) $users = $users->whereDate('deactivate_date', '<=', $request['end_date_deactivate']);
+            if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
+            if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
 
             if ($request['start_date_applied']) $users = $users->whereDate('applied', '>=', $request['start_date_applied']);
             if ($request['end_date_applied']) $users = $users->whereDate('applied', '<=', $request['end_date_applied']);
@@ -691,8 +691,8 @@ class UserController extends Controller
                 ->where('UF_ADMIN', 1)
                 ->where('is_trainee', 0);
             
-            if ($request['start_date_deactivate']) $users = $users->whereDate('deactivate_date', '>=', $request['start_date_deactivate']);
-            if ($request['end_date_deactivate']) $users = $users->whereDate('deactivate_date', '<=', $request['end_date_deactivate']);
+            if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
+            if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
             // $trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
             // $users = $users->whereNotIn('users.id', $trainees);
@@ -738,8 +738,8 @@ class UserController extends Controller
             
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
-            if ($request['start_date_deactivate']) $users = $users->whereDate('deactivate_date', '>=', $request['start_date_deactivate']);
-            if ($request['end_date_deactivate']) $users = $users->whereDate('deactivate_date', '<=', $request['end_date_deactivate']);
+            if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
+            if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
             
             
         } else {
@@ -769,7 +769,7 @@ class UserController extends Controller
             DB::raw("CONCAT(users.last_name,' ',users.name) as FULLNAME"), 
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
             'users.created_at',
-            'users.deactivate_date',
+            'users.deleted_at',
             'users.last_group',
             'users.position_id',
             'users.phone',
@@ -804,12 +804,12 @@ class UserController extends Controller
 
             $user->groups = $user_groups;
             
-            if(is_null($user->deactivate_date) || $user->deactivate_date == '0000-00-00 00:00:00') {
-                $user->deactivate_date = '';
+            if(is_null($user->deleted_at) || $user->deleted_at == '0000-00-00 00:00:00') {
+                $user->deleted_at = '';
             } else {
-                $user->deactivate_date = Carbon::parse($user->deactivate_date)->addHours(6)->format('Y-m-d H:i:s');
-                if($user->deactivate_date == '30.11.-0001 00:00:00') {
-                    $user->deactivate_date = '';
+                $user->deleted_at = Carbon::parse($user->deleted_at)->addHours(6)->format('Y-m-d H:i:s');
+                if($user->deleted_at == '30.11.-0001 00:00:00') {
+                    $user->deleted_at = '';
                 } 
             }
 
@@ -924,7 +924,7 @@ class UserController extends Controller
                     7 => array_key_exists($user->position_id, $positions) ? $positions[$user->position_id] : $user->position_id, 
                     8 => $user->created_at, 
                     9 => $user->applied, 
-                    10 => $user->deactivate_date, 
+                    10 => $user->deleted_at, 
                     11 => $user->fire_cause, 
                     12 => $user->phone, 
                     13 => $user->phone_1, 
@@ -1220,9 +1220,9 @@ class UserController extends Controller
                     $user->segment = $segment;
                 }
 
-                if($user->deactivate_date != null && $user->deactivate_date != '0000-00-00 00:00:00') {
-                    $user->worked_with_us = round((Carbon::parse($user->deactivate_date)->timestamp - Carbon::parse($user->applied_at)->timestamp) / 3600 / 24) . ' дней';
-                } else if(!$user->is_trainee && $user->deactivate_date == null) {
+                if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00') {
+                    $user->worked_with_us = round((Carbon::parse($user->deleted_at)->timestamp - Carbon::parse($user->applied_at)->timestamp) / 3600 / 24) . ' дней';
+                } else if(!$user->is_trainee && $user->deleted_at == null) {
                     $user->worked_with_us = round((Carbon::now()->timestamp - Carbon::parse($user->applied_at)->timestamp) / 3600 / 24) . ' дней';
                 } else {
                     $user->worked_with_us = 'Еще стажируется';
@@ -1294,7 +1294,7 @@ class UserController extends Controller
                 $text .= '<tr><td><b>Имя:</b></td><td>'.$user->name.'</td></tr>';
                 $text .= '<tr><td><b>Фамилия:</b></td><td>'.$user->last_name.'</td></tr>';
                 $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $user->id .'" target="_blank"> '. $user->email .'</a></td></tr>';
-                $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($user->deactivate_date)->setTimezone('Asia/Dacca').'</td></tr>';
+                $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($user->deleted_at)->setTimezone('Asia/Dacca').'</td></tr>';
                 $text .= '</table>'; 
                 return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
             }
@@ -1672,7 +1672,7 @@ class UserController extends Controller
                 $text .= '<tr><td><b>Имя:</b></td><td>'.$oldUser->name.'</td></tr>';
                 $text .= '<tr><td><b>Фамилия:</b></td><td>'.$oldUser->last_name.'</td></tr>';
                 $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $oldUser->id .'" target="_blank"> '. $oldUser->email .'</a></td></tr>';
-                $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($oldUser->deactivate_date)->setTimezone('Asia/Dacca').'</td></tr>';
+                $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($oldUser->deleted_at)->setTimezone('Asia/Dacca').'</td></tr>';
                 $text .= '</table>'; 
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             }
@@ -2347,7 +2347,7 @@ class UserController extends Controller
         $user = User::withTrashed()->where('id', $request->id)->first();
         
         if ($user) {
-            $user->deactivate_date = null;
+            $user->deleted_at = null;
             $user->restore();
 
             $bitrix = new Bitrix();

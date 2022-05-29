@@ -411,7 +411,7 @@ export default {
           sortable: true,
         },
         {
-          key: 'deactivate_date',
+          key: 'deleted_at',
           label: 'Дата увольнения',
           sortable: true,
         },
