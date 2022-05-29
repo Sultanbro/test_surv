@@ -27,7 +27,7 @@
                 <user-earnings
 
                     :data="{{json_encode($user_earnings)}}"
-                    :activeuserid="{{json_encode(auth()->user()->ID)}}"
+                    :activeuserid="{{json_encode(auth()->user()->id)}}"
                     :quarters="{{json_encode($quartal)}}"
                 />
             </div>
@@ -35,7 +35,7 @@
         <!-- Таблица начислений -->
         <div class="col-xl-12">
             <div class="ublock pt-0 relative" style="border-top: 1px solid transparent;border-radius:0 0 5px 5px" id="pulse" >  
-                <t-usersalary activeuserid="{{json_encode(auth()->user()->ID)}}" />
+                <t-usersalary activeuserid="{{json_encode(auth()->user()->id)}}" />
             </div>
         </div>
     </div>
@@ -268,7 +268,7 @@
                     
                             <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                                 {{ csrf_field() }}
-                                <input type="hidden" name="id" value="{{$user->ID}}">
+                                <input type="hidden" name="id" value="{{$user->id}}">
                                 <div class="data-information">
 
 
@@ -277,7 +277,7 @@
                                                                     padding: 15px;">
                                         <div >
                                             <div class="d-flex">
-                                                <p class="user-name">{{$user->LAST_NAME}} {{$user->NAME}}  <b> Ваш ID: {{$user->ID}}</b></p>
+                                                <p class="user-name">{{$user->LAST_NAME}} {{$user->NAME}}  <b> Ваш ID: {{$user->id}}</b></p>
                                             </div>
                                             <div class="user-groups" style="font-size:14px">Название группы:
                                             <div class="mb-2 d-flex" style="font-size:12px">
@@ -610,7 +610,7 @@ function send(question, answer) {
         url: '/user/save/answer',
         type: 'POST',
         data: {
-            user_id: {{ auth()->user()->ID }},
+            user_id: {{ auth()->user()->id }},
             question: question,
             answer: answer,
         },
@@ -631,7 +631,7 @@ function sendFile() {
 
     if(document.getElementById('answer-5').files.length > 0){
         fd.append('question',5);
-        fd.append('user_id',{{ auth()->user()->ID }});
+        fd.append('user_id',{{ auth()->user()->id }});
     
         $.ajax({
             url: '/user/save/answer',

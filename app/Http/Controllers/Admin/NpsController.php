@@ -47,7 +47,7 @@ class NpsController extends Controller
         $users = User::where('roles', 'like', '%"page-nps":"on"%')->pluck('ID')->toArray();
         $users = array_unique(array_merge($users, $superusers));
 
-        $has_access = in_array(Auth::user()->ID, $users);
+        $has_access = in_array(Auth::user()->id, $users);
         if(!$has_access) {
             abort(404);
         }
@@ -65,7 +65,7 @@ class NpsController extends Controller
         $users = User::where('roles', 'like', '%"page-top":"nps"%')->pluck('ID')->toArray();
         $users = array_unique(array_merge($users, $superusers));
 
-        $has_access = in_array(Auth::user()->ID, $users);
+        $has_access = in_array(Auth::user()->id, $users);
         if(!$has_access) {
             abort(404);
         }
@@ -85,7 +85,7 @@ class NpsController extends Controller
         foreach($_users as $user) {
 
             if($user->position_id == 45) {
-                $groups = ProfileGroup::headIn($user->ID, false);
+                $groups = ProfileGroup::headIn($user->id, false);
                 $group = count($groups) > 0 ? $groups[0]->name : '.Без группы';
             } else {
                 $groups = $user->inGroups();
@@ -104,7 +104,7 @@ class NpsController extends Controller
             for($i = 1; $i <=12; $i++) {
                 $m = Carbon::createFromDate($request->year, $i, 1)->format('Y-m-d');
                 $es_grades = EstimateGrade::where('date', $m)
-                    ->where('about_id', $user->ID)
+                    ->where('about_id', $user->id)
                     ->get();
 
                 $grade = 0;
@@ -166,7 +166,7 @@ class NpsController extends Controller
                 if($rook['grade'] != 0) {
                     // Rukovoditel
                     $est = EstimateGrade::where('date', $prev_month)
-                        ->where('user_id', $user->ID)
+                        ->where('user_id', $user->id)
                         ->where('about_id', $rook['id'])
                         ->first();
 
@@ -178,7 +178,7 @@ class NpsController extends Controller
                     } else {
                         EstimateGrade::create([
                             'group_id' => 0,
-                            'user_id' => $user->ID,
+                            'user_id' => $user->id,
                             'about_id' => $rook['id'],
                             'grade' => $rook['grade'],
                             'text' => $rook['plus'],
@@ -193,7 +193,7 @@ class NpsController extends Controller
                 if($rook['grade'] != 0) {
                     // Rukovoditel
                     $est = EstimateGrade::where('date', $prev_month)
-                        ->where('user_id', $user->ID)
+                        ->where('user_id', $user->id)
                         ->where('about_id', $rook['id'])
                         ->first();
 
@@ -205,7 +205,7 @@ class NpsController extends Controller
                     } else {
                         EstimateGrade::create([
                             'group_id' => 0,
-                            'user_id' => $user->ID,
+                            'user_id' => $user->id,
                             'about_id' => $rook['id'],
                             'grade' => $rook['grade'],
                             'text' => $rook['plus'],
@@ -237,10 +237,10 @@ class NpsController extends Controller
                 ->get(['b_user.ID', 'b_user.NAME', 'b_user.LAST_NAME']);
 
             foreach($_users as $user) {
-                if(!in_array($user->ID, $user_ids)) {
-                    array_push($user_ids, $user->ID);
+                if(!in_array($user->id, $user_ids)) {
+                    array_push($user_ids, $user->id);
                     array_push($users, [
-                        'id' => $user->ID,
+                        'id' => $user->id,
                         'name' => $user->LAST_NAME . ' '. $user->NAME
                     ]);
                 }

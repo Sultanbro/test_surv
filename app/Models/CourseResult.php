@@ -110,7 +110,7 @@ class CourseResult extends Model
         $arr['courses'] = $uc['courses'];
 
         $arr['name'] = $user->LAST_NAME . ' ' . $user->NAME . ' (' . $user->course_results->count() .')';
-        $arr['user_id'] = $user->ID;
+        $arr['user_id'] = $user->id;
         $arr['status'] = $uc['totals']['status'] == 2 ? 'Начат' : 'Завершен';
         $arr['progress'] = $uc['totals']['progress'] . '%' ;
         $arr['progress_number'] = $uc['totals']['progress'];  
@@ -147,7 +147,7 @@ class CourseResult extends Model
                 $arr = [];
                 $arr['name'] = $course->name;
                 $arr['status'] = $result->status == 2 ? 'Начат' : 'Завершен';
-                $arr['user_id'] = $user->ID;
+                $arr['user_id'] = $user->id;
 
                 $progress += $result->progress;
                 $progress_count++;

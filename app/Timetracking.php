@@ -184,7 +184,7 @@ class Timetracking extends Model
 
         TimetrackingHistory::create([
             'user_id' => $employee_id,
-            'author_id' => Auth::user()->ID,
+            'author_id' => Auth::user()->id,
             'author' => Auth::user()->LAST_NAME . ' ' . Auth::user()->NAME,
             'date' => $date,
             'description' => 'Изменено время с аналитики на ' .$total_hours . ' минут',

@@ -30,7 +30,7 @@ class ActivityController extends Controller
 
     public function import(Request $request) {
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         if ($request->isMethod('post') && $request->hasFile('file')) {
             if ($request->file('file')->isValid()) {
@@ -366,7 +366,7 @@ class ActivityController extends Controller
         }
 
         
-        return $user ? $user->ID : 0;
+        return $user ? $user->id : 0;
     }
 
     private function groupUsers($group_id) {

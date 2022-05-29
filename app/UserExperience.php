@@ -78,9 +78,9 @@ class UserExperience extends Model
             $skill['text'] = '';
             $skill['head'] = false;
 
-            $answers = self::getAnswers($user->ID);
+            $answers = self::getAnswers($user->id);
 
-            $last_time = self::where('user_id', $user->ID)
+            $last_time = self::where('user_id', $user->id)
                 ->orderBy('updated_at', 'desc')
                 ->first();
 

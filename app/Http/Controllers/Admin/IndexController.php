@@ -358,7 +358,7 @@ class IndexController extends Controller
 
             foreach ($users as $user) {
                 $data[] = [
-                    $user->ID,
+                    $user->id,
                     $user->EMAIL,
                     round($user->d1_seconds/60),
                     round($user->d2_seconds/60),
@@ -672,10 +672,10 @@ class IndexController extends Controller
                 }
 
                 $data[] = [
-                    '<input class="delete-checkbox" type="checkbox" value="'.$user->ID.'">',
-                    $user->ID,
+                    '<input class="delete-checkbox" type="checkbox" value="'.$user->id.'">',
+                    $user->id,
                     $user->DATE_REGISTER,
-                    $user->EMAIL.' <a  target="_blank" href="/login-as/'.$user->ID.'">Вход</a> <a href="/balance/update/'.$user->ID.'">Добавить баланс</a> <a href="/user/delete/'.$user->ID.'" onclick="return confirm(\'Удалить?\')">Удалить</a>',
+                    $user->EMAIL.' <a  target="_blank" href="/login-as/'.$user->id.'">Вход</a> <a href="/balance/update/'.$user->id.'">Добавить баланс</a> <a href="/user/delete/'.$user->id.'" onclick="return confirm(\'Удалить?\')">Удалить</a>',
                     $user->d1_balance,
                     $user->d2_balance,
                     $user->d3_balance,
@@ -759,18 +759,18 @@ class IndexController extends Controller
 
         if ($request->isMethod('post') && $request->balance > 0) {
 
-            Payment::add('umar', $user->ID, 1, $request->balance, 'Новый платёж', '', '', 'Пополнение баланса менеджером');
+            Payment::add('umar', $user->id, 1, $request->balance, 'Новый платёж', '', '', 'Пополнение баланса менеджером');
 
 
             $template = 'admin.balance_email';
             $mmTo    = env( 'MEDIASEND_SUPPORT_EMAIL', 'u-support@u-marketing.org' );
             $subject = 'Пополнение баланса админсистратором пользователю '.$user->EMAIL;
             $data = [
-                'who' => Auth::user()->ID.' '.Auth::user()->NAME.' '.Auth::user()->EMAIL,
+                'who' => Auth::user()->id.' '.Auth::user()->NAME.' '.Auth::user()->EMAIL,
                 'name' => $user->NAME,
                 'email' => $user->EMAIL,
                 'amount' => $request->balance,
-                'idUser' => $user->ID
+                'idUser' => $user->id
             ];
 
             Mail::to($mmTo)->send(new Mailable($template, $subject, $data));
@@ -788,7 +788,7 @@ class IndexController extends Controller
                     [
                         "customFieldId" => 'ep1mn', // total_balance
                         "value" => [
-                            User::balanceByUser($user->ID)
+                            User::balanceByUser($user->id)
                         ]
                     ],
                     [
@@ -828,7 +828,7 @@ class IndexController extends Controller
         $user = User::user($id);
 
         if ($request->isMethod('post')) {
-            User::updateBonus($request->bonus, $user->ID);
+            User::updateBonus($request->bonus, $user->id);
 
             $quantity = ($request->bonus + $user->bonus); // старое значение и новое
 
@@ -887,7 +887,7 @@ class IndexController extends Controller
         foreach ($users as $key =>$user){
             $counts = PartnerUsers::where('partner_id', (isset($user->partner) && !empty($user->partner)) ? $user->partner->id : '0')->with('user:ID,NAME,EMAIL,DATE_REGISTER')->count();
             if ($counts <> 0) {
-                $partner_users[$user->ID] = $counts;
+                $partner_users[$user->id] = $counts;
             }
         }
 
@@ -1056,7 +1056,7 @@ class IndexController extends Controller
 
         $user = PartnerUsers::where('id', $partner_user)->with('user:ID,NAME')->with('partner.user:ID,NAME')->first();
 
-        $purchases = Payment::where('id_user', $user->user->ID)->orderBy('time', 'DESC')->get();
+        $purchases = Payment::where('id_user', $user->user->id)->orderBy('time', 'DESC')->get();
 
         $title = 'Покупки пользователя '.$user->user->NAME;
 
@@ -1076,7 +1076,7 @@ class IndexController extends Controller
                             FROM b_expense
                             WHERE id_user = ?
                             GROUP BY day
-                            ORDER BY day DESC", [$user->user->ID]);
+                            ORDER BY day DESC", [$user->user->id]);
         $partner_share = $user->transactions()->partner_share;
 
         foreach ($expenses as $expense){
@@ -1234,7 +1234,7 @@ class IndexController extends Controller
 
             $notification = new Notification();
 
-            $notification->user_id = auth()->user()->ID;
+            $notification->user_id = auth()->user()->id;
             $notification->title = $request->title;
             $notification->message = $request->message;
             $notification->type = $request->type;
@@ -1292,7 +1292,7 @@ class IndexController extends Controller
      */
     public function loginAs(Request $request, $domain, $tld, $id)
     {
-        if(User::isUserAdmin(Auth::user()->ID)) {
+        if(User::isUserAdmin(Auth::user()->id)) {
             $user = User::find($id);
 
             if(empty($user->remember_token)){
@@ -1311,7 +1311,7 @@ class IndexController extends Controller
 
       View::share('title', 'Права пользователям');
 
-      if (in_array(Auth::user()->ID, [5,18])) {
+      if (in_array(Auth::user()->id, [5,18])) {
         $users = User::select('ID', 'EMAIL', 'NAME')->get();
       } else {
         return redirect()->back();
@@ -1392,7 +1392,7 @@ class IndexController extends Controller
                 ]);
             }
         }
-        if( auth()->user()->ID == 18 || auth()->user()->ID == 5) {
+        if( auth()->user()->id == 18 || auth()->user()->id == 5) {
             return view('admin.passwords')->with('access', $access);
         } else {
             abort('404');
@@ -1432,7 +1432,7 @@ class IndexController extends Controller
         
 
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
         
         $autocalls = Autocall::where('is_integration', 0);
        

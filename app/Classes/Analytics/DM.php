@@ -253,7 +253,7 @@ class DM
             } else {
                 ASI::create([
                     'date' => $date, 
-                    'user_id' => Auth::user()->ID, 
+                    'user_id' => Auth::user()->id, 
                     'group_id' => DM::GROUP_ID, 
                     'employee_id' => $user_id, 
                     'type' => 19,
@@ -279,7 +279,7 @@ class DM
             } else {
                 ASI::create([
                     'date' => $date, 
-                    'user_id' => Auth::user()->ID, 
+                    'user_id' => Auth::user()->id, 
                     'group_id' => DM::GROUP_ID, 
                     'employee_id' => $user_id, 
                     'type' => 21,
@@ -311,7 +311,7 @@ class DM
             }
 
             TimetrackingHistory::create([
-                'author_id' => Auth::user()->ID,
+                'author_id' => Auth::user()->id,
                 'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
                 'user_id' => $user_id,
                 'description' => 'Изменено время с Аналитики на ' . $value_for_21,
@@ -388,7 +388,7 @@ class DM
             }
 
             TimetrackingHistory::create([
-                'author_id' => Auth::user()->ID,
+                'author_id' => Auth::user()->id,
                 'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
                 'user_id' => $user_id,
                 'description' => 'Изменено время с Аналитики на ' . $value_for_21,
@@ -423,7 +423,7 @@ class DM
         }
 
         TimetrackingHistory::create([
-            'author_id' => Auth::user()->ID,
+            'author_id' => Auth::user()->id,
             'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
             'user_id' => $user_id,
             'description' => 'Изменено время с Аналитики на ' . $value,

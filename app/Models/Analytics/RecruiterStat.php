@@ -55,7 +55,7 @@ class RecruiterStat extends Model
             $tables[$i] = self::table($a);
         }
 
-        // if(auth()->user()->ID == 5) {
+        // if(auth()->user()->id == 5) {
         //     dd($tables);
         // }
         return $tables;
@@ -94,13 +94,13 @@ class RecruiterStat extends Model
         if(count($users) > 0) {
             $xusers = User::withTrashed()->whereIn('ID', $users)->get();
             foreach($xusers as $user) {
-                $arr[$user->ID] = [
+                $arr[$user->id] = [
                     'name' => $user->LAST_NAME . ' ' . $user->NAME,
                     'agrees' => 0,
                     '_agrees' => 0, // для сортировки
                     'show' => false,
                     'profile' => 0,
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                 ];
             }
         }   

@@ -317,14 +317,14 @@ class FunnelStats extends Command
                 if($user) {
                     $daytype = DayType::whereIn('type', [5,7])
                         ->where('date', Carbon::parse($lead->invite_at)->format('Y-m-d'))
-                        ->where('user_id', $user->ID)
+                        ->where('user_id', $user->id)
                         ->first();
                     //dump($daytype ? $daytype->user_id : '');
                     if($daytype) $first_day_users++;
 
                     $daytype = DayType::whereIn('type', [5,7])
                         ->where('date', Carbon::parse($lead->day_second)->format('Y-m-d'))
-                        ->where('user_id', $user->ID)
+                        ->where('user_id', $user->id)
                         ->first();
 
                     if($daytype) {
@@ -332,7 +332,7 @@ class FunnelStats extends Command
                     } else {
                         $daytype = DayType::whereIn('type', [5,7])
                             ->where('date', '>', Carbon::parse($lead->day_second)->format('Y-m-d'))
-                            ->where('user_id', $user->ID)
+                            ->where('user_id', $user->id)
                             ->first();
                         if($daytype) {
                             $second_day_users++;
@@ -346,7 +346,7 @@ class FunnelStats extends Command
 
                     $daytypex = DayType::whereIn('type', [5,7])
                         ->where('date', $today->format('Y-m-d'))
-                        ->where('user_id', $user->ID)
+                        ->where('user_id', $user->id)
                         ->first();
                     
                     if($daytypex) $training++; //dump($daytype->toArray()['user_id']); //$training++;

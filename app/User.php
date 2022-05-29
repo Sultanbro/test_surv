@@ -103,7 +103,7 @@ class User extends Authenticatable
      * Работает у нас уже дней
      */
     public function worked_days() {
-        $ud = UserDescription::where('user_id', $this->ID)->first();
+        $ud = UserDescription::where('user_id', $this->id)->first();
         if(!$ud) return 0;
         if($ud && $ud->is_trainee == 1) return 0;
 
@@ -120,7 +120,7 @@ class User extends Authenticatable
      */
     public function wasPartOfTeam($check_ud = false) {
         if($check_ud) {
-            $ud = UserDescription::where('user_id', $this->ID)->first();
+            $ud = UserDescription::where('user_id', $this->id)->first();
             if(!$ud) return 0;
             if($ud && $ud->is_trainee == 1) return 0;
         }   
@@ -161,7 +161,7 @@ class User extends Authenticatable
 
     public function integration_token(String $server)
     {
-        return Oauth::get_token($this->ID, $server);
+        return Oauth::get_token($this->id, $server);
     }
 
 
@@ -209,7 +209,7 @@ class User extends Authenticatable
         // проверка сданных экзаменов  
         $wage = $zarplata; // WAGE: оклад + бонус от экзамена
         $bonusFromExam = 0; // бонус от экзамена
-        $exam = Exam::where('user_id', $this->ID) // Проверка сдавал ли сотрудник книгу в этом месяце
+        $exam = Exam::where('user_id', $this->id) // Проверка сдавал ли сотрудник книгу в этом месяце
             ->where('month', $date->month)
             ->where('year', $date->year)
             ->first();
@@ -241,7 +241,7 @@ class User extends Authenticatable
             }
             $group_users = json_decode($group->users);
             
-            if(in_array($this->ID, $group_users)) {
+            if(in_array($this->id, $group_users)) {
                 $group->show = false;
                 array_push($_groups, $group);  
             }
@@ -263,7 +263,7 @@ class User extends Authenticatable
         foreach($groups as $group) {
             $group_users = json_decode($group->head_id);
             
-            if(in_array($this->ID, $group_users)) {
+            if(in_array($this->id, $group_users)) {
                 array_push($_groups, $group);  
             }
         }
@@ -303,13 +303,13 @@ class User extends Authenticatable
             if($pgu) {
             
                 $assigned = $pgu->assigned;
-                $assigned = array_diff($assigned, [$user->ID]);
+                $assigned = array_diff($assigned, [$user->id]);
                 $assigned = array_values($assigned);
                 $pgu->assigned = $assigned;
 
                 $firedx = $pgu->fired;
                
-                $firedx[] = $user->ID;
+                $firedx[] = $user->id;
 
                 $pgu->fired = array_unique($firedx);
                 $pgu->save();
@@ -330,14 +330,14 @@ class User extends Authenticatable
             $user->save();
 
 
-            self::setDay($user->ID);
+            self::setDay($user->id);
 
 
             $user->delete();
 
             /***** */
             $ud = UserDescription::where([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'is_trainee' => 0,
             ])->first();
 
@@ -397,20 +397,20 @@ class User extends Authenticatable
                 'type' => 4, // Уволен
                 'email' => $targetUser->EMAIL,
                 'date' => date('Y-m-d'),
-                'admin_id' => $authUser->ID,
+                'admin_id' => $authUser->id,
             ]);
             $description = 'с обычного на ' . DayType::DAY_TYPES_RU[4];
         } else {
             $description = 'с ' . DayType::DAY_TYPES_RU[$daytype->type] . ' на ' . DayType::DAY_TYPES_RU[4];
             $daytype->type = 4;
-            $daytype->admin_id = $authUser->ID;
+            $daytype->admin_id = $authUser->id;
             $daytype->save();
         }
 
         $authorName = $authUser->NAME . ' ' . $authUser->LAST_NAME;
         $history = TimetrackingHistory::create([
             'user_id' => $user_id,
-            'author_id' => $authUser->ID,
+            'author_id' => $authUser->id,
             'author' => $authorName,
             'date' => date('Y-m-d'),
             'description' => 'Сотрудник уволен рекрутером',
@@ -470,9 +470,9 @@ class User extends Authenticatable
      */
     public static function balance()
     {
-        //$balance = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [self::bitrixUser()->ID]);
+        //$balance = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [self::bitrixUser()->id]);
 
-        $user = User::find(self::bitrixUser()->ID);
+        $user = User::find(self::bitrixUser()->id);
 
         if (isset($user)) {
             return $user->UF_BALANCE;
@@ -482,7 +482,7 @@ class User extends Authenticatable
 
     public static function logo()
     {
-        $user = User::find(self::bitrixUser()->ID);
+        $user = User::find(self::bitrixUser()->id);
         if (!$user->UF_LOGO) {
             return '/static/images/userlogo.jpg';
         }
@@ -520,7 +520,7 @@ class User extends Authenticatable
 
     public static function getApiKey()
     {
-        $user_id = self::bitrixUser()->ID;
+        $user_id = self::bitrixUser()->id;
         $apiKey = md5($user_id . 'api.mediasend' . '_salt');
 
         if (User::where('ID', $user_id)->whereNull('UF_API_KEY')->count() > 0) {
@@ -544,16 +544,16 @@ class User extends Authenticatable
 
         $user = User::where('UF_API_KEY', $api_key)->first();
         if (isset($user)) {
-            return $user->ID;
+            return $user->id;
         }
         return false;
     }
 
     public static function getSipAccount($user_id = null)
     {
-        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [$user_id?$user_id:self::bitrixUser()->ID]);
+        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [$user_id?$user_id:self::bitrixUser()->id]);
 
-        $user = User::find($user_id ? $user_id : self::bitrixUser()->ID);
+        $user = User::find($user_id ? $user_id : self::bitrixUser()->id);
         return isset($user) ? $user->UF_SIP_ACC : null;
     }
 
@@ -567,9 +567,9 @@ class User extends Authenticatable
 
     public static function getSMPPAccount($user_id = null)
     {
-        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [$user_id?$user_id:self::bitrixUser()->ID]);
+        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [$user_id?$user_id:self::bitrixUser()->id]);
 
-        $user = User::find($user_id ? $user_id : self::bitrixUser()->ID);
+        $user = User::find($user_id ? $user_id : self::bitrixUser()->id);
         return isset($user) ? $user->UF_SMPP : null;
     }
 
@@ -714,7 +714,7 @@ class User extends Authenticatable
         $salaries = $this->getSalaryByMonth($date);
         $user_applied_at = $this->applied_at();
 
-        $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$this->ID]);
+        $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$this->id]);
         
         $sum = 0;
         if(count($salary_table['users']) > 0) {
@@ -772,7 +772,7 @@ class User extends Authenticatable
     public function applied_at()
     {
         $user_applied_at = null;
-        $ud = UserDescription::where('user_id', $this->ID)->first();
+        $ud = UserDescription::where('user_id', $this->id)->first();
         if($ud && $ud->applied) {
             $user_applied_at = $ud->applied;
         } 
@@ -839,7 +839,7 @@ class User extends Authenticatable
             }
             $group_users = array_unique($group_users);
 
-            if (in_array($this->ID, $group_users)) {
+            if (in_array($this->id, $group_users)) {
                 $user_groups[] = $group;
             }
         }
@@ -888,7 +888,7 @@ class User extends Authenticatable
 
                 $usersInGroup = explode(',', trim($group->users, '[]'));
                 foreach ($usersInGroup as $userIDInGroup) {
-                    if ($this->ID == $userIDInGroup) {
+                    if ($this->id == $userIDInGroup) {
                         $workStart = $group->work_start;
                         break;
                     }
@@ -905,7 +905,7 @@ class User extends Authenticatable
      */
     public function internshipPayRate()
     {
-        $groups = ProfileGroup::userIn($this->ID);
+        $groups = ProfileGroup::userIn($this->id);
         $rate = 0;
         foreach ($groups as $key => $group_id) {
             $group = ProfileGroup::find($group_id);
@@ -923,7 +923,7 @@ class User extends Authenticatable
      */
     public function readCorpBook()
     {
-        $ud = UserDescription::where('user_id', $this->ID)->first();
+        $ud = UserDescription::where('user_id', $this->id)->first();
         $read = true;
         if($ud && $ud->is_trainee == 0) {
             if($this->read_corp_book_at) {
@@ -944,7 +944,7 @@ class User extends Authenticatable
      */
     public function isStartedDay() {
         $tt = Timetracking::whereDate('enter', date('Y-m-d'))
-            ->where('user_id', $this->ID)
+            ->where('user_id', $this->id)
             ->first();
         return $tt ? true : false;
     }

@@ -41,11 +41,11 @@ class QualityRecordWeeklyStat extends Model
             $item = [];
 
             $item['name'] = $user->LAST_NAME. ' ' . $user->NAME;
-            $item['id'] = $user->ID;
+            $item['id'] = $user->id;
             
             // FETCHING WEEKS DATA
             $week_totals = self::where([
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'month' => $date->month,
                     'year' => $date->year,
                 ])->get();

@@ -78,25 +78,25 @@ class InviteToBitrixAndAdmin extends Command
        
             $x++;
             $wphone = Phone::normalize($user->PHONE);
-            //dump($user->ID . '   == ' . $wphone);
+            //dump($user->id . '   == ' . $wphone);
 
             
             if(is_null($wphone)) {
-                //dump($user->ID);
+                //dump($user->id);
                 continue; 
             }
             $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
             $whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->EMAIL . ' %0aПароль: 12345.');
             usleep(10000000); // 10 sec
             
-            // $trainee = $trainees->where('user_id', $user->ID)->first();
+            // $trainee = $trainees->where('user_id', $user->id)->first();
             // if($trainee) {
             //     $trainee->bitrix = 1;
             //     $trainee->save();
             // }
 
             UserDescription::make([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'bitrix' => 1,
             ]);
             

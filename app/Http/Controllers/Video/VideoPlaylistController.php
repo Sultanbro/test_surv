@@ -38,7 +38,7 @@ class VideoPlaylistController extends Controller {
 
 	public function get() {
 		return [
-			'user_id' => auth()->user()->ID,
+			'user_id' => auth()->user()->id,
 			'categories' => Category::with('playlists')->get()
 		];
 	}

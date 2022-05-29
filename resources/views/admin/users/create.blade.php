@@ -69,7 +69,7 @@
                 @if(isset($user))
                     <form action="/timetracking/person/update" method="post" enctype="multipart/form-data"
                         class="form-horizontal" id="form" name="user_form">
-                        <input class="form-control" type="hidden" name="id" value="{{$user->ID}}">
+                        <input class="form-control" type="hidden" name="id" value="{{$user->id}}">
                 @else
                     <form action="/timetracking/person/store" method="post" enctype="multipart/form-data"
                         class="form-horizontal" id="form" name="user_form">
@@ -97,7 +97,7 @@
                                         @if(isset($user) && !is_null($user->photo) && $user->photo->path !==
                                         '')
                                         <img
-                                            src="/static/profiles/{{$user->ID}}/photo/{{$user->photo->path}}">
+                                            src="/static/profiles/{{$user->id}}/photo/{{$user->photo->path}}">
                                         @else
                                         <img src="https://cp.callibro.org/files/img/8.png" alt="img">
                                         @endif
@@ -163,7 +163,7 @@
 
 
                                             
-                                            <profile-kpi-button :user_id="{{ $user->ID }}"/>
+                                            <profile-kpi-button :user_id="{{ $user->id }}"/>
 
 
 
@@ -272,7 +272,7 @@
                                                     @if(isset($user))
                                                     <profile-groups id="position_group" 
                                                         :groups="{{ $groups }}"
-                                                        :user_id="{{ $user->ID }}"
+                                                        :user_id="{{ $user->id }}"
                                                         :in_groups="{{ json_encode($user->head_in_groups) }}"
                                                         :user_role="2" />
                                                     @endif   
@@ -479,7 +479,7 @@
                                                                 <td>
                                                                     <a  download=""
                                                                         class="d-block"
-                                                                        href="/static/profiles/{{$user->ID}}/resignation/{{$user->downloads->resignation}}">Скачать</a>
+                                                                        href="/static/profiles/{{$user->id}}/resignation/{{$user->downloads->resignation}}">Скачать</a>
                                                                 </td>
                                                             </tr>
                                                             @endif
@@ -534,7 +534,7 @@
 
                                               
                                                 @if(isset($user))
-                                                <profile-groups :groups="{{ $groups }}" :user_id="{{ $user->ID }}" :in_groups="{{ json_encode($user->in_groups) }}" />
+                                                <profile-groups :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />
                                                 @else
                                                 <select name="group" id="group" class="form-control">
                                                     <option>Выберите группу</option>
@@ -555,7 +555,7 @@
                                                 @if(isset($user))
                                                 <h5 class="mb-4 mt-4">Книги</h5>
 
-                                                <profile-books :books="{{ $corpbooks }}" :user_id="{{ $user->ID }}" 
+                                                <profile-books :books="{{ $corpbooks }}" :user_id="{{ $user->id }}" 
                                                     @if(isset($user->in_books)) 
                                                         :in_books="{{ $user->in_books }}"
                                                     @else
@@ -591,7 +591,7 @@
                                                             <span>Удостоверение личности</span>
                                                         </label>
                                                         <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->ID}}/ud_lich/{{$user->downloads->ud_lich}}">Скачать</a>
+                                                            href="/static/profiles/{{$user->id}}/ud_lich/{{$user->downloads->ud_lich}}">Скачать</a>
                                                         @else
                                                         <label for="file-5">
                                                             <svg width="20" height="30" class="iconsfile">
@@ -615,7 +615,7 @@
                                                             <span>Договор оказания услуг</span>
                                                         </label>
                                                         <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->ID}}/dog_okaz_usl/{{$user->downloads->dog_okaz_usl}}">Скачать</a>
+                                                            href="/static/profiles/{{$user->id}}/dog_okaz_usl/{{$user->downloads->dog_okaz_usl}}">Скачать</a>
                                                         @else
                                                         <label for="file-1">
                                                             <svg width="20" height="30" class="iconsfile">
@@ -639,7 +639,7 @@
                                                             <span>Сохранение комм. тайны</span>
                                                         </label>
                                                         <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->ID}}/sohr_kom_tainy/{{$user->downloads->sohr_kom_tainy}}">Скачать</a>
+                                                            href="/static/profiles/{{$user->id}}/sohr_kom_tainy/{{$user->downloads->sohr_kom_tainy}}">Скачать</a>
                                                         @else
                                                         <label for="file-2">
                                                             <svg width="20" height="30" class="iconsfile">
@@ -667,7 +667,7 @@
                                                             <span>Договор о неконкуренции</span>
                                                         </label>
                                                         <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->ID}}/dog_o_nekonk/{{$user->downloads->dog_o_nekonk}}">Скачать</a>
+                                                            href="/static/profiles/{{$user->id}}/dog_o_nekonk/{{$user->downloads->dog_o_nekonk}}">Скачать</a>
                                                         @else
                                                         <label for="file-3">
                                                             <svg width="20" height="30" class="iconsfile">
@@ -691,7 +691,7 @@
                                                             <span>Трудовой <br> договор</span>
                                                         </label>
                                                         <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->ID}}/trud_dog/{{$user->downloads->trud_dog}}">Скачать</a>
+                                                            href="/static/profiles/{{$user->id}}/trud_dog/{{$user->downloads->trud_dog}}">Скачать</a>
                                                         @else
                                                         <label for="file-4">
                                                             <svg width="20" height="30" class="iconsfile">
@@ -716,7 +716,7 @@
                                                             <span>Архив <br>документов</span>
                                                         </label>
                                                         <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->ID}}/archive/{{$user->downloads->archive}}">Скачать</a>
+                                                            href="/static/profiles/{{$user->id}}/archive/{{$user->downloads->archive}}">Скачать</a>
                                                         @else
                                                         <label for="file-7">
                                                             <svg width="20" height="30" class="iconsfile">
@@ -869,7 +869,7 @@
 
                                                 <div class="col-sm-3 pl-0" >
                                                     @if(isset($user))
-                                                        <profile-quarter-button :user_id="{{ $user->ID }}"/>
+                                                        <profile-quarter-button :user_id="{{ $user->id }}"/>
                                                     @endif
                                                 </div>
 
@@ -1070,7 +1070,7 @@
             </div>
             <div class="text-center mb-3">
                 <form action="/timetracking/delete-person" id="deleteForm" enctype="multipart/form-data"  method="post">
-                    <input class="form-control" type="hidden" name="id" value="{{$user->ID}}">
+                    <input class="form-control" type="hidden" name="id" value="{{$user->id}}">
                     <input class="form-control" type="hidden" name="delay" value="1" id="delay">
 
                     {{ csrf_field() }}
@@ -1151,7 +1151,7 @@
             </div>
             <div class="text-center mb-3 ">
                 <form action="/timetracking/recover-person">
-                    <input class="form-control" type="hidden" name="id" value="{{$user->ID}}">
+                    <input class="form-control" type="hidden" name="id" value="{{$user->id}}">
                     <button type="submit" class="btn btn-success" id="deleteUserButton">Да</button>
                     <button type="reset" class="btn btn-primary" data-dismiss="modal">Нет</button>
                 </form>

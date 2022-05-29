@@ -100,7 +100,7 @@ class EstimateFirstDay extends Command
         if($user) {
             $phone = Phone::normalize($user->PHONE);
             if($phone) {
-                Whatsapp::send($phone, $this->msg($user->ID));
+                Whatsapp::send($phone, $this->msg($user->id));
                 $this->line('Sent: ' . $phone);
                 usleep(6000000); // 5 sec
                 return true;

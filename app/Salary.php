@@ -118,7 +118,7 @@ class Salary extends Model
 
            
             // another
-            array_push($user_ids, $user->ID);
+            array_push($user_ids, $user->id);
 
             $groups = $user->inGroups();
 
@@ -143,7 +143,7 @@ class Salary extends Model
             //         ])
             //         ->whereMonth('enter', $month->month)
             //         ->whereDate('enter', '>=', Carbon::parse($user_applied_at)->format('Y-m-d'))
-            //         ->where('user_id', $user->ID)
+            //         ->where('user_id', $user->id)
             //         ->groupBy('day')
             //         ->get();
             // dd('x');
@@ -152,7 +152,7 @@ class Salary extends Model
                // ->groupBy('day');
        
                // dump($user->salaries);
-            // $trainee_days = DayType::where('user_id', $user->ID)
+            // $trainee_days = DayType::where('user_id', $user->id)
             //     ->select([
             //         DB::raw('DAY(date) as day'),
             //     ])
@@ -174,7 +174,7 @@ class Salary extends Model
             //     ])
             //     ->whereMonth('enter', $month->month)
             //     ->whereDate('enter', '<', Carbon::parse($user_applied_at)->format('Y-m-d'))
-            //     ->where('user_id', $user->ID)
+            //     ->where('user_id', $user->id)
             //     ->groupBy('day')
             //     ->get();
 
@@ -271,7 +271,7 @@ class Salary extends Model
             for ($i = 1; $i <= $month->daysInMonth; $i++) {
                 $d = '' . $i;
                 if(strlen ($i) == 1) $d = '0' . $i;
-                $x = ObtainedBonus::onDay($user->ID, $award_date->day($i)->format('Y-m-d'));
+                $x = ObtainedBonus::onDay($user->id, $award_date->day($i)->format('Y-m-d'));
                 if($x != 0) {
                     $awards[$i] = $x;
                 } else {
@@ -281,10 +281,10 @@ class Salary extends Model
         
             
 
-                $user->edited_salary = EditedSalary::where('user_id', $user->ID)->where('date', $month->format('Y-m-d'))->first();
+                $user->edited_salary = EditedSalary::where('user_id', $user->id)->where('date', $month->format('Y-m-d'))->first();
 
                 //
-                $editedKpi = EditedKpi::where('user_id', $user->ID)
+                $editedKpi = EditedKpi::where('user_id', $user->id)
                     ->whereYear('date', $month->year)
                     ->whereMonth('date', $month->month)
                     ->first();
@@ -293,10 +293,10 @@ class Salary extends Model
                 if($editedKpi) {
                     $kpi = $editedKpi->amount;
                 } else {
-                    $kpi = Kpi::userKpi($user->ID, $date);
+                    $kpi = Kpi::userKpi($user->id, $date);
                 }   
              
-                $editedBonus = EditedBonus::where('user_id', $user->ID)
+                $editedBonus = EditedBonus::where('user_id', $user->id)
                     ->whereYear('date', $month->year)
                     ->whereMonth('date', $month->month)
                     ->first();
@@ -324,7 +324,7 @@ class Salary extends Model
             }
             
             
-            $text =  self::addSpace($user->ID, 5) . ' • S';
+            $text =  self::addSpace($user->id, 5) . ' • S';
             $text .= self::addSpace($total_salary, 7);
             $text .= ' • B ' ;
             $text .= self::addSpace($total_bonuses, 7);
@@ -336,13 +336,13 @@ class Salary extends Model
             $avans = self::selectRaw('sum(ROUND(paid,0)) as total')
                 ->whereMonth('date', $month->month)
                 ->whereYear('date', $month->year)
-                ->where('user_id', $user->ID)
+                ->where('user_id', $user->id)
                 ->first('total')
                 ->total;
 
             $fines = UserFine::selectRaw('sum(ROUND(f.penalty_amount,0)) as total')
                 ->leftJoin('fines as f', 'f.id', '=', 'user_fines.fine_id')
-                ->where('user_id', $user->ID)
+                ->where('user_id', $user->id)
                 ->whereMonth('day', $month->month)
                 ->whereYear('day', $month->year)
                 ->where('status', UserFine::STATUS_ACTIVE)
@@ -427,7 +427,7 @@ class Salary extends Model
                 if($d_user->last_group) { 
                     $lg = json_decode($d_user->last_group);
                     if(in_array($group_id, $lg)) {
-                        array_push($fired_users, $d_user->ID);
+                        array_push($fired_users, $d_user->id);
                     }
                 } 
             }
@@ -675,9 +675,9 @@ class Salary extends Model
             $user->awards = $awards; 
 
 
-            $user->edited_salary = EditedSalary::where('user_id', $user->ID)->where('date', $date)->first();
+            $user->edited_salary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();
 
-            $editedKpi = EditedKpi::where('user_id', $user->ID)
+            $editedKpi = EditedKpi::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->first();
@@ -687,10 +687,10 @@ class Salary extends Model
                 $user->kpi = $editedKpi->amount;
                 $user->edited_kpi = $editedKpi;
             } else {
-                $user->kpi = Kpi::userKpi($user->ID, $date);
+                $user->kpi = Kpi::userKpi($user->id, $date);
             }   
                 
-            $editedBonus = EditedBonus::where('user_id', $user->ID)
+            $editedBonus = EditedBonus::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->first();

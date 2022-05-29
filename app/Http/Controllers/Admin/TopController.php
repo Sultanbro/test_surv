@@ -58,7 +58,7 @@ class TopController extends Controller
         $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('ID')->toArray();
         $users = array_unique(array_merge($users, $superusers));
     
-        $has_access = in_array(Auth::user()->ID, $users);
+        $has_access = in_array(Auth::user()->id, $users);
         if(!$has_access) {
             abort(404);
         }
@@ -86,7 +86,7 @@ class TopController extends Controller
         $users = array_unique(array_merge($users, $superusers));
         
         
-        $has_access = in_array(Auth::user()->ID, $users);
+        $has_access = in_array(Auth::user()->id, $users);
         if(!$has_access) {
             abort(404);
         }

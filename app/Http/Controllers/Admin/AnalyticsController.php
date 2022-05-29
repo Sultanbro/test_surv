@@ -107,7 +107,7 @@ class AnalyticsController extends Controller
         $currentUser = User::bitrixUser();
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if (!$group || !in_array($currentUser->ID, $group_editors) && $currentUser->ID != 18) {
+        if (!$group || !in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
             return [
                 'error' => 'access',
             ];
@@ -403,7 +403,7 @@ class AnalyticsController extends Controller
 
                     TimetrackingHistory::create([
                         'user_id' => $tt->user_id,
-                        'author_id' => Auth::user()->ID,
+                        'author_id' => Auth::user()->id,
                         'author' => Auth::user()->LAST_NAME . ' ' . Auth::user()->NAME,
                         'date' => $date,
                         'description' => $desc,
@@ -648,7 +648,7 @@ class AnalyticsController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if ($currentUser->ID != 18 && !in_array($currentUser->ID, $group_editors)) {
+        if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
             ];

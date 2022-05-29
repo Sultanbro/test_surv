@@ -11,7 +11,7 @@
                     <a class="nav-item nav-link" id="nav-home-tab" href="/timetracking/reports">Табель</a>
                     <a class="nav-item nav-link" id="nav-home-tab" href="/timetracking/reports/enter-report">Время прихода</a>
                     <a class="nav-item nav-link" id="nav-profilex-tab" href="/timetracking/analytics">HR</a> 
-                    @if(in_array(auth()->user()->ID, [5,18,157]))<a class="nav-item nav-link" id="nav-profile-tab" href="/timetracking/an">Аналитика</a>@endif
+                    @if(in_array(auth()->user()->id, [5,18,157]))<a class="nav-item nav-link" id="nav-profile-tab" href="/timetracking/an">Аналитика</a>@endif
                     <a class="nav-item nav-link" id="nav-salary-tab" href="/timetracking/salaries">Начисление</a>
                     <a class="nav-item nav-link" id="nav-salary-tab" href="/timetracking/exam">Повышение квалификации</a>
                     <a class="nav-item nav-link" id="nav-quality-tab" href="/timetracking/quality-control">ОКК</a>
@@ -23,7 +23,7 @@
     </div>
 
     <div class="px-3 top-page mt-3">
-        <page-top :data="{{json_encode($data)}}" activeuserid="{{json_encode(auth()->user()->ID)}}" />
+        <page-top :data="{{json_encode($data)}}" activeuserid="{{json_encode(auth()->user()->id)}}" />
     </div>
 </div>
  

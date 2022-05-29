@@ -85,14 +85,14 @@ class FineCheck extends Command
  
                 
                 foreach($users as $user) {
-                    $this->line($user->ID);
-                    $user_desc = UserDescription::where('is_trainee', 0)->where('user_id', $user->ID)->first();
+                    $this->line($user->id);
+                    $user_desc = UserDescription::where('is_trainee', 0)->where('user_id', $user->id)->first();
                     
                     if(!$user_desc) {
                         continue;
                     }
                    
-                    $daytype = DayType::where('user_id', $user->ID)->whereDate('date', $lastDay->format('Y-m-d'))->first();    // Если он заболел или выходной
+                    $daytype = DayType::where('user_id', $user->id)->whereDate('date', $lastDay->format('Y-m-d'))->first();    // Если он заболел или выходной
                     if($daytype && in_array($daytype->type, [1,3])) {
                         continue;
                     }
@@ -100,7 +100,7 @@ class FineCheck extends Command
                     $tt = Timetracking::whereDay('enter', $lastDay->day)
                         ->whereMonth('enter', $lastDay->month)
                         ->whereYear('enter', $lastDay->year)
-                        ->where('user_id', '=',  $user->ID)
+                        ->where('user_id', '=',  $user->id)
                         ->first();   
                         
                     
@@ -108,13 +108,13 @@ class FineCheck extends Command
                         $wasFine = UserFine::whereDay('day', $lastDay->day)
                             ->whereMonth('day', $lastDay->month)
                             ->whereYear('day', $lastDay->year)
-                            ->where('user_id', '=',  $user->ID)
+                            ->where('user_id', '=',  $user->id)
                             ->where('fine_id','=',  $fine_id)
                             ->first();
 
                         if(!$wasFine) {
                             $userFine = new UserFine;
-                            $userFine->user_id = $user->ID;
+                            $userFine->user_id = $user->id;
                             $userFine->fine_id = $fine_id;
                             $userFine->day = $lastDay;
                             $userFine->save();
@@ -123,7 +123,7 @@ class FineCheck extends Command
                             $data = [];
 
                             $data['date'] = Carbon::parse($lastDay)->format('Y-m-d');
-                            UserFine::setNotificationAboutFine($user->ID, $fine_id, $title, $data);
+                            UserFine::setNotificationAboutFine($user->id, $fine_id, $title, $data);
                         }
                     }
                     

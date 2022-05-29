@@ -76,7 +76,7 @@ class GroupsController extends Controller
                 $add_text = $additional_minutes != 0 ? ', плюс ' . $additional_minutes . ' минут за отсутствие связи' : '';
 
                 TimetrackingHistory::create([
-                    'author_id' => Auth::user()->ID,
+                    'author_id' => Auth::user()->id,
                     'author' => Auth::user()->LAST_NAME .' '. Auth::user()->NAME,
                     'user_id' => $item['id'],
                     'date' => $date,
@@ -133,7 +133,7 @@ class GroupsController extends Controller
 
     public function import(Request $request) {
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         
 
@@ -237,7 +237,7 @@ class GroupsController extends Controller
                         $possible_user = $gusers->where('NAME' , $_fv['imya_sotrudnika'])->where('LAST_NAME',$_fv['familiya_sotrudnika'])->first();
                         
                         if($possible_user) {
-                            $item['id'] = $possible_user->ID;
+                            $item['id'] = $possible_user->id;
                         }
                     }
                     
@@ -388,7 +388,7 @@ class GroupsController extends Controller
             $gr = $group->groupUsers();
             if($gr) {
                 foreach($gr as $g) {
-                    array_push($users, $g->ID); 
+                    array_push($users, $g->id); 
                 }
             }   
         }

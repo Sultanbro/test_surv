@@ -105,7 +105,7 @@
 								</span>
                         </a>
                         <span class="id">
-								<em>Ваш ID: </em>{{\App\User::bitrixUser()->ID}}</span>
+								<em>Ваш ID: </em>{{\App\User::bitrixUser()->id}}</span>
                         <div class="panel-logo">
                             <div>
                                 <a data-fancybox="modal" data-src="#editLogo" href="javascript:;">

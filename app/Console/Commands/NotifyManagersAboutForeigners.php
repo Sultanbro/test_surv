@@ -59,7 +59,7 @@ class NotifyManagersAboutForeigners extends Command
       
         foreach($users as $user) {
 
-            // $trainee = Trainee::whereNull('applied')->where('user_id', $user->ID)->first();
+            // $trainee = Trainee::whereNull('applied')->where('user_id', $user->id)->first();
  
             // if($trainee) {
             //     continue;
@@ -77,7 +77,7 @@ class NotifyManagersAboutForeigners extends Command
                     $heads = json_decode($groups[0]->head_id);
 
                     if(count($heads) > 0) {
-                        $salaries = Salary::whereBetween('date', [$from, $to])->where('user_id', $user->ID)->get()->sum('amount');
+                        $salaries = Salary::whereBetween('date', [$from, $to])->where('user_id', $user->id)->get()->sum('amount');
                         
                         $from = Carbon::parse($from)->format('d.m.Y');
                         $to = Carbon::parse($to)->format('d.m.Y');
@@ -93,7 +93,7 @@ class NotifyManagersAboutForeigners extends Command
                         foreach($notification_receivers as $user_id) {
                             UserNotification::create([
                                 'user_id' => $user_id,
-                                'about_id' => $user->ID,
+                                'about_id' => $user->id,
                                 'title' => 'Оплатите начисления иностранному сотруднику',
                                 'group' => $timestamp,
                                 'message' => $msg_fragment

@@ -65,7 +65,7 @@ class Adaptation extends Command
             //$start_day = Carbon::parse($lead->invite_at)->startOfDay();
             $start_day = Carbon::parse($user->applied_at())->startOfDay();
 
-            $send_day = $this->getDayToSend($start_day->format('Y-m-d'), $user->ID);
+            $send_day = $this->getDayToSend($start_day->format('Y-m-d'), $user->id);
 
             if(in_array($send_day, [4,15,30,45])) { // Отправляем в эти дни
 
@@ -74,7 +74,7 @@ class Adaptation extends Command
                 if($groups->count() == 0) continue;
 
                 $msg_fragment =  $send_day . ' день <br>';
-                $msg_fragment .=  '<a href="https://admin.u-marketing.org/timetracking/edit-person?id=' . $user->ID . '">' . $user->LAST_NAME . ' ' . $user->NAME . '</a><br>';
+                $msg_fragment .=  '<a href="https://admin.u-marketing.org/timetracking/edit-person?id=' . $user->id . '">' . $user->LAST_NAME . ' ' . $user->NAME . '</a><br>';
                 $msg_fragment .=  $groups[0]->name;
 
                 $timestamp = now(); 

@@ -81,7 +81,7 @@ class Account extends Model
 
         foreach ($accounts as $account) {
             if($account->owner) {
-                $roots[] = self::rootAccount($account->owner->ID);
+                $roots[] = self::rootAccount($account->owner->id);
             }
         }
 

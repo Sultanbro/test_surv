@@ -91,7 +91,7 @@ class SettingController extends Controller
         $user = Auth::user();
 
         if ($request->isMethod('post')) {
-            $user = User::find(Auth::user()->ID);
+            $user = User::find(Auth::user()->id);
             $user->NAME = $request->name;
             $user->LAST_NAME = $request->last_name;
             $user->PHONE = $request->phone;
@@ -115,7 +115,7 @@ class SettingController extends Controller
     public function transaction(Request $request) {
         View::share('menu', 'transaction');
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         $transactions = [];
         $total_expence = 0;
@@ -199,7 +199,7 @@ class SettingController extends Controller
         $date = $request->input('date');
 
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         $start_timestamp = strtotime($date);
         $end_timestamp = strtotime($date . "+1 days");
@@ -226,7 +226,7 @@ class SettingController extends Controller
 
             $user = User::bitrixUser();
             $email = $user->EMAIL;
-            $idUser = $user->ID;
+            $idUser = $user->id;
 
             // генерация счета на оплату
             $invoice = new Invoice();
@@ -499,7 +499,7 @@ class SettingController extends Controller
 
         if ($request->isMethod('post')) {
             $user = User::bitrixUser();
-            $idUser = $user->ID;
+            $idUser = $user->id;
 
             if($request->action == 'createOrder'){
                 $amount = $request->amount;
@@ -698,7 +698,7 @@ class SettingController extends Controller
         if($request->isMethod('post')) {
 
             $user = User::bitrixUser();
-            $userID = $user->ID;
+            $userID = $user->id;
 
             $amount = $request->amount;
             $payment_amount = $request->amount;
@@ -1181,7 +1181,7 @@ class SettingController extends Controller
     public function logo(Request $request) {
 
         $user = User::bitrixUser();
-        $uid  = $user->ID;
+        $uid  = $user->id;
 
         if ( $request->hasFile( 'logo' ) && $request->file( 'logo' )->isValid() ) {
             $file = $request->file( 'logo' );
@@ -1257,7 +1257,7 @@ class SettingController extends Controller
 
     // Прочитано уведомление, которое получают все
     public function notificationRead($id = null) {
-        $user_id = auth()->user()->ID;
+        $user_id = auth()->user()->id;
         if(!is_null($id)) {
             $notifications = Notification::where('id', $id)->get();
         } else {
@@ -1285,7 +1285,7 @@ class SettingController extends Controller
     // Прочитано личное уведомление
     public function setUserNotificationIsRead($id = null) {
 
-        $user_id = auth()->user()->ID;
+        $user_id = auth()->user()->id;
 
         if(!is_null($id)) {
             $notification = UserNotification::where([
@@ -1354,8 +1354,8 @@ class SettingController extends Controller
         View::share('menu', 'stop_list');
         View::share('title', 'Стоп лист');
         $user = Auth::user();
-        User::set_timezone_of($user->ID);
-        $stoplist = Stoplist::where('user_id', $user->ID)->get();
+        User::set_timezone_of($user->id);
+        $stoplist = Stoplist::where('user_id', $user->id)->get();
         $normalize_stoplist = [];
         $obj = new Stoplist();
         foreach ($stoplist as $item) {

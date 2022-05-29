@@ -24,7 +24,7 @@ class UserActivity
         //     $user->audio_reminder_sent = 0;
         //     $user->save();
 
-        //     // if($user->ID != 5) { // Али Акпанов Показать debugbar
+        //     // if($user->id != 5) { // Али Акпанов Показать debugbar
         //     //     \Debugbar::disable();
         //     // }
         // } else {

@@ -93,20 +93,20 @@ class GetWorkedHours extends Command
                 if($minutes == 0) continue; // Не записывать ноль
                 if($minutes > 0 && $user->program_id == 1) {
                     $hours = Callibro::getWorkedHours($user->EMAIL, $this->date);
-                    $this->updateHours($user->ID, $minutes, $hours);
+                    $this->updateHours($user->id, $minutes, $hours);
                 }
                 $aggrees = Eurasian::getAggrees($user->EMAIL, $this->date);
 
                 $this->saveASI([
                     'date' => $this->startOfMonth,
-                    'employee_id' => $user->ID,
+                    'employee_id' => $user->id,
                     'group_id' => $group_id,
                     'type' => 16 // минуты
                 ], $minutes);
     
                 $this->saveASI([
                     'date' => $this->startOfMonth,
-                    'employee_id' => $user->ID,
+                    'employee_id' => $user->id,
                     'group_id' => $group_id,
                     'type' => 18 // согласия
                 ], $aggrees);
@@ -122,14 +122,14 @@ class GetWorkedHours extends Command
 
                 $this->saveASI([
                     'date' => $this->startOfMonth,
-                    'employee_id' => $user->ID,
+                    'employee_id' => $user->id,
                     'group_id' => $group_id,
                     'type' => 37 // минуты
                 ], $minutes);
     
                 $this->saveASI([
                     'date' => $this->startOfMonth,
-                    'employee_id' => $user->ID,
+                    'employee_id' => $user->id,
                     'group_id' => $group_id,
                     'type' => 38 // согласия
                 ], $aggrees);
@@ -250,17 +250,17 @@ class GetWorkedHours extends Command
             $total_hours = Callibro::getWorkedHours($user->EMAIL, $this->date);
 
             $tt = Timetracking::whereDate('enter', $this->date)
-                ->where('user_id', $user->ID)
+                ->where('user_id', $user->id)
                 ->orderBy('enter', 'asc')
                 ->first();
 
             
-            // if(in_array($user->ID, $home_users) && $total_hours < 540) {
+            // if(in_array($user->id, $home_users) && $total_hours < 540) {
             //     $total_hours = $total_hours + (int)$add_minutes;
             //     if($total_hours > 540) $total_hours = 540;
             // }
 
-            if($tt && $user->ID == 3173) {
+            if($tt && $user->id == 3173) {
                 $total_hours = 540;
             }
 
@@ -275,7 +275,7 @@ class GetWorkedHours extends Command
                 
                 Timetracking::create([
                     'total_hours' => $total_hours,
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'enter' => Carbon::parse($this->date),
                     'exit' => Carbon::parse($this->date),
                     'program_id' => 1,

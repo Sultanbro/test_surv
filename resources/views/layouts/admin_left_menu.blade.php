@@ -223,15 +223,15 @@
                             <li style="display:none;"><i class="menu-icon fa fa-money"></i><a href="/clear-validator">
                                     Почистить валидатор</a></li>
                             @endif
-                            @if(auth()->user()->ID ==18 || auth()->user()->ID == 5 || (isset(auth()->user()->roles['page18']) &&
+                            @if(auth()->user()->id ==18 || auth()->user()->id == 5 || (isset(auth()->user()->roles['page18']) &&
                             auth()->user()->roles['page18'] =='on'))
                             <li><i class="menu-icon fa fa-money"></i><a href="/rent-numbers">Аренда номеров</a></li>
                             @endif
-                            @if(auth()->user()->ID ==18 || auth()->user()->ID == 5 || (isset(auth()->user()->roles['page19']) &&
+                            @if(auth()->user()->id ==18 || auth()->user()->id == 5 || (isset(auth()->user()->roles['page19']) &&
                             auth()->user()->roles['page19'] =='on'))
                             <li><i class="menu-icon fa fa-money"></i><a href="/pay_info">Платежи</a></li>
                             @endif
-                            @if(auth()->user()->ID ==18 || auth()->user()->ID == 5 || (isset(auth()->user()->roles['page19']) &&
+                            @if(auth()->user()->id ==18 || auth()->user()->id == 5 || (isset(auth()->user()->roles['page19']) &&
                             auth()->user()->roles['page19'] =='on'))
                             <li><i class="menu-icon fa fa-phone"></i><a href="/autocalls">Автозвонки</a></li>
                             @endif
@@ -274,20 +274,20 @@
                     </li>
                     @endif
  
-                    @if(in_array(auth()->user()->ID, [5,18]))
+                    @if(in_array(auth()->user()->id, [5,18]))
                     <li class="menu-item-has-children dropdown">
                         <a href="/userroles/" class="dropdown-toggle"  > <i class="menu-icon fa fa-check-square-o"></i>Права пользователям</a>
                     </li>
                     @endif
 
-                    @if(auth()->user()->ID ==18 || auth()->user()->ID == 5 || (isset(auth()->user()->roles['page20']) &&
+                    @if(auth()->user()->id ==18 || auth()->user()->id == 5 || (isset(auth()->user()->roles['page20']) &&
                     auth()->user()->roles['page20'] =='on'))
                     <li class="menu-item-has-children dropdown">
                         <a href="/books/0" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-book"></i>Книги</a>
                     </li>
                     @endif
 
-                    @if(auth()->user()->ID ==18 || auth()->user()->ID == 5 || auth()->user()->ID == 6288 || auth()->user()->ID == 12914)
+                    @if(auth()->user()->id ==18 || auth()->user()->id == 5 || auth()->user()->id == 6288 || auth()->user()->id == 12914)
                     <li class="menu-item-has-children dropdown     @if(isset($menu) && $menu=='video_editor')  show @endif" >
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-play"></i>Видео</a>
 
@@ -301,7 +301,7 @@
                     </li>
                     @endif
 
-                    @if(auth()->user()->ID == 18 || auth()->user()->ID == 5 || (isset(auth()->user()->roles['page17']) &&
+                    @if(auth()->user()->id == 18 || auth()->user()->id == 5 || (isset(auth()->user()->roles['page17']) &&
                     auth()->user()->roles['page17'] =='on'))
                     <li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-credit-card"></i>Кредиты</a>
@@ -319,7 +319,7 @@
                     </li>
                     @endif
 
-                    @if( auth()->user()->ID ==18 || auth()->user()->ID ==5)
+                    @if( auth()->user()->id ==18 || auth()->user()->id ==5)
                     <li class="menu-item-has-children фцвывфцвфывцвфцфцвцвффццфцвфцвфыфцвфц">
                         <a href="/passwords" class="1dropdown-toggle" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-key"></i>Пароли</a>
                     </li>
@@ -382,7 +382,7 @@
                             
                             
                             @if( isset(auth()->user()->roles['page21']) && auth()->user()->roles['page21'] =='on')
-                                    @if(in_array(auth()->user()->ID, [5,18,157,84]))
+                                    @if(in_array(auth()->user()->id, [5,18,157,84]))
                                     <li>
                                         <i class="menu-icon fa fa-calendar"></i>
                                         <a class="{{(isset($menu) && $menu == 'timetrackingtop') ? 'active' : ''}}" href="/timetracking/top">ТОП</a>

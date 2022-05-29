@@ -57,7 +57,7 @@ class ExamController extends Controller
         $group = ProfileGroup::find($request['group_id']);
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if (!in_array($currentUser->ID, $group_editors) && $currentUser->ID != 18) {
+        if (!in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
             return [
                 'error' => 'access',
             ];
@@ -71,7 +71,7 @@ class ExamController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
 
-        if ($currentUser->ID != 18 && !in_array($currentUser->ID, $group_editors)) {
+        if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
             ];
@@ -116,7 +116,7 @@ class ExamController extends Controller
         $group = ProfileGroup::find($request['group_id']);
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if (!in_array($currentUser->ID, $group_editors) && $currentUser->ID != 18) {
+        if (!in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
             return [
                 'errors' => 'access',
             ];

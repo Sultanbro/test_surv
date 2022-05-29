@@ -173,7 +173,7 @@ class Lerua
             }
 
             TimetrackingHistory::create([
-                'author_id' => Auth::user()->ID,
+                'author_id' => Auth::user()->id,
                 'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
                 'user_id' => $user_id,
                 'description' => 'Изменено время с Аналитики на ' . $hours,

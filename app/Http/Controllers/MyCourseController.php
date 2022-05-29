@@ -23,7 +23,7 @@ class MyCourseController extends Controller
     }   
     
     public function getCourses(Request $request) {
-        $user_id = auth()->user()->ID;
+        $user_id = auth()->user()->id;
         $courses = CourseResult::where('user_id', $user_id)
             ->whereIn('status', [0,2])
             ->orderBy('status', 'desc')
@@ -36,7 +36,7 @@ class MyCourseController extends Controller
     }   
 
     public function getMyCourse(Request $request) {
-        $user_id = auth()->user()->ID;
+        $user_id = auth()->user()->id;
        
         $active_course = CourseResult::where('user_id', $user_id)
             ->whereIn('status', [0,2])
@@ -65,7 +65,7 @@ class MyCourseController extends Controller
 
     private function getCourseItem(CourseItem $course_item, &$no_active)
     {
-        $user_id = auth()->user()->ID;
+        $user_id = auth()->user()->id;
 
         $steps = [];
 

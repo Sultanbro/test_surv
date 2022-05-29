@@ -152,7 +152,7 @@ class VideolearningController extends Controller {
 	}
 
 	public function admin() {
-		if(!in_array(Auth::user()->ID, [5, 18])) return redirect('/videolearning');
+		if(!in_array(Auth::user()->id, [5, 18])) return redirect('/videolearning');
 		
 		$videos = Video::paginate(10);
 

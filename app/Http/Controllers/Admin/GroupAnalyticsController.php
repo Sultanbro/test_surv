@@ -83,7 +83,7 @@ class GroupAnalyticsController extends Controller
         
         if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
         else {
-            return redirect('timetracking/user/' . \Auth::user()->ID);
+            return redirect('timetracking/user/' . \Auth::user()->id);
         }
 
         $currentUser = User::bitrixUser();
@@ -99,10 +99,10 @@ class GroupAnalyticsController extends Controller
         // Доступ к группе 
 
         $groups = [];
-        $isSuperUser = in_array($currentUser->ID, [5,18,157]);
+        $isSuperUser = in_array($currentUser->id, [5,18,157]);
 
         
-        if ($recruting && in_array($currentUser->ID, json_decode($recruting->editors_id)) || $isSuperUser) {
+        if ($recruting && in_array($currentUser->id, json_decode($recruting->editors_id)) || $isSuperUser) {
             $groups[] = [
                 'id' => 48,
                 'name' => $recruting->name,
@@ -110,7 +110,7 @@ class GroupAnalyticsController extends Controller
             ];
         }  
         
-        if ($kaspi_42 && in_array($currentUser->ID, json_decode($kaspi_42->editors_id)) || $isSuperUser) {
+        if ($kaspi_42 && in_array($currentUser->id, json_decode($kaspi_42->editors_id)) || $isSuperUser) {
             $groups[] = [
                 'id' => 42,
                 'name' => $kaspi_42->name,
@@ -120,7 +120,7 @@ class GroupAnalyticsController extends Controller
 
         
         
-        // if ($dm && in_array($currentUser->ID, json_decode($dm->editors_id)) || $isSuperUser) {
+        // if ($dm && in_array($currentUser->id, json_decode($dm->editors_id)) || $isSuperUser) {
         //     $groups[] = [
         //         'id' => 31,
         //         'name' => $dm->name,
@@ -130,7 +130,7 @@ class GroupAnalyticsController extends Controller
 
      
         
-        // if ($homecredit && in_array($currentUser->ID, json_decode($homecredit->editors_id)) || $isSuperUser) {
+        // if ($homecredit && in_array($currentUser->id, json_decode($homecredit->editors_id)) || $isSuperUser) {
         //     $groups[] = [
         //         'id' => 57,
         //         'name' => $homecredit->name,
@@ -138,7 +138,7 @@ class GroupAnalyticsController extends Controller
         //     ];
         // }  
         
-        // if ($eurasian && in_array($currentUser->ID, json_decode($eurasian->editors_id)) || $isSuperUser) {
+        // if ($eurasian && in_array($currentUser->id, json_decode($eurasian->editors_id)) || $isSuperUser) {
         //     $groups[] = [
         //         'id' => 53,
         //         'name' => $eurasian->name,
@@ -146,7 +146,7 @@ class GroupAnalyticsController extends Controller
         //     ];
         // }   
 
-        // if ($lerua && in_array($currentUser->ID, json_decode($lerua->editors_id)) || $isSuperUser) {
+        // if ($lerua && in_array($currentUser->id, json_decode($lerua->editors_id)) || $isSuperUser) {
         //     $groups[] = [
         //         'id' => 63,
         //         'name' => $lerua->name,
@@ -172,7 +172,7 @@ class GroupAnalyticsController extends Controller
 
         // Доступ к группе 
         $group = ProfileGroup::find($request['group_id']);
-        if (!in_array($currentUser->ID, json_decode($group->editors_id)) && $currentUser->ID != 18) {
+        if (!in_array($currentUser->id, json_decode($group->editors_id)) && $currentUser->id != 18) {
             return [
                 'error' => 'access',
             ];
@@ -213,7 +213,7 @@ class GroupAnalyticsController extends Controller
             if($d_user->last_group) { 
                 $lg = json_decode($d_user->last_group);
                 if(in_array($request['group_id'], $lg)) {
-                    array_push($fired_users, $d_user->ID);
+                    array_push($fired_users, $d_user->id);
                 }
             } 
         }
@@ -419,7 +419,7 @@ class GroupAnalyticsController extends Controller
                 $check = AnalyticsSettingsIndividually::where([
                         'date' =>  $date, 
                         'type' => $activity->id,
-                        'employee_id' => $localUser->ID,
+                        'employee_id' => $localUser->id,
                         'group_id' => $request->group_id,
                     ])
                     ->where('group_id', $request->group_id)
@@ -441,7 +441,7 @@ class GroupAnalyticsController extends Controller
                     $_decoded->fullname = trim($localUser->LAST_NAME . ' ' . $localUser->NAME);
                     $_decoded->email = $localUser->EMAIL;
                     $_decoded->full_time = $localUser->full_time;
-                    $_decoded->id = $localUser->ID;
+                    $_decoded->id = $localUser->id;
                     $_decoded->fired = $fired;
                     $_decoded->applied_from = $applied_from;
                     array_push($records, $_decoded);
@@ -453,7 +453,7 @@ class GroupAnalyticsController extends Controller
                         'email' => $localUser->EMAIL,
                         'group' => $group_name,
                         'full_time' => $localUser->full_time,
-                        'id' => $localUser->ID,
+                        'id' => $localUser->id,
                         'fired' => $fired,
                         'applied_from' => $applied_from,
                     ]);
@@ -803,17 +803,17 @@ class GroupAnalyticsController extends Controller
                 ]); 
                 
                 UserDescription::make([
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'lead_id' => $lead->lead_id,
                     'deal_id' => $lead->deal_id,
                     'is_trainee' => 1,
                 ]);
 
                 // create trainee
-                $trainee = Trainee::where('user_id', $user->ID)->first();
+                $trainee = Trainee::where('user_id', $user->id)->first();
                 if(!$trainee) {
                     $trainee = Trainee::create([
-                        'user_id' => $user->ID,
+                        'user_id' => $user->id,
                         'lead_id' => $lead->lead_id,
                         'deal_id' => $lead->deal_id,
                     ]);  
@@ -827,7 +827,7 @@ class GroupAnalyticsController extends Controller
                 $old_invite_at = $lead->invite_at;
                 $lead->invite_at = $invite_at;
                 $lead->day_second = $day_second;
-                $lead->user_id = $user->ID;
+                $lead->user_id = $user->id;
                 $lead->invite_group_id = $request->group_id;    
                 $lead->invited = 1;
 
@@ -845,7 +845,7 @@ class GroupAnalyticsController extends Controller
                     $old_invite_at = $lead->invite_at;
                     $lead->invite_at = $invite_at;
                     $lead->day_second = $day_second;
-                    $lead->user_id = $user->ID;
+                    $lead->user_id = $user->id;
                     $lead->invite_group_id = $request->group_id;    
                     $lead->invited = 2; // Сотрудник уже существует
                     
@@ -855,17 +855,17 @@ class GroupAnalyticsController extends Controller
               
                     
                     UserDescription::make([
-                        'user_id' => $user->ID,
+                        'user_id' => $user->id,
                         'lead_id' => $lead->lead_id,
                         'deal_id' => $lead->deal_id,
                         'is_trainee' => 1,
                     ]);
 
                     // create trainee
-                    $trainee = Trainee::where('user_id', $user->ID)->first();
+                    $trainee = Trainee::where('user_id', $user->id)->first();
                     if(!$trainee) {
                         $trainee = Trainee::create([
-                            'user_id' => $user->ID,
+                            'user_id' => $user->id,
                             'lead_id' => $lead->lead_id,
                             'deal_id' => $lead->deal_id,
                         ]);  
@@ -895,17 +895,17 @@ class GroupAnalyticsController extends Controller
                     ]);
                     
                     UserDescription::make([
-                        'user_id' => $user->ID,
+                        'user_id' => $user->id,
                         'lead_id' => $lead->lead_id,
                         'deal_id' => $lead->deal_id,
                         'is_trainee' => 1,
                     ]);
 
                     // create trainee
-                    $trainee = Trainee::where('user_id', $user->ID)->first();
+                    $trainee = Trainee::where('user_id', $user->id)->first();
                     if(!$trainee) {
                         $trainee = Trainee::create([
-                            'user_id' => $user->ID,
+                            'user_id' => $user->id,
                             'lead_id' => $lead->lead_id,
                             'deal_id' => $lead->deal_id,
                         ]);  
@@ -918,7 +918,7 @@ class GroupAnalyticsController extends Controller
                     $old_invite_at = $lead->invite_at;
                     $lead->invite_at = $invite_at;
                     $lead->day_second = $day_second;
-                    $lead->user_id = $user->ID;
+                    $lead->user_id = $user->id;
                     $lead->invite_group_id = $request->group_id;    
                     $lead->invited = 1;
 
@@ -955,14 +955,14 @@ class GroupAnalyticsController extends Controller
             }
 
             /** zarplata */
-            $zarplata = Zarplata::where('user_id', $user->ID)->first();
+            $zarplata = Zarplata::where('user_id', $user->id)->first();
             if($zarplata) {
                 $zarplata->zarplata = 70000;
                 $zarplata->save();
             } else {
                 Zarplata::create([
                     'zarplata' => 70000,
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'card_number' => '',
                     'kaspi' => '',
                     'jysan' => '',
@@ -980,7 +980,7 @@ class GroupAnalyticsController extends Controller
     
             foreach($groups as $gr) {
                 $gr_users = json_decode($gr->users);
-                $gr_users = array_diff($gr_users, [$user->ID]);
+                $gr_users = array_diff($gr_users, [$user->id]);
                 $gr_users = array_values($gr_users);
 
                 $gr->users = json_encode($gr_users);
@@ -992,10 +992,10 @@ class GroupAnalyticsController extends Controller
             if ($group->users !== null) {
 
                 $users_array = json_decode($group->users);
-                $users_array[] = $user->ID;
+                $users_array[] = $user->id;
             } else {
                 $users_array = [];
-                $users_array[] = $user->ID;
+                $users_array[] = $user->id;
             }
             $group->users = json_encode($users_array);
             $group->save();
@@ -1008,7 +1008,7 @@ class GroupAnalyticsController extends Controller
 
             if($old_invite_at) {
                 $daytype = DayType::where([
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'type' => DayType::DAY_TYPES['TRAINEE'],
                     'date' => Carbon::parse($old_invite_at)->format('Y-m-d'), 
                 ])->first();
@@ -1017,7 +1017,7 @@ class GroupAnalyticsController extends Controller
             } 
 
             $daytype = DayType::where([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'date' => $date, 
             ])->first();
 
@@ -1027,7 +1027,7 @@ class GroupAnalyticsController extends Controller
                 $daytype->save();
             } else {
                 $daytype = DayType::create([
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'type' => DayType::DAY_TYPES['TRAINEE'],
                     'email' =>'',
                     'date' => $date,
@@ -1245,7 +1245,7 @@ class GroupAnalyticsController extends Controller
             'date' => $request->date,
             'type' => $request->type,
             'data' => $data,
-            'user_id' => $currentUser->ID,
+            'user_id' => $currentUser->id,
         ]);
     }
 
@@ -1314,7 +1314,7 @@ class GroupAnalyticsController extends Controller
 
                     TimetrackingHistory::create([
                         'user_id' => $tt->user_id,
-                        'author_id' => Auth::user()->ID,
+                        'author_id' => Auth::user()->id,
                         'author' => Auth::user()->LAST_NAME . ' ' . Auth::user()->NAME,
                         'date' => $date,
                         'description' => $desc,
@@ -1379,7 +1379,7 @@ class GroupAnalyticsController extends Controller
 
                     TimetrackingHistory::create([
                         'user_id' => $tt->user_id,
-                        'author_id' => Auth::user()->ID,
+                        'author_id' => Auth::user()->id,
                         'author' => Auth::user()->LAST_NAME . ' ' . Auth::user()->NAME,
                         'date' => $date,
                         'description' => $desc,
@@ -1403,7 +1403,7 @@ class GroupAnalyticsController extends Controller
             'date' => $request->date,
             'type' => 'basic',
             'data' => $data,
-            'user_id' => $currentUser->ID,
+            'user_id' => $currentUser->id,
         ]);
     }
 
@@ -1430,7 +1430,7 @@ class GroupAnalyticsController extends Controller
 
         if ($setting) {
             $setting->data = $data; 
-            $setting->user_id = $currentUser->ID;
+            $setting->user_id = $currentUser->id;
             $setting->employee_id = $employee_id;
             $setting->save();
         } else {
@@ -1440,7 +1440,7 @@ class GroupAnalyticsController extends Controller
                 'employee_id' => $employee_id,
                 'type' => $type,
                 'data' => $data,
-                'user_id' => $currentUser->ID,
+                'user_id' => $currentUser->id,
             ]);
         }
 
@@ -1540,7 +1540,7 @@ class GroupAnalyticsController extends Controller
                 $group = ProfileGroup::find(42);
               
 
-                // if(in_array($localUser->ID, $_user_ids)) {
+                // if(in_array($localUser->id, $_user_ids)) {
                 //     if($request->has('only_pros')) continue;
                     
                 // } else {
@@ -1568,7 +1568,7 @@ class GroupAnalyticsController extends Controller
 
         
 
-                $check = $data->where('employee_id', $localUser->ID)->first();
+                $check = $data->where('employee_id', $localUser->id)->first();
                 if($check) {
                     $_decoded = json_decode($check->data);
                     $_decoded->group = $group_name;
@@ -1586,7 +1586,7 @@ class GroupAnalyticsController extends Controller
                         'email' => $localUser->EMAIL,
                         'group' => $group_name,
                         'full_time' => $localUser->full_time,
-                        'id' => $localUser->ID,
+                        'id' => $localUser->id,
                         'fired' => $fired,
                         'applied_from' => $applied_from,
                     ]);
@@ -1753,8 +1753,8 @@ class GroupAnalyticsController extends Controller
             $user_item['name'] = $user_info->LAST_NAME . ' ' . $user_info->NAME;
             $user_item['email'] = $user_info->EMAIL;
             
-            $user_item['kpi'] = Kpi::userKpi($user_info->ID, $date);
-            $user_item['employee_id'] = $user_info->ID;
+            $user_item['kpi'] = Kpi::userKpi($user_info->id, $date);
+            $user_item['employee_id'] = $user_info->id;
             
 
 
@@ -1779,7 +1779,7 @@ class GroupAnalyticsController extends Controller
             $data1 = $_data->where('type', 1);
             $data3 = $_data->where('type', 5);
 
-            $item = $data1->where('employee_id', $user_info->ID)->first();
+            $item = $data1->where('employee_id', $user_info->id)->first();
             if($item) {
                 $data = json_decode($item->data, true);
                 $plan = array_key_exists('plan', $data) ? $data['plan'] : (int)$activity1->plan_unit * 26;
@@ -1788,7 +1788,7 @@ class GroupAnalyticsController extends Controller
                 $user_item['minutes2'] = 0;
             }
 
-            $item = $data3->where('employee_id', $user_info->ID)->first();
+            $item = $data3->where('employee_id', $user_info->id)->first();
             if($item) {
                 $data = json_decode($item->data, true);
                 $plan = array_key_exists('plan', $data) ? $data['plan'] : (int)$activity3->plan_unit * 26;
@@ -1799,7 +1799,7 @@ class GroupAnalyticsController extends Controller
 
             
             
-            $_at = $month_totals->where('user_id',$user_info->ID)
+            $_at = $month_totals->where('user_id',$user_info->id)
                 ->first();
             $user_item['ocenka2'] = $_at ? $_at->total : 0;
             
@@ -1829,12 +1829,12 @@ class GroupAnalyticsController extends Controller
         
         // if($at) {
         //     $at->total = $request->total;
-        //     $at->user_id = User::bitrixUser()->ID;
+        //     $at->user_id = User::bitrixUser()->id;
         //     $at->save();
         // } else {
         //     ActivityTotal::create([
         //         'date' => $request->date,
-        //         'user_id' => User::bitrixUser()->ID,
+        //         'user_id' => User::bitrixUser()->id,
         //         'employee_id' => $request->employee_id,
         //         'total' => $request->total,
         //         'activity_id' => $request->activity_id,
@@ -1874,7 +1874,7 @@ class GroupAnalyticsController extends Controller
             $gr = $group->groupUsers();
             
             foreach($gr as $g) {
-                array_push($users, $g->ID); 
+                array_push($users, $g->id); 
             }
         }
         $users = array_unique($users);
@@ -1893,7 +1893,7 @@ class GroupAnalyticsController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if ($currentUser->ID != 18 && !in_array($currentUser->ID, $group_editors)) {
+        if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
             ];

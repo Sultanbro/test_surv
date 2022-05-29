@@ -64,7 +64,7 @@
             <a href="/auth/logout/" class="exit">exit</a>
             <span class="time">{{date('H:i')}}</span>
             <a href="/account/settings/transactions.php"><span class="balanse">Баланс: <em>{{\App\User::balance()}} Т.</em></span></a>
-            <span class="id"><em>Ваш ID: </em>{{\App\User::bitrixUser()->ID}}</span>
+            <span class="id"><em>Ваш ID: </em>{{\App\User::bitrixUser()->id}}</span>
             <div class="panel-logo">
                 <div>
                     <a data-fancybox="modal" data-src="#editLogo" href="javascript:;"><img src="/static/images/logo-1.png" alt="logo"></a>

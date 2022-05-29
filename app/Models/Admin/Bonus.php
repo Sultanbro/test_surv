@@ -289,7 +289,7 @@ class Bonus extends Model
         if($leader) {
             $user = User::withTrashed()->where('email', $leader->email)->first();
             if($user) {
-               $leader_id = $user->ID; 
+               $leader_id = $user->id; 
             }
         }
         

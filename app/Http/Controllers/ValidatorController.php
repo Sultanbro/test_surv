@@ -28,7 +28,7 @@ class ValidatorController extends Controller {
 	public function index( Request $request ) {
 
 		$user = User::bitrixUser();
-		$uid  = $user->ID;
+		$uid  = $user->id;
 
 		if ( isset( $request['start'] ) && $file = ValidatorFiles::where( 'id', (int) $request['start'] )->where( 'status', ValidatorFiles::IN_MODERATION )->first() ) {
 			$file->status = ValidatorFiles::IN_PROGRESS;
@@ -59,7 +59,7 @@ class ValidatorController extends Controller {
 	public function process( Request $request ) {
 
 		$user = User::bitrixUser();
-		$uid  = $user->ID;
+		$uid  = $user->id;
 
 
 		if ( $request->hasFile( 'file' ) && $request->file( 'file' )->isValid() ) {
@@ -158,7 +158,7 @@ class ValidatorController extends Controller {
 	public function numbers( Request $request, $file_id ) {
 
 		$user = User::bitrixUser();
-		$uid  = $user->ID;
+		$uid  = $user->id;
 		$file = ValidatorFiles::where( 'id', $file_id )->where( 'user_id', $uid )->first();
 		if ( empty( $file ) ) {
 			return redirect( '/validator/index/' );
@@ -175,7 +175,7 @@ class ValidatorController extends Controller {
 	//vendor/phpoffice/phpexcel/Classes/PHPExcel/Shared/File.php  для работы этой функции все realpath заменили  на public_path
 	public function download( Request $request, $file_id, $type ) {
 		$user = User::bitrixUser();
-		$uid  = $user->ID;
+		$uid  = $user->id;
 
 		$status = [
 			'active'       => ValidatorNumbers::ALIVE,

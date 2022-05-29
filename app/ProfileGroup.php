@@ -224,7 +224,7 @@ class ProfileGroup extends Model
                     if($d_user->last_group) { 
                         $lg = json_decode($d_user->last_group);
                         if(in_array($group_id, $lg)) {
-                            array_push($fired_users, $d_user->ID);
+                            array_push($fired_users, $d_user->id);
                         }
                     } 
                 }
@@ -268,7 +268,7 @@ class ProfileGroup extends Model
                 if($d_user->last_group) { 
                     $lg = json_decode($d_user->last_group);
                     if(in_array($this->id, $lg)) {
-                        array_push($fired_users, $d_user->ID);
+                        array_push($fired_users, $d_user->id);
                     }
                 } 
             }
@@ -320,7 +320,7 @@ class ProfileGroup extends Model
                     if($d_user->last_group) { 
                         $lg = json_decode($d_user->last_group);
                         if(in_array($group_id, $lg)) {
-                            array_push($fired_users, $d_user->ID);
+                            array_push($fired_users, $d_user->id);
                         }
                     } 
                 }
@@ -362,7 +362,7 @@ class ProfileGroup extends Model
                 if($d_user->last_group) { 
                     $lg = json_decode($d_user->last_group);
                     if(in_array($this->id, $lg)) {
-                        array_push($fired_users, $d_user->ID);
+                        array_push($fired_users, $d_user->id);
                     }
                 } 
             }

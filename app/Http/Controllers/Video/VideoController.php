@@ -116,7 +116,7 @@ class VideoController extends Controller {
 		if ($request->file('file')->isValid()) {
 			$file = $request->file('file');
 			
-			$file_name = Auth::user()->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
+			$file_name = Auth::user()->id . '_' . time() . '.' . $file->getClientOriginalExtension();
 
 			//$file_path = '/uploads/video/' . $request->folder . '/' . $file_name;
 			$file_path = '/uploads/video/' . $file_name;
@@ -204,7 +204,7 @@ class VideoController extends Controller {
 		if($user) {
 			Comment::create([
 				'video_id' => $request->id,
-				'user_id' => $user->ID,
+				'user_id' => $user->id,
 				'text' => $request->text,
 			]);
 		}	

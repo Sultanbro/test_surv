@@ -44,7 +44,7 @@
 
                 <div class="mr-3" style="width: 100%">
                     <div id="cabinetjs">
-                        <timetracking activeuserid="{{json_encode(auth()->user()->ID)}}"
+                        <timetracking activeuserid="{{json_encode(auth()->user()->id)}}"
                                     usertype="{{auth()->user()->user_type}}"
                                     program="{{auth()->user()->program_id}}"
                                     user_type="{{auth()->user()->user_type}}"

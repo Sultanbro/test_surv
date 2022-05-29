@@ -65,7 +65,7 @@ class HomeController extends Controller
 
     public function manual()
     {
-        if(Auth::user() && Auth::user()->ID == 5) {
+        if(Auth::user() && Auth::user()->id == 5) {
             return view('manual');
         } else { 
             abort(404);
@@ -106,7 +106,7 @@ class HomeController extends Controller
             TelegramBot::send($request->all());
 
             if($user) {
-                $lead = Lead::where('user_id', $user->ID)->first();
+                $lead = Lead::where('user_id', $user->id)->first();
 
                 if($lead && $lead->invite_at) {
                     $date = Carbon::parse($lead->invite_at);
@@ -116,7 +116,7 @@ class HomeController extends Controller
                     
                     if($tr) {
                         $data = $tr->data;
-                        $data[$user->ID] = $answers;
+                        $data[$user->id] = $answers;
                         $tr->data = $data;
                         $tr->save();
                     } else {
@@ -160,10 +160,10 @@ class HomeController extends Controller
             foreach($users as $user) {
                 $phone = Phone::normalize($user->PHONE);
                 if($phone == Phone::normalize($request->phone)) {
-                    $ud = UserDescription::where('user_id', $user->ID)->first();
+                    $ud = UserDescription::where('user_id', $user->id)->first();
                     if(!$ud) {
                         $ud = UserDescription::create([
-                            'user_id' => $user->ID
+                            'user_id' => $user->id
                         ]);
                     }
                 }

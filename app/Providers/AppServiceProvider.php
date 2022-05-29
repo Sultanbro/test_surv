@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
 
 
                 $user= auth()->user();
-                $user_id = auth()->user()->ID;
+                $user_id = auth()->user()->id;
                 $bonus_notification = null;
 
                 $unread_notifications = UserNotification::where('user_id', $user_id)
@@ -83,7 +83,7 @@ class AppServiceProvider extends ServiceProvider
                         $corp_book_page_show = true;
                         $corp_book_page = \App\Book::getRandomPage();
 
-                        $xuser = User::find($user->ID);
+                        $xuser = User::find($user->id);
 
                         $xuser->has_noti = 0;
                         $xuser->save();
@@ -119,7 +119,7 @@ class AppServiceProvider extends ServiceProvider
             if(!\Auth::guest()) {
 
                 $user =  auth()->user();
-                $user_id = $user->ID;
+                $user_id = $user->id;
 
                 $unread_notifications = Notification::whereNotIn('id', function($query) use ($user_id) {
                     $query->select('notification_id')

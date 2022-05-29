@@ -17,7 +17,7 @@
             </div>
         </nav>
         <div class="col-md-12" style="overflow: hidden">
-            <analytick-kaspi-component :groups="{{json_encode($groups)}}" activeuserid="{{json_encode(auth()->user()->ID)}}">
+            <analytick-kaspi-component :groups="{{json_encode($groups)}}" activeuserid="{{json_encode(auth()->user()->id)}}">
             </analytick-kaspi-component>
         </div>
 

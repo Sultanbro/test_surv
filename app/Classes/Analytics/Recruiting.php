@@ -98,7 +98,7 @@ class Recruiting
         if($user) {
             return [
                 'name' => $user->NAME . ' ' . $user->LAST_NAME,
-                'id' => $user->ID,
+                'id' => $user->id,
                 'records' => [
                     ['headers' => 'План наборов с ожиданием 7 гудков','plan' => '200','fact' => '0','conversion' => '',], 
                     ['headers' => 'Успешные исходящие','plan' => '200','fact' => '0','conversion' => '',],
@@ -496,7 +496,7 @@ class Recruiting
             $f_count = 0;
         
             foreach($fired as $f_user) {
-                //dump($f_user->ID);
+                //dump($f_user->id);
                 $f_count += $f_user->full_time == 1 ? 1 : 0.5;
             }
             
@@ -841,7 +841,7 @@ class Recruiting
             // ===================
             return 1; 
         } else {
-            History::user(\Auth::user()->ID, 'Перенос обучения', [
+            History::user(\Auth::user()->id, 'Перенос обучения', [
                 'error' => 'Не найден лид',
                 'lead' => $lead,
                 'data' => $request->all(),
@@ -918,13 +918,13 @@ class Recruiting
 
                 array_push($hrs, [
                     'name' => $user->NAME . ' ' . $user->LAST_NAME,
-                    'id' => $user->ID,
+                    'id' => $user->id,
                     'deleted' => false,
                     'workdays' => $workdays,
                     'records' => $data
                 ]);
 
-                $arr = self::getIndicators($user->ID, $startOfMonth);
+                $arr = self::getIndicators($user->id, $startOfMonth);
 
                 if(count($arr) > 0 && !((int)$arr['out']['value'] == 0 && (int)$arr['converted']['value'] == 0)) {
                     array_push($recruiters, $arr);
@@ -1676,7 +1676,7 @@ class Recruiting
         foreach($ratings_leads as $rl) {
             $user = User::withTrashed()->find($rl->user_id);
             if($user) {
-                $group = ProfileGroup::userIn($user->ID, false);
+                $group = ProfileGroup::userIn($user->id, false);
 
                 if($rl->rating2 && array_key_exists('date', $rl->rating2) && $rl->rating2['date'] > $start && $rl->rating2['date'] < $end
                 ||

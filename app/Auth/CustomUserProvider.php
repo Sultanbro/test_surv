@@ -21,12 +21,12 @@ class CustomUserProvider extends EloquentUserProvider
 
 		///dd(User::get());.
 
-		// $user = User::find($user->ID);
+		// $user = User::find($user->id);
 		// Auth::login($user);
 		$result = ($password == $realPassword);
 		if($result) {
-            User::set_timezone_of($user->ID);
-		    $user = User::find($user->ID);
+            User::set_timezone_of($user->id);
+		    $user = User::find($user->id);
             $user->AUTH_TIME = date('Y-m-d H:i:s');
             $user->save();
         }

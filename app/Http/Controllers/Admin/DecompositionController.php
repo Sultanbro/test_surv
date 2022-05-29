@@ -52,7 +52,7 @@ class DecompositionController extends Controller
 
     public function delete(Request $request)
     {
-        if(Auth::user()->ID == 5) {
+        if(Auth::user()->id == 5) {
             $value = Value::find($request->id);
             if($value) $value->delete();
         }

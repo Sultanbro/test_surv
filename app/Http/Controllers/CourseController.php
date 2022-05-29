@@ -28,7 +28,7 @@ class CourseController extends Controller
         $course = Course::find($request->course_id);
         if($course) {
             $folder = 'courses';
-            $filename = auth()->user()->ID . '_'.time().'_'. $request->file('file')->getClientOriginalName();
+            $filename = auth()->user()->id . '_'.time().'_'. $request->file('file')->getClientOriginalName();
             $path = \Storage::putFileAs(
                 'public/' . $folder, $request->file('file'), $filename
             );

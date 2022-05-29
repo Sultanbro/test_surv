@@ -89,7 +89,7 @@ class Conversion extends Command
 
                 $aggrees = Eurasian::getAggrees($user->EMAIL, $this->date);
 
-                $this->line($user->ID . ' '.  $user->LAST_NAME . ' ' . $user->NAME);
+                $this->line($user->id . ' '.  $user->LAST_NAME . ' ' . $user->NAME);
 
                 if($aggrees == 0) {
                     $conversion = 0; 
@@ -104,7 +104,7 @@ class Conversion extends Command
 
                 $this->saveASI([
                     'date' => $this->startOfMonth,
-                    'employee_id' => $user->ID,
+                    'employee_id' => $user->id,
                     'group_id' => $group_id,
                     'type' => 65 // Конверсия согласий
                 ], $conversion);
@@ -120,7 +120,7 @@ class Conversion extends Command
 
                 $aggrees = HomeCredit::getAggrees($user->EMAIL, $this->date);
                 
-                $this->line($user->ID . ' '.  $user->LAST_NAME . ' ' . $user->NAME);
+                $this->line($user->id . ' '.  $user->LAST_NAME . ' ' . $user->NAME);
                     
                 if($aggrees == 0) {
                     $conversion = 0; 
@@ -135,7 +135,7 @@ class Conversion extends Command
 
                 $this->saveASI([
                     'date' => $this->startOfMonth,
-                    'employee_id' => $user->ID,
+                    'employee_id' => $user->id,
                     'group_id' => $group_id,
                     'type' => 66 // Конверсия согласий
                 ], $conversion);

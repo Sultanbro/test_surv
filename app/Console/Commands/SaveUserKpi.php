@@ -64,16 +64,16 @@ class SaveUserKpi extends Command
         foreach ($users as $key => $user) {
 
             $this->line($key);
-            $kpi = Kpi::userKpi($user->ID, $date, 1);
+            $kpi = Kpi::userKpi($user->id, $date, 1);
 
             // save 
-            $sk = SavedKpi::where('user_id', $user->ID)->where('date', $date)->first();
+            $sk = SavedKpi::where('user_id', $user->id)->where('date', $date)->first();
             if($sk) {
                 $sk->total = $kpi;
                 $sk->save();
             } else {
                 SavedKpi::create([
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'total' => $kpi,
                     'date' => $date
                 ]);

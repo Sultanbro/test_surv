@@ -2,7 +2,7 @@
 
 @section('content')
 <tr>
-  <td>{{$user->ID}}</td>
+  <td>{{$user->id}}</td>
   <td>{{$user->EMAIL}}</td>
   <td>{{$user->NAME}}</td>
   <td>{{$user->UF_ADMIN}}</td>

@@ -21,7 +21,7 @@ class Admin {
         return $next($request);
         if($request->getPathInfo()=='/logout') return $next($request);
         if(!Auth::user()) return $next($request);
-        if(!User::isUserAdmin(Auth::user()->ID)) {
+        if(!User::isUserAdmin(Auth::user()->id)) {
 
             Auth::logout();
             return redirect('/');
@@ -31,7 +31,7 @@ class Admin {
 
 
 
-        if((in_array(Auth::user()->ID,$admin->users) || Auth::user()->ID == $admin->owner_id)) {
+        if((in_array(Auth::user()->id,$admin->users) || Auth::user()->id == $admin->owner_id)) {
             Auth::user()->is_admin = true;
         } else {
             Auth::user()->is_admin = false;

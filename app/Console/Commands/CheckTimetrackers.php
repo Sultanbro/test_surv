@@ -54,7 +54,7 @@ class CheckTimetrackers extends Command
             foreach ($groups as $key => $group) {
                 if ($group->users != null) {
                     $users = json_decode($group->users);
-                    if (in_array($user->ID, $users)) {
+                    if (in_array($user->id, $users)) {
                         $group_id = $group->id;
                     }
                 }

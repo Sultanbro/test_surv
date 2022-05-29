@@ -317,7 +317,7 @@ class CheckListController extends Controller
                     ->where('year',date('Y'))
                     ->where('month',date('n'))
                     ->where('day',date('d'))
-                    ->where('check_users_id',auth()->user()->ID)->get();
+                    ->where('check_users_id',auth()->user()->id)->get();
 
                 $countChecked = [];
 
@@ -337,7 +337,7 @@ class CheckListController extends Controller
 
                     $check_reports_save = new CheckReports();
                     $check_reports_save['check_id'] = $requestCheck['id'];
-                    $check_reports_save['check_users_id'] = auth()->user()->ID;
+                    $check_reports_save['check_users_id'] = auth()->user()->id;
                     $check_reports_save['year'] = date('Y');
                     $check_reports_save['month'] = date('n');
                     $check_reports_save['day'] = date('d');

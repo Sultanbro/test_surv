@@ -59,7 +59,7 @@ class FillReport extends Command
                 $msg_fragment .= '<a class="btn btn-primary mt-2 rounded btn-sm report-modal">Заполнить отчет</a>';
 
                 UserNotification::create([
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'about_id' => 0,
                     'title' => 'Заполните отчет',
                     'group' => now(),

@@ -148,7 +148,7 @@ class KnowBaseController extends Controller
         $page = KnowBase::find($request->id);
         if ($page) {
             $page->title = $request->title;
-            $page->editor_id = Auth::user()->ID;
+            $page->editor_id = Auth::user()->id;
             $page->save();
         }
 
@@ -160,7 +160,7 @@ class KnowBaseController extends Controller
         if ($page) {
             $page->text = $request->text ?? '';
             $page->title = $request->title ?? 'Без названия';
-            $page->editor_id = Auth::user()->ID;
+            $page->editor_id = Auth::user()->id;
             $page->save();
         }
 
@@ -202,8 +202,8 @@ class KnowBaseController extends Controller
         $kb = KnowBase::create([
             'title' => 'Новая страница',
             'text' => '',
-            'user_id' => Auth::user()->ID,
-            'editor_id' => Auth::user()->ID,
+            'user_id' => Auth::user()->id,
+            'editor_id' => Auth::user()->id,
             'order' => $order,
             'parent_id' => $request->id,
             'hash' => md5(uniqid() . mt_rand()),
@@ -223,8 +223,8 @@ class KnowBaseController extends Controller
         return KnowBase::create([
             'title' => $request->name,
             'text' => '',
-            'user_id' => Auth::user()->ID,
-            'editor_id' => Auth::user()->ID,
+            'user_id' => Auth::user()->id,
+            'editor_id' => Auth::user()->id,
             'order' => $kb ? $kb->order + 1 : 0,
             'parent_id' => null,
             'hash' => 'cat',

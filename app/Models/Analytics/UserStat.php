@@ -134,7 +134,7 @@ class UserStat extends Model
                     $fired = 0;
                 }
 
-                $ud = UserDescription::where('user_id', $localUser->ID)->first();
+                $ud = UserDescription::where('user_id', $localUser->id)->first();
                 //$applied_from = $localUser->workdays_from_applied($date, $group_1->workdays);
                 $applied_from = $localUser->workdays_from_applied($date, 6);
                 
@@ -145,7 +145,7 @@ class UserStat extends Model
                     'fullname' => trim($localUser->LAST_NAME . ' ' . $localUser->NAME),
                     'email' => $localUser->EMAIL,
                     'full_time' => $localUser->full_time,
-                    'id' => $localUser->ID,
+                    'id' => $localUser->id,
                     'fired' => $fired,
                     'is_trainee' => $ud && $ud->is_trainee == 1,
                     'applied_from' => $applied_from,

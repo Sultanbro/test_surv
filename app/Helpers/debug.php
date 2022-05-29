@@ -7,18 +7,18 @@
  */
 function  me($item) 
 { 
-    if(auth()->user()->ID == 5) {
+    if(auth()->user()->id == 5) {
         dd($item);
     }
 } 
 
 function memp($item) 
 { 
-    if(auth()->user()->ID == 5) {
+    if(auth()->user()->id == 5) {
         dump($item);
     }
 } 
 
 function ali() {
-    return auth()->user()->ID == 5;
+    return auth()->user()->id == 5;
 }

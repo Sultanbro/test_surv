@@ -53,11 +53,11 @@ class SalaryIndexation extends Command
 
         foreach($users as $user) {
             $days_from_applied = Carbon::parse($user->applied)->diff(now())->days;
-            $ih = IndexationHistory::where('user_id', $user->ID)->first(); 
+            $ih = IndexationHistory::where('user_id', $user->id)->first(); 
 
             if(!$ih) {
                 IndexationHistory::create([
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'step' => 0,
                 ]);  
             } 
@@ -71,58 +71,58 @@ class SalaryIndexation extends Command
             $index_value = $this->getIndexValue($user->position_id);
 
             if($days_from_applied >= 90 && $days_from_applied < 180 && $step == 0) { // первая индексация
-                $oklad = $this->updateZarplata($user->ID, $index_value);
+                $oklad = $this->updateZarplata($user->id, $index_value);
                 if($oklad > 0) {
-                    $this->notifyUser($user->ID, $oklad, $index_value);
+                    $this->notifyUser($user->id, $oklad, $index_value);
                 }
             }
 
             if($days_from_applied >= 180 && $days_from_applied < 270 && $step == 1) { // вторая индексация
-                $oklad = $this->updateZarplata($user->ID, $index_value);
+                $oklad = $this->updateZarplata($user->id, $index_value);
                 if($oklad > 0)  {
-                    $this->notifyUser($user->ID, $oklad, $index_value);
+                    $this->notifyUser($user->id, $oklad, $index_value);
                 }
             }
 
             if($days_from_applied >= 270 && $days_from_applied < 360  && $step == 2) { // 3
-                $oklad = $this->updateZarplata($user->ID, $index_value);
+                $oklad = $this->updateZarplata($user->id, $index_value);
                 if($oklad > 0)  {
-                    $this->notifyUser($user->ID, $oklad, $index_value);
+                    $this->notifyUser($user->id, $oklad, $index_value);
                 }
             }
 
             if($days_from_applied >= 360 && $days_from_applied < 450  && $step == 3) { // 4
-                $oklad = $this->updateZarplata($user->ID, $index_value);
+                $oklad = $this->updateZarplata($user->id, $index_value);
                 if($oklad > 0)  {
-                    $this->notifyUser($user->ID, $oklad, $index_value);
+                    $this->notifyUser($user->id, $oklad, $index_value);
                 }
             }
 
             if($days_from_applied >= 450 && $days_from_applied < 540  && $step == 4) { // 5
-                $oklad = $this->updateZarplata($user->ID, $index_value);
+                $oklad = $this->updateZarplata($user->id, $index_value);
                 if($oklad > 0)  {
-                    $this->notifyUser($user->ID, $oklad, $index_value);
+                    $this->notifyUser($user->id, $oklad, $index_value);
                 }
             }
 
             if($days_from_applied >= 540 && $days_from_applied < 630  && $step == 5) { // 6
-                $oklad = $this->updateZarplata($user->ID, $index_value);
+                $oklad = $this->updateZarplata($user->id, $index_value);
                 if($oklad > 0)  {
-                    $this->notifyUser($user->ID, $oklad, $index_value);
+                    $this->notifyUser($user->id, $oklad, $index_value);
                 }
             }
 
             if($days_from_applied >= 630 && $days_from_applied < 720  && $step == 6) { // 7
-                $oklad = $this->updateZarplata($user->ID, $index_value);
+                $oklad = $this->updateZarplata($user->id, $index_value);
                 if($oklad > 0)  {
-                    $this->notifyUser($user->ID, $oklad, $index_value);
+                    $this->notifyUser($user->id, $oklad, $index_value);
                 }
             }
 
             if($days_from_applied >= 720 && $days_from_applied < 810  && $step == 7) { // 8
-                $oklad = $this->updateZarplata($user->ID, $index_value);
+                $oklad = $this->updateZarplata($user->id, $index_value);
                 if($oklad > 0)  {
-                    $this->notifyUser($user->ID, $oklad, $index_value);
+                    $this->notifyUser($user->id, $oklad, $index_value);
                 }
             }
 

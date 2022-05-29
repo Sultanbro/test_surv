@@ -27,7 +27,7 @@ class MessageController extends Controller
 
     public function index(Request $request) {
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         if ($request->isMethod('post') && $request->create_smpp) {
 
@@ -71,7 +71,7 @@ class MessageController extends Controller
 
     public function update(Request $request, $id = null) {
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         $groups = Group::bitrixGroups($uid);
 

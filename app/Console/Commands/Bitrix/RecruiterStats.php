@@ -245,7 +245,7 @@ class RecruiterStats extends Command
 			$leads = (int)$hourly_leads['total']; 
 		} 
 
-        $rs = RecruiterStat::where('user_id', $admin_user->ID)
+        $rs = RecruiterStat::where('user_id', $admin_user->id)
             ->where('hour', (int)$this->hour)
             ->where('date', $this->date)
             ->first();
@@ -258,10 +258,10 @@ class RecruiterStats extends Command
         if($total == 0 && (int)$total_minutes == 0 && $converted == 0 && $leads == 0 && $dials == 0) {
             
         } else {
-            $last_rs = RecruiterStat::where('user_id', $admin_user->ID)->orderBy('date', 'desc')->first();
+            $last_rs = RecruiterStat::where('user_id', $admin_user->id)->orderBy('date', 'desc')->first();
             $profile = $last_rs ? $last_rs->profile : 0;
             RecruiterStat::create([
-                'user_id' => $admin_user->ID,
+                'user_id' => $admin_user->id,
                 'dials' => $dials,
                 'calls' => $total,
                 'minutes' => $total_minutes,

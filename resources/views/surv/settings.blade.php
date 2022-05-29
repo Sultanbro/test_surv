@@ -42,7 +42,7 @@
                             archived_groupss="{{json_encode($archived_groups)}}" 
                             book_groups="{{json_encode($book_groups)}}"
                             corpbooks="{{json_encode($corpbooks)}}"
-                            activeuserid="{{json_encode(auth()->user()->ID)}}"
+                            activeuserid="{{json_encode(auth()->user()->id)}}"
                             ></groups>
                     </div>
                     @endif

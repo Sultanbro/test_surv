@@ -122,12 +122,12 @@ class UserController extends Controller
         $d1 = date('Y-m-d');
         $kv = intval((date('m', strtotime($d1)) + 2)/3);
 
-        $quartal = QuartalBonus::on()->where('user_id',$user->ID)
+        $quartal = QuartalBonus::on()->where('user_id',$user->id)
             ->where('year',date('Y'))
             ->where('quartal',$kv)
             ->get()->toArray();
 
-        $quarter_bonus = QuartalBonus::on()->where('user_id',$user->ID)
+        $quarter_bonus = QuartalBonus::on()->where('user_id',$user->id)
             ->where('year',date('Y'))
             ->where('quartal',$kv)
             ->sum('sum');
@@ -139,7 +139,7 @@ class UserController extends Controller
 
 
 
-        if($user->ID == 5 && isset($_GET['user_id'])) {
+        if($user->id == 5 && isset($_GET['user_id'])) {
             $user = User::find($_GET['user_id']);
         }
 
@@ -238,8 +238,8 @@ class UserController extends Controller
         } else { // GET запрос
 
             $positions = Position::all();
-            $photo = Photo::where('user_id', $user->ID)->first();
-            $downloads = Downloads::where('user_id', $user->ID)->first();
+            $photo = Photo::where('user_id', $user->id)->first();
+            $downloads = Downloads::where('user_id', $user->id)->first();
             $user_position = Position::find($user->position_id);
 
             /*** Группы пользователя */
@@ -253,14 +253,14 @@ class UserController extends Controller
                 }
                 $group_users = json_decode($group->users);
                 
-                if(in_array($user->ID, $group_users)) {
+                if(in_array($user->id, $group_users)) {
                     array_push($gs, $group);
                     $groups .= '<div>' . $group->name . '</div>';
                 }
             }
 
             /*** Текущая книга для прочтения */
-            $book = app('App\Http\Controllers\Admin\ExamController')->currentBook($user->ID, date('m'), date('Y'));
+            $book = app('App\Http\Controllers\Admin\ExamController')->currentBook($user->id, date('m'), date('Y'));
             
 
             /* recruiter */
@@ -278,20 +278,20 @@ class UserController extends Controller
                 $recruiter_stats = json_encode([]);
                 $recruiter_records = json_encode([]);
 
-                if(in_array($user->ID, $rg_users)) {
+                if(in_array($user->id, $rg_users)) {
                     $is_recruiter = true;
                     $recruiter_stats = json_encode(RecruiterStat::tables(date('Y-m-d')));
 
                     $asi  = AnalyticsSettingsIndividually::whereYear('date', date('Y'))->whereMonth('date', date('m'))
                         ->where('group_id', RM::GROUP_ID)
-                        ->where('employee_id', $user->ID)
+                        ->where('employee_id', $user->id)
                         ->first();
 
                         if($asi) {
                             $recruiter_records = json_decode($asi->data);
                         }  else {
                             $rm = new RM();
-                            $recruiter_records = $rm->defaultUserTable($user->ID)['records'];
+                            $recruiter_records = $rm->defaultUserTable($user->id)['records'];
                         }
                     
                     $indicators = $this->recruiting_temp();
@@ -343,7 +343,7 @@ class UserController extends Controller
             }
             $recruiter_stats_rates = json_encode($recruiter_stats_rates);
 
-            $zarplata = Zarplata::where('user_id', $user->ID)->first();
+            $zarplata = Zarplata::where('user_id', $user->id)->first();
             $oklad = 0;
             if($zarplata) $oklad = $zarplata->zarplata;
 
@@ -359,7 +359,7 @@ class UserController extends Controller
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
 
             //bonuses
-            $bonuses = Salary::where('user_id', $user->ID)
+            $bonuses = Salary::where('user_id', $user->id)
                 ->whereYear('date',  date('Y'))
                 ->whereMonth('date', date('m'))
                 ->where(function($query) {
@@ -370,14 +370,14 @@ class UserController extends Controller
                 ->get();
             
             $bonus = $bonuses->sum('bonus');
-            $bonus += ObtainedBonus::onMonth($user->ID, date('Y-m-d'));
+            $bonus += ObtainedBonus::onMonth($user->id, date('Y-m-d'));
 
-            $bonusHistory = ObtainedBonus::getHistory($user->ID, date('Y-m-d'), $currency_rate);
+            $bonusHistory = ObtainedBonus::getHistory($user->id, date('Y-m-d'), $currency_rate);
 
             
             // Бонусы 
 
-            $editedBonus = EditedBonus::where('user_id', $user->ID)
+            $editedBonus = EditedBonus::where('user_id', $user->id)
                 ->whereYear('date',  date('Y'))
                 ->whereMonth('date',  date('m'))
                 ->first();
@@ -386,7 +386,7 @@ class UserController extends Controller
             /**
              * EARNINGS COMPONENT
              */
-            $editedKpi = EditedKpi::where('user_id', $user->ID)
+            $editedKpi = EditedKpi::where('user_id', $user->id)
                 ->whereYear('date', date('Y'))
                 ->whereMonth('date', date('m'))
                 ->first();
@@ -394,7 +394,7 @@ class UserController extends Controller
             if($editedKpi) {
                 $kpi = $editedKpi->amount;
             } else {
-                $kpi = Kpi::userKpi($user->ID);
+                $kpi = Kpi::userKpi($user->id);
             }   
 
             $salary = $user->getCurrentSalary();
@@ -409,7 +409,7 @@ class UserController extends Controller
             
             // check exists ind kpi
             $kpis = $user->inGroups();
-            $ind_kpi = IndividualKpi::where('user_id', $user->ID)->first();
+            $ind_kpi = IndividualKpi::where('user_id', $user->id)->first();
             if($ind_kpi) {
                 $kpis = [[
                     'name' => 'Условия расчета KPI',
@@ -492,7 +492,7 @@ class UserController extends Controller
 
 
            $mycourse = \App\Models\CourseResult::whereIn('status', [0,2])
-               ->where('user_id', $user->ID)
+               ->where('user_id', $user->id)
                ->orderBy('status', 'desc')
                ->with('course')
                ->first();
@@ -504,7 +504,7 @@ class UserController extends Controller
                 'downloads', 'groups', 'book', 'is_recruiter', 'indicators', 'month', 
                 'recruiter_stats', 'recruiter_stats_rates', 'recruiter_records', 'head_in_groups',
                 'user_earnings','quartal'))->with([
-                    'answers' => UserExperience::getAnswers($user->ID),
+                    'answers' => UserExperience::getAnswers($user->id),
                     'position_desc' => $position_desc,
                     'groups_pt' => $gs,
                     'show_payment_terms' => $show_payment_terms,
@@ -666,7 +666,7 @@ class UserController extends Controller
             // Стажеров показывал но долго грузит
             // $trainees = Trainee::whereNull('applied')->get();
             // foreach($users as $user) {
-            //     $trainee = $trainees->where('user_id', $user->ID);
+            //     $trainee = $trainees->where('user_id', $user->id);
             //     if($trainee->count() > 0) {
             //         $user->is_trainee = true;
             //     } else {
@@ -787,7 +787,7 @@ class UserController extends Controller
                     continue;
                 }
 
-                if (in_array($user->ID, $group_users)) {
+                if (in_array($user->id, $group_users)) {
                     $user_groups[] = $group->id;
                 }
             }
@@ -904,7 +904,7 @@ class UserController extends Controller
                 
                 
                 $data['records'][] = [
-                    0 => $user->ID,
+                    0 => $user->id,
                     1 => $user->LAST_NAME . ' ' . $user->NAME, 
                     2 => $user->EMAIL, 
                     3 => $grs, 
@@ -956,7 +956,7 @@ class UserController extends Controller
             'users' => $users,
             'can_login_users' => [5,18],
             'auth_token' => Auth::user()->remember_token,
-            'currentUser' => Auth::user()->ID,
+            'currentUser' => Auth::user()->id,
             'segments' => Segment::pluck('name', 'id'),
             'groups' => [0 => 'Выберите группу'] + $groups,
             'start_date' => Carbon::now()->startOfMonth()->format('Y-m-d'),
@@ -966,7 +966,7 @@ class UserController extends Controller
     
     public function setNotiRead(Request $request) {
 
-        $noti = UserNotification::where('user_id', Auth::user()->ID)->where('id', $request->id)->first();
+        $noti = UserNotification::where('user_id', Auth::user()->id)->where('id', $request->id)->first();
         if($noti) {
             $timestamp = $noti->group;
 
@@ -1007,11 +1007,11 @@ class UserController extends Controller
 
                 $result = RM::transferTraining($request->user_id, $request->date, $request->time);
                 if($result == 1) {
-                    History::user(Auth::user()->ID, 'Перенос обучения', [
+                    History::user(Auth::user()->id, 'Перенос обучения', [
                         'data' => $request->all(),
                     ]);
                 } else {
-                    History::user(Auth::user()->ID, 'Перенос обучения', [
+                    History::user(Auth::user()->id, 'Перенос обучения', [
                         'error' => $result,
                         'data' => $request->all(),
                     ]);
@@ -1023,7 +1023,7 @@ class UserController extends Controller
             if($request->type && $request->type == 'report') {
                 
                 UserReport::create([
-                    'user_id' => Auth::user()->ID,
+                    'user_id' => Auth::user()->id,
                     'title' => 'Отчет недельный',
                     'date' => date('Y-m-d'),
                     'text' => $request->text
@@ -1039,7 +1039,7 @@ class UserController extends Controller
 
         $history = TimetrackingHistory::create([
             'user_id' => $request->user_id,
-            'author_id' => $user->ID,
+            'author_id' => $user->id,
             'author' => $authorName,
             'date' => $date,
             'description' => $desc,
@@ -1048,7 +1048,7 @@ class UserController extends Controller
     }
 
     public function setNotiReadAll(Request $request) {
-        $notis = UserNotification::where('user_id', Auth::user()->ID)->get();
+        $notis = UserNotification::where('user_id', Auth::user()->id)->get();
 
         foreach($notis as $noti) {
             $noti->read_at = now();
@@ -1121,7 +1121,7 @@ class UserController extends Controller
                 ->with(['zarplata', 'downloads', 'user_description'])
                 ->first();
             
-            $user->cards = Card::where('user_id', $user->ID)->get();
+            $user->cards = Card::where('user_id', $user->id)->get();
             $user->delete_time = null;
             $head_in_groups = [];
        
@@ -1190,17 +1190,17 @@ class UserController extends Controller
                     array_push($head_in_groups, $gr);
                 }
 
-                $delete_plan = UserDeletePlan::where('user_id', $user->ID)->orderBy('id', 'desc')->first();
+                $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if($delete_plan) $user->delete_time = $delete_plan->delete_time;
 
-                $ud = UserDescription::where('user_id', $user->ID)->orderBy('id', 'desc')->first();
+                $ud = UserDescription::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if($ud){
                     $user->fire_cause = $ud->fire_cause;
                     $user->recruiter_comment = $ud->recruiter_comment;
                     $user->bitrix_id = $ud->bitrix_id;
                 }
 
-                $lead = Lead::where('user_id', $user->ID)->first();
+                $lead = Lead::where('user_id', $user->id)->first();
                 $user->lead = $lead ? $lead : null;
                 
                 $seg = Segment::find($user->segment);
@@ -1220,13 +1220,13 @@ class UserController extends Controller
                 
                 // humor
 
-                if($user->ID == 5)  $user->worked_with_us = 'Алеке 😁!';
-                if($user->ID == 18)  $user->worked_with_us = 'Не успел, а основал эту команду 😁!';
-                if($user->ID == 4444)  $user->worked_with_us = 'Успел, он же программист!';
-                if($user->ID == 157)  $user->worked_with_us = 'Весь КЦ на нем стоит 😁!';
-                if($user->ID == 84)  $user->worked_with_us = 'Да это же Моооля 😁!';
+                if($user->id == 5)  $user->worked_with_us = 'Алеке 😁!';
+                if($user->id == 18)  $user->worked_with_us = 'Не успел, а основал эту команду 😁!';
+                if($user->id == 4444)  $user->worked_with_us = 'Успел, он же программист!';
+                if($user->id == 157)  $user->worked_with_us = 'Весь КЦ на нем стоит 😁!';
+                if($user->id == 84)  $user->worked_with_us = 'Да это же Моооля 😁!';
 
-                $user->in_groups = $this->getPersonGroup($user->ID);
+                $user->in_groups = $this->getPersonGroup($user->id);
                 
                 if($user->user_description) {
                     if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) { 
@@ -1241,7 +1241,7 @@ class UserController extends Controller
             }
             
             
-            $user->adaptation_talks = AdaptationTalk::getTalks($user->ID);
+            $user->adaptation_talks = AdaptationTalk::getTalks($user->id);
 
             $arr['user'] = $user;
         } 
@@ -1283,14 +1283,14 @@ class UserController extends Controller
                 $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
                 $text .= '<tr><td><b>Имя:</b></td><td>'.$user->NAME.'</td></tr>';
                 $text .= '<tr><td><b>Фамилия:</b></td><td>'.$user->LAST_NAME.'</td></tr>';
-                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $user->ID .'" target="_blank"> '. $user->EMAIL .'</a></td></tr>';
+                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $user->id .'" target="_blank"> '. $user->EMAIL .'</a></td></tr>';
                 $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($user->deactivate_date)->setTimezone('Asia/Dacca').'</td></tr>';
                 $text .= '</table>'; 
                 return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
             }
             
             if($user->UF_ADMIN == 1) { // Есть ли сотрудник
-                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->ID . '"   target="_blank">' . $user->LAST_NAME . ' ' . $user->NAME . '</a>';
+                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->id . '"   target="_blank">' . $user->LAST_NAME . ' ' . $user->NAME . '</a>';
                 return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
             } 
             // else {
@@ -1385,7 +1385,7 @@ class UserController extends Controller
             $hg = ProfileGroup::find($request->head_group);
             if($hg) {
                 $heads = json_decode($hg->head_id);
-                array_push($heads, $user->ID);
+                array_push($heads, $user->id);
                 $hg->head_id = json_encode($heads);
                 $hg->save();
             }
@@ -1399,20 +1399,20 @@ class UserController extends Controller
             $is_trainee = 1;
             // $user->DATE_REGISTER = null;
             // $user->save();
-            $trainee = Trainee::where('user_id', $user->ID)->first();
-            if(!$trainee) Trainee::create(['user_id' => $user->ID]);
+            $trainee = Trainee::where('user_id', $user->id)->first();
+            if(!$trainee) Trainee::create(['user_id' => $user->id]);
 
             UserDescription::make([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'is_trainee' => $is_trainee,
             ]);
 
             $daytype = DayType::create([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'type' => 5, // Стажировка
                 'email' => 'x',
                 'date' => date('Y-m-d'),
-                'admin_id' => Auth::user()->ID,
+                'admin_id' => Auth::user()->id,
             ]);
         } else {
             $is_trainee = 0;
@@ -1423,15 +1423,15 @@ class UserController extends Controller
             //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->EMAIL . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
             
             UserDescription::make([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'is_trainee' => $is_trainee,
                 'applied' =>  DB::raw('NOW()'),
             ]);
 
             TimetrackingHistory::create([
-                'author_id' => Auth::user()->ID,
+                'author_id' => Auth::user()->id,
                 'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'description' => 'Принятие на работу без стажировки',
                 'date' => date('Y-m-d')
             ]);
@@ -1463,7 +1463,7 @@ class UserController extends Controller
         if ($request->has('cards') && count($request->cards) > 0) {
             foreach ($request->cards as $card) {
                Card::create([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'bank' => $card['bank'],
                 'country'=> $card['country'],
                 'cardholder'=> $card['cardholder'],
@@ -1537,49 +1537,49 @@ class UserController extends Controller
 
         if ($request->hasFile('file1')) {
             $file = $request->file('file1');
-            $dog_okaz_usl = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/dog_okaz_usl", $dog_okaz_usl);
+            $dog_okaz_usl = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/dog_okaz_usl", $dog_okaz_usl);
         }
         if ($request->hasFile('file2')) {
             $file = $request->file('file2');
-            $sohr_kom_tainy = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/sohr_kom_tainy", $sohr_kom_tainy);
+            $sohr_kom_tainy = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/sohr_kom_tainy", $sohr_kom_tainy);
         }
         if ($request->hasFile('file3')) {
             $file = $request->file('file3');
-            $dog_o_nekonk = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/dog_o_nekonk", $dog_o_nekonk);
+            $dog_o_nekonk = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/dog_o_nekonk", $dog_o_nekonk);
         }
         if ($request->hasFile('file4')) {
             $file = $request->file('file4');
-            $trud_dog = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/trud_dog", $trud_dog);
+            $trud_dog = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/trud_dog", $trud_dog);
         }
         if ($request->hasFile('file5')) {
             $file = $request->file('file5');
-            $ud_lich = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/ud_lich", $ud_lich);
+            $ud_lich = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/ud_lich", $ud_lich);
         }
        
         if ($request->hasFile('file6')) {
             $file = $request->file('file6');
-            $photo_file = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/photo", $photo_file);
+            $photo_file = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/photo", $photo_file);
             $photo = Photo::create([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'path' => isset($photo_file) ? $photo_file : null,
             ]);
         }
         if ($request->hasFile('file7')) {
             $file = $request->file('file7');
-            $archive = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/archive", $archive);
+            $archive = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/archive", $archive);
         }
 
         
 
         $downloads = Downloads::create([
-            'user_id' => $user->ID,
+            'user_id' => $user->id,
             'ud_lich' => isset($ud_lich) ? $ud_lich : null,
             'dog_okaz_usl' => isset($dog_okaz_usl) ? $dog_okaz_usl : null,
             'sohr_kom_tainy' => isset($sohr_kom_tainy) ? $sohr_kom_tainy : null,
@@ -1597,10 +1597,10 @@ class UserController extends Controller
         if($group) {
             if ($group->users !== null) {
                 $users_array = json_decode($group->users);
-                $users_array[] = $user->ID;
+                $users_array[] = $user->id;
             } else {
                 $users_array = [];
-                $users_array[] = $user->ID;
+                $users_array[] = $user->id;
             }
             $group->users = json_encode($users_array);
 
@@ -1617,7 +1617,7 @@ class UserController extends Controller
 
         if ($user->zarplata === null) {
             $zarplata = new Zarplata();
-            $zarplata->user_id = $user->ID;
+            $zarplata->user_id = $user->id;
             $zarplata->zarplata = $request->zarplata == 0 ? 70000 : $request->zarplata;
             $zarplata->kaspi = $request->kaspi;
             $zarplata->jysan = $request->jysan;
@@ -1642,7 +1642,7 @@ class UserController extends Controller
 
 
 
-        return redirect()->to('/timetracking/edit-person?id=' . $user->ID);
+        return redirect()->to('/timetracking/edit-person?id=' . $user->id);
     }
 
     public function updatePerson(Request $request) {
@@ -1652,7 +1652,7 @@ class UserController extends Controller
         /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника UF_ADMIN), не знаю баг или нет  */
         /*==============================================================*/
 
-        //if(Auth::user()->ID == 5) dd($request->all());
+        //if(Auth::user()->id == 5) dd($request->all());
         $id = $request['id'];
         $user = User::with('zarplata')->where('ID', $id)->withTrashed()->first();
         $photo = Photo::where('user_id', $id)->first();
@@ -1678,14 +1678,14 @@ class UserController extends Controller
                 $text .= '<table class="table" style="border-collapse: separate; margin-bottom: 15px;">';
                 $text .= '<tr><td><b>Имя:</b></td><td>'.$oldUser->NAME.'</td></tr>';
                 $text .= '<tr><td><b>Фамилия:</b></td><td>'.$oldUser->LAST_NAME.'</td></tr>';
-                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $oldUser->ID .'" target="_blank"> '. $oldUser->EMAIL .'</a></td></tr>';
+                $text .= '<tr><td><b>Email:</b></td><td><a href="/timetracking/edit-person?id='. $oldUser->id .'" target="_blank"> '. $oldUser->EMAIL .'</a></td></tr>';
                 $text .= '<tr><td><b>Дата увольнения:</b></td><td>'.Carbon::parse($oldUser->deactivate_date)->setTimezone('Asia/Dacca').'</td></tr>';
                 $text .= '</table>'; 
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             }
             
             if($oldUser->UF_ADMIN == 1) { // Есть ли сотрудник
-                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->ID . '"   target="_blank">' . $oldUser->LAST_NAME . ' ' . $oldUser->NAME . '</a>';
+                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->LAST_NAME . ' ' . $oldUser->NAME . '</a>';
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             } else {
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors('Пользователь не является сотрудником, пожалуйста, обратитесь в тех.поддержку');
@@ -1695,7 +1695,7 @@ class UserController extends Controller
             
         } else {
             // Если нет другого аккаунта с новым email, то меняем уже сущ аккаунт в калибро
-            $old_account = Account::where('email', $user->ID)->where('owner_uid', 5)->first();
+            $old_account = Account::where('email', $user->id)->where('owner_uid', 5)->first();
             if ($old_account) {
                 $old_account->email = strtolower($request['email']);
                 $old_account->status = Account::ACTIVE_STATUS;
@@ -1744,7 +1744,7 @@ class UserController extends Controller
 
         foreach ($request->adaptation_talks as $key => $talk) {
             
-            $at = AdaptationTalk::where('user_id', $user->ID)->where('day', $talk['day'])->first();
+            $at = AdaptationTalk::where('user_id', $user->id)->where('day', $talk['day'])->first();
             if($at) {
                 $at->inter_id = $talk['inter_id'];
                 $at->text = $talk['text'];
@@ -1756,7 +1756,7 @@ class UserController extends Controller
                     'text' => $talk['text'],
                     'day' => $talk['day'],
                     'date' => $talk['date'],
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                 ]);
             }
         }
@@ -1767,7 +1767,7 @@ class UserController extends Controller
          *  Битрикс ID профиля
          */
 
-        $ud = UserDescription::where('user_id', $user->ID)
+        $ud = UserDescription::where('user_id', $user->id)
             ->first();
 
         if($ud) {
@@ -1800,7 +1800,7 @@ class UserController extends Controller
                 $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
                 //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->EMAIL . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
-                $lead = Lead::where('user_id', $user->ID)->orderBy('id', 'desc')->first();
+                $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if($lead  && $lead->deal_id != 0) {
                     $bitrix = new Bitrix();
                     
@@ -1811,7 +1811,7 @@ class UserController extends Controller
             }
 
             $ud = UserDescription::where('is_trainee', 1)
-                ->where('user_id', $user->ID)
+                ->where('user_id', $user->id)
                 ->first();
 
             if($ud) {
@@ -1821,9 +1821,9 @@ class UserController extends Controller
             }
 
             TimetrackingHistory::create([
-                'author_id' => Auth::user()->ID,
+                'author_id' => Auth::user()->id,
                 'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'description' => 'Принятие на работу стажера',
                 'date' => date('Y-m-d')
             ]);
@@ -1836,7 +1836,7 @@ class UserController extends Controller
 
         if(in_array($user->segment, [7,8,9,10,11,12])) {
 
-            $ud = UserDescription::where('is_trainee', 0)->where('user_id', $user->ID)->first();
+            $ud = UserDescription::where('is_trainee', 0)->where('user_id', $user->id)->first();
             
             if($ud) {
                 $comment = '';
@@ -1850,7 +1850,7 @@ class UserController extends Controller
                 $segment = $seg ? $seg->name : '';
 
                 $msg_fragment = '<a href="https://admin.u-marketing.org/timetracking/edit-person?id=';
-                $msg_fragment .= $user->ID .'">' . $user->LAST_NAME . ' ' . $user->NAME . '</a>';
+                $msg_fragment .= $user->id .'">' . $user->LAST_NAME . ' ' . $user->NAME . '</a>';
                 $msg_fragment .= '<br/>Дата принятия: ' . Carbon::parse($ud->applied)->format('d.m.Y');
                 $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: '. $comment;
 
@@ -1883,7 +1883,7 @@ class UserController extends Controller
             foreach($last_groups as $gr) {
             
                 $gr_users = json_decode($gr->head_id);
-                $gr_users = array_diff($gr_users, [$user->ID]);
+                $gr_users = array_diff($gr_users, [$user->id]);
                 $gr_users = array_values($gr_users);
                 $gr->head_id = json_encode($gr_users);
                 $gr->save();
@@ -1893,7 +1893,7 @@ class UserController extends Controller
             // foreach($last_groups as $gr) {
             
             //     $gr_users = json_decode($gr->head_id);
-            //     $gr_users = array_diff($gr_users, [$user->ID]);
+            //     $gr_users = array_diff($gr_users, [$user->id]);
             //     $gr_users = array_values($gr_users);
             //     $gr->head_id = json_encode($gr_users);
             //     $gr->save();
@@ -1903,7 +1903,7 @@ class UserController extends Controller
             // $hg = ProfileGroup::find($request->head_group);
             // if($hg) {
             //     $heads = json_decode($hg->head_id);
-            //     array_push($heads, $user->ID);
+            //     array_push($heads, $user->id);
             //     $hg->head_id = json_encode($heads);
             //     $hg->save();
             // }
@@ -1931,10 +1931,10 @@ class UserController extends Controller
         /*==============================================================*/ 
         
         if ($request->has('cards') && count($request->cards) > 0) {
-            $cards = Card::where('user_id', $user->ID)->delete();
+            $cards = Card::where('user_id', $user->id)->delete();
             foreach ($request->cards as $card) {
                Card::create([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'bank' => $card['bank'],
                 'country'=> $card['country'],
                 'cardholder'=> $card['cardholder'],
@@ -1950,39 +1950,39 @@ class UserController extends Controller
         /*==============================================================*/
         if ($request->hasFile('file1')) {
             $file = $request->file('file1');
-            $dog_okaz_usl = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/dog_okaz_usl", $dog_okaz_usl);
+            $dog_okaz_usl = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/dog_okaz_usl", $dog_okaz_usl);
         }
         if ($request->hasFile('file2')) {
             $file = $request->file('file2');
-            $sohr_kom_tainy = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/sohr_kom_tainy", $sohr_kom_tainy);
+            $sohr_kom_tainy = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/sohr_kom_tainy", $sohr_kom_tainy);
         }
         if ($request->hasFile('file3')) {
             $file = $request->file('file3');
-            $dog_o_nekonk = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/dog_o_nekonk", $dog_o_nekonk);
+            $dog_o_nekonk = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/dog_o_nekonk", $dog_o_nekonk);
         }
         if ($request->hasFile('file4')) {
             $file = $request->file('file4');
-            $trud_dog = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/trud_dog", $trud_dog);
+            $trud_dog = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/trud_dog", $trud_dog);
         }
         if ($request->hasFile('file5')) {
             $file = $request->file('file5');
-            $ud_lich = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/ud_lich", $ud_lich);
+            $ud_lich = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/ud_lich", $ud_lich);
         }
         if ($request->hasFile('file7')) {
             $file = $request->file('file7');
-            $archive = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/archive", $archive);
+            $archive = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/archive", $archive);
         }
 
         if ($request->hasFile('file6')) {
             $file = $request->file('file6');
-            $photo_file = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/photo", $photo_file);
+            $photo_file = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/photo", $photo_file);
             if (is_null($photo)) {
                 $photo = Photo::create([
                     'user_id' => $id,
@@ -2074,7 +2074,7 @@ class UserController extends Controller
 
         if ($user->zarplata === null) {
             $zarplata = new Zarplata();
-            $zarplata->user_id = $user->ID;
+            $zarplata->user_id = $user->id;
             $zarplata->zarplata = $request->zarplata == 0 ? 70000 : $request->zarplata;
             $zarplata->kaspi = $request->kaspi;
             $zarplata->jysan = $request->jysan;
@@ -2109,7 +2109,7 @@ class UserController extends Controller
             if($group->users == null) continue;
             $group_users = json_decode($group->users);
             
-            if(in_array($user->ID, $group_users)) {
+            if(in_array($user->id, $group_users)) {
                 $group->show = false;
                 array_push($_groups, $group->id);  
             }
@@ -2130,7 +2130,7 @@ class UserController extends Controller
         //////////////////////
         
         
-        return redirect()->to('/timetracking/edit-person?id=' . $user->ID);
+        return redirect()->to('/timetracking/edit-person?id=' . $user->id);
 
     }
 
@@ -2243,16 +2243,16 @@ class UserController extends Controller
         // Есть заявление об увольнении
         if ($request->hasFile('file8')) { // Заявление об увольнении
             $file = $request->file('file8');
-            $resignation = $user->ID . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->ID . "/resignation", $resignation);
+            $resignation = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move("static/profiles/" . $user->id . "/resignation", $resignation);
 
-            $downloads = Downloads::where('user_id', $user->ID)->first();
+            $downloads = Downloads::where('user_id', $user->id)->first();
             if ($downloads) {
                 $downloads->resignation = $resignation;
                 $downloads->save();
             } else {
                 $downloads = Downloads::create([
-                    'user_id' => $user->ID,
+                    'user_id' => $user->id,
                     'ud_lich' => null,
                     'dog_okaz_usl' => null,
                     'sohr_kom_tainy' => null,
@@ -2276,7 +2276,7 @@ class UserController extends Controller
             $fire_date = Carbon::now()->addHours(24 * 14);
 
             UserDeletePlan::create([
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'executed' => 0,
                 'delete_time' => $fire_date,
             ]);
@@ -2286,7 +2286,7 @@ class UserController extends Controller
             
             
             /////////// Удалить связанные уведомления 
-            $notis = UserNotification::where('about_id', $user->ID)->get();
+            $notis = UserNotification::where('about_id', $user->id)->get();
             if($notis->count() > 0) {
                 foreach($notis as $noti) {
                     $noti->read_at = now();
@@ -2318,7 +2318,7 @@ class UserController extends Controller
                 }
             }
 
-            $delete_plan = UserDeletePlan::where('user_id', $user->ID)->orderBy('id', 'desc')->first();
+            $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
             if($delete_plan) $delete_plan->delete();
             
             $fire_date = now();

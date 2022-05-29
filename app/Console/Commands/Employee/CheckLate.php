@@ -91,7 +91,7 @@ class CheckLate extends Command
         
         dump($this->user->LAST_NAME . ' ' . $this->user->NAME . ' ' . $workStart);
 
-        $dateTimeStart = Timetracking::where('user_id', $this->user->ID) // Время начала работы, первый enter
+        $dateTimeStart = Timetracking::where('user_id', $this->user->id) // Время начала работы, первый enter
             ->whereDate('enter', $this->date)
             ->min('enter');
 
@@ -117,7 +117,7 @@ class CheckLate extends Command
                 if ($diffInMinutes <= 5) { // Штраф до 5 минут
 
                     $activeFineLessFiveMinutes = $userFineModel->where([ // сначала ищем активные штрафы
-                        'user_id' => (int)$this->user->ID,
+                        'user_id' => (int)$this->user->id,
                         'fine_id' => 2,
                         'day' => $this->date,
                         'status' => UserFine::STATUS_ACTIVE,
@@ -126,7 +126,7 @@ class CheckLate extends Command
                     if (is_null($activeFineLessFiveMinutes)) { // если их нет, тогда ищем не активные штрафы
                         
                         $inactiveFineLessFiveMinutes = $userFineModel->where([ 
-                            'user_id' => (int)$this->user->ID,
+                            'user_id' => (int)$this->user->id,
                             'fine_id' => 2,
                             'day' => $this->date,
                             'status' => UserFine::STATUS_INACTIVE,
@@ -134,7 +134,7 @@ class CheckLate extends Command
                         
                         if (is_null($inactiveFineLessFiveMinutes)) { // если и их нет, тогда уже добавляем штраф
                             $userFineModel->addUserFine([
-                                'user_id' => (int)$this->user->ID,
+                                'user_id' => (int)$this->user->id,
                                 'fine_id' => 2,
                                 'day' => $this->date,
                                 'status' => UserFine::STATUS_ACTIVE,
@@ -148,7 +148,7 @@ class CheckLate extends Command
                 } else if ($diffInMinutes > 5) { // если он не успел прийти на 5 минут раньше штраф 1000
 
                     $fineMoreFiveMinutes = $userFineModel->where([
-                        'user_id' => (int)$this->user->ID,
+                        'user_id' => (int)$this->user->id,
                         'fine_id' => 1,
                         'day' => $this->date,
                         'status' => UserFine::STATUS_ACTIVE,
@@ -157,7 +157,7 @@ class CheckLate extends Command
                     if (is_null($fineMoreFiveMinutes)) { // если их нет, тогда ищем не активные штрафы
 
                         $inactiveFineMoreFiveMinutes = $userFineModel->where([
-                            'user_id' => (int)$this->user->ID,
+                            'user_id' => (int)$this->user->id,
                             'fine_id' => 1,
                             'day' => $this->date,
                             'status' => UserFine::STATUS_INACTIVE,
@@ -165,7 +165,7 @@ class CheckLate extends Command
                         
                         if (is_null($inactiveFineMoreFiveMinutes)) { // если и их нет, тогда уже добавляем штраф
                             $userFineModel->addUserFine([
-                                'user_id' => (int)$this->user->ID,
+                                'user_id' => (int)$this->user->id,
                                 'fine_id' => 1,
                                 'day' => $this->date,
                                 'status' => UserFine::STATUS_ACTIVE,
@@ -177,19 +177,19 @@ class CheckLate extends Command
                     }
                 }
             }
-        } else {} // Сотрудник $this->user->ID не вышел 
+        } else {} // Сотрудник $this->user->id не вышел 
             
     }
 
     public function history($message){
         $th = TimetrackingHistory::whereDate('date', $this->date)
-            ->where('user_id',  $this->user->ID)
+            ->where('user_id',  $this->user->id)
             ->where('description', 'like', $message)
             ->first();
 
         if(!$th) {
             TimetrackingHistory::create([
-                'user_id' => $this->user->ID,
+                'user_id' => $this->user->id,
                 'author_id' => 5,
                 'author' => 'Система',
                 'date' => $this->date,

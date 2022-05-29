@@ -185,13 +185,13 @@ class IntellectController extends Controller {
 
                 $user = User::find($ud->user_id);
                 if($user) {
-                    $request->id = $user->ID;
+                    $request->id = $user->id;
                     $request->day = date('d');
                     $request->month = date('m');
                     User::deleteUser($request);
 
                     $nootis = UserNotification::where([
-                        'about_id' => $user->ID,
+                        'about_id' => $user->id,
                     ])->get();
     
                     foreach($nootis as $noti) {
@@ -1075,10 +1075,10 @@ class IntellectController extends Controller {
             foreach($users as $user) {
                 $phone = Phone::normalize($user->PHONE);
                 if($phone == Phone::normalize($request->phone)) {
-                    $ud = UserDescription::where('user_id', $user->ID)->first();
+                    $ud = UserDescription::where('user_id', $user->id)->first();
                     if(!$ud) {
                         $ud = UserDescription::create([
-                            'user_id' => $user->ID
+                            'user_id' => $user->id
                         ]);
                     }
                 }

@@ -37,7 +37,7 @@ class StatController extends Controller
         ini_set('max_execution_time', 1200);
         ini_set('request_terminate_timeout', 1200);
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         if ( $request->isMethod( 'post' ) ) {
             $offset = $request->has('start') ? (int)$request->start : 0;
@@ -228,7 +228,7 @@ class StatController extends Controller
         ini_set('max_execution_time', 1200);
         ini_set('request_terminate_timeout', 1200);
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         if ( $request->isMethod( 'post' ) ) {
             $offset = $request->has('start') ? (int)$request->start : 0;
@@ -429,7 +429,7 @@ class StatController extends Controller
         ini_set('max_execution_time', 1200);
         ini_set('request_terminate_timeout', 1200);
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         if ( $request->isMethod( 'post' ) ) {
             $offset = $request->has('start') ? (int)$request->start : 0;
@@ -567,7 +567,7 @@ class StatController extends Controller
         ini_set('max_execution_time', 1200);
         ini_set('request_terminate_timeout', 1200);
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
         if ( $request->isMethod( 'post' ) ) {
             $offset = $request->has('start') ? (int)$request->start : 0;
@@ -703,7 +703,7 @@ class StatController extends Controller
       View::share('title', ' Статистика / Роботы');
 
         $user = User::bitrixUser();
-        $uid = $user->ID;
+        $uid = $user->id;
 
 
         $status_options = [

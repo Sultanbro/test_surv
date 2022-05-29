@@ -41,7 +41,7 @@ class UserFineController extends Controller
             ->toArray();
         $deleteFines = array_diff($fines, $request['fines']);
 
-        $can_delete = in_array(Auth::user()->ID, [5, 11741, 157]);
+        $can_delete = in_array(Auth::user()->id, [5, 11741, 157]);
         DB::transaction(function () use (&$resultTransaction, $request, $currentUserFines, $deleteFines, $can_delete) {
             $this->addUserFines($request, $currentUserFines, $request['comment']);
 
@@ -83,7 +83,7 @@ class UserFineController extends Controller
                 $history = [
                     'user_id' => $request['user_id'],
                     'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
-                    'author_id' => Auth::user()->ID,
+                    'author_id' => Auth::user()->id,
                     'date' => $request['date'],
                     'description' => isset($comment) ? 'Удален штраф №'.$item." ".$fine->name.', причина: '.$comment : 'Штраф'
                 ];
@@ -115,7 +115,7 @@ class UserFineController extends Controller
                 $history = [
                     'user_id' => $request['user_id'],
                     'author' => Auth::user()->NAME.' '.Auth::user()->LAST_NAME,
-                    'author_id' => Auth::user()->ID,
+                    'author_id' => Auth::user()->id,
                     'date' => $request['date'],
                     'description' => isset($comment) ? 'Штраф, причина: '.$comment : 'Штраф'
                 ];

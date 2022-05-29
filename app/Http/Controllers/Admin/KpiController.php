@@ -34,7 +34,7 @@ class KpiController extends Controller
     public function saveKPI(Request $request)
     {
         $user = User::bitrixUser();
-        $user_id = ['user_id' => $user->ID];
+        $user_id = ['user_id' => $user->id];
         $inputs = $request->only([
             'group_id',
             'kpi_80_99',
@@ -132,7 +132,7 @@ class KpiController extends Controller
                 'kpi_100' => $request->kpi_100,
                 'nijn_porok' => $request->nijn_porok,
                 'verh_porok' => $request->verh_porok,
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'month' => date('m'),
                 'year' => date('Y'),
             ]);
@@ -153,7 +153,7 @@ class KpiController extends Controller
                 'kpi_100' => $request->kpi_100,
                 'nijn_porok' => $request->nijn_porok,
                 'verh_porok' => $request->verh_porok,
-                'user_id' => $user->ID,
+                'user_id' => $user->id,
                 'month' => date('m'),
                 'year' => date('Y'),
             ];
@@ -268,7 +268,7 @@ class KpiController extends Controller
                 'kpi_100' => 0,
                 'nijn_porok' => 80,
                 'verh_porok' => 100,
-                'user_id' => $user->ID
+                'user_id' => $user->id
             ]);
         }
 
@@ -408,7 +408,7 @@ class KpiController extends Controller
             $user = User::withTrashed()->find($request->group_id);
         }
         
-        $kpi =  IndividualKpi::where('user_id', $user->ID)->first();
+        $kpi =  IndividualKpi::where('user_id', $user->id)->first();
 
         $time_rate = $user->full_time == 1 ? 1: 0.5;
 
@@ -445,7 +445,7 @@ class KpiController extends Controller
         // array_multisort($_sort, SORT_ASC, $activities); 
 
 
-        $kpi_indicators = IndividualKpiIndicator::where('user_id', $user->ID)->get();
+        $kpi_indicators = IndividualKpiIndicator::where('user_id', $user->id)->get();
 
         //$applied_from = $user->workdays_from_applied(date('Y-m-d'), $group->workdays);
         $applied_from = $user->workdays_from_applied(date('Y-m-d'), 6);

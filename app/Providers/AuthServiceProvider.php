@@ -29,7 +29,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // Gate::define('partner', function ($user) {
-        //     $partner = Partner::where('user_id', $user->ID)->first();
+        //     $partner = Partner::where('user_id', $user->id)->first();
         //     if ($partner === null) {
         //         return false;
         //     }

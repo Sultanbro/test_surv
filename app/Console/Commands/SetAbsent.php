@@ -63,7 +63,7 @@ class SetAbsent extends Command
 
                     foreach($users as $user) {
                         // Check for trainee invited day is passed or today
-                        $lead = Lead::where('user_id', $user->ID)->first();
+                        $lead = Lead::where('user_id', $user->id)->first();
                         if($lead) {
                             
                             if($lead->invite_at) {
@@ -71,20 +71,20 @@ class SetAbsent extends Command
                                 $now = Carbon::now()->setTimezone('Asia/Dacca')->timestamp;
                                 $diff = $now - $invited_at;
                                 if($diff < 0) { // not come invited day
-                                    $this->line($user->ID . '  not come invited day');
+                                    $this->line($user->id . '  not come invited day');
                                     continue;
                                 }
                             } else {
-                                $this->line($user->ID . ' not invited');
+                                $this->line($user->id . ' not invited');
                                 continue;
                             } 
                         }
 
                         // if not marked
-                        if(!in_array($user->ID, $marked_users)) {
+                        if(!in_array($user->id, $marked_users)) {
                      
                             $daytype = DayType::where([
-                                'user_id' => $user->ID,
+                                'user_id' => $user->id,
                                 'date' => Carbon::now()->format('Y-m-d'),
                             ])->first();
 
@@ -96,7 +96,7 @@ class SetAbsent extends Command
                                 ]);
                             } else {
                                 $daytype = DayType::create([
-                                    'user_id' => $user->ID,
+                                    'user_id' => $user->id,
                                     'type' => 2,
                                     'email' => $user->EMAIL,
                                     'date' => Carbon::now()->format('Y-m-d'),
@@ -105,7 +105,7 @@ class SetAbsent extends Command
                             }
 
                             $th = TimetrackingHistory::where([
-                                'user_id' => $user->ID,
+                                'user_id' => $user->id,
                                 'author' => 'Система',
                                 'date' => Carbon::now()->format('Y-m-d'),
                                 'description' => 'Не отметился по указанной ссылке для стажеров',
@@ -113,7 +113,7 @@ class SetAbsent extends Command
 
                             if(!$th) {
                                 $th = TimetrackingHistory::create([
-                                    'user_id' => $user->ID,
+                                    'user_id' => $user->id,
                                     'author_id' => 5,
                                     'author' => 'Система',
                                     'date' => Carbon::now()->format('Y-m-d'),
@@ -121,25 +121,25 @@ class SetAbsent extends Command
                                 ]);
                             }
                             
-                            $this->line($user->ID . ' NOT marked');
+                            $this->line($user->id . ' NOT marked');
                             $this->notify($user, $group->name);
                         }   else {
 
                             /** Проверить daytype на отсутствие */
                             $daytype = DayType::where([
-                                'user_id' => $user->ID,
+                                'user_id' => $user->id,
                                 'date' => date('Y-m-d'),
                             ])->first();
                             
                             /** DANGER  ODD function */
-                            $notifications = UserNotification::where('about_id', $user->ID)
+                            $notifications = UserNotification::where('about_id', $user->id)
                                 ->where('title', 'like', 'Пропал с обучения%')
                                 ->whereDate('group', date('Y-m-d'))
                                 ->delete();
                             
                             // on tabel history
                             $th = TimetrackingHistory::where([
-                                'user_id' => $user->ID,
+                                'user_id' => $user->id,
                                 'author' => 'Система',
                                 'date' => date('Y-m-d'),
                                 'description' => 'Не отметился по указанной ссылке для стажеров',
@@ -150,7 +150,7 @@ class SetAbsent extends Command
                                 'type' => 5,
                             ]);
 
-                            $this->line($user->ID . ' marked');
+                            $this->line($user->id . ' marked');
                         }
 
                         
@@ -167,12 +167,12 @@ class SetAbsent extends Command
     public function notify(User $targetUser, $group_name) {
      
         $group_name = '(' . $group_name . ')';
-        $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $targetUser->ID;
+        $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $targetUser->id;
 
         $abs_msg = 'Система: '. $group_name .'  Стажер не был на обучении: <br> <a href="' . $editPersonLink . '" target="_blank">';
         $abs_msg .= $targetUser->LAST_NAME . ' ' . $targetUser->NAME  . ' </a>';
         $abs_msg .= '<br><a href="/timetracking/analytics/skypes/' . $targetUser->lead_id . '" target="_blank" class="btn btn-primary mr-2 mt-2 rounded btn-sm">Перейти в сделку</a>';
-        $abs_msg .= '<a class="btn btn-primary mt-2 rounded btn-sm transfer-training" data-userid="' . $targetUser->ID . '">Перенести обучение</a>';
+        $abs_msg .= '<a class="btn btn-primary mt-2 rounded btn-sm transfer-training" data-userid="' . $targetUser->id . '">Перенести обучение</a>';
 
         $timestamp = Carbon::now(); 
 
@@ -181,7 +181,7 @@ class SetAbsent extends Command
         $notification_receivers = NotificationTemplate::getReceivers($notification_temp_id);
         
         /////
-        $lead = Lead::where('user_id', $targetUser->ID)->first();
+        $lead = Lead::where('user_id', $targetUser->id)->first();
 
         if($lead) {
             if(Carbon::parse($lead->invite_at)->day == date('d')) {
@@ -222,7 +222,7 @@ class SetAbsent extends Command
 
             $un =  UserNotification::where([
                 'user_id' => $user_id,
-                'about_id' => $targetUser->ID,
+                'about_id' => $targetUser->id,
                 'title' => $title_lost
             ])
             ->whereDate('group', $timestamp->format('Y-m-d'))
@@ -231,7 +231,7 @@ class SetAbsent extends Command
             if(!$un) {
                 UserNotification::create([
                     'user_id' => $user_id,
-                    'about_id' => $targetUser->ID,
+                    'about_id' => $targetUser->id,
                     'title' => $title_lost,
                     'message' => $abs_msg,
                     'group' => $timestamp

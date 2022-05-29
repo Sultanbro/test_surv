@@ -18,8 +18,8 @@
                 @foreach($users as $key => $user)
 
                 <tr>
-                  <td>{{$user->ID}}</td>
-                  <td><a href="/userroles/update/{{$user->ID}}">{{$user->EMAIL}}</a></td>
+                  <td>{{$user->id}}</td>
+                  <td><a href="/userroles/update/{{$user->id}}">{{$user->EMAIL}}</a></td>
                   <td>{{$user->NAME}}</td>
                 </tr>
                 @endforeach

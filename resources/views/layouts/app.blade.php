@@ -96,7 +96,7 @@
                 </div>
             </li>
         </ul>
-        @if (\App\User::bitrixUser() && \App\User::bitrixUser()->ID == 5)
+        @if (\App\User::bitrixUser() && \App\User::bitrixUser()->id == 5)
         <ul class="custom-accordion service-files intellect-files">
             <li class="root-item  {{$bigmenu=='intellect_calls'?'active':''}}">
                 <a href="#" class="opener-ac item-71 pener-ac">
@@ -228,7 +228,7 @@
                style="{{auth()->user()->currency=='kzt'?'':'background: url("/static/images/ico-balanser.png") no-repeat 50% 50%;'}}">&nbsp;</a>
 
             <span class="id" title="Ваш id">
-                        <em>Ваш ID: </em>{{\App\User::bitrixUser()->ID}}</span>
+                        <em>Ваш ID: </em>{{\App\User::bitrixUser()->id}}</span>
             <div class="panel-logo" title="Ваш логотип">
                 <div>
                     <a href="#" data-toggle="modal" data-target="#logo-modal"><img src="{{\App\User::logo()}}"
@@ -565,7 +565,7 @@
 
 
 
-@if(\App\User::bitrixUser()->ID != 2195)
+@if(\App\User::bitrixUser()->id != 2195)
     <script data-skip-moving="true">
         (function (w, d, u, b) {
             s = d.createElement('script');

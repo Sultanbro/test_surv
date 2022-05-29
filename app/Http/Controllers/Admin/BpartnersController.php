@@ -211,7 +211,7 @@ class BpartnersController extends Controller
       
       $corp_books = array_unique($corp_books); // книги в группе
 
-      $ud = UserDescription::where('user_id', Auth::user()->ID)->first(); // или лично настроенные в профиле
+      $ud = UserDescription::where('user_id', Auth::user()->id)->first(); // или лично настроенные в профиле
       if($ud && count(json_decode($ud->books)) > 0) {
         $corp_books = json_decode($ud->books);
       } 
