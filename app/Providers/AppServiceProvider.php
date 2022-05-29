@@ -69,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
                 $head_users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
 
 
-                $superusers = [5,18];
+                $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
                 $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('id')->toArray();
                 $users = array_unique(array_merge($users, $superusers));
 

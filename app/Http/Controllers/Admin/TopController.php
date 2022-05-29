@@ -61,6 +61,8 @@ class TopController extends Controller
 
         $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
 
+        $this->groups = ProfileGroup::where('has_analytics', 1)->get()->pluck('id')->toArray();
+
         return view('admin.top')->with([
             'data' => [
                 'rentability' => TopValue::getRentabilityGauges($date,$this->groups),
@@ -89,6 +91,9 @@ class TopController extends Controller
 
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
         
+        $this->groups = ProfileGroup::where('has_analytics', 1)->get()->pluck('id')->toArray();
+
+
         return response()->json([
             'rentability' => TopValue::getRentabilityGauges($date, $this->groups),
             'utility' => TopValue::getUtilityGauges($date, $this->groups),
@@ -156,11 +161,7 @@ class TopController extends Controller
             }
 
             
-            $left = [42];
-            $right = ProfileGroup::whereNotIn('id', $left)->where('has_analytics', 1)->get()->pluck('id')->toArray();
-            $groups = array_unique(array_merge($left, $right));
-
-            $this->groups = $groups;
+            $this->groups = ProfileGroup::where('has_analytics', 1)->get()->pluck('id')->toArray();
             
 
 

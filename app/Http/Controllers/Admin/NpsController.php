@@ -61,7 +61,7 @@ class NpsController extends Controller
      */
     public function fetch(Request $request)
     {
-        $superusers = [5,18];
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
         $users = User::where('roles', 'like', '%"page-top":"nps"%')->pluck('id')->toArray();
         $users = array_unique(array_merge($users, $superusers));
 
