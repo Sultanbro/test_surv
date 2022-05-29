@@ -19,10 +19,13 @@
                 </li>
                 @endif
                 <li>
-                    <a href="/logout" class="link link-start">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Выйти</span>
-                    </a>
+                    <form action="/logout">
+                        <a class="link link-start">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Выйти</span>
+                        </a>
+                        @csrf
+                    </form>
                 </li>
             </ul>
         </div>

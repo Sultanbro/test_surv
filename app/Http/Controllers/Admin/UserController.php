@@ -1367,6 +1367,8 @@ class UserController extends Controller
                 'work_end' => $request['work_start_end'],
                 'currency' => $request['currency'],
                 'weekdays' => $request['weekdays'],
+                'role_id' => 1,
+                'is_admin' => 0 
             ]);
         }
         

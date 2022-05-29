@@ -60,6 +60,8 @@ class User extends Authenticatable
         'last_group',
         'read_corp_book_at',
         'has_noti',
+        'role_id',
+        'is_admin',
         'weekdays', // 0000000
     ];
 

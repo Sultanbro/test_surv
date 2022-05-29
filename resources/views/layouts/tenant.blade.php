@@ -33,7 +33,14 @@ table td {
         <div class="col-12 card mb-3">
         <div class="d-flex justify-content-between">
             {{ auth()->id() }} {{ auth()->user()->email }} 
-            <a class="btn btn-primary " href="/logout">Выйти</a>
+            
+            <form action="/logout">
+                <a class="btn btn-primary">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Выйти</span>
+                </a>
+                @csrf
+            </form>
         </div>   
         
         </div>

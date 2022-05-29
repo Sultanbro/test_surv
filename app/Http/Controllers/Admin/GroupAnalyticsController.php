@@ -792,6 +792,8 @@ class GroupAnalyticsController extends Controller
                     'work_end' => null,
                     'segment' => $lead->segment,
                     'currency' => $currency,
+                    'role_id' => 1,
+                    'is_admin' => 0 
                 ]); 
                 
                 UserDescription::make([
