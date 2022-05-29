@@ -1069,8 +1069,8 @@ class GroupAnalyticsController extends Controller
      */
     private function msgForGroupLeader(String $msg, User $user) {
         $msg .= $user->phone;
-        if($user->phone_1) $msg .= ', ' . $user->phone_1;
-        if($user->phone_2) $msg .= ', ' . $user->phone_2;
+        // if($user->phone_1) $msg .= ', ' . $user->phone_1;
+        // if($user->phone_2) $msg .= ', ' . $user->phone_2;
         $msg .= ' : ' . $user->last_name . ' ' . $user->name . '<br>';
         return $msg;
     }

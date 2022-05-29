@@ -254,8 +254,8 @@ class IntellectController extends Controller {
                 $user = User::withTrashed()->find($trainee->user_id);
                 if($user) {
                     if($phone) $user->phone   = Phone::normalize($phone);
-                    if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
-                    if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
+                    // if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
+                    // if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
                     $user->save();
                 }
             }
@@ -363,8 +363,8 @@ class IntellectController extends Controller {
                     $user = User::withTrashed()->find($trainee->user_id);
                     if($user) {
                         if($phone) $user->phone     = Phone::normalize($phone);
-                        if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
-                        if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
+                        // if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
+                        // if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
                         $user->save();
                     }
                 }
@@ -446,8 +446,8 @@ class IntellectController extends Controller {
                     if($user) {
 
                         if($phone) $user->phone     = Phone::normalize($phone);
-                        if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
-                        if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
+                        // if($phone_2) $user->phone_1 = Phone::normalize($phone_2);
+                        // if($phone_3) $user->phone_2 = Phone::normalize($phone_3);
 
                         $user->save();
                     }

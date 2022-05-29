@@ -719,9 +719,6 @@ class UserController extends Controller
                 ->where(function($query){
                     $query->whereNull('users.position_id')
                             ->orWhereNull('users.phone')
-                            ->orWhereNull('users.phone_1')
-                            ->orWhereNull('users.phone_2')
-                            ->orWhereNull('users.phone_3')
                             ->orWhereNull('users.birthday')
                             ->orWhereNull('users.working_day_id')
                             ->orWhereNull('users.working_time_id');
@@ -773,8 +770,6 @@ class UserController extends Controller
             'users.last_group',
             'users.position_id',
             'users.phone',
-            'users.phone_1',
-            'users.phone_2',
             'users.birthday',
             'users.description',
             'users.working_day_id',
@@ -927,8 +922,8 @@ class UserController extends Controller
                     10 => $user->deleted_at, 
                     11 => $user->fire_cause, 
                     12 => $user->phone, 
-                    13 => $user->phone_1, 
-                    14 => $user->phone_2, 
+                    13 => $user->phone, 
+                    14 => $user->phone, 
                     15 => $user->birthday, 
                     16 => $user->description, 
                     17 => $user->program_id == 1 ? "U-Calls" : 'Другое', 
@@ -1703,20 +1698,14 @@ class UserController extends Controller
         /********** Редактирование user  */
         /*==============================================================*/     
 
-        $user->UF_ADMIN = 1; // Доступ в админку
         $user->email = strtolower($request['email']);
         $user->name = $request['name'];
         $user->last_name = $request['last_name'];
         $user->phone = $request['phone'];
-        $user->phone_1 = $request['phone_1'];
-        $user->phone_2 = $request['phone_2'];
-        $user->phone_3 = $request['phone_3'];
-        $user->phone_4 = $request['phone_4'];
         $user->birthday = $request['birthday'];
         $user->full_time = $request['full_time'];
         $user->description = $request['description'];
         $user->currency = $request['currency'];
-        $user->ACTIVE = 'Y';
         $user->position_id = $request['position'];
         $user->user_type = $request['user_type'];
         $user->timezone = 6;
