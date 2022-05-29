@@ -20,8 +20,8 @@ use App\Models\Books\Book;
 class TestController extends Controller {
  
 	public function test() {
-
-		$a = \App\Models\Tenant::get()->toArray();
+		
+		$a = \App\ProfileGroup::get()->toArray();
 
 		dd($a);
 	}  
