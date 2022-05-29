@@ -50,7 +50,7 @@ class TopController extends Controller
     {   
         View::share('menu', 'timetrackingtop');
 
-        $superusers = [5,18];
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
         $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('id')->toArray();
         $users = array_unique(array_merge($users, $superusers));
     
@@ -163,7 +163,7 @@ class TopController extends Controller
             $this->groups = $groups;
             
 
-            
+
             $w_col_sum = 0;
             foreach($this->groups as $group_id) {
                 $group = ProfileGroup::find($group_id);
