@@ -114,7 +114,6 @@ class UserController extends Controller
     public function profile(Request $request)
     {
 
-       
 
         $user = Auth::user();
 
@@ -264,17 +263,28 @@ class UserController extends Controller
             
 
             /* recruiter */
-            $rec_group = ProfileGroup::find(48);
 
 
+            $rg_users = [];
+            if(tenant('id') == 'bp') {
+                $rec_group = ProfileGroup::find(48);
 
+                if($rec_group) {
+                    $rg_users = $rec_group->users == null ? [] : json_decode($rec_group->users);
+                }
 
-            if($rec_group->users == null) {
-                $rec_group->users = '[]';
+             
+
             }
 
-                $rg_users = json_decode($rec_group->users);
+            
 
+
+
+
+            
+
+           
                 $recruiter_stats = json_encode([]);
                 $recruiter_records = json_encode([]);
 

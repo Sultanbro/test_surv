@@ -73,14 +73,12 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
     \Auth::routes();
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
+   
 
 
 
 
-
+    Route::any('/', [UserController::class, 'profile']);
     Route::any('/profile', [UserController::class, 'profile']);
 
     Route::any('/notifications/set-read/', [UserController::class, 'setNotiRead']);

@@ -34,9 +34,7 @@ class User extends Authenticatable
     public $timestamps = true;
 
     protected $primaryKey = 'id';
-
-    protected $table = 'users';
-
+    
     protected $fillable = [
         'name',
         'last_name',
