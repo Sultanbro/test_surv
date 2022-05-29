@@ -31,13 +31,18 @@ class ExamController extends Controller
 
     public function index()
     {
-        $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
-        
-        if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-        else {
-            return redirect('/');
-        }
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
 
+        if(!in_array(Auth::user()->id, $superusers)) {
+
+            $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
+            
+            if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
+            else {
+                return redirect('/');
+            }
+        }
+        
         ////
         $groups = ProfileGroup::where('active', 1)->get();
         return view('admin.exam', compact('groups'));

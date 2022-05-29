@@ -25,7 +25,7 @@ use DB;
 use Illuminate\Http\Request;
 use View;
 use App\Models\Analytics\Activity;
-
+use Auth;
 
 class QualityController extends Controller
 {
