@@ -99,11 +99,17 @@ class TimetrackingController extends Controller
 
 
 //        dd($roles);
+        
 
-        if(array_key_exists('page22', $roles) && $roles['page22'] == 'on') {} 
-        elseif(array_key_exists('persons', $roles) && $roles['persons'] == 'on' && $active_tab == 1) {} 
-        else {
-            return redirect('/');
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
+
+        if(!in_array(Auth::user()->id, $superusers)) {
+
+            if(array_key_exists('page22', $roles) && $roles['page22'] == 'on') {} 
+            elseif(array_key_exists('persons', $roles) && $roles['persons'] == 'on' && $active_tab == 1) {} 
+            else {
+                return redirect('/');
+            }
         }
         
         $corpbooks = [];

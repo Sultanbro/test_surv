@@ -40,14 +40,16 @@ class QualityController extends Controller
 
     public function index()
     {
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
 
-        $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
-        
-        if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-        else {
-            return redirect('/');
+        if(!in_array(Auth::user()->id, $superusers)) {
+            $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
+            
+            if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
+            else {
+                return redirect('/');
+            }
         }
-        
         $acts = Activity::where('type', 'quality')->get()->pluck('group_id')->toArray();
 
 

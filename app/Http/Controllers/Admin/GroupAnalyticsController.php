@@ -79,13 +79,18 @@ class GroupAnalyticsController extends Controller
     public function index()
     {
 
-        $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
-        
-        if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-        else {
-            return redirect('timetracking/user/' . \Auth::user()->id);
-        }
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
 
+        if(!in_array(Auth::user()->id, $superusers)) {
+
+            $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
+            
+            if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
+            else {
+                return redirect('timetracking/user/' . \Auth::user()->id);
+            }
+        }
+        
         $currentUser = User::bitrixUser();
 
         $kaspi_42 = ProfileGroup::find(42);

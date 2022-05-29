@@ -72,12 +72,17 @@ class AnalyticsController extends Controller
      * Permission control
      */
     public function redirect_if_has_not_permission() {
-        $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
-      
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
 
-        if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-        else {
-            return redirect('/');
+        if(!in_array(Auth::user()->id, $superusers)) {
+
+            $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
+        
+
+            if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
+            else {
+                return redirect('/');
+            }
         }
     }
 
