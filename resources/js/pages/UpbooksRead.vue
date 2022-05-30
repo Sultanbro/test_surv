@@ -59,7 +59,7 @@
         full: zoom == 0,
       }"
     >
-      <pdf
+      <!-- <pdf
         :src="activeBook.link"
         v-if="activeBook !== null"
         class="plugin"
@@ -67,7 +67,7 @@
         @keyup.right="keypress"
         @link-clicked="linkClicked($event)"
         @num-pages="pageCount = $event"
-      ></pdf>
+      ></pdf> -->
     </div>
 
     <div class="test" style="width:1000px;max-width: 100%;" v-if="status == 'testing'">
@@ -77,11 +77,11 @@
 </template>
 
 <script>
-import pdf from "vue-pdf";
+// import pdf from "vue-pdf";
 export default {
   name: "UpbooksRead",
   components: {
-    pdf,
+    
   },
   props: ["activeBook", "mode"],
   data() {

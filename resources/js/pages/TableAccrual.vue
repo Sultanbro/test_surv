@@ -749,7 +749,7 @@ export default {
 
                 let obj = {
                         name: item.full_name,
-                        user_id: item.ID,
+                        user_id: item.id,
                         kpi: item.kpi,
                         fine: item.fine,
                         avanses: item.avanses,
@@ -910,6 +910,7 @@ export default {
                 amount = this.bonus.sum;
             }
 
+            console.log(this.selectedCell)
             axios.post("/timetracking/salaries/update", {
                     month: this.$moment(this.dateInfo.currentMonth, "MMMM").format("M"),
                     year: this.dateInfo.currentYear,

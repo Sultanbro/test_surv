@@ -20,9 +20,15 @@ use App\Models\Books\Book;
 class TestController extends Controller {
  
 	public function test() {
+		$users_ids = 
+		$a = User:: //leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+		//->where('ud.is_trainee', 0)
 		
-		$a = \App\ProfileGroup::get()->toArray();
-
+			whereIn('id', $users_ids)
+			->get()
+			->pluck('id')
+			->toArray(); 
+		
 		dd($a);
 	}  
 

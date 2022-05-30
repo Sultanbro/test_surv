@@ -11,7 +11,7 @@
                     <option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
                 </select>    -->
                 <div class="p-o">
-                    <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker>
+                    <!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
                 </div>
             </div>
             <div class="col-md-2 mb-2">

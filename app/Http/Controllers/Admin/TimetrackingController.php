@@ -797,6 +797,7 @@ class TimetrackingController extends Controller
             }
         }
 
+       
         $currentUser = User::bitrixUser();
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
@@ -811,14 +812,15 @@ class TimetrackingController extends Controller
          */
 
         if($request->user_types == 0) { // Действующие
-            $_user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 0)
+            //dd($users_ids);
+            $_user_ids = User:: //leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                //->where('ud.is_trainee', 0)
                 
-                ->whereIn('users.id', $users_ids)
+                whereIn('users.id', $users_ids)
                 ->get()
                 ->pluck('id')
                 ->toArray();
-            
+               
             // foreach($users_ids as $user_id) {
             //     $trainee = Trainee::whereNull('applied')->where('user_id', $user_id)->first(); 
                 
@@ -877,9 +879,9 @@ class TimetrackingController extends Controller
         
 
         //////////////////////
-
+      
         $users = Timetracking::getTimeTrackingReportPaginate($request, $_user_ids, $year);
-        
+      
 
         $data = [];
 

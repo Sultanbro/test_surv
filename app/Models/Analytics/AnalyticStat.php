@@ -567,10 +567,12 @@ class AnalyticStat extends Model
             $math_string ="return (".$text.");";
             //$text);
             
-            //dump($math_string);
+          
             $res = eval($math_string);
-        } catch(\Exception $e) {
-            
+
+          
+        } catch(\DivisionByZeroError $e) {
+          
             $res = 0;
         }
 

@@ -12,9 +12,15 @@ const mix = require('laravel-mix');
  */
 
 
-
-mix.js('resources/js/app.js', 'public/js')
+mix.js('resources/js/app.js', 'public/js').vue()
     .sass('resources/sass/admin.scss', 'public/css/admin/app.css');
+    //.webpackConfig(require('./webpack.config'));
+
+mix.webpackConfig({
+    resolve: {
+        fallback: { "timers": require.resolve('timers-browserify') }
+    }
+});
 
 // mix.js('resources/assets/js/app.js', 'public/js')
 //     //.js('resources/assets/js/profile.js', 'public/js')

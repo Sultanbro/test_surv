@@ -531,6 +531,7 @@ class SalaryController extends Controller
   
             $user->bonuses = $bonuses; 
             $user->awards = $awards; 
+            $user->user_id = $user->id;  
 
 
             $user->edited_salary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();

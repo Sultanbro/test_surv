@@ -74,12 +74,12 @@
           'w90': zoom == 90,
           'full': zoom == 100,
         }">
-          <pdf :src="currentBookUrl"
+          <!-- <pdf :src="currentBookUrl"
           class="plugin"
           :page="page"
           @keyup.right="keypress"
           @link-clicked="linkClicked($event)"
-          @num-pages="pageCount = $event"></pdf>
+          @num-pages="pageCount = $event"></pdf> -->
       </div>
 
 
@@ -89,10 +89,10 @@
 </template>
 
 <script>
-import pdf from 'vue-pdf'
+// import pdf from 'vue-pdf'
 export default {
   components: {
-    pdf
+    
   },
   props: [],
   data() {
