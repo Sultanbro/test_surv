@@ -85,7 +85,7 @@
 
       <a-tab-pane tab="Выручка" key="3">
         <div class="table-responsive">
-          <table class="table b-table table-striped table-bordered table-sm proceed no-table"
+          <table class="table tops b-table table-striped table-bordered table-sm proceed no-table"
                  >
             <thead>
             <tr>
@@ -166,7 +166,7 @@
       </a-tab-pane>
 
       <a-tab-pane tab="Прогноз" key="4">
-        <table class="table b-table table-striped table-bordered table-sm w-700">
+        <table class="table tops b-table table-striped table-bordered table-sm w-700">
           <thead>
           <th class="text-left t-name table-title" style="background:#90d3ff">Группа
 
@@ -454,8 +454,8 @@ export default {
   font-size: 20px;
 }
 
-table th:first-child,
-table td:first-child {
+table.tops th:first-child,
+table.tops td:first-child {
   background: #f0f0f0;
   font-weight: bold;
   min-width: 200px;

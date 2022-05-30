@@ -76,12 +76,21 @@ Route::middleware([
    
 
 
-
+    Route::get('/send-mail', function() {
+        $mailData = [
+            'name' => "sad sadsdads",
+            'dob' => '123123131231'
+        ];
+        
+        \Mail::to("abik50000@gmail.com")->send(new \App\Mail\SendInvitation($mailData));
+    });
+    
+    
 
     Route::any('/', [UserController::class, 'profile']);
     Route::any('/profile', [UserController::class, 'profile']); 
 
-    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('logout', [LoginController::class, 'logout']);//->name('logout');
 
 
     Route::any('/notifications/set-read/', [UserController::class, 'setNotiRead']);

@@ -111,10 +111,10 @@
             <b-table responsive 
                 striped 
                 :sticky-header="true" 
-                class="text-nowrap text-right my-table accrual-table" 
+                class="text-nowrap text-right my-table salar accrual-table" 
                 :class="{'hide-special': special_fields}"
                 :small="true" 
-                :bordered="true" 
+                :bordered="true"  
                 :items="items"
                 :fields="fields" 
                 show-empty 
@@ -1103,7 +1103,7 @@ hr {
     background: #007bff;
     transition: width linear 0.5s;
 }
-.my-table .cell-border {
+.my-table.salar .cell-border {
     position: absolute;
     right: -47px;
     bottom: -23px;

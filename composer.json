@@ -24,7 +24,9 @@
         "setasign/fpdi-tcpdf": "^2.2",
         "setasign/tfpdf": "^1.25",
         "spatie/laravel-ignition": "^1.0",
-        "stancl/tenancy": "^3.5"
+        "stancl/tenancy": "^3.5",
+        "symfony/http-client": "^6.1",
+        "symfony/postmark-mailer": "^6.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.1",

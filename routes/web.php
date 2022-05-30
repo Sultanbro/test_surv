@@ -16,7 +16,7 @@ use App\Http\Controllers\TenantController;
 | contains the "web" middleware group. Now create something great!
 |
  */
-Auth::routes();
+// Auth::routes();
 // Route::any('/auth', function () {
 //     return redirect('/');
 // });
@@ -37,5 +37,6 @@ Route::post('/projects/save', [TenantController::class, 'save']);
 Route::post('/projects/update', [TenantController::class, 'update']);
 
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+
 
 

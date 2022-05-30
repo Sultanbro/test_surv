@@ -248,7 +248,7 @@
           </div>  
 
           <div class="col-6">
-            <div class="relative" :class="{'active': active.date}">
+            <div class="relative ooooo" :class="{'active': active.date}">
               <div class="d-flex align-items-center">
                 <label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date">
               </div>
@@ -272,7 +272,7 @@
 
           <div class="col-6">
             
-            <div class="relative" :class="{'active': active.date_deactivate}">
+            <div class="relative ooooo" :class="{'active': active.date_deactivate}">
               <div class="d-flex align-items-center">
                 <label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date_deactivate">
               </div>
@@ -293,7 +293,7 @@
           </div>  
 
           <div class="col-6">
-            <div class="relative" :class="{'active': active.date_applied}">
+            <div class="relative ooooo" :class="{'active': active.date_applied}">
               <div class="d-flex align-items-center">
                 <label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date_applied">
               </div>
@@ -711,7 +711,7 @@ table {
 .fz14 {
   font-size: 14px;
 }
-.relative {
+.relative.ooooo {
   position: relative;
   transition: 0.5s ease all; 
   height: 0;

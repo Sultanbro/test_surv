@@ -20,14 +20,7 @@ use App\Models\Books\Book;
 class TestController extends Controller {
  
 	public function test() {
-		$users_ids = 
-		$a = User:: //leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-		//->where('ud.is_trainee', 0)
-		
-			whereIn('id', $users_ids)
-			->get()
-			->pluck('id')
-			->toArray(); 
+		$a = \Hash::make('dsa3453df');
 		
 		dd($a);
 	}  

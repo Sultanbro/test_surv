@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <div class="d-flex justify-content-between">
+      <!--  <div class="d-flex justify-content-between">
         <div class="zarplata d-flex">
           <div>
             <img src="https://cp.u-marketing.org/static/images/ico-balanse.png"/>
@@ -54,15 +54,15 @@
             </p>
           </div>
         </div>
-        <!-- <div v-if="position_id == 45 || position_id == 46">
+        <div v-if="position_id == 45 || position_id == 46">
           <a
             class="btn btn-orders"
             @click="ordersShow = !ordersShow"
             title="Заказы руководителей"
             ><i class="fa fa-briefcase"></i
           ></a>
-        </div> -->
-      </div>
+        </div> 
+      </div>-->
     </div>
 
     
@@ -218,41 +218,41 @@ export default {
     },
   },
   created() {
-    axios
-      .post("/timetracking/status", {})
-      .then((response) => {
-        this.activebtn = "Завершить день";
-        this.setButton(response.data.status);
+    // axios
+    //   .post("/timetracking/status", {})
+    //   .then((response) => {
+    //     this.activebtn = "Завершить день";
+    //     this.setButton(response.data.status);
 
-        if(response.data.status == 'started' && response.data.corp_book.has) {
-          this.showCorpBookPage = true; 
-          this.corp_book_page = response.data.corp_book.page
+    //     if(response.data.status == 'started' && response.data.corp_book.has) {
+    //       this.showCorpBookPage = true; 
+    //       this.corp_book_page = response.data.corp_book.page
 
-          this.bookCounter();
-
-
+    //       this.bookCounter();
 
 
 
 
 
-        } 
 
-        this.zarplata = response.data.zarplata;
+
+    //     } 
+
+    //     this.zarplata = response.data.zarplata;
  
-        this.groups = response.data.groupsall;
-        this.total_earned = response.data.total_earned;
-        this.orders = response.data.orders;
-        this.bonus = response.data.bonus;
+    //     this.groups = response.data.groupsall;
+    //     this.total_earned = response.data.total_earned;
+    //     this.orders = response.data.orders;
+    //     this.bonus = response.data.bonus;
 
 
 
 
 
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
 
     this.setMonth();
   },
