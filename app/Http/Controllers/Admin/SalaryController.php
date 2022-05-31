@@ -120,7 +120,10 @@ class SalaryController extends Controller
     }
 
     public function salaries(Request $request)
-    {
+    {   
+        if(!auth()->user()->can['salaries_view']) {
+            return redirect()->back();
+        }
         //$year = date('Y');  // TODO Удалить лишнее
         $year = $request['year'];
         $data = [];

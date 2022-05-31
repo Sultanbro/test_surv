@@ -58,7 +58,7 @@ class TimetrackingController extends Controller
 
     public function settings()
     {
-
+      
 
 
         View::share('title', 'Настройки');
@@ -94,6 +94,14 @@ class TimetrackingController extends Controller
             $active_tab = (int)$_GET['tab'];  
         }
         
+        if($active_tab == 1 && auth()->user()->can['users_view']) {
+
+        } else if($active_tab != 1 && auth()->user()->can['settings_view']){
+            
+        } else {
+            return redirect()->back();
+        }
+
         $roles = Auth::user()->roles ? Auth::user()->roles : [];
 
 
@@ -776,18 +784,10 @@ class TimetrackingController extends Controller
 
     public function reports(Request $request)
     {   
-        $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
-        
-        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
+        if(!auth()->user()->can['tabel_view']) {
+            return redirect()->back();
+        }
 
-        if(!in_array(Auth::user()->id, $superusers)) {
-            if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-            else {
-                
-                return redirect('/');
-            }
-        } 
-        
 
         View::share('menu', 'timetrackingreports');
         $groups = ProfileGroup::where('active', 1)->get();
@@ -1422,15 +1422,8 @@ class TimetrackingController extends Controller
     {
 
 
-        $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
-        
-        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
-
-        if(!in_array(Auth::user()->id, $superusers)) {
-            if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-            else {
-                return redirect('/');
-            }
+        if(!auth()->user()->can['entertime_view']) {
+            return redirect()->back();
         }
 
         

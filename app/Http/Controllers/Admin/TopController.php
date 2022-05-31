@@ -50,13 +50,8 @@ class TopController extends Controller
     {   
         View::share('menu', 'timetrackingtop');
 
-        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
-        $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('id')->toArray();
-        $users = array_unique(array_merge($users, $superusers));
-    
-        $has_access = in_array(Auth::user()->id, $users);
-        if(!$has_access) {
-            abort(404);
+        if(!auth()->user()->can['top_view']) {
+            return redirect()->back();
         }
 
         $date = Carbon::now()->startOfMOnth()->format('Y-m-d');

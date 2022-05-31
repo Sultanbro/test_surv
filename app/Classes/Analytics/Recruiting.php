@@ -570,7 +570,7 @@ class Recruiting
                 'group_id' => self::GROUP_ID,
             ])->first();
                 
-                $x_count = $settings && array_key_exists('working', $settings->extra) ? $settings->extra['working'] : 0;
+                $x_count = $settings && array_key_exists('working', $settings->extra ?? []) ? $settings->extra['working'] : 0;
             } else {
                // $x_trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
                 

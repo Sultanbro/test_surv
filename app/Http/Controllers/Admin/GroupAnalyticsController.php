@@ -79,16 +79,8 @@ class GroupAnalyticsController extends Controller
     public function index()
     {
 
-        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
-
-        if(!in_array(Auth::user()->id, $superusers)) {
-
-            $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
-            
-            if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-            else {
-                return redirect('timetracking/user/' . \Auth::user()->id);
-            }
+        if(!auth()->user()->can['hr_view']) {
+            return redirect()->back();
         }
 
         $currentUser = User::bitrixUser();
@@ -607,14 +599,14 @@ class GroupAnalyticsController extends Controller
         $remain_apply = $data[RM::S_APPLIED]['plan'] - $data[RM::S_APPLIED]['fact'];
 
         $indicators = []; 
-        $indicators['info']['trainees'] = $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100). '%'; // Cтажировались в этом месяце
+        $indicators['info']['trainees'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Cтажировались в этом месяце
         //$indicators['info']['training'] = $data[RM::S_TRAINING_TODAY]['plan']; // Cтажируются сегодня
         $indicators['info']['training'] = $trainees; // Cтажируются сегодня
-        $indicators['info']['applied'] = $data[RM::S_APPLIED]['fact']. ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100). '%'; // Принято сотрудников
+        $indicators['info']['applied'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $data[RM::S_APPLIED]['fact']. ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Принято сотрудников
         $indicators['info']['remain_apply'] = $remain_apply > 0 ? $remain_apply : 0; // Осталось аринять
         $indicators['info']['created'] = $data[RM::S_CREATED]['fact']; // Создано лидов
-        $indicators['info']['processed'] = $data[RM::S_PROCESSED]['fact'] . ' - ' . round($data[RM::S_PROCESSED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%'; // Обработано лидов
-        $indicators['info']['converted'] = $data[RM::S_CONVERTED]['fact']. ' - ' . round($data[RM::S_CONVERTED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%' ; // Сконвертировано лидов
+        $indicators['info']['processed'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_PROCESSED]['fact'] . ' - ' . round($data[RM::S_PROCESSED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%' : 0; // Обработано лидов
+        $indicators['info']['converted'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_CONVERTED]['fact']. ' - ' . round($data[RM::S_CONVERTED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%'  : 0; // Сконвертировано лидов
         $indicators['info']['fired'] = $data[RM::S_FIRED]['fact'] ;  // Увоолено в этом месяце
         $indicators['info']['applied_plan'] = $data[RM::S_APPLIED]['plan'];// План по принятию на штат на месяц
         $indicators['info']['remain_days'] = RM::daysRemain($date); // Осталось рабочих дней до конца месяца

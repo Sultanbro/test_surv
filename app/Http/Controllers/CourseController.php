@@ -46,6 +46,9 @@ class CourseController extends Controller
     public function get(Request $request)
     {   
 
+        if(!auth()->user()->can['courses_view']) {
+            return redirect()->back();
+        }
 
         return [
             'courses' => Course::with('items')->get()

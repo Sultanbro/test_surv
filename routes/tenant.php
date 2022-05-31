@@ -268,9 +268,9 @@ Route::middleware([
     Route::get('/timetracking/fine', [FineController::class, 'index']);
     Route::put('/timetracking/fine', [FineController::class, 'update']);
 
-    Route::get('/timetracking/exam', [ExamController::class, 'index']);
-    Route::post('/timetracking/exam', [ExamController::class, 'getexams']);
-    Route::post('/timetracking/exam/update', [ExamController::class, 'update']);
+    // Route::get('/timetracking/exam', [ExamController::class, 'index']);
+    // Route::post('/timetracking/exam', [ExamController::class, 'getexams']);
+    // Route::post('/timetracking/exam/update', [ExamController::class, 'update']);
 
     Route::post('/timetracking/kpi_save', [KpiController::class, 'saveKPI']);
     Route::post('/timetracking/kpi_get', [KpiController::class, 'getKPI']);

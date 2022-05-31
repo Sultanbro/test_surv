@@ -20,6 +20,10 @@ class CabinetController extends Controller
 
     public function get()
     {
+        if(!auth()->user()->can['cabinet_view']) {
+            return redirect()->back();
+        }
+
         $users = User::get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
 
         foreach($users as $user) {

@@ -8,15 +8,15 @@
        
         <!-- profile menu -->
         <div class="profile-menu">
-            <ul>
+            <ul> 
        
-                @if(auth()->user()->is_admin)
+                @if(auth()->user()->can['cabinet_view'])
                 <li>
                     <a href="/cabinet" class="link link-start">
                         <i class="fas fa-cogs"></i>
                         <span>Настройки</span> 
                     </a>
-                </li>
+                </li> 
                 @endif
                 <li>
                     <form action="/logout" method="POST">
@@ -49,7 +49,7 @@
 
             <ul class="sub-menu">
                 <li>
-                    <a href="/upbooks" class="link">
+                    <a href="/admin/upbooks" class="link">
                         <i class="fas fa-book"></i>
                         <span>Читать книги</span>
                     </a>
@@ -60,6 +60,14 @@
                         <span>Смотреть видео</span>
                     </a>
                 </li>
+                @if(auth()->user()->is_admin)
+                <li>
+                    <a href="/courses" class="link">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Курсы</span>
+                    </a>
+                </li>
+                @endif
             </ul>
 
         </li>
@@ -81,13 +89,14 @@
             </a>
 
             <ul class="sub-menu">
-
+                @if(auth()->user()->can['top_view'])
                     <li>
                         <a href="/timetracking/top" class="link">
                             <i class="fas fa-chart-pie"></i>
                             <span>ТОП</span>
                         </a>
                     </li>
+                @endif
                     <li>
                         <a href="/timetracking/info" class="link">
                             <i class="fas fa-question-circle"></i>
@@ -112,12 +121,14 @@
                             <span>Время прихода</span>
                         </a>
                     </li>
+                    @if(auth()->user()->can['hr_view'])
                     <li>
                         <a href="/timetracking/analytics" class="link">
                             <i class="fas fa-user-secret"></i>
                             <span>HR</span>
                         </a>
                     </li>
+                    @endif
                     <li>
                         <a href="/timetracking/an" class="link">
                             <i class="fas fa-chart-area"></i>
@@ -130,12 +141,7 @@
                             <span>Начисления</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="/timetracking/exam" class="link">
-                            <i class="fas fa-list"></i>
-                            <span>Повышение квалификаци</span>
-                        </a>
-                    </li>
+                  
                     <li>
                         <a href="/timetracking/quality-control" class="link">
                             <i class="fas fa-list-ol"></i>
@@ -148,32 +154,11 @@
         </li>
         @endif
 
-        @if(auth()->user()->is_admin)
-        <li class="menu-item">
-            <a href="/courses" class="side-btn @if($menu == 'courses') active @endif">
-                <i class="fas fa-graduation-cap"></i>
-                <span>Курсы</span>
-            </a>
-        </li>
-        
-        <li class="menu-item">
-            <a href="/video_playlists" class="side-btn @if($menu == 'video_edit') active @endif">
-                <i class="fas fa-play"></i>
-                <span>Видеокурсы</span>
-            </a>
-        </li>
-
-        <li class="menu-item">
-            <a href="/admin/upbooks" class="side-btn @if($menu == 'upbook_edit') active @endif">
-                <i class="fas fa-book-open"></i>
-                <span>Книги</span>
-            </a>
-        </li>
-        @endif
+      
 
 
     </ul>
-    @if(auth()->user()->is_admin)
+    @if(auth()->user()->can['settings_view'] ||  auth()->user()->can['users_view'])
     <ul class="after-main-menu">
         <li class="menu-item">
             <a href="/timetracking/settings" class="side-btn @if($menu == 'settings') active @endif">
