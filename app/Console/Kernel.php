@@ -65,8 +65,8 @@ class Kernel extends ConsoleKernel
         /**
          * КАЖДЫЕ 5 МИНУТ
          */
-        $schedule->command("headhunter:fetch 1")->everyFiveMinutes(); // hh отклики запрос откликов
-        $schedule->command("headhunter:fetch 3")->everyFiveMinutes(); // hh отклики в битрикс 
+        // $schedule->command("headhunter:fetch 1")->everyFiveMinutes(); // hh отклики запрос откликов
+        // $schedule->command("headhunter:fetch 3")->everyFiveMinutes(); // hh отклики в битрикс 
 
 
         $schedule->command('salary:group')->everyTenMinutes(55); // Сохранить заработанное группой без вычета шт и ав
@@ -74,7 +74,7 @@ class Kernel extends ConsoleKernel
         /**
          * КАЖДЫЕ 15 МИНУТ
          */
-        $schedule->command("headhunter:fetch 2")->everyFifteenMinutes(); // hh отклики запрос резюме 500 в день
+        // $schedule->command("headhunter:fetch 2")->everyFifteenMinutes(); // hh отклики запрос резюме 500 в день
 
 
 
@@ -92,8 +92,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
         
         
-        $schedule->command(BitrixStats::class)->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
-        $schedule->command(QualityRecordsTotals::class)->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
+        // $schedule->command(BitrixStats::class)->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
+        // $schedule->command(QualityRecordsTotals::class)->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
         
 	    $schedule->command('recruiter:stats 1')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса 
 	    $schedule->command('recruiter:stats')->hourlyAt(14); // Данные почасовой таблицы рекрутинга из битрикса  
@@ -111,8 +111,8 @@ class Kernel extends ConsoleKernel
         $schedule->command(DeleteUser::class)->dailyAt('00:00'); // Удаление сотрудников с отработкой в 6 утра
         //$schedule->command("salary:update week")->dailyAt('00:10'); // обновление зарплаты: последняя неделя (в 6:10 утра)
         $schedule->command("usernotification:estimate_trainer")->dailyAt('06:00'); // Уведолмение об оценке руководителя и старшего спеца. За 2 дня до конца месяца
-        $schedule->command("headhunter:fetch 0")->dailyAt('02:00'); // hh вакансиии обновить
-        $schedule->command(InviteToBitrixAndAdmin::class)->dailyAt('02:00'); // Отправить сообщение со ссылкой по ватсапу на учет времени и битрикс, приглашенным стажерам на 4ый день стажировки
+        //$schedule->command("headhunter:fetch 0")->dailyAt('02:00'); // hh вакансиии обновить
+      //  $schedule->command(InviteToBitrixAndAdmin::class)->dailyAt('02:00'); // Отправить сообщение со ссылкой по ватсапу на учет времени и битрикс, приглашенным стажерам на 4ый день стажировки
         $schedule->command(Adaptation::class)->dailyAt('02:40'); // Уведомление о заполнении адаптации
         $schedule->command(SalaryIndexation::class)->dailyAt('17:02'); // Индексация зарплаты
         $schedule->command("callibro:grades")->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
