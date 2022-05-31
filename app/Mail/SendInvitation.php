@@ -29,6 +29,7 @@ class SendInvitation extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.send-invitation');
+        return $this->view('mail.send-invitation')
+            ->subject('Приглашение на портал');
     }
 }

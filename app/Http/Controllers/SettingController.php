@@ -1227,11 +1227,12 @@ class SettingController extends Controller
        // Mail::to($request->email)->send(new Mailable('auth.reset', $subject, $data));
 
         $mailData = [
-            'original_password' => $pass,
+            'password' => $pass,
+            'subdomain' => tenant('id')
         ];
         
-        \Mail::to($request->email)->send(new \App\Mail\SendInvitation($mailData));
-
+        \Mail::to($request->email)->send(new \App\Mail\PasswordReset($mailData));
+        
 
         return response()->json(['success'=>true]);
     }

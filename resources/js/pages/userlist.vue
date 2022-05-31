@@ -68,9 +68,9 @@
       <template slot="cell(index)" slot-scope="row">
         {{ row.index + 1 }}
       </template>
-      <template slot="cell(ID)" slot-scope="row">
+      <template slot="cell(id)" slot-scope="row">
         <a v-if="[5,18,157].includes(currentUser)"
-          :href="'http://test.u-marketing.org/login-as-employee/' + row.item.ID + '?auth=' + auth_token"
+          :href="'http://test.u-marketing.org/login-as-employee/' + row.item.id + '?auth=' + auth_token"
           target="_blank">
           {{ row.value}}
         </a>
@@ -145,7 +145,7 @@
               :value="true"
               :unchecked-value="false"
               >
-              ID 
+              id
           </b-form-checkbox>
           <b-form-checkbox
               v-model="showFields.email"
@@ -527,14 +527,14 @@ export default {
                 || el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.ID.toString().indexOf(this.filter.email.toLowerCase()) > -1)
+                || el.id.toString().indexOf(this.filter.email.toLowerCase()) > -1)
         } else {
           return el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.fullname.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
                 || el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.ID.toString().indexOf(this.filter.email.toLowerCase()) > -1
+                || el.id.toString().indexOf(this.filter.email.toLowerCase()) > -1
         }
 
       }) 

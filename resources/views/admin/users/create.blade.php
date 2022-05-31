@@ -10,7 +10,6 @@
                 <i class="fa fa-chevron-left"></i> Назад
             </a>
 
-
             <div class="data-information">
                 @if(isset($user))
                     @if($user->is_trainee)
@@ -50,7 +49,6 @@
                 @endif
                 @endif
             </div>
-
 
             <!-- <div class="bread d-flex align-items-center ml-3">
                 <a href="/timetracking/settings?tab=1">Настройки <i class="fa fa-chevron-right"></i></a>
@@ -1266,9 +1264,6 @@ function submitx() {
     counter = 0;
 
     let phone = $('#phone').val(),
-        phone_1 = $('#phone_1').val(),
-        phone_2 = $('#phone_2').val(),
-        phone_3 = $('#phone_3').val(),
         name = $('#firstName').val(),
         last_name = $('#lastName').val(),
         birthday = $('#birthday').val(),

@@ -1134,9 +1134,8 @@ class UserController extends Controller
         $arr = compact('positions', 'groups', 'timezones', 'programs', 'workingDays', 'workingTimes', 'corpbooks');
 
         if($id != 0) {
-            $user = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->withTrashed()
-                ->where('users.id', $id)
+            $user = User::withTrashed()
+                ->where('id', $id)
                 ->with(['zarplata', 'downloads', 'user_description'])
                 ->first();
             
@@ -1212,11 +1211,11 @@ class UserController extends Controller
                 $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if($delete_plan) $user->delete_time = $delete_plan->delete_time;
 
-                $ud = UserDescription::where('user_id', $user->id)->orderBy('id', 'desc')->first();
-                if($ud){
-                    $user->fire_cause = $ud->fire_cause;
-                    $user->recruiter_comment = $ud->recruiter_comment;
-                    $user->bitrix_id = $ud->bitrix_id;
+                
+                if($user->user_description){
+                    $user->fire_cause = $user->user_description->fire_cause;
+                    $user->recruiter_comment = $user->user_description->recruiter_comment;
+                    $user->bitrix_id = $user->user_description->bitrix_id;
                 }
 
                 $lead = Lead::where('user_id', $user->id)->first();
@@ -1276,16 +1275,14 @@ class UserController extends Controller
         /********** Подготовка для приглашения на почту */
         /*==============================================================*/
         $original_password = User::generateRandomString();
-        $salt = User::randString(8);
-        $user_password = \Hash::make('12345');
-        $activate_key = User::generateRandomString(24);
+        $user_password = \Hash::make($original_password);
 
         $data = [
-            'activate_key' => $activate_key,
             'user_name' => $request['name'],
             'name' => $request['name'],
             'email' => $request['email'],
-            'original_password' => $original_password,
+            'password' => $original_password,
+            'subdomain' => tenant('id')
         ];
 
         /*==============================================================*/
@@ -1323,7 +1320,9 @@ class UserController extends Controller
         /*==============================================================*/
 
         try { // если письмо с прилашением отправилось  
-            $this->mail($request['email'], 'admin.mail.inviteadmin', 'Приглашение на портал', $data);
+
+            \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
+
         } catch (Swift_TransportException $e) { // Если письмо по каким то причинам не отправилось
             return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
         }
@@ -1334,13 +1333,13 @@ class UserController extends Controller
 
         //dd($request->all());
 
-        //$user_password = 'opvLOUSe0200af69ff75617c3574485ba1da8f5d'; // 12345
+        
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
             $user->update([
                 'name' => $request['name'],
                 'last_name' => $request['last_name'],
                 'description' => $request['description'],
-                'password' => \Hash::make('12345'),
+                'password' => $user_password,
                 'created_at' => DB::raw('NOW()'),
                 'position_id' => $request['position'],
                 'user_type' => $request->user_type,
@@ -1362,7 +1361,7 @@ class UserController extends Controller
                 'name' => $request['name'],
                 'last_name' => $request['last_name'],
                 'description' => $request['description'],
-                'password' => \Hash::make('12345'),
+                'password' => $user_password,
                 'position_id' => $request['position'],
                 'user_type' => $request->user_type,
                 'timezone' => 6,

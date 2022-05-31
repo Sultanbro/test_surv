@@ -34,7 +34,11 @@ class User extends Authenticatable
     public $timestamps = true;
 
     protected $primaryKey = 'id';
-    
+
+    protected $casts = [
+        'roles' => 'array',
+    ];
+
     protected $fillable = [
         'name',
         'last_name',

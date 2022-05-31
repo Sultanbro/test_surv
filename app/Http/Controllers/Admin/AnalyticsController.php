@@ -103,21 +103,29 @@ class AnalyticsController extends Controller
      */
     public function get(Request $request)
     {
+       
         $group_id = $request->group_id;
         $month = $request->month;
         $year = $request->year;
         $date = Carbon::createFromDate($year, $month, 1);
-
+        
         $group = ProfileGroup::find($group_id);
         $currentUser = User::bitrixUser();
-        $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
-        // Доступ к группе
-        if (!$group || !in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
-            return [
-                'error' => 'access',
-            ];
+
+
+        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
+
+        if(!in_array(Auth::user()->id, $superusers)) {
+
+            $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
+            // Доступ к группе
+            if (!$group || !in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
+                return [
+                    'error' => 'access',
+                ];
+            }
         }
-        
+ 
 
         $ac = AnalyticColumn::where('group_id', $group_id)->first();
         $ar = AnalyticRow::where('group_id', $group_id)->first();
@@ -127,13 +135,14 @@ class AnalyticsController extends Controller
             'groups' => ProfileGroup::whereIn('has_analytics', [0,1])->where('active', 1)->get(),
         ];
 
-
+        
         // utility and rentability
         $util = TopValue::getUtilityGauges($date->format('Y-m-d'), [$group_id]);
         $rent = TopValue::getRentabilityGauges($date->format('Y-m-d'), [$group_id], 'Рентабельность');
         if(count($util) > 0) {
             $util[0]['gauges'] = array_merge($util[0]['gauges'], $rent);
         }   
+        
         
         $call_bases = [];
         if($group_id == 53) {
@@ -149,7 +158,8 @@ class AnalyticsController extends Controller
         $fired_percent = $ff['percent'];
         $fired_number_prev = $ffp['fired'];
         $fired_number = $ff['fired'];
-
+       
+        //dd(AnalyticStat::form($group_id, $date->format('Y-m-d')));
 
         return [
             'decomposition' => DecompositionValue::table($group_id, $date->format('Y-m-d')),

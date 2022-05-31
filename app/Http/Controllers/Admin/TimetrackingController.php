@@ -1323,7 +1323,7 @@ class TimetrackingController extends Controller
                     $user->save();
                 } 
             }
-
+            if($group->editors_id == null) $group->editors_id = [];
             $old_editors = json_decode($group->editors_id);
             $group->editors_id = json_encode(array_unique($editors_id));
             $group->save();

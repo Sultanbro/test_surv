@@ -77,7 +77,7 @@ class AnalyticStat extends Model
             ->where('date', $date)
             ->get();
 
-
+      
         // returning items 
         foreach($rows as $r_index => $row) {
 
