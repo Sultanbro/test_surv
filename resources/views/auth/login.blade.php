@@ -49,9 +49,9 @@
 
                     </div>
              
-                    <div style="margin: 10px;display:flex;justify-content:center">
+                    <!-- <div style="margin: 10px;display:flex;justify-content:center">
                         <a href="/register" class="active">Регистрация </a>
-                    </div>
+                    </div> -->
 
                     <div class="tab-row fade-tabset">
                        
@@ -98,7 +98,7 @@
                     
                             <div id="forgetPass" class="js-tab-hidden">
 
-                                <form class="form-registration" id="forget" action="#">
+                                <form class="form-registration" id="forgets" action="#">
                                     <div class="form-subregistration">
                                         <div class="message">
                                         </div>
@@ -137,4 +137,10 @@
 
 
 
+@endsection
+
+@section('scripts')
+<script>
+
+</script>
 @endsection

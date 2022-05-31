@@ -1202,6 +1202,11 @@ class SettingController extends Controller
         return back();
     }
 
+    protected function password_generate($chars) 
+    {
+      $data = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
+      return substr(str_shuffle($data), 0, $chars);
+    }
 
     public function reset(Request $request) {
 
@@ -1210,23 +1215,25 @@ class SettingController extends Controller
         if(!$accountUser) {
             return response()->json( ['success'=>false] );
         }
-        $original_password = User::generateRandomString();
-        $salt              = User::randString( 8 );
-        $user_password          = $salt . md5( $salt . $original_password );
-        info($original_password);
-        info($user_password);
-        $accountUser->password = $user_password;
+        
+
+        $pass = $this->password_generate(7);
+        $accountUser->password = \Hash::make($pass);
         $accountUser->save();
 
 
-        $data = [
-            'original_password'  => $original_password,
+        //$subject = "=?UTF-8?B?".base64_encode('Восстановление пароля на сайте http://bp.jobtron.org')."?=";
+
+       // Mail::to($request->email)->send(new Mailable('auth.reset', $subject, $data));
+
+        $mailData = [
+            'original_password' => $pass,
         ];
+        
+        \Mail::to($request->email)->send(new \App\Mail\SendInvitation($mailData));
 
-        $subject = "=?UTF-8?B?".base64_encode('Восстановление пароля на сайте https://cp.u-marketing.org')."?=";
 
-        Mail::to($request->email)->send(new Mailable('auth.reset', $subject, $data));
-        return response()->json( ['success'=>true] );
+        return response()->json(['success'=>true]);
     }
 
     /**

@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //  Instead of Tailwind 
-        Paginator::useBootstrap();
+       //Paginator::useBootstrap();
 
         \View::composer('layouts.admin', function($view) {
 
@@ -65,9 +65,9 @@ class AppServiceProvider extends ServiceProvider
                 $unread = $tec ? $tec->total : 0;
 
 
-
+               
                 $head_users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
-
+               
 
                 $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
                 $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('id')->toArray();
@@ -77,11 +77,14 @@ class AppServiceProvider extends ServiceProvider
                 $corp_book_page_show = false;
                 $corp_book_page = null;
                 $reminder = false; // Уведомление о непрочитанных сообщениях, с 14-00 до 18-59
-
+               
                 if($user->isStartedDay()) {
+             
                     if(!$user->readCorpBook()) {
+                       
                         $corp_book_page_show = true;
-                        $corp_book_page = \App\Book::getRandomPage();
+                        //$corp_book_page = \App\Book::getRandomPage();
+                        $corp_book_page = null;
 
                         $xuser = User::find($user->id);
 
@@ -98,7 +101,7 @@ class AppServiceProvider extends ServiceProvider
                         }
                     }
                 }
-
+               
                 $view->with([
                     'reminder' => $reminder,
                     'unread_notifications' => $unread_notifications,
@@ -114,44 +117,44 @@ class AppServiceProvider extends ServiceProvider
         });
 
 
-        \View::composer('layouts.app', function($view) {
+        // \View::composer('layouts.app', function($view) {
 
-            if(!\Auth::guest()) {
+        //     if(!\Auth::guest()) {
 
-                $user =  auth()->user();
-                $user_id = $user->id;
+        //         $user =  auth()->user();
+        //         $user_id = $user->id;
 
-                $unread_notifications = Notification::whereNotIn('id', function($query) use ($user_id) {
-                    $query->select('notification_id')
-                        ->from('read_notifications')
-                        ->where('user_id', $user_id);
-                })
-                    ->where('created_at', '>', $user->created_at)
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+        //         $unread_notifications = Notification::whereNotIn('id', function($query) use ($user_id) {
+        //             $query->select('notification_id')
+        //                 ->from('read_notifications')
+        //                 ->where('user_id', $user_id);
+        //         })
+        //             ->where('created_at', '>', $user->created_at)
+        //             ->orderBy('created_at', 'desc')
+        //             ->get();
 
-                $read_notifications = Notification::whereIn('id', function($query) use ($user_id) {
-                    $query->select('notification_id')
-                        ->from('read_notifications')
-                        ->where('user_id', $user_id);
-                })
-                    ->where('created_at', '>', $user->created_at)
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+        //         $read_notifications = Notification::whereIn('id', function($query) use ($user_id) {
+        //             $query->select('notification_id')
+        //                 ->from('read_notifications')
+        //                 ->where('user_id', $user_id);
+        //         })
+        //             ->where('created_at', '>', $user->created_at)
+        //             ->orderBy('created_at', 'desc')
+        //             ->get();
 
-                $unread = $unread_notifications->count();
-                $unread = $unread ? '+'.$unread : 0;
+        //         $unread = $unread_notifications->count();
+        //         $unread = $unread ? '+'.$unread : 0;
 
-                $view->with([
-                    'unread_notifications' => $unread_notifications,
-                    'read_notifications' => $read_notifications,
-                    'unread' => $unread,
-                ]);
+        //         $view->with([
+        //             'unread_notifications' => $unread_notifications,
+        //             'read_notifications' => $read_notifications,
+        //             'unread' => $unread,
+        //         ]);
 
 
-            }
+        //     }
 
-        });
+        // });
 
 
     }

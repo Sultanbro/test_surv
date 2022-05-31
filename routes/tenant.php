@@ -42,6 +42,7 @@ use App\Http\Controllers\Video\VideolearningController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\LearningController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseResultController;
@@ -83,6 +84,12 @@ Route::middleware([
         ];
         
         \Mail::to("abik50000@gmail.com")->send(new \App\Mail\SendInvitation($mailData));
+    });
+    
+
+    
+    Route::any('/ses', function() {
+        session()->flush();
     });
     
     
@@ -148,6 +155,8 @@ Route::middleware([
     Route::any('/videolearning/{id?}', [VideolearningController::class, 'list'])->name('videos.playlists');
     Route::any('/videolearning/playlists/{id}', [VideolearningController::class, 'playlist'])->name('videos.playlist');
     Route::post('/videos/views', [VideolearningController::class, 'views'])->name('videos.views');
+
+    Route::post('/setting/reset', [SettingController::class, 'reset']);
 
     Route::get('/playlists/get', [VideoPlaylistController::class, 'get']);
     Route::get('/playlists/get/{id}', [VideoPlaylistController::class, 'getPlaylist']);

@@ -303,11 +303,12 @@ class TimetrackingController extends Controller
 
         $dt = Carbon::now($tz)->format('d.m.Y');
 
-        $worktime_start = Carbon::parse($dt . ' 08:30', $tz);
+        $worktime_start = Carbon::parse($dt . ' 08:00', $tz);
         $worktime_end = Carbon::parse($dt . ' ' . $user_groups->max('work_end'), $tz);
 
         $running = $user->timetracking()->running()->first();
 
+      
         if (!is_null($running)) {
             $action = 'started';
 
@@ -364,23 +365,28 @@ class TimetrackingController extends Controller
 
 
         // corp book page 
-
-        if(!$user->readCorpBook()) {
-            $has_corp_book = true;
-            $page = Book::getRandomPage();
-        } else {
-            $page = null;
+        $page = null;
             $has_corp_book = false;
-        }
+        // if(!$user->readCorpBook()) {
+        //     $has_corp_book = true;
+        //     $page = Book::getRandomPage();
+        // } else {
+        //     $page = null;
+        //     $has_corp_book = false;
+        // }
 
-
-        return [
+            $data = [
                 'status' => $action,
                 'corp_book' => [
                     'has' => $has_corp_book,
                     'page' => $page,
                 ],
-        ] + $error;
+                'message' => $message
+        ] ;
+        
+        return response()->json($data);
+
+        return $data;
     }
 
     public function trackerstatus(Request $request)
@@ -441,12 +447,18 @@ class TimetrackingController extends Controller
 
 
          // corp book page 
-
+         $page = [
+            'title' => '',
+            'description' => ''
+        ];
          if(!$user->readCorpBook()) {
-            $has_corp_book = true;
-            $page = Book::getRandomPage();
+            $has_corp_book = false;
+            //$page = Book::getRandomPage();
         } else {
-            $page = null;
+            $page = [
+                'title' => '',
+                'description' => ''
+            ];
             $has_corp_book = false;
         }
 

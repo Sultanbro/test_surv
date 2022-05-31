@@ -48,82 +48,54 @@
 
 
                     </div>
-
-                    <div style="margin: 10px;display:flex;justify-content:center">
-                        <a href="/login" class="active">Вход </a>
-                    </div>
+             
+                    <!-- <div style="margin: 10px;display:flex;justify-content:center">
+                        <a href="/register" class="active">Регистрация </a>
+                    </div> -->
 
                     <div class="tab-row fade-tabset">
-
+                       
                         <div class="tab-content">
                             <div id="tab-30" class="tab @if(!isset($_GET['tab'])) active @else js-tab-hidden  @endif">
-                                <form class="form-registration" id="registration" action="{{ route('register') }}"
-                                    method="post">
+                                <form class="form-horizontal" method="POST" action="{{ route('login') }}">
+                                    {{ csrf_field() }}
                                     <div class="form-subregistration">
-                                        {{ csrf_field() }}
-                                        <div class="message">
-                                        </div>
-                                        @if ($errors->has('email'))
-                                        <div class="message">
-                                            Пользователь с таким email существует
-                                        </div>
-                                        @endif
-
-                                        <div class="form-registration-row form-registration-star">
-                                            <input type="email" name="email" placeholder="olegivanov@mail.ru" required>
-
+                                        <div class="form-registration-row">
+                                            <input id="username" type="text" class="form-control" name="username"
+                                                value="{{ old('username') }}" required autofocus
+                                                placeholder="olegivanov@mail.ru">
+                                            @if ($errors->has('username'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('username') }}</strong>
+                                            </span>
+                                            @endif
                                         </div>
                                         <div class="form-registration-row">
-                                            <input type="text" name="name" placeholder="Ваше имя" required>
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <input type="text" name="phone" placeholder="Телефон" required>
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <input type="password" name="password" placeholder="Введите пароль"
-                                                required>
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <input type="password" name="password_confirmation"
-                                                placeholder="Повторите пароль" required>
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <select name="currency" required class="chosen-select">
-                                                <option value="">Выберите Валюту</option>
-                                                <option value="kzt">KZT</option>
-                                                <option value="rub">RUB</option>
-                                            </select>
-                                        </div>
-                                        <!-- <div class="form-registration-row form-registration-star">
-                                            <select name="timezone" required class="chosen-select">
-                                                <option value="">Выберите таймзону</option>
-                                                @foreach(\App\Setting::TIMEZONES as $offset => $timezone)
-                                                <option value="{{$offset}}">{{$timezone}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div> -->
+                                            <input id="password" type="password" class="form-control" name="password"
+                                                required placeholder="Введите пароль">
 
-                                        <br>
-                                        <input type="submit" value="Зарегистрироваться" class="btn-form-registarion">
+                                            @if ($errors->has('password'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('password') }}</strong>
+                                            </span>
+                                            @endif
 
+                                        </div>
+                                        <div class="form-registration-line">
+                                            <input type="hidden" name="remember" value="1">
+
+
+                                            <a id="openForgetPass">Восстановление пароля</a>
+                                        </div>
+
+
+                                        <button type="submit" class="btn-form-login">
+                                            Войти
+                                        </button>
                                     </div>
-
-                                    <div style="padding:20px 40px">
-                                        <div class="form-subregistration-text">
-                                            <label for="pravila" class="control control-checkbox"
-                                                style="font-weight: normal;">
-                                                <input type="checkbox" name="pravila" id="pravila" checked="checked">
-                                                <div class="control_indicator"></div>
-                                                Я согласен(а) с правилами использования сервиса
-                                            </label>
-                                            <p>Регистрируясь, я подтверждаю, что принимаю Пользовательское соглашение,
-                                                ознакомлен с договором оферты и Политикой конфеденциальности.
-                                            </p>
-                                        </div>
-                                    </div>
-                                   
                                 </form>
                             </div>
+                    
                             <div id="forgetPass" class="js-tab-hidden">
 
                                 <form class="form-registration" id="forget" action="#">

@@ -50,6 +50,6 @@ if (getUrlParameter('reg') == 'show') {
  });
 </script>
 
-        <script src="/static/new/js/auth.js?v=1.31"></script>
+        <script src="/static/new/js/auth.js?v=5"></script>
     </body>
 </html>

@@ -218,41 +218,43 @@ export default {
     },
   },
   created() {
-    // axios
-    //   .post("/timetracking/status", {})
-    //   .then((response) => {
-    //     this.activebtn = "Завершить день";
-    //     this.setButton(response.data.status);
+    axios
+      .post("/timetracking/status", {})
+      .then((response) => {
+        this.activebtn = "Завершить день";
+        this.setButton(response.data.status);
 
-    //     if(response.data.status == 'started' && response.data.corp_book.has) {
-    //       this.showCorpBookPage = true; 
-    //       this.corp_book_page = response.data.corp_book.page
+        if(response.data.status == 'started' && response.data.corp_book.has) {
+          
+          this.corp_book_page = response.data.corp_book.page
 
-    //       this.bookCounter();
-
-
-
-
+    
+          this.showCorpBookPage = this.corp_book_page != null; 
+          this.bookCounter();
 
 
 
-    //     } 
 
-    //     this.zarplata = response.data.zarplata;
+
+
+
+        } 
+
+        this.zarplata = response.data.zarplata;
  
-    //     this.groups = response.data.groupsall;
-    //     this.total_earned = response.data.total_earned;
-    //     this.orders = response.data.orders;
-    //     this.bonus = response.data.bonus;
+        this.groups = response.data.groupsall;
+        this.total_earned = response.data.total_earned;
+        this.orders = response.data.orders;
+        this.bonus = response.data.bonus;
 
 
 
 
 
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
     this.setMonth();
   },
@@ -354,9 +356,9 @@ export default {
           }
 
           if(response.data.status == 'started' && response.data.corp_book.has) {
-            this.showCorpBookPage = true; 
+            
             this.corp_book_page = response.data.corp_book.page
-
+             this.showCorpBookPage = this.corp_book_page != null; 
             this.bookCounter();
           } 
           this.setButton(response.data.status);
