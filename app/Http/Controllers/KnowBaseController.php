@@ -21,9 +21,14 @@ class KnowBaseController extends Controller
     }
 
     public function get(Request $request)
-    {
+    {   
+        if(\Auth::user()->is_admin == 1) {
+            $books = KnowBase::whereNull('parent_id')->orderBy('order')->get()->toArray();
+        } else {
+            $books = [];
+        }
         return [
-            'books' => KnowBase::whereNull('parent_id')->orderBy('order')->get()->toArray(),
+            'books' => $books
         ];
     }
 
@@ -59,8 +64,14 @@ class KnowBaseController extends Controller
 
     public function getArchived(Request $request)
     {
+        if(\Auth::user()->is_admin == 1) {
+            $books = KnowBase::onlyTrashed()->whereNull('parent_id')->orderBy('order')->get()->toArray();
+        } else {
+            $books = [];
+        }
+
         return [
-            'books' => KnowBase::onlyTrashed()->whereNull('parent_id')->orderBy('order')->get()->toArray(),
+            'books' => $books,
         ];
     }
 
@@ -71,9 +82,18 @@ class KnowBaseController extends Controller
         foreach ($trees as $tree) {
             $tree->parent_id = null;
         }
+
+        $trees->toArray();
+        $book = KnowBase::find($request->id);
+
+        if(\Auth::user()->is_admin != 1) {
+            $trees = [];
+            $book = null;
+        }
+
         return [
-            'trees' => $trees->toArray(),
-            'book' => KnowBase::find($request->id),
+            'trees' => $trees,
+            'book' => $book,
         ];
     }
 
@@ -107,12 +127,23 @@ class KnowBaseController extends Controller
 
         }
 
-        return [
+        $data = [
             'book' => $page,
             'breadcrumbs' => $breadcrumbs,
             'tree' => $trees,
             'top_parent' => $top_parent,
         ];
+
+        if(\Auth::user()->is_admin != 1) {
+            $data = [
+                'book' => null,
+                'breadcrumbs' => [],
+                'tree' => [],
+                'top_parent' => null,
+            ];
+        }
+
+        return $data;
     }
 
     private function getTopParent($id)

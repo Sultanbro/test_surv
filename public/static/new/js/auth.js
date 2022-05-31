@@ -49,7 +49,7 @@ jQuery(function($){
         $('#forgetPass').removeClass('js-tab-hidden');
     });
 
-    $('form#forgets').submit(function(e){
+    $('form#forget').submit(function(e){
         e.preventDefault();
 
         let email =  $(this).find('input[name=email]').val();
@@ -61,15 +61,15 @@ jQuery(function($){
             },
             type:'POST',
             success: function(data){
-                
-                
+                if(data.success) {
+                    alert('На вашу почту отправлен новый пароль!');
+                    $('#forgetPass, #tab-31').addClass('js-tab-hidden').removeClass('active');
+                    $('#tab-30').removeClass('js-tab-hidden').addClass('active');
+                } else {
+                    alert('Вы не зарегистрированы в нашей системе!');
+                }
+
             },
         });
-
-        $('#forgetPass, #tab-31').addClass('js-tab-hidden').removeClass('active');
-                $('#tab-30').removeClass('js-tab-hidden').addClass('active');
-                $('#openForgetPass').hide();
-                alert('Новый пароль выслан на вашу почту!');
     });
-
 });

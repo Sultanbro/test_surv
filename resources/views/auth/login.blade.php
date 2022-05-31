@@ -98,7 +98,7 @@
                     
                             <div id="forgetPass" class="js-tab-hidden">
 
-                                <form class="form-registration" id="forgets" action="#">
+                                <form class="form-registration" id="forget" action="#">
                                     <div class="form-subregistration">
                                         <div class="message">
                                         </div>
