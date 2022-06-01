@@ -81,7 +81,7 @@
 
 
 
-        @if(auth()->user()->is_admin)
+
         <li class="menu-item">
             <a href="/timetracking/reports" class="side-btn @if($menu == 'surv') active @endif">
                 <i class="fas fa-calendar-alt"></i>
@@ -109,18 +109,22 @@
                             <span>Депримирование</span>
                         </a>
                     </li>
+                    @if(auth()->user()->can['tabel_view'])
                     <li>
                         <a href="/timetracking/reports" class="link">
                             <i class="fas fa-clock"></i>
                             <span>Табель</span>
                         </a>
                     </li>
+                    @endif
+                    @if(auth()->user()->can['entertime_view'])
                     <li>
                         <a href="/timetracking/reports/enter-report" class="link">
                             <i class="fas fa-user-clock"></i>
                             <span>Время прихода</span>
                         </a>
                     </li>
+                    @endif
                     @if(auth()->user()->can['hr_view'])
                     <li>
                         <a href="/timetracking/analytics" class="link">
@@ -129,30 +133,35 @@
                         </a>
                     </li>
                     @endif
+                    @if(auth()->user()->can['analytics_view'])
                     <li>
                         <a href="/timetracking/an" class="link">
                             <i class="fas fa-chart-area"></i>
                             <span>Аналитика</span>
                         </a>
                     </li>
+                    @endif
+                    @if(auth()->user()->can['salaries_view'])
                     <li>
                         <a href="/timetracking/salaries" class="link">
                             <i class="fas fa-comment-dollar"></i>
                             <span>Начисления</span>
                         </a>
                     </li>
-                  
+                    @endif
+                    @if(auth()->user()->can['quality_view'])
                     <li>
                         <a href="/timetracking/quality-control" class="link">
                             <i class="fas fa-list-ol"></i>
                             <span>Контроль качества</span>
                         </a>
                     </li>
+                    @endif
 
 
                 </ul>
         </li>
-        @endif
+       
 
       
 

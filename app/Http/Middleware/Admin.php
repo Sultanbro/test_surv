@@ -22,20 +22,20 @@ class Admin {
         if($request->getPathInfo()=='/logout') return $next($request);
         if(!Auth::user()) return $next($request);
   
-
+        
         $user = Auth::user();
         Auth::user()->can = [
-            'top_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
-            'hr_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
-            'analytics_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
-            'tabel_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
-            'entertime_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
-            'salaries_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
-            'quality_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
-            'users_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
-            'settings_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
+            'top_view' => $user->is_admin == 1 || in_array($user->id, []),
+            'hr_view' => $user->is_admin == 1 || in_array($user->id, [5263,9974]),
+            'analytics_view' => $user->is_admin == 1 || in_array($user->id, [11533,5494,12787,13583,3782,4593,3794,3423,3865,3957]),
+            'tabel_view' => $user->is_admin == 1 || in_array($user->id, [5263,9974,11533,5494,12787,13583]),
+            'entertime_view' => $user->is_admin == 1 || in_array($user->id, [5263,9974,11533,5494,12787,13583]),
+            'salaries_view' => $user->is_admin == 1 || in_array($user->id, [5263,9974,11533,5494,12787,13583]),
+            'quality_view' => $user->is_admin == 1 || in_array($user->id, [11533,5494,12787,13583]),
+            'users_view' => $user->is_admin == 1 || in_array($user->id, [5263,9974]),
+            'settings_view' => $user->is_admin == 1 || in_array($user->id, []),
             'cabinet_view' => $user->is_admin == 1,
-            'courses_view' => $user->is_admin == 1 || in_array($user->id, [5,18,84,4444,13865]),
+            'courses_view' => $user->is_admin == 1 || in_array($user->id, []),
             
         ];
 

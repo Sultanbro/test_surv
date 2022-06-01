@@ -24,14 +24,16 @@ class CabinetController extends Controller
             return redirect()->back();
         }
 
-        $users = User::get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
+        $users = User::withTrashed()->get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
 
         foreach($users as $user) {
             if($user->email == '') $user->email = 'x'; 
         }
 
-        $admin = Admin::where('owner_id', 18)->first(); 
-        $admins = User::withTrashed()->whereIn('id', $admin->users)->get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
+      
+        $admins = User::withTrashed()
+            ->where('is_admin', 1)
+            ->get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
 
         return [
             'users' => $users,
@@ -41,13 +43,27 @@ class CabinetController extends Controller
 
     public function save(Request $request)
     {
-        $admins = [];
-        foreach($request->admins as $index => $user) {
-            $admins[] = $user['id'];
+        $admins = User::withTrashed()
+            ->where('is_admin', 1)
+            ->get(['id'])
+            ->pluck('id')
+            ->toArray();
+
+        foreach ($admins as $key => $id) {
+            $admin = User::withTrashed()->find($id);
+            if($admin) {
+                $admin->is_admin = 0;
+                $admin->save();
+            }
         }
-        $admin = Admin::where('owner_id', 18)->first(); 
-        $admin->users = array_unique($admins);
-        $admin->save();
+
+        foreach($request->admins as $index => $user) {
+            $admin = User::withTrashed()->find($user['id']);
+            if($admin) {
+                $admin->is_admin = 1;
+                $admin->save();
+            }
+        }
         
     }
 }
