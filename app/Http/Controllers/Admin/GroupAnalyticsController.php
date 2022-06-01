@@ -79,20 +79,14 @@ class GroupAnalyticsController extends Controller
     public function index()
     {
 
-        if(!auth()->user()->can['hr_view']) {
+        if(!auth()->user()->can['hr_view'] && tenant('id') != 'bp') {
             return redirect()->back();
         }
 
         $currentUser = User::bitrixUser();
 
-        $kaspi_42 = ProfileGroup::find(42);
         $recruting = ProfileGroup::find(48);
-        // $dm = ProfileGroup::find(31);
-       
-        // $lerua = ProfileGroup::find(63);
-        // $homecredit = ProfileGroup::find(57);
-        // $eurasian = ProfileGroup::find(53);
-        
+   
         // Доступ к группе 
 
         $groups = [];
@@ -106,53 +100,8 @@ class GroupAnalyticsController extends Controller
                 'groups' => [48],
             ];
         }  
+    
         
-        if ($kaspi_42 && in_array($currentUser->id, json_decode($kaspi_42->editors_id)) || $isSuperUser) {
-            $groups[] = [
-                'id' => 42,
-                'name' => $kaspi_42->name,
-                'groups' => [42],
-            ];
-        }
-
-        
-        
-        // if ($dm && in_array($currentUser->id, json_decode($dm->editors_id)) || $isSuperUser) {
-        //     $groups[] = [
-        //         'id' => 31,
-        //         'name' => $dm->name,
-        //         'groups' => [31],
-        //     ];
-        // }   
-
-     
-        
-        // if ($homecredit && in_array($currentUser->id, json_decode($homecredit->editors_id)) || $isSuperUser) {
-        //     $groups[] = [
-        //         'id' => 57,
-        //         'name' => $homecredit->name,
-        //         'groups' => [57],
-        //     ];
-        // }  
-        
-        // if ($eurasian && in_array($currentUser->id, json_decode($eurasian->editors_id)) || $isSuperUser) {
-        //     $groups[] = [
-        //         'id' => 53,
-        //         'name' => $eurasian->name,
-        //         'groups' => [53],
-        //     ];
-        // }   
-
-        // if ($lerua && in_array($currentUser->id, json_decode($lerua->editors_id)) || $isSuperUser) {
-        //     $groups[] = [
-        //         'id' => 63,
-        //         'name' => $lerua->name,
-        //         'groups' => [63],
-        //     ];
-        // } 
-
-      
-
         $groups = collect($groups);
         
         View::share('menu', 'timetracking_hr');
@@ -610,7 +559,7 @@ class GroupAnalyticsController extends Controller
         $indicators['info']['fired'] = $data[RM::S_FIRED]['fact'] ;  // Увоолено в этом месяце
         $indicators['info']['applied_plan'] = $data[RM::S_APPLIED]['plan'];// План по принятию на штат на месяц
         $indicators['info']['remain_days'] = RM::daysRemain($date); // Осталось рабочих дней до конца месяца
-        $indicators['info']['working'] = $settings && array_key_exists('working', $settings->extra) ? $settings->extra['working'] : RM::getWorkerQuantity(); // Кол-во работающих (Ставка)
+        $indicators['info']['working'] = $settings && $settings->extra && array_key_exists('working', $settings->extra) ? $settings->extra['working'] : RM::getWorkerQuantity(); // Кол-во работающих (Ставка)
         $indicators['recruiters'] = $rec_tables['recruiters']; // Для графической аналитики
         $indicators['orders'] = RM::getOrders(); // Заказы стажеров от руководителей 
         $indicators['today'] = date('d');

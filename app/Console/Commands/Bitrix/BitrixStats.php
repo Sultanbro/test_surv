@@ -333,9 +333,7 @@ class BitrixStats extends Command
             
             if(!$group) {
                 continue;
-            } elseif(!$group->bp_link) {
-                continue;
-            }
+            } 
             
 
             // Invite Zoom link

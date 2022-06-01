@@ -81,10 +81,14 @@ class AnalyticsController extends Controller
     {
         $this->redirect_if_has_not_permission();
 
-        $currentUser = User::bitrixUser();
         
-        $groups = ProfileGroup::whereIn('has_analytics', [0,1])->where('active', 1)->get();
+        $groups = ProfileGroup::whereIn('has_analytics', [0,1]);
+
+        if(!auth()->user()->is_admin) $groups->whereIn('id', auth()->user()->groups);
+            
+        $groups = $groups->where('active', 1)->get();
          
+        
         View::share('menu', 'timetrackinganalytics');
         return view('admin.analytics-page', compact('groups'));
     }
