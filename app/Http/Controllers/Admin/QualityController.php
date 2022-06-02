@@ -25,7 +25,7 @@ use DB;
 use Illuminate\Http\Request;
 use View;
 use App\Models\Analytics\Activity;
-
+use Auth;
 
 class QualityController extends Controller
 {
@@ -40,14 +40,10 @@ class QualityController extends Controller
 
     public function index()
     {
-
-        $roles = \Auth::user()->roles ? \Auth::user()->roles : [];
-        
-        if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-        else {
-            return redirect('/');
+        if(!auth()->user()->can['quality_view']) {
+            return redirect()->back();
         }
-        
+
         $acts = Activity::where('type', 'quality')->get()->pluck('group_id')->toArray();
 
 
@@ -88,14 +84,14 @@ class QualityController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if (!in_array($currentUser->ID, $group_editors) && $currentUser->ID != 18 && $currentUser->ID != 5) {
+        if (!in_array($currentUser->id, $group_editors) && $currentUser->id != 18 && $currentUser->id != 5) {
             return [
                 'error' => 'access',
             ];
         }
 
         $user_ids = $this->employees($request->group_id);
-        $raw_items = User::whereIn('id', $user_ids)->orderBy('LAST_NAME', 'asc')->select(['ID','LAST_NAME', 'NAME'])->get();
+        $raw_items = User::whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id','last_name', 'name'])->get();
 
         $items = [];
         
@@ -105,12 +101,12 @@ class QualityController extends Controller
         foreach($raw_items as $raw_item) {
             $item = [];
 
-            $item['name'] = $raw_item->LAST_NAME. ' ' . $raw_item->NAME;
-            $item['id'] = $raw_item->ID;
+            $item['name'] = $raw_item->last_name. ' ' . $raw_item->name;
+            $item['id'] = $raw_item->id;
             
             // FETCHING WEEKS DATA
             $week_totals = QualityRecordWeeklyStat::where([
-                    'user_id' => $raw_item->ID,
+                    'user_id' => $raw_item->id,
                     'month' => $request->month,
                     'year' => $request->year,
                     'group_id' => $group->id
@@ -149,7 +145,7 @@ class QualityController extends Controller
                 $monthly = QualityRecordMonthlyStat::where([
                     'month' => $request->month,
                     'year' => $request->year,
-                    'user_id' => $raw_item->ID,
+                    'user_id' => $raw_item->id,
                     'group_id' => $group->id
                 ])->first();
 
@@ -161,7 +157,7 @@ class QualityController extends Controller
                         'month' => $request->month,
                         'year' => $request->year,
                         'total' => (int)$item['weeks']['total'],
-                        'user_id' => $raw_item->ID,
+                        'user_id' => $raw_item->id,
                         'group_id' => $group->id
                     ]);
                 }
@@ -170,7 +166,7 @@ class QualityController extends Controller
             
             // FETCHING MONTHS DATA
             $month_totals = QualityRecordMonthlyStat::where([
-                'user_id' => $raw_item->ID, 
+                'user_id' => $raw_item->id, 
                 'year' => $request->year,
                 'group_id' => $group->id
             ])->get();
@@ -201,7 +197,7 @@ class QualityController extends Controller
             $item['months']['quantity'] = QualityRecord::whereYear('listened_on', $request->year)
                 ->whereMonth('listened_on', $request->month)
                 ->where('group_id', $group->id)
-                ->where('employee_id', $raw_item->ID)
+                ->where('employee_id', $raw_item->id)
                 ->get()
                 ->count();
             
@@ -259,7 +255,7 @@ class QualityController extends Controller
             
                 
                 $_user = User::withTrashed()->find($record->employee_id);
-                $record->name = $_user->LAST_NAME . ' ' . $_user->NAME;
+                $record->name = $_user->last_name . ' ' . $_user->name;
 
                 
                 $record->dayOfDelay = $record->day_of_delay;
@@ -341,7 +337,7 @@ class QualityController extends Controller
 
     public function saveRecord(Request $request) {
     
-        $user_id = User::bitrixUser()->ID;
+        $user_id = User::bitrixUser()->id;
 
         
 
@@ -501,7 +497,7 @@ class QualityController extends Controller
                 $_user = $record->user;
                 $params = json_decode($record->params);
                 $data['records'][] = [
-                    0 => $_user->LAST_NAME . ' ' . $_user->NAME,
+                    0 => $_user->last_name . ' ' . $_user->name,
                     1 => $record->phone, 
                     2 => strval($record->day_of_delay), 
                     3 => $record->interlocutor, 
@@ -552,7 +548,7 @@ class QualityController extends Controller
             $gr = $group->groupUsers();
 
             foreach($gr as $g) {
-                array_push($users, $g->ID); 
+                array_push($users, $g->id); 
             }
         }
         
@@ -636,7 +632,7 @@ class QualityController extends Controller
 
 
                 $arr = [
-                    0 => $_user->LAST_NAME . ' ' . $_user->NAME,
+                    0 => $_user->last_name . ' ' . $_user->name,
                     1 => $segments[$record->segment_id], 
                     2 => $record->phone, 
                     3 => strval($record->day_of_delay), 
