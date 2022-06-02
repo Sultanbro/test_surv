@@ -990,7 +990,7 @@ class SalaryController extends Controller
             ->leftjoin('timetracking as t', 't.user_id', '=', 'users.id')
             ->whereIn('users.id', array_unique($users_ids))
             ->withTrashed()
-            ->selectRaw("users.ID as ID,
+            ->selectRaw("users.id as id,
                         users.phone as phone,
                         users.program_id as program_id,
                         CONCAT(users.last_name,' ',users.name) as full_name,

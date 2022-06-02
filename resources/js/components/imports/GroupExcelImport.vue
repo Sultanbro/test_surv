@@ -74,7 +74,7 @@
 
             <div class="col-md-5">
                 <select class="form-control" v-model="item.id">
-                    <option :value="user.ID" v-for="user in users">{{ user.name }} {{ user.last_name }} ID {{ user.ID }}</option>
+                    <option :value="user.id" v-for="user in users">{{ user.name }} {{ user.last_name }} ID {{ user.id }}</option>
                 </select>
             </div>
             <div class="col-md-2">

@@ -1162,7 +1162,7 @@ class TimetrackingController extends Controller
         $_notifications = User::withTrashed()
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.notifications', '!=', '[]')
-            ->select(DB::raw("CONCAT_WS(' ',users.ID, users.last_name, users.name) as name"), 'users.ID as id')
+            ->select(DB::raw("CONCAT_WS(' ',users.id, users.last_name, users.name) as name"), 'users.id as id')
             ->get()->toArray();
         
         //$_notification_templates = NotificationTemplate::where('type', NotificationTemplate::USER)->select('id', 'title as name')->get()->toArray();
@@ -2201,7 +2201,7 @@ class TimetrackingController extends Controller
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.notifications', '!=', '[]')
             ->where('users.id', $request->user_id)
-            ->select(DB::raw("CONCAT_WS(' ',users.ID, users.last_name, users.name) as name"), 'users.ID as id', 'ud.notifications as notifications')
+            ->select(DB::raw("CONCAT_WS(' ',users.id, users.last_name, users.name) as name"), 'users.id as id', 'ud.notifications as notifications')
             ->first();
     
         $notifications = [];

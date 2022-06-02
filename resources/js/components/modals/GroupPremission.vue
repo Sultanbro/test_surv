@@ -75,7 +75,7 @@ export default {
       
       let premission = false
       this.group_editors.forEach(editor => {
-        if (editor.ID == parseInt(activeuserid)) premission = true
+        if (editor.id == parseInt(activeuserid)) premission = true
       })
       console.log(premission)
       return premission;
