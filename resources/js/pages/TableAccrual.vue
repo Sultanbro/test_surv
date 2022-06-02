@@ -1,5 +1,5 @@
 <template>
-<div class="mt-5">
+<div class="mt-5 ssssssssss">
     <div class="mb-0">
         <div class="row mb-3">
             <div class="col-3">
@@ -1078,7 +1078,7 @@ input[type="number"]::-webkit-outer-spin-button,
     line-height: 1.4em;
     padding: 10px 0;
 }
-.ui-sidebar__body * {
+.ssssssssss .ui-sidebar__body * {
     color: #333;
 }
 hr {

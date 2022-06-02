@@ -23,7 +23,17 @@ import 'vue-select/dist/vue-select.css';
 
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
-import VueCoreVideoPlayer from 'vue-core-video-player';
+//import VueCoreVideoPlayer from 'vue-core-video-player';
+
+
+import VueVideoPlayer from 'vue-video-player'
+
+
+
+Vue.use(VueVideoPlayer, /* {
+  options: global default options,
+  events: global videojs events
+} */)
 
 
 moment.locale('ru')
@@ -50,7 +60,7 @@ Vue.use(VGauge);
 Vue.use(VueMask);
 Vue.use(Antd)
 Vue.use(Notifications)
-Vue.use(VueCoreVideoPlayer)
+// Vue.use(VueCoreVideoPlayer)
 
 
 

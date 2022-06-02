@@ -17,7 +17,7 @@
 
       <div class="col-lg-8">
             <div class="block  br" v-if="activeVideo">
-                <vue-core-video-player :src="activeVideo.links"  class="mb-3 w65"></vue-core-video-player>
+                <!-- <vue-core-video-player :src="activeVideo.links"  class="mb-3 w65"></vue-core-video-player> -->
                 <div class="description">
 
                   <div class="video-tit mb-2">
