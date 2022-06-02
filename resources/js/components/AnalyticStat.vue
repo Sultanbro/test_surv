@@ -737,7 +737,7 @@ export default {
         },
 
         openContextMenu(item, i_index, f_index) {
-            if(![5,18,157,84].includes(Number(this.activeuserid))) {
+            if(![5,18,157,84,14009].includes(Number(this.activeuserid))) {
                 return "";
             }
             this.focus(i_index, f_index);

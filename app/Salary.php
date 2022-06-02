@@ -61,9 +61,9 @@ class Salary extends Model
         // //
 
         $users = User::withTrashed()
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('ud.is_trainee', 0) 
+            //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->with([
+                'user_description',
                 'salaries' => function ($q) use ($month) {
                     $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
                         ->whereMonth('date', $month->month)
@@ -116,6 +116,11 @@ class Salary extends Model
       
         foreach ($users as $key => $user) {
 
+            if($user->user_description && $user->user_description->is_trainee == 0) {
+                
+            } else {
+                continue;
+            }
            
             // another
             array_push($user_ids, $user->id);

@@ -1,7 +1,7 @@
 <template>
   <div class="questions" :class="{'hide': mode == 'read' && (questions === undefined || questions.length == 0)}">
     <div class="title" v-if="mode == 'read' && type == 'book' || ['kb', 'video'].includes(type)">Проверочные вопросы</div>
-    <div class="question mb-2" v-for="(q, q_index) in questions" :key="q_index">
+    <div class="question mb-2" v-for="(q, q_index) in questions" :key="q_index" :class="{'show': q.editable}">
       <div
         class="title d-flex jcsb"
         @click="editQuestion(q_index)"
@@ -20,7 +20,15 @@
           placeholder="Текст вопроса..."
         />
         <div class="btns aic">
-          <i class="far fa-edit pointer"></i>
+          <i
+            v-if="q.type == 0"
+            class="fas fa-tasks"
+          ></i>
+          <i
+            v-else
+            class="fas fa-question"
+          ></i>
+          <span class="mx-1">{{q.points}}</span>
           <i
             class="far fa-trash-alt pointer"
             @click.stop="deleteQuestion(q_index)"
@@ -95,17 +103,6 @@
             <p>Баллы</p>
             <input type="number" v-model="q.points" min="0" max="999" />
           </div>
-
-          <button class="btn btn-success" @click="saveQuestion(q_index)">
-            Проверить вопрос
-          </button>
-          <button
-            class="btn mr-1"
-            @click="addVariant(q_index)"
-            v-if="q.type == 0"
-          >
-            Добавить вариант
-          </button>
         </template>
       </div>
     </div>
@@ -263,14 +260,31 @@ export default {
     },
 
     saveQuestion(q_index) {
+
+      if(this.questions[q_index].text == '' || this.questions[q_index].text == null) {
+          alert("Вопрос  №" + (q_index + 1) + " не заполнен!");
+        return false;
+      }
+
+
+      if(this.questions[q_index].variants.findIndex((v) => v.text == '') != -1 &&
+        this.questions[q_index].type == 0) {
+        alert("Не оставляйте варианты пустыми! Вопрос №" + (q_index + 1));
+        return false;
+      }
+
       if (
         this.questions[q_index].variants.findIndex((v) => v.right == 1) == -1 &&
         this.questions[q_index].type == 0
       ) {
-        alert("Выберите один правильный вариант!");
-        return;
+        alert("Выберите один правильный вариант! Вопрос №" + (q_index + 1));
+        return false;
       }
+
+      
+
       this.questions[q_index].editable = false;
+      return true;
     },
 
     editQuestion(q_index) {
@@ -309,7 +323,7 @@ export default {
 
     deleteVariant(q, v) {
       let el = this.questions[q].variants[v];
-      if (el.text == el.before && el.before == "") {
+      if (el.text == el.before && el.before == "" && this.questions[q].variants.length > 1) {
         this.questions[q].variants.splice(v, 1);
         if (v > 0) this.$refs["variant" + q + "_" + (v - 1)][0].focus();
       } else {
@@ -320,6 +334,16 @@ export default {
     },
 
     saveTest() {
+      let passed = true;
+      this.questions.every((q, index) => {
+        if(!this.saveQuestion(index)) {
+          passed = false;
+          return false;
+        }
+        return true;
+      });
+
+      if(!passed) return false;
       let loader = this.$loading.show();
 
       let url = this.type == 'kb' ? "/kb/page/save-test" : "/playlists/save-test";

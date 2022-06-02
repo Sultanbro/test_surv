@@ -56,87 +56,80 @@ class Kernel extends ConsoleKernel
         /**
          * КАЖДАЯ МИНУТА
          */
-        $schedule->command("timetracking:check")->everyMinute(); // автоматически завершить рабочий день если забыли нажать на кнопку
-        $schedule->command(FetchAnvizRecords::class)->everyMinute(); // Anviz W1 Pro Учет времени: выгрузка истории отпечатков с базы и запись в Timetracking 
-        $schedule->command(SetAbsent::class)->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
+        $schedule->command("tenants:run " . "timetracking:check" . " --tenants=bp")->everyMinute(); // автоматически завершить рабочий день если забыли нажать на кнопку
+        $schedule->command("tenants:run " . "fetch:anviz" . " --tenants=bp")->everyMinute(); // Anviz W1 Pro Учет времени: выгрузка истории отпечатков с базы и запись в Timetracking 
+        $schedule->command("tenants:run " . "set:absent" . " --tenants=bp")->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
         
 
 
         /**
          * КАЖДЫЕ 5 МИНУТ
          */
-        // $schedule->command("headhunter:fetch 1")->everyFiveMinutes(); // hh отклики запрос откликов
-        // $schedule->command("headhunter:fetch 3")->everyFiveMinutes(); // hh отклики в битрикс 
+        $schedule->command("tenants:run " . "headhunter:fetch 1" . " --tenants=bp")->everyFiveMinutes(); // hh отклики запрос откликов
+        $schedule->command("tenants:run " . "headhunter:fetch 3" . " --tenants=bp")->everyFiveMinutes(); // hh отклики в битрикс 
 
 
-        $schedule->command('salary:group')->everyTenMinutes(55); // Сохранить заработанное группой без вычета шт и ав
+        $schedule->command("tenants:run " . "salary:group" . " --tenants=bp")->everyTenMinutes(55); // Сохранить заработанное группой без вычета шт и ав
  
         /**
          * КАЖДЫЕ 15 МИНУТ
          */
-        // $schedule->command("headhunter:fetch 2")->everyFifteenMinutes(); // hh отклики запрос резюме 500 в день
+        $schedule->command("tenants:run " . "headhunter:fetch 2". " --tenants=bp")->everyFifteenMinutes(); // hh отклики запрос резюме 500 в день
 
 
 
         /**
          * РАЗ В ЧАС
          */
-        $schedule->command("salary:update")->hourly(); // обновление зарплаты: за текущий день
-        $schedule->command("count:hours")->hourly(); // обновление минут
-        $schedule->command("month:hours")->hourly(); // обновление минут
-        $schedule->command('check:late')->hourly(); // Опоздание
-        $schedule->command('bonus:update')->hourly(); // Бонусы сотрудников
-        $schedule->command(GetWorkedHours::class)->hourlyAt(40); // Отработанное время сотрудников Евраз 1 Хоум
-        $schedule->command('whatsapp:estimate_first_day')->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
-        $schedule->command('recruiting:trainee_report')->hourlyAt(56); // Отчет, сколько пристутствовал на обучении в течении семи дней
-        $schedule->command('user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
+        $schedule->command("tenants:run " . "salary:update" . " --tenants=bp")->hourly(); // обновление зарплаты: за текущий день
+        $schedule->command("tenants:run " . "count:hours" . " --tenants=bp")->hourly(); // обновление минут
+        $schedule->command("tenants:run " . "check:late" . " --tenants=bp")->hourly(); // Опоздание
+        $schedule->command("tenants:run " . "bonus:update" . " --tenants=bp")->hourly(); // Бонусы сотрудников
+        $schedule->command("tenants:run " . "callibro:minutes_aggrees ". " --tenants=bp")->hourlyAt(40); // Отработанное время сотрудников Евраз 1 Хоум
+        $schedule->command("tenants:run " . 'whatsapp:estimate_first_day'. " --tenants=bp")->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
+        $schedule->command("tenants:run " . 'recruiting:trainee_report'. " --tenants=bp")->hourlyAt(56); // Отчет, сколько пристутствовал на обучении в течении семи дней
+        $schedule->command("tenants:run " . 'user:save_kpi'. " --tenants=bp")->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
         
         
-        // $schedule->command(BitrixStats::class)->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
-        // $schedule->command(QualityRecordsTotals::class)->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
+        $schedule->command("tenants:run " . "bitrix:stats" . " --tenants=bp")->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
+        $schedule->command("tenants:run " . "quality:totals" . " --tenants=bp")->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
         
-	    $schedule->command('recruiter:stats 1')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса 
-	    $schedule->command('recruiter:stats')->hourlyAt(14); // Данные почасовой таблицы рекрутинга из битрикса  
-	    $schedule->command('recruiter:stats')->hourlyAt(29); // Данные почасовой таблицы рекрутинга из битрикса 
-	    $schedule->command('recruiter:stats')->hourlyAt(44); // Данные почасовой таблицы рекрутинга из битрикса 
+	    $schedule->command("tenants:run " . 'recruiter:stats 1'. " --tenants=bp")->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса 
+	    $schedule->command("tenants:run " . 'recruiter:stats'. " --tenants=bp")->hourlyAt(14); // Данные почасовой таблицы рекрутинга из битрикса  
+	    $schedule->command("tenants:run " . 'recruiter:stats'. " --tenants=bp")->hourlyAt(29); // Данные почасовой таблицы рекрутинга из битрикса 
+	    $schedule->command("tenants:run " . 'recruiter:stats'. " --tenants=bp")->hourlyAt(44); // Данные почасовой таблицы рекрутинга из битрикса 
         
-        $schedule->command(RecruitingRecordsTotals::class)->hourlyAt(59); //  рекрутинг cводная
-        $schedule->command(FunnelStats::class)->hourlyAt(16); // Воронка в Аналитике
+        $schedule->command("tenants:run " . "recruiting:totals" . " --tenants=bp")->hourlyAt(59); //  рекрутинг cводная
+        $schedule->command("tenants:run " . "bitrix:funnel:stats" . " --tenants=bp")->hourlyAt(16); // Воронка в Аналитике
         
         /**
          * РАЗ В ДЕНЬ
          */
-        $schedule->command(MarkTrainees::class)->dailyAt('00:00'); // Отметка стажеров в табели в 6 утра
-        $schedule->command('currency:refresh')->dailyAt('00:00'); // Обновление курса валют currencylayer.com
-        $schedule->command(DeleteUser::class)->dailyAt('00:00'); // Удаление сотрудников с отработкой в 6 утра
+        $schedule->command("tenants:run " . "timetracking:mark_trainees" . " --tenants=bp")->dailyAt('00:00'); // Отметка стажеров в табели в 6 утра
+        $schedule->command("tenants:run " . 'currency:refresh' . " --tenants=bp")->dailyAt('00:00'); // Обновление курса валют currencylayer.com
+        $schedule->command("tenants:run " . "userxxxxxxxxxxxxx:delete:dontusethisitsnotforsuign" . " --tenants=bp")->dailyAt('00:00'); // Удаление сотрудников с отработкой в 6 утра
         //$schedule->command("salary:update week")->dailyAt('00:10'); // обновление зарплаты: последняя неделя (в 6:10 утра)
-        $schedule->command("usernotification:estimate_trainer")->dailyAt('06:00'); // Уведолмение об оценке руководителя и старшего спеца. За 2 дня до конца месяца
-        //$schedule->command("headhunter:fetch 0")->dailyAt('02:00'); // hh вакансиии обновить
-      //  $schedule->command(InviteToBitrixAndAdmin::class)->dailyAt('02:00'); // Отправить сообщение со ссылкой по ватсапу на учет времени и битрикс, приглашенным стажерам на 4ый день стажировки
-        $schedule->command(Adaptation::class)->dailyAt('02:40'); // Уведомление о заполнении адаптации
-        $schedule->command(SalaryIndexation::class)->dailyAt('17:02'); // Индексация зарплаты
-        $schedule->command("callibro:grades")->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
-        $schedule->command(SalaryTrainees::class)->dailyAt('17:30'); // Расчет оплаты стажерам
-        $schedule->command('callibro:conversion')->dailyAt('17:35'); // Конверсия согласий сотрудников Евраз 1 Хоум
+        $schedule->command("tenants:run " . "usernotification:estimate_trainer" . " --tenants=bp")->dailyAt('06:00'); // Уведолмение об оценке руководителя и старшего спеца. За 2 дня до конца месяца
+        $schedule->command("tenants:run " . "headhunter:fetch 0" . " --tenants=bp")->dailyAt('02:00'); // hh вакансиии обновить
+        $schedule->command("tenants:run " . "intellect:send" . " --tenants=bp")->dailyAt('02:00'); // Отправить сообщение со ссылкой по ватсапу на учет времени и битрикс, приглашенным стажерам на 4ый день стажировки
+        $schedule->command("tenants:run " . "usernotification:adaptation". " --tenants=bp")->dailyAt('02:40'); // Уведомление о заполнении адаптации
+        $schedule->command("tenants:run " . "salary:indexation" . " --tenants=bp")->dailyAt('17:02'); // Индексация зарплаты
+        $schedule->command("tenants:run " . "callibro:grades" . " --tenants=bp")->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
+        $schedule->command("tenants:run " . "timetracking:salary_trainees" . " --tenants=bp")->dailyAt('17:30'); // Расчет оплаты стажерам
+        $schedule->command("tenants:run " . 'callibro:conversion' . " --tenants=bp")->dailyAt('17:35'); // Конверсия согласий сотрудников Евраз 1 Хоум
         
-        $schedule->command(CheckTimetrackers::class)->dailyAt('20:00'); // Автоматически завершать день в 2 часа ночи, тем кто забыл завершить
+        $schedule->command("tenants:run " . "check:timetrackers" . " --tenants=bp")->dailyAt('20:00'); // Автоматически завершать день в 2 часа ночи, тем кто забыл завершить
     
         /**
          * РАЗ В НЕДЕЛЮ
          */
         
-        $schedule->command(FillReport::class)->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
-        $schedule->command(NotifyManagersAboutForeigners::class)->weekly()->mondays()->at('02:00'); // Уведомление руководителей групп об оплате иностранным стажерам. Запускается каждый понедельник
-        $schedule->command("fine:check")->weeklyOn(1, '00:00'); // Каждый понедельник в 6 утра проверка на отсутствие в воскресенье 
-        $schedule->command("fine:check")->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
+        $schedule->command("tenants:run " . "usernotification:report" . " --tenants=bp")->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
+        $schedule->command("tenants:run " . "usernotification:foreigner" . " --tenants=bp")->weekly()->mondays()->at('02:00'); // Уведомление руководителей групп об оплате иностранным стажерам. Запускается каждый понедельник
+        $schedule->command("tenants:run " . "fine:check" . " --tenants=bp")->weeklyOn(1, '00:00'); // Каждый понедельник в 6 утра проверка на отсутствие в воскресенье 
+        $schedule->command("tenants:run " . "fine:check" . " --tenants=bp")->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
 
 
-
-        /**
-         * РАЗ В МЕСЯЦ
-         */
-
-        $schedule->command(ExamZarpMonthly::class)->monthlyOn(1, '7:00'); // Каждый месяц первого числа убираем бонус тем кто сдал экзамен по книгам
     }
 
     /**
@@ -147,7 +140,10 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');
-
+        
+        $tenant = \App\Models\Tenant::find('bp');
+        tenancy()->initialize($tenant);
+        
         require base_path('routes/console.php');
     }
 }

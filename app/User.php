@@ -659,10 +659,10 @@ class User extends Authenticatable
         return $this->hasOne('App\Photo');
     }
 
-    public function groups()
-    {
-        return $this->hasMany('App\Group');
-    }
+    // public function groups()
+    // {
+    //     return $this->hasMany('App\Group');
+    // }
 
     public function fines()
     {

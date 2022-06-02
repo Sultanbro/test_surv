@@ -6,6 +6,11 @@
   border-radius: 5px;
   box-shadow: 0 0 5px 1px #e9ebef;
   
+  .btn {
+    padding: 5px 15px;
+    margin: 0;
+  }
+
   &.hide {
     display: none;
   }
@@ -23,8 +28,10 @@
   textarea {
     width: 100%;
     border: none;
-    padding: 11px 0;
-    max-height: 112px;
+    padding: 11px 11px;
+    max-height: 300px;
+    font-size: 14px;
+    border-radius: 5px;
   }
 
   input[type="text"] {
@@ -35,13 +42,17 @@
   }
 
   .question {
-    background: #f0ece6;
-    padding: 5px 15px;
+    background: #ededed;
+    padding: 3px 15px;
     border-radius: 5px;
-    box-shadow: 0 0 2px 0 #b7a589;
-    
+    box-shadow: 0 0 2px 0 #ededed;
+
+    &.show {
+      padding: 15px;
+    }
+
     &:hover {
-      background: #ebddc7;
+      background: #dcdee0;
     }
     
     .type {
@@ -64,7 +75,7 @@
 
     .btns {
       display: flex;
-      width: 60px;
+      width: 100px;
       justify-content: space-around;
     }
 

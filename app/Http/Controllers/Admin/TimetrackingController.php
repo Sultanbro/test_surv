@@ -1107,7 +1107,7 @@ class TimetrackingController extends Controller
             'success' => true,
             'history' => $history ?? null
         ];
-        return response()->json($result, 200);
+        return response()->json($result);
     }
 
     // Проверка не начинал ли сотрудник работу ранее рабочего времени

@@ -17,8 +17,11 @@ class CreateCheckListsTable extends Migration
             $table->increments('id');
             $table->string('user_name');
             $table->string('user_last_name');
+            $table->string('title');
             $table->integer('user_id');
             $table->integer('auth_id');
+            $table->integer('item_id');
+            $table->integer('item_type');
             $table->string('auth_name');
             $table->string('auth_last_name');
             $table->string('active_check_text');

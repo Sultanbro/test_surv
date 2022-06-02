@@ -60,7 +60,7 @@ class DailySalaryUpdate extends Command
      */
     public function handle()
     {
-        
+
         $argDate = $this->argument('date') ?? date('Y-m-d');
         
         $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')

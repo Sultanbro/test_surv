@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use App\Components\TelegramBot;
+use App\Components\TelegramBot as TB;
 use Illuminate\Http\Request;
 use Auth;
 use App\User;
@@ -653,8 +653,8 @@ class IntellectController extends Controller {
 
     public function get_link(Request $request) {
 
+        TB::send('Test');
         
-
         if($request->has('phone')) {
             $lead = Lead::where('phone', $request->phone)->latest()->first();
             if($lead) {

@@ -1657,8 +1657,6 @@ class UserController extends Controller
             $user->roles = $this->roles;
         }
 
-        
-
         /*==============================================================*/
         /********** Проверка новой почты существует ли  */
         /*==============================================================*/  
@@ -1720,8 +1718,7 @@ class UserController extends Controller
         $user->weekdays = $request['weekdays'];
         
         if($request->new_pwd != '') {
-            $salt = User::randString(8);
-            $user->password = $salt . md5($salt . $request->new_pwd);
+            $user->password = \Hash::make($request->new_pwd);
         } 
 
         $user->save();

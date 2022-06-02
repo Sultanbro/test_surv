@@ -1992,6 +1992,10 @@ ul.main-menu {
   border-radius: 5px;
   box-shadow: 0 0 5px 1px #e9ebef;
 }
+.questions .btn {
+  padding: 5px 15px;
+  margin: 0;
+}
 .questions.hide {
   display: none;
 }
@@ -2007,8 +2011,10 @@ ul.main-menu {
 .questions textarea {
   width: 100%;
   border: none;
-  padding: 11px 0;
-  max-height: 112px;
+  padding: 11px 11px;
+  max-height: 300px;
+  font-size: 14px;
+  border-radius: 5px;
 }
 .questions input[type=text] {
   border: none;
@@ -2017,13 +2023,16 @@ ul.main-menu {
   width: 100%;
 }
 .questions .question {
-  background: #f0ece6;
-  padding: 5px 15px;
+  background: #ededed;
+  padding: 3px 15px;
   border-radius: 5px;
-  box-shadow: 0 0 2px 0 #b7a589;
+  box-shadow: 0 0 2px 0 #ededed;
+}
+.questions .question.show {
+  padding: 15px;
 }
 .questions .question:hover {
-  background: #ebddc7;
+  background: #dcdee0;
 }
 .questions .question .type {
   border: none;
@@ -2039,7 +2048,7 @@ ul.main-menu {
 }
 .questions .question .title .btns {
   display: flex;
-  width: 60px;
+  width: 100px;
   justify-content: space-around;
 }
 .questions .question .title input {
