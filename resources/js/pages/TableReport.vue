@@ -1018,9 +1018,9 @@ export default {
                     name: item.full_name,
                     total: Number(total).toFixed(1),
                     enable_comment: item.enable_comment,
-                    id: item.ID,
+                    id: item.id,
                     fines: item.selectedFines,
-                    user_id: item.ID,
+                    user_id: item.id,
                     user_type: item.user_type,
                     is_trainee: item.is_trainee,
                     requested: item.requested,
@@ -1090,6 +1090,8 @@ export default {
                 this.$message.error('Что-то пошло не так. Выберите поле и попробуйте снова');
                 return ;
             }
+
+            console.log(this.currentEditingCell.item)
             if (this.comment.length > 0) {
                 let loader = this.$loading.show();
                 axios.post('/timetracking/reports/update/day', {

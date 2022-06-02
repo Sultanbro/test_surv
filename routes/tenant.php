@@ -422,6 +422,14 @@ Route::middleware([
     Route::any('/books/password/', [BpartnersController::class, 'password']);
 
 
+    /* Intellect Recruiting */
+    Route::get('/bpr/{hash}', [IntellectController::class, 'contract']);
+    Route::post('/bpr/{hash}', [IntellectController::class, 'contract']);
+    Route::get('/bpcontract', [IntellectController::class, 'contract']);
+    Route::any('/bp/job/agreement', [IntellectController::class, 'contract']);
+    Route::any('/bp/job/skype', [IntellectController::class, 'skype']);
+    Route::any('/bp/choose_time', [IntellectController::class, 'choose_time']);
+
     // Controllers with one method
 
     Route::post('/file/upload', [UploadController::class, 'resumableUpload']);
