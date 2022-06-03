@@ -46,7 +46,7 @@
                     <button class="btn btn-sm rounded btn-primary ml-2" v-if="currentGroup != 23 && user_types == 2" @click="copy()" :style="{
                         'padding': '2px 8px'
                     }">
-                        <i class="fa fa-clone pointer"></i>
+                        <i class="fa fa-clone ddpointer"></i>
                         Начать отметку 
                     </button>
                 </div>
@@ -1380,7 +1380,7 @@ hr {
     opacity: 0;
     display: block;
 }
-.pointer {
+.ddpointer {
     margin-top: 2px;
     cursor: pointer;
 }

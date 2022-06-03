@@ -21,10 +21,10 @@
                     <input type="text" :ref="'mylink' + segment" class="hider">
                     <span>{{data.field.label}}</span>
                     <a :href="'https://admin.u-marketing.org/timetracking/analytics/funnels?type=' + segment" target="_blank">
-                        <i class="fa fa-external-link pointer ml-2 mr-2" aria-hidden="true"></i>
+                        <i class="fa fa-external-link ffpointer ml-2 mr-2" aria-hidden="true"></i>
                     </a>
 
-                    <i class="fa fa-clone pointer" @click="copy()"></i>
+                    <i class="fa fa-clone ffpointer" @click="copy()"></i>
                 </template>
 
                 <template slot="cell(name)" slot-scope="data">
@@ -387,7 +387,7 @@ export default {
     opacity: 0;
     display: block;
 }
-.pointer {
+.ff.pointer {
     margin-top: 2px;
     cursor: pointer;
 }
