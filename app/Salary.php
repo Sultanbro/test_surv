@@ -408,11 +408,11 @@ class Salary extends Model
     {
         $date = Carbon::parse($date)->day(1);
 
-        $users = \DB::table('users');
 
- 
+        $users = User::where('id', '!=', 0);
+
         if($user_types == 0) {// Действующие
-            $users ->whereNull('deleted_at');
+            $users->whereNull('deleted_at');
         } 
 
         if($user_types == 1) {// Уволенные
