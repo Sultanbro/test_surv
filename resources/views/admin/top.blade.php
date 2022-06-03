@@ -17,7 +17,7 @@
                 </div>
             </nav>    
         </div>
-        <div class="px-3 top-page mt-2">
+        <div class="top-page col-md-12">
             <page-top :data="{{json_encode($data)}}" activeuserid="{{json_encode(auth()->user()->id)}}" />
         </div>
        
