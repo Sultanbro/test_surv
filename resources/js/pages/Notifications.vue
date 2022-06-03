@@ -760,7 +760,7 @@ select {
     height: 150px;
 }
 .vs__dropdown-menu {
-    position: relative;
+    position: absolute;
     top: 100000;
 }
 </style>
