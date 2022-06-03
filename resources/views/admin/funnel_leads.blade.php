@@ -22,7 +22,7 @@
 
 
 
-<div class="animated fadeIn">
+<div class="">
     <div class="row">
         <div class="col-xl-12">
 

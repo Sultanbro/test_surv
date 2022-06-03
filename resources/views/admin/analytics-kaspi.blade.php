@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="animated fadeIn">
+<div class="">
     <div class="row">
         <nav>
             <div class="nav nav-tabs" id="nav-tab">

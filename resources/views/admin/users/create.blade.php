@@ -2,7 +2,7 @@
 @section('title', 'Сотрудник')
 @section('content')
 
-<div class="animated fadeIn user-page">
+<div class="user-page">
     <div class="mt-3">
         <div class="col-md-12 d-flex justify-content-between align-items-start">
             <a href="/timetracking/settings?tab=1" class="btn btn-rounded"

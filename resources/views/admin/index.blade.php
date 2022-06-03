@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="animated fadeIn">
+    <div class="">
     </div><!-- .animated -->
 @endsection

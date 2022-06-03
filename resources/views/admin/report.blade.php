@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="animated fadeIn">
+    <div class="">
         <div class="row">
             <form action="" method="get">
                 <div class="col-lg-4">

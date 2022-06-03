@@ -3,7 +3,7 @@
 @section('content')
 
 
-<div class="animated fadeIn container" style="margin-top:6px">
+<div class="container" style="margin-top:6px">
 
     <div class="">
         <div class="col-xl-12">

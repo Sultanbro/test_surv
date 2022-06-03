@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="animated fadeIn">
+<div class="">
     <div class="row">
         <div class="col-lg-12">
             <table id="report-table-new" class="table table-striped table-bordered" data-url="/bonus" style="width:100%">

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('title', 'Настройки')
 @section('content')
-    <div class="animated fadeIn">
+    <div class="">
         <div class="">
  
             <div class="c">
