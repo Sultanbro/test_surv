@@ -20,7 +20,13 @@ use App\Models\Books\Book;
 class TestController extends Controller {
  
 	public function test() {
-		$a = \Hash::make('dsa3453df');
+		$a = User::with([
+			'user_description' => function($q){
+				$q->where('is_trainee', 0);
+			}
+		])
+		->whereIn('id', [5,4444,18])
+		->get();
 		
 		dd($a);
 	}  

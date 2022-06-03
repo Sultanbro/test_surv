@@ -115,7 +115,7 @@ class UserController extends Controller
     {
 
        
-        $user = Auth::user();
+        $user = User::find(auth()->id());
 
 
         $d1 = date('Y-m-d');
@@ -133,14 +133,6 @@ class UserController extends Controller
 
 
 
-
-
-
-
-
-        if($user->id == 5 && isset($_GET['user_id'])) {
-            $user = User::find($_GET['user_id']);
-        }
 
         $new_email = trim(strtolower($request->email));
 
@@ -222,11 +214,12 @@ class UserController extends Controller
             
             if(!empty($request->password)) { // Введен новый пароль
                 
-                $salt = User::randString(8);
-                $password = $salt.md5($salt.$request->password);
-                $user->password = $password;
+
+                $user->password = \Hash::make($request->password);
                 $user->save();
 
+                unset(auth()->user()['can']);
+                unset(auth()->user()['groups']);
                 Auth::logout();
 
                 return redirect()->back();
@@ -1339,7 +1332,7 @@ class UserController extends Controller
                 'full_time' => $request['full_time'],
                 'work_start' => $request['work_start_time'],
                 'work_end' => $request['work_start_end'],
-                'currency' => $request['currency'],
+                'currency' => $request['currency'] ?? 'kzt',
                 'weekdays' => $request['weekdays'],
             ]);    
         } else { // Не было никакого полльзователя с таким email
@@ -1360,7 +1353,7 @@ class UserController extends Controller
                 'full_time' => $request['full_time'],
                 'work_start' => $request['work_start_time'],
                 'work_end' => $request['work_start_end'],
-                'currency' => $request['currency'],
+                'currency' => $request['currency'] ?? 'kzt',
                 'weekdays' => $request['weekdays'],
                 'role_id' => 1,
                 'is_admin' => 0 
@@ -1706,7 +1699,7 @@ class UserController extends Controller
         $user->birthday = $request['birthday'];
         $user->full_time = $request['full_time'];
         $user->description = $request['description'];
-        $user->currency = $request['currency'];
+        $user->currency = $request['currency'] ?? 'kzt';
         $user->position_id = $request['position'];
         $user->user_type = $request['user_type'];
         $user->timezone = 6;

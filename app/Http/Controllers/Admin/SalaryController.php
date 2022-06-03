@@ -74,13 +74,14 @@ class SalaryController extends Controller
             return redirect()->back();
         }
 
-        $groups = ProfileGroup::whereIn('has_analytics', [0,1]);
+        $groups = ProfileGroup::where('active', 1);
 
         if(!auth()->user()->is_admin) $groups->whereIn('id', auth()->user()->groups);
             
-        $groups = $groups->where('active', 1)->get();
+        
+        $groups = $groups->get();
 
-
+        //if(auth()->id() == 4444) dd($groups);
         
 
         $date = Carbon::now()->day(1)->format("Y-m-d");
@@ -157,7 +158,7 @@ class SalaryController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
+        if (!in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
             ];

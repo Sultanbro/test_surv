@@ -63,7 +63,7 @@
         </div>
 
         <div class="dialerlist bg mb-2">
-          <div class="fl">Подтягивать время <i class="fa fa-cog ml-2" @click="editTimeAddress()"></i></div>
+          <div class="fl">Подтягивать время <i class="fa fa-cogs ml-2" @click="editTimeAddress()"></i></div>
           <div class="fl">
             <input
               type="text"
