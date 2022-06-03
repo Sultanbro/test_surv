@@ -1382,7 +1382,8 @@ class Recruiting
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereIn('users.id', $prev_employees)
-            ->get();
+            ->get()
+            ->toArray();
 
         $working_prev =  0;
         foreach($users_a as $u) {
