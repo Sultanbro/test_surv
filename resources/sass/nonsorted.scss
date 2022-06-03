@@ -584,10 +584,6 @@ body.admin {
 }
 
 ///////
-.right-panel .header {
-    position: relative;
-    top: 0;
-}
 body {
     display: block !important;
 }
@@ -599,6 +595,8 @@ body {
     height: 55px;
     min-height: 55px;
     padding: 5px 10px;
+    position: relative;
+    background: white;
 }
 .kolokolchik div.inf {
     padding: 6px 0;
@@ -636,9 +634,6 @@ body {
     flex-grow: 1;
 }
 
-.right-panel .header {
-    background: white;
-}
 
 
 //

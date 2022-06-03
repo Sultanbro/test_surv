@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/admin/css/bootstrap.min.css">
     <link rel="stylesheet" href="/admin/css/style.css">
     <link rel="stylesheet" href="/admin/css/custom.css">
-    <link rel="stylesheet" href="/css/admin/app.css?6">
+    <!-- <link rel="stylesheet" href="/css/admin/app.css?6"> -->
     <link rel="stylesheet" href="/admin/css/all.min.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
 

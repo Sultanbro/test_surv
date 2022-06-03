@@ -467,9 +467,6 @@ export default {
   -webkit-box-shadow: inset 0 1px 0 rgba(27, 42, 48, 0.1), inset 0 -1px 0 rgba(27, 42, 48, 0.2), inset -1px 0 0 rgba(27, 42, 48, 0.1), inset 1px 0 0 rgba(27, 42, 48, 0.1);
           box-shadow: inset 0 1px 0 rgba(27, 42, 48, 0.1), inset 0 -1px 0 rgba(27, 42, 48, 0.2), inset -1px 0 0 rgba(27, 42, 48, 0.1), inset 1px 0 0 rgba(27, 42, 48, 0.1);
 }
-.right-panel .header {
-  border-bottom: 1px solid #dfdfdf;
-}
 .linksa {
     color: #1890ff !important;
 }

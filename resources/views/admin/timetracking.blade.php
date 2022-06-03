@@ -1056,44 +1056,7 @@ $('#owl').owlCarousel({
         margin: auto;
     }
 
-    /* .box span {
-        width: 170px;
-        font-size: 12px;
-        overflow: hidden;
-        text-align: center;
-    }
-
-    .box label {
-        vertical-align: top;
-    }
-
-    .box {
-        display: flex;
-        align-items: end;
-
-    }
-
-    .box label {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .box svg {
-        display: block;
-        height: 50px;
-        fill: #1076b0;
-        cursor: pointer;
-        width: 310px;
-        height: 103px;
-        background-size: contain;
-        cursor: pointer;
-        background: rgba(39, 44, 51, 0.1);
-        padding: 30px;
-        fill: #96da34;
-        margin: 0 5px;
-    } */
-
+   
     .active a {
         color: green;
     }
@@ -1262,14 +1225,7 @@ h2.small-title {
     .boxes {
         display: flex;
     }
- /*    .box {
-        flex: 1;
-        transition: 1s ease all;
-       max-width:100%;
-    } 
-    .box:hover {
-        flex: 5;
-    } */
+
 
     .box {
         transition: 1s ease all;
@@ -1278,7 +1234,7 @@ h2.small-title {
         max-height: 420px;
         overflow-x: hidden;
         padding: 15px;
-        z-index: 22;
+        z-index: 10;
         border: 1px solid #eff2f3;
     }
 
