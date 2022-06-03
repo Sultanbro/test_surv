@@ -418,7 +418,7 @@ export default {
     &::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
-    }
+    } 
 }
 
 $fine: red;
