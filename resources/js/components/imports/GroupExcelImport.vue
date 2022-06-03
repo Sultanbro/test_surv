@@ -209,9 +209,7 @@ font-size: 1.25rem;
         }
     }
 }
-.ui-sidebar__header {
-    padding: 20px 27px  !important;
-}
+
 .b-tooltip {
     min-width: 300px;
     text-align: left  !important;

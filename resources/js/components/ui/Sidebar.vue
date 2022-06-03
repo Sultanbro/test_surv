@@ -39,6 +39,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.ui-sidebar__header {
+    padding: 13px 27px  !important;
+}
+.ui-sidebar__content {
+    .custom-checkbox {
+        margin-bottom: .7rem;
+    }
+}
 .ui-sidebar {
   display: none;
   background: rgba(0, 0, 0, 0.45);
@@ -65,7 +73,7 @@ export default {
     display: block;
 
     .ui-sidebar__body {
-      right: 0;
+      right: 44px;
     }
 
   }

@@ -1012,11 +1012,7 @@ $training: orange;
 .fz-09 {
     font-size: 0.9rem;
 }
-.ui-sidebar__content {
-    .custom-checkbox {
-        margin-bottom: 0.7rem;
-    }
-}
+
 .fine,.avans,.bonus {
     color:#fff;
 }

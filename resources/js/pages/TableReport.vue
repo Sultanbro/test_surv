@@ -1245,11 +1245,6 @@ export default {
     }
 }
 
-.ui-sidebar__content {
-    .custom-checkbox {
-        margin-bottom: .7rem;
-    }
-}
 
 .b-table-sticky-header {
     max-height: 450px;

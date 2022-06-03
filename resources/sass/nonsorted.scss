@@ -585,7 +585,7 @@ body.admin {
 
 ///////
 .right-panel .header {
-    position: sticky;
+    position: relative;
     top: 0;
 }
 body {
@@ -638,7 +638,6 @@ body {
 
 .right-panel .header {
     background: white;
-    z-index: 11;
 }
 
 

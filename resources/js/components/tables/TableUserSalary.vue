@@ -344,11 +344,7 @@ export default {
 </script>
 
 <style lang="scss">
-.ui-sidebar__content {
-    .custom-checkbox {
-        margin-bottom: .7rem;
-    }
-}
+
 
 .b-table-sticky-header {
     max-height: 450px;
@@ -433,11 +429,7 @@ $training: orange;
 .fz-09 {
     font-size: 0.9rem;
 }
-.ui-sidebar__content {
-    .custom-checkbox {
-        margin-bottom: 0.7rem;
-    }
-}
+
 .fine,.avans,.bonus {
     color:#fff;
 }

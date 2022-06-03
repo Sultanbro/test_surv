@@ -34,7 +34,7 @@
 
   <div style="clear: both;"></div>
     
-    <div class="table-responsive"> 
+    <div class="table-responsive ul"> 
     <b-table striped hover show-empty emptyText="Ничего нет" ref="table" small 
               stacked="md" 
               :items="itemProvider"
@@ -678,7 +678,7 @@ export default {
 </script>
 
 <style lang="scss">
-table {
+.ul table {
   border-radius: 3px;
       border-left: 1px solid #dee2e6;
       border-right: 1px solid #dee2e6;
