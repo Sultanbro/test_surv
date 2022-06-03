@@ -328,7 +328,6 @@ position: relative;
     padding: 4px 26px 4px 10px;
     border-radius: 5px;
     margin-right: 10px;
-    color: #fff;
     min-width: 200px;
     line-height: 1.5;
     background: #41b883;
@@ -337,7 +336,10 @@ position: relative;
     overflow: hidden;
     max-width: 100%;
     text-overflow: ellipsis;
+    background: #d5dde2 !important;
+    color: #454545;
 }
+
  .data-information input.multiselect__input {
     border: none;
 }
