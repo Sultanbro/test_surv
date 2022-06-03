@@ -511,14 +511,12 @@ class Salary extends Model
             'users.id', 
             'users.email', 
             'deleted_at',
-                DB::raw("CONCAT(last_name,' ',name) as full_name"),
-                'user_type',
+            DB::raw("CONCAT(last_name,' ',name) as full_name"),
+            'user_type',
             'users.created_at',
-                'full_time',
-                'users.working_day_id',
-                'users.working_time_id',
-                'headphones_amount',
-                'headphones_date'
+            'full_time',
+            'users.working_day_id',
+            'users.working_time_id',
         ]);
         
      
@@ -639,13 +637,16 @@ class Salary extends Model
 
             // headphone price minus
             $headphones_amount = 0;
-            $headphones_date = Carbon::parse($user->headphones_date);
-            if($user->headphones_amount > 0 &&
-                $headphones_date->year == $date->year &&
-                $headphones_date->month == $date->month) {
-                $headphones_amount = $user->headphones_amount;
-            }
 
+            if($user->user_description) {
+                $headphones_date = Carbon::parse($user->user_description->headphones_date);
+                if($user->user_description->headphones_amount > 0 &&
+                    $headphones_date->year == $date->year &&
+                    $headphones_date->month == $date->month) {
+                    $headphones_amount = $user->user_description->headphones_amount;
+                }
+            }
+          
              
             $avanses = [];
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
