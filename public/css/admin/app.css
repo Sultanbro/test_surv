@@ -3190,7 +3190,7 @@ ul.main-menu {
   padding: 0;
   height: 100%;
   margin-bottom: 0;
-  height: calc(100% - 135px);
+  height: calc(100% - 150px);
 }
 
 .main-menu::-webkit-scrollbar-track {
@@ -3208,7 +3208,7 @@ ul.main-menu {
   list-style-type: none;
   padding: 0;
   height: 60px;
-  background: #272c33;
+  background: #2a2f36;
 }
 
 .menu-item {
@@ -3933,19 +3933,23 @@ nav {
 /* */
 ::-webkit-scrollbar {
   width: 7px;
+  height: 7px;
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar-track {
   background: #f9f9f9;
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 5px;
+  border-radius: 0px;
   background: #888;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #007bff;
+  cursor: pointer;
 }
 
 /**/
@@ -4531,12 +4535,15 @@ body.admin {
   background: rgb(255, 255, 255);
 }
 
-
 body {
   display: block !important;
 }
 
-
+.right-panel .header {
+  padding: 14px 31px 7px;
+  position: relative;
+  background: white;
+}
 
 .kolokolchik div.inf {
   padding: 6px 0;
@@ -4578,7 +4585,6 @@ body {
   flex-grow: 1;
 }
 
-
 .page {
   padding-left: 70px;
   padding-right: 50px;
@@ -4591,7 +4597,7 @@ body {
   width: 0;
   height: 0;
   cursor: pointer;
-} 
+}
 
 /* Track */
 .noscrollbar::-webkit-scrollbar-track {
