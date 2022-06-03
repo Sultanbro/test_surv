@@ -49,6 +49,7 @@
         "select2": "~4.0",
         "v-mask": "^2.0.2",
         "vgauge": "^1.2.12",
+        "vue-axios": "^3.4.1",
         "vue-core-video-player": "^0.2.0",
         "vue-json-editor": "^1.4.3",
         "vue-loading-overlay": "^3.2.0",

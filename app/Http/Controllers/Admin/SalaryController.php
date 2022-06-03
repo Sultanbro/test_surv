@@ -22,6 +22,7 @@ use App\SalaryApproval;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel;
@@ -36,9 +37,12 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedSalary;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Exports\UsersExport;
 
 class SalaryController extends Controller
 {
+    
     public function __construct()
     {
         View::share('title', 'Начисления');
@@ -810,6 +814,8 @@ class SalaryController extends Controller
         if($date->format('Y-m-d') == '2022-04-01' && $request->group_id == 53) {
             array_push($working_users, 11250);
         }
+        //dd($working_users);
+        $myusers = $working_users;
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
 
@@ -825,10 +831,24 @@ class SalaryController extends Controller
             'counter' => count($working_users['users']) - 1
         ];
 
+         //dd($data);
+
         // if(Auth::user()->id == 5) dump(now());
         if(ob_get_length() > 0) ob_clean(); //  ob_end_clean();
         $edate = $date->format('m.Y');
-        Excel::create('Начисления ' . $edate .' "'.$group->name . '"', function ($excel) use ($data, $group) {
+
+
+       
+
+        /*return (new Collection([[1, 2, 3], [1, 2, 3]]))->downloadExcel(
+            $filePath,
+            $writerType = null,
+            $headings = false
+        );*/
+        
+        /*
+        return $this->excel->download( function ($excel) use ($data, $group) {
+
             $excel->setTitle('Отчет');
             $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
             $excel->setDescription('экспорт данных в Excel файл');
@@ -974,12 +994,17 @@ class SalaryController extends Controller
             
             $excel->setActiveSheetIndex(0);
 
-        })->export('xls');
+        },'Начисления ' . $edate .' "'.$group->name . '".xls');
 
-        
-        
-        
-        return $data['users'];
+        */
+
+     
+
+        return Excel::download(new UsersExport($myusers),'users.xlsx');
+        //dd(array_keys($data));
+        //return $data['users'];
+        //return Excel::download(new UsersExport, 'users.xlsx');
+
     }
 
     private function getSheet($users_ids, $date, $group_id) {

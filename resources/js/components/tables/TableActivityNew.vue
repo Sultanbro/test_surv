@@ -2,7 +2,7 @@
 <div class="mb-3">
     <div class="d-flex align-items-center mb-2" v-if="show_headers">
         
-        <h4 class="mr-2">{{ activity.name }} <i class="fa fa-cog show" @click="editActivity()"></i> </h4>
+        <h4 class="mr-2">{{ activity.name }} <i class="fa fa-cogs show" @click="editActivity()"></i> </h4>
 
         <div class="my-2 d-flex ml-auto mr-3">
             <div class="d-flex">

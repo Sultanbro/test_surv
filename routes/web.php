@@ -4,6 +4,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\Admin\GroupAnalyticsController;
 
 
 /*
@@ -40,3 +41,4 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 
 
+Route::any('/timetracking/analytics/invite-users', [GroupAnalyticsController::class, 'inviteUsers']); // Приглашение стажеров

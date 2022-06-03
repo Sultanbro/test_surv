@@ -364,7 +364,7 @@ Route::middleware([
     Route::any('/timetracking/analytics', [GroupAnalyticsController::class, 'index']);
     Route::any('/timetracking/analytics/skypes/{id}', [GroupAnalyticsController::class, 'redirectToBitrixDeal']);
     Route::any('/timetracking/getanalytics', [GroupAnalyticsController::class, 'getanalytics']);
-    Route::post('/timetracking/analytics/invite-users', [GroupAnalyticsController::class, 'inviteUsers']); // Приглашение стажеров
+    Route::any('/timetracking/analytics/invite-users', [GroupAnalyticsController::class, 'inviteUsers']); // Приглашение стажеров
     Route::post('/timetracking/analytics/recruting/create-lead', [GroupAnalyticsController::class, 'createRecrutingLead']); // Создание лидов вручную
     Route::post('/timetracking/analytics/recruting/change-profile', [GroupAnalyticsController::class, 'changeRecruiterProfile']); // Сменить профиль рекрутера
     Route::any('/timetracking/get_kpi_totals', [GroupAnalyticsController::class, 'get_kpi_totals']);

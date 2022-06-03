@@ -70,7 +70,7 @@ class GroupAnalyticsController extends Controller
     public function __construct()
     {
         View::share('title', 'Аналитика групп');
-        $this->middleware('auth');
+        //$this->middleware('auth');
     }
 
     /**
@@ -636,7 +636,7 @@ class GroupAnalyticsController extends Controller
         $whatsapp = new IC();
         
         /////////// check group and zoom link existence
-
+        
         $group = ProfileGroup::find($request['group_id']);
 
         if(!$group) {
@@ -645,7 +645,7 @@ class GroupAnalyticsController extends Controller
             ];
         }
 
-
+        
 
         // save users migrations
 
@@ -780,91 +780,41 @@ class GroupAnalyticsController extends Controller
             } else {
 
                 
-                if($user->UF_ADMIN == 1) {
-
-                    $old_invite_at = $lead->invite_at;
-                    $lead->invite_at = $invite_at;
-                    $lead->day_second = $day_second;
-                    $lead->user_id = $user->id;
-                    $lead->invite_group_id = $request->group_id;    
-                    $lead->invited = 2; // Сотрудник уже существует
-                    
-                    if($user_type == 'remote') {
-                        $msg_for_group_leader = $this->msgForGroupLeader($msg_for_group_leader, $user);
-                    }
-              
-                    
-                    UserDescription::make([
-                        'user_id' => $user->id,
-                        'lead_id' => $lead->lead_id,
-                        'deal_id' => $lead->deal_id,
-                        'is_trainee' => 1,
-                    ]);
-
-                    // create trainee
-                    $trainee = Trainee::where('user_id', $user->id)->first();
-                    if(!$trainee) {
-                        $trainee = Trainee::create([
-                            'user_id' => $user->id,
-                            'lead_id' => $lead->lead_id,
-                            'deal_id' => $lead->deal_id,
-                        ]);  
-                    } else {
-                        $trainee->lead_id = $lead->lead_id;
-                        $trainee->deal_id = $lead->deal_id;
-                        $trainee->save();
-                    }
-
-                    $user->segment = $lead->segment;
-                    $user->save();
-                    //
-                } else {
-                    $user->update([
-                        'description' => $lead->name,
-                        'phone' => $lead->phone, // ????????????
-                        'position_id' => 32, // Оператор
-                        'program_id' => 2,
-                        'full_time' => $full_time,
-                        'working_day_id' => 2,
-                        'working_time_id' => 2,
-                        'currency' => $currency,
-                        'segment' => $lead->segment,
-                        'user_type' => $user_type,
-                    ]);
-                    
-                    UserDescription::make([
-                        'user_id' => $user->id,
-                        'lead_id' => $lead->lead_id,
-                        'deal_id' => $lead->deal_id,
-                        'is_trainee' => 1,
-                    ]);
-
-                    // create trainee
-                    $trainee = Trainee::where('user_id', $user->id)->first();
-                    if(!$trainee) {
-                        $trainee = Trainee::create([
-                            'user_id' => $user->id,
-                            'lead_id' => $lead->lead_id,
-                            'deal_id' => $lead->deal_id,
-                        ]);  
-                    } else {
-                        $trainee->lead_id = $lead->lead_id;
-                        $trainee->deal_id = $lead->deal_id;
-                        $trainee->save();
-                    }
-
-                    $old_invite_at = $lead->invite_at;
-                    $lead->invite_at = $invite_at;
-                    $lead->day_second = $day_second;
-                    $lead->user_id = $user->id;
-                    $lead->invite_group_id = $request->group_id;    
-                    $lead->invited = 1;
-
-                    if($user_type == 'remote') {
-                        $msg_for_group_leader = $this->msgForGroupLeader($msg_for_group_leader, $user);
-                    }
-                    
+                $old_invite_at = $lead->invite_at;
+                $lead->invite_at = $invite_at;
+                $lead->day_second = $day_second;
+                $lead->user_id = $user->id;
+                $lead->invite_group_id = $request->group_id;    
+                $lead->invited = 2; // Сотрудник уже существует
+                
+                if($user_type == 'remote') {
+                    $msg_for_group_leader = $this->msgForGroupLeader($msg_for_group_leader, $user);
                 }
+            
+                
+                UserDescription::make([
+                    'user_id' => $user->id,
+                    'lead_id' => $lead->lead_id,
+                    'deal_id' => $lead->deal_id,
+                    'is_trainee' => 1,
+                ]);
+
+                // create trainee
+                $trainee = Trainee::where('user_id', $user->id)->first();
+                if(!$trainee) {
+                    $trainee = Trainee::create([
+                        'user_id' => $user->id,
+                        'lead_id' => $lead->lead_id,
+                        'deal_id' => $lead->deal_id,
+                    ]);  
+                } else {
+                    $trainee->lead_id = $lead->lead_id;
+                    $trainee->deal_id = $lead->deal_id;
+                    $trainee->save();
+                }
+
+                $user->segment = $lead->segment;
+                $user->save();
             }
 
             $lead->save();
@@ -874,23 +824,23 @@ class GroupAnalyticsController extends Controller
             /*******  Создание пользователя в Callibro.org */
             /*==============================================================*/
 
-            $account = Account::where('email', $email)->first();
-            if (!$account) {
+            // $account = Account::where('email', $email)->first();
+            // if (!$account) {
 
-                if($lead->name == '') {
-                    $lead->name = 'Без имени';
-                }
-                $account = Account::create([
-                    'password' => User::randString(16),
-                    'owner_uid' => 5,
-                    'name' => $uname,
-                    'surname' => '',
-                    'email' => strtolower($email),
-                    'status' => Account::ACTIVE_STATUS,
-                    'role' => [Account::OPERATOR],
-                    'activate_key' => '',
-                ]);
-            }
+            //     if($lead->name == '') {
+            //         $lead->name = 'Без имени';
+            //     }
+            //     $account = Account::create([
+            //         'password' => User::randString(16),
+            //         'owner_uid' => 5,
+            //         'name' => $uname,
+            //         'surname' => '',
+            //         'email' => strtolower($email),
+            //         'status' => Account::ACTIVE_STATUS,
+            //         'role' => [Account::OPERATOR],
+            //         'activate_key' => '',
+            //     ]);
+            // }
 
             /** zarplata */
             $zarplata = Zarplata::where('user_id', $user->id)->first();
@@ -972,9 +922,11 @@ class GroupAnalyticsController extends Controller
                     'admin_id' => 1,
                 ]);
             }
-           
+        
         }
         
+
+      
         /*==============================================================*/
         /*******  Уведомление руководителю группы */
         /*==============================================================*/
@@ -1000,9 +952,9 @@ class GroupAnalyticsController extends Controller
         }
         
         
-        return [
+        return response()->json([
             'code' => 200
-        ];
+        ]);
     }
 
     /**
@@ -2016,7 +1968,6 @@ class GroupAnalyticsController extends Controller
     public function changeRecruiterProfile(Request $request){
         RecruiterStat::changeProfile($request['user_id'], $request['profile'], Carbon::createFromDate($request->year, $request->month, $request->day));
     }
-
     
 }
 

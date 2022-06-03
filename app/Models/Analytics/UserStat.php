@@ -209,7 +209,7 @@ class UserStat extends Model
             ->where('date', 'like', Carbon::parse($date)->format('Y-m') . '%')
             ->get();
 
-        $act = Activity::find($activity_id);
+        $act = Activity::withTrashed()->find($activity_id);
         if($act && ($act->plan_unit == 'minutes' || $act->plan_unit == 'less_sum')) {
             $method = 'sum';
         }  else {

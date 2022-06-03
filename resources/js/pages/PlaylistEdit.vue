@@ -216,15 +216,7 @@
       <div class="fast-edit">
         <div v-if="activeVideo !== null">
           <!-- <vue-core-video-player :src="activeVideo.links"  class="mb-3 w65"></vue-core-video-player> -->
-          <video-player  class="vjs-custom-skin"
-          
-                 ref="videoPlayer"
-                 :options="playerOptions"
-                 :playsinline="true"
-                         @play="onPlayerPlay($event)"
-                         @pause="onPlayerPause($event)"
-                         @ended="onPlayerEnded($event)"
-                         @statechanged="playerStateChanged($event)" />
+          <v-player :src="activeVideo.links" />
 
           <div class="row mb-2">
             <div class="col-md-4">
@@ -324,29 +316,7 @@ export default {
           show: false,
         },
       },
-      playerOptions: {
-          // videojs options
-          muted: false,
-          width: 100,
-          language: 'ru',
-          playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0],
-          sources: [{
-            type: "video/mp4",
-            src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm",
-          }],
-          poster: "/static/images/author.jpg",
-          userActions: {
-            hotkeys: {
-              muteKey: function(event) {
-                // disable mute key
-              },
-              fullscreenKey: function(event) {
-                // override fullscreen to trigger when pressing the v key
-                return (event.which === 86);
-              }
-            }
-          }
-        },
+
         
     };
   },
@@ -363,29 +333,6 @@ export default {
 
   mounted() {},
   methods: { 
-
-      // listen event
-      onPlayerPlay(player) {
-        // console.log('player play!', player)
-      },
-      onPlayerPause(player) {
-        // console.log('player pause!', player)
-      },
-      // ...player event
-
-      // or listen state event
-      playerStateChanged(playerCurrentState) {
-        // console.log('player current update state', playerCurrentState)
-      },
-
-      // player is ready
-      playerReadied(player) {
-        console.log('the player is readied', player)
-        // you can use it to do something...
-        // player.[methods]
-      },
-
-
     showQuestions(v_index) {
       let questions = this.playlist.videos[v_index].questions;
       if (questions == undefined) this.playlist.videos[v_index].questions = [];

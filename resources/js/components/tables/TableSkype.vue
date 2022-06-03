@@ -1021,8 +1021,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .bottomvars {
     position: fixed;
     bottom: 0;
-    width: calc(100vw - 280px);
-    left: 280px;
+    width: calc(100vw - 127px);
+    left: 70px; 
     z-index: 999;
     background: #d6dfe5;
     border-top: 1px solid #e9e9e9;
