@@ -80,10 +80,10 @@
 
 /* */
 
-// ::-webkit-scrollbar {width: 7px;}
-// ::-webkit-scrollbar-track {background: #f9f9f9; }
-// ::-webkit-scrollbar-thumb {border-radius: 5px;background: #888; } 
-::-webkit-scrollbar-thumb:hover {background: #007bff; }
+::-webkit-scrollbar {width: 7px;height: 7px;cursor: pointer;}
+::-webkit-scrollbar-track {background: #f9f9f9; cursor: pointer;}
+::-webkit-scrollbar-thumb {border-radius: 0px;background: #888; } 
+::-webkit-scrollbar-thumb:hover {background: #007bff; cursor: pointer;}
 
 /**/
 body {
