@@ -279,7 +279,7 @@
 
     
     <div id="personal_info" class=" rw non-pillar px-3">
-        <div class="col-xl-12 mt-3">
+        <div class="col-xl2 mt-3">
             <div class="ublock">
                 <h2 class="big-title">Ваша личная информация</h2>
                 <div class="row">
