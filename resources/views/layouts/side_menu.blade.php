@@ -2,7 +2,7 @@
 
     <div class="user pointer">
         <a href="/profile">
-            <img src="/images/logoo.png" alt="avatar">
+            <img src="/images/logo.png" alt="avatar">
         </a>
         
        
