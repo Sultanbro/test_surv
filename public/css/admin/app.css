@@ -4587,10 +4587,6 @@ body {
   flex-grow: 1;
 }
 
-.animated.fadeIn {
-  padding: 5px 0 0;
-}
-
 .right-panel .header {
   background: white;
   z-index: 11;
