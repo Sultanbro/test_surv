@@ -35,7 +35,7 @@ ul.main-menu {
   padding: 0;
   height: 100%;
   margin-bottom: 0;
-  height: calc(100% - 150px);
+  height: calc(100% - 135px);
 }
 .main-menu::-webkit-scrollbar-track {
   width: 0;
@@ -50,6 +50,7 @@ ul.main-menu {
   list-style-type: none;
   padding: 0;
   height: 60px;
+  margin-bottom: 0;
   background: #2a2f36;
 }
 
