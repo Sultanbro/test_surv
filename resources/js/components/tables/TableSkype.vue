@@ -64,7 +64,7 @@
                         <div>Не найдена сделка</div>
                     </div> -->
                     <b-button @click="showModal = !showModal" class="btn btn-primary btn-sm rounded py-1">+ Добавить</b-button>
-                    <b-button @click="showSkypeFieldsModal = !showSkypeFieldsModal" class="btn-primary btn-sm rounded ml-1" title="Показывать поля"><i class="fa fa-cog" aria-hidden="true"></i></b-button>
+                    <b-button @click="showSkypeFieldsModal = !showSkypeFieldsModal" class="btn-primary btn-sm rounded ml-1" title="Показывать поля"><i class="fa fa-cogs" aria-hidden="true"></i></b-button>
                 </div>
                 
             </div>

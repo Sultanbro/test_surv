@@ -23,7 +23,7 @@
 
                 <p class="text-center g-title" :class="{'underline': gauge.is_main == 1}">
                     {{ gauge.name }} <template v-if="page == 'analytics'">{{gauge.diff}}%</template>
-                    <!-- <span class="btn" @click="edit(group_index, gauge_index)"><i class="fa fa-cog"></i></span> -->
+                    <!-- <span class="btn" @click="edit(group_index, gauge_index)"><i class="fa fa-cogs"></i></span> -->
                 </p>
                 
                 <div @click="edit(group_index, gauge_index)"

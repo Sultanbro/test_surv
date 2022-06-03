@@ -15,7 +15,7 @@
                 <tr>
                     <td class="ruler-cells t-cell text-center">
                         <div class="in-cell inner-div " @click="editMode()">
-                            <i class="fa fa-cog"></i>
+                            <i class="fa fa-cogs"></i>
                         </div>
                     </td>
                     <td v-for="(letter, index) in letter_cells.slice(1, 4)" :key="index"

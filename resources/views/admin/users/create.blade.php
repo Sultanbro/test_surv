@@ -138,7 +138,7 @@
                                                 <a href="https://infinitys.bitrix24.kz/company/personal/user/{{ $user->bitrix_id }}/" target="_blank">
                                                     <i class="fa fa-link pointer"></i>
                                                 </a>
-                                                <i class="fa fa-cog pointer" title="Редактировать" id="bitrix_editor"></i>
+                                                <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
                                             </p>
                                             @else
                                             <p>
@@ -146,7 +146,7 @@
                                                     Битрикс:
                                                     <span class="text-red">Нет</span>
                                                 </b> 
-                                                <i class="fa fa-cog pointer" title="Редактировать" id="bitrix_editor"></i>
+                                                <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
                                             </p>
                                             @endif
 
