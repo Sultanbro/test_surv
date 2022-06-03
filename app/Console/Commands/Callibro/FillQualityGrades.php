@@ -130,9 +130,8 @@ class FillQualityGrades extends Command
     private function getUsers($group_id) {
         $user_ids = json_decode(ProfileGroup::find($group_id)->users);
 
-        return User::withTrashed()
+        return \DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                
                 ->where('is_trainee', 0)
                 ->whereIn('users.id', $user_ids)
                 ->select(['users.id', 'users.email', 'users.name', 'users.last_name'])

@@ -112,7 +112,9 @@ class BonusUpdate extends Command
              */
             $group = ProfileGroup::find($this->argument('group_id'));
             $user_ids = json_decode($group->users);
-            $user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            $user_ids = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $user_ids)
                 ->where('is_trainee', 0)
                 ->get(['users.id'])->pluck('id')->toArray();

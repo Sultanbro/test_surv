@@ -70,7 +70,9 @@ class CheckLate extends Command
         $this->day = $date->day;
         $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
 
-        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        $users = \DB::table('users')
+            ->whereNull('deleted_at')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->orderBy('last_name', 'asc')
             ->select(['users.id','users.last_name', 'users.name', 'users.working_time_id', 'users.work_start'])

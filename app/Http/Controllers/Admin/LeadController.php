@@ -39,17 +39,18 @@ class LeadController extends Controller {
         
         
         if(array_key_exists($request->type, $segments)) {
-            $leads = Lead::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'bitrix_leads.user_id')
-			->leftJoin('users as u', 'u.id', '=', 'bitrix_leads.user_id')
-            ->where([
-                'bitrix_leads.segment' => $segments[$request->type]
-            ])
-            ->where(function($query) {
-                $query->whereNotNull('skyped')
-                    ->orWhereNotNull('inhouse');
-            })
-            ->orderBy('bitrix_leads.id', 'desc')
-            ->get();
+            $leads = \DB::table('bitrix_leads')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'bitrix_leads.user_id')
+                ->leftJoin('users as u', 'u.id', '=', 'bitrix_leads.user_id')
+                ->where([
+                    'bitrix_leads.segment' => $segments[$request->type]
+                ])
+                ->where(function($query) {
+                    $query->whereNotNull('skyped')
+                        ->orWhereNotNull('inhouse');
+                })
+                ->orderBy('bitrix_leads.id', 'desc')
+                ->get();
         } else {
             //$leads = Lead::where('id', 0)->get();
             abort(404);

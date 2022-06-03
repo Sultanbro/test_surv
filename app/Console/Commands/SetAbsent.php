@@ -55,8 +55,9 @@ class SetAbsent extends Command
               
                 if($group->checktime && Carbon::parse($group->checktime)->timestamp - time() < 0) { // если время отметок истекло
                 
-                    $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                        
+                    $users = \DB::table('users')
+                        ->whereNull('deleted_at')
+                        ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                         ->where('ud.is_trainee', 1)
                         ->whereIn('users.id', json_decode($group->users))
                         ->get();

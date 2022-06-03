@@ -54,10 +54,14 @@ class Bonus extends Model
         $awards = []; // bonuses
         $comments = []; // bonuses
         
-        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        $users = \DB::table('users')
+            ->whereNull('deleted_at')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->whereIn('users.id', $user_ids)
             ->where('is_trainee', 0)
-            ->get(['users.id'])->pluck('id')->toArray();
+            ->get(['users.id'])
+            ->pluck('id')
+            ->toArray();
 
         foreach ($users as $user_id) { //  fill $awards array
             $awards[$user_id] = 0;
@@ -68,7 +72,7 @@ class Bonus extends Model
             
             if($bonus->sum == 0) continue;
             if($bonus->activity_id == 0) continue;
-           // dd($bonus);
+       
             if($bonus->unit == self::FOR_ALL) {
                 $best_user = 0;
                 $best_value = 0;
@@ -77,9 +81,6 @@ class Bonus extends Model
                     $best_user = self::fetch_best_user_from_callibro($bonus, $group_id, $date);
                     // save award to the best user
                     if($best_user != 0) {
-                        //$awards[$best_user] += $bonus->sum;
-                        //$comments[$best_user] .= $bonus->title . ' : ' . $best_value . ';';
-
                         ObtainedBonus::createOrUpdate([
                             'user_id' => $best_user,
                             'date' => $date,
@@ -105,9 +106,6 @@ class Bonus extends Model
 
                     // save award to the best user
                     if($best_user != 0 && (int)$best_value >= $bonus->quantity) {
-                        //$awards[$best_user] += $bonus->sum;
-                        //$comments[$best_user] .= $bonus->title . ' : ' . $best_value . ';';
-
                         ObtainedBonus::createOrUpdate([
                             'user_id' => $best_user,
                             'date' => $date,

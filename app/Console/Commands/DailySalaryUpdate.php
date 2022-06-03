@@ -63,7 +63,9 @@ class DailySalaryUpdate extends Command
 
         $argDate = $this->argument('date') ?? date('Y-m-d');
         
-        $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        $users = \DB::table('users')
+            ->whereNull('deleted_at')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->select(['users.id'])
             
             ->where('ud.is_trainee', 0)
@@ -71,9 +73,10 @@ class DailySalaryUpdate extends Command
             ->pluck('id') 
             ->toArray(); 
         
-        $users2 = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        $users2 = \DB::table('users')
+            ->whereNotNull('deleted_at')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->select(['users.id'])
-            
             ->where('ud.is_trainee', 0)
             ->whereDate('deleted_at', '>=', $argDate)
             ->get()

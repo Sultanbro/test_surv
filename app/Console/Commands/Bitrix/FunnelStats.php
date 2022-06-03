@@ -270,7 +270,7 @@ class FunnelStats extends Command
             
         //     $hired = array_key_exists('total', $hired) ? $hired['total'] : 0;
         
-        $hired_users = User::withTrashed()
+        $hired_users = \DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->leftJoin('bitrix_leads as bl', 'bl.user_id', '=', 'users.id')
             ->where('bl.segment', $segment_id)

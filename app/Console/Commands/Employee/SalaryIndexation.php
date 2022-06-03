@@ -44,7 +44,8 @@ class SalaryIndexation extends Command
     public function handle()
     {
         // Приняты в BP
-        $users = User::where('UF_ADMIN', 1)
+        $users = \DB::table('users')
+            ->whereNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             //->where('users.id', 5) // При запуске на прод убрать

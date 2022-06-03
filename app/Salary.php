@@ -345,7 +345,8 @@ class Salary extends Model
                 ->first('total')
                 ->total;
 
-            $fines = UserFine::selectRaw('sum(ROUND(f.penalty_amount,0)) as total')
+            $fines = \DB::table('user_fines')
+                ->selectRaw('sum(ROUND(f.penalty_amount,0)) as total')
                 ->leftJoin('fines as f', 'f.id', '=', 'user_fines.fine_id')
                 ->where('user_id', $user->id)
                 ->whereMonth('day', $month->month)
@@ -408,24 +409,25 @@ class Salary extends Model
         $date = Carbon::parse($date)->day(1);
 
         if($user_types == -1) { // one person
-            $users = User::withTrashed()
+            $users = \DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 0)
-                ;
+                ->where('ud.is_trainee', 0);
         }
 
 
         if($user_types == 0) {// Действующие
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 0)
-                ;
+            $users = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('ud.is_trainee', 0);
         } 
 
         if($user_types == 1) {// Уволенные
 
-            $x_users = User::withTrashed()
+            $x_users = \DB::table('users')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereDate('deleted_at', '>=', $date->format('Y-m-d'))
-                ->get(['id','last_group']);
+                ->get(['users.id','users.last_group']);
 
             $fired_users = [];
             foreach($x_users as $d_user) {
@@ -439,15 +441,16 @@ class Salary extends Model
 
             $users_ids = $fired_users;
 
-            $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                 ->where('ud.is_trainee', 0)
-                ;
+            $users = \DB::table('users')
+                ->whereNotNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('ud.is_trainee', 0);
         } 
 
         if($user_types == 2) {// Стажеры
-            $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 1)
-                ;
+            $users = \DB::table('users')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('ud.is_trainee', 1);
         } 
         
         $users = $users->with([

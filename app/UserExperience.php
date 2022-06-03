@@ -67,7 +67,8 @@ class UserExperience extends Model
     public static function getSkills($user_ids) {
         $skills = [];
 
-        $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        $users = \DB::table('users')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->whereIn('users.id', $user_ids)
             ->where('is_trainee', 0)
             ->get(['users.id','users.name','users.last_name']);

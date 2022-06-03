@@ -53,7 +53,9 @@ class SaveUserKpi extends Command
         
         $date = $this->argument('date') ?? date('Y-m-d');
         
-        $users =  User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        $users =  \DB::table('users')
+            ->whereNull('deleted_at')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->select(['users.id','users.last_name', 'users.name'])
             ->get();

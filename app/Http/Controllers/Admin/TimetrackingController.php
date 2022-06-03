@@ -813,11 +813,8 @@ class TimetrackingController extends Controller
          */
 
         if($request->user_types == 0) { // Действующие
-            //dd($users_ids);
-          //  $_user_ids = User:: //leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                //->where('ud.is_trainee', 0)
+     
                 
-
             $_user_ids = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -827,17 +824,6 @@ class TimetrackingController extends Controller
                 ->pluck('id')
                 ->toArray();
                
-            // foreach($users_ids as $user_id) {
-            //     $trainee = Trainee::whereNull('applied')->where('user_id', $user_id)->first(); 
-                
-            //     if($trainee) {
-            //         if (($key = array_search($user_id, $_user_ids)) !== false) {
-            //             unset($_user_ids[$key]);
-            //         }
-            //     }
-            // }
- 
-            
         }
         
         if($request->user_types == 1) { // Уволенныне
@@ -1154,7 +1140,7 @@ class TimetrackingController extends Controller
 
         $_others = NotificationTemplate::where('type', NotificationTemplate::OTHER)->get();        
 
-        $_notifications = User::withTrashed()
+        $_notifications = \DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.notifications', '!=', '[]')
             ->select(DB::raw("CONCAT_WS(' ',users.id, users.last_name, users.name) as name"), 'users.id as id')
@@ -2322,16 +2308,18 @@ class TimetrackingController extends Controller
             }
 
             if($group->users != null) {
-                $time_exceptions_options = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                $time_exceptions_options = \DB::table('users')
+                    ->whereNull('deleted_at')
+                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                     ->where('ud.is_trainee', 0)
-                    
                     ->whereIn('users.id', json_decode($group->users)) 
                     ->get(['users.id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
 
-            $time_exceptions = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            $time_exceptions =\DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
-                
                 ->whereIn('users.id', $group->time_exceptions) 
                 ->get(['users.id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
         } 

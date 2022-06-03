@@ -276,9 +276,10 @@ class SalaryController extends Controller
         $date = Carbon::parse($date)->day(1);
 
         if($user_types == 0) {// Действующие
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 0)
-                ;
+            $users = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('ud.is_trainee', 0);
         } 
 
         if($user_types == 1) {// Уволенные
@@ -299,15 +300,16 @@ class SalaryController extends Controller
 
             $users_ids = $fired_users;
 
-            $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                 ->where('ud.is_trainee', 0)
-                ;
+            $users = \DB::table('users')
+                ->whereNotNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('ud.is_trainee', 0);
         } 
 
         if($user_types == 2) {// Стажеры
-            $users = User::withTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 1)
-                ;
+            $users =\DB::table('users')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('ud.is_trainee', 1);
         } 
         
         $users = $users->with([
@@ -735,9 +737,10 @@ class SalaryController extends Controller
 
         // if(Auth::user()->id == 5) dump(now());
 
-        $working_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        $working_users = \DB::table('users')
+            ->whereNull('deleted_at')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
-            
             ->whereIn('users.id', $users_ids);
 
 
@@ -770,13 +773,7 @@ class SalaryController extends Controller
             $fired_users = array_merge($fired_users, $fired_users_2);
             $fired_users = array_unique(array_values($fired_users));
 
-            // $users = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            //      ->where('ud.is_trainee', 0)
-            //     ;
-
-        //  me(User::withTrashed()->whereIn('users.id', array_unique($old_users))->get()->toArray());
        
-
             ///////////
       
 
@@ -1010,12 +1007,12 @@ class SalaryController extends Controller
 
     private function getSheet($users_ids, $date, $group_id) {
     
-        $users = User::join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
+        $users = \DB::table('users')
+            ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
             ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
             ->leftjoin('timetracking as t', 't.user_id', '=', 'users.id')
             ->whereIn('users.id', array_unique($users_ids))
-            ->withTrashed()
             ->selectRaw("users.id as id,
                         users.phone as phone,
                         users.program_id as program_id,
@@ -1661,19 +1658,7 @@ class SalaryController extends Controller
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-            ///////////////
+        /////////// block
         $bonus = Salary::selectRaw('sum(ROUND(bonus,0)) as total')
             ->whereMonth('date', $request->month)
             ->whereYear('date', $request['year'])
@@ -1681,29 +1666,8 @@ class SalaryController extends Controller
             ->first('total')
             ->total;
 
-        // $avans = Salary::selectRaw('sum(ROUND(paid,0)) as total')
-        //     ->whereMonth('date', $request->month)
-        //     ->whereYear('date', $request['year'])
-        //     ->whereIn('user_id', $user_ids)
-        //     ->first('total')
-        //     ->total;
-
-        // $fines = UserFine::selectRaw('sum(ROUND(f.penalty_amount,0)) as total')
-        //     ->leftJoin('fines as f', 'f.id', '=', 'user_fines.fine_id')
-        //     ->whereIn('user_id', $user_ids)
-        //     ->whereMonth('day', $request->month)
-        //     ->whereYear('day', $request['year'])
-        //     ->where('status', UserFine::STATUS_ACTIVE)
-        //     ->first('total')
-        //     ->total;
-        
-        //$res = $total - $avans + $bonus - $fines + $kpi_total + $editedBonuses;
-
         $res = $total + $bonus + $kpi_total + $editedBonuses;
-        // memp($total);
-        // memp($kpi_total);
-        // memp($bonus);
-        // me($editedBonuses);
+
         $res = $this->space($res, 3, true);
 
         return $res;

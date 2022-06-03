@@ -19,12 +19,12 @@ class UsersExport implements FromCollection
     {
         //dd(array_unique($this->users));
        
-        return User::join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
+        return \DB::table('users')
+            ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
             ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
             ->leftjoin('timetracking as t', 't.user_id', '=', 'users.id')
             ->whereIn('users.id', array_unique($this->users))
-            ->withTrashed()
             ->selectRaw("users.id as id,
                         users.phone as phone,
                         users.program_id as program_id,

@@ -57,7 +57,9 @@ class MarkTrainees extends Command
 			$users = array_unique($users);
 		}
 
-        $trainees = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        $trainees = \DB::table('users')
+            ->whereNull('deleted_at')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('users.UF_ADMIN', 1)
             ->where('ud.is_trainee',1)
             ->whereIn('users.id', $users);

@@ -69,8 +69,9 @@ class FineCheck extends Command
             $usersArray = array_unique($usersArray); // Готовый массив с уникальными значениями
 
 
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                
+            $users = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee',0)
                 ->whereIn('users.id', $usersArray)
                 ->get(); // Берем данные о полователях

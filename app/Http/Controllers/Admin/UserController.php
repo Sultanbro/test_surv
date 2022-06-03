@@ -548,18 +548,20 @@ class UserController extends Controller
             $indicators['info']['applied'] = $arr[RM::S_APPLIED]['fact']; 
             $indicators['info']['remain_apply'] = $arr[RM::S_APPLIED]['plan'] - $arr[RM::S_APPLIED]['fact']; 
 
-            $x_count = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            $x_count = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
-                
                 ->get()
                 ->count();
 
             $indicators['info']['working'] = $x_count;
 
             $training_users = Trainee::whereNull('applied')->pluck('user_id')->toArray();
-            $t_users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            $t_users = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 1)
-                
                 ->get();
 
 
@@ -651,9 +653,8 @@ class UserController extends Controller
 
             //$users = User::withTrashed()->whereIn('email', $array_accounts_email);
 
-            $users = User::withTrashed()
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ;
+            $users = \DB::table('users')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
@@ -679,9 +680,9 @@ class UserController extends Controller
         } elseif(isset($request['filter']) && $request['filter'] == 'deactivated') {
 
             //$users = User::onlyTrashed()->whereIn('email', $array_accounts_email); 
-            $users = User::onlyTrashed()
+            $users = \DB::table('users')
+                ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                
                 ->where('is_trainee', 0);
             
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
@@ -692,7 +693,8 @@ class UserController extends Controller
             
         } elseif(isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
-            $users_1 = User::where('UF_ADMIN', 1)
+            $users_1 = \DB::table('users')
+                ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
                 ->get(['users.id'])
@@ -706,7 +708,8 @@ class UserController extends Controller
             
             $users_1 = array_diff($users_1 ,array_unique($downloads));
             
-            $users = User::where('UF_ADMIN', 1)
+            $users = \DB::table('users')
+                ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
                 ->where(function($query){
@@ -722,8 +725,9 @@ class UserController extends Controller
 
         } elseif(isset($request['filter']) && $request['filter'] == 'trainees') {
 
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                
+            $users = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 1);
             
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
@@ -734,8 +738,9 @@ class UserController extends Controller
             
         } else {
 
-            $users = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                
+            $users = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
             
            // $trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
