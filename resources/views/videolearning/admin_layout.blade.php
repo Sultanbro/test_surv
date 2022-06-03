@@ -132,26 +132,6 @@ $('#file').change(function(file) {
     
 });
 
-
-// function uploadProgress() {
-//     timer = setInterval(() => {
-//         $.ajax({
-//             type: 'POST',
-//             url: '/videos/upload_progress',
-//             success: function(msg) {
-//                 if(msg === null) {
-//                     clearInterval(timer);
-//                     clearInterval(approximateTimer);
-//                     console.log('FINISHED');
-//                 } else {
-//                     let progress = JSON.parse(msg);
-//                     console.log(progress);
-//                 }
-//             }
-//         })
-//     }, 3000);
-// }
-
 function setApproximateTimer() {
     clearInterval(incrementor); 
     approximateTimer = setInterval(function() {
