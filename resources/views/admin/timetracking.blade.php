@@ -2,7 +2,7 @@
 @section('title', 'Мой профиль')
 @section('content')
 
-<div id="header" class="header" style="display:none;min-height:70px;padding: 10px 10px">
+<div id="header" class="header" >
 
 <div class="header-menu d-flex justify-content-between">
 
