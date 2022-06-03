@@ -408,24 +408,17 @@ class Salary extends Model
     {
         $date = Carbon::parse($date)->day(1);
 
-        if($user_types == -1) { // one person
-            $users = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 0);
-        }
+        $users = \DB::table('users');
 
-
+ 
         if($user_types == 0) {// Действующие
-            $users = \DB::table('users')
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 0);
+            $users ->whereNull('deleted_at');
         } 
 
         if($user_types == 1) {// Уволенные
+            $users->whereNotNull('deleted_at');
 
             $x_users = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereDate('deleted_at', '>=', $date->format('Y-m-d'))
                 ->get(['users.id','users.last_group']);
 
@@ -440,20 +433,46 @@ class Salary extends Model
             }
 
             $users_ids = $fired_users;
+        }
 
-            $users = \DB::table('users')
-                ->whereNotNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 0);
-        } 
+        if($user_types == -1) {// one person
+           
+        }
 
-        if($user_types == 2) {// Стажеры
-            $users = \DB::table('users')
+        if($user_types == 0) { // Действующие
+            $users_ids = \DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 1);
-        } 
-        
-        $users = $users->with([
+                ->where('is_trainee', 0)
+                ->whereIn('users.id', $users_ids)
+                ->get(['users.id'])
+                ->pluck('id')
+                ->toArray();
+        }
+
+        if($user_types == 1) { // Уволенные
+            $users_ids = \DB::table('users')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 0)
+                ->whereIn('users.id', $users_ids)
+                ->get(['users.id'])
+                ->pluck('id')
+                ->toArray();
+        }
+
+        if($user_types == 2) {
+            $users_ids = \DB::table('users')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 1)
+                ->whereIn('users.id', $users_ids)
+                ->get(['users.id'])
+                ->pluck('id')
+                ->toArray();
+        }
+
+        $users->whereIn('users.id', array_unique($users_ids));
+
+        $users->with([
+            'user_description',
             'salaries' => function ($q) use ($date) {
                 $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', $date->month)->whereYear('date', $date->year);
             },
@@ -486,20 +505,21 @@ class Salary extends Model
                     ->whereYear('enter', $date->year)
                     ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
             },
-        ])->whereIn('users.id', array_unique($users_ids))
-            ->get([
-                'users.id', 
-                'users.email', 
-                'deleted_at',
-                 DB::raw("CONCAT(last_name,' ',name) as full_name"),
-                 'user_type',
-                'users.created_at',
-                 'full_time',
-                 'users.working_day_id',
-                 'users.working_time_id',
-                 'headphones_amount',
-                 'headphones_date'
-            ]);
+        ]);
+
+        $users = $users->get([
+            'users.id', 
+            'users.email', 
+            'deleted_at',
+                DB::raw("CONCAT(last_name,' ',name) as full_name"),
+                'user_type',
+            'users.created_at',
+                'full_time',
+                'users.working_day_id',
+                'users.working_time_id',
+                'headphones_amount',
+                'headphones_date'
+        ]);
         
      
         ///////////////////// 
