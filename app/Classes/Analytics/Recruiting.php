@@ -1382,12 +1382,11 @@ class Recruiting
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
             ->whereIn('users.id', $prev_employees)
-            ->get()
-            ->toArray();
+            ->get();
 
         $working_prev =  0;
         foreach($users_a as $u) {
-            $working_prev += $u['full_time'] == 1 ? 1 : 0.5;
+            $working_prev += $u->full_time == 1 ? 1 : 0.5;
         }
 
         $users_b = \DB::table('users')
@@ -1398,22 +1397,22 @@ class Recruiting
 
         $working =  0;
         foreach($users_b as $u) {
-            $working += $u['full_time'] == 1 ? 1 : 0.5;
+            $working += $u->full_time == 1 ? 1 : 0.5;
         }
 
         $fired_prev = 0;
         foreach($users_off_prev as $u) {
-            $fired_prev += $u['full_time'] == 1 ? 1 : 0.5;
+            $fired_prev += $u->full_time == 1 ? 1 : 0.5;
         }
          
         $fired = 0;
         foreach($users_off as $u) {
-            $fired += $u['full_time'] == 1 ? 1 : 0.5;
+            $fired += $u->full_time == 1 ? 1 : 0.5;
         }
         
         $applied = 0;
         foreach($applied_users as $u) {
-            $applied += $u['full_time'] == 1 ? 1 : 0.5;
+            $applied += $u->full_time == 1 ? 1 : 0.5;
         }
         
         
