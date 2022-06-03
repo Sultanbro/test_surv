@@ -4531,21 +4531,12 @@ body.admin {
   background: rgb(255, 255, 255);
 }
 
-.right-panel .header {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-}
 
 body {
   display: block !important;
 }
 
-.right-panel .header {
-  height: 55px;
-  min-height: 55px;
-  padding: 5px 10px;
-}
+
 
 .kolokolchik div.inf {
   padding: 6px 0;
@@ -4587,10 +4578,6 @@ body {
   flex-grow: 1;
 }
 
-.right-panel .header {
-  background: white;
-  z-index: 11;
-}
 
 .page {
   padding-left: 70px;
