@@ -1,5 +1,5 @@
 <template>
-<div class="mt-5 analytics-page">
+<div class="mt-2 px-3 analytics-page">
     <div class="row mb-3 ">
         <div class="col-3">
             <select class="form-control" v-model="currentGroup" @change="fetchData">

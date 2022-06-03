@@ -17,13 +17,13 @@
                 </div>
             </nav>    
         </div>
-        
+        <div class="px-3 top-page mt-2">
+            <page-top :data="{{json_encode($data)}}" activeuserid="{{json_encode(auth()->user()->id)}}" />
+        </div>
        
     </div>
 
-    <div class="px-3 top-page mt-3">
-        <page-top :data="{{json_encode($data)}}" activeuserid="{{json_encode(auth()->user()->id)}}" />
-    </div>
+   
 </div>
  
 @endsection
