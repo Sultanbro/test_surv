@@ -314,10 +314,10 @@
                                         <table class="w-full table-2">
 
                                             <tr>
-                                                <td colspan="2">
+                                                <td colspan="3">
                                                     <p class="name pr-1 mt-2">Должность</p>
                                                 </td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                                                     <input  type="text" name="oklad" disabled
                                                         value="{{$user_position ? $user_position->position : ''}}">
                                                 </td>
@@ -326,20 +326,20 @@
                                             
 
                                             <tr>
-                                                <td colspan="2">
+                                                <td colspan="3">
                                                     <p class="name pr-1 mt-2">Ваш оклад</p>
                                                 </td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                                                     <input  type="text" name="oklad" disabled
                                                         value="{{$oklad}}">
                                                 </td>
                                             </tr>
 
                                             <tr>
-                                                <td colspan="2">
+                                                <td colspan="3">
                                                     <p class="name pr-1 mt-2">Рабочий график</p>
                                                 </td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                                                     <div class="d-flex justify-content-between">
                                                         <input  type="text" name="workday" disabled style="width:48%"
                                                             value="@if($user->working_day_id == 1) 5-2 @else 6-1 @endif">
@@ -351,10 +351,10 @@
                                             </tr>
 
                                             <tr>
-                                                <td colspan="2">
+                                                <td colspan="3">
                                                     <p class="name pr-1 mt-2">Рабочие часы</p>
                                                 </td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                                                     <input  type="text" name="worktime" disabled
                                                         value="@if($user->working_time_id == 1) 8 @else 9 @endif часов">
                                                 </td>
@@ -363,10 +363,10 @@
                                             
 
                                             <tr class="after-edit"> 
-                                                <td colspan="2">
+                                                <td colspan="3">
                                                     <p class="name pr-1 mt-2">Валюта</p>
                                                 </td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                                                     <select name="currency" id="currency" class="form-control form-control-sm mb-2 mt-2 changers">
                                                         <option value="kzt" @if($user->currency == 'kzt')selected @endif>KZT Казахстанский тенге</option>
                                                         <option value="rub" @if($user->currency == 'rub')selected @endif>RUB Российский рубль</option>
@@ -387,7 +387,7 @@
                                                         value="{{$user->email}}" class="changers" />
                                                 </td>
                                                 <td >
-                                                    <p class="name pr-1 ml-2" >Новый пароль</p>
+                                                    <p class="name pr-1 ml-2 text-right">Новый пароль</p>
                                                 </td>
                                                 <td >
                                                     <input type="text" name="password" class="changers" style="margin:0">
@@ -396,10 +396,10 @@
 
 
                                             <tr id="saveProfile" style="display:none">
-                                                <td colspan="2">
+                                                <td colspan="3">
                                                     
                                                 </td>
-                                                <td colspan="2">
+                                                <td colspan="1">
                                                     <button class="btn btn-primary btn-sm rounded mt-2" style="float:right;" >Сохранить</button>
                                                 </td>
                                             </tr>
