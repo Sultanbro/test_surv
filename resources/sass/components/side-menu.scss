@@ -53,6 +53,8 @@ ul.main-menu {
   height: 60px;
   margin-bottom: 0;
   background: #272c33;
+  position: relative;
+  z-index: 2;
 }
 
 .menu-item {
