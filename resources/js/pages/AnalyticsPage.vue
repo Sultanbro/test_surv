@@ -118,7 +118,7 @@
 
                             </a-tabs>
                             <button class="btn btn-success rounded add-activity btn-sm" @click="add_activity()"><i class="fa fa-plus-square" style="font-size:14px"></i></button>
-                            <button class="btn btn-primary rounded order-activity btn-sm" @click="showOrder = true"><i class="fa fa-sort-amount-desc"></i></button>
+                            <button class="btn btn-primary rounded order-activity btn-sm" @click="showOrder = true"><i class="fas fa-sort-amount-down"></i></button>
                         </a-tab-pane>
                     
                     </a-tabs>
