@@ -473,10 +473,6 @@ export default {
 .navbar .navbar-brand img {
     max-width: 166px;
 }
-.right-panel .header .header-menu {
-    display: flex;
-    align-items: center;
-}
 .blink-notification {
   -webkit-box-shadow: 0 0 4px #61bfe9;
           box-shadow: 0 0 4px #61bfe9;

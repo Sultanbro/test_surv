@@ -38,30 +38,7 @@
     ])    
     <div class="page">
 
-        <div id="header" class="header" style="display:none;min-height:70px;padding: 10px 10px">
-
-            <div class="header-menu d-flex justify-content-between">
-
-                <div class="mr-3" style="width: 100%">
-                    <div id="cabinetjs">
-                        <timetracking activeuserid="{{json_encode(auth()->user()->id)}}"
-                                    usertype="{{auth()->user()->user_type}}"
-                                    program="{{auth()->user()->program_id}}"
-                                    user_type="{{auth()->user()->user_type}}"
-                                    position_id="{{auth()->user()->position_id}}"></timetracking>
-
-                    </div>
-
-                </div>
-                <div class=" d-flex justify-content-end">
-                   
-                    <div class="user-area dropdown " style="display: flex; align-items: center;">
-                        <profile user="{{json_encode(auth()->user())}}"></profile>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+      
 
         <div class="content-wrap">
              
