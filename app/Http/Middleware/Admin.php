@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\User;
 use App\Admin as AdminModel;
-use Closure;
+use Closure; 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 
@@ -31,7 +31,7 @@ class Admin {
             'tabel_view' => $user->is_admin == 1 || in_array($user->id, [13410,4444,5263,9974,11533,5494,12787,1358, 3460, 1739,2966,13337,3794,3423,4143,13583,13410,3865,10230,6288,5673]),
             'entertime_view' => $user->is_admin == 1 || in_array($user->id, [13410,5263,9974,11533,5494,12787,13583, 1739,2966,3794,3423,4143,3865,6288]),
             'salaries_view' => $user->is_admin == 1 || in_array($user->id, [13410,4444,5263,9974,11533,5494,12787,13583,1739,2966,3794,3423,4143,3865,6288]),
-            'quality_view' => $user->is_admin == 1 || in_array($user->id, [13410,11533,5494,12787,13583,3460,3423,3794,3965,4143,5494,8257,9974,11208,3423,3865,10230,6288,5673]),
+            'quality_view' => $user->is_admin == 1 || in_array($user->id, [13410,11533,5494,12787,13583,3460,3423,3794,3965,4143,5494,8257,9974,11208,3423,3865,10230,6288,5673,5263,3957]),
             'users_view' => $user->is_admin == 1 || in_array($user->id, [5263,9974]), 
             'settings_view' => $user->is_admin == 1 || in_array($user->id, []),
             'cabinet_view' => $user->is_admin == 1,

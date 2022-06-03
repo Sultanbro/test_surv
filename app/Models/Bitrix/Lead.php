@@ -124,7 +124,7 @@ class Lead extends Model
         if($str == NULL) return 0;
         return array_key_exists($str, self::SEGMENTS) ? self::SEGMENTS[$str] : 99;
     }
-
+ 
     public static function getSegmentAlt($str) {
         if($str == NULL) return 0;
         return array_key_exists($str, self::SEGMENTS_ALT) ? self::SEGMENTS_ALT[$str] : 99;
@@ -147,7 +147,7 @@ class Lead extends Model
             $arr = json_decode($skype->files);
             
             if(count($arr) > 0) {
-                $skype->file = 'https://admin.u-marketing.org/static/uploads/job/' . $arr[0];
+                $skype->file = 'https://' .tenant('id') . '.' . env('APP_DOMAIN', 'jobtron.org') . '/static/uploads/job/' . $arr[0];
             }
            
             

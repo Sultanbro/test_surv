@@ -12,7 +12,7 @@ class Bitrix {
     {
         $fields = [
             'id' =>  $lead_id,
-            'fields' => $lead_fields
+            'fields' => $lead_fields 
         ];
         
         $query = http_build_query($fields);
@@ -173,13 +173,13 @@ class Bitrix {
             $fields = [
                 'order' =>  ['STAGE_ID' => 'ASC'],
                 'filter' =>  ['STAGE_ID' => 'C4:18', 'LEAD_ID' => $lead_id],
-                'select' => ['id', 'TITLE', 'STAGE_SEMANTIC_ID', 'LEAD_ID', 'UF_CRM_60C72B525A4E8']
+                'select' => ['ID', 'TITLE', 'STAGE_SEMANTIC_ID', 'LEAD_ID', 'UF_CRM_60C72B525A4E8']
             ];
         } else {
             $fields = [
                 'order' =>  ['STAGE_ID' => 'ASC'],
                 'filter' =>  ['LEAD_ID' => $lead_id],
-                'select' => ['id', 'TITLE', 'STAGE_SEMANTIC_ID', 'LEAD_ID', 'UF_CRM_60C72B525A4E8']
+                'select' => ['ID', 'TITLE', 'STAGE_SEMANTIC_ID', 'LEAD_ID', 'UF_CRM_60C72B525A4E8']
             ];
         }
 
@@ -191,7 +191,7 @@ class Bitrix {
         if(array_key_exists('result',$result)) {
       
             if(count($result['result']) > 0){
-                $id = $result['result'][0]['id'];
+                $id = $result['result'][0]['ID'];
             }
         }   
         return $id;
@@ -328,7 +328,7 @@ class Bitrix {
 
         $fields = [
             'ORDER' =>  'ASC', 
-            'SORT' =>  'id', 
+            'SORT' =>  'ID', 
             'filter' => $filter
         ];
 
@@ -352,7 +352,7 @@ class Bitrix {
         $filter['<DATE_CREATE'] = $end;
 
         $fields = [
-            'SORT' =>  'id', 
+            'SORT' =>  'ID',  
             'filter' => $filter
         ];
 

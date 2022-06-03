@@ -76,7 +76,7 @@ class BitrixStats extends Command
         $this->day = $datex[2];
         
         $this->bitrix = new Bitrix();
-
+ 
         $this->getChatbotData();
         $this->getRecruiterStats(); 
         $this->inviteTrainees();
@@ -318,13 +318,16 @@ class BitrixStats extends Command
 
     private function inviteTrainees() {
         $leads = Lead::whereNotNull('invite_at')
+            ->whereDate('invite_at', '>=', '2022-06-02')
 			->whereIn('invited', [1,2])
 			->get();
         
         /////////// check group and zoom link existence
-
+        $i = 0;
+        dump($leads->count());
         foreach($leads as $lead) {
-
+            $i++;
+            dump($i);
             try {
                 $group = ProfileGroup::find($lead->invite_group_id);
             } catch (\Exception $e) {
