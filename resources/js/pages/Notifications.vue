@@ -702,9 +702,7 @@ select {
     margin-top: 0;
     min-height: 30px;
 }
-.multiselect__tag {
-    margin-bottom: 0;
-}
+
 .multiselect__select {
     position: absolute;
     width: 33px;
