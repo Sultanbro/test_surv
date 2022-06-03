@@ -70,7 +70,7 @@ class GroupAnalyticsController extends Controller
     public function __construct()
     {
         View::share('title', 'Аналитика групп');
-        //$this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
@@ -623,15 +623,25 @@ class GroupAnalyticsController extends Controller
             return redirect('https://infinitys.bitrix24.kz/crm/deal/details/' . $deal_id . '/');
         }
 
-        
+        // if(ob_get_length() > 0) ob_clean(); //  ob_end_clean();
     }
 
     /**
      * Пригласить на стажировку во вкладке Аналитика Групп (Рекрутинг) - Стажеры
      * Создает пользователей и меняет сделку в битриксе
      */
-    public function inviteUsers(Request $request) {
+    public function inviteUsllers(Request $request) {
+     
+        //dd(ob_get_status()); 
+        
+       // if(ob_get_length() > 0) ob_clean();
+        //dd(ob_get_length());
+        return response()->json([
+            'code' => 200
+        ]);
+    }
 
+    public function inviteUsers(Request $request) {
         $leads = Lead::whereIn('id', $request->users)->get();
         $whatsapp = new IC();
         

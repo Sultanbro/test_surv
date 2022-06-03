@@ -16,7 +16,7 @@ class UserActivity
      */
     public function handle($request, Closure $next)
     {
-        \Debugbar::disable();
+    
         // if (Auth::check()) {
         //     $user = Auth::user();
         //     $user->LAST_LOGIN = date('Y-m-d H:i:s');

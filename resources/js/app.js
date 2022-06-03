@@ -9,7 +9,7 @@ window.Vue = require('vue').default;
 window.collect = require('collect.js')// globally
 
 import BootstrapVue from 'bootstrap-vue'
-import mDatePicker from 'vue-multi-date-picker'
+
 import moment from 'moment'
 import Notifications from 'vue-notification'
 import Antd from 'ant-design-vue'
@@ -54,7 +54,7 @@ Vue.prototype.$moment = moment
  * or customize the JavaScript scaffolding to fit your unique needs.
  */ 
 Vue.use(BootstrapVue)
-Vue.use(mDatePicker)
+
 Vue.use(Loading)
 Vue.use(VGauge);
 Vue.use(VueMask);
@@ -111,7 +111,7 @@ Vue.component('t-funnel', require('./components/tables/TableFunnel.vue').default
 Vue.component('t-skypes', require('./components/tables/TableSkype.vue').default); // Стажеры
 Vue.component('t-summary-recruting', require('./components/tables/TableSummaryRecruting.vue').default); // Сводная рекрутинг
 Vue.component('t-recruting-user', require('./components/tables/TableRecrutingUser.vue').default); // Таблица рекрутера
-Vue.component('t-summary-kaspi', require('./components/tables/TableSummaryKaspi.vue').default); // Сводная Каспи старая
+
 Vue.component('t-rentability', require('./components/tables/TableRentability.vue').default); // ТОП рентабельность
 Vue.component('analytic-stat', require('./components/AnalyticStat.vue').default); // Сводная аналитики
 Vue.component('t-activity', require('./components/tables/TableActivity.vue').default); // Старая активность

@@ -81,7 +81,7 @@ Route::middleware([
     Route::get('/send-mail', function() {
         $mailData = [
             'name' => "sad sadsdads",
-            'dob' => '123123131231'
+            'dob' => '123123131231' 
         ];
         
         \Mail::to("abik50000@gmail.com")->send(new \App\Mail\SendInvitation($mailData));
@@ -89,8 +89,11 @@ Route::middleware([
     
 
     
-    Route::any('/ses', function() {
-        session()->flush();
+    Route::any('/bless', function() {
+       
+           
+            return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
+       
     });
     
     
@@ -439,7 +442,10 @@ Route::middleware([
     Route::post('/user/save/answer', [ProfileController::class, 'saveAnswer']);
     Route::post('/position/save/desc', [PositionController::class, 'savePositionDesc']);
 
-    Route::prefix('api')->group(function () {
+    Route::group([
+        'middleware' => ['api'],
+        'prefix' => 'api',
+    ], function () {
 
         // Route::any('/apix', 'AmoController@get_token');
     

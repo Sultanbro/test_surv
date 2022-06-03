@@ -66,7 +66,7 @@ $response = $kernel->handle(
 // $app->withFacades();
 // $app->register(\KitLoong\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
 
-
+// dd($response->data());
 $response->send();
 
 

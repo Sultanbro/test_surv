@@ -15,13 +15,7 @@ class TestMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (auth()->user() && in_array(auth()->id(), [5])) {
-            \Debugbar::enable();
-        }
-        else {
-            \Debugbar::disable();
-           
-        }
+  
 
         return $next($request);
     }

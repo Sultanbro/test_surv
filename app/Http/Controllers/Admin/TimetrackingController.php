@@ -67,7 +67,7 @@ class TimetrackingController extends Controller
 
         View::share('menu', 'timetrackingsetting');
 
-        $groups = ProfileGroup::where('active', 1)->get()->pluck('name','id');
+        $groups = ProfileGroup::where('active', 1)->get()->pluck('name','name');
 
 
 
@@ -103,10 +103,6 @@ class TimetrackingController extends Controller
         }
 
         $roles = Auth::user()->roles ? Auth::user()->roles : [];
-
-
-
-//        dd($roles);
         
 
         $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
@@ -122,11 +118,7 @@ class TimetrackingController extends Controller
 
         $corpbooks = [];
         if($active_tab == 3) {
-            if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
-                $corpbooks = BookCategory::where('parent_cat_id', NULL)->where('is_deleted', 0)->get();
-            } else {
-                $corpbooks = collect([]);
-            }
+            $corpbooks = collect([]);
         }
 
         $tab5 = [
@@ -549,18 +541,15 @@ class TimetrackingController extends Controller
     {
         if ($request->group) {
             $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->first();
+            //if(!$group) $group = ProfileGroup::find($request->group);
+            
             if ($group->users != null) {
                 $users = json_decode($group->users);
                 $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
             $book_groups = BookGroup::whereIn('id', json_decode($group->book_groups))->get();
 
-            if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
-                $corp_books = BookCategory::whereIn('id', json_decode($group->corp_books))->get();
-            } else {
-                $corpbooks = collect([]);
-            }
-
+            $corpbooks = collect([]);
             
             $bonus = Bonus::where('group_id', $group->id)->first();
         } else {
@@ -825,11 +814,16 @@ class TimetrackingController extends Controller
 
         if($request->user_types == 0) { // Действующие
             //dd($users_ids);
-            $_user_ids = User:: //leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+          //  $_user_ids = User:: //leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 //->where('ud.is_trainee', 0)
                 
-                whereIn('users.id', $users_ids)
-                ->get()
+
+            $_user_ids = DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', $users_ids)
+                ->where('ud.is_trainee', 0) 
+                ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
                
@@ -866,25 +860,26 @@ class TimetrackingController extends Controller
                 } 
             } 
             
-            $_user_ids = User::onlyTrashed()->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 0)
-                
+            $_user_ids = DB::table('users')
+                ->whereNotNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $_user_ids)
-                ->get()
+                ->where('ud.is_trainee', 0) 
+                ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
         }
 
         if($request->user_types == 2) { // Стажеры
 
-            $_user_ids = User::leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('ud.is_trainee', 1)
-                
+            $_user_ids = DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $users_ids)
-                ->get()
+                ->where('ud.is_trainee', 1) 
+                ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
-            
         }
 
 

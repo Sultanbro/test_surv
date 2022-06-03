@@ -1006,15 +1006,16 @@ class IntellectController extends Controller {
             
             $lead = Lead::where('hash', $request->hash)->latest()->first();
             
-            if($lead->time != null) {
-                
-                return view('recruiting.choose_time')->with([
-                    'view' => 2,
-                    'msg' => 'Поздравляем вас, '. $lead->name . '! Вам назначена стажировка. <br><br>дата: '. date('d.m.Y', strtotime($lead->time) + 3600 * 6) . ' <br>время:'. date('H:i', strtotime($lead->time) + 3600 * 6) .' <br><br>Пожалуйста приходите ровно в это время 😉'
-                ]);
-            }
-            
+          
             if($lead) {
+
+                if($lead->time != null) {
+                
+                    return view('recruiting.choose_time')->with([
+                        'view' => 2,
+                        'msg' => 'Поздравляем вас, '. $lead->name . '! Вам назначена стажировка. <br><br>дата: '. date('d.m.Y', strtotime($lead->time) + 3600 * 6) . ' <br>время:'. date('H:i', strtotime($lead->time) + 3600 * 6) .' <br><br>Пожалуйста приходите ровно в это время 😉'
+                    ]);
+                }
 
                 if($request->isMethod('get')) {
 

@@ -19,16 +19,6 @@ class TestMiddleware
 
 
 
-        \Debugbar::disable();
-
-        if (auth()->user() && in_array(auth()->id(), [5]) && env('DEBUGBAR_ENABLED', false)) {
-           // \Debugbar::enable();
-        }
-        else {
-            \Debugbar::disable();
-
-        }
-
 
 
 

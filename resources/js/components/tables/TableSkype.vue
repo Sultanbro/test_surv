@@ -704,6 +704,7 @@ export default {
                 })
                 .then(response => {
 
+                    console.log(response)
                     if(response.data.code == 201) {
                         this.$message.error('Группа не найдена. Обратитесь к разработчику')
                     }

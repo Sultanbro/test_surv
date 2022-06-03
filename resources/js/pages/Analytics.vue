@@ -30,69 +30,7 @@
         <div v-if="!firstEnter">
             <div v-if="this.hasPremission">
                 
-                <div class="wrap">
-                    <template v-if="currentGroup == 42">
-                        <top-gauges :utility_items="utility" :editable="false"  wrapper_class="d-flex"  :key="componentKeys[5]" page="analytics"/>
-                    </template>
-                </div>
-                
-                
                 <a-tabs type="card" v-if="dataLoaded" :defaultActiveKey='active'>
-
-                    <template v-if="currentGroup == 35 || currentGroup == 42 || currentGroup == 56">
-                        <a-tab-pane tab="Сводная" key="1">
-                            
-                            <t-summary-kaspi :data="data" 
-                                :totals="totals" 
-                                :month="monthInfo" 
-                                :currentYear="currentYear" 
-                                :currentGroup="currentGroup"
-                            ></t-summary-kaspi>
-                            <div class="mt-5"></div>
-                            <t-decomposition 
-                                :month="monthInfo"
-                                :data="decomposition"
-                            ></t-decomposition>
-                        </a-tab-pane>
-
-                        <a-tab-pane tab="Подробная" key="2">
-
-                            <a-tabs type="card">
-                                <template v-for="activity in activities"> 
-                                    <a-tab-pane :tab="activity.name" :key="activity.id">
-                                        <t-activity v-if="Number(activity.table) == 1"
-                                            :month="monthInfo"
-                                            :activity="activity"
-                                            :key="activity.id"
-                                            :group_id="currentGroup"
-                                            :work_days="monthInfo.workDays"
-                                            :editable="false"
-                                        ></t-activity>
-
-                                        <t-activity-collection v-else 
-                                            :month="monthInfo"
-                                            :activity="activity"
-                                            :is_admin="false"
-                                            :key="activity.id"
-                                            :price="activity.price"
-                                        ></t-activity-collection>
-                                    </a-tab-pane>
-                                </template>
-
-                                <a-tab-pane tab="Контроль Качества" :key="1233">
-                                    <t-quality-weekly 
-                                        :monthInfo="monthInfo"
-                                        :items="quality"
-                                    ></t-quality-weekly>
-                                </a-tab-pane>
-                            </a-tabs>
-                            
-                        </a-tab-pane> 
-
-                    
-                    </template>
-                    
-                 
 
 
                     <template v-if="currentGroup == 48">
@@ -500,70 +438,7 @@ export default {
                 
                 this.dataLoaded = true
                 this.firstEnter = false
-                if(this.currentGroup == 42) { // kaspi
-                    this.records = response.data.records
-                    this.activities = JSON.parse(response.data.activities)
-                    this.getTotals(response.data)
-                    this.decomposition = response.data.decomposition
-                    this.utility = response.data.utility
-                    this.quality = response.data.quality
-                    this.data = response.data.data
-                }
-
-                if(this.currentGroup == 31) { // dm
-                    this.activities = JSON.parse(response.data.activities)
-                    this.records = response.data.settings
-                    this.totals = response.data.totals
-                    this.decomposition = response.data.decomposition
-                    this.quality = response.data.quality
-                }
-
-                if(this.currentGroup == 58 || this.currentGroup == 59) { // ozon
-                    this.activities = JSON.parse(response.data.activities)
-                    this.records = response.data.settings
-                    this.totals = response.data.totals
-                    this.decomposition = response.data.decomposition
-                    this.utility = response.data.utility
-                    this.quality = response.data.quality
-                }
-
-                if(this.currentGroup == 63) { // Lerua
-                    this.activities = JSON.parse(response.data.activities)
-                    this.records = response.data.settings
-                    this.totals = response.data.totals
-                    this.decomposition = response.data.decomposition
-                    this.quality = response.data.quality
-                }
-
-                if(this.currentGroup == 57) { // homecredit
-                    this.activities = JSON.parse(response.data.activities)
-                    this.records = response.data.settings
-                    this.totals = response.data.totals
-                    this.decomposition = response.data.decomposition
-                    this.utility = response.data.utility
-                    this.quality = response.data.quality
-                }
-
-                if(this.currentGroup == 46) { // tinkoff
-                    this.activities = JSON.parse(response.data.activities)
-                    this.records = response.data.settings
-                    this.totals = response.data.totals
-                    this.decomposition = response.data.decomposition
-                    this.quality = response.data.quality
-                }
-
-                if(this.currentGroup == 53) { // Eurasian Bank 
-                    this.activities = JSON.parse(response.data.activities)
-                    this.records = response.data.settings
-                    this.call_bases = response.data.call_bases
-                    this.coef = response.data.coef
-                    this.totals = response.data.totals
-                    this.decomposition = response.data.decomposition
-                    this.utility = response.data.utility
-                    this.quality = response.data.quality
-                    this.call_bases_key++
-                }
-
+               
                 this.componentKeys[5]++
 
                 if(this.currentGroup == 48) { // recruiting
@@ -591,10 +466,6 @@ export default {
                     this.recruiting.funnels = response.data.funnels
                     this.recruiting.segments = response.data.segments
                     this.decomposition = response.data.decomposition
-
-                    // if(localStorage['recruiter_' + this.id + '_deleted']) {
-                    //     this.deleted = true;
-                    // } 
 
                     this.archived_recruiters = localStorage;
                     
@@ -697,6 +568,6 @@ export default {
     padding: 15px;
 }
 .date-select {
-    width: 250px;
+    width: 250px;  
 }
 </style> 

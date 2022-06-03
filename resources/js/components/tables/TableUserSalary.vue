@@ -399,29 +399,7 @@ export default {
         }
     }
 
-    tr:nth-child(8) {
-        background: #ff33cc7a !important;
-        color: #000 !important;
-
-        td {
-            background: #ff33cc7a !important;
-            font-weight: bold;
-
-            input {
-                font-weight: bold;
-            }
-        }
-    }
-
-    tr:nth-child(15) {
-        background: #ff33cc7a !important;
-        color: #000 !important;
-
-        td {
-            background: #ff33cc7a !important;
-            font-weight: bold;
-        }
-    }
+   
 
 }
 
