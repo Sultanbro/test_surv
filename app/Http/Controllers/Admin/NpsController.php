@@ -37,38 +37,13 @@ class NpsController extends Controller
     }
 
     /**
-     * Страница
-     */
-    public function index()
-    {
-        View::share('menu', 'timetrackingnps');
-
-        $superusers = [5,18, 157];
-        $users = User::where('roles', 'like', '%"page-nps":"on"%')->pluck('id')->toArray();
-        $users = array_unique(array_merge($users, $superusers));
-
-        $has_access = in_array(Auth::user()->id, $users);
-        if(!$has_access) {
-            abort(404);
-        }
-
-        return view('admin.nps');
-    }
-
-    /**
      * Страница  axios
      * @method POST
      */
     public function fetch(Request $request)
     {
-        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
-        $users = User::where('roles', 'like', '%"page-top":"nps"%')->pluck('id')->toArray();
-        $users = array_unique(array_merge($users, $superusers));
-
-        $has_access = in_array(Auth::user()->id, $users);
-        if(!$has_access) {
-            abort(404);
-        }
+        
+    
 
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
 

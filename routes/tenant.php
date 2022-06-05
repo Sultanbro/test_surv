@@ -241,10 +241,8 @@ Route::middleware([
 
     Route::get('/bonus', [IndexController::class, 'bonus']);
     Route::any('/bonus/update/{id}', [IndexController::class, 'bonusUpdate']);
-    Route::get('/userroles', [IndexController::class, 'userroles']);
-    Route::any('/userroles/update/{id}', [IndexController::class, 'userrolesUpdate']);
     Route::any('/max-session', [IndexController::class, 'maxSession']);
-    Route::any('/passwords', [IndexController::class, 'passwords']);
+
     Route::get('/user/delete/{id}', [IndexController::class, 'deleteUser']);
 
 

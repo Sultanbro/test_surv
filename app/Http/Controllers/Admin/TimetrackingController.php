@@ -102,19 +102,7 @@ class TimetrackingController extends Controller
             return redirect()->back();
         }
 
-        $roles = Auth::user()->roles ? Auth::user()->roles : [];
         
-
-        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
-
-        if(!in_array(Auth::user()->id, $superusers)) {
-
-            if(array_key_exists('page22', $roles) && $roles['page22'] == 'on') {} 
-            elseif(array_key_exists('persons', $roles) && $roles['persons'] == 'on' && $active_tab == 1) {} 
-            else {
-                return redirect('/');
-            }
-        }
 
         $corpbooks = [];
         if($active_tab == 3) {
@@ -1260,50 +1248,15 @@ class TimetrackingController extends Controller
     public function usereditreports(Request $request)
     {
 
-        if($request->page == 'page-top') {
-            
-            $users = User::where('roles', 'like', '%"page-top":"on"%')->get();
-
-            foreach ($users as $user) {
-                $arr = $user->roles;
-                $arr['page-top'] = null;
-                $user->roles = $arr;
-                $user->save();
-            }
-
-            foreach ($request->users as $_user) {
-                $user = User::find($_user['id']);
-                if($user) {
-                    if($user->roles) {
-                        $arr = $user->roles;
-                        $arr['page-top'] = 'on';
-                        $user->roles = $arr;
-                    } else {
-                        $user->roles = ['page-top' => 'on'];
-                    }
-                    $user->save();
-                }
-            }
-        } else {
+      
             $group = ProfileGroup::find($request['group_id']);
 
             $editors_id = [];
 
             foreach ($request->users as $user) {
                 $editors_id[] = $user['id'];
-                
-                $user = User::find($user['id']);
-                if($user) {
-                    if($user->roles) {
-                        $arr = $user->roles;
-                        $arr['page21'] = 'on';
-                        $user->roles = $arr;
-                    } else {
-                        $user->roles = ['page21' => 'on'];
-                    }
-                    $user->save();
-                } 
             }
+
             if($group->editors_id == null) $group->editors_id = [];
             $old_editors = json_decode($group->editors_id);
             $group->editors_id = json_encode(array_unique($editors_id));
@@ -1318,41 +1271,22 @@ class TimetrackingController extends Controller
             } 
             $all_editors = array_unique($all_editors);
 
-            foreach($old_editors as $older) {
-                if(!in_array($older, array_unique($all_editors))) {
-                    $user = User::find($older);
-                    if($user && $user->roles) {
-                        $arr = $user->roles;
-                        $arr['page21'] = null;
-                        $user->roles = $arr;
-                        $user->save();
-                    } 
-                }
-            }
-
-        
-        }
-        
-
         return $request->users;
     }
 
     public function modalcheckuserrole(Request $request)
     {
-        if($request->page == 'page-top') {
-            $users = [];
-            $users = User::where('roles', 'like', '%"page-top":"on"%')->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
+        
+        $group = ProfileGroup::find($request['group_id']);
+
+        $editors_id = json_decode($group->editors_id);
+        if (is_array($editors_id) && count($editors_id)) {
+
+            $users = User::whereIn('id', $editors_id)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
         } else {
-            $group = ProfileGroup::find($request['group_id']);
-
-            $editors_id = json_decode($group->editors_id);
-            if (is_array($editors_id) && count($editors_id)) {
-
-                $users = User::whereIn('id', $editors_id)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
-            } else {
-                $users = [];
-            }
+            $users = [];
         }
+        
 
         return $users;
     }

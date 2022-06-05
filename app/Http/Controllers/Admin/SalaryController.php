@@ -691,13 +691,6 @@ class SalaryController extends Controller
     public function exportExcel(Request $request)
     {
 
-        $roles = Auth::user()->roles ? Auth::user()->roles : [];
-        if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
-        else {
-            return redirect('/');
-        }
-
-        // if(Auth::user()->id == 5) dump(now());
         $rules = [
             'year' => 'required',
             'month' => 'required',

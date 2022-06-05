@@ -75,31 +75,6 @@ class UserController extends Controller
         $this->middleware('auth');
     }
 
-    public $roles = [
-        "page1" => null,
-        "page2" => null,
-        "page3" => null,
-        "page4" => null,
-        "page5" => null,
-        "page6" => null,
-        "page7" => null,
-        "page8" => null,
-        "page9" => null,
-        "page10" => null,
-        "page11" => null,
-        "page12" => null,
-        "page13" => null,
-        "page14" => null,
-        "page15" => null,
-        "page16" => null,
-        "page17" => null,
-        "page18" => null,
-        "page19" => null,
-        "page20" => null,
-        "page21" => null, // Учет времени
-        "page22" => null,
-    ];
-
     public function surv(Request $request)
     {
         View::share('menu', 'timetrackinguser');
@@ -1651,9 +1626,6 @@ class UserController extends Controller
       
         $zarplata = !is_null($user->zarplata) && !is_null($user->zarplata->zarplata) ? $user->zarplata->zarplata : 0;
         
-        if (is_null($user->roles) || $user->roles == '') {
-            $user->roles = $this->roles;
-        }
 
         /*==============================================================*/
         /********** Проверка новой почты существует ли  */
@@ -2363,13 +2335,8 @@ class UserController extends Controller
         View::share('title', 'Сотрудник восстановлен');
         View::share('menu', 'timetrackinguser');
 
-        $roles = Auth::user()->roles ? Auth::user()->roles : [];
-        
-        if((array_key_exists('page22', $roles) && $roles['page22'] == 'on') || (array_key_exists('persons', $roles) && $roles['persons'] == 'on')) {
-            return view('admin.users.create', $this->preparePersonInputs($request->id));
-        }  else {
-            return redirect('/');
-        }
+      
+        return view('admin.users.create', $this->preparePersonInputs($request->id));
     }
 
     protected function mail($to, $template, $subject, $data)

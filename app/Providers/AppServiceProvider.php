@@ -70,7 +70,7 @@ class AppServiceProvider extends ServiceProvider
                
 
                 $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
-                $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('id')->toArray();
+                $users = [];
                 $users = array_unique(array_merge($users, $superusers));
 
 

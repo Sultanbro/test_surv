@@ -74,16 +74,7 @@ class TopController extends Controller
      */
     public function fetch(Request $request)
     {   
-        $superusers = [5,18];
-        $users = User::where('roles', 'like', '%"page-top":"on"%')->pluck('id')->toArray();
-        $users = array_unique(array_merge($users, $superusers));
-        
-        
-        $has_access = in_array(Auth::user()->id, $users);
-        if(!$has_access) {
-            abort(404);
-        }
-
+    
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
         
         $this->groups = ProfileGroup::where('has_analytics', 1)->get()->pluck('id')->toArray();
