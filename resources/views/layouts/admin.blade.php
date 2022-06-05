@@ -62,7 +62,7 @@
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
 <!-- <script src="/js/manifest.js"></script>
 <script src="/js/vendor.js"></script>  -->
-<script src="/js/app.js?19"></script>
+<script src="{{ url('/js/app.js') }}"></script>
 
 
 @include('includes.admin_notifications_css_js')

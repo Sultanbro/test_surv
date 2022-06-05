@@ -17,7 +17,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'App\Model' => 'App\Policies\ModelPolicy',
+        \App\ProfileGroup::class => \App\Policies\ProfileGroupPolicy::class,
     ];
 
     /**
@@ -30,6 +30,10 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
        
+        // Gate::before(function ($user, $ability) {
+        //     return $user->is_admin == 1366  ? true : null;
+        // });
+
 
         // Gate::define('partner', function ($user) {
         //     $partner = Partner::where('user_id', $user->id)->first();

@@ -19,12 +19,12 @@ use App\TimetrackingHistory;
 use App\Http\Controllers\IntellectController as IC;
 use App\Classes\Helpers\Phone;
 use App\ProfileGroupUser as PGU;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Contracts\Auth\Access\Authorizable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Authorizable
 {
-    use SoftDeletes;
-    use Notifiable;
-    use HasFactory;
+    use SoftDeletes,Notifiable,HasFactory,HasRoles;
 
     const USER_TYPE_OFFICE = 'office';
     const USER_TYPE_REMOTE = 'remote';
@@ -34,10 +34,6 @@ class User extends Authenticatable
     public $timestamps = true;
 
     protected $primaryKey = 'id';
-
-    protected $casts = [
-        'roles' => 'array',
-    ];
 
     protected $fillable = [
         'name',

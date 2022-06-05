@@ -406,6 +406,10 @@ $('#setRead').click(function() {
   animation: pulse 1s ease-out infinite;
 }
 
+.kolokolchik {
+  right: 534px;
+}
+
 .marker {
   position: absolute;
   top: -5px;
@@ -443,4 +447,20 @@ $('#setRead').click(function() {
       opacity: 0.0;
   }
 } 
+
+
+.bgpanel {
+  display: none;
+}
+.bgpanel.active {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: none;
+    z-index: 8888;
+}
+
 </style>

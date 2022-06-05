@@ -11,7 +11,7 @@ class UsersImport implements WithMultipleSheets
     public function __construct($data, $group)
     {
 
-
+        //dd($data['counter']);
         $this->data = $data;
         $this->group = $group;
     }
@@ -21,7 +21,8 @@ class UsersImport implements WithMultipleSheets
         //dd($matches);
         $collections = [];
         foreach($this->data as $list) {
-            $collections[] = new UsersExport($list['name'], $list['headings'],$list['sheet']);
+            //dd($list['counter']);
+            $collections[] = new UsersExport($list['name'], $list['headings'],$list['sheet'],$this->group,$list['counter']);
         }
         return $collections;
     }

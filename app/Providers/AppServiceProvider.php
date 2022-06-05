@@ -22,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
         //  Instead of Tailwind 
        //Paginator::useBootstrap();
 
+        \Schema::defaultStringLength(125);
+
         \View::composer('layouts.admin', function($view) {
 
             if(!\Auth::guest()) {
@@ -115,47 +117,6 @@ class AppServiceProvider extends ServiceProvider
             }
 
         });
-
-
-        // \View::composer('layouts.app', function($view) {
-
-        //     if(!\Auth::guest()) {
-
-        //         $user =  auth()->user();
-        //         $user_id = $user->id;
-
-        //         $unread_notifications = Notification::whereNotIn('id', function($query) use ($user_id) {
-        //             $query->select('notification_id')
-        //                 ->from('read_notifications')
-        //                 ->where('user_id', $user_id);
-        //         })
-        //             ->where('created_at', '>', $user->created_at)
-        //             ->orderBy('created_at', 'desc')
-        //             ->get();
-
-        //         $read_notifications = Notification::whereIn('id', function($query) use ($user_id) {
-        //             $query->select('notification_id')
-        //                 ->from('read_notifications')
-        //                 ->where('user_id', $user_id);
-        //         })
-        //             ->where('created_at', '>', $user->created_at)
-        //             ->orderBy('created_at', 'desc')
-        //             ->get();
-
-        //         $unread = $unread_notifications->count();
-        //         $unread = $unread ? '+'.$unread : 0;
-
-        //         $view->with([
-        //             'unread_notifications' => $unread_notifications,
-        //             'read_notifications' => $read_notifications,
-        //             'unread' => $unread,
-        //         ]);
-
-
-        //     }
-
-        // });
-
 
     }
 

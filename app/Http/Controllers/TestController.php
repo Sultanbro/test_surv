@@ -16,19 +16,25 @@ use App\Models\Analytics\UserStat;
 use App\Models\QuartalBonus;
 use App\KnowBase;
 use App\Models\Books\Book;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
-class TestController extends Controller {
+class TestController extends Controller { 
  
 	public function test() {
-		$a = User::with([
-			'user_description' => function($q){
-				$q->where('is_trainee', 0);
-			}
-		])
-		->whereIn('id', [5,4444,18])
-		->get();
-		
-		dd($a);
+		// $role = Role::where(['name' => 'writer'])->first();
+        // $permission = Permission::where(['name' => 'edit articles'])->first();
+
+		// $role->givePermissionTo($permission);
+		// $permission->assignRole($role);
+
+	
+		 
+		$a = auth()->user();
+		//$a->assignRole('writer');
+		// dd($a);
+		dump('Shakerчф');
+		dd($a->can('edit articles'));
 	}  
 
 	public function hhRefresher() {
