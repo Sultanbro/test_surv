@@ -38,7 +38,7 @@ use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedSalary;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use App\Exports\UsersExport;
+use App\Imports\UsersImport;
 
 class SalaryController extends Controller
 {
@@ -690,6 +690,7 @@ class SalaryController extends Controller
 
     public function exportExcel(Request $request)
     {
+
         $roles = Auth::user()->roles ? Auth::user()->roles : [];
         if(array_key_exists('page21', $roles) && $roles['page21'] == 'on') {}
         else {
@@ -710,7 +711,7 @@ class SalaryController extends Controller
         }
 
         $group = ProfileGroup::find($request->group_id);
-
+        //dd($group);
         $users_ids = [];
         if (!empty($group) && $group->users != null) {
            // $users_ids = json_decode($group->users);
@@ -722,6 +723,7 @@ class SalaryController extends Controller
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
         if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
+            
             return [
                 'error' => 'access',
             ];
@@ -828,7 +830,6 @@ class SalaryController extends Controller
             'headings' => $headings,
             'counter' => count($working_users['users']) - 1
         ];
-
          //dd($data);
 
         // if(Auth::user()->id == 5) dump(now());
@@ -996,9 +997,9 @@ class SalaryController extends Controller
 
         */
 
-     
-
-        return Excel::download(new UsersExport($myusers),'users.xlsx');
+        
+       
+        return Excel::download(new UsersImport($data, $group),'Начисления ' . $edate .' "'.$group->name . '".xls');
         //dd(array_keys($data));
         //return $data['users'];
         //return Excel::download(new UsersExport, 'users.xlsx');
@@ -1007,8 +1008,8 @@ class SalaryController extends Controller
 
     private function getSheet($users_ids, $date, $group_id) {
     
-        $users = \DB::table('users')
-            ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
+        //$users = \DB::table('users')
+        $users = User::join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
             ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
             ->leftjoin('timetracking as t', 't.user_id', '=', 'users.id')

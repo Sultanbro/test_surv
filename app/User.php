@@ -250,7 +250,7 @@ class User extends Authenticatable
                 array_push($_groups, $group);  
             }
         }
-
+        
         return $_groups;
     }
 

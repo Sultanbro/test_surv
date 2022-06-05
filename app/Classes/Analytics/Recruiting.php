@@ -1082,14 +1082,14 @@ class Recruiting
             $staff[0]['m'.$i] = 0;
             if(array_key_exists($i, $users_on)) {
                 foreach($users_on[$i] as $u) {
-                    $staff[0]['m'.$i] += $u['full_time'] == 1 ? 1 : 0.5;
+                    $staff[0]['m'.$i] += $u->full_time == 1 ? 1 : 0.5;
                 }
             }
          
             $staff[1]['m'.$i] = 0;
             if(array_key_exists($i, $users_off)) {
                 foreach($users_off[$i] as $u) {
-                    $staff[1]['m'.$i] += $u['full_time'] == 1 ? 1 : 0.5;
+                    $staff[1]['m'.$i] += $u->full_time == 1 ? 1 : 0.5;
                 }
             }
             
@@ -1151,7 +1151,9 @@ class Recruiting
             $total_fired = 0;
             foreach ($users as $key => $user) {
 
-                $worked = $user->wasPartOfTeam();
+                $_user = User::withTrashed()->find($user->id);
+                if(!$user) continue;
+                $worked = $_user->wasPartOfTeam();
 
                 // which cat to count user
                 switch ($worked) {
