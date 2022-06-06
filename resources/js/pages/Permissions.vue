@@ -6,10 +6,6 @@
 <!-- Главная страница -->
 <section v-if="role == null">
   <div class="d-flex mb-3">
-      <button class="btn btn-default btn-sm" @click="addRole">Добавить роль</button>
-  </div>
-  
-  <div class="d-flex mb-3">
     <div class="list">
       <div class="item d-flex contrast">
         <div class="person"><b>Пользователь</b></div>
@@ -46,12 +42,12 @@
     <!-- Показать все роли -->
     <div class="roles-list">
       <div class="roles">
-        <div class="contrast"><b>Список ролей</b></div>
+        <div class="contrast role-title"><b>Список ролей</b></div>
         <div class="item d-flex" v-for="(item, i) in roles" :key="i">
           <div class="name" @click="editRole(i)">{{ item.name }}</div> 
           <div class="actions">
-              <button class="btn btn-default btn-sm" @click="editRole(i)"><i class="fa fa-edit" /></button>
-              <button class="btn btn-default btn-sm" @click="deleteRole(i)"><i class="fa fa-times" /></button>
+            <i class="far fa-edit" @click="editRole(i)" />
+            <i class="fa fa-times" @click="deleteRole(i)"/>
           </div>
         </div>
       </div>
@@ -70,24 +66,26 @@
 <section v-if="role && !showRoles">
   <div class="d-flex mb-3">
     <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
-      <button class="btn btn-info btn-sm" @click="showRolesPage">Роли</button>
   </div>
 
- 
   <input type="text" v-model="role.name" class="role-title mb-3" />
 
-
   <div class="pages">
+    <div class="item d-flex">
+      <div class="name mr-3">Страница</div>
+      <div class="check d-flex">Просмотр</div>
+      <div class="check d-flex">Редактирование</div>
+    </div>
     <div class="item d-flex" v-for="(page, i) in pages" :key="i">
       <div class="name mr-3">{{page.name}}</div>
       <div class="check d-flex">
           <label class="mr-3 pointer">
             <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox"  />
-            <i class="fa fa-eye"></i>
           </label>
+      </div>
+        <div class="check d-flex">
           <label class="mr-3 pointer">
             <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox"  />
-            <i class="fa fa-edit"></i>
           </label>
       </div>
     </div>
@@ -270,7 +268,7 @@ export default {
     deleteRole(i) {
 
        if(!confirm('Вы уверены удалить роль?')) {
-         return null;
+         return null; 
        }
 
       if(this.roles[i].id == null) {

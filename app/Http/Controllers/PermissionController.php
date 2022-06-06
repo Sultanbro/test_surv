@@ -160,4 +160,11 @@ class PermissionController extends Controller
         if($user)   $user->removeRole();
         
     }
+
+    public function deleteRole(Request $request) {
+
+        //$users = User::
+        if($user)   $user->removeRole();
+        
+    }
 }
