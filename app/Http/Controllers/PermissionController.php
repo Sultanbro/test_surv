@@ -24,6 +24,7 @@ class PermissionController extends Controller
         $roles = Role::with('permissions')->get(['name', 'id']); 
 
 
+
         foreach($roles as $role) {
             $arr = [];
             foreach ($role->permissions as $key => $perm) {
@@ -32,12 +33,33 @@ class PermissionController extends Controller
 
             $role->perms = $arr;
         }
+
+        $items = [];
+        // this.items = [ 
+        //     {
+        //       user: {
+        //         id: 5,
+        //         name: 'ALi'
+        //       },
+        //       role: {
+        //         id: 1,
+        //         name: 'writerro'
+        //       },
+        //       groups: [
+        //         {
+        //           id: 42,
+        //           name: 'Kaspi'
+        //         }
+        //       ]
+        //     }
+        //   ];
         
         return [
             'users' => \App\User::whereNull('deleted_at')->get([\DB::raw("CONCAT(last_name,' ',name) as name"), 'id']),
             'groups' => \App\ProfileGroup::get(['name', 'id']),
             'roles' => $roles,
             'pages' => $this->getPages(),
+            'items' => $items
         ];
     }
 
@@ -134,7 +156,7 @@ class PermissionController extends Controller
 
     public function deleteUser(Request $request) {
 
-        $user = \App\User::witgTrashed()->find($request->user['id']);
+        $user = \App\User::withTrashed()->find($request->user['id']);
         if($user)   $user->removeRole();
         
     }

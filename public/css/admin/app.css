@@ -4692,6 +4692,12 @@ body {
   height: calc(100vh - 130px);
 }
 
+/**888888888*/
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 .kb-sections .sections-wrap {
   height: calc(100vh - 94px);
   overflow-y: auto;
@@ -5380,10 +5386,19 @@ body {
   border-right: 1px solid #eee;
 }
 
+.permissions * {
+  font-size: 13px;
+}
+.permissions .contrast {
+  background: #ffd277;
+}
 .permissions .title {
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 20px;
+}
+.permissions .list {
+  width: 100%;
 }
 .permissions .list .item {
   padding: 5px 15px;
@@ -5407,13 +5422,19 @@ body {
 .permissions .list .item .actions {
   width: 10%;
 }
+.permissions .roles-list {
+  width: 300px;
+  margin-left: 15px;
+}
 .permissions .roles .item .name {
-  font-size: 20px;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 .permissions .roles .item .name:hover {
   color: #004dff;
+}
+.permissions .roles .item .actions {
+  font-size: 12px;
 }
 .permissions .role-title {
   font-size: 20px;

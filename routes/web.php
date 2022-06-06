@@ -39,6 +39,3 @@ Route::post('/projects/update', [TenantController::class, 'update']);
 
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-
-
-Route::any('/timetracking/analytics/invite-users', [GroupAnalyticsController::class, 'inviteUsers']); // Приглашение стажеров

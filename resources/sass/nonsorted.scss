@@ -751,3 +751,10 @@ body {
     overflow-y: auto;
     height: calc(100vh - 130px);
 }
+
+
+/**888888888*/
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}

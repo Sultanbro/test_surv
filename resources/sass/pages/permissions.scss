@@ -1,5 +1,11 @@
 .permissions {
 
+  * {
+    font-size: 13px;
+  }
+  .contrast {
+    background: #ffd277;
+  }
   .title {
     font-size: 24px;
     font-weight: 600;
@@ -7,7 +13,7 @@
   }
 
   .list {
-
+    width: 100%;
 
     .item {
       padding: 5px 15px;
@@ -37,15 +43,23 @@
     }
   }
 
+  .roles-list {
+    width: 300px;
+    margin-left: 15px;
+  }
+
   .roles {
     .item {
       .name {
-        font-size: 20px;
         cursor: pointer;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
         &:hover {
           color:#004dff;
         }
+      }
+
+      .actions {
+        font-size: 12px;
       }
     }
   }

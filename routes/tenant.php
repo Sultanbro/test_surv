@@ -236,6 +236,7 @@ Route::middleware([
     Route::post('/permissions/update-role', [PermissionController::class, 'updateRole']);
     Route::post('/permissions/update-user', [PermissionController::class, 'updateUser']);
     Route::post('/permissions/delete-user', [PermissionController::class, 'deleteUser']);
+    Route::post('/permissions/delete-role', [PermissionController::class, 'deleteRole']);
 
 
 
