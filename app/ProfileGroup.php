@@ -177,6 +177,7 @@ class ProfileGroup extends Model
         $g = [];
 
         foreach ($groups as $key => $group) {
+            if($group->users == null) continue;
             if(in_array($user_id, json_decode($group->users))) {
                 array_push($g, $group->id);
             }
@@ -195,7 +196,10 @@ class ProfileGroup extends Model
         $users = [];
 
         if($user_types == 0 || $user_types == 1) {
-            $users = json_decode($group->users);
+            $group_users = json_decode($group->users);
+            if($group->users == null) $group_users = [];
+            
+            $users = $group_users;
             
             $users = \DB::table('users')
                 ->whereNull('deleted_at')

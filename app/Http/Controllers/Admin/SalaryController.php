@@ -690,7 +690,8 @@ class SalaryController extends Controller
 
     public function exportExcel(Request $request)
     {
-
+       
+        // if(Auth::user()->id == 5) dump(now());
         $rules = [
             'year' => 'required',
             'month' => 'required',
@@ -702,21 +703,20 @@ class SalaryController extends Controller
         if ($validator->fails()) {
             return redirect()->to('/timetracking/salaries')->withErrors('Поля не введены');
         }
-
+        //dd($request->group_id);
         $group = ProfileGroup::find($request->group_id);
-        //dd($group);
+
         $users_ids = [];
         if (!empty($group) && $group->users != null) {
            // $users_ids = json_decode($group->users);
             if($group) $users_ids = json_decode($group->users, true);
         }
-
+        //dd($users_ids);
         $currentUser = User::bitrixUser();
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
         if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
-            
             return [
                 'error' => 'access',
             ];
@@ -731,13 +731,16 @@ class SalaryController extends Controller
      
 
         // if(Auth::user()->id == 5) dump(now());
-
-        $working_users = \DB::table('users')
-            ->whereNull('deleted_at')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('ud.is_trainee', 0)
+   
+        $working_users = DB::table('users')
+            
+            ->leftJoin('user_descriptions', 'user_descriptions.user_id', '=', 'users.id')
+            ->whereNull('users.deleted_at')
+            ->where('is_trainee', 0)
             ->whereIn('users.id', $users_ids);
 
+
+        //dd($working_users);
 
 
             /////////////
@@ -755,7 +758,6 @@ class SalaryController extends Controller
                     }
                 } 
             }
-            
             $salary_users = Salary::whereYear('date', $request->year)
                 ->whereMonth('date', $request->month)
                 ->whereIn('user_id', $fired_users)
@@ -771,9 +773,7 @@ class SalaryController extends Controller
        
             ///////////
       
-
-        $working_users = $working_users->get()->pluck('id')->toArray();
-        
+        $working_users = $working_users->get(['users.id'])->pluck('id')->toArray();
         $headings = [
             'ФИО', // 0
             'На карте', // 1
@@ -807,22 +807,26 @@ class SalaryController extends Controller
         if($date->format('Y-m-d') == '2022-04-01' && $request->group_id == 53) {
             array_push($working_users, 11250);
         }
-        //dd($working_users);
+       
         $myusers = $working_users;
+
+        //dd($fired_users);
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
 
-       
-        $_users = array_merge($working_users['users'], [[],[],[]]);
-        $_users = array_merge($_users, $fired_users['users']);
+            //dd($fired_users);
         
-       
+        $_users = array_merge([['']],$working_users['users']);
+        $_users = array_merge($_users, [[''],[''],['']]);
+        $_users = array_merge($_users, $fired_users['users']);
+        //dd(count($_users)-4);
         $data[0] = [
             'name' => 'Действующие и Уволенные',
             'sheet' => $_users,
             'headings' => $headings,
             'counter' => count($working_users['users']) - 1
         ];
+
          //dd($data);
 
         // if(Auth::user()->id == 5) dump(now());
@@ -990,9 +994,9 @@ class SalaryController extends Controller
 
         */
 
-        
-       
-        return Excel::download(new UsersImport($data, $group),'Начисления ' . $edate .' "'.$group->name . '".xls');
+     
+
+        return Excel::download(new UsersImport($data,$group),'users.xlsx');
         //dd(array_keys($data));
         //return $data['users'];
         //return Excel::download(new UsersExport, 'users.xlsx');
@@ -1000,9 +1004,9 @@ class SalaryController extends Controller
     }
 
     private function getSheet($users_ids, $date, $group_id) {
-    
-        //$users = \DB::table('users')
-        $users = User::join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
+        //dd($users_ids);
+        $users = \DB::table('users')
+            ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
             ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
             ->leftjoin('timetracking as t', 't.user_id', '=', 'users.id')
@@ -1061,9 +1065,9 @@ class SalaryController extends Controller
         $data['users'] = [];
         
         foreach ($users as $user) { /** @var User $user */
-            
-            
-            $ugroups = $user->inGroups();
+
+            $_user = User::withTrashed()->find($user->id);
+            $ugroups = $_user->inGroups();
 
             if(count($ugroups) > 0) {
                 if($ugroups[0]->id != $group_id) {
@@ -1073,9 +1077,10 @@ class SalaryController extends Controller
 
             
             // Вычисление даты принятия
-            $user_applied_at = $user->applied_at();
+            $user_applied_at = $_user->applied_at();
 
             $ud = UserDescription::where('user_id', $user->id)->first();
+
             if($ud && $ud->is_trainee != 0) {
                 continue;
             } 
@@ -1101,7 +1106,7 @@ class SalaryController extends Controller
             $edited_salary_amount = $edited_salary ? $edited_salary->amount : 0;
 
             // Почасовая оплата
-            $hourly_pay = $user->hourly_pay($date->format('Y-m-d'));
+            $hourly_pay = $_user->hourly_pay($date->format('Y-m-d'));
             
             // Карты и держатели карт
             $cards = '';
@@ -1181,8 +1186,10 @@ class SalaryController extends Controller
             
             
             
-            $workedHours = round($workedHours / 60, 2);
+           
+            
             $workedDays = round($workedHours / $user->workTime, 2);
+            
                 // if($user->id == 10242) {
                 //     dump($user_applied_at);
                 //     dump($workedHours);
@@ -1222,19 +1229,24 @@ class SalaryController extends Controller
             //$salary = round($workedHours * $hourly_pay, 2);
 
             $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id]);
- 
-            $arrs = $salary_table['users'][0];
+            
             $salary = 0;
             $trainee_fees = 0;
-            for($i =1;$i<=$date->daysInMonth;$i++) {
-                if($arrs->trainings[$i]) {
-                    $trainee_fees += $arrs->earnings[$i] ?? 0;
-                } else {
-                    $salary += $arrs->earnings[$i] ?? 0;
-                    
-                }
-            }   
+           
             
+            if(count($salary_table['users']) > 0) {
+                $arrs = $salary_table['users'][0];
+                for($i =1;$i<=$date->daysInMonth;$i++) {
+                    if($arrs->trainings[$i]) {
+                        $trainee_fees += $arrs->earnings[$i] ?? 0;
+                    } else {
+                        $salary += $arrs->earnings[$i] ?? 0;
+                        
+                    }
+                }   
+            }
+           
+           
 
             // if($user->id == 10230) {
             //         dump($workedHours);

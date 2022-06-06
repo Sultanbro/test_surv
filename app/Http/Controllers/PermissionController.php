@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\User;
+use App\ProfileGroup;
 
 class PermissionController extends Controller
 {
@@ -19,10 +21,22 @@ class PermissionController extends Controller
 
     public function get(Request $request)
     {   
+        $roles = Role::with('permissions')->get(['name', 'id']); 
+
+
+        foreach($roles as $role) {
+            $arr = [];
+            foreach ($role->permissions as $key => $perm) {
+                $arr[$perm->name] = true;
+            }
+
+            $role->perms = $arr;
+        }
+        
         return [
             'users' => \App\User::whereNull('deleted_at')->get([\DB::raw("CONCAT(last_name,' ',name) as name"), 'id']),
             'groups' => \App\ProfileGroup::get(['name', 'id']),
-            'roles' => Role::with('permissions')->get(['name', 'id']),
+            'roles' => $roles,
             'pages' => $this->getPages(),
         ];
     }
@@ -48,17 +62,18 @@ class PermissionController extends Controller
 
     public function updateUser(Request $request) {
 
-        $user = User::withTrashed()->find($request->user['id']);
+        $user = User::withTrashed()->find($request->item['user']['id']);
         
         if($user) {
-            $this->assignGroups($user->id, $request->groups);
-            $role = Role::find($request->role['id']);
+            $this->assignGroups($user->id, $request->item['groups']);
+            $role = Role::find($request->item['role']['id']);
             if($role) $user->assignRole($role->name);
         }
     }
 
     private function assignGroups($user_id, $items)
     {
+        if($items == null) $items = [];
         $groups = ProfileGroup::get();
 
         foreach ($groups as $key => $group) {
@@ -96,16 +111,20 @@ class PermissionController extends Controller
         $role->save();
 
         foreach ($this->getPages() as $key => $page) {
+            
             $permission = $page['key'] . '_view';
-            if(in_array($permission, $request->role['permissions'])) {
-                $role->givePermissionTo($permission);         
+            // dump($permission);
+            // dump($request->permissions);
+            if(in_array($permission, $request->permissions)) {
+                $role->givePermissionTo($permission);       
             } else {
+             
                 $role->revokePermissionTo($permission);
             }
             
             $permission = $page['key'] . '_edit';
-            if(in_array($permission, $request->role['permissions'])) {
-                $role->givePermissionTo($permission);         
+            if(in_array($permission, $request->permissions)) {
+                $role->givePermissionTo($permission);          
             } else {
                 $role->revokePermissionTo($permission);
             }

@@ -56,11 +56,11 @@
       <div class="name mr-3">{{page.name}}</div>
       <div class="check d-flex">
           <label class="mr-3 pointer">
-            <input class="pointer" v-model="permissions[page.key + '-view']"  type="checkbox" />
+            <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox"  />
             <i class="fa fa-eye"></i>
           </label>
           <label class="mr-3 pointer">
-            <input class="pointer" v-model="permissions[page.key + '-edit']"  type="checkbox" />
+            <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox"  />
             <i class="fa fa-edit"></i>
           </label>
       </div>
@@ -135,24 +135,7 @@ export default {
           this.groups = response.data.groups;
           this.pages = response.data.pages;
 
-          this.items = [ 
-              {
-                user: {
-                  id: 5,
-                  name: 'ALi'
-                },
-                role: {
-                  id: 1,
-                  name: 'writerro'
-                },
-                groups: [
-                  {
-                    id: 42,
-                    name: 'Kaspi'
-                  }
-                ]
-              }
-            ];
+        
 
 
           loader.hide();
@@ -177,7 +160,6 @@ export default {
       this.showEditRole = true;
 
       let role = this.roles[i];
-      this.permissions  = role.permissions
       this.role = role;
       this.showRoles = false;
     }, 
@@ -197,17 +179,26 @@ export default {
 
     updateRole() {
       let loader = this.$loading.show();
-       axios
-        .post( '/permissions/update-role', {
-          role: this.role
+      
+      this.permissions = [];
+      Object.keys(this.role.perms).forEach((el, index) => {
+        this.permissions.push(el)
+      });
+
+
+
+      axios
+        .post('/permissions/update-role', {
+          role: this.role,  
+          permissions: this.permissions
         })
         .then((response) => {
-
+        
           let index = this.roles.findIndex(x => x.id == null);
           if(index != -1) this.roles[index].id = response.data.id;
-          loader.hide();
-           this.$message.success('Роль сохранена!');
-        })
+          loader.hide(); 
+          this.$message.success('Роль сохранена!');
+        }) 
         .catch((error) => {
           loader.hide();
           alert(error);
@@ -241,7 +232,7 @@ export default {
       let loader = this.$loading.show();
        axios
         .post( '/permissions/update-user', {
-          user: item
+          item: item
         })
         .then((response) => {
           loader.hide();

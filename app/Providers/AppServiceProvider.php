@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //  Instead of Tailwind 
-       //Paginator::useBootstrap();
+       Paginator::useBootstrap();
 
         \Schema::defaultStringLength(125);
 
