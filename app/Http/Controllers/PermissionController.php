@@ -26,7 +26,7 @@ class PermissionController extends Controller
 
 
         foreach($roles as $role) {
-            $arr = [];
+            $arr = []; 
             foreach ($role->permissions as $key => $perm) {
                 $arr[$perm->name] = true;
             }
@@ -35,6 +35,10 @@ class PermissionController extends Controller
         }
 
         $items = [];
+
+
+
+
         // this.items = [ 
         //     {
         //       user: {
@@ -55,7 +59,11 @@ class PermissionController extends Controller
         //   ];
         
         return [
-            'users' => \App\User::whereNull('deleted_at')->get([\DB::raw("CONCAT(last_name,' ',name) as name"), 'id']),
+            'users' => \App\User::whereNull('deleted_at')
+                ->whereNotNull('name')
+                ->orWhereNotNull('last_name')
+                ->orderBy('id', 'desc')
+                ->get([\DB::raw("CONCAT(last_name,' ',name) as name"), 'id']),
             'groups' => \App\ProfileGroup::get(['name', 'id']),
             'roles' => $roles,
             'pages' => $this->getPages(),
@@ -84,13 +92,17 @@ class PermissionController extends Controller
 
     public function updateUser(Request $request) {
 
-        $user = User::withTrashed()->find($request->item['user']['id']);
+        foreach ($request->items as $key => $item) {
+            if($item['user']['id'] == null) continue;
+            $user = User::withTrashed()->find($item['user']['id']);
         
-        if($user) {
-            $this->assignGroups($user->id, $request->item['groups']);
-            $role = Role::find($request->item['role']['id']);
-            if($role) $user->assignRole($role->name);
+            if($user) {
+                $this->assignGroups($user->id, $item['groups']);
+                $role = Role::find($item['role']['id']);
+                if($role) $user->assignRole($role->name);
+            } 
         }
+       
     }
 
     private function assignGroups($user_id, $items)
@@ -157,14 +169,14 @@ class PermissionController extends Controller
     public function deleteUser(Request $request) {
 
         $user = \App\User::withTrashed()->find($request->user['id']);
-        if($user)   $user->removeRole();
+        if($user) $user->removeRole();
         
     }
 
     public function deleteRole(Request $request) {
 
-        //$users = User::
-        if($user)   $user->removeRole();
+        
+        if($user) $user->removeRole();
         
     }
 }

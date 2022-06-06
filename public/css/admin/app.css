@@ -5402,9 +5402,13 @@ body::-webkit-scrollbar {
 }
 .permissions .list .item {
   padding: 5px 15px;
-  border: 1px solid #ddd;
+  border: 1px solid #e8eef3;
   align-items: center;
   display: flex;
+  border-bottom: none;
+}
+.permissions .list .item:last-child {
+  border: 1px solid #e8eef3;
 }
 .permissions .list .item .person {
   width: 20%;
@@ -5416,11 +5420,8 @@ body::-webkit-scrollbar {
   padding-right: 15px;
 }
 .permissions .list .item .groups {
-  width: 50%;
+  width: 56%;
   padding-right: 15px;
-}
-.permissions .list .item .actions {
-  width: 10%;
 }
 .permissions .roles-list {
   width: 350px;
@@ -5429,7 +5430,7 @@ body::-webkit-scrollbar {
 .permissions .roles-list .role-title {
   padding: 5px 15px;
   margin-bottom: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #e8eef3;
   align-items: center;
   display: flex;
 }
@@ -5448,21 +5449,28 @@ body::-webkit-scrollbar {
   margin-left: 7px;
 }
 .permissions .role-title {
-  font-size: 20px;
+  font-size: 16px;
   margin-bottom: 20px;
 }
 .permissions .pages .item {
-  border: 1px solid #ddd;
+  border: 1px solid #e8eef3;
+  border-bottom: 0;
   align-items: center;
   display: flex;
   padding: 5px 15px;
+}
+.permissions .pages .item:first-child {
+  font-weight: 700;
+}
+.permissions .pages .item:last-child {
+  border: 1px solid #e8eef3;
 }
 .permissions .pages .name {
   width: 300px;
 }
 .permissions .pages .check {
   width: 120px;
-  padding: 10px;
+  padding: 3px;
   display: flex;
   justify-content: center;
   align-items: center;

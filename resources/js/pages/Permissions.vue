@@ -68,10 +68,10 @@
     <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
   </div>
 
-  <input type="text" v-model="role.name" class="role-title mb-3" />
+  <input type="text" v-model="role.name" class="role-title form-control mb-3" />
 
   <div class="pages">
-    <div class="item d-flex">
+    <div class="item d-flex contrast">
       <div class="name mr-3">Страница</div>
       <div class="check d-flex">Просмотр</div>
       <div class="check d-flex">Редактирование</div>
@@ -79,19 +79,19 @@
     <div class="item d-flex" v-for="(page, i) in pages" :key="i">
       <div class="name mr-3">{{page.name}}</div>
       <div class="check d-flex">
-          <label class="mr-3 pointer">
+          <label class="mb-0 pointer">
             <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox"  />
           </label>
       </div>
         <div class="check d-flex">
-          <label class="mr-3 pointer">
+          <label class="mb-0 pointer">
             <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox"  />
           </label>
       </div>
     </div>
   </div>
 
-  <div class="mt-5">
+  <div class="mt-3">
      <button class="btn btn-success btn-sm" @click="updateRole">Сохранить</button>
   </div>
 </section>
@@ -114,7 +114,15 @@
 <script>
 export default {
   name: "Permissions",
-  data() {
+  watch: {
+    items: {
+      immediate: true, 
+      handler (val, oldVal) {
+        console.log(val)
+      }
+    }
+  },
+  data() { 
     return {
       role: null,
       users: [], // all select
@@ -144,9 +152,6 @@ export default {
           this.groups = response.data.groups;
           this.pages = response.data.pages;
           this.items = response.data.items;
-
-        
-
 
           loader.hide();
         })
@@ -183,7 +188,7 @@ export default {
       this.role = {
         name: 'Test',
         id: null,
-        permissions: {}
+        perms: {}
       }
     },
 
@@ -216,9 +221,14 @@ export default {
     },
 
     deleteItem(i) {
+
+      if(!confirm('Вы точно хотите удалить доступ пользователю?')) {
+         return false; 
+       }
+
       if(this.items[i].user.id == null) {
         this.items.splice(i,1)
-        return null;
+        return false; 
       }
 
       let loader = this.$loading.show();
@@ -239,16 +249,15 @@ export default {
     },
 
     saveItems() {
-
       
-      let item = this.items[i]
+      
       if(item.user == null) return null;
       if(item.role == null) return null;
 
       let loader = this.$loading.show();
        axios
         .post( '/permissions/update-user', {
-          item: item
+          items: this.items,
         })
         .then((response) => {
           loader.hide();
@@ -268,12 +277,12 @@ export default {
     deleteRole(i) {
 
        if(!confirm('Вы уверены удалить роль?')) {
-         return null; 
+         return false; 
        }
 
       if(this.roles[i].id == null) {
         this.roles.splice(i,1);
-        return null;
+        return false; 
       }
 
       let loader = this.$loading.show();

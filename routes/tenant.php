@@ -230,7 +230,7 @@ Route::middleware([
 
 
     Route::get('/permissions', [PermissionController::class, 'index']);
-    Route::get('/permissions/get', [PermissionController::class, 'get']);
+    Route::get('/permissions/get', [PermissionController::class, 'get']); 
 
     Route::post('/permissions/create-role', [PermissionController::class, 'createRole']);
     Route::post('/permissions/update-role', [PermissionController::class, 'updateRole']);
