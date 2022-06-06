@@ -2,12 +2,9 @@
 
 namespace App\Providers;
 
-use App\Auth\CustomUserProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use App\User;
-use App\ProfileGroup;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -31,23 +28,8 @@ class AuthServiceProvider extends ServiceProvider
 
        
         // Gate::before(function ($user, $ability) {
-        //     return $user->is_admin == 1366  ? true : null;
+        //     return $user->is_admin == 1  ? true : null;
         // });
-
-
-        // Gate::define('partner', function ($user) {
-        //     $partner = Partner::where('user_id', $user->id)->first();
-        //     if ($partner === null) {
-        //         return false;
-        //     }
-
-        //     return $partner->is_active;
-        // });
-
-	    // // Binding eloquent.admin to our EloquentAdminUserProvider
-	    // Auth::provider('eloquent.custom', function($app, array $config) {
-		//     return new CustomUserProvider($app['hash'], $config['model']);
-	    // });
 
     }
 }

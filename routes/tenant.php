@@ -90,10 +90,7 @@ Route::middleware([
 
     
     Route::any('/bless', function() {
-       
-           
-            return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-       
+        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
     
     
@@ -234,6 +231,13 @@ Route::middleware([
 
     Route::get('/permissions', [PermissionController::class, 'index']);
     Route::get('/permissions/get', [PermissionController::class, 'get']);
+
+    Route::post('/permissions/create-role', [PermissionController::class, 'createRole']);
+    Route::post('/permissions/update-role', [PermissionController::class, 'updateRole']);
+    Route::post('/permissions/update-user', [PermissionController::class, 'updateUser']);
+    Route::post('/permissions/delete-user', [PermissionController::class, 'deleteUser']);
+
+
 
     Route::get('/test', [TestController::class, 'test'])->name('test');
     Route::get('/wami', [TestController::class, 'send_whatsapp']);

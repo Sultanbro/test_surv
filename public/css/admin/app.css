@@ -5380,6 +5380,55 @@ body {
   border-right: 1px solid #eee;
 }
 
+.permissions .title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.permissions .list .item {
+  padding: 5px 15px;
+  border: 1px solid #ddd;
+  align-items: center;
+  display: flex;
+}
+.permissions .list .item .person {
+  width: 20%;
+  padding-right: 15px;
+}
+.permissions .list .item .role {
+  width: 20%;
+  color: #004dff;
+  padding-right: 15px;
+}
+.permissions .list .item .groups {
+  width: 50%;
+  padding-right: 15px;
+}
+.permissions .list .item .actions {
+  width: 10%;
+}
+.permissions .roles .item .name {
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.permissions .roles .item .name:hover {
+  color: #004dff;
+}
+.permissions .role-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+.permissions .pages .item {
+  border: 1px solid #ddd;
+  align-items: center;
+  display: flex;
+  padding: 5px 15px;
+}
+.permissions .pages .name {
+  width: 300px;
+}
+
 /**** video player */
 .vjs-custom-skin > .video-js {
   width: 100%;

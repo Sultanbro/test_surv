@@ -1,286 +1,128 @@
 <template>
-<div class="d-flex">
-  <div class="lp">
-    <h1 class="page-title">Доступы</h1>
-    <div
-      class="section d-flex aic jcsb my-2"
-      v-for="(course, c_index) in items"
-      :key="course.id"
-      @click="selectCourse(c_index)"
-    >
-      <p class="mb-0">{{ course.name }}</p>
+<div class="p-3 permissions">
 
-      <div class="d-flex">
-        <i
-        class="fa fa-cogs"
-        v-if="course.id != 0"
-        @click.stop="editAccess(c_index)"
-      ></i>
-      <i
-        class="fa fa-trash ml-2"
-        v-if="course.id != 0"
-        @click.stop="deleteCourse(c_index)"
-      ></i>
+<h4 class="title">Настройка доступов</h4>
+
+<!-- Главная страница -->
+<section v-if="!showRoles && role == null">
+  <div class="d-flex mb-3">
+      <button class="btn btn-info btn-sm mr-2" @click="showRolesPage">Роли</button>
+      <button class="btn btn-default btn-sm" @click="addRole">Добавить роль</button>
+  </div>
+  
+  <div class="list">
+    <div class="item d-flex">
+      <div class="person"><b>Пользователь</b></div>
+      <div class="role">Роль</div>
+      <div class="groups">Группы</div>
+      <div class="actions"></div>
+    </div>
+    <div class="item d-flex" v-for="(item, i) in items" :key="i">
+      <div class="person">
+        <v-select :options="users" label="name" v-model="item.user" class="noscrollbar"></v-select>
+      </div>
+      <div class="role">
+        <v-select :options="roles" label="name" v-model="item.role" class="noscrollbar"></v-select>
+      </div>
+      <div class="groups">
+        <v-select :options="groups" label="name" v-model="item.groups" class="noscrollbar" multiple></v-select>
+      </div>
+      <div class="actions d-flex">
+         <button class="btn btn-success btn-sm mr-2" @click="saveItem(i)">Сохранить</button>
+        <button class="btn btn-danger btn-sm" @click="deleteItem(i)">Удалить</button>
       </div>
     </div>
+    <div class=" d-flex mt-3">
+      <button class="btn btn-primary btn-sm" @click="addItem">Добавить пользователя</button>
+    </div>
+  </div>
+</section>
 
-   
+
+
+<!-- Edit роль -->
+<section v-if="role && !showRoles">
+  <div class="d-flex mb-3">
+    <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
+      <button class="btn btn-info btn-sm" @click="showRolesPage">Роли</button>
   </div>
 
 
-  <div class="rp" style="flex: 1 1 0%; padding-bottom: 50px;">
-    <div class="hat">
-      <div class="d-flex jsutify-content-between hat-top">
-        <div class="bc">
-          <a href="#">Доступы</a>
-          <template v-if="activeCourse">
-            <i class="fa fa-chevron-right"></i>
-            <a href="#" >{{ activeCourse.name }}</a>
-          </template>
-          <!---->
-        </div>
-        <div class="control-btns"></div>
+  <input type="text" v-model="role.name" class="role-title mb-3" />
+
+
+  <div class="pages">
+    <div class="item d-flex" v-for="(page, i) in pages" :key="i">
+      <div class="name mr-3">{{page.name}}</div>
+      <div class="check d-flex">
+          <label class="mr-3 pointer">
+            <input class="pointer" v-model="permissions[page.key + '-view']"  type="checkbox" />
+            <i class="fa fa-eye"></i>
+          </label>
+          <label class="mr-3 pointer">
+            <input class="pointer" v-model="permissions[page.key + '-edit']"  type="checkbox" />
+            <i class="fa fa-edit"></i>
+          </label>
       </div>
-    </div>
-    <div class="content mt-3">
-
-
-
-      <b>Это верстка неактуальная</b>
-      <div class="col-12 columnContent " >
-        <div class="row">
-          <div class="col-md-2 columnInnerLeft">
-            Name
-          </div>
-          <div class="col-md-5" >
-            <input class="form-control btn-block" placeholder="Editor"/>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 columnContent " >
-        <div class="row">
-          <div class="col-md-2 columnInnerLeft">
-            Slug
-          </div>
-          <div class="col-md-5" >
-            <input class="form-control btn-block" placeholder="Editor"/>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 columnContent " >
-        <div class="row">
-          <div class="col-md-2 columnInnerLeft">
-            Permissions
-          </div>
-          <div class="col-md-5" >
-
-            <div>
-              <button  class="btn btn-light font-bold">Select all</button>
-              <button  class="btn btn-light font-bold">Do not select any</button>
-            </div>
-
-
-          </div>
-          <div class="col-md-12 p-0 mt-4">
-
-            <div class="col-md-2 offset-2">
-              <p class="font-weight-bold list-checkbox">Product</p>
-              <ul>
-                <li>
-                   <input class="per-inputs" id="view_own_products" type="checkbox" >
-                   <label for="view_own_products" class="label-input" >View own products</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="view_products" type="checkbox"/>
-                  <label for="view_products" class="label-input" >View products</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="manage_own_products" type="checkbox"/>
-                  <label for="manage_own_products" class="label-input">Manage own products</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="manage_products"  type="checkbox"/>
-                  <label for="manage_products" class="label-input">Manage products</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="force_delete_products"  type="checkbox"/>
-                  <label for="force_delete_products" class="label-input">Force Delete products</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="restore_products"  type="checkbox"/>
-                  <label for="restore_products" class="label-input">Restore products</label>
-                </li>
-              </ul>
-            </div>
-
-            <div class="col-md-2 p-0">
-              <p class="font-weight-bold list-checkbox">Category</p>
-              <ul>
-                <li>
-                  <input class="per-inputs" id="view_own_categories" type="checkbox"/>
-                  <label for="view_own_categories" class="label-input" >View own categories</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="view_categories" type="checkbox"/>
-                  <label for="view_categories" class="label-input" >View categories</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="manage_own_categories" type="checkbox"/>
-                  <label for="manage_own_categories" class="label-input">Manage own categories</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="manage_categories"  type="checkbox"/>
-                  <label for="manage_categories" class="label-input">Manage categories</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="force_delete_categories"  type="checkbox"/>
-                  <label for="force_delete_categories" class="label-input">Force Delete categories</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="restore_categories"  type="checkbox"/>
-                  <label for="restore_categories" class="label-input">Restore categories</label>
-                </li>
-              </ul>
-            </div>
-
-            <div class="col-md-2 p-0">
-              <p class="font-weight-bold list-checkbox">Order</p>
-              <ul>
-                <li>
-                  <input class="per-inputs" id="view_own_orders" type="checkbox"/>
-                  <label for="view_own_orders" class="label-input" >View own orders</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="view_orders" type="checkbox"/>
-                  <label for="view_orders" class="label-input" >View orders</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="manage_own_orders" type="checkbox"/>
-                  <label for="manage_own_orders" class="label-input">Manage own orders</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="manage_orders"  type="checkbox"/>
-                  <label for="manage_orders" class="label-input">Manage orders</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="force_delete_orders"  type="checkbox"/>
-                  <label for="force_delete_orders" class="label-input">Force Delete orders</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="restore_orders"  type="checkbox"/>
-                  <label for="restore_orders" class="label-input">Restore orders</label>
-                </li>
-              </ul>
-            </div>
-
-            <div class="col-md-2">
-              <p class="font-weight-bold list-checkbox">User</p>
-              <ul>
-                <li>
-                  <input class="per-inputs" id="view_users" type="checkbox"/>
-                  <label for="view_users" class="label-input" >View users</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="create_users" type="checkbox"/>
-                  <label for="create_users" class="label-input" >Create users</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="edit_users" type="checkbox"/>
-                  <label for="edit_users" class="label-input">Edit user</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="delete_users"  type="checkbox"/>
-                  <label for="delete_users" class="label-input">Delete users</label>
-                </li>
-
-              </ul>
-            </div>
-
-            <div class="col-md-2 pl-0">
-              <p class="font-weight-bold list-checkbox">Role</p>
-              <ul>
-                <li>
-                  <input class="per-inputs" id="view_roles" type="checkbox"/>
-                  <label for="view_roles" class="label-input" >View roles</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="create_roles" type="checkbox"/>
-                  <label for="create_roles" class="label-input" >Create roles</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="edit_roles" type="checkbox"/>
-                  <label for="edit_roles" class="label-input">Editroles</label>
-                </li>
-                <li>
-                  <input class="per-inputs" id="delete_roles"  type="checkbox"/>
-                  <label for="delete_roles" class="label-input">Delete roles</label>
-                </li>
-
-              </ul>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-
-
-
-      <div v-if="activeCourse" class="p-3">
-        <course :id="activeCourse.id" /> 
-      </div>
-
-
-
     </div>
   </div>
 
- 
+  <div class="mt-5">
+     <button class="btn btn-success btn-sm" @click="updateRole">Сохранить</button>
+  </div>
+</section>
+
+
+
+<!-- Показать все роли -->
+<section v-if="showRoles && role == null">
+  <div class="d-flex mb-3">
+    <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
+      <button class="btn btn-info btn-sm" @click="addRole">Добавить роль</button>
+  </div>
+
+  
+
+  <div class="roles">
+    <div class="item" v-for="(item, i) in roles" :key="i">
+      <div class="name" @click="editRole(i)">{{ item.name }}</div> 
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+               
 
 </div>
 </template>
-<style>
-
-  .label-input{
-    cursor: pointer;
-    padding-left:5px;
-  }
-  .list-checkbox ul li{
-    list-style: none;
-    float: left;
-  }
-  .per-inputs{
-    cursor: pointer;
-  }
-  .columnContent{
-    padding-top: 25px;
-    padding-bottom: 25px;
-    border-bottom: 1px solid #ced4da;
-
-  }
-
-  .columnInnerLeft{
-    margin-top: 10px;
-  }
-</style>
 <script>
 export default {
   name: "Permissions",
   data() {
     return {
-      test: 'dsa',
+      role: null,
+      users: [], // all select
+      groups: [], // all select
       items: [],
-      activeCourse: null,
+      roles: [],
+      pages: [],
+      permissions: [],
+      showRoles: false,
     };
   },
   created() {
-    //this.fetchData();
+    this.fetchData();
   },
   mounted() {},
   methods: {
- 
+
     fetchData() {
       let loader = this.$loading.show();
 
@@ -288,9 +130,31 @@ export default {
         .get("/permissions/get", {})
         .then((response) => {
 
-          console.log(response.data);
-          //this.items = response.data.courses;
-         
+          this.users = response.data.users;
+          this.roles = response.data.roles;
+          this.groups = response.data.groups;
+          this.pages = response.data.pages;
+
+          this.items = [ 
+              {
+                user: {
+                  id: 5,
+                  name: 'ALi'
+                },
+                role: {
+                  id: 1,
+                  name: 'writerro'
+                },
+                groups: [
+                  {
+                    id: 42,
+                    name: 'Kaspi'
+                  }
+                ]
+              }
+            ];
+
+
           loader.hide();
         })
         .catch((error) => {
@@ -298,6 +162,101 @@ export default {
           alert(error);
         });
     },
+
+    addItem() {
+      this.items.push(
+        {
+          user: null,
+          role: null,
+          groups: []
+        }
+      );
+    },
+
+    editRole(i) {
+      this.showEditRole = true;
+
+      let role = this.roles[i];
+      this.permissions  = role.permissions
+      this.role = role;
+      this.showRoles = false;
+    }, 
+
+    showRolesPage() {
+      this.role = null;
+      this.showRoles = true;
+    },
+
+    addRole() {
+      this.role = {
+        name: 'Test',
+        id: null,
+        permissions: {}
+      }
+    },
+
+    updateRole() {
+      let loader = this.$loading.show();
+       axios
+        .post( '/permissions/update-role', {
+          role: this.role
+        })
+        .then((response) => {
+
+          let index = this.roles.findIndex(x => x.id == null);
+          if(index != -1) this.roles[index].id = response.data.id;
+          loader.hide();
+           this.$message.success('Роль сохранена!');
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+    },
+
+    deleteItem(i) {
+
+      let loader = this.$loading.show();
+       axios
+        .post( '/permissions/delete-user', {
+          user: this.items[i].user
+        })
+        .then((response) => {
+          this.items.splice(i,1)
+          loader.hide();
+           this.$message.success('Пользователь удален!');
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+
+    },
+
+    saveItem(i) {
+      let item = this.items[i]
+      if(item.user == null) return null;
+      if(item.role == null) return null;
+
+      let loader = this.$loading.show();
+       axios
+        .post( '/permissions/update-user', {
+          user: item
+        })
+        .then((response) => {
+          loader.hide();
+           this.$message.success('Пользователь сохранен!');
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+    },
+
+    back() {
+      this.showRoles = false;
+      this.role = null;
+    }
   },
 };
 </script>

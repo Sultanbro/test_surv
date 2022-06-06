@@ -91,7 +91,8 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                $fields = ['A', 'B', 'C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R', 'S', 'T', 'U'];
 
                foreach($this->last as $key => $item){
-                    $event->sheet->setCellValue($fields[$key] . (7 + $this->counter), $item);
+                    if(is_string($item) || $item > 0)
+                        $event->sheet->setCellValue($fields[$key] . (7 + $this->counter), $item);
                }
 
                 $last = 'U';
@@ -137,6 +138,18 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setARGB('e0e0e0');
+
+                $event->sheet->getDelegate()->getStyle('F'.(4 + $this->counter).':U'.(4 + $this->counter))
+                        ->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('ddffad');
+
+                $event->sheet->getDelegate()->getStyle('F'.(7 + $this->counter).':U'.(7 + $this->counter))
+                        ->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setARGB('ddffad');
 
                 /*
                     // Итоговые колонки
