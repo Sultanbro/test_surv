@@ -28,13 +28,14 @@ class TestController extends Controller {
 		// $role->givePermissionTo($permission);
 		// $permission->assignRole($role);
 
-	
-		 
-		$a = auth()->user();
-		//$a->assignRole('writer');
-		// dd($a);
-		dump('Shakerчф');
-		dd($a->can('edit articles'));
+		$all_users_with_all_their_roles = User::with('roles')->has('roles')->get()->toArray();
+		
+		dd($all_users_with_all_their_roles);
+		// $a = auth()->user();
+		// //$a->assignRole('writer');
+		// // dd($a);
+		// dump('Shakerчф');
+		// dd($a->can('edit articles'));
 	}  
 
 	public function hhRefresher() {
