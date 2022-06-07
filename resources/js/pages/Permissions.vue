@@ -15,7 +15,8 @@
       </div>
       <div class="item d-flex" v-for="(item, i) in items" :key="i">
         <div class="person">
-          <v-select :options="users" label="name" v-model="item.user" class="noscrollbar"></v-select>
+          <v-select v-if="item.user.id == null" :options="users" label="name" v-model="item.user" class="noscrollbar"></v-select>
+          <p class="mb-0">{{ item.user.name }}</p>
         </div>
         <div class="role">
           <v-select :options="roles" label="name" v-model="item.role" class="noscrollbar"></v-select>
@@ -164,8 +165,14 @@ export default {
     addItem() {
       this.items.push(
         {
-          user: null,
-          role: null,
+          user: {
+            id: null,
+            name: ''
+          },
+          role: {
+            id: null,
+            name: ''
+          },
           groups: []
         }
       );
@@ -250,10 +257,6 @@ export default {
 
     saveItems() {
       
-      
-      if(item.user == null) return null;
-      if(item.role == null) return null;
-
       let loader = this.$loading.show();
        axios
         .post( '/permissions/update-user', {
@@ -261,7 +264,7 @@ export default {
         })
         .then((response) => {
           loader.hide();
-           this.$message.success('Пользователь сохранен!');
+           this.$message.success('Пользователи сохранены!');
         })
         .catch((error) => {
           loader.hide();
