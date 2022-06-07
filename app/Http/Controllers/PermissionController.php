@@ -46,7 +46,7 @@ class PermissionController extends Controller
             $item['user_id'] = $user->id;
             $item['user'] = [
                 'id' => $user->id,
-                'name' => $user->last_name . ' ' . $user->name,
+                'name' => $user->last_name . ' ' . $user->name . ' #' . $user->id,
             ];
             foreach ($user->roles as $key => $role) {
                 $item['role'] = [
@@ -68,7 +68,7 @@ class PermissionController extends Controller
                 })
                 ->whereNotIn('id', $all_users_with_all_their_roles->pluck('id')->toArray())
                 ->orderBy('id', 'desc')
-                ->get([\DB::raw("CONCAT(last_name,' ',name) as name"), 'id']);
+                ->get([\DB::raw("CONCAT(last_name,' ',name, ' #', id) as name"), 'id']);
 
         return [
             'users' => $users,
