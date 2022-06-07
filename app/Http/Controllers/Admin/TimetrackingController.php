@@ -761,7 +761,7 @@ class TimetrackingController extends Controller
 
     public function reports(Request $request)
     {   
-        if(!auth()->user()->can['tabel_view']) {
+        if(!auth()->user()->can('tabel_view')) {
             return redirect()->back();
         }
 
