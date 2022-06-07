@@ -50,7 +50,7 @@ class TopController extends Controller
     {   
         View::share('menu', 'timetrackingtop');
 
-        if(!auth()->user()->can['top_view']) {
+        if(!auth()->user()->can('top_view')) {
             return redirect()->back();
         }
 

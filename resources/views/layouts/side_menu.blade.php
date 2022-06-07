@@ -8,9 +8,13 @@
        
         <!-- profile menu -->
         <div class="profile-menu">
+            <div class="top">
+                <p class="name">{{ auth()->user()->last_name }} {{ auth()->user()->name }} <span>#{{ auth()->user()->id }} </span></p>
+                <p class="email">{{ auth()->user()->email }} </p>
+            </div>
             <ul> 
        
-                @if(auth()->user()->can['cabinet_view'])
+                @if(auth()->user()->is_admin)
                 <li>
                     <a href="/cabinet" class="link link-start">
                         <i class="fas fa-cogs"></i>
@@ -85,11 +89,11 @@
         <li class="menu-item">
             <a href="/timetracking/reports" class="side-btn @if($menu == 'surv') active @endif">
                 <i class="fas fa-calendar-alt"></i>
-                <span>Учет времени</span>
+                <span>Отчеты</span>
             </a>
 
             <ul class="sub-menu">
-                @if(auth()->user()->can['top_view'])
+                @if(auth()->user()->can('top_view'))
                     <li>
                         <a href="/timetracking/top" class="link">
                             <i class="fas fa-chart-pie"></i>

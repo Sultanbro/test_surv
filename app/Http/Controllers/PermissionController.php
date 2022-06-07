@@ -223,6 +223,7 @@ class PermissionController extends Controller
             }
         }
 
+        return $role;
     }   
 
     public function deleteUser(Request $request) {
@@ -235,7 +236,6 @@ class PermissionController extends Controller
     } 
 
     public function deleteRole(Request $request) {
-
         $role = Role::with('permissions')->find($request['role']['id']);
         if($role) {
 
@@ -243,15 +243,16 @@ class PermissionController extends Controller
                 $role->revokePermissionTo($p->name);
             }
 
-            $users = User::with('roles')->whereHas('roles', function ($query) use ($id) {
-                $query->where('id', $id);
+            $users = User::with('roles')->whereHas('roles', function ($query) use ($role) {
+                $query->where('id', $role->id);
             })->get();
 
-            dd($users);
+            foreach ($users as $key => $user) {
+                $user->removeRole($role->name);
+            }
 
-
+            $role->delete();
         }
-        if($user) $user->removeRole();
         
     }
 }

@@ -24,7 +24,7 @@
                         <div class="tab-content" id="nav-tabContent">
                             @if($active_tab == 1)
                                 <div class="tab-pane fade show active  p-3" id="nav-person" role="tabpanel" aria-labelledby="nav-person-tab">
-                                    <userlist ></userlist>
+                                    <userlist :is_admin="{{ auth()->user()->is_admin }}" subdomain="{{ tenant('id') }}"></userlist>
                                 </div>
                             @endif
                             @if($active_tab == 2)
