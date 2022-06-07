@@ -128,7 +128,7 @@ class PermissionController extends Controller
             $user = User::withTrashed()->with('roles')->find($item['user']['id']);
         
             if($user) {
-               // $this->assignGroups($user->id, $item['groups']);
+                $this->assignGroups($user->id, $item['groups']);
                 $newrole = Role::find($item['role']['id']);
          
                 foreach($user->roles as $role) {
