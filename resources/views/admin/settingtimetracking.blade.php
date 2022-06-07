@@ -48,7 +48,7 @@
                                 <fines/>
                             </div>
                             @endif
-                            @if($active_tab == 5)
+                            @if($active_tab == 5 && auth()->user()->is_admin)
                             <div class="tab-pane fade show active   p-3" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
                                 <s-notifications groups_with_id="{{json_encode($groupsWithId) }}"
                                     :users="{{json_encode($tab5['users']) }}"

@@ -117,6 +117,10 @@ class TimetrackingController extends Controller
         
         if($active_tab == 5) {
 
+            if(!auth()->user()->is_admin) {
+                return redirect('/');
+            }
+
             $users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
             $tab5['users'] = array_values($users);
 
