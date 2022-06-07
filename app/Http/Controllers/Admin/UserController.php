@@ -1049,8 +1049,8 @@ class UserController extends Controller
         View::share('title', 'Новый сотрудник');
         View::share('menu', 'timetrackingusercreate');
         
-        if(!auth()->user()->can['users_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
         }
 
         return view('admin.users.create', $this->preparePersonInputs());
@@ -1064,8 +1064,8 @@ class UserController extends Controller
         View::share('menu', 'timetrackingusercreate');
 
         
-        if(!auth()->user()->can['users_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
         }
 
         return view('admin.users.create', $this->preparePersonInputs($request->id));
@@ -1227,8 +1227,8 @@ class UserController extends Controller
 
     public function storePerson(Request $request) {
         
-        if(!auth()->user()->can['users_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
         }
 
         /*==============================================================*/
@@ -1610,8 +1610,8 @@ class UserController extends Controller
 
     public function updatePerson(Request $request) {
         
-        if(!auth()->user()->can['users_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
         }
         /*==============================================================*/
         /********** Подготовка  */

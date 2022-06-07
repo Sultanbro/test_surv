@@ -72,8 +72,8 @@ class AnalyticsController extends Controller
      * Permission control
      */
     public function redirect_if_has_not_permission() {
-        if(!auth()->user()->can['analytics_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('analytics_view')) {
+            return redirect('/');
         }
     }
 

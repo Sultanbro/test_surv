@@ -70,8 +70,8 @@ class SalaryController extends Controller
 
     public function index()
     {
-        if(!auth()->user()->can['salaries_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('salaries_view')) {
+            return redirect('/');
         }
 
         $groups = ProfileGroup::where('active', 1);
@@ -125,8 +125,10 @@ class SalaryController extends Controller
 
     public function salaries(Request $request)
     {   
-        if(!auth()->user()->can['salaries_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('salaries_view')) {
+            return [
+                'error' => 'access'
+            ]
         }
         //$year = date('Y');  // TODO Удалить лишнее
         $year = $request['year'];

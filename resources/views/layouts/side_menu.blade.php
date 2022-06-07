@@ -113,7 +113,7 @@
                             <span>Депримирование</span>
                         </a>
                     </li>
-                    @if(auth()->user()->can['tabel_view'])
+                    @if(auth()->user()->can('tabel_view'))
                     <li>
                         <a href="/timetracking/reports" class="link">
                             <i class="fas fa-clock"></i>
@@ -121,7 +121,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(auth()->user()->can['entertime_view'])
+                    @if(auth()->user()->can('entertime_view'))
                     <li>
                         <a href="/timetracking/reports/enter-report" class="link">
                             <i class="fas fa-user-clock"></i>
@@ -129,7 +129,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(auth()->user()->can['hr_view'])
+                    @if(auth()->user()->can('hr_view'))
                     <li>
                         <a href="/timetracking/analytics" class="link">
                             <i class="fas fa-user-secret"></i>
@@ -137,7 +137,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(auth()->user()->can['analytics_view'])
+                    @if(auth()->user()->can('analytics_view'))
                     <li>
                         <a href="/timetracking/an" class="link">
                             <i class="fas fa-chart-area"></i>
@@ -145,7 +145,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(auth()->user()->can['salaries_view'])
+                    @if(auth()->user()->can('salaries_view'))
                     <li>
                         <a href="/timetracking/salaries" class="link">
                             <i class="fas fa-comment-dollar"></i>
@@ -153,7 +153,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(auth()->user()->can['quality_view'])
+                    @if(auth()->user()->can('quality_view'))
                     <li>
                         <a href="/timetracking/quality-control" class="link">
                             <i class="fas fa-list-ol"></i>
@@ -176,7 +176,7 @@
 
 
     </ul>
-    @if(auth()->user()->can['settings_view'] ||  auth()->user()->can['users_view'])
+    @if(auth()->user()->can('settings_view') ||  auth()->user()->can('users_view'))
     <ul class="after-main-menu">
         <li class="menu-item">
             <a href="/timetracking/settings" class="side-btn @if($menu == 'settings') active @endif">

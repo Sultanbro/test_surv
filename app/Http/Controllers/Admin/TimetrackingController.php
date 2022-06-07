@@ -94,12 +94,12 @@ class TimetrackingController extends Controller
             $active_tab = (int)$_GET['tab'];  
         }
         
-        if($active_tab == 1 && auth()->user()->can['users_view']) {
+        if($active_tab == 1 && auth()->user()->can('users_view')) {
 
-        } else if($active_tab != 1 && auth()->user()->can['settings_view']){
+        } else if($active_tab != 1 && auth()->user()->can('settings_view')){
             
         } else {
-            return redirect()->back();
+            return redirect('/');
         }
 
         
@@ -1341,8 +1341,8 @@ class TimetrackingController extends Controller
     {
 
 
-        if(!auth()->user()->can['entertime_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('entertime_view')) {
+            return redirect('/');
         }
 
         

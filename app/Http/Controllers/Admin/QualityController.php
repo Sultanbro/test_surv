@@ -40,8 +40,8 @@ class QualityController extends Controller
 
     public function index()
     {
-        if(!auth()->user()->can['quality_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('quality_view')) {
+            return redirect('/');
         }
 
         $acts = Activity::where('type', 'quality')->get()->pluck('group_id')->toArray();
