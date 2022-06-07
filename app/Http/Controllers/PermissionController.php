@@ -232,7 +232,7 @@ class PermissionController extends Controller
                 $user->removeRole($role->name);
             }
         }
-    }
+    } 
 
     public function deleteRole(Request $request) {
 
