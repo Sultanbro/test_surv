@@ -166,7 +166,12 @@
                 </ul>
         </li>
        
-
+        <li class="menu-item">
+            <a href="/maps" class="side-btn @if($menu == 'maps') active @endif">
+                <i class="fas fa-map-signs"></i>
+                <span>Карта</span>
+            </a>
+        </li>
       
 
 

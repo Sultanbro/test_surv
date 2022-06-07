@@ -81,6 +81,7 @@ Vue.component('profile-books', require('./components/profile/ProfileBooks.vue').
 
 Vue.component('profile-quarter-button', require('./components/ProfileQuarterButton.vue').default); // кнопка Индивид Quarter в настройках User
 Vue.component('auth-check-list', require('./components/auth_check_list.vue').default); // кнопка у кого есть Чек Лист список Чек Листов (Fixed)
+Vue.component('selected-modal-checkList', require('./components/selectedModalCheckList.vue').default); // чек лист selected modal
 
 /** 
  * Components

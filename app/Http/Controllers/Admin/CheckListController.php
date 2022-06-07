@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Auth;
 use Artisan;
+use function Symfony\Component\Finder\name;
 
 class CheckListController extends Controller
 {
@@ -29,24 +30,23 @@ class CheckListController extends Controller
 
     public function store(Request $request){
 
-       if ($request['countView'] < 11 && $request['countView'] != 0){
 
 
+        if ($request['countView'] < 11 && $request['countView'] != 0){
 
-
-
-
-
-           if (count($request['valueGroups']) != 0 && !empty($request['valueGroups']) && $request['checked']['gr'] == 1){
+            if (count($request['valueGroups']) != 0 && !empty($request['valueGroups'])){
                 $countCheckList = $this->validateRequest($request['valueGroups']);
                 if ($countCheckList == 0){
                     foreach ($request['valueGroups'] as $keys => $group){
                         $profileGroups = ProfileGroup::on()->find($group['code']);
+
+
+
                         $checkList = new CheckList();
                         $checkList['title'] = $profileGroups->name;
                         $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                        $checkList['auth_name'] = auth()->user()->NAME;
-                        $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
+                        $checkList['auth_name'] = auth()->user()->name;
+                        $checkList['auth_last_name'] = auth()->user()->last_name;
                         $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
                         $checkList['count_view'] = $request['countView'];
                         $checkList['item_type'] = 1;
@@ -55,79 +55,89 @@ class CheckListController extends Controller
                         $this->saveGroup($profileGroups,$checkList,$request,1);
                     }
                 }else{
-                    return response(['successGR'=>false]);
+                    return response(['success'=>false]);
                 }
-           }
+            }
 
-           if (count($request['valuePositions']) != 0 && !empty($request['valuePositions']) && $request['checked']['ps'] == 1){
-               $countCheckList = $this->validateRequest($request['valuePositions']);
-               if ($countCheckList == 0) {
-                   foreach ($request['valuePositions'] as $keys => $group) {
-                       $profileGroups = Position::on()->find($group['code']);
-                       if (!empty($profileGroups)) {
-                           $checkList = new CheckList();
-                           $checkList['title'] = $profileGroups['position'];
-                           $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                           $checkList['auth_name'] = auth()->user()->NAME;
-                           $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
-                           $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
-                           $checkList['count_view'] = $request['countView'];
-                           $checkList['item_type'] = 2;
-                           $checkList['item_id'] = $profileGroups['id'];
-                           $checkList->save();
-                           $this->savePosition($profileGroups, $checkList, $request, 2);
-                       }
-                   }
-               }else{
-                   return response(['successPS'=>false]);
-               }
-           }
+            if (count($request['valuePositions']) != 0 && !empty($request['valuePositions'])){
+                $countCheckList = $this->validateRequest($request['valuePositions']);
+                if ($countCheckList == 0) {
+                    foreach ($request['valuePositions'] as $keys => $group) {
+                        $profileGroups = Position::on()->find($group['code']);
+                        if (!empty($profileGroups)) {
+                            $checkList = new CheckList();
+                            $checkList['title'] = $profileGroups['position'];
+                            $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
+                            $checkList['auth_name'] = auth()->user()->name;
+                            $checkList['auth_last_name'] = auth()->user()->last_name;
+                            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
+                            $checkList['count_view'] = $request['countView'];
+                            $checkList['item_type'] = 2;
+                            $checkList['item_id'] = $profileGroups['id'];
+                            $checkList->save();
+                            $this->savePosition($profileGroups, $checkList, $request, 2);
+                        }
+                    }
+                }else{
+                    return response(['success'=>false]);
+                }
+            }
 
-           if (count($request['valueUsers']) != 0 && !empty($request['valueUsers']) && $request['checked']['us'] == 1){
+            if (count($request['valueUsers']) != 0 && !empty($request['valueUsers'])){
 
-               $countCheckList = $this->validateRequest($request['valueUsers']);
+                $countCheckList = $this->validateRequest($request['valueUsers']);
 
 
 
-               if ($countCheckList == 0) {
-                   foreach ($request['valueUsers'] as $keys => $group) {
-                       $profileUsers = User::on()->find($group['code']);
-                       if (!empty($profileUsers)) {
-                           $checkList = new CheckList();
-                           $checkList['title'] = $profileUsers['LAST_NAME'].' '.$profileUsers['NAME'];
-                           $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                           $checkList['auth_name'] = auth()->user()->NAME;
-                           $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
-                           $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
-                           $checkList['count_view'] = $request['countView'];
-                           $checkList['item_type'] = 3;
-                           $checkList['item_id'] = $profileUsers['ID'];
-                           $checkList->save();
-                           $this->saveUsers($profileUsers, $checkList, $request, 3);
-                       }
-                   }
-               }else{
-                   return response(['successUs'=>false]);
-               }
 
-           }
-       }
+
+
+                if ($countCheckList == 0) {
+
+
+
+
+                    foreach ($request['valueUsers'] as $keys => $group) {
+                        $profileUsers = User::on()->find($group['code']);
+
+
+
+                        if (!empty($profileUsers)) {
+                            $checkList = new CheckList();
+                            $checkList['title'] = $profileUsers['last_name'].' '.$profileUsers['name'];
+                            $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
+                            $checkList['auth_name'] = auth()->user()->name;
+                            $checkList['auth_last_name'] = auth()->user()->last_name;
+                            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
+                            $checkList['count_view'] = $request['countView'];
+                            $checkList['item_type'] = 3;
+                            $checkList['item_id'] = $profileUsers['id'];
+                            $checkList->save();
+                            $this->saveUsers($profileUsers, $checkList, $request, 3);
+                        }
+                    }
+                }else{
+                    return response(['success'=>false]);
+                }
+
+            }
+        }
     }
 
 
     public function saveUsers($positionUser,$checkListId,$request,$type){
 
         if (!empty($positionUser)){
-                $check_users = new CheckUsers();
-                $check_users['name'] = $positionUser['NAME'];
-                $check_users['last_name'] = $positionUser['LAST_NAME'];
-                $check_users['check_list_id'] = $checkListId['id'];
-                $check_users['check_users_id'] = $positionUser['ID'];
-                $check_users['check_reports_id'] = $this->saveReports($checkListId,$positionUser,$request,$positionUser,$type);
-                $check_users['count_view'] = $request['countView'];
-                $check_users['item_type'] = $type;
-                $check_users['item_id'] = $positionUser['ID'];
-                $check_users->save();
+            $check_users = new CheckUsers();
+            $check_users['name'] = $positionUser['name'];
+            $check_users['last_name'] = $positionUser['last_name'];
+            $check_users['check_list_id'] = $checkListId['id'];
+            $check_users['check_users_id'] = $positionUser['id'];
+            $check_users['check_reports_id'] = $this->saveReports($checkListId,$positionUser,$request,$positionUser,$type);
+            $check_users['count_view'] = $request['countView'];
+            $check_users['item_type'] = $type;
+            $check_users['item_id'] = $positionUser['id'];
+            $check_users->save();
         }
 
 
@@ -139,10 +149,10 @@ class CheckListController extends Controller
         if (!empty($positionUsers)){
             foreach ($positionUsers as $positionUser){
                 $check_users = new CheckUsers();
-                $check_users['name'] = $positionUser['NAME'];
-                $check_users['last_name'] = $positionUser['LAST_NAME'];
+                $check_users['name'] = $positionUser['name'];
+                $check_users['last_name'] = $positionUser['last_name'];
                 $check_users['check_list_id'] = $checkListId['id'];
-                $check_users['check_users_id'] = $positionUser['ID'];
+                $check_users['check_users_id'] = $positionUser['id'];
                 $check_users['check_reports_id'] = $this->saveReports($checkListId,$positionUser,$request,$profileGroups,$type);
                 $check_users['count_view'] = $request['countView'];
                 $check_users['item_type'] = $type;
@@ -164,20 +174,20 @@ class CheckListController extends Controller
                     $dataBaseUser = User::on()->find($profile_users_id);
                     if (!empty($dataBaseUser)){
                         $check_users = new CheckUsers();
-                        $check_users['name'] = $dataBaseUser['NAME'];
-                        $check_users['last_name'] = $dataBaseUser['LAST_NAME'];
+                        $check_users['name'] = $dataBaseUser['name'];
+                        $check_users['last_name'] = $dataBaseUser['last_name'];
                         $check_users['check_list_id'] = $checkList->id;
-                        $check_users['check_users_id'] = $dataBaseUser['ID'];
+                        $check_users['check_users_id'] = $dataBaseUser['id'];
                         $check_users['check_reports_id'] = $this->saveReports($checkList,$dataBaseUser,$request,$profileGroups,$type);
                         $check_users['count_view'] = $request['countView'];
                         $check_users['item_type'] = $type;
                         $check_users['item_id'] = $profileGroups['id'];
                         $check_users->save();
-                      }
                     }
                 }
             }
         }
+    }
 
     public function saveReports($checkList=null,$dataBaseUser=null,$request=null,$profileGroups=null,$type)
     {
@@ -191,7 +201,7 @@ class CheckListController extends Controller
         $check_reports_save['count_check'] = count($request['arrCheckInput']);
         $check_reports_save['count_check_auth'] = 0;
         $check_reports_save['item_type'] = $type;
-        $check_reports_save['item_id'] = $profileGroups['id'] ?? $profileGroups['ID'];
+        $check_reports_save['item_id'] = $profileGroups['id'] ?? $profileGroups['id'];
         $check_reports_save->save();
 
         return $check_reports_save->id;
@@ -201,7 +211,7 @@ class CheckListController extends Controller
     {
         $checkList = CheckList::on()->get()->toArray();
 
-       return $checkList;
+        return $checkList;
     }
 
     public function deleteCheck(Request$request){
@@ -298,12 +308,12 @@ class CheckListController extends Controller
 
     public function viewAuthCheck(Request$request){
 
-       if (!empty($request['auth_check'])){
-           foreach (json_decode($request['auth_check']) as $key => $arrCheckInput){
-               $check_list[$key] = CheckList::on()->where('id',$arrCheckInput->check_list_id)->get()->toArray();
-           }
-           return response($check_list);
-       }
+        if (!empty($request['auth_check'])){
+            foreach (json_decode($request['auth_check']) as $key => $arrCheckInput){
+                $check_list[$key] = CheckList::on()->where('id',$arrCheckInput->check_list_id)->get()->toArray();
+            }
+            return response($check_list);
+        }
     }
 
     public function sendAuthCheck(Request$request)

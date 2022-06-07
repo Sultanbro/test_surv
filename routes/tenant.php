@@ -54,6 +54,7 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\IntellectController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\GroupsController;
+use App\Http\Controllers\MapsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -445,6 +446,20 @@ Route::middleware([
     Route::post('/user/save/answer', [ProfileController::class, 'saveAnswer']);
     Route::post('/position/save/desc', [PositionController::class, 'savePositionDesc']);
 
+    
+    Route::get('/maps', [MapsController::class, 'index'])->name('maps');
+    Route::post('/selected-country', [MapsController::class, 'selectedCountryAjax']);
+
+    Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
+    Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
+    Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
+    Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
+    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
+    Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
+    Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
+
+   
+    
     Route::group([
         'middleware' => ['api'],
         'prefix' => 'api',
