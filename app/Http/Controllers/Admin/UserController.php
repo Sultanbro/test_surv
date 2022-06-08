@@ -1276,7 +1276,7 @@ class UserController extends Controller
         /*******  Приглашение на почту  */
         /*==============================================================*/
 
-        if(env('APP_ENV', 'local')) {
+        if(env('APP_ENV', 'local') == 'prod') {
             try { // если письмо с прилашением отправилось
 
                 \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
