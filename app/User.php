@@ -348,7 +348,7 @@ class User extends Authenticatable implements Authorizable
                 $bitrix_id = $ud->bitrix_id;
             } else {
                 $bitrixUser = $bitrix->searchUser($email);
-                if($bitrixUser) $bitrix_id = $bitrixUser['id'];
+                if($bitrixUser) $bitrix_id = $bitrixUser['ID'];
             }
             
             /** Увольнение с Битрикс */
@@ -368,7 +368,7 @@ class User extends Authenticatable implements Authorizable
                 $wphone = Phone::normalize($user->phone);
                 if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://admin.u-marketing.org/quiz_after_fire?phone='. $wphone);
                     
-                if($bitrixUser['id'] != 0) {
+                if($bitrix_id != 0) {
                     $ud->bitrix_id = 0;
                     $ud->save();
                 }

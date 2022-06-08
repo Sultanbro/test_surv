@@ -2233,7 +2233,7 @@ class UserController extends Controller
             
             
             /////////// Удалить связанные уведомления 
-            $notis = UserNotification::where('about_id', $user->id)->get();
+            $notis = UserNotification::where('about_id', $request->id)->get();
             if($notis->count() > 0) {
                 foreach($notis as $noti) {
                     $noti->read_at = now();
@@ -2308,7 +2308,7 @@ class UserController extends Controller
            
             $bitrixUser = $bitrix->searchUser($user->email);
             usleep(1000000); // 1 sec
-            if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['id']);
+            if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
 
             /*** Восстановить с битрикс */
 

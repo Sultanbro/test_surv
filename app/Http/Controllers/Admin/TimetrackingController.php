@@ -293,10 +293,16 @@ class TimetrackingController extends Controller
 
         $user_groups = $user->profileGroups();
 
+        $work_end_max = $user_groups->max('work_end');
+      
+        if($work_end_max == null) {
+            $work_end_max = $user->work_end;
+        }
+
         $dt = Carbon::now($tz)->format('d.m.Y');
 
         $worktime_start = Carbon::parse($dt . ' 08:00', $tz);
-        $worktime_end = Carbon::parse($dt . ' ' . $user_groups->max('work_end'), $tz);
+        $worktime_end = Carbon::parse($dt . ' ' . $work_end_max, $tz);
 
         $running = $user->timetracking()->running()->first();
 
@@ -539,6 +545,7 @@ class TimetrackingController extends Controller
                 $users = json_decode($group->users);
                 $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
+            if($group->book_groups == null) $group->book_groups = '[]';
             $book_groups = BookGroup::whereIn('id', json_decode($group->book_groups))->get();
 
             $corpbooks = collect([]);

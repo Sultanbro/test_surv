@@ -10,7 +10,7 @@
                 <i class="fa fa-chevron-left"></i> Назад
             </a>
 
-            <div class="data-information">
+            <div class="data-information d-flex">
                 @if(isset($user))
                     @if($user->is_trainee)
                     <button class="btn btn-warning mr-2 rounded" id="submit_job">Принять на работу</button>
@@ -26,26 +26,25 @@
                 @if ( is_null($user->deleted_at))
 
                     @if(!$user->is_trainee)
-                    <button type="button" class="btn btn-danger rounded mr-2" id="deleteModalBtn" data-toggle="modal"
-                    data-target="#deactivateUserModal">
+                    <button type="button" class="btn btn-danger rounded mr-2" id="deleteModalBtn" v-b-modal.modal-deactivate>
                         Уволить без отработки
                     </button>
-                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn2" data-toggle="modal"
-                        data-target="#deactivateUserModal">
+                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn2" v-b-modal.modal-deactivate>
                         Уволить с отработкой
                     </button>
                     @else
-                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn" data-toggle="modal"
-                    data-target="#deactivateUserModal">
+                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn" v-b-modal.modal-deactivate>
                         Уволить стажера
                     </button>
                     @endif
-                
+
+                  
                 @else
-                <button type="button" class="btn btn-success rounded" id="restoreUserBtn" data-toggle="modal"
-                    data-target="#activateUserModal">
-                    Восстановить
+
+                <button type="button" class="btn btn-success rounded" v-b-modal.modal-activate>
+                Восстановить
                 </button>
+
                 @endif
                 @endif
             </div>
@@ -1098,7 +1097,7 @@
 
 @if(isset($user))
 @if (is_null($user->deleted_at))
-<div class="modal fade" id="deactivateUserModal" tabindex="-1" role="dialog">
+<b-modal id="modal-deactivate" hide-footer hide-header>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body text-center">
@@ -1177,9 +1176,9 @@
             </div>
         </div>
     </div>
-</div>
+</b-modal>
 @else
-<div class="modal" id="activateUserModal" tabindex="-1" role="dialog">
+<b-modal id="modal-activate" hide-footer hide-header>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body text-center">
@@ -1194,7 +1193,7 @@
             </div>
         </div>
     </div>
-</div>
+</b-modal>
 @endif
 @endif
 
@@ -1207,24 +1206,6 @@
                 <h5>Заполните все поля</h5>
             </div>
             <div class="text-left mb-3 texter px-3"></div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="bitrix_quarter_id_input" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <h6>Вы уверены что хотите востановить пользователя?</h6>
-            </div>
-            <div class="text-center mb-3 ">
-                <form action="/timetracking/recover-person">
-
-                    <button type="submit" class="btn btn-success" id="deleteUserButton">Да</button>
-                    <button type="reset" class="btn btn-primary" data-dismiss="modal">Нет</button>
-                </form>
-            </div>
         </div>
     </div>
 </div>
