@@ -59,9 +59,7 @@
                     </div>
                      <button class="btn btn-success btn btn-block" style="margin-bottom: 20px; margin-left: 0px;color: white;" type="button" @click="doSomething">Добавить</button>
 
-                    <button v-on:click="warn('Форма не может быть отправлена.', $event)">
-                      Отправить
-                    </button>
+
 
 
 
@@ -147,13 +145,7 @@
             }
         },
         methods: {
-            warn: function (message, event) {
-              // теперь у нас есть доступ к нативному событию
-              if (event) {
-                event.preventDefault()
-              }
-              alert(message)
-            },
+
             doSomething() {
 
               if (this.editValueThis.view == true){
@@ -246,13 +238,7 @@
                 if (this.flag_type.us && this.flag_type.ps && this.flag_type.gr){
 
                   // this.templateKKK = '<button @click="deleteDesk(1)" >Счётчик кликов</button>'
-
-
-                     var span = createElement('div', {}, ['blabla']) // нормально
-
-
-
-                    // var span = '<a id="id-'+id+'" style="background-color: #67dfef;padding: 7px;color: white;margin: 7px"  onclick="deleteDesk(1)"  >'+item+ '</a>';
+                     var span = '<a id="id-'+id+'" style="background-color: #67dfef;padding: 7px;color: white;margin: 7px"  onclick="deleteDesk(1)"  >'+item+ '</a>';
                     $("#selected-block-array").append(span);
                 }
 
