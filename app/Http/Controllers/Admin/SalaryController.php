@@ -128,7 +128,7 @@ class SalaryController extends Controller
         if(!auth()->user()->can('salaries_view')) {
             return [
                 'error' => 'access'
-            ]
+            ];
         }
         //$year = date('Y');  // TODO Удалить лишнее
         $year = $request['year'];
@@ -175,7 +175,7 @@ class SalaryController extends Controller
         $date = Carbon::createFromDate($request->year, $request->month, 1);
 
         $arr = Salary::salariesTable($request->user_types, $date->format('Y-m-d'), $users_ids, $request->group_id);
-
+     
         $data['users'] = $arr['users'];
         $data['total_resources'] = $arr['total_resources'];
         $data['auth_token'] = Auth::user()->remember_token;
@@ -718,7 +718,7 @@ class SalaryController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
+        if (!in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
             ];
@@ -812,11 +812,11 @@ class SalaryController extends Controller
        
         $myusers = $working_users;
 
-        //dd($fired_users);
+      
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
-
-            //dd($fired_users);
+        
+         
         
         $_users = array_merge([['']],$working_users['users']);
         $_users = array_merge($_users, [[''],[''],['']]);
@@ -1006,7 +1006,7 @@ class SalaryController extends Controller
     }
 
     private function getSheet($users_ids, $date, $group_id) {
-        //dd($users_ids);
+        
         $users = \DB::table('users')
             ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
             ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
@@ -1036,6 +1036,7 @@ class SalaryController extends Controller
             'card_kaspi', 'card_jysan', 'jysan', 'kaspi','kaspi_cardholder','jysan_cardholder', 'card', 'program_id', 'birthday','currency', 'working_day_id')
             ->get();
         
+  
         
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
         $data = [];
@@ -1076,7 +1077,7 @@ class SalaryController extends Controller
                     continue;
                 }
             }
-
+           
             
             // Вычисление даты принятия
             $user_applied_at = $_user->applied_at();
@@ -1087,7 +1088,7 @@ class SalaryController extends Controller
                 continue;
             } 
             // delete not applied 
-
+       
             
             // Суммы на месяц 
             $month_salary = Salary::where('user_id', $user->id)
@@ -1232,6 +1233,9 @@ class SalaryController extends Controller
 
             $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id]);
             
+            // if($user->id == 5670) dump($salary_table);
+
+
             $salary = 0;
             $trainee_fees = 0;
            
@@ -1323,18 +1327,28 @@ class SalaryController extends Controller
             if(!$edited_salary) $allTotal[13] += $prepaid;
             
             
-
+                    
             
             // Не показывать если все по нулям
             
             if($edited_salary && $edited_salary->amount == 0) {
                 continue;
             }
+                
+            // if($user->id == 5670) {
 
-            if($salary == 0 && $bonus == 0 && $prepaid == 0 && $trainee_fees == 0 && $edited_salary_amount == 0) {
-                continue;
-            }
-
+            
+            // dump($salary);
+            // dump($bonus);
+            // dump($prepaid);
+            // dump($trainee_fees);
+            // dump($edited_salary_amount);
+            // dd($user->id);
+            // }
+            // if($salary == 0 && $bonus == 0 && $prepaid == 0 && $trainee_fees == 0 && $edited_salary_amount == 0) {
+            //     continue;
+            // }
+           
             // if($user->id == 10242) {
             //     dd($salary);
             // }
