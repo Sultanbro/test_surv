@@ -1212,7 +1212,7 @@
                         for (let i = 0; i < response[0].length; i++) {
                             $("#searchResultCountry").append(
                                 '<li id="li-hover-jquery-'+response[0][i]['id']+'"  onmouseover="liHoverOver('+response[0][i]['id']+')"    onmouseout="liHoverOut('+response[0][i]['id']+')"   onclick="pasteSearchInput('+response[0][i]['id']+')"  style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white;" class="searchResultCountry">' +
-                                    '<a id="hiddenCity-'+response[0][i]['id']+'">'+response[0][i]['country']+' <strong>город: </strong> '+response[0][i]['city']+'</a><' +
+                                    '<a id="hiddenCity-'+response[0][i]['id']+'"><strong>Страна: </strong> '+response[0][i]['country']+' <strong>Город: </strong> '+response[0][i]['city']+'</a><' +
                                 '/li>'
                             );
                         }

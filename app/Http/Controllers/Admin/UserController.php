@@ -1297,7 +1297,7 @@ class UserController extends Controller
         /*******  Создание пользователя в U-marketing.org  */
         /*==============================================================*/
 
-        dd($request->all());
+
 
 
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
