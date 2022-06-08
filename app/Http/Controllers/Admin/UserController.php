@@ -1300,6 +1300,7 @@ class UserController extends Controller
 
 
 
+
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
             $user->update([
                 'name' => $request['name'],
@@ -1680,6 +1681,7 @@ class UserController extends Controller
         }
         
 
+        dd($request->toArray());
         /*==============================================================*/
         /********** Редактирование user  */
         /*==============================================================*/     
@@ -1701,6 +1703,8 @@ class UserController extends Controller
         $user->work_start = $request['work_start_time'];
         $user->work_end = $request['work_start_end'];
         $user->weekdays = $request['weekdays'];
+        $user->working_country = $request['selectedCityInput'];
+        $user->working_city = $request['working_city'];
         
         if($request->new_pwd != '') {
             $user->password = \Hash::make($request->new_pwd);
