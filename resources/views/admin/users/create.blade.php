@@ -1318,7 +1318,7 @@ function submitx() {
         email = $('#email').val(),
         zarplata = $('#zarplata').val();
         workingCity = $('#workingCity').val();
-        
+
 
 
     $('#beforeSubmit .texter').html('');
@@ -1384,11 +1384,11 @@ function submitx() {
     }
 
 
-    if (workingCity == null) {
-        $('#beforeSubmit .texter').append('<div>Город: <b>Астана</b></div>');
-        counter++;
-        profile_errors++
-    }
+    // if (workingCity == null) {
+    //     $('#beforeSubmit .texter').append('<div>Город: <b>Астана</b></div>');
+    //     counter++;
+    //     profile_errors++
+    // }
 
     let zarplata_errors = 0;
 
