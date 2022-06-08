@@ -26,8 +26,8 @@ class MapsController extends Controller
         View::share('menu', 'maps');
         View::share('link', 'maps');
         $allUsers = User::on()->select('working_city')->distinct('working_city')->get()->toArray();
+        $maps_array = [];
         if (!empty($allUsers)){
-            $maps_array = [];
             foreach ($allUsers as $key => $allUser){
                 $allUsersCount = User::on()->where('working_city',$allUser['working_city'])->count();
                 $geo_location = DB::table('coordinates')->find($allUser['working_city']);

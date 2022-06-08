@@ -67,6 +67,8 @@ use App\Http\Controllers\Admin\GroupAnalyticsController as GAController;
 use App\Models\Analytics\IndividualKpi;
 use App\Models\Analytics\TraineeReport;
 use App\AdaptationTalk;
+use http\Env;
+
 
 class UserController extends Controller
 {
@@ -1231,6 +1233,7 @@ class UserController extends Controller
 
 
 
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1283,13 +1286,16 @@ class UserController extends Controller
         /*******  Приглашение на почту  */
         /*==============================================================*/
 
-//        try { // если письмо с прилашением отправилось
-//
-//            \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
-//
-//        } catch (Swift_TransportException $e) { // Если письмо по каким то причинам не отправилось
-//            return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
-//        }
+        if (env('APP_ENV','local') == 'prod'){
+            try { // если письмо с прилашением отправилось
+
+                \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
+
+            } catch (Swift_TransportException $e) { // Если письмо по каким то причинам не отправилось
+                return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
+            }
+        }
+
 
         /*==============================================================*/
         /*******  Создание пользователя в U-marketing.org  */
