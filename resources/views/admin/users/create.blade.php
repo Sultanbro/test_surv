@@ -1318,9 +1318,8 @@ function submitx() {
         email = $('#email').val(),
         zarplata = $('#zarplata').val();
         workingCity = $('#workingCity').val();
+        
 
-
-        console.log(workingCountry,'077');
 
     $('#beforeSubmit .texter').html('');
 
