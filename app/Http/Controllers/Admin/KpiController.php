@@ -622,7 +622,7 @@ class KpiController extends Controller
         }
 
         // RESPONSE
-        return response()->json([
+        return [
             'kpi' => $kpi ? $kpi : [
                 'user_id' => $request->group_id,
                 'kpi_80_99' => 0,
@@ -634,6 +634,6 @@ class KpiController extends Controller
             'kpi_indicators' => $kpi_indicators,
             'workdays' => $applied_from == 0 ? $workdays : $applied_from,
             'groups' => $groups,
-        ]);
+        ];
     }
 }
