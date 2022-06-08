@@ -55,10 +55,13 @@
 
                     <div id="selected-block-array"  class="selected-block-array" >
                        <a style="color: #abb1b8;" id="placholder-select">Добавить Отделы/Сотрудники</a>
+                        {{ this.templateKKK }}
                     </div>
                      <button class="btn btn-success btn btn-block" style="margin-bottom: 20px; margin-left: 0px;color: white;" type="button" @click="doSomething">Добавить</button>
 
-
+                    <button v-on:click="warn('Форма не может быть отправлена.', $event)">
+                      Отправить
+                    </button>
 
 
 
@@ -99,28 +102,17 @@
                     role_2:false,
                     role_3:false,
                 },
+                templateKKK:'',
+
             };
         },
-        created(){
-
-
-
-
-      },
         mounted() {
 
           console.log(this.editValueThis.view,'dd')
           console.log(this.editValueThis,'dddd')
 
 
-              if (this.editValueThis.view == true){
-                console.log(this.editValueThis.view,'kis')
-                this.addDivBlock(this.editValueThis.title,this.editValueThis.id,this.editValueThis.item_type);
-              }else {
-                console.log(this.editValueThis.view,'ff')
-                console.log(this.editValueThis,'fffff')
 
-              }
 
 
 
@@ -155,19 +147,28 @@
             }
         },
         methods: {
+            warn: function (message, event) {
+              // теперь у нас есть доступ к нативному событию
+              if (event) {
+                event.preventDefault()
+              }
+              alert(message)
+            },
             doSomething() {
 
-                console.log(this.editValueThis,'ww')
-                this.$message.success('Успешно Сохранено')
+              if (this.editValueThis.view == true){
+                console.log(this.editValueThis.view,'kis')
+                this.addDivBlock(this.editValueThis.title,this.editValueThis.id,this.editValueThis.item_type);
+              }
 
+
+                this.$message.success('Успешно Сохранено')
                 this.$emit('updateParent', {
                     valueGroups: this.valueGroups ,
                     valuePositions:this.valuePositions,
                     valueUsers:this.valueUsers,
                 })
             },
-
-
             selectedRoles(type){
                 if (type == 1){
                     this.selectedRole.role_1 = true
@@ -187,14 +188,7 @@
             toggle() {
                 this.showModal = !this.showModal
             },
-
-
             addDivBlock(item,id,type){
-
-
-                console.log(item,id,type,'fuck you');
-
-
                 $("#placholder-select").empty();
 
                 if (type == 1){
@@ -249,13 +243,16 @@
                     }
                 }
 
-
-
-
-
-
                 if (this.flag_type.us && this.flag_type.ps && this.flag_type.gr){
-                    var span = '<a id="id-'+id+'" style="background-color: #67dfef;padding: 7px;color: white;margin: 7px"  @click="deleteDesk(s)"  >'+item+ '</a>';
+
+                  // this.templateKKK = '<button @click="deleteDesk(1)" >Счётчик кликов</button>'
+
+
+                     var span = createElement('div', {}, ['blabla']) // нормально
+
+
+
+                    // var span = '<a id="id-'+id+'" style="background-color: #67dfef;padding: 7px;color: white;margin: 7px"  onclick="deleteDesk(1)"  >'+item+ '</a>';
                     $("#selected-block-array").append(span);
                 }
 
@@ -272,6 +269,10 @@
         },
 
     }
+
+
+
+
 
 </script>
 

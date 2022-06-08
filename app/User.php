@@ -54,6 +54,8 @@ class User extends Authenticatable implements Authorizable
         'segment',
         'working_day_id',
         'working_time_id',
+        'working_country',
+        'working_city',
         'work_start',
         'work_end',
         'birthday', // admin.u-marketing

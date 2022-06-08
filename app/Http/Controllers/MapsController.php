@@ -17,20 +17,35 @@ class MapsController extends Controller
 
 
 
+
+
     public function index(){
+
+
+
         View::share('menu', 'maps');
         View::share('link', 'maps');
+        $allUsers = User::on()->select('working_city')->distinct('working_city')->get()->toArray();
+        if (!empty($allUsers)){
+            $maps_array = [];
+            foreach ($allUsers as $key => $allUser){
+                $allUsersCount = User::on()->where('working_city',$allUser['working_city'])->count();
+                $geo_location = DB::table('coordinates')->find($allUser['working_city']);
+                $maps_array[$key]['count'] = $allUsersCount;
+                $maps_array[$key]['geo_lat'] = $geo_location->geo_lat;
+                $maps_array[$key]['geo_lon'] = $geo_location->geo_lon;
+            }
+        }
 
 
 
 
-        $coordinates = DB::table('coordinates')->where('type','!=',2)->get()->toArray();
 
 
 
 
 
-        return view('surv.maps',compact('coordinates'));
+        return view('surv.maps',compact('maps_array'));
 
 
 
@@ -41,8 +56,9 @@ class MapsController extends Controller
     public function selectedCountryAjax(Request$request)
     {
 
-        if ($request['value'] == 2){
-            return response(['success'=>2]);
+
+        if ($request['value'] == 2 || $request['value'] == 4 || $request['value'] == 5 || $request['value'] == 6 ){
+            return response(['success'=>$request['value']]);
         }else{
             $getCity = DB::table('coordinates')->where('type',$request['value'])->get();
         }
@@ -54,5 +70,19 @@ class MapsController extends Controller
             return response(['success'=>0]);
         }
 
+    }
+
+
+    public function selectedCountryAjaxSearch(Request$request){
+        $valueCity = $request['value'];
+
+
+
+        $geo_location[] = DB::table('coordinates')->where('type',$request['valueCountry'])
+            ->where('city','like', "%$valueCity%")
+            ->where('address','like', "%$valueCity%")
+            ->get()->toArray();
+
+        return response($geo_location);
     }
 }
