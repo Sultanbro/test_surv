@@ -644,17 +644,17 @@ class TimetrackingController extends Controller
 
 
 
-        $bplink = BPLink::where('name', $request['bp_link'])->first();
+        // $bplink = BPLink::where('name', $request['bp_link'])->first();
         
-        if($bplink) {
-            $bplink->link = $request['zoom_link'];
-            $bplink->save();
-        } else {
-            $bplink = new BPLink;
-            $bplink->name = $request['bp_link'] ?? 'NONAME' . $group->id;
-            $bplink->link = $request['zoom_link'] ?? 'NONAME' . $group->id;
-            $bplink->save();
-        }
+        // if($bplink) {
+        //     $bplink->link = $request['zoom_link'];
+        //     $bplink->save();
+        // } else {
+        //     $bplink = new BPLink;
+        //     $bplink->name = $request['bp_link'] ?? 'NONAME' . $group->id;
+        //     $bplink->link = $request['zoom_link'] ?? 'NONAME' . $group->id;
+        //     $bplink->save();
+        // }
         
         
         return [

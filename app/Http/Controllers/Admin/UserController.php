@@ -1076,11 +1076,8 @@ class UserController extends Controller
     {
         $positions = Position::all();
         $groups = ProfileGroup::where('active', 1)->get();
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
-            $corpbooks = BookCategory::where('parent_cat_id', NULL)->where('is_deleted', 0)->get();
-        } else {
-            $corpbooks = '[]';
-        }
+
+        $corpbooks = '[]';
         
         $programs = Program::orderBy('id', 'desc')->get();
         $workingDays = WorkingDay::all();
@@ -1093,6 +1090,7 @@ class UserController extends Controller
             $user = User::withTrashed()
                 ->where('id', $id)
                 ->with(['zarplata', 'downloads', 'user_description'])
+                ->has('user_description')
                 ->first();
             
             $user->cards = Card::where('user_id', $user->id)->get();
@@ -1100,13 +1098,13 @@ class UserController extends Controller
             $head_in_groups = [];
        
             if($user) {
-                if($user->trainee) {
+                if($user->is_trainee == 1) {
                     $user->applied_at = $user->applied;
                 } else {
                     $user->applied_at = $user->created_at;
                 }
 
-                if($user->is_trainee){
+                if($user->user_description->is_trainee == 1){
                     $arr['fire_causes'] = [
                         'Был на основной работе',
                         'Бросает трубку',
@@ -1203,12 +1201,7 @@ class UserController extends Controller
                 $user->in_groups = $this->getPersonGroup($user->id);
                 
                 if($user->user_description) {
-                    if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) { 
-                        $user->in_books  = BookCategory::whereIn('id', json_decode($user->user_description->books))->where('is_deleted', 0)->get();
-                    } else {
-                        $user->in_books  = '[]';
-                    }
-                    
+                    $user->in_books  = '[]';
                 }
                 
                 $user->head_in_groups = $head_in_groups;
@@ -2119,7 +2112,7 @@ class UserController extends Controller
     } 
     
     public function editPersonGroup(Request $request) {
-        dd('123');
+    
         $group = ProfileGroup::find($request['group_id']);
         $users = json_decode($group->users);
  
