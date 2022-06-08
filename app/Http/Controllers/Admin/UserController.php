@@ -1230,10 +1230,6 @@ class UserController extends Controller
     public function storePerson(Request $request) {
 
 
-
-
-
-
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1301,19 +1297,9 @@ class UserController extends Controller
         /*******  Создание пользователя в U-marketing.org  */
         /*==============================================================*/
 
-        //dd($request->all());
+        dd($request->all());
 
 
-
-        if ($request['working_country'] == 2){
-            $working = $request['working_city_ru'];
-        }else{
-            $working = $request['working_city'];
-        }
-
-
-
-        
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
             $user->update([
                 'name' => $request['name'],
@@ -1334,8 +1320,8 @@ class UserController extends Controller
                 'work_end' => $request['work_start_end'],
                 'currency' => $request['currency'] ?? 'kzt',
                 'weekdays' => $request['weekdays'],
-                'working_country' => $request['working_country'],
-                'working_city' => $working,
+                'working_country' => $request['selectedCityInput'],
+                'working_city' => $request['working_city'],
             ]);    
         } else { // Не было никакого полльзователя с таким email
 
@@ -1361,8 +1347,8 @@ class UserController extends Controller
                 'work_end' => $request['work_start_end'],
                 'currency' => $request['currency'] ?? 'kzt',
                 'weekdays' => $request['weekdays'],
-                'working_country' =>$request['working_country'],
-                'working_city' =>$working,
+                'working_country' =>$request['selectedCityInput'],
+                'working_city' =>$request['working_city'],
                 'role_id' => 1,
                 'is_admin' => 0 
             ]);

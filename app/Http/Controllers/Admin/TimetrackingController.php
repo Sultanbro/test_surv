@@ -70,10 +70,6 @@ class TimetrackingController extends Controller
         $groups = ProfileGroup::where('active', 1)->get()->pluck('id','name');
 
 
-
-
-
-
         $archived_groups = ProfileGroup::where('active', 0)->get(['id', 'name']);
         $book_groups = BookGroup::all();
         

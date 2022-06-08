@@ -14,11 +14,6 @@ use Illuminate\Support\Facades\View;
 
 class MapsController extends Controller
 {
-
-
-
-
-
     public function index(){
 
 
@@ -51,37 +46,14 @@ class MapsController extends Controller
     }
 
 
-
-    public function selectedCountryAjax(Request$request)
-    {
-
-
-        if ($request['value'] == 2 || $request['value'] == 4 || $request['value'] == 5 || $request['value'] == 6 ){
-            return response(['success'=>$request['value']]);
-        }else{
-            $getCity = DB::table('coordinates')->where('type',$request['value'])->get();
-        }
-
-
-        if (!empty($getCity)){
-            return response(['success'=>1,'city'=>$getCity]);
-        }else{
-            return response(['success'=>0]);
-        }
-
-    }
-
-
-    public function selectedCountryAjaxSearch(Request$request){
+    public function selectedCountryAjaxSearch(Request $request){
         $valueCity = $request['value'];
 
 
-
-        $geo_location[] = DB::table('coordinates')->where('type',$request['valueCountry'])
+        $geo_location[] = DB::table('coordinates')
             ->where('city','like', "%$valueCity%")
-            ->where('address','like', "%$valueCity%")
             ->get()->toArray();
 
-        return response($geo_location);
+        return $geo_location;
     }
 }

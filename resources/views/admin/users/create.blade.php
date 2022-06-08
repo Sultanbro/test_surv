@@ -160,7 +160,7 @@
 
 
                                             
-                                            <profile-kpi-button :user_id="{{ $user->id }}"/>
+{{--                                            <profile-kpi-button :user_id="{{ $user->id }}"/>--}}
 
 
 
@@ -547,34 +547,20 @@
                                                 
                                                 <!--  -->
                                             </div>
+
+
                                             <div class="mb-3 xfade">
-                                                <div class="form-group ">
-                                                    <h5 class="mb-1 mt-5">Выбрать Страну</h5>
-                                                    <div class="col-sm-12 p-0 mb-3">
-                                                        <select required name="working_country" id="workingCountry" class="form-control" onchange="selectedCountry()">
-                                                            <option selected disabled>Выбрать Страну</option>
-                                                            <option value="1">Казахстан</option>
-                                                            <option value="2">Россия</option>
-                                                            <option value="3">Кыргызстан</option>
-                                                            <option value="4">Узбекистан</option>
-                                                            <option value="5">Украина</option>
-                                                            <option value="6">Беларуссия</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="form-group row " id="selectedCityHide" style="display: none">
+                                                <div class="form-group row " id="selectedCityRU" >
                                                     <div class="col-sm-12">
-                                                        <select required name="working_city" id="workingCity" class="form-control"></select>
-                                                        <input hidden id="typeDefaultCountry" name="working_city_ru">
-                                                    </div>
-                                                </div>
+                                                        <input class="form-control" name="selectedCityInput" id="selectedCityInput"
+                                                               @if(isset($user) && !empty($user->working_country))
+                                                                   value="{{$user->working_country}}"
+                                                               @endif
 
-                                                <div class="form-group row " id="selectedCityRU" style="display: none">
-                                                    <div class="col-sm-12">
-                                                        <input class="form-control" id="selectedCityInput" placeholder="Поиск городов Россий">
+                                                               placeholder="Поиск городов ">
 
-                                                        <div id="listSearchResult" style="border: 1px solid #d9d9d9;margin-top: 10px;display: none">
+                                                        <input hidden name="working_city" id="working_city">
+                                                        <div id="listSearchResult" class="listSearchResult">
                                                             <ul class="p-0 searchResultCountry" id="searchResultCountry" style="margin-bottom: 0px;">
 
                                                             </ul>
@@ -582,6 +568,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="mb-4">
                                                 @if(isset($user))
                                                 <h5 class="mb-4 mt-4">Книги</h5>
@@ -771,26 +758,9 @@
                                                 <!--  -->
                                             </div>
                                             <!-- end of documents -->
-                                          
                                         </div>
-
-                                        
-
-
-
                                     </div>
-
-
-
-
-
-
-
-
-
-
                                 </div>
-
                                 <!-- second tab -->
                                 <div class="xtab-pane xfade" id="phones" role="tabpanel" aria-labelledby="phones-tab">
                                     <!--  -->
@@ -1195,9 +1165,6 @@
 </b-modal>
 @endif
 @endif
-
-
-
 <div class="modal " id="beforeSubmit" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -1208,10 +1175,6 @@
         </div>
     </div>
 </div>
-
-
-
-
 @include('admin.svg.icons')
 
 @endsection
@@ -1220,114 +1183,69 @@
 
 <script>
 
+
+    function liHoverOver(element){
+        $("#li-hover-jquery-"+element).css('background-color','rgb(236 244 249)');
+    }
+
+    function liHoverOut(element){
+        $("#li-hover-jquery-"+element).css('background-color','rgb(245, 245, 245)');
+    }
+
     document.getElementById('selectedCityInput').onkeyup = function() {
         let _token   = $('meta[name="csrf-token"]').attr('content');
         var value = document.getElementById('selectedCityInput').value;
-        var valueCountry = document.getElementById('workingCountry').value;
 
+        if (value.length){
+            $.ajax({
+                url: "/selected-country/search/",
+                type:"POST",
+                data:{
+                    value:value,
+                    _token: _token,
+                },
+                success:function(response){
+                    $("#searchResultCountry").empty();
+                    $("#listSearchResult").css('display','block');
 
-
-        $.ajax({
-            url: "/selected-country/search/",
-            type:"POST",
-            data:{
-                valueCountry:valueCountry,
-                value:value,
-                _token: _token,
-            },
-            success:function(response){
-                $("#searchResultCountry").empty();
-                $("#listSearchResult").css('display','block');
-
-                if (response[0].length > 0){
-
-                    for (let i = 0; i < response[0].length; i++) {
-
+                    if (response[0].length > 0){
+                        for (let i = 0; i < response[0].length; i++) {
+                            $("#searchResultCountry").append(
+                                '<li id="li-hover-jquery-'+response[0][i]['id']+'"  onmouseover="liHoverOver('+response[0][i]['id']+')"    onmouseout="liHoverOut('+response[0][i]['id']+')"   onclick="pasteSearchInput('+response[0][i]['id']+')"  style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white;" class="searchResultCountry">' +
+                                    '<a id="hiddenCity-'+response[0][i]['id']+'">'+response[0][i]['country']+' <strong>город: </strong> '+response[0][i]['city']+'</a><' +
+                                '/li>'
+                            );
+                        }
+                    }else{
                         $("#searchResultCountry").append(
-                            '<li onclick="pasteSearchInput('+response[0][i]['id']+')"  style="cursor: pointer; background-color: #f5f5f5;padding: 10px;" class="searchResultCountry">' +
-                                '<a id="hiddenCity-'+response[0][i]['id']+'">'+response[0][i]['address']+' <strong>город:</strong> '+response[0][i]['city']+'</a><' +
-                            '/li>'
+                            '<li style="cursor: pointer; background-color: #f5f5f5;padding: 10px;" class="searchResultCountry"><a>Нет найденных городов </a></li>'
                         );
-
                     }
-                }else{
-                    $("#searchResultCountry").append(
-                        '<li style="cursor: pointer; background-color: #f5f5f5;padding: 10px;" class="searchResultCountry"><a>Нет найденных городов </a></li>'
-                    );
-                }
 
-            },
+                },
 
-        });
+            });
+        }else{
+
+            $("#searchResultCountry").empty();
+            $("#listSearchResult").css('display','none');
+        }
+
+
+
 
     }
 
 
     function pasteSearchInput(type_id){
         var kis = $("#hiddenCity-"+type_id).text();
-
-        $("#typeDefaultCountry").val(type_id);
+        $("#working_city").val(type_id);
         $("#selectedCityInput").val(kis);
         $("#listSearchResult").hide();
 
     }
 
-    function selectedCountry() {
 
-        let value = $("#workingCountry").val();
-        let _token   = $('meta[name="csrf-token"]').attr('content');
-
-
-        $.ajax({
-            url: "/selected-country",
-            type:"POST",
-            data:{
-                value:value,
-                _token: _token,
-            },
-            success:function(response){
-
-
-                if (response['success'] == 1){
-                    $("#workingCity").append().empty();
-                    $("#selectedCityHide").show();
-                    $("#selectedCityRU").hide();
-                    for (var i = 0; i < response.city.length;i++){
-                        $("#workingCity").append('<option value="' + response.city[i]['id'] + '">' + response.city[i]['city'] + '</option>');
-                    }
-                }
-
-                if (response['success'] == 2 || response['success'] == 4 || response['success'] == 5 || response['success'] == 6){
-                    $("#selectedCityRU").show();
-                    $("#selectedCityHide").hide();
-                    $("#selectedCityInput").val('');
-                    $("#listSearchResult").hide();
-                    $("#searchResultCountry").empty();
-
-
-
-                    if (response['success'] == 2){
-                        $("#selectedCityInput").attr('placeholder','Поиск Страны России')
-
-                    }else if (response['success'] == 4){
-                        $("#selectedCityInput").attr('placeholder','Поиск Страны Узбекстана')
-                    }else if (response['success'] == 5){
-                        $("#selectedCityInput").attr('placeholder','Поиск Страны Украина')
-                    }else if (response['success'] == 6){
-                        $("#selectedCityInput").attr('placeholder','Поиск Страны Беларуссии')
-                    }
-
-
-                }
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        });
-
-
-
-    }
 
 
     function bitrix_quarter_editor(){
@@ -1399,7 +1317,6 @@ function submitx() {
         birthday = $('#birthday').val(),
         email = $('#email').val(),
         zarplata = $('#zarplata').val();
-        workingCountry = $('#workingCountry').val();
         workingCity = $('#workingCity').val();
 
 
@@ -1467,11 +1384,6 @@ function submitx() {
         phone_errors++
     }
 
-    if (workingCountry == null) {
-        $('#beforeSubmit .texter').append('<div>Выбрать Страну: <b>Казахстан</b></div>');
-        counter++;
-        profile_errors++
-    }
 
     if (workingCity == null) {
         $('#beforeSubmit .texter').append('<div>Город: <b>Астана</b></div>');
@@ -1770,6 +1682,14 @@ function selectedCountry() {
 }
 </style>
 <style>
+
+.listSearchResult{
+    border: 1px solid #d9d9d9;
+    margin-top: 10px;
+    overflow-x: hidden;
+    max-height: 200px;
+    display:none;
+}
 .weekday {
     text-align: center;
     display: flex;
