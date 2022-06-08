@@ -528,10 +528,10 @@ class KpiController extends Controller
                         
                         $users = $pgu ? $pgu->assigned : [];
 
-                        $kpi_indicator->completed_value = UserDescription::where('is_trainee', 0)
+                        $kpi_indicator->completed_value = $pgu ? UserDescription::where('is_trainee', 0)
                             ->whereIn('user_id', $pgu->assigned)
                             ->get()
-                            ->count();
+                            ->count() : 0;
 
                         $completed = 0;
                         if((float)$activity->daily_plan > 0) {
