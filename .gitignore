@@ -6,6 +6,8 @@
 /public/static/uploads
 /public/test.php
 /public/images/bookcovers
+/public/js/app.js
+/public/css/admin/app.css
 /public/users/
 /public/storage
 /app/Sms/.SmsKcell.php.swp
