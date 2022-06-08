@@ -72,7 +72,7 @@ class PermissionController extends Controller
 
         return [
             'users' => $users,
-            'groups' => ProfileGroup::get(['name', 'id']),
+            'groups' => ProfileGroup::where('active', 1)->get(['name', 'id']),
             'roles' => $roles,
             'pages' => $this->getPages(),
             'items' => $items

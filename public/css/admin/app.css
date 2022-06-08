@@ -3529,7 +3529,7 @@ ul.main-menu {
   cursor: pointer;
 }
 
-.multiselect__tag {
+body .multiselect__tag {
   position: relative;
   display: inline-block;
   padding: 3px 32px 4px 10px !important;
@@ -3547,18 +3547,26 @@ ul.main-menu {
   text-overflow: ellipsis;
   margin-bottom: 2px;
 }
-
-.multiselect__tag-icon {
+body .multiselect__tag-icon {
   font-weight: 400;
   width: 28px;
   line-height: 25px;
   border-radius: 0px;
 }
-.multiselect__tag-icon:hover {
+body .multiselect__tag-icon:hover {
   background: #8098a8;
 }
-.multiselect__tag-icon:after {
+body .multiselect__tag-icon:after {
   font-size: 18px;
+}
+body .multiselect__option {
+  display: block;
+  min-height: 10px;
+  line-height: 16px;
+  padding: 5px 12px;
+}
+body .multiselect__option:after {
+  line-height: 16px;
 }
 
 @media (min-width: 1200px) {

@@ -28,7 +28,7 @@ class TestController extends Controller {
 		// $role->givePermissionTo($permission);
 		// $permission->assignRole($role);
 
-		$all_users_with_all_their_roles = User::with('roles')->has('roles')->get()->toArray();
+		$all_users_with_all_their_roles = User::get();
 		
 		dd($all_users_with_all_their_roles);
 		// $a = auth()->user();
