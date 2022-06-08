@@ -22,20 +22,14 @@ use Spatie\Permission\Models\Permission;
 class TestController extends Controller { 
  
 	public function test() {
-		// $role = Role::where(['name' => 'writer'])->first();
-        // $permission = Permission::where(['name' => 'edit articles'])->first();
 
-		// $role->givePermissionTo($permission);
-		// $permission->assignRole($role);
 
-		$all_users_with_all_their_roles = User::with('roles')->has('roles')->get()->toArray();
-		
-		dd($all_users_with_all_their_roles);
-		// $a = auth()->user();
-		// //$a->assignRole('writer');
-		// // dd($a);
-		// dump('Shakerчф');
-		// dd($a->can('edit articles'));
+        $user = User::find(1);
+
+//         \Hash::make('12345');
+//        $user->save();
+        \Auth::login($user);
+
 	}  
 
 	public function hhRefresher() {

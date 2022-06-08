@@ -10,7 +10,7 @@
                 <i class="fa fa-chevron-left"></i> Назад
             </a>
 
-            <div class="data-information">
+            <div class="data-information d-flex">
                 @if(isset($user))
                     @if($user->is_trainee)
                     <button class="btn btn-warning mr-2 rounded" id="submit_job">Принять на работу</button>
@@ -26,26 +26,25 @@
                 @if ( is_null($user->deleted_at))
 
                     @if(!$user->is_trainee)
-                    <button type="button" class="btn btn-danger rounded mr-2" id="deleteModalBtn" data-toggle="modal"
-                    data-target="#deactivateUserModal">
+                    <button type="button" class="btn btn-danger rounded mr-2" id="deleteModalBtn" v-b-modal.modal-deactivate>
                         Уволить без отработки
                     </button>
-                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn2" data-toggle="modal"
-                        data-target="#deactivateUserModal">
+                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn2" v-b-modal.modal-deactivate>
                         Уволить с отработкой
                     </button>
                     @else
-                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn" data-toggle="modal"
-                    data-target="#deactivateUserModal">
+                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn" v-b-modal.modal-deactivate>
                         Уволить стажера
                     </button>
                     @endif
-                
+
+                  
                 @else
-                <button type="button" class="btn btn-success rounded" id="restoreUserBtn" data-toggle="modal"
-                    data-target="#activateUserModal">
-                    Восстановить
+
+                <button type="button" class="btn btn-success rounded" v-b-modal.modal-activate>
+                Восстановить
                 </button>
+
                 @endif
                 @endif
             </div>
@@ -383,6 +382,41 @@
                                                     <div class="weekday @if(isset($user) && $user->weekdays[0] == 1 ) active @endif" data-id="0">Вс</div>   
                                                 </div>
                                             </div>
+
+                                            <div class="form-group row">
+                                                <label for="workingCountry" class="col-sm-4 col-form-label font-weight-bold">Страна</label>
+                                               <div class="col-sm-8">
+                                                   <select name="working_country" id="workingCountry" class="form-control" onchange="selectedCountry()">
+                                                       <option selected disabled>Выбрать Страну</option>
+                                                       <option value="1">Казахстан</option>
+                                                       <option value="2">Россия</option>
+                                                       <option value="3">Кыргызстан</option>
+                                                       <option value="4">Узбекистан</option>
+                                                       <option value="5">Украина</option>
+                                                       <option value="6">Беларуссия</option>
+                                                   </select>
+                                               </div>
+                                           </div>
+
+                                           <div class="form-group row " id="selectedCityHide" style="display: none">
+                                               <label for="workingCity"
+                                                      class="col-sm-4 col-form-label font-weight-bold">Город</label>
+
+                                               <div class="col-sm-8">
+                                                   <select name="working_times" id="workingCity" class="form-control">
+
+                                                   </select>
+                                               </div>
+                                           </div>
+
+                                           <div class="form-group row " id="selectedCityRU" style="display: none">
+                                               <label for="workingCityRU"
+                                                      class="col-sm-4 col-form-label font-weight-bold">Город</label>
+
+                                               <div class="col-sm-8">
+                                                   <input class="form-control" placeholder="Поиск городов Россий">
+                                               </div>
+                                           </div>
 
                                             <div class="form-group row">
                                                 <label for="description"
@@ -1061,6 +1095,9 @@
                                                 </div>
                                             </div>
                                         </div>
+
+
+                                        
                                         @endif
 
                                     </div>
@@ -1094,7 +1131,7 @@
 
 @if(isset($user))
 @if (is_null($user->deleted_at))
-<div class="modal fade" id="deactivateUserModal" tabindex="-1" role="dialog">
+<b-modal id="modal-deactivate" hide-footer hide-header>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body text-center">
@@ -1173,9 +1210,9 @@
             </div>
         </div>
     </div>
-</div>
+</b-modal>
 @else
-<div class="modal" id="activateUserModal" tabindex="-1" role="dialog">
+<b-modal id="modal-activate" hide-footer hide-header>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body text-center">
@@ -1190,7 +1227,7 @@
             </div>
         </div>
     </div>
-</div>
+</b-modal>
 @endif
 @endif
 
@@ -1203,24 +1240,6 @@
                 <h5>Заполните все поля</h5>
             </div>
             <div class="text-left mb-3 texter px-3"></div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="bitrix_quarter_id_input" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <h6>Вы уверены что хотите востановить пользователя?</h6>
-            </div>
-            <div class="text-center mb-3 ">
-                <form action="/timetracking/recover-person">
-
-                    <button type="submit" class="btn btn-success" id="deleteUserButton">Да</button>
-                    <button type="reset" class="btn btn-primary" data-dismiss="modal">Нет</button>
-                </form>
-            </div>
         </div>
     </div>
 </div>
@@ -1718,6 +1737,63 @@ $('#weekdays .weekday').click(function() {
 });
 
 
+</script>
+<script>
+function selectedCountry() {
+
+    let value = $("#workingCountry").val();
+    let _token   = $('meta[name="csrf-token"]').attr('content');
+
+
+    $.ajax({
+    url: "/selected-country",
+    type:"POST",
+    data:{
+        value:value,
+        _token: _token,
+    },
+    success:function(response){
+
+
+        console.log(response);
+
+
+
+
+        if (response['success'] == 1){
+            $("#workingCity").append().empty();
+            $("#selectedCityHide").show();
+            $("#selectedCityRU").hide();
+            for (var i = 0; i < response.city.length;i++){
+                $("#workingCity").append('<option value="' + response.city[i]['id'] + '">' + response.city[i]['city'] + '</option>');
+            }
+        }else if (response['success'] == 2){
+            $("#selectedCityRU").show();
+            $("#selectedCityHide").hide();
+
+            input.oninput = function() {
+                console.log(input.value,'1122333')
+            };
+        }else{
+            console.log(response);
+            alert('ggg')
+        }
+
+
+
+
+
+
+
+    },
+    error: function(error) {
+        console.log(error);
+    }
+    });
+
+    console.log(value,'imasheev')
+
+}
 </script>
 @endsection
 

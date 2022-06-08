@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\View;
 
 class KnowBaseController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(Request $request)
     {
         View::share('menu', 'kb');
@@ -22,7 +28,7 @@ class KnowBaseController extends Controller
 
     public function get(Request $request)
     {   
-        if(\Auth::user()->is_admin == 1) {
+        if(auth()->user()->can('kb_edit')) {
             $books = KnowBase::whereNull('parent_id')->orderBy('order')->get()->toArray();
         } else {
             $books = [];
@@ -34,6 +40,13 @@ class KnowBaseController extends Controller
 
     public function search(Request $request)
     {
+
+        if(!auth()->user()->can('kb_edit')) {
+            return [
+                'items' => [],
+            ];
+        }
+
         $phrase = '%' . $request->text . '%';
         $items = KnowBase::where('title', 'like', $phrase)
             ->orWhere('text', 'like', $phrase)
@@ -64,7 +77,7 @@ class KnowBaseController extends Controller
 
     public function getArchived(Request $request)
     {
-        if(\Auth::user()->is_admin == 1) {
+        if(auth()->user()->can('kb_edit')) {
             $books = KnowBase::onlyTrashed()->whereNull('parent_id')->orderBy('order')->get()->toArray();
         } else {
             $books = [];
@@ -86,7 +99,7 @@ class KnowBaseController extends Controller
         $trees->toArray();
         $book = KnowBase::find($request->id);
 
-        if(\Auth::user()->is_admin != 1) {
+        if(!auth()->user()->can('kb_edit')) {
             $trees = [];
             $book = null;
         }
@@ -134,7 +147,7 @@ class KnowBaseController extends Controller
             'top_parent' => $top_parent,
         ];
 
-        if(\Auth::user()->is_admin != 1) {
+        if(!auth()->user()->can('kb_edit')) {
             $data = [
                 'book' => null,
                 'breadcrumbs' => [],

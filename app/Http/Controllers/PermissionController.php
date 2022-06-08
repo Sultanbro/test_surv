@@ -44,6 +44,7 @@ class PermissionController extends Controller
             $item = [];
 
             $item['user_id'] = $user->id;
+            $item['groups_all'] = $user->groups_all == 1 ? true : false;
             $item['user'] = [
                 'id' => $user->id,
                 'name' => $user->last_name . ' ' . $user->name . ' #' . $user->id,
@@ -72,7 +73,7 @@ class PermissionController extends Controller
 
         return [
             'users' => $users,
-            'groups' => ProfileGroup::get(['name', 'id']),
+            'groups' => ProfileGroup::where('active', 1)->get(['name', 'id']),
             'roles' => $roles,
             'pages' => $this->getPages(),
             'items' => $items
@@ -128,7 +129,8 @@ class PermissionController extends Controller
             $user = User::withTrashed()->with('roles')->find($item['user']['id']);
         
             if($user) {
-                $this->assignGroups($user->id, $item['groups']);
+                $this->assignGroups($user->id, $item['groups'], $item['groups_all']);
+
                 $newrole = Role::find($item['role']['id']);
          
                 foreach($user->roles as $role) {
@@ -136,7 +138,11 @@ class PermissionController extends Controller
                         $user->removeRole($role->name);
                     }
                 }
+
                 if($newrole) $user->assignRole($newrole->name);
+
+                $user->groups_all = $item['groups_all'] ? 1 : null;
+                $user->save();
                 
             } 
         }
@@ -158,7 +164,7 @@ class PermissionController extends Controller
        
     }
 
-    private function assignGroups($user_id, $items)
+    private function assignGroups($user_id, $items, $full_access = false)
     {
         if($items == null) $items = [];
 
@@ -172,8 +178,8 @@ class PermissionController extends Controller
         foreach ($groups as $key => $group) {
             $editors_id = json_decode($group->editors_id);
             if($group->editors_id == null) $editors_id = [];
-
-            if(in_array($group->id, $arr)) {
+            
+            if($full_access || in_array($group->id, $arr)) {
                 array_push($editors_id, $user_id);
             } else {
                 $editors_id = array_diff($editors_id, [$user_id]);

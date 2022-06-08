@@ -21,13 +21,28 @@
       <div class="item d-flex" v-for="(item, i) in items" :key="i">
         <div class="person">
           <v-select v-if="item.user.id == null" :options="users" label="name" v-model="item.user" class="noscrollbar"></v-select>
-          <p class="mb-0" v-else><b>Пользователь:</b><br/>{{ item.user.name }}</p>
+          <p class="mb-0" v-else>{{ item.user.name }}</p>
         </div>
         <div class="role">
           <v-select :options="roles" label="name" v-model="item.role" class="noscrollbar"></v-select>
         </div>
         <div class="groups">
-          <v-select :options="groups" label="name" v-model="item.groups" class="noscrollbar" multiple></v-select>
+          <label class="mb-0 pointer">
+            <input class="pointer" v-model="item.groups_all"  type="checkbox"  />
+            Все
+          </label>
+          <multiselect 
+            v-if="!item.groups_all"
+            v-model="item.groups"
+            :options="groups"
+            :multiple="true"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :preserve-search="true"
+            :hide-selected="true"
+            placeholder="Выберите"
+            label="name"
+            track-by="name" />
         </div>
         <div class="actions d-flex">
 
@@ -166,6 +181,8 @@ export default {
     addItem() {
       this.items.push(
         {
+          user_id: null,
+          groups_all: false,
           user: {
             id: null,
             name: ''
@@ -310,7 +327,7 @@ export default {
           loader.hide();
           alert(error);
         });
-    }
+    },
   },
 };
 </script>

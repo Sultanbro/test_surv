@@ -23,6 +23,8 @@ class Admin {
 //        dd(  $next,$request->toArray());
 
 
+
+
         if($request->getPathInfo()=='/logout') return $next($request);
         if(!Auth::user()) return $next($request);
   
