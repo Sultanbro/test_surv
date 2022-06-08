@@ -384,41 +384,6 @@
                                             </div>
 
                                             <div class="form-group row">
-                                                <label for="workingCountry" class="col-sm-4 col-form-label font-weight-bold">Страна</label>
-                                               <div class="col-sm-8">
-                                                   <select name="working_country" id="workingCountry" class="form-control" onchange="selectedCountry()">
-                                                       <option selected disabled>Выбрать Страну</option>
-                                                       <option value="1">Казахстан</option>
-                                                       <option value="2">Россия</option>
-                                                       <option value="3">Кыргызстан</option>
-                                                       <option value="4">Узбекистан</option>
-                                                       <option value="5">Украина</option>
-                                                       <option value="6">Беларуссия</option>
-                                                   </select>
-                                               </div>
-                                           </div>
-
-                                           <div class="form-group row " id="selectedCityHide" style="display: none">
-                                               <label for="workingCity"
-                                                      class="col-sm-4 col-form-label font-weight-bold">Город</label>
-
-                                               <div class="col-sm-8">
-                                                   <select name="working_times" id="workingCity" class="form-control">
-
-                                                   </select>
-                                               </div>
-                                           </div>
-
-                                           <div class="form-group row " id="selectedCityRU" style="display: none">
-                                               <label for="workingCityRU"
-                                                      class="col-sm-4 col-form-label font-weight-bold">Город</label>
-
-                                               <div class="col-sm-8">
-                                                   <input class="form-control" placeholder="Поиск городов Россий">
-                                               </div>
-                                           </div>
-
-                                            <div class="form-group row">
                                                 <label for="description"
                                                     class="col-sm-4 col-form-label font-weight-bold">Дополнительно</label>
                                                 <div class="col-sm-8">

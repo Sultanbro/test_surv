@@ -67,6 +67,8 @@ use App\Http\Controllers\Admin\GroupAnalyticsController as GAController;
 use App\Models\Analytics\IndividualKpi;
 use App\Models\Analytics\TraineeReport;
 use App\AdaptationTalk;
+use http\Env;
+
 
 class UserController extends Controller
 {
@@ -1219,6 +1221,7 @@ class UserController extends Controller
     }
 
     public function storePerson(Request $request) {
+
 
 
 
