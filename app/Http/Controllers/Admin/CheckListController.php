@@ -21,6 +21,8 @@ class CheckListController extends Controller
     public function validateRequest($query)
     {
         $validateGR = [];
+
+
         foreach ($query as $keys => $group){
             $validateGR = CheckList::on()->where('item_id',$group['code'])->get()->toArray();
         }
@@ -33,9 +35,11 @@ class CheckListController extends Controller
 
 
         if ($request['countView'] < 11 && $request['countView'] != 0){
-
             if (count($request['valueGroups']) != 0 && !empty($request['valueGroups'])){
                 $countCheckList = $this->validateRequest($request['valueGroups']);
+
+
+
                 if ($countCheckList == 0){
                     foreach ($request['valueGroups'] as $keys => $group){
                         $profileGroups = ProfileGroup::on()->find($group['code']);
@@ -58,7 +62,6 @@ class CheckListController extends Controller
                     return response(['success'=>false]);
                 }
             }
-
             if (count($request['valuePositions']) != 0 && !empty($request['valuePositions'])){
                 $countCheckList = $this->validateRequest($request['valuePositions']);
                 if ($countCheckList == 0) {
@@ -82,26 +85,11 @@ class CheckListController extends Controller
                     return response(['success'=>false]);
                 }
             }
-
             if (count($request['valueUsers']) != 0 && !empty($request['valueUsers'])){
-
                 $countCheckList = $this->validateRequest($request['valueUsers']);
-
-
-
-
-
-
                 if ($countCheckList == 0) {
-
-
-
-
                     foreach ($request['valueUsers'] as $keys => $group) {
                         $profileUsers = User::on()->find($group['code']);
-
-
-
                         if (!empty($profileUsers)) {
                             $checkList = new CheckList();
                             $checkList['title'] = $profileUsers['last_name'].' '.$profileUsers['name'];
@@ -226,7 +214,7 @@ class CheckListController extends Controller
     {
         $check_list = CheckList::on()->find($request['check_id'])->toArray();
 
-        return $check_list;
+        return response($check_list);
     }
 
     public function editSaveCheck(Request$request){

@@ -1219,7 +1219,11 @@ class UserController extends Controller
     }
 
     public function storePerson(Request $request) {
-        
+
+
+
+
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1272,19 +1276,29 @@ class UserController extends Controller
         /*******  Приглашение на почту  */
         /*==============================================================*/
 
-        try { // если письмо с прилашением отправилось  
-
-            \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
-
-        } catch (Swift_TransportException $e) { // Если письмо по каким то причинам не отправилось
-            return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
-        }
+//        try { // если письмо с прилашением отправилось
+//
+//            \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
+//
+//        } catch (Swift_TransportException $e) { // Если письмо по каким то причинам не отправилось
+//            return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
+//        }
 
         /*==============================================================*/
         /*******  Создание пользователя в U-marketing.org  */
         /*==============================================================*/
 
         //dd($request->all());
+
+
+
+        if ($request['working_country'] == 2){
+            $working = $request['working_city_ru'];
+        }else{
+            $working = $request['working_city'];
+        }
+
+        dd($working,$request->toArray());
 
         
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
@@ -1307,8 +1321,14 @@ class UserController extends Controller
                 'work_end' => $request['work_start_end'],
                 'currency' => $request['currency'] ?? 'kzt',
                 'weekdays' => $request['weekdays'],
+                'working_country' => $request['working_country'],
+                'working_city' => $working,
             ]);    
         } else { // Не было никакого полльзователя с таким email
+
+
+
+
             $user = User::create([
                 'email' => strtolower($request['email']),
                 'name' => $request['name'],
@@ -1328,11 +1348,14 @@ class UserController extends Controller
                 'work_end' => $request['work_start_end'],
                 'currency' => $request['currency'] ?? 'kzt',
                 'weekdays' => $request['weekdays'],
+                'working_country' =>$request['working_country'],
+                'working_city' =>$working,
                 'role_id' => 1,
                 'is_admin' => 0 
             ]);
         }
-        
+
+
         /*==============================================================*/
         /*******  Руковод или нет  */
         /*==============================================================*/

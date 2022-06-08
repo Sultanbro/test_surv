@@ -449,6 +449,7 @@ Route::middleware([
     
     Route::get('/maps', [MapsController::class, 'index'])->name('maps');
     Route::post('/selected-country', [MapsController::class, 'selectedCountryAjax']);
+    Route::post('/selected-country/search/', [MapsController::class, 'selectedCountryAjaxSearch']);
 
     Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
     Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов

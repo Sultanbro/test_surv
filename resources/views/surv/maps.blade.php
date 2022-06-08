@@ -5,7 +5,7 @@
 @section('title', 'Карта Мира')
 
     @section('content')
-    <div id="coordinates-maps" data-json="{{json_encode($coordinates)}}"></div>
+    <div id="coordinates-maps" data-json="{{json_encode($maps_array)}}"></div>
 
     <div id="map" style="width:100%;height:1500px;"></div>
     <script  type="application/javascript">
@@ -28,25 +28,18 @@
             });
 
 
-
-            myDivIcon = DG.divIcon({
-                iconSize: [30,30],
-                // myIcon: 'https://docs.2gis.com/img/mapgl/marker.svg',
-                html: '<b>1</b>',
-            });
-
-
-
-
             for (let i = 0; i < kis.length;i++){
+                let count = kis[i]['count'];
+                myDivIcon = DG.divIcon({
+                    iconSize: [30,30],
+                    // myIcon: 'https://docs.2gis.com/img/mapgl/marker.svg',
+                    html: '<b>'+count+'</b>',
+                });
+
                 DG.marker([kis[i]['geo_lat'],kis[i]['geo_lon'] ], {
-                    icon: myDivIcon
+                    icon: myDivIcon,
                 }).addTo(map);
-
-
             }
-
-
         });
     </script>
     @endsection

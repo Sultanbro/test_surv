@@ -1,7 +1,7 @@
 <template>
 
     <div class="check-page mt-2">
-        <div class="col-md-12 p-0">
+        <div class="col-md-12 p-0 row">
             <div class="col-md-2">
                 <a id="showCheckSideBar" @click="addNewCheckModalShow()"  class="btn btn-success" style="color: white">Создать чек лист</a>
             </div>
@@ -36,7 +36,7 @@
 
                     <tr v-for="arrCheckList of arrCheckLists">
                         <td >
-                            <a href="#"   @click="editCheck(arrCheckList.id,arrCheckList.type)">
+                            <a href="#"   @click="editCheck(arrCheckList.id,arrCheckList.item_type)">
                                 {{arrCheckList.title}}
                             </a>
                         </td>
@@ -99,105 +99,10 @@
                 <selected-modal-checkList :groups=groups
                                           :allusers="allusers"
                                           :positions="positions"
+                                          :editValueThis="editValueThis"
                                           :someProps="parent" @updateParent="onUpdateSalary"
                 ></selected-modal-checkList>
 
-
-
-
-                <!--<div class="row">-->
-                <!--<div class="col-md-3">-->
-                <!--<p>Для группы чек лист</p>-->
-                <!--</div>-->
-                <!--<div class="col-md-4 p-0" >-->
-
-                <!--<label for="gr-id"  :open="click_show.gr" @close="click_show.gr = false" >-->
-                <!--<p style="margin-left: 30px;cursor: pointer">Группы</p>-->
-                <!--</label>-->
-
-                <!--<div class="position-absolute" style="top: 0px">-->
-                <!--<b-form-checkbox  v-model="click_show.gr"  id="gr-id"></b-form-checkbox>-->
-                <!--</div>-->
-                <!--&lt;!&ndash;<textarea class="form-control btn-block"></textarea>&ndash;&gt;-->
-                <!--</div>-->
-                <!--</div>-->
-
-                <!--<div class="row" v-if="click_show.gr">-->
-                <!--<div class="col-md-11" style="margin-top: -10px;margin-bottom: 10px;">-->
-                <!--&lt;!&ndash;:options="cars"&ndash;&gt;-->
-                <!--&lt;!&ndash;:selectable="car => car.disabled"&ndash;&gt;-->
-                <!--<div>-->
-                <!--&lt;!&ndash;<label class="typo__label">Tagging</label>&ndash;&gt;-->
-                <!--<multiselect v-model="valueGroups"     tag-placeholder="Add this as new tag" placeholder="Выбрать группы"-->
-                <!--label="name" track-by="code" :options="groups_arr"-->
-                <!--:multiple="true" :taggable="true"-->
-                <!--&gt;-->
-                <!--</multiselect>-->
-
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-
-
-                <!--<div class="row">-->
-                <!--<div class="col-md-3">-->
-                <!--<p>Для должностных чек лист</p>-->
-                <!--</div>-->
-                <!--<div class="col-md-4 p-0" >-->
-
-                <!--<label for="ps-id"  :open="click_show.ps" @close="click_show.ps = false">-->
-                <!--<p style="margin-left: 30px;cursor: pointer">Должности</p>-->
-                <!--</label>-->
-
-                <!--<div class="position-absolute" style="top: 0px">-->
-                <!--<b-form-checkbox  v-model="click_show.ps"  id="ps-id"></b-form-checkbox>-->
-                <!--</div>-->
-                <!--&lt;!&ndash;<textarea class="form-control btn-block"></textarea>&ndash;&gt;-->
-                <!--</div>-->
-                <!--</div>-->
-
-
-                <!--<div class="row" v-if="click_show.ps">-->
-                <!--<div class="col-md-11" style="margin-top: -10px;margin-bottom: 10px;">-->
-                <!--<div>-->
-                <!--&lt;!&ndash;<label class="typo__label">Tagging</label>&ndash;&gt;-->
-                <!--<multiselect v-model="valuePositions" tag-placeholder="Add this as new tag" placeholder="Выбрать должности"-->
-                <!--label="name" track-by="code" :options="positions_arr" :multiple="true" :taggable="true">-->
-                <!--</multiselect>-->
-
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!---->
-
-
-                <!--<div class="row">-->
-                <!--<div class="col-md-3">-->
-                <!--<p>Для сотрудников чек лист</p>-->
-                <!--</div>-->
-                <!--<div class="col-md-4 p-0" >-->
-
-                <!--<label for="us-id"  :open="click_show.us" @close="click_show.us = false">-->
-                <!--<p style="margin-left: 30px;cursor: pointer">Сотрудники</p>-->
-                <!--</label>-->
-
-                <!--<div class="position-absolute" style="top: 0px">-->
-                <!--<b-form-checkbox  v-model="click_show.us"  id="us-id"></b-form-checkbox>-->
-                <!--</div>-->
-                <!--&lt;!&ndash;<textarea class="form-control btn-block"></textarea>&ndash;&gt;-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="row" v-if="click_show.us">-->
-                <!--<div class="col-md-11" style="margin-top: -10px;margin-bottom: 10px;">-->
-                <!--<div>-->
-                <!--&lt;!&ndash;<label class="typo__label">Tagging</label>&ndash;&gt;-->
-                <!--<multiselect v-model="valueUsers"  tag-placeholder="Add this as new tag" placeholder="Выбрать сотрудников"-->
-                <!--label="name" track-by="code" :options="allusers_arr" :multiple="true" :taggable="true">-->
-                <!--</multiselect>-->
-
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
 
 
 
@@ -326,6 +231,10 @@
                 valueGroups:[],
                 valuePositions:[],
                 valueUsers:[],
+                editValueThis:{
+                    view:false,
+                    arr:[]
+                },
 
 
 
@@ -343,7 +252,6 @@
                 this.valuePositions = someData['valuePositions'];
                 this.valueUsers = someData['valueUsers'];
                 // Выполняем необходимые действия с `someData`
-                console.log(someData['valueGroups'],'0777')
             },
             addNewCheckModalShow(){
                 this.showCheckSideBar = true
@@ -401,7 +309,11 @@
 
 
             },
+
+
             editCheck(check_id,type){
+
+
                 this.addButton = false
                 this.editButton = true
                 this.showCheckSideBar = true
@@ -417,14 +329,16 @@
                     // console.log(check_id,'imasheev');
                     // console.log(response,'imasheevsdf');
 
+
+
+
+                    this.editValueThis = response.data;
                     this.valueFindGr = response.data.item_id;
-
-
                     this.countView = response.data.count_view;
                     this.arrCheckInput = JSON.parse(response.data['active_check_text'])
 
-
-
+                    this.editValueThis.view = true
+                    this.editValueThis.arr= response.data
 
 
 
@@ -477,31 +391,6 @@
                 this.errors.save_checkbox = false
                 this.validateInput(this.arrCheckInput,this.countView)
 
-
-                // if (this.click_show.gr == true || this.click_show.ps == true || this.click_show.us == true){
-                //     this.errors.save_checkbox = true;
-                //     if (this.click_show.gr == true && this.valueGroups.length  == 0){
-                //         this.errors.save_checkbox = false;
-                //         this.errors.show = true;
-                //         this.errors.message = "Выбрать Группы"
-                //     }
-                //     if (this.click_show.ps == true && this.valuePositions.length  == 0){
-                //         this.errors.save_checkbox = false;
-                //         this.errors.show = true;
-                //         this.errors.message = "Выбрать Должности"
-                //     }
-                // }else {
-                //     this.errors.save_checkbox = false;
-                //     this.errors.show = true;
-                //     this.errors.message = "Выбрать для кого чек лист"
-                // }
-
-
-
-                // console.log(this.errors.save,'08999');
-
-
-
                 if (this.errors.save){
                     axios.post('/timetracking/settings/add/check', {
                         valueGroups:this.valueGroups,
@@ -511,12 +400,6 @@
                         arrCheckInput:this.arrCheckInput,
 
                     }).then(response => {
-
-                        console.log(response,'iiimmaassshhheevv');
-
-
-
-
                         if (response.data.success == false){
                             this.$message.error('Уже существует вы можете от отредактировать');
                             this.errors.show = false;

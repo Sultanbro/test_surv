@@ -67,7 +67,7 @@ class TimetrackingController extends Controller
 
         View::share('menu', 'timetrackingsetting');
 
-        $groups = ProfileGroup::where('active', 1)->get()->pluck('name','name');
+        $groups = ProfileGroup::where('active', 1)->get()->pluck('id','name');
 
 
 
@@ -132,7 +132,7 @@ class TimetrackingController extends Controller
         }
 
         /// временно
-        $getUsers = User::on()->limit(45)->select('id','name','last_name')->get()->toArray();
+        $getUsers = User::on()->select('id','name','last_name')->get()->toArray();
 
 
 

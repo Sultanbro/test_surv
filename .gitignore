@@ -25,7 +25,8 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 ansible/.venv
-.env
+/.env
 composer.lock
 /config/database.php
-.htaccess
+/.htaccess
+/public/.htaccess

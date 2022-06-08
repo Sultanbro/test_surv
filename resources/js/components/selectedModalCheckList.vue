@@ -55,10 +55,13 @@
 
                     <div id="selected-block-array"  class="selected-block-array" >
                        <a style="color: #abb1b8;" id="placholder-select">Добавить Отделы/Сотрудники</a>
+                        {{ this.templateKKK }}
                     </div>
                      <button class="btn btn-success btn btn-block" style="margin-bottom: 20px; margin-left: 0px;color: white;" type="button" @click="doSomething">Добавить</button>
 
-
+                    <button v-on:click="warn('Форма не может быть отправлена.', $event)">
+                      Отправить
+                    </button>
 
 
 
@@ -77,11 +80,16 @@
         props: {
             groups:{},
             allusers:{},
-            positions:{}
+            positions:{},
+            editValueThis:{}
         },
         data() {
             return {
-                flag_type:true,
+                flag_type:{
+                    gr:true,
+                    ps:true,
+                    us:true,
+                },
                 valueGroups:[],
                 valuePositions:[],
                 valueUsers:[],
@@ -94,14 +102,21 @@
                     role_2:false,
                     role_3:false,
                 },
+                templateKKK:'',
+
             };
         },
         mounted() {
+
+          console.log(this.editValueThis.view,'dd')
+          console.log(this.editValueThis,'dddd')
+
+
+
+
+
+
             this.positions_arr = this.positions;
-
-
-
-
             if (Object.keys(JSON.parse(this.groups)).length > 0) {
                 this.groups_arr = JSON.parse(this.groups);
                 const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
@@ -111,10 +126,6 @@
 
                 this.groups_arr = arrayFailedGr
             }
-
-
-
-
             if (Object.keys(this.positions_arr).length > 0) {
                 // this.groups_arr = JSON.parse(this.positions_arr);
 
@@ -136,22 +147,28 @@
             }
         },
         methods: {
-
-
-
-
+            warn: function (message, event) {
+              // теперь у нас есть доступ к нативному событию
+              if (event) {
+                event.preventDefault()
+              }
+              alert(message)
+            },
             doSomething() {
 
-                this.$message.success('Успешно Сохранено')
+              if (this.editValueThis.view == true){
+                console.log(this.editValueThis.view,'kis')
+                this.addDivBlock(this.editValueThis.title,this.editValueThis.id,this.editValueThis.item_type);
+              }
 
+
+                this.$message.success('Успешно Сохранено')
                 this.$emit('updateParent', {
                     valueGroups: this.valueGroups ,
                     valuePositions:this.valuePositions,
                     valueUsers:this.valueUsers,
                 })
             },
-
-
             selectedRoles(type){
                 if (type == 1){
                     this.selectedRole.role_1 = true
@@ -171,65 +188,72 @@
             toggle() {
                 this.showModal = !this.showModal
             },
-
-
             addDivBlock(item,id,type){
-
                 $("#placholder-select").empty();
 
                 if (type == 1){
                     if (this.valueGroups.length > 0){
-                        this.flag_type = true;
+                        this.flag_type.gr = true;
                         for (let i = 0; i < this.valueGroups.length;i ++){
-                            if (this.valueGroups[i]['id'] == id){
+                            if (this.valueGroups[i]['code'] == id){
                                 alert('Уже Добавлено');
-                                this.flag_type = false;
+                                this.flag_type.gr = false;
                             }
                         }
                     }
-
-
-                    console.log(item,id,type,'imasheeev kis')
-
-                    if (this.flag_type == true){
+                    if (this.flag_type.gr == true){
                           this.valueGroups.push({
                               text: item,
                               code:id,
                           });
-
-
-                          console.log(this.valueGroups,'07777ww');
                       }
-
-
-
-
-
                 }
                 if (type == 2){
-                    this.valuePositions.push({
-                        text: item,
-                        code:id,
-                    });
+                    if (this.valuePositions.length > 0){
+                        this.flag_type.ps = true;
+                        for (let i = 0; i < this.valuePositions.length;i ++){
+                            if (this.valuePositions[i]['code'] == id){
+                                alert('Уже Добавлено');
+                                this.flag_type.ps = false;
+                            }
+                        }
+                    }
+                    if (this.flag_type.ps == true){
+                        this.valuePositions.push({
+                            text: item,
+                            code:id,
+                        });
+                    }
                 }
                 if (type == 3){
-                    this.valueUsers.push({
-                        text: item,
-                        code:id,
-                    });
+                    if (this.valueUsers.length > 0){
+                        this.flag_type.us = true;
+                        for (let i = 0; i < this.valueUsers.length;i ++){
+                            if (this.valueUsers[i]['code'] == id){
+                                alert('Уже Добавлено');
+                                this.flag_type.us = false;
+                            }
+                        }
+                    }
+                    if (this.flag_type.us == true){
+                        this.valueUsers.push({
+                            text: item,
+                            code:id,
+                        });
+                    }
                 }
 
+                if (this.flag_type.us && this.flag_type.ps && this.flag_type.gr){
+
+                  // this.templateKKK = '<button @click="deleteDesk(1)" >Счётчик кликов</button>'
+
+
+                     var span = createElement('div', {}, ['blabla']) // нормально
 
 
 
-                if (this.flag_type){
-                    var span = '<a id="id-'+id+'" style="background-color: #67dfef;padding: 7px;color: white;margin: 7px"  @click="deleteDesk(s)"  >'+item+ '</a>';
-
+                    // var span = '<a id="id-'+id+'" style="background-color: #67dfef;padding: 7px;color: white;margin: 7px"  onclick="deleteDesk(1)"  >'+item+ '</a>';
                     $("#selected-block-array").append(span);
-
-
-
-                    // this.doSomething()
                 }
 
 
@@ -245,6 +269,10 @@
         },
 
     }
+
+
+
+
 
 </script>
 
