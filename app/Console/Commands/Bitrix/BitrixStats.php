@@ -77,8 +77,8 @@ class BitrixStats extends Command
         
         $this->bitrix = new Bitrix();
  
-        // $this->getChatbotData();
-        // $this->getRecruiterStats(); 
+        $this->getChatbotData();
+        $this->getRecruiterStats(); 
         $this->inviteTrainees();
     }
 

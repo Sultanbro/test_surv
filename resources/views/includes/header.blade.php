@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE" />
 	<title>MediaSend</title>
+	<link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.1"/>
 	<link rel="stylesheet" href="/css/all.css">
 	<link rel="stylesheet" href="/css/jcf.css">
 
@@ -26,4 +27,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-modal/2.2.6/js/bootstrap-modal.js"></script>
 
 </head>
+
 <body>
