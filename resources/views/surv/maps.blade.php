@@ -15,39 +15,40 @@
         //
         // console.log(kis,'07777');
 
+    
         DG.then(function() {
+            var map,
+                myIcon,
+                myDivIcon;
+
             map = DG.map('map', {
-                'center': [54.98, 82.89],
-                'zoom': 13
+                center:
+                    [42.885933,71.369987]
+                ,
+                zoom: 4.5
+            });
+
+            // console.log(kis.length)
+
+           // for (let i = 0; i < Object.keys(kis).length;i++){
+            Object.keys(kis).forEach(i => {
+                
+      
+                console.log(kis[i])
+                let count = kis[i]['count']; 
+                myDivIcon = DG.divIcon({
+                    iconSize: [30,30],
+                    // myIcon: 'https://docs.2gis.com/img/mapgl/marker.svg',
+                    html: '<b>'+count+'</b>',
+                });
+
+               
+
+                DG.marker([kis[i]['geo_lat'],kis[i]['geo_lon'] ], {
+                    icon: myDivIcon,
+                }).addTo(map);
             });
         });
-
-        // DG.then(function() {
-        //     var map,
-        //         myIcon,
-        //         myDivIcon;
-
-        //     map = DG.map('map', {
-        //         center:
-        //             [42.885933,71.369987]
-        //         ,
-        //         zoom: 4.5
-        //     });
-
-
-        //     for (let i = 0; i < kis.length;i++){
-        //         let count = kis[i]['count'];
-        //         myDivIcon = DG.divIcon({
-        //             iconSize: [30,30],
-        //             // myIcon: 'https://docs.2gis.com/img/mapgl/marker.svg',
-        //             html: '<b>'+count+'</b>',
-        //         });
-
-        //         DG.marker([kis[i]['geo_lat'],kis[i]['geo_lon'] ], {
-        //             icon: myDivIcon,
-        //         }).addTo(map);
-        //     }
-        // });
     </script>
     @endsection
 
