@@ -6,7 +6,7 @@
 @section('title', 'Карта Мира')
 
     @section('content')
-    <div id="coordinates-maps" data-json="{{json_encode($maps_array)}}"></div>
+    <div id="coordinates-maps" data-json="{{json_encode($maps_array,true)}}"></div>
 
     <div id="map" style="width:100%;height:1500px;"></div>
     <script  type="application/javascript">
