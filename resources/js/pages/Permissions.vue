@@ -28,10 +28,11 @@
         </div>
         <div class="groups">
           <label class="mb-0 pointer">
-            <input class="pointer" v-model="item.all_groups"  type="checkbox"  />
+            <input class="pointer" v-model="item.groups_all"  type="checkbox"  />
             Все
           </label>
           <multiselect 
+            v-if="!item.groups_all"
             v-model="item.groups"
             :options="groups"
             :multiple="true"
@@ -39,7 +40,6 @@
             :clear-on-select="false"
             :preserve-search="true"
             :hide-selected="true"
-            @select="onSelect"
             placeholder="Выберите"
             label="name"
             track-by="name" />
@@ -181,6 +181,8 @@ export default {
     addItem() {
       this.items.push(
         {
+          user_id: null,
+          groups_all: false,
           user: {
             id: null,
             name: ''
@@ -326,10 +328,6 @@ export default {
           alert(error);
         });
     },
-
-    onSelect(item) {
-      console.log(item)
-    }
   },
 };
 </script>

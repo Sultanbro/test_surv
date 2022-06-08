@@ -5458,7 +5458,16 @@ body::-webkit-scrollbar {
 }
 .permissions .list .item .groups {
   width: 56%;
+  display: flex;
   padding-right: 15px;
+}
+.permissions .list .item .groups label {
+  display: flex;
+  align-items: center;
+  margin-right: 7px;
+}
+.permissions .list .item .groups label input {
+  margin-right: 7px;
 }
 .permissions .roles-list {
   width: 350px;

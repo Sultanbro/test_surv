@@ -64,6 +64,7 @@ class User extends Authenticatable implements Authorizable
         'has_noti',
         'role_id',
         'is_admin',
+        'groups_all',
         'weekdays', // 0000000
     ];
 
