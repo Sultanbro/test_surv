@@ -65,7 +65,7 @@ class SaveUserKpi extends Command
         $this->comment($users->count());
         foreach ($users as $key => $user) {
 
-            $this->line($key);
+            $this->line($key . ' '. $user->id);
             $kpi = Kpi::userKpi($user->id, $date, 1);
 
             // save 

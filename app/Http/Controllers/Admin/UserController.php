@@ -1681,7 +1681,7 @@ class UserController extends Controller
         }
         
 
-        dd($request->toArray());
+        //dd($request->toArray());
         /*==============================================================*/
         /********** Редактирование user  */
         /*==============================================================*/     
@@ -2138,7 +2138,7 @@ class UserController extends Controller
     } 
     
     public function editPersonGroup(Request $request) {
-        dd('123');
+      
         $group = ProfileGroup::find($request['group_id']);
         $users = json_decode($group->users);
  
