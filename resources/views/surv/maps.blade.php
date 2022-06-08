@@ -1,5 +1,6 @@
 
-<script  src="https://maps.api.2gis.ru/2.0/loader.js"></script>
+<!-- <script  src="https://maps.api.2gis.ru/2.0/loader.js"></script> -->
+<script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
 
 @extends('layouts.admin')
 @section('title', 'Карта Мира')
@@ -14,33 +15,39 @@
         //
         // console.log(kis,'07777');
 
-
         DG.then(function() {
-            var map,
-                myIcon,
-                myDivIcon;
-
             map = DG.map('map', {
-                center:
-                    [42.885933,71.369987]
-                ,
-                zoom: 4.5
+                'center': [54.98, 82.89],
+                'zoom': 13
             });
-
-
-            for (let i = 0; i < kis.length;i++){
-                let count = kis[i]['count'];
-                myDivIcon = DG.divIcon({
-                    iconSize: [30,30],
-                    // myIcon: 'https://docs.2gis.com/img/mapgl/marker.svg',
-                    html: '<b>'+count+'</b>',
-                });
-
-                DG.marker([kis[i]['geo_lat'],kis[i]['geo_lon'] ], {
-                    icon: myDivIcon,
-                }).addTo(map);
-            }
         });
+
+        // DG.then(function() {
+        //     var map,
+        //         myIcon,
+        //         myDivIcon;
+
+        //     map = DG.map('map', {
+        //         center:
+        //             [42.885933,71.369987]
+        //         ,
+        //         zoom: 4.5
+        //     });
+
+
+        //     for (let i = 0; i < kis.length;i++){
+        //         let count = kis[i]['count'];
+        //         myDivIcon = DG.divIcon({
+        //             iconSize: [30,30],
+        //             // myIcon: 'https://docs.2gis.com/img/mapgl/marker.svg',
+        //             html: '<b>'+count+'</b>',
+        //         });
+
+        //         DG.marker([kis[i]['geo_lat'],kis[i]['geo_lon'] ], {
+        //             icon: myDivIcon,
+        //         }).addTo(map);
+        //     }
+        // });
     </script>
     @endsection
 
