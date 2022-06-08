@@ -77,11 +77,16 @@
         props: {
             groups:{},
             allusers:{},
-            positions:{}
+            positions:{},
+            editValueThis:{}
         },
         data() {
             return {
-                flag_type:true,
+                flag_type:{
+                    gr:true,
+                    ps:true,
+                    us:true,
+                },
                 valueGroups:[],
                 valuePositions:[],
                 valueUsers:[],
@@ -96,12 +101,30 @@
                 },
             };
         },
+        created(){
+
+
+
+
+      },
         mounted() {
+
+          console.log(this.editValueThis.view,'dd')
+          console.log(this.editValueThis,'dddd')
+
+
+              if (this.editValueThis.view == true){
+                console.log(this.editValueThis.view,'kis')
+                this.addDivBlock(this.editValueThis.title,this.editValueThis.id,this.editValueThis.item_type);
+              }else {
+                console.log(this.editValueThis.view,'ff')
+                console.log(this.editValueThis,'fffff')
+
+              }
+
+
+
             this.positions_arr = this.positions;
-
-
-
-
             if (Object.keys(JSON.parse(this.groups)).length > 0) {
                 this.groups_arr = JSON.parse(this.groups);
                 const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
@@ -111,10 +134,6 @@
 
                 this.groups_arr = arrayFailedGr
             }
-
-
-
-
             if (Object.keys(this.positions_arr).length > 0) {
                 // this.groups_arr = JSON.parse(this.positions_arr);
 
@@ -136,12 +155,9 @@
             }
         },
         methods: {
-
-
-
-
             doSomething() {
 
+                console.log(this.editValueThis,'ww')
                 this.$message.success('Успешно Сохранено')
 
                 this.$emit('updateParent', {
@@ -175,61 +191,72 @@
 
             addDivBlock(item,id,type){
 
+
+                console.log(item,id,type,'fuck you');
+
+
                 $("#placholder-select").empty();
 
                 if (type == 1){
                     if (this.valueGroups.length > 0){
-                        this.flag_type = true;
+                        this.flag_type.gr = true;
                         for (let i = 0; i < this.valueGroups.length;i ++){
-                            if (this.valueGroups[i]['id'] == id){
+                            if (this.valueGroups[i]['code'] == id){
                                 alert('Уже Добавлено');
-                                this.flag_type = false;
+                                this.flag_type.gr = false;
                             }
                         }
                     }
-
-
-                    console.log(item,id,type,'imasheeev kis')
-
-                    if (this.flag_type == true){
+                    if (this.flag_type.gr == true){
                           this.valueGroups.push({
                               text: item,
                               code:id,
                           });
-
-
-                          console.log(this.valueGroups,'07777ww');
                       }
-
-
-
-
-
                 }
                 if (type == 2){
-                    this.valuePositions.push({
-                        text: item,
-                        code:id,
-                    });
+                    if (this.valuePositions.length > 0){
+                        this.flag_type.ps = true;
+                        for (let i = 0; i < this.valuePositions.length;i ++){
+                            if (this.valuePositions[i]['code'] == id){
+                                alert('Уже Добавлено');
+                                this.flag_type.ps = false;
+                            }
+                        }
+                    }
+                    if (this.flag_type.ps == true){
+                        this.valuePositions.push({
+                            text: item,
+                            code:id,
+                        });
+                    }
                 }
                 if (type == 3){
-                    this.valueUsers.push({
-                        text: item,
-                        code:id,
-                    });
+                    if (this.valueUsers.length > 0){
+                        this.flag_type.us = true;
+                        for (let i = 0; i < this.valueUsers.length;i ++){
+                            if (this.valueUsers[i]['code'] == id){
+                                alert('Уже Добавлено');
+                                this.flag_type.us = false;
+                            }
+                        }
+                    }
+                    if (this.flag_type.us == true){
+                        this.valueUsers.push({
+                            text: item,
+                            code:id,
+                        });
+                    }
                 }
 
 
 
 
-                if (this.flag_type){
+
+
+                if (this.flag_type.us && this.flag_type.ps && this.flag_type.gr){
                     var span = '<a id="id-'+id+'" style="background-color: #67dfef;padding: 7px;color: white;margin: 7px"  @click="deleteDesk(s)"  >'+item+ '</a>';
-
                     $("#selected-block-array").append(span);
-
-
-
-                    // this.doSomething()
                 }
 
 
