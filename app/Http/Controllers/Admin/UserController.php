@@ -1305,7 +1305,7 @@ class UserController extends Controller
             $working = $request['working_city'];
         }
 
-        dd($working,$request->toArray());
+
 
         
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org

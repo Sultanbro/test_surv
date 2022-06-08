@@ -59,9 +59,7 @@
                     </div>
                      <button class="btn btn-success btn btn-block" style="margin-bottom: 20px; margin-left: 0px;color: white;" type="button" @click="doSomething">Добавить</button>
 
-                    <button v-on:click="warn('Форма не может быть отправлена.', $event)">
-                      Отправить
-                    </button>
+
 
 
 
@@ -147,13 +145,7 @@
             }
         },
         methods: {
-            warn: function (message, event) {
-              // теперь у нас есть доступ к нативному событию
-              if (event) {
-                event.preventDefault()
-              }
-              alert(message)
-            },
+
             doSomething() {
 
               if (this.editValueThis.view == true){
