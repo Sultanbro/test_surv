@@ -160,7 +160,7 @@
 
 
                                             
-{{--                                            <profile-kpi-button :user_id="{{ $user->id }}"/>--}}
+                               <profile-kpi-button :user_id="{{ $user->id }}"/>
 
 
 
