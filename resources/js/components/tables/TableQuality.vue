@@ -35,14 +35,13 @@
         class="col-2"
         v-if="
           Number(activeuserid) == 18 ||
-          Number(activeuserid) == 5 ||
-          Number(activeuserid) == 157
+          Number(activeuserid) == 5
         "
       >
-        <group-premission
-          :currentGroup="currentGroup"
-          page="analytic"
-        ></group-premission>
+        <button class="btn btn-primary" @click="showSettings = true">
+          <i class="fa fa-cogs mr-2"></i>
+          Настройки
+        </button>
       </div>
     </div>
 
@@ -57,27 +56,7 @@
           <a-tabs type="card" v-if="dataLoaded">
             <a-tab-pane tab="Неделя" key="1">
 
-              <div class="mb-3">
-                <button
-                  class="btn btn-success rounded change-type"
-                  @click="change_type()"
-                  v-if="
-                    Number(activeuserid) == 18 ||
-                    Number(activeuserid) == 5 ||
-                    Number(activeuserid) == 157
-                  "
-                >
-                  <span v-if="can_add_records">Перевести на Оценку с U-calls</span>
-                  <span v-else>Перевести на Ручную оценку</span>
-                </button>
-                <button
-                  class="btn btn-success rounded change-type ml-2"
-                  @click="showCritWindow = true"
-                  v-if="can_add_records && [5, 18, 157].includes(Number(activeuserid))"
-                >
-                  <span>Критерии</span>
-                </button>
-              </div>
+          
 
               <div class="table-responsive my-table">
                 <table class="table b-table table-bordered table-sm">
@@ -601,39 +580,76 @@
       </div>
     </b-modal>
 
-    <!-- Modal Create activity -->
-    <a-modal
-      v-model="showCritWindow"
-      title="Критерии оценки"
-      @ok="showCritWindow = false"
+
+
+    <b-modal
+      v-model="showSettings"
+      title="Настройки"
       :width="400"
-      class="modalle"
+      hide-header
     >
       <div class="row">
-        <div class="col-12 d-flex mb-1" v-for="crit in params">
-          <b-form-checkbox
-            v-model="crit.active"
-            :value="1"
-            :unchecked-value="0"
-          >
-          </b-form-checkbox>
-          <input
-            type="text"
-            v-model="crit.name"
-            class="form-control form-control-sm"
-          />
+        <div class="col-12 d-flex mb-1">
+
+          <div class="fl">Источник оценок
+            <i class="fa fa-info-circle ml-2" 
+                v-b-popover.hover.right.html="'Заполнять оценки диалогов и критерии на странице <b>Контроль качества</b>, либо подтягивать их по крону с cp.callibro.org'" 
+                title="Оценки контроля качества">
+            </i>
+          </div>
+          <div class="fl d-flex">
+            <b-form-radio v-model="can_add_records"  name="some-radios" value="false" class="mr-3">C U-calls</b-form-radio>
+            <b-form-radio v-model="can_add_records"  name="some-radios" value="true">Ручная оценка</b-form-radio>
+          </div>
+
         </div>
 
+        <div class="col-12" v-if="!can_add_records">
+           <div class="bg mb-2">
+            <div class="fl">ID диалера 
+              <i class="fa fa-info-circle ml-2" 
+                  v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" 
+                  title="Диалер в U-Calls">
+              </i>
+            </div>
+            <div class="fl d-flex">
+              <input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc" />
+              <input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc" />
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12" v-if="can_add_records">
+           <div class="row">
+              <div class="col-12 d-flex mb-1" v-for="crit in params">
+                <b-form-checkbox
+                  v-model="crit.active"
+                  :value="1"
+                  :unchecked-value="0"
+                >
+                </b-form-checkbox>
+                <input
+                  type="text"
+                  v-model="crit.name"
+                  class="form-control form-control-sm"
+                />
+              </div>
+
+              <div class="col-12">
+                <button class="btn btn-sm btn-primary rounded" @click="addParam()">
+                  Добавить критерий
+                </button>
+              </div>
+            </div>
+        </div>
+             
         <div class="col-12">
-          <button class="btn btn-sm btn-primary rounded" @click="addParam()">
-            Добавить
-          </button>
-          <button class="btn btn-sm btn-success rounded" @click="saveParam()">
+          <button class="btn btn-sm btn-success rounded" @click="saveSettings">
             Сохранить
           </button>
         </div>
       </div>
-    </a-modal>
+    </b-modal>
   </div>
 </template>
 
@@ -655,12 +671,15 @@ export default {
         toDate: moment().format("YYYY-MM-DD"),
       },
       can_add_records: false, // like kaspi
+      script_id: null,
+      dialer_id: null,
       fieldsNumber: 15,
       pageNumber: 1,
       currentDay: new Date().getDate(),
       avgDay: 0,
       avgMonth: 0,
       showCritWindow: false,
+      showSettings: false,
       newRecord: {
         id: 0,
         employee_id: 0,
@@ -806,12 +825,15 @@ export default {
       });
     },
 
-    saveParam() {
+    saveSettings() {
       let loader = this.$loading.show();
 
       axios
         .post("/timetracking/quality-control/crits/save", {
           crits: this.params,
+          can_add_records: this.can_add_records,
+          script_id: this.script_id,
+          dialer_id: this.dialer_id,
           group_id: this.currentGroup,
         })
         .then((response) => {
@@ -862,6 +884,8 @@ export default {
           this.records = response.data.records;
           this.can_add_records = response.data.can_add_records;
           this.params = response.data.params;
+          this.script_id = response.data.script_id;
+          this.dialer_id = response.data.dialer_id;
 
 
 
