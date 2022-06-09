@@ -458,13 +458,13 @@
                                                         @endif
 
 
-                                                        @if($user->deactivate_date != null && $user->deactivate_date != '0000-00-00 00:00:00')
+                                                        @if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00')
                                                             <tr>
                                                                 <td>
                                                                     <span>Дата увольнения</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->deactivate_date)->format('d.m.Y')}}</span>
+                                                                    <span>{{ \Carbon\Carbon::parse($user->deleted_at)->format('d.m.Y')}}</span>
                                                                 </td>
                                                             </tr>
                                                                  
