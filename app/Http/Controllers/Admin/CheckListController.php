@@ -69,7 +69,7 @@ class CheckListController extends Controller
                             $checkList['auth_last_name'] = auth()->user()->last_name;
                             $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
                             $checkList['count_view'] = $request['countView'];
-                            $checkList['item_type'] = 2;
+                            $checkList['item_type'] =  $allValueArray['type'];
                             $checkList['item_id'] = $profilePosition->id;
                             $checkList->save();
                             $this->savePosition($profilePosition, $checkList, $request, 2);
@@ -83,7 +83,7 @@ class CheckListController extends Controller
                                 $checkList['auth_last_name'] = auth()->user()->last_name;
                                 $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
                                 $checkList['count_view'] = $request['countView'];
-                                $checkList['item_type'] = 3;
+                                $checkList['item_type'] =  $allValueArray['type'];
                                 $checkList['item_id'] = $profileUsers['id'];
                                 $checkList->save();
                                 $this->saveUsers($profileUsers, $checkList, $request, 3);

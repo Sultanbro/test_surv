@@ -328,8 +328,8 @@
           if (Object.keys(JSON.parse(this.groups)).length > 0) {
             this.groups_arr = JSON.parse(this.groups);
             const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
-              code: arr[1],
-              name: arr[0],
+              code: arr[0],
+              name: arr[1],
               checked:false,
             }));
 

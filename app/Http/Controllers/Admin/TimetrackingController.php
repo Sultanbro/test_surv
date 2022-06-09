@@ -70,6 +70,10 @@ class TimetrackingController extends Controller
         $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
 
 
+
+//        dd($groups);
+
+
         $archived_groups = ProfileGroup::where('active', 0)->get(['id', 'name']);
         $book_groups = BookGroup::all();
         
@@ -111,7 +115,7 @@ class TimetrackingController extends Controller
             'positions' => [],
         ];
         
-        if($active_tab == 5) {
+        if($active_tab == 5 || $active_tab == 1) {
 
             if(!auth()->user()->is_admin) {
                 return redirect('/');
@@ -121,7 +125,8 @@ class TimetrackingController extends Controller
             $tab5['users'] = array_values($users);
 
             $positions = Position::select('position as name', 'id')->get()->toArray();
-            $tab5['positions'] = array_values($positions);    
+
+            $tab5['positions'] = array_values($positions);
 
 
 
@@ -129,6 +134,7 @@ class TimetrackingController extends Controller
 
         /// временно
         $getUsers = User::on()->select('id','name','last_name')->get()->toArray();
+
 
 
 
