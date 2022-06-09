@@ -48,23 +48,23 @@ class QualityController extends Controller
 
 
 
-        $groups = ProfileGroup::
-            //whereIn('id', $acts)
-            //->where('has_analytics', 1)
-            where('active', 1)->get();
+        $groups = ProfileGroup::whereIn('id', $acts)->where('has_analytics', 1)->where('active', 1)->get();
 
-        // $groups2 = ProfileGroup::on()->get();
+        $groups2 = ProfileGroup::on()->get();
 
 
-        // $groups = $groups->merge($groups2);
+        $groups = $groups->merge($groups2);
 
-        // $groups3 = ProfileGroup::on()->get();
+        $groups3 = ProfileGroup::on()->get();
 
-        // $groups = $groups->merge($groups3);
+        $groups = $groups->merge($groups3);
 
 
-        $check_users =CheckUsers::on()->select('name','last_name','check_users_id')
-            ->distinct()->get()->toArray();
+
+
+
+
+
 
 
         return view('admin.quality_control', compact('groups'));
@@ -289,6 +289,7 @@ class QualityController extends Controller
 
         $getReportsCheck = new CheckReports();
         $check_users = $getReportsCheck->filterCheckList($request);
+
 
 
 

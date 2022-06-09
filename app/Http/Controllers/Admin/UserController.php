@@ -1268,10 +1268,10 @@ class UserController extends Controller
                 return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
             }
             
-       
-            $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->id . '"   target="_blank">' . $user->last_name . ' ' . $user->name . '</a>';
-            return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
-        
+            if($user->UF_ADMIN == 1) { // Есть ли сотрудник
+                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->id . '"   target="_blank">' . $user->last_name . ' ' . $user->name . '</a>';
+                return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
+            } 
             // else {
             //     return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Пользователь не является сотрудником, пожалуйста, обратитесь в тех.поддержку');
             // }
@@ -1631,6 +1631,7 @@ class UserController extends Controller
         }
         /*==============================================================*/
         /********** Подготовка  */
+        /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника UF_ADMIN), не знаю баг или нет  */
         /*==============================================================*/
 
         //if(Auth::user()->id == 5) dd($request->all());
@@ -1660,9 +1661,14 @@ class UserController extends Controller
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             }
             
-            $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->last_name . ' ' . $oldUser->name . '</a>';
-            return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
+            if($oldUser->UF_ADMIN == 1) { // Есть ли сотрудник
+                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->last_name . ' ' . $oldUser->name . '</a>';
+                return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
+            } else {
+                return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors('Пользователь не является сотрудником, пожалуйста, обратитесь в тех.поддержку');
+            }
 
+            
             
         } else {
             // Если нет другого аккаунта с новым email, то меняем уже сущ аккаунт в калибро
@@ -1673,9 +1679,8 @@ class UserController extends Controller
                 $old_account->save();
             }
         }
-        
 
-        //dd($request->toArray());
+
         /*==============================================================*/
         /********** Редактирование user  */
         /*==============================================================*/     
@@ -2132,7 +2137,7 @@ class UserController extends Controller
     } 
     
     public function editPersonGroup(Request $request) {
-      
+        dd('123');
         $group = ProfileGroup::find($request['group_id']);
         $users = json_decode($group->users);
  
@@ -2203,6 +2208,7 @@ class UserController extends Controller
     {
         $user = User::where([
             'id' => $request->id,
+            'UF_ADMIN' => 1,
         ])->first();
         
         
@@ -2327,7 +2333,7 @@ class UserController extends Controller
            
             $bitrixUser = $bitrix->searchUser($user->email);
             usleep(1000000); // 1 sec
-            if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
+            if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['id']);
 
             /*** Восстановить с битрикс */
 
