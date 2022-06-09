@@ -1018,7 +1018,7 @@ export default {
                 console.log(error)
             });
         },
-
+ 
         setDecimals() {
 
             let item = this.items[this.focused_item][this.focused_field];

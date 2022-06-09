@@ -835,7 +835,7 @@ class AnalyticStat extends Model
         $prev_date = Carbon::parse($date)->subMonths(1)->format('Y-m-d');
         $impl_prev = self::getRentabilityOnDay($group_id, $prev_date);
 
-        return $impl - $impl_prev;
+        return round($impl - $impl_prev, 2);
 
     }
 }
