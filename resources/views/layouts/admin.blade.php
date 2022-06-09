@@ -29,7 +29,7 @@
     <script>
         jQuery(document).ready(function($){
            $.iMissYou({
-               title: "Вернись (",
+               title: "Вернись :(",
                favicon: {
                    enabled: true,
                    src:'/IMissYouFavicon.ico'

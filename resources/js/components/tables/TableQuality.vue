@@ -38,7 +38,7 @@
           Number(activeuserid) == 5
         "
       >
-        <button class="btn btn-primary" @click="showSettings = true">
+        <button class="btn btn-primary d-block ml-auto" @click="showSettings = true">
           <i class="fa fa-cogs mr-2"></i>
           Настройки
         </button>
@@ -586,10 +586,10 @@
       v-model="showSettings"
       title="Настройки"
       :width="400"
-      hide-header
+      hide-footer
     >
       <div class="row">
-        <div class="col-12 d-flex mb-1">
+        <div class="col-12 d-flex mb-3">
 
           <div class="fl">Источник оценок
             <i class="fa fa-info-circle ml-2" 
@@ -597,9 +597,9 @@
                 title="Оценки контроля качества">
             </i>
           </div>
-          <div class="fl d-flex">
-            <b-form-radio v-model="can_add_records"  name="some-radios" value="false" class="mr-3">C U-calls</b-form-radio>
-            <b-form-radio v-model="can_add_records"  name="some-radios" value="true">Ручная оценка</b-form-radio>
+          <div class="fl d-flex ml-3">
+            <b-form-radio v-model="can_add_records"  name="some-radios" :value="false" class="mr-3">C U-calls</b-form-radio>
+            <b-form-radio v-model="can_add_records"  name="some-radios" :value="true">Ручная оценка</b-form-radio>
           </div>
 
         </div>
@@ -612,9 +612,9 @@
                   title="Диалер в U-Calls">
               </i>
             </div>
-            <div class="fl d-flex">
-              <input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc" />
-              <input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc" />
+            <div class="fl d-flex mt-1">
+              <input type="text" v-model="dialer_id" placeholder="ID" class="form-control form-control-sm" />
+              <input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control form-control-sm" />
             </div>
           </div>
         </div>
@@ -636,16 +636,16 @@
               </div>
 
               <div class="col-12">
-                <button class="btn btn-sm btn-primary rounded" @click="addParam()">
+                <button class="btn btn-sm btn-default rounded" style="font-size:12px;" @click="addParam()">
                   Добавить критерий
                 </button>
               </div>
             </div>
         </div>
              
-        <div class="col-12">
-          <button class="btn btn-sm btn-success rounded" @click="saveSettings">
-            Сохранить
+        <div class="col-12 mt-3">
+          <button class="btn btn-sm btn-primary rounded" @click="saveSettings">
+            Сохранить 
           </button>
         </div>
       </div>
@@ -839,6 +839,7 @@ export default {
         .then((response) => {
           console.log(response);
           this.$message.success("Сохранено!!");
+          this.showSettings = false;
           this.fetchData();
           loader.hide();
         })
