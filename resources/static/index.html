@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=800, initial-scale=1.0">
+	<meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE" />
+	<title>MediaSend</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="plugins/fancybox/src/css/core.css">	
+	<link rel="stylesheet" href="css/adaptive.css">	
+	<link rel="stylesheet" href="css/jcf.css">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&amp;subset=cyrillic" rel="stylesheet">
+</head>
+<body>
+	<div id="wrapper">
+		<div id="sidebar">
+			<a href="#" class="logo">logo</a>
+			<strong>Меню</strong>
+			<ul class="custom-accordion">
+				<li><a href="#" class="item-1">Контакты</a></li>
+				<li>
+					<a href="#" class="opener-ac item-2"><span>Рассылки</span></a>
+					<div class="slide-ac">
+						<ul>
+							<li><a href="#">Профиль</a></li>
+							<li><a href="#">Общие настройки</a></li>
+							<li><a href="#">API ключ</a></li>
+							<li><a href="#">Как стать партнером</a></li>
+							<li><a href="#">Шаблоны СМС и аудио ролики</a></li>
+							<li><a href="#">Стоп лист</a></li>
+							<li><a href="#">Пополнить баланс</a></li>
+							<li><a href="#">Денежные транзакции</a></li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<a href="#" class="opener-ac item-3"><span>Статистика</span></a>
+					<div class="slide-ac">
+						<ul>
+							<li><a href="#">Профиль</a></li>
+							<li><a href="#">Общие настройки</a></li>
+							<li><a href="#">API ключ</a></li>
+							<li><a href="#">Как стать партнером</a></li>
+							<li><a href="#">Шаблоны СМС и аудио ролики</a></li>
+							<li><a href="#">Стоп лист</a></li>
+							<li><a href="#">Пополнить баланс</a></li>
+							<li><a href="#">Денежные транзакции</a></li>
+						</ul>
+					</div>
+				</li>				
+				<li>
+					<a href="#" class="opener-ac item-4"><span>Интеграция</span></a>
+					<div class="slide-ac">
+						<ul>
+							<li><a href="#">Голосовые интеграции</a></li>
+							<li><a href="#">Смс интеграции</a></li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<a href="#" class="opener-ac item-5"><span>Настройки</span></a>
+					<div class="slide-ac">
+						<ul>
+							<li class="active"><a href="#">Профиль</a></li>
+							<li><a href="#">Общие настройки</a></li>
+							<li><a href="#">API ключ</a></li>
+							<li><a href="#">Как стать партнером</a></li>
+							<li><a href="#">Шаблоны СМС и аудио ролики</a></li>
+							<li><a href="#">Стоп лист</a></li>
+							<li><a href="#">Пополнить баланс</a></li>
+							<li><a href="#">Денежные транзакции</a></li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+			<a class="opener" href="#"><span>+ View More</span><em>- View Less</em></a>
+			<div id="contacts">
+					<p>Поддержка:</p>
+					<a href="skype:live:support_49911?add" class="skype"><p>live:support_49911</p></a>
+					<a href="tel:+77057804343" class="call"><p>8 (705) 780-43-43</p></a>
+			</div>
+		</div>
+		<div id="main" class="my_main">
+			<div class="panel">
+				<strong>
+					Добавить обзвон							
+				</strong>
+				<a href="/auth/logout/" class="exit">exit</a>
+				<span class="time">16:44</span>
+				<a href="/account/settings/transactions.php"><span class="balanse">Баланс: <em>30 000 Т.</em></span></a>
+				<span class="id"><em>Ваш ID: </em>1897615</span>
+				<div class="panel-logo">
+					<div>
+						<a data-fancybox="modal" data-src="#editLogo" href="javascript:;"><img src="images/logo-1.png" alt="logo"></a>
+					</div>
+				</div>
+			</div>
+			<div id="editLogo" style="display: none; padding: 50px 5vw; max-width: 800px; text-align: center;">
+					<form action="" method="post" enctype="multipart/form-data">
+						<div class="message">
+						</div>
+						<div class="edit-row">
+								<div class="dispatch-sectionbox-line"><input type="file" data-jcf='{"buttonText": "Custoasd", "placeholderText": "Загрузить логотип"}' name="logo"></div>
+						</div>
+						<div class="edit-row">
+							<input type="submit" name="saveLogo" value="Сохранить" class="btn btn-blue">
+						</div>
+					</form>
+			</div>				
+			<div id="content">				
+				<div class="contacts">
+					<div id="video" style="display: none; ">
+						<iframe src="https://www.youtube.com/embed/F6fZYia32Jw?showinfo=0;modestbranding=1;rel=0;" frameborder="0" allowfullscreen="" style="width:650px; height:390px;"></iframe>
+					</div>
+					<div class="dispatch-panel">
+						<a href="/account/forwards/sms.php" class="btn-back">back</a>
+					</div>
+					<div class="dispatch-instruction la">
+						<h1 data-fancybox="import" data-src="#video">Видео инструкция</h1>
+						<div class="dispatch-area da_pop">
+							<div class="box_popup">
+								<div class="close_popupp">
+									<img src="images/ico-key-close.png" alt="">
+								</div>
+								<div class="tabs">
+
+									<ul class="tabs__caption">
+										<li class="active">Выбрать</li>
+										<li>Загрузить</li>
+									</ul>
+
+									<div class="tabs__content active">
+										<table>
+											<tr>
+												<th>Название голосового сообщения <span><span class="up_arrow"></span><hr><span class="down_arrow"></span></span></th>
+												<th>Длина <span><span class="up_arrow"></span><hr><span class="down_arrow"></span></span></th>
+												<th>Статус <span><span class="up_arrow"></span><hr><span class="down_arrow"></span></span></th>
+											</tr>
+											<tr>
+												<td>Голосовое сообщение</td>
+												<td>00:30</td>
+												<td>Выполнена</td>
+											</tr>
+											<tr>
+												<td>Голосовое сообщение</td>
+												<td>00:30</td>
+												<td>Выполнена</td>
+											</tr>
+											<tr>
+												<td>Голосовое сообщение</td>
+												<td>00:30</td>
+												<td>Выполнена</td>
+											</tr>
+										</table>
+										<div class="save_choise">
+											<a href="#">Сохранить</a>		
+										</div>
+									</div>
+
+									<div class="tabs__content">
+										<form>
+											<label for="name_popup" class="name_labell">Имя</label>
+											<input type="text" id="name_popup" placeholder="Дайте название Вашему файлу">
+											<div class="example">
+												<p>Файл</p>
+
+												<!-- The labels can be nested… -->
+												<label for="upload">
+													<input id="uploaded" placeholder=" Файл WAV или MP3" disabled>
+
+													<label class="file">
+														Обзор
+														<input type="file" id="upload" class="upload" data-value="uploaded" multiple>
+													</label>
+												</label>
+												<div class="box_download">
+													<p class="n_dow">Имя файла</p>
+															<div class="meter" style="width: 116px;">
+			<span style="width: 50%;"></span>
+		</div>
+												</div>
+
+											</div>
+
+											<div class="save_choise">
+												<a href="#">Сохранить</a>		
+											</div>
+										</form>
+									</div>
+
+								</div>
+							</div>
+							<input class="big" type="text" placeholder="Введите название рассылки">
+							<input type="text" placeholder="Если Вам нужно, укажите здесь любую дополнительную информацию о рассылке.">
+							<p class="chois_la">Выбор голосового сообщения</p>
+							<a href="#" class="chois_f_la chois_music">Выбрать аудиозапись</a>
+							<a href="#" class="chois_f_la chois_f_la_sintez">Синтез речи</a>
+							<a href="#" class="chois_f_la chois_f_la_rec">Записать</a>
+							<div class="box_la_dt2">
+								<div class="form-1-row2">
+									<textarea cols="5" rows="5">Введите текст сообщения</textarea>
+									<em>0/250 осталось символов </em>
+								</div>
+								<div class="dispatch-area2">
+									<span class="skob">[</span><input type="text" class="la_inp_name" placeholder="Имя отправителя"><span class="skob">]</span>
+								</div>
+								<div class="dispatch-area2">
+									<span class="skob">[</span><input type="text" class="la_inp_name la_inp_fam" placeholder="Фамилия отправителя"><span class="skob">]</span>
+								</div>
+								<div class="box_rb">
+									<div class="box_radio">
+										<div class="b_radio">
+											<input id="radio-1" name="radio" type="radio" checked>
+											<label for="radio-1" class="radio-label">мужской голос</label>
+										</div>
+										<div class="b_radio">
+											<input id="radio-2" name="radio" type="radio">
+											<label  for="radio-2" class="radio-label">женский голос</label>	
+										</div>	
+									</div>
+									<a href="#" class="btn-play">Синтезировать речь</a>
+								</div>
+							</div>
+
+							
+							<div class="la_sound">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p4.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p1.png" alt="">
+								<img src="images/p2.png" alt="">
+								<img src="images/p3.png" alt="">
+								<img src="images/p3.png" alt="">
+							</div>
+						</div>
+						<div class="dispatch-select ds_la">
+							<div class="dispatch-inputs-row">
+								<div class="dispatch-inputs-rowbox">
+									<strong>Дата начала</strong>
+									<div class="dec-4">
+										<input type="text" placeholder="26.05.2017">
+									</div>
+									<span style="margin-left: auto;"></span>
+									<em>Время начала</em>
+									<div class="dec-4 dec-5">
+										<input type="text" maxlength="5" placeholder="00:00">
+									</div>
+								</div>
+							</div>
+							<div class="dispatch-inputs-row">
+								<strong>Группа контактов</strong>
+								<div class="dec-3 la_dec">
+									<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+										<option>Выбрать группу контактов</option>
+										<option>Выбрать группу контактов1</option>
+										<option>Выбрать группу контактов2</option>
+									</select>
+								</div>
+							</div>
+							<div class="dispatch-inputs-row">
+								<strong>Повтор рассылки</strong>
+								<div class="dec-1 la_dec1">
+									<select class="la_target">
+										<option value="la_every_day">Каждый день</option>
+										<option value="la_every_week">Каждую неделю</option>
+										<option value="la_every_month">Каждый месяц</option>
+									</select>
+								</div>
+							</div>
+							<div class="box_bdotw">
+								<div class="bdotw">
+									<div class="box_day_of_the_weeek">
+										<div class="box_dayyyy">
+											<div class="plus_la"></div>
+											<p class="proc">День недели</p>		
+										</div>
+									</div>
+									<div class="box_date_time">
+										<div class="date_time">
+											<div class="date_icon_box mon1">
+												<img src="images/ico-calendar.png" alt="">
+											</div>
+											<div class="date_icon_box monte">
+												<img src="images/ico-calendar.png" alt="">
+											</div>
+											<div class="la_bb box_day_wek">
+												<form>
+													<div class="day_wek">
+
+														<div class="day">
+															<label for="pn_la">Пн</label>
+															<input id="pn_la" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="vt_la">Вт</label>
+															<input id="vt_la" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="sr_la">Ср</label>
+															<input id="sr_la" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="cht_la">Чт</label>
+															<input id="cht_la" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="pt_la">Пт</label>
+															<input id="pt_la" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="sb_la">Сб</label>
+															<input id="sb_la" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="pn_la">Вс</label>
+															<input id="sb_la" type="checkbox">	
+														</div>
+
+													</div>
+													<div class="la_ok">
+														Ок
+													</div>
+												</form>
+											</div>
+
+											<div class="la_bb box_day_monthh">
+												<form>
+													<div class="day_wek">
+
+														<div class="day">
+															<label for="1">1</label>
+															<input id="1" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="2">2</label>
+															<input id="2" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="3">3</label>
+															<input id="3" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="4">4</label>
+															<input id="4" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="5">5</label>
+															<input id="5" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="6">6</label>
+															<input id="6" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="7">7</label>
+															<input id="7" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="8">8</label>
+															<input id="8" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="9">9</label>
+															<input id="9" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="10">10</label>
+															<input id="10" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="11">11</label>
+															<input id="11" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="12">12</label>
+															<input id="12" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="13">13</label>
+															<input id="13" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="14">14</label>
+															<input id="14" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="15">15</label>
+															<input id="15" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="16">16</label>
+															<input id="16" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="17">17</label>
+															<input id="17" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="18">18</label>
+															<input id="18" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="19">19</label>
+															<input id="19" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="20">20</label>
+															<input id="20" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="21">21</label>
+															<input id="21" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="22">22</label>
+															<input id="22" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="23">23</label>
+															<input id="23" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="24">24</label>
+															<input id="24" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="25">25</label>
+															<input id="25" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="26">26</label>
+															<input id="26" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="27">27</label>
+															<input id="27" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="28">28</label>
+															<input id="28" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="29">29</label>
+															<input id="29" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="30">30</label>
+															<input id="30" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="31">31</label>
+															<input id="31" type="checkbox">	
+														</div>
+														<div class="day">
+															<label for="32">31</label>
+															<input id="32" type="checkbox">	
+														</div>
+
+
+
+
+													</div>
+													<div class="la_ok">
+														Ок
+													</div>
+												</form>
+											</div>
+
+										</div>
+
+
+									</div>
+									<div class="time_begin">
+										<div class="box_la_dc45">
+											<p>Время начала</p>
+										</div>
+										<div class="dec-4 dec-5 la_dc45">
+											<input type="text" maxlength="5" placeholder="00:00">
+										</div>
+									</div>
+								</div>
+
+
+
+							</div>
+							<div class="dispatch-inputs-row">
+								<strong>Повторный дозвон</strong>
+								<div class="dec-3 la_dec">
+									<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+										<option>Выбрать количество дозвонов</option>
+										<option>Выбрать количество дозвонов1</option>
+										<option>Выбрать количество дозвонов2</option>
+									</select>
+								</div>
+							</div>
+							<div class="dispatch-inputs-row dir_fromto">
+								<strong>Интервал рассылки</strong>
+								<div class="la_bf begin_from">
+									<span>с</span>
+									<input type="text" maxlength="5" placeholder="00:00">
+								</div>
+								<div class="la_bf begin_to">
+									<span>до</span>
+									<input type="text" maxlength="5" placeholder="00:00">
+								</div>
+							</div>
+							<div class="dispatch-inputs-row dir_mmessage">
+								<strong>Отправлять в сутки сообщений</strong>
+								<div class="dec-1 la_dec1">
+									<select class="la_target" data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+										<option value="500">500 шт</option>
+										<option value="1000">1000 шт</option>
+										<option value="2000">2000 шт</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="box_setting_voice dispatch-add">
+							<div class="checkbox dispatch-row2">
+								<input type="checkbox" id="che" class="checkbox__input">
+								<label for="che" class="checkbox__label"><em>Настройка голосового меню</em></label>
+							</div>
+							
+							<div class="sub_setting_voice">
+								<p>Настройте голосовое меню кампании. Выберите какие кнопки будут доступны абонентам. +0,33 руб к стоимости каждой клавиши.</p>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #1</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>загрузить аудиоролик</option>
+											<option>повторить сообщение</option>
+											<option>соединить с оператором</option>
+											<option>кнопка не используется</option>
+											<option>удалить из обзвона</option>
+										</select>
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>перезвонить через 10 дней</option>
+											<option>выбрать номер оператора</option>
+										</select>
+									</div>
+								</div>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #2</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>повторить сообщение</option>
+											<option>загрузить аудиоролик</option>
+											<option>соединить с оператором</option>
+											<option>кнопка не используется</option>
+											<option>удалить из обзвона</option>
+										</select>
+										<input type="text" class="text_opis to" placeholder="текстовое описание кнопки">
+									</div>
+								</div>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #3</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>соединить с оператором</option>
+											<option>загрузить аудиоролик</option>
+											<option>повторить сообщение</option>
+											<option>кнопка не используется</option>
+											<option>удалить из обзвона</option>
+										</select>
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>выбрать номер оператора</option>
+											<option>перезвонить через 10 дней</option>
+										</select>
+									</div>
+								</div>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #4</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>кнопка не используется</option>
+											<option>загрузить аудиоролик</option>
+											<option>повторить сообщение</option>
+											<option>соединить с оператором</option>
+											<option>удалить из обзвона</option>
+										</select>
+										<input type="text" class="text_opis" disabled placeholder="текстовое описание кнопки">
+									</div>
+								</div>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #5</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>повторить сообщение</option>
+											<option>загрузить аудиоролик</option>
+											<option>соединить с оператором</option>
+											<option>кнопка не используется</option>
+											<option>удалить из обзвона</option>
+										</select>
+										<input type="text" class="text_opis to" placeholder="текстовое описание кнопки">
+									</div>
+								</div>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #6</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>соединить с оператором</option>
+											<option>загрузить аудиоролик</option>
+											<option>повторить сообщение</option>
+											<option>кнопка не используется</option>
+											<option>удалить из обзвона</option>
+										</select>
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>выбрать номер оператора</option>
+											<option>перезвонить через 10 дней</option>
+										</select>
+									</div>
+								</div>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #7</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>соединить с оператором</option>
+											<option>загрузить аудиоролик</option>
+											<option>повторить сообщение</option>
+											<option>кнопка не используется</option>
+											<option>удалить из обзвона</option>
+										</select>
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>выбрать номер оператора</option>
+											<option>перезвонить через 10 дней</option>
+										</select>
+									</div>
+								</div>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #8</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>удалить из обзвона</option>
+											<option>загрузить аудиоролик</option>
+											<option>повторить сообщение</option>
+											<option>соединить с оператором</option>
+											<option>кнопка не используется</option>
+										</select>
+										<input type="text" class="text_opis" disabled placeholder="абонент удалил себя из кампании">
+									</div>
+								</div>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #9</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>повторить сообщение</option>
+											<option>загрузить аудиоролик</option>
+											<option>соединить с оператором</option>
+											<option>кнопка не используется</option>
+											<option>удалить из обзвона</option>
+										</select>
+										<input type="text" class="text_opis to" disabled placeholder="текстовое описание кнопки">
+									</div>
+								</div>
+								<div class="dispatch-inputs-row">
+									<strong>Кнопка #10</strong>
+									<div class="dec-3 la_dec">
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>соединить с оператором</option>
+											<option>загрузить аудиоролик</option>
+											<option>повторить сообщение</option>
+											<option>кнопка не используется</option>
+											<option>удалить из обзвона</option>
+										</select>
+										<select data-jcf='{"wrapNative": false, "wrapNativeOnMobile": false}'>
+											<option>выбрать номер оператора</option>
+											<option>перезвонить через 10 дней</option>
+										</select>
+									</div>
+								</div>
+							</div>	
+							
+						</div>
+						<div class="dispatch-add box_dop_optionn chch">
+							<h3>Дополнительные опции</h3>
+							<div class="box_mar_desp">
+								<div class="checkbox ch111 dispatch-row2">
+									<input type="checkbox" id="checkbox1" class="checkbox__input">
+									<label for="checkbox1" class="checkbox__label"><em>Отправка СМС после автозвонка</em></label>
+								</div>
+								<div class="checkbox dispatch-row2">									
+									<input type="checkbox" id="checkbox2" class="checkbox__input">
+									<label for="checkbox2" class="checkbox__label"><em>Добавить стандартное Мульти Имя</em></label>
+								</div>
+								<div class="box_fordi">
+									<div class="form-1-row2">
+										<textarea cols="5" rows="5">Введите текст сообщения</textarea>
+										<em>0/70 осталось символов </em>
+									</div>
+									<div class="dispatch-area2">
+										<span class="skob">[</span><input type="text" class="la_inp_name" placeholder="Имя отправителя"><span class="skob">]</span>
+									</div>
+									<div class="dispatch-area2">
+										<span class="skob">[</span><input type="text" class="la_inp_name la_inp_fam" placeholder="Фамилия отправителя"><span class="skob">]</span>
+									</div>
+								</div>
+							</div>
+							<h3><em>стоимость рассылки</em></h3>
+							<strong>12 000 тг.</strong>
+						</div>
+						<div class="dispatch-block la_db_btn">
+							<a href="#" class="btn-save">Создать рассылку</a>
+							<a href="#" class="btn-play">Сохранить рассылку</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="plugins/fancybox/src/js/core.js"></script>
+	<script src="js/common.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script src="js/jcf.radio.js"></script>		
+	<!-- <script src="js/jcf.checkbox.js"></script> -->
+	<script src="js/jcf.select.js"></script>
+	
+</body>
+</html>

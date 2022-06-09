@@ -1,0 +1,30 @@
+.mycourse {
+    
+    .course-item {
+        .title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+
+            background: #c4c6c8;
+            &.disabled {
+                background: #5a6673;
+            }
+        }
+
+        &.active {
+            .title {
+                color: green;
+            }
+        }
+    }
+    
+    .fixed-height {
+        height: 90vh;
+        height: calc(100vh - 36px);
+        overflow-x: hidden;
+        overflow-y: auto;
+        border-right: 1px solid #eee;
+    }
+    
+}

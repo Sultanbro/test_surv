@@ -1,0 +1,215 @@
+.nestable {
+  position: relative;
+}
+
+.nestable-rtl {
+  direction: rtl;
+}
+
+.nestable .nestable-list {
+  margin: 0;
+  padding: 0 0 0 40px;
+  list-style-type: none;
+}
+
+.nestable-rtl .nestable-list {
+  padding: 0 40px 0 0;
+}
+
+.nestable>.nestable-list {
+  padding: 0;
+}
+
+.nestable-item,
+.nestable-item-copy {
+  margin: 10px 0 0;
+}
+
+.nestable-item:first-child,
+.nestable-item-copy:first-child {
+  margin-top: 0;
+}
+
+.nestable-item .nestable-list,
+.nestable-item-copy .nestable-list {
+  margin-top: 10px;
+}
+
+.nestable-item {
+  position: relative;
+}
+
+.nestable-item.is-dragging .nestable-list {
+  pointer-events: none;
+}
+
+.nestable-item.is-dragging * {
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+
+.nestable-item.is-dragging:before {
+  content: " ";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(106, 127, 233, 0.274);
+  border: 1px dashed rgb(73, 100, 241);
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
+.nestable-drag-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.nestable-rtl .nestable-drag-layer {
+  left: auto;
+  right: 0;
+}
+
+.nestable-drag-layer>.nestable-list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0;
+  background-color: rgba(106, 127, 233, 0.274);
+}
+
+.nestable-rtl .nestable-drag-layer>.nestable-list {
+  padding: 0;
+}
+
+.nestable [draggable="true"] {
+  cursor: move;
+}
+
+.nestable-handle {
+  display: inline;
+}
+
+// chapters
+
+.dragArea {
+  margin-left: 20px;
+  padding-left: 0;
+  min-height: 5px;
+}
+
+.handles i {
+  position: relative;
+  top: 1px;
+  color: #a3a3a3;
+  font-size: 12px;
+  width: 25px;
+}
+
+.mover {
+  cursor: move;
+  color: #d7d7d7 !important;
+}
+
+ul {
+  list-style: none;
+}
+
+.chapter {
+  padding: 0;
+  position: relative;
+
+  &:first-child { 
+    margin-top: 5px;
+  }
+  .fa-circle {
+    font-size: 5px;
+  }
+  display: none;
+  &.opened { 
+    display: block;
+  }
+  .chapter-btns i {
+    width: 27px;
+    margin-left: 5px;
+    font-size: 10px;
+    padding: 5px;
+    background: #c7d0d6;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      color: $hover-blue;
+    }
+  }
+
+  .chapter-btns {
+    position: absolute;
+    right: 0;
+    top: 3px;
+    text-align: center;
+    display: none;
+  }
+
+ .d-flex:hover > .chapter-btns {
+    display: flex;
+  }
+}
+
+.chapter p {
+  font-size: 13px;
+  word-break: break-all;
+  white-space: nowrap;
+  cursor: pointer;
+ // position: relative;
+
+  span.long {
+    display: none;
+    position: absolute;
+    left: 25px;
+    margin: 0 -5px;
+    top: 0;
+    max-width: 100%;
+    z-index: 14;
+    font-size: 13px;
+    white-space: normal;
+    padding: 0px 5px;
+    background: #efefef;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 2px #dfdfdf inset;
+    pointer-events: none;
+    word-break: break-word;
+  }
+
+  &:hover span.long {
+    display: block;
+  }
+}
+
+li.chapter:hover>div p {
+  color: rgb(10, 161, 10);
+}
+
+.chapter {
+  .mover {
+    display: none;
+  }
+
+  .shower {
+    display: flex;
+  }
+}
+
+.chapter .handles:hover {
+  &>.mover {
+    display: block;
+  }
+
+  &>.shower {
+    display: none;
+  }
+}
