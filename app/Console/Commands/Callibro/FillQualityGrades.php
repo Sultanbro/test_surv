@@ -9,6 +9,7 @@ use App\User;
 use App\ProfileGroup;
 use App\QualityRecordWeeklyStat;
 use App\QualityRecordMonthlyStat;
+use App\Models\CallibroDialer;
 
 class FillQualityGrades extends Command
 {
@@ -170,25 +171,25 @@ class FillQualityGrades extends Command
      */
     private function setGroups() {
 
-        // $groups = ProfileGroup::where('active', 1)
-        //     ->where('quality', 'ucalls')
-        //     ->get();
+        $groups = ProfileGroup::where('active', 1)
+            ->where('quality', 'ucalls')
+            ->with('dialer')
+            ->has('dialer')
+            ->get();
 
-        // $arr = [];
+        $arr = [];
 
-        // foreach() {
-
-        // }
-        
-        return [
-            [
-                'name' => 'Евраз',
-                'group_id' => 53,
-                'dialer_id' => 398,
-                'script_id' => 2508,
+        foreach($groups as $group) {
+            $arr[] = [
+                'name' => $group->name,
+                'group_id' => $group->id,
+                'dialer_id' => $group->dialer->dialer_id,
+                'script_id' => $group->dialer->script_id, // 2508 - eurasian bank
                 'script_grades' => [],
-            ],
-        ];
+            ];
+        }
+        
+        return $arr;
     }
 
 }
