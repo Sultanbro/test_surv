@@ -60,10 +60,6 @@ class QualityController extends Controller
         $groups = $groups->merge($groups3);
 
 
-        $check_users =CheckUsers::on()->select('name','last_name','check_users_id')
-            ->distinct()->get()->toArray();
-
-
 
 
 
@@ -293,6 +289,7 @@ class QualityController extends Controller
 
         $getReportsCheck = new CheckReports();
         $check_users = $getReportsCheck->filterCheckList($request);
+
 
 
 

@@ -841,6 +841,9 @@ export default {
           if (response.data.error && response.data.error == "access") {
 
 
+            console.log(response,'wsw');
+
+
 
             this.hasPermission = false;
             loader.hide();
