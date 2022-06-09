@@ -655,31 +655,30 @@
 
               if (this.allValueArray.length == 0){
                 this.placeholderSelect = true;
-              }
+              }else{
 
-            console.log(this.groups_arr,'wwssw',type,code)
-
-              for (var i = 0; i < this.groups_arr.length;i++){
-
-
-                if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
-
-                  console.log(this.groups_arr[i]['type'],this.groups_arr[i]['code'] == code,'wwssw',type,code)
-                  this.groups_arr[i]['checked'] = false
+                for (var i = 0; i < this.groups_arr.length;i++){
+                  if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
+                    this.groups_arr[i]['checked'] = false
+                  }
                 }
+
+                for (var i = 0; i < this.positions_arr.length;i++){
+                  if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
+                    this.positions_arr[i]['checked'] = false
+                  }
+                }
+
+                for (var i = 0; i < this.allusers_arr.length;i++){
+                  if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
+                    this.allusers_arr[i]['checked'] = false
+                  }
+                }
+
               }
 
-              for (var i = 0; i < this.positions_arr.length;i++){
-                if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
-                  this.positions_arr[i]['checked'] = false
-                }
-              }
 
-              for (var i = 0; i < this.allusers_arr.length;i++){
-                if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
-                  this.allusers_arr[i]['checked'] = false
-                }
-              }
+
 
 
 
