@@ -2327,7 +2327,7 @@ class UserController extends Controller
            
             $bitrixUser = $bitrix->searchUser($user->email);
             usleep(1000000); // 1 sec
-            if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['id']);
+            if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
 
             /*** Восстановить с битрикс */
 
