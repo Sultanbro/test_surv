@@ -70,10 +70,17 @@ class PermissionController extends Controller
                 ->whereNotIn('id', $all_users_with_all_their_roles->pluck('id')->toArray())
                 ->orderBy('id', 'desc')
                 ->get([\DB::raw("CONCAT(last_name,' ',name, ' #', id) as name"), 'id']);
+        
+        $groups = ProfileGroup::where('active', 1)->get(['name', 'id'])->toArray();
+        array_unshift($groups, [
+            'id' => 0, 
+            'name' => 'Все отделы'
+        ]);
+                
 
         return [
             'users' => $users,
-            'groups' => ProfileGroup::where('active', 1)->get(['name', 'id']),
+            'groups' => $groups,
             'roles' => $roles,
             'pages' => $this->getPages(),
             'items' => $items

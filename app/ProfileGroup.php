@@ -93,7 +93,7 @@ class ProfileGroup extends Model
         $profile = self::find($profile_id);
         
         if($profile) {
-            return json_decode($profile->book_groups);
+            return json_decode($profile->book_groups) ? json_decode($profile->book_groups) : [];
         } else {
             return [];
         }
