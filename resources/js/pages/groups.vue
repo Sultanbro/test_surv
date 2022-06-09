@@ -81,23 +81,34 @@
           </div>
         </div>
 
+     
+
         <div class="dialerlist bg mb-2">
-          <div class="fl">Zoom для обучения</div>
-          <div class="fl">
-            <input
-              type="text"
-              v-model="zoom_link"
-              class="form-control scscsc"
-            />
+          <div class="fl">ID диалера 
+             <i class="fa fa-info-circle ml-2" 
+                v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" 
+                title="Диалер в U-Calls">
+            </i>
+          </div>
+          <div class="fl d-flex">
+            <input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc" />
+            <input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc" />
           </div>
         </div>
 
-        <div class="dialerlist bg mb-2">
-          <div class="fl">Ссылка на zoom в Bpartners</div>
-          <div class="fl">
-            <input type="text" v-model="bp_link" class="form-control scscsc" />
+        <div class="dialerlist bg mb-2 py-1">
+          <div class="fl">Оценки контроля качества
+            <i class="fa fa-info-circle ml-2" 
+                v-b-popover.hover.right.html="'Заполнять оценки диалогов и критерии на странице <b>Контроль качества</b>, либо подтягивать их по крону с cp.callibro.org'" 
+                title="Оценки контроля качества">
+            </i>
+          </div>
+          <div class="fl d-flex">
+            <b-form-radio v-model="quality"  name="some-radios" value="ucalls" class="mr-3">C U-calls</b-form-radio>
+            <b-form-radio v-model="quality"  name="some-radios" value="local">Ручная</b-form-radio>
           </div>
         </div>
+
 
         <div class="dialerlist bg mb-2">
           <div class="fl">Кол-во рабочих дней</div>
@@ -223,7 +234,7 @@
           Сохранить
         </button>
         <button
-          @click.stop="deleted(group_id, activebtn)"
+          @click.stop="deleted"
           class="btn btn-danger mr-2 rounded"
         >
           <i class="fa fa-trash"></i> Удалить группу
@@ -507,13 +518,15 @@ export default {
       payment_terms: "", // Условия оплаты труда в группе
       timeon: "09:00",
       timeoff: "18:00",
-
+      dialer_id: null,
+      script_id: null,
       // time edit
       time_address: 0,
       editable_time: 0,
       time_address_text: "Из табеля",
       time_variants: [],
       workdays: 5,
+      quality: 'local',
       time_exceptions: [],
       time_exceptions_options: [],
       showEditTimeAddress: false,
@@ -646,8 +659,8 @@ export default {
         this.message = null;
       }, 3000);
     },
-    selectGroup(value) {
-      this.activebtn = value;
+    selectGroup() {
+
 
       let loader = this.$loading.show();
 
@@ -657,7 +670,7 @@ export default {
         })
         .then((response) => {
           if (response.data) {
-            this.gname = this.activebtn;
+            this.gname = response.data.name;
             this.value = response.data.users;
             this.bgs = response.data.book_groups;
             this.timeon = response.data.timeon;
@@ -665,6 +678,9 @@ export default {
             this.group_id = response.data.group_id;
             this.zoom_link = response.data.zoom_link;
             this.bp_link = response.data.bp_link;
+            this.dialer_id = response.data.dialer_id;
+            this.script_id = response.data.script_id;
+            this.quality = response.data.quality;
             this.corps = response.data.corp_books;
             this.bonuses = response.data.bonuses;
             this.activities = response.data.activities;
@@ -699,14 +715,17 @@ export default {
           gname: this.gname,
           users: this.value,
           book_groups: this.bgs,
-          corp_books: this.corps,
+          corp_books: this.corps, 
           timeon: this.timeon,
           timeoff: this.timeoff,
           zoom_link: this.zoom_link,
           workdays: this.workdays,
+          script_id: this.script_id,
+          dialer_id: this.dialer_id,
           bp_link: this.bp_link,
           payment_terms: this.payment_terms,
           editable_time: this.editable_time,
+          quality: this.quality,
           paid_internship: this.paid_internship,
           show_payment_terms: this.show_payment_terms,
         })
@@ -747,11 +766,11 @@ export default {
           });
       }
     },
-    deleted(index, status) {
+    deleted() {
       if (confirm("Вы уверены что хотите удалить группу?")) {
         axios
           .post("/timetracking/group/delete", {
-            group: status,
+            group: this.activebtn,
           })
           .then((response) => {
             this.$message.info("Удалена");
