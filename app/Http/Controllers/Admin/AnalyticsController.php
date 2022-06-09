@@ -527,6 +527,18 @@ class AnalyticsController extends Controller
         
     }
 
+    public function setDecimals(Request $request) {
+        $stat = AnalyticStat::where('column_id', $request->column_id)
+            ->where('row_id', $request->row_id)
+            ->first();
+            if($stat) {
+                $stat->decimals = $request->decimals;
+                $stat->save();
+            }
+    
+    }
+    
+
     public function add_depend(Request $request) {
         $row = AnalyticRow::find($request->id);
         if($row) {
@@ -626,6 +638,7 @@ class AnalyticsController extends Controller
                     'show_value' => 0,
                     'type' => 'formula',
                     'class' => 'text-center',
+                    'decimals' => $request->decimals,
                     'editable' => 1,
                 ]);
             } else {
@@ -638,6 +651,7 @@ class AnalyticsController extends Controller
                     'show_value' => 0,
                     'type' => 'formula',
                     'class' => 'text-center',
+                    'decimals' => $request->decimals,
                     'editable' => 1,
                 ]);
             }

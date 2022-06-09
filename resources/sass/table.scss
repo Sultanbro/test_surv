@@ -316,6 +316,13 @@ $grey: #ece8e8;
         flex: 1;
         margin-right: 5px;
     }
+    .cell-show-value {
+        padding: 5px 10px;
+        border: 1px solid #f1f1f1;
+        flex: 0 0 130px;
+        max-width: 130px;
+        margin-right: 5px;
+    }
     .cell-comment {
         padding: 5px 10px;
         border: 1px solid #f1f1f1;
@@ -338,7 +345,7 @@ $grey: #ece8e8;
     left: 50%;
     z-index: 35;
     text-align: left !important;
-    width: 180px;
+    width: 220px;
     top: 50%;
     border: 1px solid #e7e7e7;
     border-radius: 3px;
@@ -349,6 +356,7 @@ $grey: #ece8e8;
     ul {
         list-style: none;
         margin: 0;
+        padding: 0;
         li {
             padding: 6px 12px;
             font-weight: 500;
@@ -361,6 +369,22 @@ $grey: #ece8e8;
             }
             &:last-child {
                 border: none;
+            }
+
+            .decimals {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                p {
+                    margin-bottom: 0;
+                }
+
+                input {
+                    border: 0;
+                    background: #fff;
+                    margin-left: 10px;    
+                }
             }
         }
     }

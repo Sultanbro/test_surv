@@ -4,14 +4,15 @@
     <div class="table-header">
         <input type="text" class="cell-coords" v-model="coords">
         <input type="text" class="cell-type" v-model="cell_type">
+        <input type="text" class="cell-show-value" v-model="cell_show_value">
         <input type="text" class="cell-value" v-model="cell_value">
         <input type="text" class="cell-comment" v-model="cell_comment">
     </div>
 
     <div class="d-flex">
-        <div class="relative   w551">
+        <div class="relative   w551" id="wow-table">
             <!-- table -->
-            <table class="as-table left-side" id="wow-table">
+            <table class="as-table left-side" >
                 <tr>
                     <td class="ruler-cells t-cell text-center">
                         <div class="in-cell inner-div " @click="editMode()">
@@ -206,7 +207,7 @@
     
         <div class="table-responsive">
             <!-- table 2 -->
-            <table class="as-table mr150" id="wow-table2">
+            <table class="as-table mr150">
                 <tr>
                     
                     <td v-for="(letter, index) in letter_cells.slice(4, letter_cells.length)" :key="index"
@@ -235,6 +236,12 @@
                                     <div class="disabled"></div>
                                     <div class="contextor" v-if="item[field.key].context">
                                         <ul class="types">
+                                            <li>
+                                                <div class="d-flex decimals">
+                                                    <p>Дробные</p>
+                                                    <input v-model="item[field.key].decimals"  type="number" @change="setDecimals"/>
+                                                </div>
+                                            </li>
                                             <li  @click="change_type('initial', i_index, field.key)">
                                                 Обычный
                                             </li>
@@ -250,7 +257,7 @@
                                     <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index" 
                                         v-model="item[field.key].value" @change="change_stat(i_index, field.key)"/>
             
-                                    <input v-else-if="i_index != 0" type="text" class="in-cell" :value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(1) + item[field.key].sign : '')" />
+                                    <input v-else-if="i_index != 0" type="text" class="in-cell" :value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(item[field.key].decimals) + item[field.key].sign : '')" />
                                     <input v-else type="text" class="in-cell" :value="item[field.key].show_value" />
 
                                     <div class="bottom-angle" v-if="focused_item === i_index && focused_field === f_index">
@@ -320,8 +327,14 @@
                 <p>Пример формулы: {5} * 12 / 1000</p>
                 <p>Станет        : E5  * 12 / 1000</p>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-3">
                 <input type="text" class="form-control form-control-sm" v-model="formula_1_31">
+            </div>
+            <div class="col-4">
+                Количество цифр после запятой
+            </div>
+            <div class="col-8">
+                <input type="text" class="form-control form-control-sm" v-model="formula_1_31_decimals">
             </div>
         </div>
 
@@ -368,6 +381,7 @@ export default {
             dependencies: [],
             cell_value: null,
             cell_type: null,
+            cell_show_value: null,
             cell_comment: null,
             showFormula1_31: false,
             showCommentWindow: false, // for remote/ inhouse add hours
@@ -376,6 +390,7 @@ export default {
             comment_f: '', // for remote/ inhouse add hours
             depender: [],
             formula_1_31: '',
+            formula_1_31_decimals: 0,
             cell_types: {
                 initial: 'Обычный',
                 formula: 'Формула',
@@ -414,7 +429,7 @@ export default {
     
     mounted () {
         document.addEventListener("keyup", this.nextItem);
-        this.listener()
+        // this.listener()
     },
 
     methods: {
@@ -548,7 +563,7 @@ export default {
             items.forEach(it => {
                 let combinations = this.combinator(it.value);
                 it.formula  = this.getExpression(combinations, 'db');
-                it.show_value = Number(Number(this.calc(combinations).toFixed(2)));
+                it.show_value = Number(Number(this.calc(combinations).toFixed(it.decimals)));
             });
         },
        
@@ -676,29 +691,27 @@ export default {
 
         focus(i,f) {
 
-            if([1,2,3].includes(i) && f == 0) {
-                return ""
-            }
+            if([1,2,3].includes(i) && f == 0) return ""
 
-            // if(this.items[i][this.fields[f].key].editable == 0) {
-            //     return "";
-            // } 
-            console.log(i,f)
-            this.hideContextMenu();
+                console.log(i,f)
+                console.log(this.focused_item,this.focused_field )
+            if(!(this.focused_item == i && this.focused_field == f)) {
+                console.log('hide');
+                 this.hideContextMenu();
+            }
+           
             // indexes
             this.focused_item = i
             this.focused_field = f
 
             // cell value
-            // console.log(this.items[i])
-            // console.log(this.fields[f])
-            this.cell_value = this.items[i][this.fields[f].key].value
-            this.cell_comment = this.items[i][this.fields[f].key].comment
-           //console.log(this.items[i][this.fields[f].key])
-            this.cell_type = this.cell_types[this.items[i][this.fields[f].key].type]
+            let item = this.items[i][this.fields[f].key];
 
-           
-            this.coords = this.items[i][this.fields[f].key].cell
+            this.cell_value = item.value
+            this.cell_comment = item.comment
+            this.cell_type = this.cell_types[item.type]
+            this.cell_show_value = item.show_value
+            this.coords = item.cell
 
         },
 
@@ -1006,6 +1019,31 @@ export default {
             });
         },
 
+        setDecimals() {
+
+            let item = this.items[this.focused_item][this.focused_field];
+            this.itemy = item;
+         
+
+            axios.post("/timetracking/analytics/set-decimals", {
+                date: this.$moment(
+                    `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+                    "MMMM YYYY"
+                ).format("YYYY-MM-DD"),
+                row_id: this.itemy.row_id,
+                column_id: this.itemy.column_id,
+                decimals: this.itemy.decimals
+            })
+            .then((response) => {
+                this.$message.success('Сохранено!');
+                this.hideContextMenu();
+                this.itemy = null;
+            }).catch(error => {
+                this.$message.error('Не сохранено');
+                console.log(error)
+            });
+        },
+
         save_formula_1_31() {
             let rows = [];
 
@@ -1024,12 +1062,14 @@ export default {
                     "MMMM YYYY"
                 ).format("YYYY-MM-DD"),
                 formula: text,
-                row_id: this.itemy.row_id
+                row_id: this.itemy.row_id,
+                decimals: this.formula_1_31_decimals
             })
             .then((response) => {
                 this.$message.success('Обновите для сохранения');
                 this.showFormula1_31 = false
                 this.formula_1_31 = '';
+                this.formula_1_31_decimals = 9;
                 this.itemy = null;
             }).catch(error => {
                 this.$message.error('Не сохранено');
