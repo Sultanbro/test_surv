@@ -83,32 +83,7 @@
 
      
 
-        <div class="dialerlist bg mb-2">
-          <div class="fl">ID диалера 
-             <i class="fa fa-info-circle ml-2" 
-                v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" 
-                title="Диалер в U-Calls">
-            </i>
-          </div>
-          <div class="fl d-flex">
-            <input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc" />
-            <input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc" />
-          </div>
-        </div>
-
-        <div class="dialerlist bg mb-2 py-1">
-          <div class="fl">Оценки контроля качества
-            <i class="fa fa-info-circle ml-2" 
-                v-b-popover.hover.right.html="'Заполнять оценки диалогов и критерии на странице <b>Контроль качества</b>, либо подтягивать их по крону с cp.callibro.org'" 
-                title="Оценки контроля качества">
-            </i>
-          </div>
-          <div class="fl d-flex">
-            <b-form-radio v-model="quality"  name="some-radios" value="ucalls" class="mr-3">C U-calls</b-form-radio>
-            <b-form-radio v-model="quality"  name="some-radios" value="local">Ручная</b-form-radio>
-          </div>
-        </div>
-
+     
 
         <div class="dialerlist bg mb-2">
           <div class="fl">Кол-во рабочих дней</div>
@@ -429,8 +404,28 @@
             </option>
           </select>
         </div>
+
+       
+
       </div>
 
+       <div class="row" v-if="time_address == -1">
+          <div class="col-5 mt-1">
+            <div class="fl">ID диалера 
+              <i class="fa fa-info-circle ml-2" 
+                  v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" 
+                  title="Диалер в U-Calls">
+              </i>
+            </div>
+          </div>
+          <div class="col-7 mt-1">
+            <div class="fl d-flex">
+              <input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc" />
+              <input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc" />
+            </div>
+          </div>
+        </div>
+        
       <div class="row mt-1">
         <div class="col-12">
           <p class="">Исключения
@@ -523,7 +518,7 @@ export default {
       // time edit
       time_address: 0,
       editable_time: 0,
-      time_address_text: "Из табеля",
+      time_address_text: "Не выбран",
       time_variants: [],
       workdays: 5,
       quality: 'local',
@@ -696,7 +691,7 @@ export default {
             if (this.time_address != -1 || this.time_address != 0)
               this.time_address_text = "Из аналитики";
             if (this.time_address == -1) this.time_address_text = "Из U-calls";
-            if (this.time_address == 0) this.time_address_text = "Из табеля";
+            if (this.time_address == 0) this.time_address_text = "Не выбран";
 
             loader.hide();
           } else {
@@ -853,12 +848,12 @@ export default {
           if (this.time_address != -1 || this.time_address != 0)
             this.time_address_text = "Из аналитики";
           if (this.time_address == -1) this.time_address_text = "Из U-calls";
-          if (this.time_address == 0) this.time_address_text = "Из табеля";
+          if (this.time_address == 0) this.time_address_text = "Не выбран";
 
           this.time_address_text =
             this.time_variants !== undefined
               ? this.time_variants[this.time_address]
-              : "Из табеля";
+              : "Не выбран";
         })
         .catch((error) => {
           alert(error);

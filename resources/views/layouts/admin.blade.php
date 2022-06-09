@@ -32,7 +32,7 @@
                title: "Вернись (",
                favicon: {
                    enabled: true,
-                   src:"public/iMissYouFavicon.ico"
+                   src:'/IMissYouFavicon.ico'
                }
            });
        });

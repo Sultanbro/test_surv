@@ -11,46 +11,25 @@
         <div class="person"></div>
         <div class="role">Роль</div>
         <div class="groups">Отделы 
-              <i class="fa fa-info-circle" 
+              <i class="fa fa-info-circle ml-2" 
                 v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'" 
                 title="Доступ к отделам">
             </i>
         </div>
         <div class="actions"></div>
       </div>
-      <div class="item d-flex" v-for="(item, i) in items" :key="i">
-        <div class="person">
-          <v-select v-if="item.user.id == null" :options="users" label="name" v-model="item.user" class="noscrollbar"></v-select>
-          <p class="mb-0" v-else>{{ item.user.name }}</p>
-        </div>
-        <div class="role">
-          <v-select :options="roles" label="name" v-model="item.role" class="noscrollbar"></v-select>
-        </div>
-        <div class="groups">
-          <label class="mb-0 pointer">
-            <input class="pointer" v-model="item.groups_all"  type="checkbox"  />
-            Все
-          </label>
-          <multiselect 
-            v-if="!item.groups_all"
-            v-model="item.groups"
-            :options="groups"
-            :multiple="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            :hide-selected="true"
-            placeholder="Выберите"
-            label="name"
-            track-by="name" />
-        </div>
-        <div class="actions d-flex">
+      
+      <permission-item 
+        v-for="(item, i) in items"
+        class="item d-flex" 
+        :key="i" 
+        @deleteItem="deleteItem(i)"
+        :item="item"
+        :groups="groups"
+        :users="users"
+        :roles="roles"
+      />
 
-          <button class="btn btn-default btn-sm" @click="deleteItem(i)">
-            <i class="fa fa-times" />
-          </button>
-        </div>
-      </div>
       <div class=" d-flex mt-3">
         <button class="btn btn-default btn-sm" @click="addItem">Добавить</button>
       </div>
@@ -131,14 +110,6 @@
 <script>
 export default {
   name: "Permissions",
-  watch: {
-    items: {
-      immediate: true, 
-      handler (val, oldVal) {
-        console.log(val)
-      }
-    }
-  },
   data() { 
     return {
       role: null,
@@ -328,6 +299,8 @@ export default {
           alert(error);
         });
     },
+
+  
   },
 };
 </script>

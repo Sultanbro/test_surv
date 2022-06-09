@@ -122,7 +122,9 @@ Vue.component('t-quality', require('./components/tables/TableQuality.vue').defau
 Vue.component('t-quality-weekly', require('./components/tables/TableQualityWeekly.vue').default); // Недельные оценки качества
 Vue.component('t-usersalary', require('./components/tables/TableUserSalary.vue').default); // таблица начислений
 Vue.component('questions', require('./pages/Questions.vue').default); // вопросы тестов
-Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); // вопросы тестов
+Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); // плеер
+
+Vue.component('permission-item', require('./components/PermissionItem.vue').default); // 
 
 /**
  * Pages

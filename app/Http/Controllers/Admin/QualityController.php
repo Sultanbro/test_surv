@@ -301,6 +301,8 @@ class QualityController extends Controller
             'avg_day' => $group->quality == 'local' ? $avg_day : 0,
             'avg_month' => $group->quality == 'local' ? $avg_month : 0,
             'can_add_records' => $group->quality == 'local' ? true : false,
+            'script_id' => $group->script_id,
+            'dialer_id' => $group->dialer_id,
             'params' => $q_params,
             'check_users' => $check_users,
         ]);
@@ -704,20 +706,46 @@ class QualityController extends Controller
 
     public function saveCrits(Request $request)
     {
-        foreach ($request->crits as $key => $crit) {
-            $param = QualityParam::find($crit['id']);
+        $group = ProfileGroup::find($request->gruop_id);
 
-            if($param) {
-                $param->name = $crit['name'];
-                $param->active = $crit['active'];
-                $param->save();
+        if($request->can_add_records) {
+
+            foreach ($request->crits as $key => $crit) {
+                $param = QualityParam::find($crit['id']);
+    
+                if($param) {
+                    $param->name = $crit['name'];
+                    $param->active = $crit['active'];
+                    $param->save();
+                } else {
+                    QualityParam::create([
+                        'name' => $crit['name'],
+                        'group_id' => $request->group_id,
+                        'active' => $crit['active'],
+                    ]);
+                }
+            }
+
+        } else {
+
+           
+            $dialer = \App\Models\CallibroDialer::where('group_id', $request->group_id)->first();
+            
+            if($dialer) {
+                $dialer->dialer_id = $request['dialer_id'];
+                $dialer->script_id = $request['script_id'] ?? 0;
+                $dialer->save();
             } else {
-                QualityParam::create([
-                    'name' => $crit['name'],
-                    'group_id' => $request->group_id,
-                    'active' => $crit['active'],
+                \App\Models\CallibroDialer::create([
+                    'group_id' => $group->id,
+                    'dialer_id' => $request['dialer_id'],
+                    'script_id' => $request['script_id'] ?? 0
                 ]);
             }
+
         }
+
+        $group->quality = $request->can_add_records ? 'local' : 'ucalls';
+        $group->save();
     }
 }

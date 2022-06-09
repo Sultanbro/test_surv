@@ -2262,18 +2262,17 @@ class TimetrackingController extends Controller
 
     public function getTimeAddresses(Request $request)
     {
-        $group = ProfileGroup::where('name', $request->group_id)
-            ->first();
+        $group = ProfileGroup::find($request->group_id);
 
         $time_variants = [
             '-1' => 'Из U-calls',
-            '0' => 'Из табеля',
+            '0' => 'Не выбран',
         ];
         $time_exceptions_options = [];
         $time_exceptions = [];
 
         if($group) {
-            $activities = Activity::where('group_id', $group->id)->get();
+            $activities = Activity::where('group_id', $group->id)->where('type', 'default')->get();
             foreach ($activities as $key => $activity) {
                 $time_variants[$activity->id] = $activity->name;
             }
@@ -2305,8 +2304,7 @@ class TimetrackingController extends Controller
 
     public function saveTimeAddresses(Request $request)
     {
-        $group = ProfileGroup::where('name', $request->group_id)
-            ->first();
+        $group = ProfileGroup::find($request->group_id);
 
         if($group) {
             $group->time_address = $request->time_address;
