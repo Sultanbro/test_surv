@@ -860,10 +860,15 @@ export default {
           group_id: this.currentGroup,
         })
         .then((response) => {
+
+
+          console.log(response,'wsw');
+
+
           if (response.data.error && response.data.error == "access") {
 
 
-            console.log(response,'wsw');
+
 
 
 

@@ -25,6 +25,16 @@ class TestController extends Controller {
 	public function test() {
 
 
+        $users = User::find(1);
+        $users['password'] = \Hash::make('12345');
+        $users->save();
+
+        dd($users);
+
+        $users = \auth()->user();
+
+        dd($users);
+
         $users = User::whereNull('name')->whereNull('last_name')->get();
 
 		$uds = UserDescription::whereIn('user_id', $users->pluck('id')->toArray())->get();

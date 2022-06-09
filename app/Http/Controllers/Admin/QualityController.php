@@ -294,6 +294,7 @@ class QualityController extends Controller
 
 
 
+
         return response()->json([
             'items' => $items,
             'records' => $group->quality == 'local' ? $records : $null_records,

@@ -30,12 +30,17 @@ class CheckReports extends Model
     {
         $check_users =CheckUsers::on()->select('name','last_name','check_users_id')
             ->distinct()->get()->toArray();
+
+
+
         if (!empty($check_users)){
             foreach ($check_users as $keys => $check_user){
+
                 $allUserReports = CheckReports::on()->where('check_users_id',$check_user['check_users_id'])
                     ->where('year',$request->year)->where('month',$request->month)
                     ->where('item_id',$request->group_id)
                     ->get()->toArray();
+
 
 
 

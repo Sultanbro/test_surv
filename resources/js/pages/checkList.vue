@@ -611,13 +611,24 @@
             },
             addDivBlock(item,id,type){
               $("#placholder-select").empty();
-
+              this.flag_type = true;
 
 
               if (this.allValueArray.length > 0){
                   for (let i = 0; i < this.allValueArray.length;i ++){
                       if (this.allValueArray[i]['code'] == id){
-                          alert('Уже Добавлено');
+
+
+
+                          if (this.allValueArray[i]['type'] == 1){
+                            this.$message.error('Группа ранее добавлено');
+                          }else if (this.allValueArray[i]['type'] == 2){
+                            this.$message.error('Должность ранее добавлено');
+                          }else if (this.allValueArray[i]['type'] == 3){
+                            this.$message.error('Пользователь ранее добавлено');
+                          }
+
+
                           this.flag_type = false;
                       }
                   }
