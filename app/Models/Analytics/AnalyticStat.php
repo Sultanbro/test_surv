@@ -470,7 +470,7 @@ class AnalyticStat extends Model
 
 
         if($count > 0) {
-            $total = round($total / $count, 1);
+            $total = round($total / $count, 3);
         } else {
             $total = 0;
         }

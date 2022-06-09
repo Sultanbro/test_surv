@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use View;
 use App\Models\Analytics\Activity;
 use Auth;
+use App\Models\CallibroDialer;
 
 class QualityController extends Controller
 {
@@ -292,7 +293,7 @@ class QualityController extends Controller
 
 
 
-
+        $dialer = CallibroDialer::where('group_id', $group->id)->first();
 
         return response()->json([
             'items' => $items,
@@ -301,8 +302,8 @@ class QualityController extends Controller
             'avg_day' => $group->quality == 'local' ? $avg_day : 0,
             'avg_month' => $group->quality == 'local' ? $avg_month : 0,
             'can_add_records' => $group->quality == 'local' ? true : false,
-            'script_id' => $group->script_id,
-            'dialer_id' => $group->dialer_id,
+            'script_id' => $dialer ? $dialer->script_id : null,
+            'dialer_id' => $dialer ? $dialer->dialer_id : null,
             'params' => $q_params,
             'check_users' => $check_users,
         ]);
@@ -706,7 +707,7 @@ class QualityController extends Controller
 
     public function saveCrits(Request $request)
     {
-        $group = ProfileGroup::find($request->gruop_id);
+        $group = ProfileGroup::find($request->group_id);
 
         if($request->can_add_records) {
 
@@ -729,14 +730,14 @@ class QualityController extends Controller
         } else {
 
            
-            $dialer = \App\Models\CallibroDialer::where('group_id', $request->group_id)->first();
+            $dialer = CallibroDialer::where('group_id', $request->group_id)->first();
             
             if($dialer) {
                 $dialer->dialer_id = $request['dialer_id'];
                 $dialer->script_id = $request['script_id'] ?? 0;
                 $dialer->save();
             } else {
-                \App\Models\CallibroDialer::create([
+                CallibroDialer::create([
                     'group_id' => $group->id,
                     'dialer_id' => $request['dialer_id'],
                     'script_id' => $request['script_id'] ?? 0
