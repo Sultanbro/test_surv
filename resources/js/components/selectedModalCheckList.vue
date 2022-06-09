@@ -59,32 +59,28 @@
 
 
                     <div id="selected-block-array"  class="selected-block-array" >
-                        <a style="color: #abb1b8;" id="placholder-select">Добавить Отделы/Сотрудники</a>
+                        <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
 
                       <div class="addElement"  v-for="(item,i) in allValueArray"  >
                           <a  class="elementHoverList">
                                <span> {{ item.text }} </span>
-                              <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code)">
+                              <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
                                 <span class="ui-tag-selector-remove-icon  ">x</span>
                               </div>
                           </a>
-
                       </div>
 
                     </div>
-                     <button class="btn btn-success btn btn-block" style="margin-bottom: 20px; margin-left: 0px;color: white;" type="button" @click="doSomething">Добавить</button>
+<!--                     <button class="btn btn-success btn btn-block" style="margin-bottom: 20px; margin-left: 0px;color: white;" type="button" @click="doSomething">Добавить</button>-->
             </div>
         </div>
     </div>
 </template>
 
 <script>
-    // import Multiselect from 'vue-multiselect'
-    // Vue.component('multiselect', Multiselect)
-
 
     export default {
-        name: "test",
+        name: "modalRole",
         props: {
             groups:{},
             allusers:{},
@@ -94,6 +90,7 @@
         data() {
             return {
                 flag_type:true,
+                placeholderSelect:false,
                 allValueArray:[],
                 groups_arr:[],
                 allusers_arr:[],
@@ -107,52 +104,41 @@
             };
         },
         mounted() {
-            this.positions_arr = this.positions;
-            if (Object.keys(JSON.parse(this.groups)).length > 0) {
-                this.groups_arr = JSON.parse(this.groups);
-                const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
-                    code: arr[1],
-                    name: arr[0],
-                    checked:false,
-                }));
 
-                this.groups_arr = arrayFailedGr
-            }
-            if (Object.keys(this.positions_arr).length > 0) {
-                // this.groups_arr = JSON.parse(this.positions_arr);
+            this.groups_arr = [
+                                  { name: 'groups_1', code: '1',type:'1',checked:false },
+                                  { name: 'groups_2', code: '2',type:'1',checked:false },
+                                  { name: 'groups_3', code: '3',type:'1',checked:false },
 
-                const arrayFailedGr = Object.entries(this.positions_arr).map((arr) => ({
-                    code: arr[0],
-                    name: arr[1],
-                    checked:false,
-                }));
-                this.positions_arr = arrayFailedGr
-            }
-            if (this.allusers) {
-                for (let i = 0; i < this.allusers.length; i++) {
-                    if (this.allusers[i]['name'].length > 1) {
-                        this.allusers_arr[i] = {
-                            name: this.allusers[i]['name'] + '  ' + this.allusers[i]['last_name'],
-                            code: this.allusers[i]['id'],
-                            checked:false,
-                        }
-                    }
-                }
-            }
+                              ];
+            this.positions_arr = [
+                                  { name: 'positions_1', code: '1',type:'2',checked:false },
+                                  { name: 'positions_2', code: '2',type:'2',checked:false },
+                                  { name: 'positions_3', code: '3',type:'2',checked:false },
+
+                                ];
+
+          this.allusers_arr = [
+                                  { name: 'users_1', code: '1',type:'3',checked:false },
+                                  { name: 'users_2', code: '2',type:'3',checked:false },
+                                  { name: 'users_3', code: '3',type:'3',checked:false },
+                              ];
+
+
         },
         methods: {
 
-            doSomething() {
-
-              event.default()
-              console.log(this.allValueArray,'07771995')
-
-
-                this.$message.success('Успешно Сохранено')
-                this.$emit('updateParent', {
-                     allValueArray: this.allValueArray
-                })
-            },
+            // doSomething() {
+            //
+            //   event.default()
+            //   console.log(this.allValueArray,'07771995')
+            //
+            //
+            //     this.$message.success('Успешно Сохранено')
+            //     this.$emit('updateParent', {
+            //          allValueArray: this.allValueArray
+            //     })
+            // },
             selectedRoles(type){
                 if (type == 1){
                     this.selectedRole.role_1 = true
@@ -170,19 +156,28 @@
 
             },
             addDivBlock(item,id,type){
-                $("#placholder-select").empty();
-
-                    // if (this.allValueArray.length > 0){
-                    //     for (let i = 0; i < this.allValueArray.length;i ++){
-                    //         if (this.allValueArray[i]['code'] == id){
-                    //             alert('Уже Добавлено');
-                    //             this.flag_type = false;
-                    //         }
-                    //     }
-                    // }
+                this.placeholderSelect = false;
+                this.flag_type = true;
 
 
-                    if (this.flag_type == true){
+                if (this.allValueArray.length > 0){
+                  for (let i = 0; i < this.allValueArray.length;i ++){
+                      if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+                           this.$message.error('Группа ранее добавлено');
+                           this.flag_type = false;
+                      }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+                           this.$message.error('Должность ранее добавлено');
+                           this.flag_type = false;
+                      }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+                          this.$message.error('Пользователь ранее добавлено');
+                          this.flag_type = false;
+                      }
+                    }
+                }
+
+
+
+              if (this.flag_type == true){
                           this.allValueArray.push({
                               text: item,
                               code:id,
@@ -215,13 +210,30 @@
 
                       }
             },
-            deleteDesk(id,code){
+            deleteDesk(id,code,type){
                 this.allValueArray.splice(id,1)
+                if (this.allValueArray.length == 0){
+                  this.placeholderSelect = true;
+                }
                 for (var i = 0; i < this.groups_arr.length;i++){
-                  if (this.groups_arr[i]['code'] == code){
-                    this.groups_arr[i]['checked'] = false
+                    if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
+                      this.groups_arr[i]['checked'] = false
+                    }
+                  }
+
+                for (var i = 0; i < this.positions_arr.length;i++){
+                  if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
+                    this.positions_arr[i]['checked'] = false
                   }
                 }
+
+                for (var i = 0; i < this.allusers_arr.length;i++){
+                  if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
+                    this.allusers_arr[i]['checked'] = false
+                  }
+                }
+
+
 
             },
             // toggle() {

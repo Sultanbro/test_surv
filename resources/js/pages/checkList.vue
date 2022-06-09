@@ -156,12 +156,12 @@
 
 
                     <div id="selected-block-array"  class="selected-block-array" >
-                      <a style="color: #abb1b8;" id="placholder-select">Добавить Отделы/Сотрудники</a>
+                      <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
 
                         <div class="addElement"  v-for="(item,i) in allValueArray"  >
                           <a  class="elementHoverList">
                             <span> {{ item.text }} </span>
-                            <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code)">
+                            <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
                               <span class="ui-tag-selector-remove-icon  ">x</span>
                             </div>
                           </a>
@@ -173,14 +173,14 @@
                 </div>
               </div>
 
-<!--                <selected-modal-checkList :groups=groups-->
-<!--                                          :allusers="allusers"-->
-<!--                                          :positions="positions"-->
-
-<!--                                          :someProps="parent" @updateParent="onUpdateSalary"-->
-<!--                ></selected-modal-checkList>-->
+                <selected-modal-checkList :groups=groups
+                                          :allusers="allusers"
+                                          :positions="positions"
 
 
+                ></selected-modal-checkList>
+
+<!--              :someProps="parent" @updateParent="onUpdateSalary"-->
 
 
                 <div class="row mt-5 pb-3" style="border-bottom: 1px solid #dee2e6">
@@ -234,12 +234,6 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-
-
-                        <!--<div v-if="countViewTextError.length">-->
-                        <!--<p style="color: #c75f5f">{{ this.countViewTextError }}</p>-->
-                        <!--</div>-->
-
                         <div class="col-md-6 p-0">
 
                             <button type="button" @click="addCheckList()" title="Добавить новый пункт чек листа" class="btn btn-success">
@@ -253,10 +247,6 @@
                             <button v-if="editButton" type="button" @click="saveEditCheckList(arrCheckInput)" title="Сохранить" class="btn btn-primary">
                                 Изменить Сохранение
                             </button>
-                        </div>
-
-                        <div class="col-md-6 p-0">
-
                         </div>
                     </div>
                 </div>
@@ -300,9 +290,8 @@
                 showCheckSideBar:false,
                 addButton:false,
                 editButton:false,
+                placeholderSelect:false,
                 check_id:null,
-
-
                 flag_type:true,
                 allValueArray:[],
                 groups_arr:[],
@@ -331,6 +320,7 @@
               code: arr[0],
               name: arr[1],
               checked:false,
+              type:1,
             }));
 
             this.groups_arr = arrayFailedGr
@@ -342,6 +332,7 @@
               code: arr[0],
               name: arr[1],
               checked:false,
+              type:2,
             }));
             this.positions_arr = arrayFailedGr
           }
@@ -352,6 +343,7 @@
                   name: this.allusers[i]['name'] + '  ' + this.allusers[i]['last_name'],
                   code: this.allusers[i]['id'],
                   checked:false,
+                  type:3,
                 }
               }
             }
@@ -364,7 +356,6 @@
             //     this.valueUsers = someData['valueUsers'];
             //     // Выполняем необходимые действия с `someData`
             // },
-
 
             addNewCheckModalShow(){
                 this.showCheckSideBar = true
@@ -419,8 +410,6 @@
 
 
             },
-
-
             editCheck(check_id,type){
 
 
@@ -592,7 +581,6 @@
             closeAlert() {
                 this.errors.show = false;
             },
-
             selectedRoles(type){
               if (type == 1){
                 this.selectedRole.role_1 = true
@@ -610,28 +598,22 @@
 
             },
             addDivBlock(item,id,type){
-              $("#placholder-select").empty();
               this.flag_type = true;
-
+              this.placeholderSelect = false;
 
               if (this.allValueArray.length > 0){
-                  for (let i = 0; i < this.allValueArray.length;i ++){
-                      if (this.allValueArray[i]['code'] == id){
-
-
-
-                          if (this.allValueArray[i]['type'] == 1){
-                            this.$message.error('Группа ранее добавлено');
-                          }else if (this.allValueArray[i]['type'] == 2){
-                            this.$message.error('Должность ранее добавлено');
-                          }else if (this.allValueArray[i]['type'] == 3){
-                            this.$message.error('Пользователь ранее добавлено');
-                          }
-
-
-                          this.flag_type = false;
-                      }
+                for (let i = 0; i < this.allValueArray.length;i ++){
+                  if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+                    this.$message.error('Группа ранее добавлено');
+                    this.flag_type = false;
+                  }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+                    this.$message.error('Должность ранее добавлено');
+                    this.flag_type = false;
+                  }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+                    this.$message.error('Пользователь ранее добавлено');
+                    this.flag_type = false;
                   }
+                }
               }
 
 
@@ -668,15 +650,40 @@
 
               }
             },
-            deleteDesk(id,code){
+          deleteDesk(id,code,type){
               this.allValueArray.splice(id,1)
+
+              if (this.allValueArray.length == 0){
+                this.placeholderSelect = true;
+              }
+
+            console.log(this.groups_arr,'wwssw',type,code)
+
               for (var i = 0; i < this.groups_arr.length;i++){
-                if (this.groups_arr[i]['code'] == code){
+
+
+                if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
+
+                  console.log(this.groups_arr[i]['type'],this.groups_arr[i]['code'] == code,'wwssw',type,code)
                   this.groups_arr[i]['checked'] = false
                 }
               }
 
-            },
+              for (var i = 0; i < this.positions_arr.length;i++){
+                if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
+                  this.positions_arr[i]['checked'] = false
+                }
+              }
+
+              for (var i = 0; i < this.allusers_arr.length;i++){
+                if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
+                  this.allusers_arr[i]['checked'] = false
+                }
+              }
+
+
+
+          },
         },
 
     }
