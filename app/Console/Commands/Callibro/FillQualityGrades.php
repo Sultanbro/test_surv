@@ -169,6 +169,17 @@ class FillQualityGrades extends Command
      * Prepare start array
      */
     private function setGroups() {
+
+        // $groups = ProfileGroup::where('active', 1)
+        //     ->where('quality', 'ucalls')
+        //     ->get();
+
+        // $arr = [];
+
+        // foreach() {
+
+        // }
+        
         return [
             [
                 'name' => 'Евраз',
