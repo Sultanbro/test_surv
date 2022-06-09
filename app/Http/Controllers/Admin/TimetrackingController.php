@@ -67,7 +67,7 @@ class TimetrackingController extends Controller
 
         View::share('menu', 'timetrackingsetting');
 
-        $groups = ProfileGroup::where('active', 1)->get()->pluck('id','name');
+        $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
 
 
         $archived_groups = ProfileGroup::where('active', 0)->get(['id', 'name']);
@@ -534,7 +534,8 @@ class TimetrackingController extends Controller
     public function getusersgroup(Request $request)
     {
         if ($request->group) {
-            $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->first();
+            $group =  ProfileGroup::find($request->group);
+          //  $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->with('dialer')->first();
             //if(!$group) $group = ProfileGroup::find($request->group);
             
             if ($group->users != null) {
@@ -564,6 +565,7 @@ class TimetrackingController extends Controller
         //time_exceptions
 
         return response()->json([
+            'name' => isset($group) ? $group->name : 'Noname',
             'users' => isset($users) ? $users : [],
             'book_groups' => isset($book_groups) ? $book_groups : [],
             'corp_books' => isset($corp_books) ? $corp_books : [],
@@ -573,6 +575,9 @@ class TimetrackingController extends Controller
             'plan' => isset($group->plan) ? $group->plan : 0,
             'zoom_link' => isset($group->zoom_link) ? $group->zoom_link : '',
             'bp_link' => isset($group->bp_link) ? $group->bp_link : '',
+            'dialer_id' => isset($group->dialer) ? $group->dialer->dialer_id : null,
+            'script_id' => isset($group->dialer) ? $group->dialer->script_id : null,
+            'quality' => isset($group) ? $group->quality : 'local',
             'bonuses' => $bonuses,
             'activities' => $activities,
             'payment_terms' => $payment_terms,
@@ -582,7 +587,7 @@ class TimetrackingController extends Controller
             'editable_time' => isset($group) ? $group->editable_time : 0,
             'paid_internship' => isset($group) ? $group->paid_internship : 0,
             'show_payment_terms' => isset($group) ? $group->show_payment_terms : 0,
-            'groups' => ProfileGroup::where('active', 1)->get()->pluck('name'),
+            'groups' => ProfileGroup::where('active', 1)->get()->pluck('name', 'id'),
             'archived_groups' => ProfileGroup::where('active', 0)->get(['name', 'id']),
 
         ]);
@@ -590,7 +595,8 @@ class TimetrackingController extends Controller
 
     public function saveusersgroup(Request $request)
     {
-        $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->first();
+        //$group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->with('dialer')->first();
+        $group = ProfileGroup::with('dialer')->find($request->group);
         //
         $users_id = [];
         $groups = ProfileGroup::where('active', 1)->get();
@@ -621,9 +627,27 @@ class TimetrackingController extends Controller
         $group->payment_terms = $request['payment_terms'];
         $group->editable_time = $request['editable_time'];
         $group->paid_internship = $request['paid_internship'];
+        $group->quality = $request['quality'];
         $group->show_payment_terms = $request['show_payment_terms'];
         $group->save();
 
+        if($request['dialer_id']) {
+            if($group->dialer) {
+                $group->dialer->dialer_id = $request['dialer_id'];
+                $group->dialer->script_id = $request['script_id'] ?? 0;
+                $group->dialer->save();
+            } else {
+                \App\Models\CallibroDialer::create([
+                    'group_id' => $group->id,
+                    'dialer_id' => $request['dialer_id'],
+                    'script_id' => $request['script_id'] ?? 0
+                ]);
+            }
+        }
+
+        
+
+        
 
         // save users migrations
 
@@ -661,7 +685,7 @@ class TimetrackingController extends Controller
         
         
         return [
-            'groups' => ProfileGroup::pluck('name')->toArray(),
+            'groups' => ProfileGroup::pluck('name', 'id')->toArray(),
             'group' => $group->name
         ];;
     }

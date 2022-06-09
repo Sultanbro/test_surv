@@ -815,7 +815,7 @@ class SalaryController extends Controller
       
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
-        
+        //dd(1);
          
         
         $_users = array_merge([['']],$working_users['users']);
@@ -1011,7 +1011,7 @@ class SalaryController extends Controller
             ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
             ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
-            ->leftjoin('timetracking as t', 't.user_id', '=', 'users.id')
+            ->leftJoin('timetracking as t', 't.user_id', '=', 'users.id')
             ->whereIn('users.id', array_unique($users_ids))
             ->selectRaw("users.id as id,
                         users.phone as phone,
@@ -1035,8 +1035,9 @@ class SalaryController extends Controller
             ->groupBy('id', 'phone', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary', 
             'card_kaspi', 'card_jysan', 'jysan', 'kaspi','kaspi_cardholder','jysan_cardholder', 'card', 'program_id', 'birthday','currency', 'working_day_id')
             ->get();
-        
-  
+
+            //if($users->where('id', 14073)->first()) dd($users_ids);
+       //     if($user->id == 14073) dd($users_ids);
         
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
         $data = [];
@@ -1078,7 +1079,8 @@ class SalaryController extends Controller
                 }
             }
            
-            
+           
+
             // Вычисление даты принятия
             $user_applied_at = $_user->applied_at();
 
@@ -1185,14 +1187,15 @@ class SalaryController extends Controller
             
 
             //$workedHours = $workedHours->sum('total_hours');
-            $workedHours = $workedHours->sum('total_hours');
+            $workedHours = $workedHours->sum('total_hours') / 60;
             
             
             
-           
-            
+           // dump($user->workTime);   
+           //dump($workedHours, $user->workTime);  
+        
             $workedDays = round($workedHours / $user->workTime, 2);
-            
+           // dump($workedDays);  
                 // if($user->id == 10242) {
                 //     dump($user_applied_at);
                 //     dump($workedHours);
@@ -1345,9 +1348,9 @@ class SalaryController extends Controller
             // dump($edited_salary_amount);
             // dd($user->id);
             // }
-            // if($salary == 0 && $bonus == 0 && $prepaid == 0 && $trainee_fees == 0 && $edited_salary_amount == 0) {
-            //     continue;
-            // }
+            if($salary == 0 && $bonus == 0 && $prepaid == 0 && $trainee_fees == 0 && $edited_salary_amount == 0) {
+                continue;
+            }
            
             // if($user->id == 10242) {
             //     dd($salary);

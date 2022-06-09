@@ -6,6 +6,7 @@ use Auth;
 use App\ProfileGroup;
 use App\AnalyticsSettingsIndividually;
 use App\User;
+use App\UserDescription;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Classes\Analytics\Impl;
@@ -24,11 +25,17 @@ class TestController extends Controller {
 	public function test() {
 
 
-        $user = User::find(1);
+        $users = User::whereNull('name')->whereNull('last_name')->get();
 
+		$uds = UserDescription::whereIn('user_id', $users->pluck('id')->toArray())->get();
+		foreach ($uds as $key => $ud) {
+			$ud->is_trainee = 1;
+			$ud->save();
+		}
+		//dd($uds);
 //         \Hash::make('12345');
 //        $user->save();
-        \Auth::login($user);
+        //\Auth::login($user);
 
 	}  
 

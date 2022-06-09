@@ -389,6 +389,8 @@ Route::middleware([
     Route::post('/timetracking/analytics/delete-row', [AnalyticsController::class, 'deleteRow']);
     Route::post('/timetracking/analytics/dependency/remove', [AnalyticsController::class, 'removeDependency']);
     Route::post('/timetracking/analytics/edit-stat', [AnalyticsController::class, 'editStat']);
+    Route::post('/timetracking/analytics/set-decimals', [AnalyticsController::class, 'setDecimals']);
+    
     Route::post('/timetracking/analytics/new-group', [AnalyticsController::class, 'newGroup']);
     Route::post('/timetracking/analytics/create-activity', [AnalyticsController::class, 'createActivity']);
     Route::post('/timetracking/analytics/edit-activity', [AnalyticsController::class, 'editActivity']);

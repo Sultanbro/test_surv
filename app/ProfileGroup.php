@@ -51,6 +51,11 @@ class ProfileGroup extends Model
     CONST FROM_UCALLS = -1;
     CONST NOWHERE = 0;
 
+    public function dialer()
+    {
+        return $this->hasOne('App\Models\CallibroDialer', 'group_id', 'id');
+	}
+
     public function plan()
     {
         return $this->hasOne('App\GroupPlan', 'group_id', 'id');
