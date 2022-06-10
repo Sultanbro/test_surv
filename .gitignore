@@ -32,3 +32,5 @@ composer.lock
 /config/database.php
 /.htaccess
 /public/.htaccess
+/public/js/app.js
+/public/css/app.css

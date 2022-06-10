@@ -157,8 +157,8 @@
 
                     <div id="selected-block-array"  class="selected-block-array" >
                       <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
-                        <div class="addElement"  v-for="(item,i) in allValueArray"  >
-                          <a class="elementHoverList"  v-bind:class="{ existElement: isExistElement }" >
+                        <div class="addElement"  v-for="(item,i) in allValueArray"   >
+                          <a class="elementHoverList">
                             <span> {{ item.text }} </span>
                             <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
                               <span class="ui-tag-selector-remove-icon  ">x</span>
@@ -268,6 +268,7 @@
                 countView:'1',
                 errors: {
                     message:'',
+                    msg:'',
                     text:[],
                     counterror:[],
                     show:false,
@@ -289,7 +290,7 @@
                   role_2:false,
                   role_3:false,
                 },
-              isExistElement:false,
+
 
 
             }
@@ -478,8 +479,6 @@
                 this.errors.save_checkbox = false
                 this.validateInput(this.arrCheckInput,this.countView)
 
-              console.log(this.allValueArray,'7777777')
-
 
                 if (this.errors.save){
                     axios.post('/timetracking/settings/add/check', {
@@ -490,21 +489,25 @@
                     }).then(response => {
 
                         if (response.data.success == false){
-                            this.$message.error('Уже существует вы можете от отредактировать');
                             this.errors.show = false;
+                            this.errors.msg = null;
                             // this.showCheckSideBar = false;
-
-
-
                             for (let i = 0;i < this.allValueArray.length;i++){
-
                                if (this.allValueArray[i]['type'] == response.data.exists[0]['item_type'] && this.allValueArray[i]['code'] == response.data.exists[0]['item_id']){
-                                 this.isExistElement = true
-                                 console.log(response.data.exists)
-                                 console.log(this.isExistElement,'wwww')
+
+
+                                 if (response.data.exists[0]['item_type'] == 1){
+                                   this.errors.msg = 'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+                                   this.$message.error(this.errors.msg);
+                                 }else if(response.data.exists[0]['item_type'] == 2){
+                                   this.errors.msg = 'Данная ' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
+                                   this.$message.error(this.errors.msg);
+                                 }else if (response.data.exists[0]['item_type'] == 3){
+                                   this.errors.msg = 'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено';
+                                   this.$message.error(this.errors.msg);
+                                 }
                                }
                             }
-
                         }else {
                             this.$message.success('Успешно Добавлено');
                             this.errors.show = false;
@@ -606,22 +609,27 @@
                   if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
                     this.$message.error('Группа ранее добавлено');
                     this.flag_type = false;
+                    this.allValueArray[i]['exists'] = true
                   }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
                     this.$message.error('Должность ранее добавлено');
                     this.flag_type = false;
+                    this.allValueArray[i]['exists'] = true
                   }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
                     this.$message.error('Пользователь ранее добавлено');
                     this.flag_type = false;
+                    this.allValueArray[i]['exists'] = true
                   }
                 }
               }
+
 
 
               if (this.flag_type == true){
                 this.allValueArray.push({
                   text: item,
                   code:id,
-                  type:type
+                  type:type,
+                  exists:false,
                 });
 
                 if (type == 1){
@@ -655,28 +663,25 @@
 
               if (this.allValueArray.length == 0){
                 this.placeholderSelect = true;
-              }else{
-
-                for (var i = 0; i < this.groups_arr.length;i++){
-                  if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
-                    this.groups_arr[i]['checked'] = false
-                  }
-                }
-
-                for (var i = 0; i < this.positions_arr.length;i++){
-                  if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
-                    this.positions_arr[i]['checked'] = false
-                  }
-                }
-
-                for (var i = 0; i < this.allusers_arr.length;i++){
-                  if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
-                    this.allusers_arr[i]['checked'] = false
-                  }
-                }
-
               }
 
+              for (var i = 0; i < this.groups_arr.length;i++){
+                if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
+                  this.groups_arr[i]['checked'] = false
+                }
+              }
+
+              for (var i = 0; i < this.positions_arr.length;i++){
+                if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
+                  this.positions_arr[i]['checked'] = false
+                }
+              }
+
+              for (var i = 0; i < this.allusers_arr.length;i++){
+                if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
+                  this.allusers_arr[i]['checked'] = false
+                }
+              }
 
 
 
@@ -691,12 +696,6 @@
 </script>
 
 <style lang="scss" scoped>
-
-    .existElement{
-      background-color: red;
-      z-index: 1;
-      color: red
-    }
     .check-page {
         .number_input {
             width: 100px;

@@ -141,7 +141,7 @@ class TimetrackingController extends Controller
 
         $groupsWithId = ProfileGroup::select('name','id')->get();
         return view(
-            'admin.settingtimetracking',compact('getUsers'))
+            'admin.settingtimetracking')
             ->with('positions', $positions)
             ->with('groups',$groups)
             ->with('archived_groups',$archived_groups)
@@ -149,7 +149,8 @@ class TimetrackingController extends Controller
             ->with('corpbooks',$corpbooks)
             ->with('active_tab',$active_tab)
             ->with('tab5',$tab5)
-            ->with('groupsWithId',$groupsWithId);
+            ->with('groupsWithId',$groupsWithId)
+            ->with('getUsers',$getUsers);
     }
 
     public function fines()

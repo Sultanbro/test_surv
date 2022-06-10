@@ -70,6 +70,7 @@
                             @if($active_tab == 8)
 
 
+
                                     <div class="tab-pane fade show active   p-3" id="checkList" role="tabpanel" aria-labelledby="nav-checkList-tab">
                                         <check-list
                                                           groups="{{json_encode($groups) }}"
