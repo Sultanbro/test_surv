@@ -63,18 +63,6 @@
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
 <!-- 
 <script src="js/jquery-1.11.2.min.js"></script> -->
-<script src="/js/jquery.iMissYou.min.js"></script>
-<script>
-$(document).ready(function(){
-    $.iMissYou({
-        title: "Вернись :(",
-        favicon: {
-            enabled: true,
-            src:'/IMissYouFavicon.ico'
-        }
-    });
-});
-</script>
   
 
 <!-- <script src="/js/manifest.js"></script>
