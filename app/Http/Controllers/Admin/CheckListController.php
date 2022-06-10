@@ -17,34 +17,21 @@ use function Symfony\Component\Finder\name;
 class CheckListController extends Controller
 {
 
-
-    public function validateRequest($query)
-    {
-        $validateGR = [];
-
-
-        foreach ($query as $keys => $group){
-            $validateGR = CheckList::on()->where('item_id',$group['code'])->get()->toArray();
-        }
-
-        return count($validateGR);
-    }
-
     public function store(Request $request){
-
-
 
         if ($request['countView'] < 11 && $request['countView'] != 0){
 
-
-
             if (isset($request['allValueArray'])){
 
+                foreach ($request['allValueArray'] as $allValidate){
+                    $validate = CheckList::where('item_id',$allValidate['code'])->where('item_type',$allValidate['type'])->get()->toArray();
+                    if (!empty($validate)){
+                        return response(['success'=>false,'exists'=>$validate]);
+                    }
+                }
+
+
                 foreach ($request['allValueArray'] as $allValueArray){
-                    $countCheckList = $this->validateRequest($request['allValueArray']);
-
-                    if ($countCheckList == 0){
-
                         if ($allValueArray['type'] == 1){
                             $profileGroups = ProfileGroup::on()->find($allValueArray['code']);
                             $checkList = new CheckList();
@@ -60,8 +47,6 @@ class CheckListController extends Controller
                             $this->saveGroup($profileGroups,$checkList,$request,1);
                         }elseif ($allValueArray['type'] == 2){
                             $profilePosition = Position::on()->find($allValueArray['code']);
-
-
                             $checkList = new CheckList();
                             $checkList['title'] = $profilePosition['position'];
                             $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
@@ -89,10 +74,7 @@ class CheckListController extends Controller
                                 $this->saveUsers($profileUsers, $checkList, $request, 3);
                             }
                         }
-                    }else{
-                        return response(['success'=>false]);
                     }
-                }
             }
 
 

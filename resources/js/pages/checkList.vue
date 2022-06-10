@@ -157,32 +157,23 @@
 
                     <div id="selected-block-array"  class="selected-block-array" >
                       <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
-
                         <div class="addElement"  v-for="(item,i) in allValueArray"  >
-                          <a  class="elementHoverList">
+                          <a class="elementHoverList"  v-bind:class="{ existElement: isExistElement }" >
                             <span> {{ item.text }} </span>
                             <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
                               <span class="ui-tag-selector-remove-icon  ">x</span>
                             </div>
                           </a>
                         </div>
-
                     </div>
-
                   </div>
                 </div>
               </div>
-
-                <selected-modal-checkList :groups=groups
-                                          :allusers="allusers"
-                                          :positions="positions"
-
-
-                ></selected-modal-checkList>
-
-<!--              :someProps="parent" @updateParent="onUpdateSalary"-->
-
-
+<!--                <selected-modal-checkList :groups=groups-->
+<!--                                          :allusers="allusers"-->
+<!--                                          :positions="positions"-->
+<!--                                          :someProps="parent" @updateParent="onUpdateSalary"-->
+<!--                ></selected-modal-checkList>-->
                 <div class="row mt-5 pb-3" style="border-bottom: 1px solid #dee2e6">
                     <div class="col-md-3">
                         <p>Колво показов</p>
@@ -191,7 +182,6 @@
                         <input v-model="countView"   placeholder="Максимум 10 " type="number" class="form-control btn-block">
                     </div>
                 </div>
-
                 <div class="row mt-4 pl-3">
                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in arrCheckInput">
 
@@ -250,10 +240,7 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
-
         </sidebar>
     </div>
 </template>
@@ -290,7 +277,7 @@
                 showCheckSideBar:false,
                 addButton:false,
                 editButton:false,
-                placeholderSelect:false,
+                placeholderSelect:true,
                 check_id:null,
                 flag_type:true,
                 allValueArray:[],
@@ -302,6 +289,7 @@
                   role_2:false,
                   role_3:false,
                 },
+              isExistElement:false,
 
 
             }
@@ -504,7 +492,19 @@
                         if (response.data.success == false){
                             this.$message.error('Уже существует вы можете от отредактировать');
                             this.errors.show = false;
-                            this.showCheckSideBar = false;
+                            // this.showCheckSideBar = false;
+
+
+
+                            for (let i = 0;i < this.allValueArray.length;i++){
+
+                               if (this.allValueArray[i]['type'] == response.data.exists[0]['item_type'] && this.allValueArray[i]['code'] == response.data.exists[0]['item_id']){
+                                 this.isExistElement = true
+                                 console.log(response.data.exists)
+                                 console.log(this.isExistElement,'wwww')
+                               }
+                            }
+
                         }else {
                             this.$message.success('Успешно Добавлено');
                             this.errors.show = false;
@@ -650,7 +650,7 @@
 
               }
             },
-          deleteDesk(id,code,type){
+            deleteDesk(id,code,type){
               this.allValueArray.splice(id,1)
 
               if (this.allValueArray.length == 0){
@@ -692,6 +692,11 @@
 
 <style lang="scss" scoped>
 
+    .existElement{
+      background-color: red;
+      z-index: 1;
+      color: red
+    }
     .check-page {
         .number_input {
             width: 100px;
