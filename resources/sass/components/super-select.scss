@@ -55,13 +55,14 @@
             border-radius: 0 50px 50px 0;
 
             i {
-                margin-right: 10px;
+                margin-left: 10px;
                 font-size: 14px;
             }
 
             .text {
                 width: 0;
                 font-size: 12px;
+                overflow: hidden;
                 color: #fff;
                 transition: 0.4s all ease;
             }

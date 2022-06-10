@@ -15,16 +15,16 @@
     <div class="options-window">
         <div class="types">
             <div class="type">
+                <div class="text">Сотрудники</div>
                 <i class="fa fa-user"></i>
-                <div class="text">zczxcz</div>
             </div>
             <div class="type">
+                <div class="text">Отделы</div>
                 <i class="fa fa-user"></i>
-                <div class="text">sadsasda</div>
             </div>
             <div class="type">
+                <div class="text">Должности</div>
                 <i class="fa fa-user"></i>
-                <div class="text">qweqweq</div>
             </div>
         </div>
 
