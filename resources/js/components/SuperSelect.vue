@@ -1,18 +1,18 @@
 <template>
 <div class="super-select">
 
-    <div class="selected-items">
+    <div class="selected-items noscrollbar" @click="toggleShow">
         <div class="selected-item">
             text
             <i class="fa fa-times"></i>
         </div>
     </div>
     
-    <div class="search">
+    <div class="search" v-if="show">
         <input type="text">
     </div>
     
-    <div class="options-window">
+    <div class="options-window" v-if="show">
         <div class="types">
             <div class="type">
                 <div class="text">Сотрудники</div>
@@ -20,11 +20,11 @@
             </div>
             <div class="type">
                 <div class="text">Отделы</div>
-                <i class="fa fa-user"></i>
+                <i class="fa fa-users"></i>
             </div>
             <div class="type">
                 <div class="text">Должности</div>
-                <i class="fa fa-user"></i>
+                <i class="fa fa-briefcase"></i>
             </div>
         </div>
  
@@ -57,13 +57,25 @@ export default {
             groups: [],
             positions: [],
             users: [],
-            active_type: 1
+            active_type: 1,
+            show: false
         };
     },
     mounted() {
+        // var ignoreClickOnMeElement = document.getElementById('wow-table');
+
+        // var self = this;
+        // document.addEventListener('click', function(event) {
+        //     var isClickInsideElement = ignoreClickOnMeElement.contains(event.target);
+        //     if (!isClickInsideElement) {
+        //         self.hideContextMenu();
+        //     }
+        // });
     },
     methods: {
-
+        toggleShow() {
+            this.show = !this.show;
+        }
     },
 
 }
