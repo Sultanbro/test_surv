@@ -20,7 +20,7 @@
                    
                     <input type="text" :ref="'mylink' + segment" class="hider">
                     <span>{{data.field.label}}</span>
-                    <a :href="'https://admin.u-marketing.org/timetracking/analytics/funnels?type=' + segment" target="_blank">
+                    <a :href="'https://bp.jobtron.org/timetracking/analytics/funnels?type=' + segment" target="_blank">
                         <i class="fa fa-external-link ffpointer ml-2 mr-2" aria-hidden="true"></i>
                     </a>
 
@@ -173,8 +173,8 @@ export default {
       
         copy() {
             var Url = this.$refs['mylink' + this.segment];
-            Url.value = 'https://admin.u-marketing.org/timetracking/analytics/funnels?type=' + this.segment;
-            //Url.value = 'https://admin.u-marketing.org/timetracking/analytics/funnels/' + this.type;
+            Url.value = 'https://bp.jobtron.org/timetracking/analytics/funnels?type=' + this.segment;
+            //Url.value = 'https://bp.jobtron.org/timetracking/analytics/funnels/' + this.type;
 
             this.$message.success('Ссылка скопирована ' +  this.segment)
             Url.select();

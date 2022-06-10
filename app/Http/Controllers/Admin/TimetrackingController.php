@@ -94,6 +94,7 @@ class TimetrackingController extends Controller
             $active_tab = (int)$_GET['tab'];  
         }
         
+     
         if($active_tab == 1 && auth()->user()->can('users_view')) {
 
         } else if($active_tab != 1 && auth()->user()->can('settings_view')){
@@ -102,8 +103,7 @@ class TimetrackingController extends Controller
             return redirect('/');
         }
 
-        
-
+     
         $corpbooks = [];
         if($active_tab == 3) {
             $corpbooks = collect([]);
@@ -117,9 +117,14 @@ class TimetrackingController extends Controller
         
         if($active_tab == 5 || $active_tab == 1) {
 
-            if(!auth()->user()->is_admin) {
-                return redirect('/');
-            }
+            // if(!auth()->user()->is_admin) {
+            //     return redirect('/');
+            // }
+
+            // if(auth()->id() == 9974) {
+            //     dd(auth()->user()->can('settings_view'));
+            // }
+    
 
             $users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
             $tab5['users'] = array_values($users);
@@ -716,7 +721,7 @@ class TimetrackingController extends Controller
         
 
         ///////////////////////////////////////////    
-        $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $request->user_id;
+        $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
         $recruiters = User::where('position_id', 46)->get();
 
         $timestamp = now();
@@ -781,7 +786,7 @@ class TimetrackingController extends Controller
         $whatsapp = new IC();
         $wphone = Phone::normalize($user->phone);
         $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-        //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+        //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
         $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
             if($lead && $lead->deal_id != 0) {
@@ -1779,7 +1784,7 @@ class TimetrackingController extends Controller
             $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->user_id)->first();
             
             if($trainee) {
-                $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $request->user_id;
+                $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
                 $recruiters = User::where('position_id', 46)->get();
                 
                 // Поиск ID лида или сделки
@@ -1926,7 +1931,7 @@ class TimetrackingController extends Controller
             
             if($trainee) {
                 
-                $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $request->user_id;
+                $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
                 $recruiters = User::where('position_id', 46)->get();
                 
                 // Поиск ID лида или сделки

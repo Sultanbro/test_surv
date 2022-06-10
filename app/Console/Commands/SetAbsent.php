@@ -168,7 +168,7 @@ class SetAbsent extends Command
     public function notify(User $targetUser, $group_name) {
      
         $group_name = '(' . $group_name . ')';
-        $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $targetUser->id;
+        $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $targetUser->id;
 
         $abs_msg = 'Система: '. $group_name .'  Стажер не был на обучении: <br> <a href="' . $editPersonLink . '" target="_blank">';
         $abs_msg .= $targetUser->last_name . ' ' . $targetUser->name  . ' </a>';

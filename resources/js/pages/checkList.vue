@@ -169,11 +169,25 @@
                   </div>
                 </div>
               </div>
+<<<<<<< HEAD
 <!--                <selected-modal-checkList :groups=groups-->
 <!--                                          :allusers="allusers"-->
 <!--                                          :positions="positions"-->
 <!--                                          :someProps="parent" @updateParent="onUpdateSalary"-->
 <!--                ></selected-modal-checkList>-->
+=======
+
+                <selected-modal-checkList :groups="groups"
+                                          :allusers="allusers"
+                                          :positions="positions"
+
+
+                ></selected-modal-checkList>
+
+<!--              :someProps="parent" @updateParent="onUpdateSalary"-->
+
+
+>>>>>>> 685712426bb6d309a3cc58ce6341416f588e40bc
                 <div class="row mt-5 pb-3" style="border-bottom: 1px solid #dee2e6">
                     <div class="col-md-3">
                         <p>Колво показов</p>

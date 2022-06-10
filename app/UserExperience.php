@@ -51,7 +51,7 @@ class UserExperience extends Model
         if($q5) {
             $arr = json_decode($q5->answer, true);
             foreach ($arr as $key => $file) {
-                $arr[$key] = 'https://admin.u-marketing.org/' . $file;
+                $arr[$key] = 'https://bp.jobtron.org/' . $file;
             }
             $answers[5] = $arr;
         } else {

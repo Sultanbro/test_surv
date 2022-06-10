@@ -626,6 +626,7 @@ class UserController extends Controller
         //     $array_accounts_email[] = $account->email;
         // }
 
+
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
             //$users = User::withTrashed()->whereIn('email', $array_accounts_email);
@@ -1078,11 +1079,7 @@ class UserController extends Controller
     {
         $positions = Position::all();
         $groups = ProfileGroup::where('active', 1)->get();
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
-            $corpbooks = BookCategory::where('parent_cat_id', NULL)->where('is_deleted', 0)->get();
-        } else {
-            $corpbooks = '[]';
-        }
+        $corpbooks = '[]';
         
         $programs = Program::orderBy('id', 'desc')->get();
         $workingDays = WorkingDay::all();
@@ -1205,12 +1202,7 @@ class UserController extends Controller
                 $user->in_groups = $this->getPersonGroup($user->id);
                 
                 if($user->user_description) {
-                    if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) { 
-                        $user->in_books  = BookCategory::whereIn('id', json_decode($user->user_description->books))->where('is_deleted', 0)->get();
-                    } else {
-                        $user->in_books  = '[]';
-                    }
-                    
+                    $user->in_books  = '[]';
                 }
                 
                 $user->head_in_groups = $head_in_groups;
@@ -1268,10 +1260,8 @@ class UserController extends Controller
                 return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
             }
             
-            if($user->UF_ADMIN == 1) { // Есть ли сотрудник
-                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->id . '"   target="_blank">' . $user->last_name . ' ' . $user->name . '</a>';
-                return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
-            } 
+            $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->id . '"   target="_blank">' . $user->last_name . ' ' . $user->name . '</a>';
+            return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
             // else {
             //     return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Пользователь не является сотрудником, пожалуйста, обратитесь в тех.поддержку');
             // }
@@ -1399,7 +1389,7 @@ class UserController extends Controller
             $whatsapp = new IC();
             $wphone = Phone::normalize($user->phone);
             $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
             
             UserDescription::make([
                 'user_id' => $user->id,
@@ -1458,7 +1448,7 @@ class UserController extends Controller
         /*==============================================================*/
 
 
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
+        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'bp.jobtron.org')) {
             $account = Account::where('email', $request['email'])->first();
             if (!$account) {
                 $account = Account::create([
@@ -1473,39 +1463,39 @@ class UserController extends Controller
                 ]);
             }
 
-            $agent_name = $account->id . '@voip.cfpsa.ru';
-            $agent = Agent::where('name', $agent_name)->first();
-            if(!$agent) {
-                $agent = Agent::create([
-                    'name' => $agent_name,
-                    'system' => 'single_box',
-                    'type' => 'callback',
-                    'contact' => Agent::CONTACT_PREFIX . $agent_name,
-                    'status' => 'Logged Out',
-                    'state' => 'Waiting'
-                ]);
-            }
+            // $agent_name = $account->id . '@voip.cfpsa.ru';
+            // $agent = Agent::where('name', $agent_name)->first();
+            // if(!$agent) {
+            //     $agent = Agent::create([
+            //         'name' => $agent_name,
+            //         'system' => 'single_box',
+            //         'type' => 'callback',
+            //         'contact' => Agent::CONTACT_PREFIX . $agent_name,
+            //         'status' => 'Logged Out',
+            //         'state' => 'Waiting'
+            //     ]);
+            // }
             
-            $directory = Directory::where('account', $account->id)->first();
-            if(!$directory) {
-                $directory = Directory::create([
-                    'account' => $account->id,
-                    'password' => $account->password,
-                    'domain' => 'voip.cfpsa.ru',
-                    'context' => 'voip.cfpsa.ru_context',
-                    'provider' => '600',
-                    'toll_allow' => '600',
-                    'state' => 'active',
-                ]);
-            } else {
-                $directory->password = $account->password;
-                $directory->toll_allow = '600';
-                $directory->provider = '600';
-                $directory->domain = 'voip.cfpsa.ru';
-                $directory->context = 'voip.cfpsa.ru_context';
-                $directory->state = 'active';
-                $directory->save();
-            }
+            // $directory = Directory::where('account', $account->id)->first();
+            // if(!$directory) {
+            //     $directory = Directory::create([
+            //         'account' => $account->id,
+            //         'password' => $account->password,
+            //         'domain' => 'voip.cfpsa.ru',
+            //         'context' => 'voip.cfpsa.ru_context',
+            //         'provider' => '600',
+            //         'toll_allow' => '600',
+            //         'state' => 'active',
+            //     ]);
+            // } else {
+            //     $directory->password = $account->password;
+            //     $directory->toll_allow = '600';
+            //     $directory->provider = '600';
+            //     $directory->domain = 'voip.cfpsa.ru';
+            //     $directory->context = 'voip.cfpsa.ru_context';
+            //     $directory->state = 'active';
+            //     $directory->save();
+            // }
         }
 
         
@@ -1631,7 +1621,7 @@ class UserController extends Controller
         }
         /*==============================================================*/
         /********** Подготовка  */
-        /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника UF_ADMIN), не знаю баг или нет  */
+        /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника ), не знаю баг или нет  */
         /*==============================================================*/
 
         //if(Auth::user()->id == 5) dd($request->all());
@@ -1661,12 +1651,10 @@ class UserController extends Controller
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             }
             
-            if($oldUser->UF_ADMIN == 1) { // Есть ли сотрудник
+            
                 $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->last_name . ' ' . $oldUser->name . '</a>';
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
-            } else {
-                return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors('Пользователь не является сотрудником, пожалуйста, обратитесь в тех.поддержку');
-            }
+          
 
             
             
@@ -1770,7 +1758,7 @@ class UserController extends Controller
                 $whatsapp = new IC();
                 $wphone = Phone::normalize($user->phone);
                 $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-                //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+                //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
                 $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if($lead  && $lead->deal_id != 0) {
@@ -1821,7 +1809,7 @@ class UserController extends Controller
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
 
-                $msg_fragment = '<a href="https://admin.u-marketing.org/timetracking/edit-person?id=';
+                $msg_fragment = '<a href="https://bp.jobtron.org/timetracking/edit-person?id=';
                 $msg_fragment .= $user->id .'">' . $user->last_name . ' ' . $user->name . '</a>';
                 $msg_fragment .= '<br/>Дата принятия: ' . Carbon::parse($ud->applied)->format('d.m.Y');
                 $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: '. $comment;
@@ -1993,7 +1981,7 @@ class UserController extends Controller
         /********** Редактирование аккаунта в callibro.org */
         /*==============================================================*/
 
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
+        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'bp.jobtron.org')) {
             $account = Account::where('email', $request['email'])->first();
             if ($account) {
                 $account->name = $request['name'];
@@ -2003,39 +1991,39 @@ class UserController extends Controller
                 $account->save();
 
 
-                $agent_name = $account->id . '@voip.cfpsa.ru';
-                $agent = Agent::where('name', $agent_name)->first();
-                if(!$agent) {
-                    $agent = Agent::create([
-                        'name' => $agent_name,
-                        'system' => 'single_box',
-                        'type' => 'callback',
-                        'contact' => Agent::CONTACT_PREFIX . $agent_name,
-                        'status' => 'Logged Out',
-                        'state' => 'Waiting'
-                    ]);
-                }
+                // $agent_name = $account->id . '@voip.cfpsa.ru';
+                // $agent = Agent::where('name', $agent_name)->first();
+                // if(!$agent) {
+                //     $agent = Agent::create([
+                //         'name' => $agent_name,
+                //         'system' => 'single_box',
+                //         'type' => 'callback',
+                //         'contact' => Agent::CONTACT_PREFIX . $agent_name,
+                //         'status' => 'Logged Out',
+                //         'state' => 'Waiting'
+                //     ]);
+                // }
                 
-                $directory = Directory::where('account', $account->id)->first();
-                if(!$directory) {
-                    $directory = Directory::create([
-                        'account' => $account->id,
-                        'password' => $account->password,
-                        'domain' => 'voip.cfpsa.ru',
-                        'context' => 'voip.cfpsa.ru_context',
-                        'provider' => '600',
-                        'toll_allow' => '600',
-                        'state' => 'active',
-                    ]);
-                } else {
-                    $directory->password = $account->password;
-                    $directory->toll_allow = '600';
-                    $directory->provider = '600';
-                    $directory->domain = 'voip.cfpsa.ru';
-                    $directory->context = 'voip.cfpsa.ru_context';
-                    $directory->state = 'active';
-                    $directory->save();
-                }
+                // $directory = Directory::where('account', $account->id)->first();
+                // if(!$directory) {
+                //     $directory = Directory::create([
+                //         'account' => $account->id,
+                //         'password' => $account->password,
+                //         'domain' => 'voip.cfpsa.ru',
+                //         'context' => 'voip.cfpsa.ru_context',
+                //         'provider' => '600',
+                //         'toll_allow' => '600',
+                //         'state' => 'active',
+                //     ]);
+                // } else {
+                //     $directory->password = $account->password;
+                //     $directory->toll_allow = '600';
+                //     $directory->provider = '600';
+                //     $directory->domain = 'voip.cfpsa.ru';
+                //     $directory->context = 'voip.cfpsa.ru_context';
+                //     $directory->state = 'active';
+                //     $directory->save();
+                // }
             }
         }
         
@@ -2208,7 +2196,6 @@ class UserController extends Controller
     {
         $user = User::where([
             'id' => $request->id,
-            'UF_ADMIN' => 1,
         ])->first();
         
         
