@@ -24,19 +24,6 @@
 </head>
 <body>
 
-    <script src="js/jquery-1.11.2.min.js"></script>
-    <script src="js/jquery.iMissYou.min.js"></script>
-    <script>
-        jQuery(document).ready(function($){
-           $.iMissYou({
-               title: "Вернись :(",
-               favicon: {
-                   enabled: true,
-                   src:'/IMissYouFavicon.ico'
-               }
-           });
-       });
-    </script>
 
 <div id="app" class="right-panel right-panel-app d-flex">
 
@@ -74,6 +61,22 @@
 
 
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
+<!-- 
+<script src="js/jquery-1.11.2.min.js"></script> -->
+<script src="js/jquery.iMissYou.min.js"></script>
+<script>
+$(document).ready(function($){
+    $.iMissYou({
+        title: "Вернись :(",
+        favicon: {
+            enabled: true,
+            src:'/IMissYouFavicon.ico'
+        }
+    });
+});
+</script>
+  
+
 <!-- <script src="/js/manifest.js"></script>
 <script src="/js/vendor.js"></script>  -->
 <script src="{{ url('/js/app.js') }}"></script>
