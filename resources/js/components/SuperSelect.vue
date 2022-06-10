@@ -1,5 +1,5 @@
 <template>
-<div class="super-select">
+<div class="super-select" ref="select">
 
     <div class="selected-items noscrollbar" @click="toggleShow">
         <div class="selected-item">
@@ -62,6 +62,12 @@ export default {
         };
     },
     mounted() {
+
+        const boxABB = this.$refs["select"].getBoundingClientRect();
+        const boxBBB = this.$refs["select"].getBoundingClientRect();
+        console.log(boxABB);
+        console.log(boxBBB);
+
         // var ignoreClickOnMeElement = document.getElementById('wow-table');
 
         // var self = this;
