@@ -27,7 +27,7 @@
                 <i class="fa fa-user"></i>
             </div>
         </div>
-
+ 
         <div class="options">
 
             <div class="option">Text</div>
