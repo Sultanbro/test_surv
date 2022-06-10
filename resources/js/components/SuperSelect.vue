@@ -63,10 +63,7 @@ export default {
     },
     mounted() {
 
-        const boxABB = this.$refs["select"].getBoundingClientRect();
-        const boxBBB = this.$refs["select"].getBoundingClientRect();
-        console.log(boxABB);
-        console.log(boxBBB);
+        
 
         // var ignoreClickOnMeElement = document.getElementById('wow-table');
 
@@ -81,6 +78,8 @@ export default {
     methods: {
         toggleShow() {
             this.show = !this.show;
+            const boxABB = this.$refs["select"].getBoundingClientRect();
+        console.log(boxABB);
         }
     },
 
