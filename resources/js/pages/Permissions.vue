@@ -38,7 +38,7 @@
       </div>
       
       <div class="mt-3">
-        <super-select :values="values" />
+        <superselect :values="values" />
       </div>
     </div>
 
