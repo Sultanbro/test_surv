@@ -16,15 +16,15 @@
         <div class="types">
             <div class="type">
                 <i class="fa fa-user"></i>
-                <div class="text"></div>
+                <div class="text">zczxcz</div>
             </div>
             <div class="type">
                 <i class="fa fa-user"></i>
-                <div class="text"></div>
+                <div class="text">sadsasda</div>
             </div>
             <div class="type">
                 <i class="fa fa-user"></i>
-                <div class="text"></div>
+                <div class="text">qweqweq</div>
             </div>
         </div>
 
