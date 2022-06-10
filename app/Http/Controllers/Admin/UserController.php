@@ -935,7 +935,7 @@ class UserController extends Controller
 
         return [
             'users' => $users,
-            'can_login_users' => [5,18],
+            'can_login_users' => [5,18,1],
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,
             'segments' => Segment::pluck('name', 'id'),
@@ -1260,10 +1260,8 @@ class UserController extends Controller
                 return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
             }
             
-            if($user->UF_ADMIN == 1) { // Есть ли сотрудник
-                $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->id . '"   target="_blank">' . $user->last_name . ' ' . $user->name . '</a>';
-                return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
-            } 
+            $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $user->id . '"   target="_blank">' . $user->last_name . ' ' . $user->name . '</a>';
+            return redirect()->to('/timetracking/create-person')->withInput()->withErrors($text);
             // else {
             //     return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Пользователь не является сотрудником, пожалуйста, обратитесь в тех.поддержку');
             // }
@@ -1465,39 +1463,39 @@ class UserController extends Controller
                 ]);
             }
 
-            $agent_name = $account->id . '@voip.cfpsa.ru';
-            $agent = Agent::where('name', $agent_name)->first();
-            if(!$agent) {
-                $agent = Agent::create([
-                    'name' => $agent_name,
-                    'system' => 'single_box',
-                    'type' => 'callback',
-                    'contact' => Agent::CONTACT_PREFIX . $agent_name,
-                    'status' => 'Logged Out',
-                    'state' => 'Waiting'
-                ]);
-            }
+            // $agent_name = $account->id . '@voip.cfpsa.ru';
+            // $agent = Agent::where('name', $agent_name)->first();
+            // if(!$agent) {
+            //     $agent = Agent::create([
+            //         'name' => $agent_name,
+            //         'system' => 'single_box',
+            //         'type' => 'callback',
+            //         'contact' => Agent::CONTACT_PREFIX . $agent_name,
+            //         'status' => 'Logged Out',
+            //         'state' => 'Waiting'
+            //     ]);
+            // }
             
-            $directory = Directory::where('account', $account->id)->first();
-            if(!$directory) {
-                $directory = Directory::create([
-                    'account' => $account->id,
-                    'password' => $account->password,
-                    'domain' => 'voip.cfpsa.ru',
-                    'context' => 'voip.cfpsa.ru_context',
-                    'provider' => '600',
-                    'toll_allow' => '600',
-                    'state' => 'active',
-                ]);
-            } else {
-                $directory->password = $account->password;
-                $directory->toll_allow = '600';
-                $directory->provider = '600';
-                $directory->domain = 'voip.cfpsa.ru';
-                $directory->context = 'voip.cfpsa.ru_context';
-                $directory->state = 'active';
-                $directory->save();
-            }
+            // $directory = Directory::where('account', $account->id)->first();
+            // if(!$directory) {
+            //     $directory = Directory::create([
+            //         'account' => $account->id,
+            //         'password' => $account->password,
+            //         'domain' => 'voip.cfpsa.ru',
+            //         'context' => 'voip.cfpsa.ru_context',
+            //         'provider' => '600',
+            //         'toll_allow' => '600',
+            //         'state' => 'active',
+            //     ]);
+            // } else {
+            //     $directory->password = $account->password;
+            //     $directory->toll_allow = '600';
+            //     $directory->provider = '600';
+            //     $directory->domain = 'voip.cfpsa.ru';
+            //     $directory->context = 'voip.cfpsa.ru_context';
+            //     $directory->state = 'active';
+            //     $directory->save();
+            // }
         }
 
         
@@ -1623,7 +1621,7 @@ class UserController extends Controller
         }
         /*==============================================================*/
         /********** Подготовка  */
-        /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника UF_ADMIN), не знаю баг или нет  */
+        /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника ), не знаю баг или нет  */
         /*==============================================================*/
 
         //if(Auth::user()->id == 5) dd($request->all());
@@ -1653,12 +1651,10 @@ class UserController extends Controller
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             }
             
-            if($oldUser->UF_ADMIN == 1) { // Есть ли сотрудник
+            
                 $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->last_name . ' ' . $oldUser->name . '</a>';
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
-            } else {
-                return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors('Пользователь не является сотрудником, пожалуйста, обратитесь в тех.поддержку');
-            }
+          
 
             
             
@@ -1995,39 +1991,39 @@ class UserController extends Controller
                 $account->save();
 
 
-                $agent_name = $account->id . '@voip.cfpsa.ru';
-                $agent = Agent::where('name', $agent_name)->first();
-                if(!$agent) {
-                    $agent = Agent::create([
-                        'name' => $agent_name,
-                        'system' => 'single_box',
-                        'type' => 'callback',
-                        'contact' => Agent::CONTACT_PREFIX . $agent_name,
-                        'status' => 'Logged Out',
-                        'state' => 'Waiting'
-                    ]);
-                }
+                // $agent_name = $account->id . '@voip.cfpsa.ru';
+                // $agent = Agent::where('name', $agent_name)->first();
+                // if(!$agent) {
+                //     $agent = Agent::create([
+                //         'name' => $agent_name,
+                //         'system' => 'single_box',
+                //         'type' => 'callback',
+                //         'contact' => Agent::CONTACT_PREFIX . $agent_name,
+                //         'status' => 'Logged Out',
+                //         'state' => 'Waiting'
+                //     ]);
+                // }
                 
-                $directory = Directory::where('account', $account->id)->first();
-                if(!$directory) {
-                    $directory = Directory::create([
-                        'account' => $account->id,
-                        'password' => $account->password,
-                        'domain' => 'voip.cfpsa.ru',
-                        'context' => 'voip.cfpsa.ru_context',
-                        'provider' => '600',
-                        'toll_allow' => '600',
-                        'state' => 'active',
-                    ]);
-                } else {
-                    $directory->password = $account->password;
-                    $directory->toll_allow = '600';
-                    $directory->provider = '600';
-                    $directory->domain = 'voip.cfpsa.ru';
-                    $directory->context = 'voip.cfpsa.ru_context';
-                    $directory->state = 'active';
-                    $directory->save();
-                }
+                // $directory = Directory::where('account', $account->id)->first();
+                // if(!$directory) {
+                //     $directory = Directory::create([
+                //         'account' => $account->id,
+                //         'password' => $account->password,
+                //         'domain' => 'voip.cfpsa.ru',
+                //         'context' => 'voip.cfpsa.ru_context',
+                //         'provider' => '600',
+                //         'toll_allow' => '600',
+                //         'state' => 'active',
+                //     ]);
+                // } else {
+                //     $directory->password = $account->password;
+                //     $directory->toll_allow = '600';
+                //     $directory->provider = '600';
+                //     $directory->domain = 'voip.cfpsa.ru';
+                //     $directory->context = 'voip.cfpsa.ru_context';
+                //     $directory->state = 'active';
+                //     $directory->save();
+                // }
             }
         }
         
@@ -2200,7 +2196,6 @@ class UserController extends Controller
     {
         $user = User::where([
             'id' => $request->id,
-            'UF_ADMIN' => 1,
         ])->first();
         
         

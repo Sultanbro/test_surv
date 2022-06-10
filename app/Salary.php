@@ -452,7 +452,7 @@ class Salary extends Model
         }
 
         if($user_types == -1) {// one person
-            //dd($users);
+
             $users->withTrashed();
         }
 

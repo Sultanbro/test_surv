@@ -51,138 +51,113 @@
                                 <i class="pl-4 far fa-address-card fa-2x"></i>
                             </a>
 
-                            <!--<i class="pl-4 far fa-signal fa-2x"></i>-->
-
                             <a class="position-absolute" @click="arrCheckDelete(arrCheckList.id)" style="right: 0">
                                 <i class="fa fa-trash fa-2x" aria-hidden="true"></i>
                             </a>
                         </td>
 
+
                     </tr>
-
-
                     </tbody>
                 </table>
             </div>
 
         </div>
 
-        <b-modal id="bv-modal-2" hide-footer>
-        <template #modal-title>
-        Редактировать
-        </template>
-        <div class="d-block">
-        <input value="asdasd" class="form-control"/>
 
-        <input value="2" class="form-control mt-2"/>
-        </div>
-        <div class="d-flex mt-2">
-        <b-button variant="primary mr-2" class="" @click.prevent="$bvModal.hide('bv-modal-2')">Сохранить</b-button>
-        <b-button variant="danger" class="" @click.prevent="$bvModal.hide('bv-modal-2')">Отменить</b-button>
-        </div>
-        </b-modal>
+<!--        <b-modal id="bv-modal-2" hide-footer>-->
+<!--        <template #modal-title>-->
+<!--              Редактировать-->
+<!--        </template>-->
+<!--&lt;!&ndash;        <div class="d-block">&ndash;&gt;-->
+<!--&lt;!&ndash;          <input value="asdasd" class="form-control"/>&ndash;&gt;-->
+<!--&lt;!&ndash;          <input value="2" class="form-control mt-2"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--        <div class="d-flex mt-2">-->
+<!--          <b-button variant="primary mr-2" class="" @click.prevent="$bvModal.hide('bv-modal-2')">Сохранить</b-button>-->
+<!--          <b-button variant="danger" class="" @click.prevent="$bvModal.hide('bv-modal-2')">Отменить</b-button>-->
+<!--        </div>-->
+<!--        </b-modal>-->
 
         <sidebar
                 title="Создать чек лист"
                 :open="showCheckSideBar"
                 @close="showCheckSideBar = false"
-                width="65%"
-        >
-
-
-
-
-
+                width="65%">
 
             <div class="col-md-12 p-0">
-
-              <div class="col-12 p-0">
-
-                <div class="row">
-                  <div class="col-md-3">
-                    <p>Для группы чек лист</p>
-                  </div>
-                  <div class="col-md-4 p-0">
-
-                    <div style="position: relative;border: 1px solid #dcdcdc">
-                      <div class="gen-role-class" style="position: absolute" >
-                        <a class="role_1" @click="selectedRoles('1')" >
-
-                          <i class="fas fa-chalkboard-teacher role_icon_false">  </i>
-                        </a>
-                        <a class="role_2" @click="selectedRoles('2')">
-
-                          <i class="fas fa-chalkboard-teacher role_icon_false"></i>
-                        </a>
-                        <a class="role_3" @click="selectedRoles('3')" >
-
-                          <i class="fas fa-chalkboard-teacher role_icon_false" ></i>
-                        </a>
-                      </div>
-
-                      <div class="popupShowSelected">
-                        <div v-if="selectedRole.role_1" >
-                          <p class="list-role"  v-for="item in  groups_arr">
-
-                            <a @click="addDivBlock(item.name,item.code,'1')"  v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
-                              <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
-                              <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
-                              <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
-                            </a>
-
-                          </p>
-                        </div>
-                        <div v-if="selectedRole.role_2">
-                          <p class="list-role"  v-for="item in  positions_arr">
-                            <a @click="addDivBlock(item.name,item.code,'2')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
-                              <i class="fas fa-arrow-alt-circle-right style-icons" ></i>
-                              <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
-                              <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
-                            </a>
-                          </p>
-                        </div>
-                        <div v-if="selectedRole.role_3">
-                          <p class="list-role"  v-for="item in   allusers_arr">
-                            <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
-                              <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
-                              <span style="margin-top: 5px; margin-left:15px;">{{ item.last_name}} {{ item.name}}</span>
-                              <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
-                            </a>
-                          </p>
-                        </div>
-                      </div>
+                <div class="col-12 p-0">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <p>Для группы чек лист</p>
                     </div>
+                    <div class="col-md-4 p-0">
 
+                      <div style="position: relative;border: 1px solid #dcdcdc">
+                        <div class="gen-role-class" style="position: absolute" >
+                          <a class="role_1" @click="selectedRoles('1')" >
 
+                            <i class="fas fa-chalkboard-teacher role_icon_false">  </i>
+                          </a>
+                          <a class="role_2" @click="selectedRoles('2')">
 
-                    <div id="selected-block-array"  class="selected-block-array" >
-                      <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
+                            <i class="fas fa-chalkboard-teacher role_icon_false"></i>
+                          </a>
+                          <a class="role_3" @click="selectedRoles('3')" >
 
-                        <div class="addElement"  v-for="(item,i) in allValueArray"  >
-                          <a  class="elementHoverList">
-                            <span> {{ item.text }} </span>
-                            <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
-                              <span class="ui-tag-selector-remove-icon  ">x</span>
-                            </div>
+                            <i class="fas fa-chalkboard-teacher role_icon_false" ></i>
                           </a>
                         </div>
 
-                    </div>
+                        <div class="popupShowSelected">
+                          <div v-if="selectedRole.role_1" >
+                            <p class="list-role"  v-for="item in  groups_arr">
 
+                              <a @click="addDivBlock(item.name,item.code,'1')"  v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
+                                <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
+                                <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
+                                <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
+                              </a>
+
+                            </p>
+                          </div>
+                          <div v-if="selectedRole.role_2">
+                            <p class="list-role"  v-for="item in  positions_arr">
+                              <a @click="addDivBlock(item.name,item.code,'2')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
+                                <i class="fas fa-arrow-alt-circle-right style-icons" ></i>
+                                <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
+                                <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
+                              </a>
+                            </p>
+                          </div>
+                          <div v-if="selectedRole.role_3">
+                            <p class="list-role"  v-for="item in   allusers_arr">
+                              <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
+                                <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
+                                <span style="margin-top: 5px; margin-left:15px;">{{ item.last_name}} {{ item.name}}</span>
+                                <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
+                              </a>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+
+
+                      <div id="selected-block-array"  class="selected-block-array" >
+                        <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
+                          <div class="addElement"  v-for="(item,i) in allValueArray"   >
+                            <a class="elementHoverList">
+                              <span> {{ item.text }} </span>
+                              <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
+                                <span class="ui-tag-selector-remove-icon  ">x</span>
+                              </div>
+                            </a>
+                          </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-                <selected-modal-checkList :groups=groups
-                                          :allusers="allusers"
-                                          :positions="positions"
-
-
-                ></selected-modal-checkList>
-
-<!--              :someProps="parent" @updateParent="onUpdateSalary"-->
-
-
                 <div class="row mt-5 pb-3" style="border-bottom: 1px solid #dee2e6">
                     <div class="col-md-3">
                         <p>Колво показов</p>
@@ -251,9 +226,7 @@
                     </div>
                 </div>
 
-
             </div>
-
         </sidebar>
     </div>
 </template>
@@ -281,6 +254,7 @@
                 countView:'1',
                 errors: {
                     message:'',
+                    msg:'',
                     text:[],
                     counterror:[],
                     show:false,
@@ -290,7 +264,7 @@
                 showCheckSideBar:false,
                 addButton:false,
                 editButton:false,
-                placeholderSelect:false,
+                placeholderSelect:true,
                 check_id:null,
                 flag_type:true,
                 allValueArray:[],
@@ -302,12 +276,9 @@
                   role_2:false,
                   role_3:false,
                 },
-
-
             }
         },
         created(){
-
 
             this.addCheckList()
             this.viewCheckList()
@@ -361,20 +332,21 @@
                 this.showCheckSideBar = true
                 this.addButton = true
                 this.editButton = false
-                this.valueGroups = []
+
+                this.allValueArray = [];
+                this.placeholderSelect = true
+                this.refreshArray()
+
 
                 this.arrCheckInput=
-                    [
-                        {   checked: true,
-                            text: '',
-                            https:''
-                        },
+                      [
+                          {   checked: false,
+                              text: '',
+                              https:''
+                          },
 
-                    ]
+                      ]
 
-
-                // this.addCheckList()
-                // this.viewCheckList()
 
             },
             saveEditCheckList(arrCheckInput,){
@@ -385,6 +357,9 @@
                 // console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
 
 
+
+
+
                 if (this.errors.save){
                     axios.post('/timetracking/settings/edit/check/save/', {
                         check_id:this.check_id,
@@ -393,25 +368,26 @@
                         arrCheckInput:arrCheckInput,
                         valueFindGr:this.valueFindGr
                     }).then(response => {
-                        if (response.data.type == 1){
-                            this.$message.error('Ошибка');
+
+
+
+                        if (response.data.type == 1 || response.data == ''){
+                            this.$message.error('Ошибка ');
+
                             this.errors.show = true;
-                            this.errors.message = response.data.item;
+                            this.errors.message = 'Добавленный чек лист существует';
                         }else {
                             this.$message.success('Успешно изменен');
                             this.errors.show = false;
                             this.showCheckSideBar = false;
                             this.viewCheckList()
                         }
-
-
                     })
                 }
 
 
             },
             editCheck(check_id,type){
-
 
                 this.addButton = false
                 this.editButton = true
@@ -424,10 +400,11 @@
                     type:type,
                 }).then(response => {
 
-                    // console.log(type,'type');
-                    // console.log(check_id,'imasheev');
-                    // console.log(response,'imasheevsdf');
 
+
+
+
+                    this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
 
 
 
@@ -438,8 +415,6 @@
 
                     this.editValueThis.view = true
                     this.editValueThis.arr= response.data
-
-
 
 
 
@@ -490,9 +465,6 @@
                 this.errors.save_checkbox = false
                 this.validateInput(this.arrCheckInput,this.countView)
 
-              console.log(this.allValueArray,'7777777')
-
-
                 if (this.errors.save){
                     axios.post('/timetracking/settings/add/check', {
                         allValueArray:this.allValueArray,
@@ -502,9 +474,25 @@
                     }).then(response => {
 
                         if (response.data.success == false){
-                            this.$message.error('Уже существует вы можете от отредактировать');
                             this.errors.show = false;
-                            this.showCheckSideBar = false;
+                            this.errors.msg = null;
+                            // this.showCheckSideBar = false;
+                            for (let i = 0;i < this.allValueArray.length;i++){
+                               if (this.allValueArray[i]['type'] == response.data.exists[0]['item_type'] && this.allValueArray[i]['code'] == response.data.exists[0]['item_id']){
+
+
+                                 if (response.data.exists[0]['item_type'] == 1){
+                                   this.errors.msg = 'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+                                   this.$message.error(this.errors.msg);
+                                 }else if(response.data.exists[0]['item_type'] == 2){
+                                   this.errors.msg = 'Данная ' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
+                                   this.$message.error(this.errors.msg);
+                                 }else if (response.data.exists[0]['item_type'] == 3){
+                                   this.errors.msg = 'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено';
+                                   this.$message.error(this.errors.msg);
+                                 }
+                               }
+                            }
                         }else {
                             this.$message.success('Успешно Добавлено');
                             this.errors.show = false;
@@ -520,7 +508,7 @@
             addCheckList() {
                 // this.buttonClass = 'primary',
                 this.arrCheckInput.push({
-                    checked: true,
+                    checked: false,
                     text: "",
                     https: '',
                 });
@@ -597,9 +585,16 @@
               }
 
             },
-            addDivBlock(item,id,type){
+
+            addDivBlock(item,id,type,edit = null){
               this.flag_type = true;
               this.placeholderSelect = false;
+
+              if (edit == 'edit'){
+                this.allValueArray = [];
+                this.selectedRoles(type)
+                this.refreshArray()
+              }
 
               if (this.allValueArray.length > 0){
                 for (let i = 0; i < this.allValueArray.length;i ++){
@@ -616,12 +611,12 @@
                 }
               }
 
-
               if (this.flag_type == true){
                 this.allValueArray.push({
                   text: item,
                   code:id,
-                  type:type
+
+                  type:type,
                 });
 
                 if (type == 1){
@@ -645,34 +640,31 @@
                   }
                 }
 
-
-
-
               }
             },
-          deleteDesk(id,code,type){
+            deleteDesk(id,code,type){
               this.allValueArray.splice(id,1)
 
               if (this.allValueArray.length == 0){
                 this.placeholderSelect = true;
-              }else{
 
-                for (var i = 0; i < this.groups_arr.length;i++){
-                  if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
-                    this.groups_arr[i]['checked'] = false
-                  }
+              }
+
+              for (var i = 0; i < this.groups_arr.length;i++){
+                if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
+                  this.groups_arr[i]['checked'] = false
                 }
+              }
 
-                for (var i = 0; i < this.positions_arr.length;i++){
-                  if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
-                    this.positions_arr[i]['checked'] = false
-                  }
+              for (var i = 0; i < this.positions_arr.length;i++){
+                if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
+                  this.positions_arr[i]['checked'] = false
                 }
+              }
 
-                for (var i = 0; i < this.allusers_arr.length;i++){
-                  if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
-                    this.allusers_arr[i]['checked'] = false
-                  }
+              for (var i = 0; i < this.allusers_arr.length;i++){
+                if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
+                  this.allusers_arr[i]['checked'] = false
                 }
 
               }
@@ -683,6 +675,18 @@
 
 
           },
+            refreshArray(){
+                for (var i = 0; i < this.groups_arr.length;i++){
+                    this.groups_arr[i]['checked'] = false
+                }
+                for (var i = 0; i < this.positions_arr.length;i++){
+                    this.positions_arr[i]['checked'] = false
+                }
+                for (var i = 0; i < this.allusers_arr.length;i++){
+                    this.allusers_arr[i]['checked'] = false
+                }
+
+            }
         },
 
     }
@@ -691,7 +695,6 @@
 </script>
 
 <style lang="scss" scoped>
-
     .check-page {
         .number_input {
             width: 100px;

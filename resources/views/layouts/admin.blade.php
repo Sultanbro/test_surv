@@ -74,6 +74,10 @@
 
 
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
+<!-- 
+<script src="js/jquery-1.11.2.min.js"></script> -->
+  
+
 <!-- <script src="/js/manifest.js"></script>
 <script src="/js/vendor.js"></script>  -->
 <script src="{{ url('/js/app.js') }}"></script>
