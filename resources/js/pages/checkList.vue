@@ -331,20 +331,20 @@
                 this.showCheckSideBar = true
                 this.addButton = true
                 this.editButton = false
-                this.valueGroups = []
+                this.allValueArray = [];
+                this.placeholderSelect = true
+                this.refreshArray()
+
 
                 this.arrCheckInput=
-                    [
-                        {   checked: true,
-                            text: '',
-                            https:''
-                        },
+                      [
+                          {   checked: false,
+                              text: '',
+                              https:''
+                          },
 
-                    ]
+                      ]
 
-
-                // this.addCheckList()
-                // this.viewCheckList()
 
             },
             saveEditCheckList(arrCheckInput,){
@@ -353,6 +353,9 @@
                 this.validateInput(arrCheckInput,this.countView)
 
                 // console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
+
+
+
 
 
                 if (this.errors.save){
@@ -373,14 +376,15 @@
                             this.showCheckSideBar = false;
                             this.viewCheckList()
                         }
-
-
                     })
                 }
 
 
             },
             editCheck(check_id,type){
+
+
+
 
 
                 this.addButton = false
@@ -394,11 +398,10 @@
                     type:type,
                 }).then(response => {
 
-                    // console.log(type,'type');
-                    // console.log(check_id,'imasheev');
-                    // console.log(response,'imasheevsdf');
 
 
+
+                    this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
 
 
                     this.editValueThis = response.data;
@@ -504,7 +507,7 @@
             addCheckList() {
                 // this.buttonClass = 'primary',
                 this.arrCheckInput.push({
-                    checked: true,
+                    checked: false,
                     text: "",
                     https: '',
                 });
@@ -581,37 +584,38 @@
               }
 
             },
-            addDivBlock(item,id,type){
+            addDivBlock(item,id,type,edit = null){
               this.flag_type = true;
               this.placeholderSelect = false;
+
+              if (edit == 'edit'){
+                this.allValueArray = [];
+                this.selectedRoles(type)
+                this.refreshArray()
+              }
 
               if (this.allValueArray.length > 0){
                 for (let i = 0; i < this.allValueArray.length;i ++){
                   if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
                     this.$message.error('Группа ранее добавлено');
                     this.flag_type = false;
-                    this.allValueArray[i]['exists'] = true
                   }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
                     this.$message.error('Должность ранее добавлено');
                     this.flag_type = false;
-                    this.allValueArray[i]['exists'] = true
                   }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
                     this.$message.error('Пользователь ранее добавлено');
                     this.flag_type = false;
-                    this.allValueArray[i]['exists'] = true
                   }
                 }
               }
-
-
 
               if (this.flag_type == true){
                 this.allValueArray.push({
                   text: item,
                   code:id,
                   type:type,
-                  exists:false,
                 });
+
 
                 if (type == 1){
                   for (var i = 0; i < this.groups_arr.length;i++){
@@ -625,7 +629,6 @@
                       this.positions_arr[i]['checked'] = true
                     }
                   }
-
                 }else if(type == 3){
                   for (var i = 0; i < this.allusers_arr.length;i++){
                     if (this.allusers_arr[i]['code'] == id){
@@ -633,10 +636,6 @@
                     }
                   }
                 }
-
-
-
-
               }
             },
             deleteDesk(id,code,type){
@@ -669,6 +668,18 @@
 
 
           },
+            refreshArray(){
+                for (var i = 0; i < this.groups_arr.length;i++){
+                    this.groups_arr[i]['checked'] = false
+                }
+                for (var i = 0; i < this.positions_arr.length;i++){
+                    this.positions_arr[i]['checked'] = false
+                }
+                for (var i = 0; i < this.allusers_arr.length;i++){
+                    this.allusers_arr[i]['checked'] = false
+                }
+
+            }
         },
 
     }
