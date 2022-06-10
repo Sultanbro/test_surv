@@ -5,8 +5,7 @@
         <div 
             v-for="(value, i) in values"
             :key="i"
-            class="selected-item" 
-            ref="search"
+            class="selected-item"
             :class="'value' + value.type">
             {{ value.name }}
             <i class="fa fa-times" @click.stop="removeValue(i)"></i>
@@ -14,7 +13,7 @@
     </div>
     
     <div class="show">
-        <div class="search" v-if="show">
+        <div class="search" v-if="show" ref="search">
             <input type="text">
         </div>
         
