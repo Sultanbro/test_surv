@@ -1,16 +1,15 @@
 <template>
-<div class="super-select" ref="select" :class="posClass">
+<div class="super-select" ref="select" :class="posClass" v-click-outside="show = false">
 
-    <div class="selected-items noscrollbar" @click="toggleShow">
-        <div class="wrap">
-            <div 
-                v-for="(value, index) in values"
-                :key="index"
-                class="selected-item" 
-                :class="'value' + value.type">
-                {{ value.name }}
-                <i class="fa fa-times" @click="removeValue(i)"></i>
-            </div>
+    <div class="selected-items" @click="toggleShow">
+        <div 
+            v-for="(value, i) in values"
+            :key="i"
+            class="selected-item" 
+            ref="search"
+            :class="'value' + value.type">
+            {{ value.name }}
+            <i class="fa fa-times" @click.stop="removeValue(i)"></i>
         </div>
     </div>
     
@@ -69,7 +68,7 @@ export default {
             positions: [],
             users: [],
             options: [],
-            active_type: 1,
+            type: 1,
             show: false,
             posClass: 'top',
         };
@@ -114,6 +113,7 @@ export default {
     methods: {
         toggleShow() {
             this.show = !this.show;
+            this.$refs.search.focus();
             this.setPosClass();
         },
 
@@ -132,6 +132,7 @@ export default {
         addValue(index) {
             let item = this.options[index];
             if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
+                console.log(item)
                 this.values.push({
                     name: item.name,
                     id: item.id,

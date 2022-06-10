@@ -10,9 +10,10 @@
         position: absolute;
         left: 0;
         width: 100%;
-        background: white;
-        margin: 0px 1px;
         border: 1px solid #e8ecee;
+        width: calc(100% + 2px);
+        background: white;
+        margin: 0px -1px;
     }
 
     &.top .show {
@@ -28,10 +29,6 @@
         padding: 7px;
         overflow: overlay;
         width: 100%;
-        
-        .wrap {
-            display: flex;
-        }
 
         .selected-item {
             display: flex;
@@ -39,6 +36,7 @@
             background: rgb(51, 161, 229);
             margin-right: 5px;
             align-items: center;
+            flex: 0 0 auto;
 
             i {
                 margin-left: 5px;
