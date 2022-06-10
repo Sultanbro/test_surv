@@ -4,7 +4,7 @@
     border: 1px solid #e8ecee;
     position: relative;
     z-index: 2;
-    
+
     .show {
         box-shadow: 0 -5px 5px 5px #f3f3f3;
         position: absolute;
@@ -26,7 +26,12 @@
     .selected-items {
         display: flex;
         padding: 7px;
-        overflow: auto;
+        overflow: overlay;
+        width: 100%;
+        
+        .wrap {
+            display: flex;
+        }
 
         .selected-item {
             display: flex;

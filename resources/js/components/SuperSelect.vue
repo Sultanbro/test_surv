@@ -2,13 +2,15 @@
 <div class="super-select" ref="select" :class="posClass">
 
     <div class="selected-items noscrollbar" @click="toggleShow">
-        <div 
-            v-for="(value, index) in values"
-            :key="index"
-            class="selected-item" 
-            :class="'value' + value.type">
-            {{ value.name }}
-            <i class="fa fa-times"></i>
+        <div class="wrap">
+            <div 
+                v-for="(value, index) in values"
+                :key="index"
+                class="selected-item" 
+                :class="'value' + value.type">
+                {{ value.name }}
+                <i class="fa fa-times" @click="removeValue(i)"></i>
+            </div>
         </div>
     </div>
     
@@ -129,13 +131,17 @@ export default {
 
         addValue(index) {
             let item = this.options[index];
-            if(this.values.findIndex(v => v.id == item.id && v.type == this.type) == -1) {
+            if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
                 this.values.push({
                     name: item.name,
                     id: item.id,
                     type: this.type,
                 });
             }
+        },
+
+        removeValue(i) {
+            this.values.splice(i, 1);
         }
     },
 
