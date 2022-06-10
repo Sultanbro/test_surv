@@ -127,7 +127,7 @@ class VideoController extends Controller {
 			$duration = 30;
 			
 			return [
-				'file' => 'https://admin.u-marketing.org/sharedvideos/' . $file_name,
+				'file' => 'https://bp.jobtron.org/sharedvideos/' . $file_name,
 				'ftp_status' => $ftp_upload,
 			];
 		}

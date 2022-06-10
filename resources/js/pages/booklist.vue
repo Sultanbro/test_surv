@@ -876,7 +876,7 @@ export default {
 
           this.addimage(response.data.location);
         //   this.imagegroup.push({
-        //     url: "https://admin.u-marketing.org/" + response.data.location,
+        //     url: "https://bp.jobtron.org/" + response.data.location,
         //   });
 
         this.showImageModal = false;
@@ -913,7 +913,7 @@ export default {
         .post("/upload/audio/", formData)
         .then((response) => {
         //   this.audioarray.push({
-        //     url: "https://admin.u-marketing.org/" + response.data.location,
+        //     url: "https://bp.jobtron.org/" + response.data.location,
         //   });
 
           this.addaudio(response.data.location);

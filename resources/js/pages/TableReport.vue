@@ -465,7 +465,7 @@ export default {
     methods: {
         copy() {
             var Url = this.$refs['mylink' + this.currentGroup];
-            Url.value = 'https://admin.u-marketing.org/autocheck/' + this.currentGroup;
+            Url.value = 'https://bp.jobtron.org/autocheck/' + this.currentGroup;
 
             Url.select();
             document.execCommand("copy");

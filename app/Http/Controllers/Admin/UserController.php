@@ -1079,11 +1079,7 @@ class UserController extends Controller
     {
         $positions = Position::all();
         $groups = ProfileGroup::where('active', 1)->get();
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
-            $corpbooks = BookCategory::where('parent_cat_id', NULL)->where('is_deleted', 0)->get();
-        } else {
-            $corpbooks = '[]';
-        }
+        $corpbooks = '[]';
         
         $programs = Program::orderBy('id', 'desc')->get();
         $workingDays = WorkingDay::all();
@@ -1206,12 +1202,7 @@ class UserController extends Controller
                 $user->in_groups = $this->getPersonGroup($user->id);
                 
                 if($user->user_description) {
-                    if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) { 
-                        $user->in_books  = BookCategory::whereIn('id', json_decode($user->user_description->books))->where('is_deleted', 0)->get();
-                    } else {
-                        $user->in_books  = '[]';
-                    }
-                    
+                    $user->in_books  = '[]';
                 }
                 
                 $user->head_in_groups = $head_in_groups;
@@ -1400,7 +1391,7 @@ class UserController extends Controller
             $whatsapp = new IC();
             $wphone = Phone::normalize($user->phone);
             $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
             
             UserDescription::make([
                 'user_id' => $user->id,
@@ -1459,7 +1450,7 @@ class UserController extends Controller
         /*==============================================================*/
 
 
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
+        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'bp.jobtron.org')) {
             $account = Account::where('email', $request['email'])->first();
             if (!$account) {
                 $account = Account::create([
@@ -1771,7 +1762,7 @@ class UserController extends Controller
                 $whatsapp = new IC();
                 $wphone = Phone::normalize($user->phone);
                 $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-                //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+                //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
                 $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if($lead  && $lead->deal_id != 0) {
@@ -1822,7 +1813,7 @@ class UserController extends Controller
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
 
-                $msg_fragment = '<a href="https://admin.u-marketing.org/timetracking/edit-person?id=';
+                $msg_fragment = '<a href="https://bp.jobtron.org/timetracking/edit-person?id=';
                 $msg_fragment .= $user->id .'">' . $user->last_name . ' ' . $user->name . '</a>';
                 $msg_fragment .= '<br/>Дата принятия: ' . Carbon::parse($ud->applied)->format('d.m.Y');
                 $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: '. $comment;
@@ -1994,7 +1985,7 @@ class UserController extends Controller
         /********** Редактирование аккаунта в callibro.org */
         /*==============================================================*/
 
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
+        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'bp.jobtron.org')) {
             $account = Account::where('email', $request['email'])->first();
             if ($account) {
                 $account->name = $request['name'];
