@@ -1463,39 +1463,39 @@ class UserController extends Controller
                 ]);
             }
 
-            $agent_name = $account->id . '@voip.cfpsa.ru';
-            $agent = Agent::where('name', $agent_name)->first();
-            if(!$agent) {
-                $agent = Agent::create([
-                    'name' => $agent_name,
-                    'system' => 'single_box',
-                    'type' => 'callback',
-                    'contact' => Agent::CONTACT_PREFIX . $agent_name,
-                    'status' => 'Logged Out',
-                    'state' => 'Waiting'
-                ]);
-            }
+            // $agent_name = $account->id . '@voip.cfpsa.ru';
+            // $agent = Agent::where('name', $agent_name)->first();
+            // if(!$agent) {
+            //     $agent = Agent::create([
+            //         'name' => $agent_name,
+            //         'system' => 'single_box',
+            //         'type' => 'callback',
+            //         'contact' => Agent::CONTACT_PREFIX . $agent_name,
+            //         'status' => 'Logged Out',
+            //         'state' => 'Waiting'
+            //     ]);
+            // }
             
-            $directory = Directory::where('account', $account->id)->first();
-            if(!$directory) {
-                $directory = Directory::create([
-                    'account' => $account->id,
-                    'password' => $account->password,
-                    'domain' => 'voip.cfpsa.ru',
-                    'context' => 'voip.cfpsa.ru_context',
-                    'provider' => '600',
-                    'toll_allow' => '600',
-                    'state' => 'active',
-                ]);
-            } else {
-                $directory->password = $account->password;
-                $directory->toll_allow = '600';
-                $directory->provider = '600';
-                $directory->domain = 'voip.cfpsa.ru';
-                $directory->context = 'voip.cfpsa.ru_context';
-                $directory->state = 'active';
-                $directory->save();
-            }
+            // $directory = Directory::where('account', $account->id)->first();
+            // if(!$directory) {
+            //     $directory = Directory::create([
+            //         'account' => $account->id,
+            //         'password' => $account->password,
+            //         'domain' => 'voip.cfpsa.ru',
+            //         'context' => 'voip.cfpsa.ru_context',
+            //         'provider' => '600',
+            //         'toll_allow' => '600',
+            //         'state' => 'active',
+            //     ]);
+            // } else {
+            //     $directory->password = $account->password;
+            //     $directory->toll_allow = '600';
+            //     $directory->provider = '600';
+            //     $directory->domain = 'voip.cfpsa.ru';
+            //     $directory->context = 'voip.cfpsa.ru_context';
+            //     $directory->state = 'active';
+            //     $directory->save();
+            // }
         }
 
         
@@ -1991,39 +1991,39 @@ class UserController extends Controller
                 $account->save();
 
 
-                $agent_name = $account->id . '@voip.cfpsa.ru';
-                $agent = Agent::where('name', $agent_name)->first();
-                if(!$agent) {
-                    $agent = Agent::create([
-                        'name' => $agent_name,
-                        'system' => 'single_box',
-                        'type' => 'callback',
-                        'contact' => Agent::CONTACT_PREFIX . $agent_name,
-                        'status' => 'Logged Out',
-                        'state' => 'Waiting'
-                    ]);
-                }
+                // $agent_name = $account->id . '@voip.cfpsa.ru';
+                // $agent = Agent::where('name', $agent_name)->first();
+                // if(!$agent) {
+                //     $agent = Agent::create([
+                //         'name' => $agent_name,
+                //         'system' => 'single_box',
+                //         'type' => 'callback',
+                //         'contact' => Agent::CONTACT_PREFIX . $agent_name,
+                //         'status' => 'Logged Out',
+                //         'state' => 'Waiting'
+                //     ]);
+                // }
                 
-                $directory = Directory::where('account', $account->id)->first();
-                if(!$directory) {
-                    $directory = Directory::create([
-                        'account' => $account->id,
-                        'password' => $account->password,
-                        'domain' => 'voip.cfpsa.ru',
-                        'context' => 'voip.cfpsa.ru_context',
-                        'provider' => '600',
-                        'toll_allow' => '600',
-                        'state' => 'active',
-                    ]);
-                } else {
-                    $directory->password = $account->password;
-                    $directory->toll_allow = '600';
-                    $directory->provider = '600';
-                    $directory->domain = 'voip.cfpsa.ru';
-                    $directory->context = 'voip.cfpsa.ru_context';
-                    $directory->state = 'active';
-                    $directory->save();
-                }
+                // $directory = Directory::where('account', $account->id)->first();
+                // if(!$directory) {
+                //     $directory = Directory::create([
+                //         'account' => $account->id,
+                //         'password' => $account->password,
+                //         'domain' => 'voip.cfpsa.ru',
+                //         'context' => 'voip.cfpsa.ru_context',
+                //         'provider' => '600',
+                //         'toll_allow' => '600',
+                //         'state' => 'active',
+                //     ]);
+                // } else {
+                //     $directory->password = $account->password;
+                //     $directory->toll_allow = '600';
+                //     $directory->provider = '600';
+                //     $directory->domain = 'voip.cfpsa.ru';
+                //     $directory->context = 'voip.cfpsa.ru_context';
+                //     $directory->state = 'active';
+                //     $directory->save();
+                // }
             }
         }
         

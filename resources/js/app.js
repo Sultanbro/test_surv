@@ -125,6 +125,7 @@ Vue.component('questions', require('./pages/Questions.vue').default); // воп�
 Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); // плеер
 
 Vue.component('permission-item', require('./components/PermissionItem.vue').default); // 
+Vue.component('superselect', require('./components/SuperSelect.vue').default); // 
 
 /**
  * Pages
