@@ -3,10 +3,16 @@
     width: 400px;
     border: 1px solid #e8ecee;
     position: relative;
-
+    z-index: 2;
+    
     .show {
+        box-shadow: 0 -5px 5px 5px #f3f3f3;
         position: absolute;
         left: 0;
+        width: 100%;
+        background: white;
+        margin: 0px 1px;
+        border: 1px solid #e8ecee;
     }
 
     &.top .show {
