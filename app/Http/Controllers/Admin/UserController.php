@@ -626,6 +626,7 @@ class UserController extends Controller
         //     $array_accounts_email[] = $account->email;
         // }
 
+
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
             //$users = User::withTrashed()->whereIn('email', $array_accounts_email);

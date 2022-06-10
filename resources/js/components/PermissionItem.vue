@@ -50,7 +50,15 @@ export default {
     },
     created() {
         this.local_groups = this.groups;
-        if(this.item.groups_all) this.selectAll();
+        if(this.item.groups_all) {
+            this.local_groups = [];
+            this.item.groups.splice(0,this.item.groups.length + 1)
+            this.item.groups.push({
+                id: 0,
+                name: 'Все отделы' 
+            });
+            this.item.groups_all = true;
+        }
     },
     methods: {
         onSelect(selectedOption) {

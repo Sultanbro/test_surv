@@ -94,6 +94,7 @@ class TimetrackingController extends Controller
             $active_tab = (int)$_GET['tab'];  
         }
         
+     
         if($active_tab == 1 && auth()->user()->can('users_view')) {
 
         } else if($active_tab != 1 && auth()->user()->can('settings_view')){
@@ -102,8 +103,7 @@ class TimetrackingController extends Controller
             return redirect('/');
         }
 
-        
-
+     
         $corpbooks = [];
         if($active_tab == 3) {
             $corpbooks = collect([]);
@@ -117,9 +117,14 @@ class TimetrackingController extends Controller
         
         if($active_tab == 5 || $active_tab == 1) {
 
-            if(!auth()->user()->is_admin) {
-                return redirect('/');
-            }
+            // if(!auth()->user()->is_admin) {
+            //     return redirect('/');
+            // }
+
+            // if(auth()->id() == 9974) {
+            //     dd(auth()->user()->can('settings_view'));
+            // }
+    
 
             $users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
             $tab5['users'] = array_values($users);
