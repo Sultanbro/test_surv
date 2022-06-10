@@ -2,7 +2,21 @@
     background: #fafafa;
     width: 400px;
     border: 1px solid #e8ecee;
-    
+    position: relative;
+
+    .show {
+        position: absolute;
+        left: 0;
+    }
+
+    &.top .show {
+        bottom: 100%;
+    }
+
+    &.bottom .show {
+        top: 100%;
+    }
+
     .selected-items {
         display: flex;
         padding: 7px;
@@ -88,7 +102,7 @@
         height: 300px;
         overflow-x: hidden;
         overflow-y: auto;
-        
+
         .option {
             padding: 5px 15px;
             font-size: 14px;
