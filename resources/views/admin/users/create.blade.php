@@ -10,7 +10,7 @@
                 <i class="fa fa-chevron-left"></i> Назад
             </a>
 
-            <div class="data-information">
+            <div class="data-information d-flex">
                 @if(isset($user))
                     @if($user->is_trainee)
                     <button class="btn btn-warning mr-2 rounded" id="submit_job">Принять на работу</button>
@@ -26,26 +26,25 @@
                 @if ( is_null($user->deleted_at))
 
                     @if(!$user->is_trainee)
-                    <button type="button" class="btn btn-danger rounded mr-2" id="deleteModalBtn" data-toggle="modal"
-                    data-target="#deactivateUserModal">
+                    <button type="button" class="btn btn-danger rounded mr-2" id="deleteModalBtn" v-b-modal.modal-deactivate>
                         Уволить без отработки
                     </button>
-                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn2" data-toggle="modal"
-                        data-target="#deactivateUserModal">
+                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn2" v-b-modal.modal-deactivate>
                         Уволить с отработкой
                     </button>
                     @else
-                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn" data-toggle="modal"
-                    data-target="#deactivateUserModal">
+                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn" v-b-modal.modal-deactivate>
                         Уволить стажера
                     </button>
                     @endif
-                
+
+                  
                 @else
-                <button type="button" class="btn btn-success rounded" id="restoreUserBtn" data-toggle="modal"
-                    data-target="#activateUserModal">
-                    Восстановить
+
+                <button type="button" class="btn btn-success rounded" v-b-modal.modal-activate>
+                Восстановить
                 </button>
+
                 @endif
                 @endif
             </div>
@@ -161,7 +160,7 @@
 
 
                                             
-                                            <profile-kpi-button :user_id="{{ $user->id }}"/>
+                               <profile-kpi-button :user_id="{{ $user->id }}"/>
 
 
 
@@ -459,13 +458,13 @@
                                                         @endif
 
 
-                                                        @if($user->deactivate_date != null && $user->deactivate_date != '0000-00-00 00:00:00')
+                                                        @if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00')
                                                             <tr>
                                                                 <td>
                                                                     <span>Дата увольнения</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->deactivate_date)->format('d.m.Y')}}</span>
+                                                                    <span>{{ \Carbon\Carbon::parse($user->deleted_at)->format('d.m.Y')}}</span>
                                                                 </td>
                                                             </tr>
                                                                  
@@ -547,6 +546,27 @@
                                                
                                                 
                                                 <!--  -->
+                                            </div>
+
+
+                                            <div class="mb-3 xfade">
+                                                <div class="form-group row " id="selectedCityRU" >
+                                                    <div class="col-sm-12">
+                                                        <input class="form-control" name="selectedCityInput" id="selectedCityInput"
+                                                               @if(isset($user) && !empty($user->working_country))
+                                                                   value="{{$user->working_country}}"
+                                                               @endif
+
+                                                               placeholder="Поиск городов ">
+
+                                                        <input hidden name="working_city" id="working_city">
+                                                        <div id="listSearchResult" class="listSearchResult">
+                                                            <ul class="p-0 searchResultCountry" id="searchResultCountry" style="margin-bottom: 0px;">
+
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div class="mb-4">
@@ -738,26 +758,9 @@
                                                 <!--  -->
                                             </div>
                                             <!-- end of documents -->
-                                          
                                         </div>
-
-                                        
-
-
-
                                     </div>
-
-
-
-
-
-
-
-
-
-
                                 </div>
-
                                 <!-- second tab -->
                                 <div class="xtab-pane xfade" id="phones" role="tabpanel" aria-labelledby="phones-tab">
                                     <!--  -->
@@ -1027,6 +1030,9 @@
                                                 </div>
                                             </div>
                                         </div>
+
+
+                                        
                                         @endif
 
                                     </div>
@@ -1060,7 +1066,7 @@
 
 @if(isset($user))
 @if (is_null($user->deleted_at))
-<div class="modal fade" id="deactivateUserModal" tabindex="-1" role="dialog">
+<b-modal id="modal-deactivate" hide-footer hide-header>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body text-center">
@@ -1139,9 +1145,9 @@
             </div>
         </div>
     </div>
-</div>
+</b-modal>
 @else
-<div class="modal" id="activateUserModal" tabindex="-1" role="dialog">
+<b-modal id="modal-activate" hide-footer hide-header>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body text-center">
@@ -1156,12 +1162,9 @@
             </div>
         </div>
     </div>
-</div>
+</b-modal>
 @endif
 @endif
-
-
-
 <div class="modal " id="beforeSubmit" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -1172,28 +1175,6 @@
         </div>
     </div>
 </div>
-
-
-<div class="modal fade" id="bitrix_quarter_id_input" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <h6>Вы уверены что хотите востановить пользователя?</h6>
-            </div>
-            <div class="text-center mb-3 ">
-                <form action="/timetracking/recover-person">
-
-                    <button type="submit" class="btn btn-success" id="deleteUserButton">Да</button>
-                    <button type="reset" class="btn btn-primary" data-dismiss="modal">Нет</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
 @include('admin.svg.icons')
 
 @endsection
@@ -1202,8 +1183,72 @@
 
 <script>
 
+
+    function liHoverOver(element){
+        $("#li-hover-jquery-"+element).css('background-color','rgb(236 244 249)');
+    }
+
+    function liHoverOut(element){
+        $("#li-hover-jquery-"+element).css('background-color','rgb(245, 245, 245)');
+    }
+
+    document.getElementById('selectedCityInput').onkeyup = function() {
+        let _token   = $('meta[name="csrf-token"]').attr('content');
+        var value = document.getElementById('selectedCityInput').value;
+
+        if (value.length){
+            $.ajax({
+                url: "/selected-country/search/",
+                type:"POST",
+                data:{
+                    value:value,
+                    _token: _token,
+                },
+                success:function(response){
+                    $("#searchResultCountry").empty();
+                    $("#listSearchResult").css('display','block');
+
+                    if (response[0].length > 0){
+                        for (let i = 0; i < response[0].length; i++) {
+                            $("#searchResultCountry").append(
+                                '<li id="li-hover-jquery-'+response[0][i]['id']+'"  onmouseover="liHoverOver('+response[0][i]['id']+')"    onmouseout="liHoverOut('+response[0][i]['id']+')"   onclick="pasteSearchInput('+response[0][i]['id']+')"  style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white;" class="searchResultCountry">' +
+                                    '<a id="hiddenCity-'+response[0][i]['id']+'"><strong>Страна: </strong> '+response[0][i]['country']+' <strong>Город: </strong> '+response[0][i]['city']+'</a><' +
+                                '/li>'
+                            );
+                        }
+                    }else{
+                        $("#searchResultCountry").append(
+                            '<li style="cursor: pointer; background-color: #f5f5f5;padding: 10px;" class="searchResultCountry"><a>Нет найденных городов </a></li>'
+                        );
+                    }
+
+                },
+
+            });
+        }else{
+
+            $("#searchResultCountry").empty();
+            $("#listSearchResult").css('display','none');
+        }
+
+
+
+
+    }
+
+
+    function pasteSearchInput(type_id){
+        var kis = $("#hiddenCity-"+type_id).text();
+        $("#working_city").val(type_id);
+        $("#selectedCityInput").val(kis);
+        $("#listSearchResult").hide();
+
+    }
+
+
+
+
     function bitrix_quarter_editor(){
-        console.log('1995');
         $('#bitrix_quarter_id_input').show();
     }
 
@@ -1260,7 +1305,10 @@ $('#deleteUser').click(function(e) {
 
 
 function submitx() {
-    
+
+
+
+
     counter = 0;
 
     let phone = $('#phone').val(),
@@ -1269,6 +1317,8 @@ function submitx() {
         birthday = $('#birthday').val(),
         email = $('#email').val(),
         zarplata = $('#zarplata').val();
+        workingCity = $('#workingCity').val();
+
 
 
     $('#beforeSubmit .texter').html('');
@@ -1278,6 +1328,9 @@ function submitx() {
 
 
     let profile_errors = 0;
+
+
+
 
     if (name.length < 2) {
         $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');
@@ -1329,6 +1382,13 @@ function submitx() {
         counter++;
         phone_errors++
     }
+
+
+    // if (workingCity == null) {
+    //     $('#beforeSubmit .texter').append('<div>Город: <b>Астана</b></div>');
+    //     counter++;
+    //     profile_errors++
+    // }
 
     let zarplata_errors = 0;
 
@@ -1554,6 +1614,63 @@ $('#weekdays .weekday').click(function() {
 
 
 </script>
+<script>
+function selectedCountry() {
+
+    let value = $("#workingCountry").val();
+    let _token   = $('meta[name="csrf-token"]').attr('content');
+
+
+    $.ajax({
+    url: "/selected-country",
+    type:"POST",
+    data:{
+        value:value,
+        _token: _token,
+    },
+    success:function(response){
+
+
+        console.log(response);
+
+
+
+
+        if (response['success'] == 1){
+            $("#workingCity").append().empty();
+            $("#selectedCityHide").show();
+            $("#selectedCityRU").hide();
+            for (var i = 0; i < response.city.length;i++){
+                $("#workingCity").append('<option value="' + response.city[i]['id'] + '">' + response.city[i]['city'] + '</option>');
+            }
+        }else if (response['success'] == 2){
+            $("#selectedCityRU").show();
+            $("#selectedCityHide").hide();
+
+            input.oninput = function() {
+                console.log(input.value,'1122333')
+            };
+        }else{
+            console.log(response);
+            alert('ggg')
+        }
+
+
+
+
+
+
+
+    },
+    error: function(error) {
+        console.log(error);
+    }
+    });
+
+    console.log(value,'imasheev')
+
+}
+</script>
 @endsection
 
 @section('styles')
@@ -1564,6 +1681,14 @@ $('#weekdays .weekday').click(function() {
 }
 </style>
 <style>
+
+.listSearchResult{
+    border: 1px solid #d9d9d9;
+    margin-top: 10px;
+    overflow-x: hidden;
+    max-height: 200px;
+    display:none;
+}
 .weekday {
     text-align: center;
     display: flex;

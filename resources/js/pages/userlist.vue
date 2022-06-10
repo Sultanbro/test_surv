@@ -69,8 +69,8 @@
         {{ row.index + 1 }}
       </template>
       <template slot="cell(id)" slot-scope="row">
-        <a v-if="[5,18,157].includes(currentUser)"
-          :href="'http://test.u-marketing.org/login-as-employee/' + row.item.id + '?auth=' + auth_token"
+        <a v-if="is_admin && subdomain == 'bp'"
+          :href="'https://test.jobtron.org/login-as-employee/' + row.item.id + '?auth=' + auth_token"
           target="_blank">
           {{ row.value}}
         </a>
@@ -335,6 +335,16 @@
 import 'ant-design-vue/dist/antd.css'
 export default {
   name: "Userlist",
+  props: {
+    is_admin: {
+      type: Boolean,
+      default: false,
+    },
+    subdomain: {
+      type: String,
+      default: 'nosub'
+    }
+  },
   data() {
     return {
       sel: false,

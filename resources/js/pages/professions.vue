@@ -272,7 +272,6 @@ span.before {
 }
 .multiselect__tag {
     display: block !important;
-    background: #29a746 !important;
     max-width: max-content !important;
 }
 .blu .multiselect__tag {

@@ -81,6 +81,7 @@ Vue.component('profile-books', require('./components/profile/ProfileBooks.vue').
 
 Vue.component('profile-quarter-button', require('./components/ProfileQuarterButton.vue').default); // кнопка Индивид Quarter в настройках User
 Vue.component('auth-check-list', require('./components/auth_check_list.vue').default); // кнопка у кого есть Чек Лист список Чек Листов (Fixed)
+Vue.component('selected-modal-checkList', require('./components/selectedModalCheckList.vue').default); // чек лист selected modal
 
 /** 
  * Components
@@ -121,7 +122,9 @@ Vue.component('t-quality', require('./components/tables/TableQuality.vue').defau
 Vue.component('t-quality-weekly', require('./components/tables/TableQualityWeekly.vue').default); // Недельные оценки качества
 Vue.component('t-usersalary', require('./components/tables/TableUserSalary.vue').default); // таблица начислений
 Vue.component('questions', require('./pages/Questions.vue').default); // вопросы тестов
-Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); // вопросы тестов
+Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); // плеер
+
+Vue.component('permission-item', require('./components/PermissionItem.vue').default); // 
 
 /**
  * Pages

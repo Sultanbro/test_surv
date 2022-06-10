@@ -25,6 +25,7 @@ class AnalyticStat extends Model
         'type',
         'editable',
         'class',
+        'decimals',
         'comment'
     ];
 
@@ -129,6 +130,7 @@ class AnalyticStat extends Model
                         'class' => $stat->class . $add_class,
                         'editable' => $stat->editable,
                         'depend_id' => $row->depend_id,
+                        'decimals' => $stat->decimals,
                         'comment' => $stat->comment,
                         'sign' => ''
                     ];
@@ -145,7 +147,7 @@ class AnalyticStat extends Model
                     }
                     if($stat->type == 'formula') {
                         $arr['value'] = self::convert_formula($stat->value, $row_keys, $col_keys);
-                        $val = self::calcFormula($stat, $date);
+                        $val = self::calcFormula($stat, $date, $stat->decimals);
 
 
                         $arr['show_value'] = $val;
@@ -220,6 +222,7 @@ class AnalyticStat extends Model
                         'column_id' => $column->id,
                         'value' => '',
                         'show_value' => '',
+                        'decimals' => 0,
                         'type' => $type,
                         'class' => 'text-center' . $add_class,
                         'editable' => ($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name']) ? 0 : 1,
@@ -231,6 +234,7 @@ class AnalyticStat extends Model
                         'context' => false,
                         'row_id' => $row->id,
                         'column_id' => $column->id,
+                        'decimals' => 0,
                         'type' => $type,
                         'cell' => $cell_letter . $cell_number,
                         'class' => 'text-center' . $add_class,
@@ -466,7 +470,7 @@ class AnalyticStat extends Model
 
 
         if($count > 0) {
-            $total = round($total / $count, 1);
+            $total = round($total / $count, 3);
         } else {
             $total = 0;
         }
@@ -831,7 +835,7 @@ class AnalyticStat extends Model
         $prev_date = Carbon::parse($date)->subMonths(1)->format('Y-m-d');
         $impl_prev = self::getRentabilityOnDay($group_id, $prev_date);
 
-        return $impl - $impl_prev;
+        return round($impl - $impl_prev, 2);
 
     }
 }

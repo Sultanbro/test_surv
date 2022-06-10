@@ -43,7 +43,7 @@
                     <div class="login-panel">
 
                         <a href="/" class="">
-                            <img src="https://admin.u-marketing.org/admin/images/logo.png" style="max-width: 150px;">
+                            <img src="https://bp.jobtron.org/admin/images/logo.png" style="max-width: 150px;">
                         </a>
 
 
@@ -59,6 +59,7 @@
                             <div id="tab-30" class="tab @if(!isset($_GET['tab'])) active @else js-tab-hidden  @endif">
                                 <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                                     {{ csrf_field() }}
+                                    {{$errors}}
                                     <div class="form-subregistration">
                                         <div class="form-registration-row">
                                             <input id="username" type="text" class="form-control" name="username"

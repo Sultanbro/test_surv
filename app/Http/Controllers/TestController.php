@@ -6,6 +6,7 @@ use Auth;
 use App\ProfileGroup;
 use App\AnalyticsSettingsIndividually;
 use App\User;
+use App\UserDescription;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Classes\Analytics\Impl;
@@ -22,19 +23,30 @@ use Spatie\Permission\Models\Permission;
 class TestController extends Controller { 
  
 	public function test() {
-		// $role = Role::where(['name' => 'writer'])->first();
-        // $permission = Permission::where(['name' => 'edit articles'])->first();
 
-		// $role->givePermissionTo($permission);
-		// $permission->assignRole($role);
 
-	
-		 
-		$a = auth()->user();
-		//$a->assignRole('writer');
-		// dd($a);
-		dump('Shakerчф');
-		dd($a->can('edit articles'));
+        $users = User::find(1);
+        $users['password'] = \Hash::make('12345');
+        $users->save();
+
+        dd($users);
+
+        $users = \auth()->user();
+
+        dd($users);
+
+        $users = User::whereNull('name')->whereNull('last_name')->get();
+
+		$uds = UserDescription::whereIn('user_id', $users->pluck('id')->toArray())->get();
+		foreach ($uds as $key => $ud) {
+			$ud->is_trainee = 1;
+			$ud->save();
+		}
+		//dd($uds);
+//         \Hash::make('12345');
+//        $user->save();
+        //\Auth::login($user);
+
 	}  
 
 	public function hhRefresher() {

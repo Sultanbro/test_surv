@@ -67,11 +67,11 @@ class TimetrackingController extends Controller
 
         View::share('menu', 'timetrackingsetting');
 
-        $groups = ProfileGroup::where('active', 1)->get()->pluck('name','name');
+        $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
 
 
 
-
+//        dd($groups);
 
 
         $archived_groups = ProfileGroup::where('active', 0)->get(['id', 'name']);
@@ -94,16 +94,16 @@ class TimetrackingController extends Controller
             $active_tab = (int)$_GET['tab'];  
         }
         
-        if($active_tab == 1 && auth()->user()->can['users_view']) {
+     
+        if($active_tab == 1 && auth()->user()->can('users_view')) {
 
-        } else if($active_tab != 1 && auth()->user()->can['settings_view']){
+        } else if($active_tab != 1 && auth()->user()->can('settings_view')){
             
         } else {
-            return redirect()->back();
+            return redirect('/');
         }
 
-        
-
+     
         $corpbooks = [];
         if($active_tab == 3) {
             $corpbooks = collect([]);
@@ -115,20 +115,31 @@ class TimetrackingController extends Controller
             'positions' => [],
         ];
         
-        if($active_tab == 5) {
+        if($active_tab == 5 || $active_tab == 1) {
+
+            // if(!auth()->user()->is_admin) {
+            //     return redirect('/');
+            // }
+
+            // if(auth()->id() == 9974) {
+            //     dd(auth()->user()->can('settings_view'));
+            // }
+    
 
             $users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
             $tab5['users'] = array_values($users);
 
             $positions = Position::select('position as name', 'id')->get()->toArray();
-            $tab5['positions'] = array_values($positions);    
+
+            $tab5['positions'] = array_values($positions);
 
 
 
         }
 
         /// временно
-        $getUsers = User::on()->limit(45)->select('id','name','last_name')->get()->toArray();
+        $getUsers = User::on()->select('id','name','last_name')->get()->toArray();
+
 
 
 
@@ -289,10 +300,16 @@ class TimetrackingController extends Controller
 
         $user_groups = $user->profileGroups();
 
+        $work_end_max = $user_groups->max('work_end');
+      
+        if($work_end_max == null) {
+            $work_end_max = $user->work_end;
+        }
+
         $dt = Carbon::now($tz)->format('d.m.Y');
 
         $worktime_start = Carbon::parse($dt . ' 08:00', $tz);
-        $worktime_end = Carbon::parse($dt . ' ' . $user_groups->max('work_end'), $tz);
+        $worktime_end = Carbon::parse($dt . ' ' . $work_end_max, $tz);
 
         $running = $user->timetracking()->running()->first();
 
@@ -528,13 +545,15 @@ class TimetrackingController extends Controller
     public function getusersgroup(Request $request)
     {
         if ($request->group) {
-            $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->first();
+            $group =  ProfileGroup::find($request->group);
+          //  $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->with('dialer')->first();
             //if(!$group) $group = ProfileGroup::find($request->group);
             
             if ($group->users != null) {
                 $users = json_decode($group->users);
                 $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
+            if($group->book_groups == null) $group->book_groups = '[]';
             $book_groups = BookGroup::whereIn('id', json_decode($group->book_groups))->get();
 
             $corpbooks = collect([]);
@@ -557,6 +576,7 @@ class TimetrackingController extends Controller
         //time_exceptions
 
         return response()->json([
+            'name' => isset($group) ? $group->name : 'Noname',
             'users' => isset($users) ? $users : [],
             'book_groups' => isset($book_groups) ? $book_groups : [],
             'corp_books' => isset($corp_books) ? $corp_books : [],
@@ -566,6 +586,9 @@ class TimetrackingController extends Controller
             'plan' => isset($group->plan) ? $group->plan : 0,
             'zoom_link' => isset($group->zoom_link) ? $group->zoom_link : '',
             'bp_link' => isset($group->bp_link) ? $group->bp_link : '',
+            'dialer_id' => isset($group->dialer) ? $group->dialer->dialer_id : null,
+            'script_id' => isset($group->dialer) ? $group->dialer->script_id : null,
+            'quality' => isset($group) ? $group->quality : 'local',
             'bonuses' => $bonuses,
             'activities' => $activities,
             'payment_terms' => $payment_terms,
@@ -575,7 +598,7 @@ class TimetrackingController extends Controller
             'editable_time' => isset($group) ? $group->editable_time : 0,
             'paid_internship' => isset($group) ? $group->paid_internship : 0,
             'show_payment_terms' => isset($group) ? $group->show_payment_terms : 0,
-            'groups' => ProfileGroup::where('active', 1)->get()->pluck('name'),
+            'groups' => ProfileGroup::where('active', 1)->get()->pluck('name', 'id'),
             'archived_groups' => ProfileGroup::where('active', 0)->get(['name', 'id']),
 
         ]);
@@ -583,7 +606,8 @@ class TimetrackingController extends Controller
 
     public function saveusersgroup(Request $request)
     {
-        $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->first();
+        //$group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->with('dialer')->first();
+        $group = ProfileGroup::with('dialer')->find($request->group);
         //
         $users_id = [];
         $groups = ProfileGroup::where('active', 1)->get();
@@ -614,9 +638,27 @@ class TimetrackingController extends Controller
         $group->payment_terms = $request['payment_terms'];
         $group->editable_time = $request['editable_time'];
         $group->paid_internship = $request['paid_internship'];
+        $group->quality = $request['quality'];
         $group->show_payment_terms = $request['show_payment_terms'];
         $group->save();
 
+        if($request['dialer_id']) {
+            if($group->dialer) {
+                $group->dialer->dialer_id = $request['dialer_id'];
+                $group->dialer->script_id = $request['script_id'] ?? 0;
+                $group->dialer->save();
+            } else {
+                \App\Models\CallibroDialer::create([
+                    'group_id' => $group->id,
+                    'dialer_id' => $request['dialer_id'],
+                    'script_id' => $request['script_id'] ?? 0
+                ]);
+            }
+        }
+
+        
+
+        
 
         // save users migrations
 
@@ -640,21 +682,21 @@ class TimetrackingController extends Controller
 
 
 
-        $bplink = BPLink::where('name', $request['bp_link'])->first();
+        // $bplink = BPLink::where('name', $request['bp_link'])->first();
         
-        if($bplink) {
-            $bplink->link = $request['zoom_link'];
-            $bplink->save();
-        } else {
-            $bplink = new BPLink;
-            $bplink->name = $request['bp_link'] ?? 'NONAME' . $group->id;
-            $bplink->link = $request['zoom_link'] ?? 'NONAME' . $group->id;
-            $bplink->save();
-        }
+        // if($bplink) {
+        //     $bplink->link = $request['zoom_link'];
+        //     $bplink->save();
+        // } else {
+        //     $bplink = new BPLink;
+        //     $bplink->name = $request['bp_link'] ?? 'NONAME' . $group->id;
+        //     $bplink->link = $request['zoom_link'] ?? 'NONAME' . $group->id;
+        //     $bplink->save();
+        // }
         
         
         return [
-            'groups' => ProfileGroup::pluck('name')->toArray(),
+            'groups' => ProfileGroup::pluck('name', 'id')->toArray(),
             'group' => $group->name
         ];;
     }
@@ -678,7 +720,7 @@ class TimetrackingController extends Controller
         
 
         ///////////////////////////////////////////    
-        $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $request->user_id;
+        $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
         $recruiters = User::where('position_id', 46)->get();
 
         $timestamp = now();
@@ -743,7 +785,7 @@ class TimetrackingController extends Controller
         $whatsapp = new IC();
         $wphone = Phone::normalize($user->phone);
         $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-        //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+        //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
         $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
             if($lead && $lead->deal_id != 0) {
@@ -761,8 +803,8 @@ class TimetrackingController extends Controller
 
     public function reports(Request $request)
     {   
-        if(!auth()->user()->can['tabel_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('tabel_view')) {
+            return redirect('/');
         }
 
 
@@ -1337,8 +1379,8 @@ class TimetrackingController extends Controller
     {
 
 
-        if(!auth()->user()->can['entertime_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('entertime_view')) {
+            return redirect('/');
         }
 
         
@@ -1741,7 +1783,7 @@ class TimetrackingController extends Controller
             $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->user_id)->first();
             
             if($trainee) {
-                $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $request->user_id;
+                $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
                 $recruiters = User::where('position_id', 46)->get();
                 
                 // Поиск ID лида или сделки
@@ -1888,7 +1930,7 @@ class TimetrackingController extends Controller
             
             if($trainee) {
                 
-                $editPersonLink = 'https://admin.u-marketing.org/timetracking/edit-person?id=' . $request->user_id;
+                $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
                 $recruiters = User::where('position_id', 46)->get();
                 
                 // Поиск ID лида или сделки
@@ -2225,18 +2267,17 @@ class TimetrackingController extends Controller
 
     public function getTimeAddresses(Request $request)
     {
-        $group = ProfileGroup::where('name', $request->group_id)
-            ->first();
+        $group = ProfileGroup::find($request->group_id);
 
         $time_variants = [
             '-1' => 'Из U-calls',
-            '0' => 'Из табеля',
+            '0' => 'Не выбран',
         ];
         $time_exceptions_options = [];
         $time_exceptions = [];
 
         if($group) {
-            $activities = Activity::where('group_id', $group->id)->get();
+            $activities = Activity::where('group_id', $group->id)->where('type', 'default')->get();
             foreach ($activities as $key => $activity) {
                 $time_variants[$activity->id] = $activity->name;
             }
@@ -2268,8 +2309,7 @@ class TimetrackingController extends Controller
 
     public function saveTimeAddresses(Request $request)
     {
-        $group = ProfileGroup::where('name', $request->group_id)
-            ->first();
+        $group = ProfileGroup::find($request->group_id);
 
         if($group) {
             $group->time_address = $request->time_address;

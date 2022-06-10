@@ -79,8 +79,8 @@ class GroupAnalyticsController extends Controller
     public function index()
     {
 
-        if(!auth()->user()->can['hr_view'] && tenant('id') != 'bp') {
-            return redirect()->back();
+        if(!auth()->user()->can('hr_view') && tenant('id') != 'bp') {
+            return redirect('/');
         }
 
         $currentUser = User::bitrixUser();

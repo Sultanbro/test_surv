@@ -555,7 +555,7 @@ class BpartnersController extends Controller
     		$id = DB::connection('bpartners_db')->table('images')->insertGetId(
                 [
                     'book_id' => $request['id'],
-                    'url' => 'https://admin.u-marketing.org/bpartners/',
+                    'url' => 'https://bp.jobtron.org/bpartners/',
                     'name' => $image_name,
                 ]
             );

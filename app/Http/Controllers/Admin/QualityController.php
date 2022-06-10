@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use View;
 use App\Models\Analytics\Activity;
 use Auth;
+use App\Models\CallibroDialer;
 
 class QualityController extends Controller
 {
@@ -40,8 +41,8 @@ class QualityController extends Controller
 
     public function index()
     {
-        if(!auth()->user()->can['quality_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('quality_view')) {
+            return redirect('/');
         }
 
         $acts = Activity::where('type', 'quality')->get()->pluck('group_id')->toArray();
@@ -58,10 +59,6 @@ class QualityController extends Controller
         $groups3 = ProfileGroup::on()->get();
 
         $groups = $groups->merge($groups3);
-
-
-        $check_users =CheckUsers::on()->select('name','last_name','check_users_id')
-            ->distinct()->get()->toArray();
 
 
 
@@ -296,6 +293,8 @@ class QualityController extends Controller
 
 
 
+        $dialer = CallibroDialer::where('group_id', $group->id)->first();
+
 
         return response()->json([
             'items' => $items,
@@ -304,6 +303,8 @@ class QualityController extends Controller
             'avg_day' => $group->quality == 'local' ? $avg_day : 0,
             'avg_month' => $group->quality == 'local' ? $avg_month : 0,
             'can_add_records' => $group->quality == 'local' ? true : false,
+            'script_id' => $dialer ? $dialer->script_id : null,
+            'dialer_id' => $dialer ? $dialer->dialer_id : null,
             'params' => $q_params,
             'check_users' => $check_users,
         ]);
@@ -707,20 +708,46 @@ class QualityController extends Controller
 
     public function saveCrits(Request $request)
     {
-        foreach ($request->crits as $key => $crit) {
-            $param = QualityParam::find($crit['id']);
+        $group = ProfileGroup::find($request->group_id);
 
-            if($param) {
-                $param->name = $crit['name'];
-                $param->active = $crit['active'];
-                $param->save();
+        if($request->can_add_records) {
+
+            foreach ($request->crits as $key => $crit) {
+                $param = QualityParam::find($crit['id']);
+    
+                if($param) {
+                    $param->name = $crit['name'];
+                    $param->active = $crit['active'];
+                    $param->save();
+                } else {
+                    QualityParam::create([
+                        'name' => $crit['name'],
+                        'group_id' => $request->group_id,
+                        'active' => $crit['active'],
+                    ]);
+                }
+            }
+
+        } else {
+
+           
+            $dialer = CallibroDialer::where('group_id', $request->group_id)->first();
+            
+            if($dialer) {
+                $dialer->dialer_id = $request['dialer_id'];
+                $dialer->script_id = $request['script_id'] ?? 0;
+                $dialer->save();
             } else {
-                QualityParam::create([
-                    'name' => $crit['name'],
-                    'group_id' => $request->group_id,
-                    'active' => $crit['active'],
+                CallibroDialer::create([
+                    'group_id' => $group->id,
+                    'dialer_id' => $request['dialer_id'],
+                    'script_id' => $request['script_id'] ?? 0
                 ]);
             }
+
         }
+
+        $group->quality = $request->can_add_records ? 'local' : 'ucalls';
+        $group->save();
     }
 }

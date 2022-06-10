@@ -118,7 +118,7 @@ class RecruiterStats extends Command
                 $bitrix_user = $this->bitrix->searchUser($admin_user->email);
                 if(!$bitrix_user) continue;
 
-                $this->bitrix_user = $bitrix_user['id'];
+                $this->bitrix_user = $bitrix_user['ID'];
                 $ud = UserDescription::where('user_id', $user_id)->first();
                 if($ud) {
                     

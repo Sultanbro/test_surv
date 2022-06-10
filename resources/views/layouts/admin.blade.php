@@ -2,6 +2,7 @@
 <html class="no-js" lang="ru"> 
 <head>
     <meta charset="utf-8">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.1"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@yield('title')</title>
     <meta name="description" content="Mediasend.kz Управление">
@@ -23,6 +24,19 @@
 </head>
 <body>
 
+    <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="js/jquery.iMissYou.min.js"></script>
+    <script>
+        jQuery(document).ready(function($){
+           $.iMissYou({
+               title: "Вернись :(",
+               favicon: {
+                   enabled: true,
+                   src:'/IMissYouFavicon.ico'
+               }
+           });
+       });
+    </script>
 
 <div id="app" class="right-panel right-panel-app d-flex">
 

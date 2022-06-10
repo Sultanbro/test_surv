@@ -17,12 +17,12 @@ use App\Http\Controllers\Admin\GroupAnalyticsController;
 | contains the "web" middleware group. Now create something great!
 |
  */
-Auth::routes();
+//Auth::routes();
 // Route::any('/auth', function () {
 //     return redirect('/');
 // });
 
-// Route::get('/login', [LoginController::class, 'in dex'])->name('login');
+// Route::get('/login', [LoginController::class, 'index'])->name('login');
 // Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 
@@ -37,5 +37,5 @@ Route::get('/projects/edit/{id}', [TenantController::class, 'edit']);
 Route::post('/projects/save', [TenantController::class, 'save']);
 Route::post('/projects/update', [TenantController::class, 'update']);
 
-Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+//Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 

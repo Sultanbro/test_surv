@@ -267,7 +267,8 @@ export default {
 
         fetchIndividual() {
             let loader = this.$loading.show();
-            
+
+
             axios
                 .post("/timetracking/kpi_get_individual", {
                     group_id: this.group_id,

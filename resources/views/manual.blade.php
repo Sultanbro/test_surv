@@ -111,7 +111,7 @@ body {
         <div class="row">
             <aside class="col-3 bg-grey docs_sidebar p-30">
 
-                <img src="https://admin.u-marketing.org/admin/images/logo.png" alt="" class="logo mb-2">
+                <img src="https://bp.jobtron.org/admin/images/logo.png" alt="" class="logo mb-2">
                 <p class="ttitle"> Заметки ленивого разработчика</p>
                 <ul>
                     <li class="link" data-page="1">Начисления</li>

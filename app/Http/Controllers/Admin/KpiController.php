@@ -528,10 +528,10 @@ class KpiController extends Controller
                         
                         $users = $pgu ? $pgu->assigned : [];
 
-                        $kpi_indicator->completed_value = UserDescription::where('is_trainee', 0)
+                        $kpi_indicator->completed_value = $pgu ? UserDescription::where('is_trainee', 0)
                             ->whereIn('user_id', $pgu->assigned)
                             ->get()
-                            ->count();
+                            ->count() : 0;
 
                         $completed = 0;
                         if((float)$activity->daily_plan > 0) {
@@ -622,7 +622,7 @@ class KpiController extends Controller
         }
 
         // RESPONSE
-        return response()->json([
+        return [
             'kpi' => $kpi ? $kpi : [
                 'user_id' => $request->group_id,
                 'kpi_80_99' => 0,
@@ -634,6 +634,6 @@ class KpiController extends Controller
             'kpi_indicators' => $kpi_indicators,
             'workdays' => $applied_from == 0 ? $workdays : $applied_from,
             'groups' => $groups,
-        ]);
+        ];
     }
 }

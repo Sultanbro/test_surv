@@ -51,6 +51,11 @@ class ProfileGroup extends Model
     CONST FROM_UCALLS = -1;
     CONST NOWHERE = 0;
 
+    public function dialer()
+    {
+        return $this->hasOne('App\Models\CallibroDialer', 'group_id', 'id');
+	}
+
     public function plan()
     {
         return $this->hasOne('App\GroupPlan', 'group_id', 'id');
@@ -88,7 +93,7 @@ class ProfileGroup extends Model
         $profile = self::find($profile_id);
         
         if($profile) {
-            return json_decode($profile->book_groups);
+            return json_decode($profile->book_groups) ? json_decode($profile->book_groups) : [];
         } else {
             return [];
         }

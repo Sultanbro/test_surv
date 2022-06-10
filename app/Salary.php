@@ -2,7 +2,9 @@
 
 namespace App;
 
+//use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use DB;
 use Auth;
@@ -18,6 +20,7 @@ use App\Models\Admin\EditedSalary;
 
 class Salary extends Model
 {
+    use SoftDeletes;
     protected $table = 'salaries';
 
     protected $dates = ['date'];
@@ -416,40 +419,44 @@ class Salary extends Model
         } 
 
         if($user_types == 1) {// Уволенные
-            $users->whereNotNull('deleted_at');
+            $users->onlyTrashed();
 
             $x_users = \DB::table('users')
                 ->whereDate('deleted_at', '>=', $date->format('Y-m-d'))
                 ->get(['users.id','users.last_group']);
-
+              
             $fired_users = [];
             foreach($x_users as $d_user) {
+           
                 if($d_user->last_group) { 
+                  
                     $lg = json_decode($d_user->last_group);
                     if(in_array($group_id, $lg)) {
                         array_push($fired_users, $d_user->id);
                     }
                 } 
             }
-
+       
             $users_ids = $fired_users;
-        }
-
-        if($user_types == -1) {// one person
-           
-        }
-
-        if($user_types == 0) { // Действующие
-            $users_ids = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0)
+         
+            $users_ids = User::with('user_description')
+                ->withTrashed()
+                ->whereHas('user_description', function ($query) {
+                    $query->where('is_trainee', 0);
+                })
                 ->whereIn('users.id', $users_ids)
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
+            
         }
 
-        if($user_types == 1) { // Уволенные
+        if($user_types == -1) {// one person
+            //dd($users);
+            $users->withTrashed();
+        }
+
+        if($user_types == 0) { // Действующие
             $users_ids = \DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
@@ -467,6 +474,8 @@ class Salary extends Model
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
+
+       
         }
 
         $users->whereIn('users.id', array_unique($users_ids));
@@ -510,7 +519,7 @@ class Salary extends Model
         $users = $users->get([
             'users.id', 
             'users.email', 
-            'deleted_at',
+            'users.deleted_at',
             DB::raw("CONCAT(last_name,' ',name) as full_name"),
             'user_type',
             'users.created_at',
@@ -518,7 +527,9 @@ class Salary extends Model
             'users.working_day_id',
             'users.working_time_id',
         ]);
-        
+
+      
+     
      
         ///////////////////// 
 
@@ -527,7 +538,7 @@ class Salary extends Model
 
         //me($users);
         foreach ($users as $key => $user) {
-
+            
             $ugroups = $user->inGroups();
 
             if(count($ugroups) > 0) {
@@ -535,7 +546,7 @@ class Salary extends Model
                     continue;
                 }
             }
-
+          
             $internshipPayRate = $user->internshipPayRate();
             
             $fines = [];

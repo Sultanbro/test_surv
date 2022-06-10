@@ -1,35 +1,35 @@
 <template>
 <div class="p-3 permissions">
 
-<h4 class="title">Настройка доступов</h4>
+<h4 class="title">Настройка доступов<span v-if="role != null">: Роли</span></h4>
 
 <!-- Главная страница -->
-<section v-if="role == null">
+<section>
   <div class="d-flex mb-3">
-    <div class="list">
+    <div class="list" v-if="role == null">
       <div class="item d-flex contrast">
-        <div class="person"><b>Пользователь</b></div>
+        <div class="person"></div>
         <div class="role">Роль</div>
-        <div class="groups">Группы</div>
+        <div class="groups">Отделы 
+              <i class="fa fa-info-circle ml-2" 
+                v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'" 
+                title="Доступ к отделам">
+            </i>
+        </div>
         <div class="actions"></div>
       </div>
-      <div class="item d-flex" v-for="(item, i) in items" :key="i">
-        <div class="person">
-          <v-select :options="users" label="name" v-model="item.user" class="noscrollbar"></v-select>
-        </div>
-        <div class="role">
-          <v-select :options="roles" label="name" v-model="item.role" class="noscrollbar"></v-select>
-        </div>
-        <div class="groups">
-          <v-select :options="groups" label="name" v-model="item.groups" class="noscrollbar" multiple></v-select>
-        </div>
-        <div class="actions d-flex">
+      
+      <permission-item 
+        v-for="(item, i) in items"
+        class="item d-flex" 
+        :key="i" 
+        @deleteItem="deleteItem(i)"
+        :item="item"
+        :groups="groups"
+        :users="users"
+        :roles="roles"
+      />
 
-          <button class="btn btn-default btn-sm" @click="deleteItem(i)">
-            <i class="fa fa-times" />
-          </button>
-        </div>
-      </div>
       <div class=" d-flex mt-3">
         <button class="btn btn-default btn-sm" @click="addItem">Добавить</button>
       </div>
@@ -37,6 +37,40 @@
         <button class="btn btn-success btn-sm" @click="saveItems">Сохранить</button>
       </div>
       
+    </div>
+
+    <!-- Edit роль -->
+    <div v-if="role" class="edit-role">
+      <div class="d-flex mb-3">
+        <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
+      </div>
+
+      <input type="text" v-model="role.name" class="role-title form-control mb-3" />
+
+      <div class="pages">
+        <div class="item d-flex contrast">
+          <div class="name mr-3">Страница</div>
+          <div class="check d-flex">Просмотр</div>
+          <div class="check d-flex">Редактирование</div>
+        </div>
+        <div class="item d-flex" v-for="(page, i) in pages" :key="i">
+          <div class="name mr-3">{{page.name}}</div>
+          <div class="check d-flex">
+              <label class="mb-0 pointer">
+                <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox"  />
+              </label>
+          </div>
+            <div class="check d-flex">
+              <label class="mb-0 pointer">
+                <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox"  />
+              </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button class="btn btn-success btn-sm" @click="updateRole">Сохранить</button>
+      </div>
     </div>
 
     <!-- Показать все роли -->
@@ -62,44 +96,6 @@
 
 
 
-<!-- Edit роль -->
-<section v-if="role && !showRoles">
-  <div class="d-flex mb-3">
-    <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
-  </div>
-
-  <input type="text" v-model="role.name" class="role-title mb-3" />
-
-  <div class="pages">
-    <div class="item d-flex">
-      <div class="name mr-3">Страница</div>
-      <div class="check d-flex">Просмотр</div>
-      <div class="check d-flex">Редактирование</div>
-    </div>
-    <div class="item d-flex" v-for="(page, i) in pages" :key="i">
-      <div class="name mr-3">{{page.name}}</div>
-      <div class="check d-flex">
-          <label class="mr-3 pointer">
-            <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox"  />
-          </label>
-      </div>
-        <div class="check d-flex">
-          <label class="mr-3 pointer">
-            <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox"  />
-          </label>
-      </div>
-    </div>
-  </div>
-
-  <div class="mt-5">
-     <button class="btn btn-success btn-sm" @click="updateRole">Сохранить</button>
-  </div>
-</section>
-
-
-
-
-
 
 
 
@@ -114,7 +110,7 @@
 <script>
 export default {
   name: "Permissions",
-  data() {
+  data() { 
     return {
       role: null,
       users: [], // all select
@@ -145,9 +141,6 @@ export default {
           this.pages = response.data.pages;
           this.items = response.data.items;
 
-        
-
-
           loader.hide();
         })
         .catch((error) => {
@@ -159,8 +152,16 @@ export default {
     addItem() {
       this.items.push(
         {
-          user: null,
-          role: null,
+          user_id: null,
+          groups_all: false,
+          user: {
+            id: null,
+            name: ''
+          },
+          role: {
+            id: null,
+            name: ''
+          },
           groups: []
         }
       );
@@ -183,7 +184,7 @@ export default {
       this.role = {
         name: 'Test',
         id: null,
-        permissions: {}
+        perms: {}
       }
     },
 
@@ -191,8 +192,8 @@ export default {
       let loader = this.$loading.show();
       
       this.permissions = [];
-      Object.keys(this.role.perms).forEach((el, index) => {
-        this.permissions.push(el)
+      Object.keys(this.role.perms).forEach((key, index) => {
+        if(this.role.perms[key]) this.permissions.push(key)
       });
 
 
@@ -203,9 +204,16 @@ export default {
           permissions: this.permissions
         })
         .then((response) => {
-        
-          let index = this.roles.findIndex(x => x.id == null);
-          if(index != -1) this.roles[index].id = response.data.id;
+          if(this.role.id == null) {
+             this.roles.push({
+               id: response.data.id,
+               name: response.data.name,
+               perms: this.role.perms,
+               permissions: []
+             });
+          }
+
+          this.role = null;
           loader.hide(); 
           this.$message.success('Роль сохранена!');
         }) 
@@ -216,9 +224,14 @@ export default {
     },
 
     deleteItem(i) {
+
+      if(!confirm('Вы точно хотите удалить доступ пользователю?')) {
+         return false; 
+       }
+
       if(this.items[i].user.id == null) {
         this.items.splice(i,1)
-        return null;
+        return false; 
       }
 
       let loader = this.$loading.show();
@@ -239,20 +252,15 @@ export default {
     },
 
     saveItems() {
-
       
-      let item = this.items[i]
-      if(item.user == null) return null;
-      if(item.role == null) return null;
-
       let loader = this.$loading.show();
        axios
         .post( '/permissions/update-user', {
-          item: item
+          items: this.items,
         })
         .then((response) => {
           loader.hide();
-           this.$message.success('Пользователь сохранен!');
+           this.$message.success('Пользователи сохранены!');
         })
         .catch((error) => {
           loader.hide();
@@ -268,12 +276,12 @@ export default {
     deleteRole(i) {
 
        if(!confirm('Вы уверены удалить роль?')) {
-         return null; 
+         return false; 
        }
 
       if(this.roles[i].id == null) {
         this.roles.splice(i,1);
-        return null;
+        return false; 
       }
 
       let loader = this.$loading.show();
@@ -283,13 +291,16 @@ export default {
         })
         .then((response) => {
           loader.hide();
+           this.roles.splice(i,1);
            this.$message.success('Роль удалена!');
         })
         .catch((error) => {
           loader.hide();
           alert(error);
         });
-    }
+    },
+
+  
   },
 };
 </script>

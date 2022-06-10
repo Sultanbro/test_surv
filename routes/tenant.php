@@ -54,6 +54,7 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\IntellectController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\GroupsController;
+use App\Http\Controllers\MapsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -230,7 +231,7 @@ Route::middleware([
 
 
     Route::get('/permissions', [PermissionController::class, 'index']);
-    Route::get('/permissions/get', [PermissionController::class, 'get']);
+    Route::get('/permissions/get', [PermissionController::class, 'get']); 
 
     Route::post('/permissions/create-role', [PermissionController::class, 'createRole']);
     Route::post('/permissions/update-role', [PermissionController::class, 'updateRole']);
@@ -388,6 +389,8 @@ Route::middleware([
     Route::post('/timetracking/analytics/delete-row', [AnalyticsController::class, 'deleteRow']);
     Route::post('/timetracking/analytics/dependency/remove', [AnalyticsController::class, 'removeDependency']);
     Route::post('/timetracking/analytics/edit-stat', [AnalyticsController::class, 'editStat']);
+    Route::post('/timetracking/analytics/set-decimals', [AnalyticsController::class, 'setDecimals']);
+    
     Route::post('/timetracking/analytics/new-group', [AnalyticsController::class, 'newGroup']);
     Route::post('/timetracking/analytics/create-activity', [AnalyticsController::class, 'createActivity']);
     Route::post('/timetracking/analytics/edit-activity', [AnalyticsController::class, 'editActivity']);
@@ -445,6 +448,20 @@ Route::middleware([
     Route::post('/user/save/answer', [ProfileController::class, 'saveAnswer']);
     Route::post('/position/save/desc', [PositionController::class, 'savePositionDesc']);
 
+    
+    Route::get('/maps', [MapsController::class, 'index'])->name('maps');
+    Route::post('/selected-country/search/', [MapsController::class, 'selectedCountryAjaxSearch']);
+
+    Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
+    Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
+    Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
+    Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
+    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
+    Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
+    Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
+
+   
+    
     Route::group([
         'middleware' => ['api'],
         'prefix' => 'api',

@@ -67,6 +67,8 @@ use App\Http\Controllers\Admin\GroupAnalyticsController as GAController;
 use App\Models\Analytics\IndividualKpi;
 use App\Models\Analytics\TraineeReport;
 use App\AdaptationTalk;
+use http\Env;
+
 
 class UserController extends Controller
 {
@@ -624,6 +626,7 @@ class UserController extends Controller
         //     $array_accounts_email[] = $account->email;
         // }
 
+
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
             //$users = User::withTrashed()->whereIn('email', $array_accounts_email);
@@ -1049,8 +1052,8 @@ class UserController extends Controller
         View::share('title', 'Новый сотрудник');
         View::share('menu', 'timetrackingusercreate');
         
-        if(!auth()->user()->can['users_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
         }
 
         return view('admin.users.create', $this->preparePersonInputs());
@@ -1064,8 +1067,8 @@ class UserController extends Controller
         View::share('menu', 'timetrackingusercreate');
 
         
-        if(!auth()->user()->can['users_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
         }
 
         return view('admin.users.create', $this->preparePersonInputs($request->id));
@@ -1076,11 +1079,7 @@ class UserController extends Controller
     {
         $positions = Position::all();
         $groups = ProfileGroup::where('active', 1)->get();
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
-            $corpbooks = BookCategory::where('parent_cat_id', NULL)->where('is_deleted', 0)->get();
-        } else {
-            $corpbooks = '[]';
-        }
+        $corpbooks = '[]';
         
         $programs = Program::orderBy('id', 'desc')->get();
         $workingDays = WorkingDay::all();
@@ -1203,12 +1202,7 @@ class UserController extends Controller
                 $user->in_groups = $this->getPersonGroup($user->id);
                 
                 if($user->user_description) {
-                    if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) { 
-                        $user->in_books  = BookCategory::whereIn('id', json_decode($user->user_description->books))->where('is_deleted', 0)->get();
-                    } else {
-                        $user->in_books  = '[]';
-                    }
-                    
+                    $user->in_books  = '[]';
                 }
                 
                 $user->head_in_groups = $head_in_groups;
@@ -1226,9 +1220,10 @@ class UserController extends Controller
     }
 
     public function storePerson(Request $request) {
-        
-        if(!auth()->user()->can['users_view']) {
-            return redirect()->back();
+
+
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
         }
 
         /*==============================================================*/
@@ -1279,21 +1274,25 @@ class UserController extends Controller
         /*******  Приглашение на почту  */
         /*==============================================================*/
 
-        try { // если письмо с прилашением отправилось  
+        if (env('APP_ENV','local') == 'prod'){
+            try { // если письмо с прилашением отправилось
 
-            \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
+                \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
 
-        } catch (Swift_TransportException $e) { // Если письмо по каким то причинам не отправилось
-            return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
+            } catch (Swift_TransportException $e) { // Если письмо по каким то причинам не отправилось
+                return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
+            }
         }
+
 
         /*==============================================================*/
         /*******  Создание пользователя в U-marketing.org  */
         /*==============================================================*/
 
-        //dd($request->all());
 
-        
+
+
+
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
             $user->update([
                 'name' => $request['name'],
@@ -1314,8 +1313,14 @@ class UserController extends Controller
                 'work_end' => $request['work_start_end'],
                 'currency' => $request['currency'] ?? 'kzt',
                 'weekdays' => $request['weekdays'],
+                'working_country' => $request['selectedCityInput'],
+                'working_city' => $request['working_city'],
             ]);    
         } else { // Не было никакого полльзователя с таким email
+
+
+
+
             $user = User::create([
                 'email' => strtolower($request['email']),
                 'name' => $request['name'],
@@ -1335,11 +1340,14 @@ class UserController extends Controller
                 'work_end' => $request['work_start_end'],
                 'currency' => $request['currency'] ?? 'kzt',
                 'weekdays' => $request['weekdays'],
+                'working_country' =>$request['selectedCityInput'],
+                'working_city' =>$request['working_city'],
                 'role_id' => 1,
                 'is_admin' => 0 
             ]);
         }
-        
+
+
         /*==============================================================*/
         /*******  Руковод или нет  */
         /*==============================================================*/
@@ -1383,7 +1391,7 @@ class UserController extends Controller
             $whatsapp = new IC();
             $wphone = Phone::normalize($user->phone);
             $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
             
             UserDescription::make([
                 'user_id' => $user->id,
@@ -1442,7 +1450,7 @@ class UserController extends Controller
         /*==============================================================*/
 
 
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
+        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'bp.jobtron.org')) {
             $account = Account::where('email', $request['email'])->first();
             if (!$account) {
                 $account = Account::create([
@@ -1610,8 +1618,8 @@ class UserController extends Controller
 
     public function updatePerson(Request $request) {
         
-        if(!auth()->user()->can['users_view']) {
-            return redirect()->back();
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
         }
         /*==============================================================*/
         /********** Подготовка  */
@@ -1663,7 +1671,7 @@ class UserController extends Controller
                 $old_account->save();
             }
         }
-        
+
 
         /*==============================================================*/
         /********** Редактирование user  */
@@ -1686,6 +1694,8 @@ class UserController extends Controller
         $user->work_start = $request['work_start_time'];
         $user->work_end = $request['work_start_end'];
         $user->weekdays = $request['weekdays'];
+        $user->working_country = $request['selectedCityInput'];
+        $user->working_city = $request['working_city'];
         
         if($request->new_pwd != '') {
             $user->password = \Hash::make($request->new_pwd);
@@ -1752,7 +1762,7 @@ class UserController extends Controller
                 $whatsapp = new IC();
                 $wphone = Phone::normalize($user->phone);
                 $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-                //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://admin.u-marketing.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
+                //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
 
                 $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if($lead  && $lead->deal_id != 0) {
@@ -1803,7 +1813,7 @@ class UserController extends Controller
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
 
-                $msg_fragment = '<a href="https://admin.u-marketing.org/timetracking/edit-person?id=';
+                $msg_fragment = '<a href="https://bp.jobtron.org/timetracking/edit-person?id=';
                 $msg_fragment .= $user->id .'">' . $user->last_name . ' ' . $user->name . '</a>';
                 $msg_fragment .= '<br/>Дата принятия: ' . Carbon::parse($ud->applied)->format('d.m.Y');
                 $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: '. $comment;
@@ -1975,7 +1985,7 @@ class UserController extends Controller
         /********** Редактирование аккаунта в callibro.org */
         /*==============================================================*/
 
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'admin.u-marketing.org')) {
+        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'bp.jobtron.org')) {
             $account = Account::where('email', $request['email'])->first();
             if ($account) {
                 $account->name = $request['name'];

@@ -24,6 +24,8 @@
     <link rel="stylesheet" href="/static/new/css/style.css?v=1.2">
 </head>
 <body>
+
+
 <div id="wrapper">
     <div id="sidebar" class="active active_no_transition">
         <a href="/" class="logo">
