@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.2"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>@yield('title')</title>
+    <title>@yield('title') - </title>
     <meta name="description" content="Mediasend.kz Управление">
     <meta name="viewport" content="width=800, initial-scale=0.26">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -24,6 +24,19 @@
 </head>
 <body>
 
+    <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="js/jquery.iMissYou.min.js"></script>
+    <script>
+        jQuery(document).ready(function($){
+           $.iMissYou({
+               title: "Вернись :(",
+               favicon: {
+                   enabled: true,
+                   src:'/IMissYouFavicon.ico'
+               }
+           });
+       });
+    </script>
 
 <div id="app" class="right-panel right-panel-app d-flex">
 
@@ -61,6 +74,18 @@
 
 
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
+<script src="/js/jquery.iMissYou.min.js"></script>
+<script>
+$(document).ready(function(){
+    $.iMissYou({
+        title: "@yield('title') - Вернись  :(",
+        favicon: {
+            enabled: true,
+            src:'/IMissYouFavicon.ico'
+        }
+    });
+});
+</script>
 <!-- 
 <script src="js/jquery-1.11.2.min.js"></script> -->
   

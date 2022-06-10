@@ -18,33 +18,29 @@ class CheckListController extends Controller
 {
 
 
-    public function validateRequest($query)
-    {
-        $validateGR = [];
+    public function store(Request $request,$edit = null){
 
 
-        foreach ($query as $keys => $group){
-            $validateGR = CheckList::on()->where('item_id',$group['code'])->get()->toArray();
+
+
+        if ($edit != null){
+            $request = $edit;
         }
-
-        return count($validateGR);
-    }
-
-    public function store(Request $request){
-
-
 
         if ($request['countView'] < 11 && $request['countView'] != 0){
 
-
-
             if (isset($request['allValueArray'])){
 
+
+                foreach ($request['allValueArray'] as $allValidate){
+                    $validate = CheckList::where('item_id',$allValidate['code'])->where('item_type',$allValidate['type'])->get()->toArray();
+                    if (!empty($validate)){
+                        return response(['success'=>false,'exists'=>$validate]);
+                    }
+                }
+
+
                 foreach ($request['allValueArray'] as $allValueArray){
-                    $countCheckList = $this->validateRequest($request['allValueArray']);
-
-                    if ($countCheckList == 0){
-
                         if ($allValueArray['type'] == 1){
                             $profileGroups = ProfileGroup::on()->find($allValueArray['code']);
                             $checkList = new CheckList();
@@ -60,8 +56,6 @@ class CheckListController extends Controller
                             $this->saveGroup($profileGroups,$checkList,$request,1);
                         }elseif ($allValueArray['type'] == 2){
                             $profilePosition = Position::on()->find($allValueArray['code']);
-
-
                             $checkList = new CheckList();
                             $checkList['title'] = $profilePosition['position'];
                             $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
@@ -89,88 +83,8 @@ class CheckListController extends Controller
                                 $this->saveUsers($profileUsers, $checkList, $request, 3);
                             }
                         }
-                    }else{
-                        return response(['success'=>false]);
                     }
-                }
             }
-
-
-
-//            if (count($request['valueGroups']) != 0 && !empty($request['valueGroups'])){
-//                $countCheckList = $this->validateRequest($request['valueGroups']);
-//
-//
-//
-//                if ($countCheckList == 0){
-//                    foreach ($request['valueGroups'] as $keys => $group){
-//                        $profileGroups = ProfileGroup::on()->find($group['code']);
-//
-//
-//
-//                        $checkList = new CheckList();
-//                        $checkList['title'] = $profileGroups->name;
-//                        $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-//                        $checkList['auth_name'] = auth()->user()->name;
-//                        $checkList['auth_last_name'] = auth()->user()->last_name;
-//                        $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
-//                        $checkList['count_view'] = $request['countView'];
-//                        $checkList['item_type'] = 1;
-//                        $checkList['item_id'] = $profileGroups->id;
-//                        $checkList->save();
-//                        $this->saveGroup($profileGroups,$checkList,$request,1);
-//                    }
-//                }else{
-//                    return response(['success'=>false]);
-//                }
-//            }
-//            if (count($request['valuePositions']) != 0 && !empty($request['valuePositions'])){
-//                $countCheckList = $this->validateRequest($request['valuePositions']);
-//                if ($countCheckList == 0) {
-//                    foreach ($request['valuePositions'] as $keys => $group) {
-//                        $profileGroups = Position::on()->find($group['code']);
-//                        if (!empty($profileGroups)) {
-//                            $checkList = new CheckList();
-//                            $checkList['title'] = $profileGroups['position'];
-//                            $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-//                            $checkList['auth_name'] = auth()->user()->name;
-//                            $checkList['auth_last_name'] = auth()->user()->last_name;
-//                            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
-//                            $checkList['count_view'] = $request['countView'];
-//                            $checkList['item_type'] = 2;
-//                            $checkList['item_id'] = $profileGroups['id'];
-//                            $checkList->save();
-//                            $this->savePosition($profileGroups, $checkList, $request, 2);
-//                        }
-//                    }
-//                }else{
-//                    return response(['success'=>false]);
-//                }
-//            }
-//            if (count($request['valueUsers']) != 0 && !empty($request['valueUsers'])){
-//                $countCheckList = $this->validateRequest($request['valueUsers']);
-//                if ($countCheckList == 0) {
-//                    foreach ($request['valueUsers'] as $keys => $group) {
-//                        $profileUsers = User::on()->find($group['code']);
-//                        if (!empty($profileUsers)) {
-//                            $checkList = new CheckList();
-//                            $checkList['title'] = $profileUsers['last_name'].' '.$profileUsers['name'];
-//                            $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-//                            $checkList['auth_name'] = auth()->user()->name;
-//                            $checkList['auth_last_name'] = auth()->user()->last_name;
-//                            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
-//                            $checkList['count_view'] = $request['countView'];
-//                            $checkList['item_type'] = 3;
-//                            $checkList['item_id'] = $profileUsers['id'];
-//                            $checkList->save();
-//                            $this->saveUsers($profileUsers, $checkList, $request, 3);
-//                        }
-//                    }
-//                }else{
-//                    return response(['success'=>false]);
-//                }
-//
-//            }
         }
     }
 
@@ -215,6 +129,7 @@ class CheckListController extends Controller
 
     public function saveGroup($profileGroups,$checkList,$request,$type)
     {
+
 
 
         if (!empty($profileGroups['id'])){
@@ -280,79 +195,101 @@ class CheckListController extends Controller
 
     public function editSaveCheck(Request$request){
 
+        if (!empty($request['allValueArray'])){
 
-        if (isset($request['check_id'])){
+           if (count($request['allValueArray']) > 1){
+               foreach ($request['allValueArray'] as $keys =>$allValueArray){
+                   if ($request['valueFindGr'] != $allValueArray['code']){
+                       $newArrays['allValueArray'][] = $allValueArray;
+                   }
+               }
+               $newArrays['countView'] = $request['countView'];
+               $newArrays['arrCheckInput'] = $request['arrCheckInput'];
+               $this->store($request,$newArrays);
+           }
+           if (!empty($request['valueFindGr'])){
 
-            if (!empty($request['valueGroups'])){
-                foreach ($request['valueGroups'] as $keys => $valueGroup){
-                    if ($valueGroup['code'] != $request['valueFindGr']){
-                        $dataBaseCheckList = CheckList::on()->where('item_id',$valueGroup['code'])->get()->toArray();
-                        if (!empty($dataBaseCheckList)){
-                            foreach ($dataBaseCheckList as $dataBaseGr){
-                                if ($dataBaseGr['item_type'] == 1){
-                                    $text = "Данная Группа ".$dataBaseGr['title'].' уже существует';
-                                }elseif ($dataBaseGr['item_type'] == 2){
-                                    $text = "Должность ".$dataBaseGr['title'].' уже существует';
-                                }
-                                return response(['type'=>1,'item'=>$text]);
-                            }
-                        }
-                    }
-                }
-            }
-            $checkList = CheckList::on()->find($request['check_id']);
-            $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-            $checkList['auth_name'] = auth()->user()->NAME;
-            $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
-            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
-            $checkList['count_view'] = $request['countView'];
-            $checkList->save();
-
-//            $profileGroups,$checkList,$request
+               $findArray = CheckList::find($request['check_id']);
+               $findArray->auth_id = auth()->user()->id;
+               $findArray->auth_name = auth()->user()->name;
+               $findArray->auth_last_name = auth()->user()->last_name;
+               $findArray->active_check_text = json_encode($request['arrCheckInput']);
+               $findArray->count_view = $request['countView'];
+               $findArray->save();
 
 
+               $checkReports = CheckReports::on()->where('item_id',$findArray->item_id)->where('item_type',$findArray->item_type)
+                   ->where('year',date('Y'))
+                   ->where('month',date('n'))
+                   ->where('day',date('d'))
+                   ->get()->toArray();
 
+               if (!empty($checkReports) && count($checkReports) > 0){
+                   foreach ($checkReports  as $checkReport){
+                       $checkReportSave = CheckReports::on()->find($checkReport['id']);
+                       $checkReportSave['count_check'] = count($request['arrCheckInput']);
+                       $checkReportSave->save();
+                   }
+               }
 
-            foreach ($request['valueGroups'] as $keys => $valueGroup){
+               if ($findArray->item_type == 1){
+                   if (empty($checkReports) && count($checkReports) == 0){
+                       $profileGroups = ProfileGroup::on()->find($request['valueFindGr']);
+                       if (!empty($profileGroups)){
+                           foreach (json_decode($profileGroups['users']) as $profile_users_id){
+                               $dataBaseUser = User::on()->find($profile_users_id);
+                               if (!empty($dataBaseUser)){
+                                   $check_reports_save = new CheckReports();
+                                   $check_reports_save['check_id'] = $findArray->id;
+                                   $check_reports_save['check_users_id'] = $dataBaseUser->id ;
+                                   $check_reports_save['year'] = date('Y');
+                                   $check_reports_save['month'] = date('n');
+                                   $check_reports_save['day'] = date('d');
+                                   $check_reports_save['count_check'] = count($request['arrCheckInput']);
+                                   $check_reports_save['count_check_auth'] = 0;
+                                   $check_reports_save['item_type'] = $findArray->item_type;
+                                   $check_reports_save['item_id'] = $findArray->item_id;
+                                   $check_reports_save->save();
 
-                $profileGroups = ProfileGroup::on()->find($valueGroup['code']);
-
-                if ($valueGroup['code'] == $request['valueFindGr']) {
-                    $checkReports = CheckReports::on()->where('item_id',$valueGroup['code'])
-                        ->where('year',date('Y'))
-                        ->where('month',date('n'))
-                        ->where('day',date('d'))
-                        ->get()->toArray();
-                    if (!empty($checkReports)){
-                        foreach ($checkReports  as $checkReport){
-                            $checkReportSave = CheckReports::on()->find($checkReport['id']);
-                            $checkReportSave['count_check'] = count($request['arrCheckInput']);
-                            $checkReportSave->save();
-                        }
-                    }else{
-                        if (!empty($profileGroups)){
-                            foreach (json_decode($profileGroups['users']) as $profile_users_id){
-                                $dataBaseUser = User::on()->find($profile_users_id)->toArray();
-                                $this->saveReports($checkList,$dataBaseUser,$request,$profileGroups);
-                            }
-                        }
-                    }
-                }else{
-                    $checkList = new CheckList();
-                    $checkList['title'] = $profileGroups->name;
-                    $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                    $checkList['auth_name'] = auth()->user()->NAME;
-                    $checkList['auth_last_name'] = auth()->user()->LAST_NAME;
-                    $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
-                    $checkList['count_view'] = $request['countView'];
-                    $checkList['item_type'] = 1;
-                    $checkList['item_id'] = $profileGroups->id;
-                    $checkList->save();
-                    $this->saveGroup($profileGroups,$checkList,$request,1);
-                }
-            }
-
+                               }
+                           }
+                       }
+                   }
+               }elseif ($findArray->item_type == 2){
+                       $positionUsers = User::on()->where('position_id',$request['valueFindGr'])->get()->toArray();
+                       if (!empty($positionUsers)){
+                       $check_reports_save = new CheckReports();
+                       $check_reports_save['check_id'] = $findArray->id;
+                       $check_reports_save['check_users_id'] = $positionUsers['id'] ;
+                       $check_reports_save['year'] = date('Y');
+                       $check_reports_save['month'] = date('n');
+                       $check_reports_save['day'] = date('d');
+                       $check_reports_save['count_check'] = count($request['arrCheckInput']);
+                       $check_reports_save['count_check_auth'] = 0;
+                       $check_reports_save['item_type'] = $findArray->item_type;
+                       $check_reports_save['item_id'] = $findArray->item_id;
+                       $check_reports_save->save();
+                   }
+               }elseif ($findArray->item_type == 3){
+//                   saveReports($checkListId,$positionUser,$request,$positionUser,$type);
+                   $check_reports_save = new CheckReports();
+                   $check_reports_save['check_id'] = $findArray->id;
+                   $check_reports_save['check_users_id'] = $request['valueFindGr'] ;
+                   $check_reports_save['year'] = date('Y');
+                   $check_reports_save['month'] = date('n');
+                   $check_reports_save['day'] = date('d');
+                   $check_reports_save['count_check'] = count($request['arrCheckInput']);
+                   $check_reports_save['count_check_auth'] = 0;
+                   $check_reports_save['item_type'] = $findArray->item_type;
+                   $check_reports_save['item_id'] = $findArray->item_id;
+                   $check_reports_save->save();
+               }
+           }
         }
+
+
+
+
     }
 
     public function viewAuthCheck(Request$request){
@@ -373,8 +310,6 @@ class CheckListController extends Controller
 
             return response($check_list);
         }
-
-
     }
 
     public function sendAuthCheck(Request$request)
