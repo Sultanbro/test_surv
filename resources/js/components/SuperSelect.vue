@@ -1,5 +1,5 @@
 <template>
-<div class="super-select" ref="select" :class="posClass" v-click-outside="show = false">
+<div class="super-select" ref="select" :class="posClass">
 
     <div class="selected-items" @click="toggleShow">
         <div 
@@ -12,13 +12,18 @@
         </div>
     </div>
     
-    <div class="show">
-        <div class="search" v-if="show" ref="search">
-            <input type="text">
+    <div class="show" v-if="show">
+        <div class="search">
+            <input 
+                v-model="searchText"
+                type="text"
+                placeholder="Поиск..."
+                ref="search"
+                @change="onSearch">
         </div>
         
-        <div class="options-window" v-if="show">
-            <div class="types">
+        <div class="options-window">
+            <div class="types"> 
                 <div class="type">
                     <div class="text" @click="changeType(1)">Сотрудники</div>
                     <i class="fa fa-user"></i>
@@ -36,7 +41,7 @@
             <div class="options">
 
                 <div 
-                    v-for="(option, index) in options"
+                    v-for="(option, index) in filtered_options"
                     :key="index"
                     @click="addValue(index)"
                     class="option selected" 
@@ -70,6 +75,7 @@ export default {
             type: 1,
             show: false,
             posClass: 'top',
+            searchText: ''
         };
     },
     mounted() {
@@ -86,33 +92,34 @@ export default {
         //     }
         // });
 
-        this.users = [
-            {id: 1, name: 'Text 1'},
-            {id: 2, name: 'Text Agl 1'},
-            {id: 3, name: 'Text Ali 1'},
-            {id: 4, name: 'Text Ruslan 1'},
+        this.options = [
+            {id: 1, type: 1, name: 'Text 1'},
+            {id: 2, type: 1, name: 'Text Agl 1'},
+            {id: 3, type: 1, name: 'Text Ali 1'},
+            {id: 4, type: 1, name: 'Text Ruslan 1'},
+            {id: 2, type: 2, name: 'Group Agl 1'},
+            {id: 1, type: 2, name: 'Group 1'},
+            {id: 4, type: 2, name: 'Group Ruslan 1'},
+            {id: 3, type: 2, name: 'Group Ali 1'},
+            {id: 1, type: 3, name: 'Pos 1' },
+            {id: 2, type: 3, name: 'Pos Agl 1'},
+            {id: 4, type: 3, name: 'Poss Ruslan 1'},
+            {id: 3, type: 3, name: 'Pos Ali 1'},
         ];
 
-        this.groups = [
-            {id: 2, name: 'Group Agl 1'},
-            {id: 1, name: 'Group 1'},
-            {id: 4, name: 'Group Ruslan 1'},
-            {id: 3, name: 'Group Ali 1'},
-        ];
-
-        this.positions = [
-            {id: 1, name: 'Pos 1'},
-            {id: 2, name: 'Pos Agl 1'},
-            {id: 4, name: 'Poss Ruslan 1'},
-            {id: 3, name: 'Pos Ali 1'},
-        ];
-
-        this.options = this.users;
+        this.filtered_options = this.options;
     },
     methods: {
         toggleShow() {
             this.show = !this.show;
-            this.$refs.search.focus();
+            console.log(this.$refs)
+           
+            this.$nextTick(() => {
+                 this.$refs.search.focus();
+                if(this.$refs.search) {
+                   
+                }
+            });
             this.setPosClass();
         },
 
@@ -123,15 +130,16 @@ export default {
         },
 
         changeType(i) {
-            if(i == 1) this.options = this.users;
-            if(i == 2) this.options = this.groups;
-            if(i == 3) this.options = this.positions;
+            this.type = i;
+            this.filtered_options = this.options.filter((el, index) => {
+                return el.type = i
+            });
         },
 
         addValue(index) {
-            let item = this.options[index];
-            if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
-                console.log(item)
+            let item = this.filtered_options[index];
+            if(this.values.findIndex(v => v.id == item.id && v.type == this.type) == -1) {
+           
                 this.values.push({
                     name: item.name,
                     id: item.id,
@@ -142,6 +150,16 @@ export default {
 
         removeValue(i) {
             this.values.splice(i, 1);
+        },
+
+        onSearch() {
+            this.filtered_options = this.options.filter((el, index) => {
+                return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
+            });
+
+            if(this.searchText == '') {
+                this.filtered_options = this.options;
+            }
         }
     },
 

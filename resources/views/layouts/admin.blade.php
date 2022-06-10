@@ -2,7 +2,7 @@
 <html class="no-js" lang="ru"> 
 <head>
     <meta charset="utf-8">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.1"/>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.2"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@yield('title')</title>
     <meta name="description" content="Mediasend.kz Управление">

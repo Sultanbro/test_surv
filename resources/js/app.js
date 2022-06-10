@@ -13,7 +13,7 @@ import BootstrapVue from 'bootstrap-vue'
 import moment from 'moment'
 import Notifications from 'vue-notification'
 import Antd from 'ant-design-vue'
-import VueMask from 'v-mask'
+import VueMask from 'v-mask' 
 import VGauge from 'vgauge';
 import draggable from 'vuedraggable'
 import Multiselect from 'vue-multiselect'
@@ -169,19 +169,19 @@ Vue.component('check-list', require('./pages/checkList.vue').default); // чек
 
 
 
-Vue.directive('click-outside', {
-  bind () {
-      this.event = event => this.vm.$emit(this.expression, event)
-      this.el.addEventListener('click', this.stopProp)
-      document.body.addEventListener('click', this.event)
-  },   
-  unbind() {
-    this.el.removeEventListener('click', this.stopProp)
-    document.body.removeEventListener('click', this.event)
-  },
+// Vue.directive('click-outside', {
+//   bind () {
+//       this.event = event => this.vm.$emit(this.expression, event)
+//       this.el.addEventListener('click', this.stopProp)
+//       document.body.addEventListener('click', this.event)
+//   },   
+//   unbind() {
+//     this.el.removeEventListener('click', this.stopProp)
+//     document.body.removeEventListener('click', this.event)
+//   },
 
-  stopProp(event) { event.stopPropagation() }
-});
+//   stopProp(event) { event.stopPropagation() }
+// });
 
 
 
