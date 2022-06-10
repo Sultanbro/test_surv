@@ -16,28 +16,30 @@
         <div class="options-window" v-if="show">
             <div class="types">
                 <div class="type">
-                    <div class="text">Сотрудники</div>
+                    <div class="text" @click="changeType(1)">Сотрудники</div>
                     <i class="fa fa-user"></i>
                 </div>
                 <div class="type">
-                    <div class="text">Отделы</div>
+                    <div class="text" @click="changeType(2)">Отделы</div>
                     <i class="fa fa-users"></i>
                 </div>
                 <div class="type">
-                    <div class="text">Должности</div>
+                    <div class="text" @click="changeType(3)">Должности</div>
                     <i class="fa fa-briefcase"></i>
                 </div>
             </div>
     
             <div class="options">
 
-                <div class="option">Text</div>
-                <div class="option selected">
-                    Text2
-                    <i class="fa fa-check"></i>
+                <div 
+                    v-for="(option, index) in options"
+                    :key="index"
+                    @click="addValue(index)"
+                    class="option selected" 
+                >
+                    {{ option.name }}
+                    <!-- <i class="fa fa-check"></i> -->
                 </div>
-                <div class="option">Text3</div>
-                <div class="option">Text3</div>
 
             </div>
         </div>
@@ -60,6 +62,7 @@ export default {
             groups: [],
             positions: [],
             users: [],
+            options: [],
             active_type: 1,
             show: false,
             posClass: 'top',
@@ -78,6 +81,29 @@ export default {
         //         self.hideContextMenu();
         //     }
         // });
+
+        this.users = [
+            {id: 1, name: 'Text 1'},
+            {id: 2, name: 'Text Agl 1'},
+            {id: 3, name: 'Text Ali 1'},
+            {id: 4, name: 'Text Ruslan 1'},
+        ];
+
+        this.groups = [
+            {id: 2, name: 'Group Agl 1'},
+            {id: 1, name: 'Group 1'},
+            {id: 4, name: 'Group Ruslan 1'},
+            {id: 3, name: 'Group Ali 1'},
+        ];
+
+        this.positions = [
+            {id: 1, name: 'Pos 1'},
+            {id: 2, name: 'Pos Agl 1'},
+            {id: 4, name: 'Poss Ruslan 1'},
+            {id: 3, name: 'Pos Ali 1'},
+        ];
+
+        this.options = this.users;
     },
     methods: {
         toggleShow() {
@@ -89,6 +115,23 @@ export default {
             let pos = this.$refs["select"].getBoundingClientRect();
             let viewport_h = document.documentElement.clientHeight;
             this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
+        },
+
+        changeType(i) {
+            if(i == 1) this.options = this.users;
+            if(i == 2) this.options = this.groups;
+            if(i == 3) this.options = this.positions;
+        },
+
+        addValue(index) {
+            let item = this.options[index];
+            if(this.values.findIndex(v => v.id == item.id && v.type == this.type) == -1) {
+                this.values.push({
+                    name: item.name,
+                    id: item.id,
+                    type: this.type,
+                });
+            }
         }
     },
 
