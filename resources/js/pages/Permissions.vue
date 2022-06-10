@@ -37,6 +37,9 @@
         <button class="btn btn-success btn-sm" @click="saveItems">Сохранить</button>
       </div>
       
+      <div class="mt-3">
+        <super-select :values="values" />
+      </div>
     </div>
 
     <!-- Edit роль -->
@@ -89,21 +92,7 @@
     </div>
   </div>
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-               
+ 
 
 </div>
 </template>
@@ -117,6 +106,7 @@ export default {
       groups: [], // all select
       items: [],
       roles: [],
+      values: [],
       pages: [],
       permissions: [],
       showRoles: false,

@@ -173,7 +173,7 @@
                 </div>
               </div>
 
-                <selected-modal-checkList :groups=groups
+                <selected-modal-checkList :groups="groups"
                                           :allusers="allusers"
                                           :positions="positions"
 
