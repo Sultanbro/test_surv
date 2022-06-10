@@ -366,10 +366,12 @@
                         arrCheckInput:arrCheckInput,
                         valueFindGr:this.valueFindGr
                     }).then(response => {
-                        if (response.data.type == 1){
-                            this.$message.error('Ошибка');
+
+
+                        if (response.data.type == 1 || response.data == ''){
+                            this.$message.error('Ошибка ');
                             this.errors.show = true;
-                            this.errors.message = response.data.item;
+                            this.errors.message = 'Добавленный чек лист существует';
                         }else {
                             this.$message.success('Успешно изменен');
                             this.errors.show = false;
