@@ -24,6 +24,19 @@
 </head>
 <body>
 
+    <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="js/jquery.iMissYou.min.js"></script>
+    <script>
+        jQuery(document).ready(function($){
+           $.iMissYou({
+               title: "Вернись :(",
+               favicon: {
+                   enabled: true,
+                   src:'/IMissYouFavicon.ico'
+               }
+           });
+       });
+    </script>
 
 <div id="app" class="right-panel right-panel-app d-flex">
 

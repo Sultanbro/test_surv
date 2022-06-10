@@ -24,7 +24,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable;
 
 class User extends Authenticatable implements Authorizable
 {
-    use SoftDeletes,Notifiable,HasFactory,HasRoles;
+    use Notifiable,HasFactory,HasRoles,SoftDeletes;
 
     const USER_TYPE_OFFICE = 'office';
     const USER_TYPE_REMOTE = 'remote';

@@ -125,7 +125,9 @@ Vue.component('questions', require('./pages/Questions.vue').default); // воп�
 Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); // плеер
 
 Vue.component('permission-item', require('./components/PermissionItem.vue').default); // 
+
 Vue.component('superselect', require('./components/SuperSelect.vue').default); // 
+
 
 /**
  * Pages
@@ -168,6 +170,20 @@ Vue.component('bookgroups', require('./pages/bookgroups.vue').default); // об�
 Vue.component('check-list', require('./pages/checkList.vue').default); // чек лист
 
 
+
+Vue.directive('click-outside', {
+  bind () {
+      this.event = event => this.vm.$emit(this.expression, event)
+      this.el.addEventListener('click', this.stopProp)
+      document.body.addEventListener('click', this.event)
+  },   
+  unbind() {
+    this.el.removeEventListener('click', this.stopProp)
+    document.body.removeEventListener('click', this.event)
+  },
+
+  stopProp(event) { event.stopPropagation() }
+});
 
 
 

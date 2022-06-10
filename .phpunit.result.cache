@@ -1,0 +1,1 @@
+{"version":1,"defects":{"Tests\\Feature\\ExampleTest::testBasicTest":3,"Tests\\Feature\\MessageTest::inTime":4},"times":{"Tests\\Feature\\ExampleTest::testBasicTest":0.45,"Tests\\Feature\\MessageTest::inTime":0.044,"Tests\\Unit\\ExampleTest::testBasicTest":0.031,"Tests\\Unit\\TimetrackingCommandTest::testExample":0.066}}

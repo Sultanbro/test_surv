@@ -935,7 +935,7 @@ class UserController extends Controller
 
         return [
             'users' => $users,
-            'can_login_users' => [5,18],
+            'can_login_users' => [5,18,1],
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,
             'segments' => Segment::pluck('name', 'id'),

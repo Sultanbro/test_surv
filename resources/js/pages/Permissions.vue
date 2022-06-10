@@ -76,6 +76,40 @@
       </div>
     </div>
 
+    <!-- Edit роль -->
+    <div v-if="role" class="edit-role">
+      <div class="d-flex mb-3">
+        <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
+      </div>
+
+      <input type="text" v-model="role.name" class="role-title form-control mb-3" />
+
+      <div class="pages">
+        <div class="item d-flex contrast">
+          <div class="name mr-3">Страница</div>
+          <div class="check d-flex">Просмотр</div>
+          <div class="check d-flex">Редактирование</div>
+        </div>
+        <div class="item d-flex" v-for="(page, i) in pages" :key="i">
+          <div class="name mr-3">{{page.name}}</div>
+          <div class="check d-flex">
+              <label class="mb-0 pointer">
+                <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox"  />
+              </label>
+          </div>
+            <div class="check d-flex">
+              <label class="mb-0 pointer">
+                <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox"  />
+              </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button class="btn btn-success btn-sm" @click="updateRole">Сохранить</button>
+      </div>
+    </div>
+
     <!-- Показать все роли -->
     <div class="roles-list">
       <div class="roles">
@@ -92,7 +126,6 @@
     </div>
   </div>
 </section>
- 
 
 </div>
 </template>

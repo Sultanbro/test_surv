@@ -4,15 +4,16 @@
     border: 1px solid #e8ecee;
     position: relative;
     z-index: 2;
-    
+
     .show {
         box-shadow: 0 -5px 5px 5px #f3f3f3;
         position: absolute;
         left: 0;
         width: 100%;
-        background: white;
-        margin: 0px 1px;
         border: 1px solid #e8ecee;
+        width: calc(100% + 2px);
+        background: white;
+        margin: 0px -1px;
     }
 
     &.top .show {
@@ -26,7 +27,8 @@
     .selected-items {
         display: flex;
         padding: 7px;
-        overflow: auto;
+        overflow: overlay;
+        width: 100%;
 
         .selected-item {
             display: flex;
@@ -34,6 +36,7 @@
             background: rgb(51, 161, 229);
             margin-right: 5px;
             align-items: center;
+            flex: 0 0 auto;
 
             i {
                 margin-left: 5px;
