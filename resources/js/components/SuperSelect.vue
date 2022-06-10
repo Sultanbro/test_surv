@@ -31,7 +31,11 @@
         <div class="options">
 
             <div class="option">Text</div>
-            <div class="option">Text2</div>
+            <div class="option selected">
+                Text2
+                <i class="fa fa-check"></i>
+            </div>
+            <div class="option">Text3</div>
             <div class="option">Text3</div>
 
         </div>

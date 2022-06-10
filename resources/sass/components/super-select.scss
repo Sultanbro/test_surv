@@ -5,17 +5,18 @@
     
     .selected-items {
         display: flex;
-        padding: 10px;
+        padding: 7px;
 
         .selected-item {
             display: flex;
             padding: 5px 10px;
             background: rgb(51, 161, 229);
             margin-right: 5px;
+            align-items: center;
 
             i {
                 margin-left: 5px;
-                font-size: 10px;
+                font-size: 12px;
                 cursor: pointer;
                 
                 &:hover {
@@ -28,11 +29,15 @@
 
     .search {
 
+        border-top: 1px solid #e8ecee;
+        border-bottom: 1px solid #e8ecee;
+
         input {
             border: 0;
             width: 100%;
             padding: 5px 15px;
             font-size: 14px;
+            outline: 0;
         }
     }
 
@@ -53,6 +58,7 @@
             display: flex;
             background: rgb(49, 159, 255);
             border-radius: 0 50px 50px 0;
+            width: fit-content;
 
             i {
                 margin-left: 10px;
@@ -69,7 +75,7 @@
 
             &:hover {
                 .text {
-                    width: auto;
+                    width: 70px;
                 }
             }
         }
@@ -82,6 +88,18 @@
             padding: 5px 15px;
             font-size: 14px;
             
+            i {
+                display: none;
+            }
+            
+            &.selected {
+                background: rgb(214, 228, 234);
+
+                i {
+                    display: block;
+                }
+            }
+
             &:hover {
                 background: rgb(214, 228, 234);
             }
