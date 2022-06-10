@@ -2,8 +2,12 @@
 <div class="super-select" ref="select" :class="posClass">
 
     <div class="selected-items noscrollbar" @click="toggleShow">
-        <div class="selected-item">
-            text
+        <div 
+            v-for="(value, index) in values"
+            :key="index"
+            class="selected-item" 
+            :class="'value' + value.type">
+            {{ value.name }}
             <i class="fa fa-times"></i>
         </div>
     </div>
