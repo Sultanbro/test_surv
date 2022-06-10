@@ -1,3 +1,85 @@
 .super-select {
     background: grey;
+
+    .selected-items {
+        display: flex;
+        padding: 10px;
+
+        .selected-item {
+            display: flex;
+            padding: 5px 10px;
+            background: rgb(51, 161, 229);
+            margin-right: 5px;
+
+            i {
+                margin-left: 5px;
+                font-size: 10px;
+                cursor: pointer;
+                
+                &:hover {
+                    background: rgb(32, 119, 172);
+                }
+            }
+        }
+
+    }
+
+    .search {
+
+        input {
+            border: 0;
+            width: 100%;
+            padding: 5px 15px;
+            font-size: 14px;
+        }
+    }
+
+    
+}
+
+.options-window {
+    position: relative;
+
+    .types {
+        position: absolute;
+        right: 100%;
+
+        .type {
+            padding: 5px 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            background: rgb(49, 159, 255);
+            border-radius: 50% 0 0 50%;
+
+            i {
+                margin-right: 10px;
+                font-size: 14px;
+            }
+
+            .text {
+                font-size: 0;
+                color: #fff;
+                transition: 0.4s all ease;
+            }
+
+            &:hover {
+                .text {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+
+    .options {
+        min-height: 400px;
+        
+        .option {
+            padding: 5px 15px;
+            font-size: 14px;
+            
+            &:hover {
+                background: rgb(214, 228, 234);
+            }
+        }
+    }
 }
