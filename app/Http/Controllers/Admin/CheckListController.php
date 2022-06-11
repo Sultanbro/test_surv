@@ -17,6 +17,7 @@ use function Symfony\Component\Finder\name;
 class CheckListController extends Controller
 {
 
+
     public function store(Request $request,$edit = null){
 
 
@@ -29,6 +30,7 @@ class CheckListController extends Controller
         if ($request['countView'] < 11 && $request['countView'] != 0){
 
             if (isset($request['allValueArray'])){
+
 
                 foreach ($request['allValueArray'] as $allValidate){
                     $validate = CheckList::where('item_id',$allValidate['code'])->where('item_type',$allValidate['type'])->get()->toArray();
@@ -83,10 +85,6 @@ class CheckListController extends Controller
                         }
                     }
             }
-
-
-
-
         }
     }
 
@@ -315,8 +313,6 @@ class CheckListController extends Controller
 
             return response($check_list);
         }
-
-
     }
 
     public function sendAuthCheck(Request$request)

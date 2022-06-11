@@ -561,18 +561,6 @@
 @endsection
 
 @section('scripts')
-<script src="/js/jquery.iMissYou.min.js"></script>
-<script>
-$(document).ready(function(){
-    $.iMissYou({
-        title: "Вернись :(",
-        favicon: {
-            enabled: true,
-            src:'/IMissYouFavicon.ico'
-        }
-    });
-});
-</script>
 <script>
     $('#showPasswordInputs').click(function() {
         $('#pwdInputs').slideToggle();

@@ -2,7 +2,9 @@
 
 namespace App;
 
+//use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use DB;
 use Auth;
@@ -18,6 +20,7 @@ use App\Models\Admin\EditedSalary;
 
 class Salary extends Model
 {
+    use SoftDeletes;
     protected $table = 'salaries';
 
     protected $dates = ['date'];
@@ -449,6 +452,7 @@ class Salary extends Model
         }
 
         if($user_types == -1) {// one person
+
             $users->withTrashed();
         }
 

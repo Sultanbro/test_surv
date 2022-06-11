@@ -8,7 +8,8 @@ use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 
 class CustomUserProvider extends EloquentUserProvider
 {
-	public function validateCredentials(UserContract $user, array $credentials) {
+	public function validateCredentials($user, array $credentials) {
+		
 		$plain = $credentials['password'];
 
 		if(!$user->active_in_admin) {

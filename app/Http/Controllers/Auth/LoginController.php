@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
+
 class LoginController extends Controller
 {
     /*
@@ -91,9 +92,9 @@ class LoginController extends Controller
             'password' => $request->password,
         ];
         
-       
 
         if (\Auth::attempt($credentials)) {
+
             $request->session()->regenerate();
 
             if(request()->getHost() == config('app.name')) {
@@ -101,7 +102,6 @@ class LoginController extends Controller
             } else {
                 $link = $this->redirectTo;
             }
-
             return redirect($link);
         } else {
             return back()->withErrors([
