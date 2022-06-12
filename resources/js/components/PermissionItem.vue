@@ -18,7 +18,7 @@
     </div>
     <div class="groups">
         <multiselect 
-            ref="group_select"
+            ref="group_select" 
             v-model="item.groups"
             :options="local_groups"
             :multiple="true"

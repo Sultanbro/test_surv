@@ -10,7 +10,7 @@
       <div class="item d-flex contrast">
         <div class="person"></div>
         <div class="role">Роль</div>
-        <div class="groups">Отделы 
+        <div class="groups">Отделы  
               <i class="fa fa-info-circle ml-2" 
                 v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'" 
                 title="Доступ к отделам">

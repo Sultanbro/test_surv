@@ -21,6 +21,7 @@ import Vue from 'vue'
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
 
+
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 //import VueCoreVideoPlayer from 'vue-core-video-player';
@@ -60,6 +61,7 @@ Vue.use(VGauge);
 Vue.use(VueMask);
 Vue.use(Antd)
 Vue.use(Notifications)
+
 // Vue.use(VueCoreVideoPlayer)
 
 
@@ -170,22 +172,22 @@ Vue.component('bookgroups', require('./pages/bookgroups.vue').default); // об�
 Vue.component('check-list', require('./pages/checkList.vue').default); // чек лист
 
 
-
-// Vue.directive('click-outside', {
-//   bind () {
-//       this.event = event => this.vm.$emit(this.expression, event)
-//       this.el.addEventListener('click', this.stopProp)
-//       document.body.addEventListener('click', this.event)
-//   },   
-//   unbind() {
-//     this.el.removeEventListener('click', this.stopProp)
-//     document.body.removeEventListener('click', this.event)
-//   },
+ 
+Vue.directive("click-outside", {
+  bind(el, binding, vnode) {
+    el.clickOutsideEvent = (event) => {
+      if (!(el === event.target || el.contains(event.target))) {
+        vnode.context[binding.expression](event);
+      }
+    };
+    document.body.addEventListener("click", el.clickOutsideEvent);
+  },
+  unbind(el) {
+    document.body.removeEventListener("click", el.clickOutsideEvent);
+  },
 
 //   stopProp(event) { event.stopPropagation() }
-// });
-
-
+});
 
 const app = new Vue({
   el: '.right-panel-app'
