@@ -20,7 +20,7 @@ use App\Models\Admin\EditedSalary;
 
 class Salary extends Model
 {
-    use SoftDeletes;
+   // use SoftDeletes;
     protected $table = 'salaries';
 
     protected $dates = ['date'];

@@ -165,7 +165,7 @@ class SetAbsent extends Command
         }
     }
 
-    public function notify(User $targetUser, $group_name) {
+    public function notify($targetUser, $group_name) {
      
         $group_name = '(' . $group_name . ')';
         $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $targetUser->id;
