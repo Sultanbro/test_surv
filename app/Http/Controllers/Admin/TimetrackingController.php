@@ -515,7 +515,7 @@ class TimetrackingController extends Controller
 
     public function savegroup(Request $request)
     {
-        $pg = ProfileGroup::where('name', $request->group)->first();
+        $pg = ProfileGroup::where('name', $request->name)->first();
 
         if($pg) {
             return response()->json([
@@ -524,7 +524,7 @@ class TimetrackingController extends Controller
             ]);
         } else {
             $added = ProfileGroup::create([
-                'name' => $request->group,
+                'name' => $request->name,
             ]);
             return response()->json([
                 'status' => 1,
@@ -537,7 +537,7 @@ class TimetrackingController extends Controller
 
     public function deletegroup(Request $request)
     {
-        $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->first();
+        $group = ProfileGroup::where('id', $request->id)->first();
         $group->active = 0;
         $group->save();
         return 'true';
@@ -2326,7 +2326,7 @@ class TimetrackingController extends Controller
 
     public function restoreGroup(Request $request)
     {   
-        $group = ProfileGroup::where('name', 'like', '%' . $request->id . '%')->first();
+        $group = ProfileGroup::where('id', $request->id)->first();
        
         if($group) {
             $group->active = 1;
