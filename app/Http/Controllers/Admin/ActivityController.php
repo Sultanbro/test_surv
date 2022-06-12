@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-
 use Illuminate\Http\Request;
 use Auth;
 use DB;
@@ -18,6 +17,7 @@ use App\Http\Controllers\Controller;
 use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Ozon;
 use App\Models\Analytics\UserStat;
+use App\Imports\UserStatsImport;
 
 class ActivityController extends Controller
 {   
@@ -29,81 +29,39 @@ class ActivityController extends Controller
     }
 
     public function import(Request $request) {
-        $user = User::bitrixUser();
-        $uid = $user->id;
+        $user = auth()->user();
+        $group_id = $request->group_id;
 
         if ($request->isMethod('post') && $request->hasFile('file')) {
-            if ($request->file('file')->isValid()) {
-                $file = $request->file('file');
-                $file_name = $uid.'_'.time().'_'. $file->getClientOriginalName();
-                $file->move("files/import/tt/", $file_name);
-                $group_id = $request->group_id;
 
-                $file_path = public_path() . '/files/import/tt/' . $file_name;
-                $array_excel = [];
-                
-                $highestColumn = 0;
-                
-                //dd(get_class_methods('Excel'));
-                
-                $start_row = 1;
-                if($request->group_id == 58) {
-                    $start_row = 3;
-                }
-                config(['excel.import.startRow' => $start_row]);
+            // if ($request->file('file')->isValid()) 
 
-                //me($file_path);
-                $excel = Excel::load($file_path, function ($reader)  {
-                    $reader->calculate(false);
-                   // me(get_class_methods($reader));
-                })->get();
+            $import = new UserStatsImport;
+            Excel::import($import, $request->file('file'));
+          
+            $headings = $import->headings; // first row
+            $sheet = $import->data[0]; // first Sheet
 
-                if(!method_exists($excel, 'getHeading')) { //first shhett
-                    $excel = $excel->first();
-                } 
-               
+            // missing fiels
+            //$this->checkMissingFields();
+
                 $table_type = 'minutes'; // минуты
-                if(in_array('menedzher', $excel->getHeading())) {
-                    $table_type = 'gatherings';   // сборы      
-                } 
-                if(in_array('srednee_vremya_razgovora', $excel->getHeading())) {
-                    $table_type = 'avg_time';   // ср время разговора      
-                } 
+
+                if(in_array('Менеджер', $headings)) $table_type = 'gatherings';   // сборы  
+                if(in_array('cреднее время разговора', $headings)) $table_type = 'avg_time';   // ср время разговора      
               
- 
-                if($request->group_id != 42) {
-                    $missingFields = $this->getMissingFields($excel->getHeading());
-
-                    if(count($missingFields) > 0) {
-                        unlink($file_path);
-                        
-                        $str = 'Не хватает полей: ';
-                        foreach($missingFields as $field) {
-                            $str .= $field .', ';
-                        }
-
-                        return response()->json([
-                            'items' => [],
-                            'filename' => '',
-                            'users' => [],
-                            'date' => '',
-                            'errors' => [$str]
-                        ]);
-                    }
-                }
                
                 
+                // date
+                $excel_date = count($sheet) > 0 ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($sheet[0]['ДАТА']) : Carbon::now();
+                $date = $excel_date ? $excel_date->format('Y-m-d') : date('Y-m-d');
 
-                if($excel && array_key_exists('data', $excel[0])) {
-                    $date = Carbon::parse($excel[0]['data'])->format('Y-m-d');
-                } else {
-                    $date = date('Y-m-d');
-                }
-
+              
                 $items = [];
                 $gusers = $this->groupUsers($request->group_id);
 
-                foreach($excel as $row) {
+
+                foreach($sheet as $row) {
                     //me($row);
                     $item['group_id'] = $request->group_id;
                     $item['activity_id'] = $request->activity_id;
@@ -112,42 +70,31 @@ class ActivityController extends Controller
 
                        
                         if($table_type == 'minutes') {
-                   
-                            $item['name'] = $row['fio_sotrudnika'];
-                            $item['date'] = $row['data'] ? $row['data']->format('Y-m-d') : ''; 
-                            $item['data'] = $row['data'] ? $row['data']->format('d.m.Y') : '';
-                            $item['hours'] = $this->countHours($row['minuty']); 
-                            $item['id'] = $row['fio_sotrudnika'] ? $this->getPossibleUser($gusers, $row['fio_sotrudnika']) : 0;
+                            $item['name'] = $row['ФИО сотрудника'];
+                            if($item['name'] == null) continue;
+                            $excel_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['ДАТА']);
+                            $item['date'] = $excel_date ? Carbon::parse($excel_date)->format('Y-m-d') : ''; 
+                            $item['data'] = $excel_date ? Carbon::parse($excel_date)->format('d.m.Y') : '';
+                            $item['hours'] = $this->countHours($row['минуты']); 
+                            $item['id'] = $this->getPossibleUser($gusers, $item['name']);
                         } 
 
                         if($table_type == 'gatherings') {
-                            $item['name'] = $row['menedzher'];
-                            $item['gatherings'] = (int)$row['sborden_v_den'];
+                            $item['name'] = $row['Менеджер'];
+                            $item['gatherings'] = (int)$row['Сбор(день в день)'];
                             
-                            $item['id'] = $row['menedzher'] ? $this->getPossibleUser($gusers, $row['menedzher']) : 0;
+                            $item['id'] = $item['name'] ? $this->getPossibleUser($gusers, $item['name']) : 0;
                         } 
                         
                         if($table_type == 'avg_time') { 
-                            $item['name'] = $row['menedzher'];
-                            $item['avg_time'] = Carbon::parse($row['srednee_vremya_razgovora'])->format('i:s');
-                            $item['id'] = $row['menedzher'] ? $this->getPossibleUser($gusers, $row['menedzher']) : 0;
+                            $item['name'] = $row['Менеджер'];
+                            $item['avg_time'] = Carbon::parse($row['среднее время разговора'])->format('i:s');
+                            $item['id'] = $item['name'] ? $this->getPossibleUser($gusers, $item['name']) : 0;
                             if($row['menedzher'] == '') continue;
                         }
                         
                         
-                    } else { 
-                        $item['name'] = $row['fio'];
-                        $item['date'] = $row['data']->format('Y-m-d');
-                        $item['data'] = $row['data']->format('d.m.Y');
-                        $item['hours'] = $this->countHours($row['oplachivaemoe_vremya']); 
-                        $item['process_time'] = $this->countHours($row['vremya_obrabotki']); 
-                        $item['tickets'] = (int)$row['zakryto']; 
-                        $item['rr'] = number_format((float)$row['rr'] * 100, 2); 
-                        $item['avg_rating'] = number_format((float)$row['sredniy_reyting_mf_autsors'], 2);
-                        $item['id'] = $row['fio'] ? $this->getPossibleUser($gusers, $row['fio']) : 0;
-                    }
-                    
-                    
+                    } 
                     
                     array_push($items, $item);
                 }
@@ -164,6 +111,7 @@ class ActivityController extends Controller
                             $date = $item['date'];
                             $hours = $item['hours'];
 
+                            dump($name . ' ' . $hours);
                             if(!in_array($name, $users)) {
                                 array_push($users, $name);
                                 $sorted_users->push(collect($item));
@@ -189,12 +137,12 @@ class ActivityController extends Controller
                 ///me($items);
                 return response()->json([
                     'items' => $items,
-                    'filename' => $file_name,
+                    'filename' => '',
                     'users' => $gusers,
                     'date' => $date, 
                     'errors' => []
                 ]);
-            }
+            
         }
     }
 
@@ -378,10 +326,27 @@ class ActivityController extends Controller
             $users = array_unique($users);
         } 
 
-        $_users = User::whereIn('id', $users)->orderBy('last_name', 'asc')->get();
+        $_users = User::whereIn('id', $users)->orderBy('last_name', 'asc')->get(['id', 'last_name', 'name', 'email']);
         return $_users;
     }
 
+    private function checkMissingFields() {
 
+        if(count($missingFields) > 0) {
+                
+            $str = 'Не хватает полей: ';
+            foreach($missingFields as $field) {
+                $str .= $field .', ';
+            }
+
+            return response()->json([
+                'items' => [],
+                'filename' => '',
+                'users' => [],
+                'date' => '',
+                'errors' => [$str]
+            ]);
+        }
+    }
 
 }
