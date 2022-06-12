@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Admin\Bonus;
+use App\Imports\TimetrackingImport;
 
 class GroupsController extends Controller
 {   
@@ -132,77 +133,46 @@ class GroupsController extends Controller
     }
 
     public function import(Request $request) {
-        $user = User::bitrixUser();
-        $uid = $user->id;
-
+        $user = auth()->user();
+        $group_id = $request->group_id;
         
 
         if ($request->isMethod('post') && $request->hasFile('file')) {
-            if ($request->file('file')->isValid()) {
-                $file = $request->file('file');
-                $file_name = $uid.'_'.time().'_'. $file->getClientOriginalName();
-                $file->move("files/import/tt/", $file_name);
-                $group_id = $request->group_id;
 
-                $file_path = public_path() . '/files/import/tt/' . $file_name;
-                $array_excel = [];
+            //if ($request->file('file')->isValid()) {
+
+                $import = new TimetrackingImport;
+                Excel::import($import, $request->file('file'));
                 
-                $highestColumn = 0;
-                
-                //dd(get_class_methods('Excel'));
-                $excel = Excel::load($file_path, function ($reader)  {
-                    $reader->calculate(false);
-                })->get();
+                $headings = $import->headings; // first row
+                $sheet = $import->data[0]; // first Sheet
 
-                if(!method_exists($excel, 'getHeading')) { //first shhett
-                    $excel = $excel->first();
-                } 
+                //$missingFields = $this->getMissingFields($heading);
 
-                $heading = $excel->getHeading();
+                $date_field = 'Дата и время создания';
+             
+                $excel_date = count($sheet) > 0 ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($sheet[0][$date_field]) : Carbon::now();
+                $date = $excel_date ? $excel_date->format('Y-m-d') : date('Y-m-d');
 
-                $missingFields = $this->getMissingFields($heading);
-
-                if(count($missingFields) > 0) {
-                    unlink($file_path);
-                    
-                    $str = 'Не хватает полей: ';
-                    foreach($missingFields as $field) {
-                        $str .= $field .', ';
-                    }
-
-                    return response()->json([
-                        'items' => [],
-                        'filename' => '',
-                        'users' => [],
-                        'date' => '',
-                        'errors' => [$str]
-                    ]);
+                foreach($sheet as $key => $item) {
+                    $sheet[$key]['fullname'] = $item['Фамилия сотрудника'] . ' ' . $item['Имя сотрудника'];
                 }
 
+
                 
-                
-                if($excel) {
-                    $date = Carbon::parse($excel[0]['data_i_vremya_sozdaniya'])->format('Y-m-d');
-                    
-                } else {
-                    $date = date('Y-m-d');
+
+                $usernames = [];
+                foreach($sheet as $element) {
+                    $usernames[$element['fullname']][] = $element;
                 }
 
-                foreach($excel as $item) {
-                    
-                    $item->fullname = $item['familiya_sotrudnika'] . ' ' . $item['imya_sotrudnika'];
-                }
-
-                $usernames = $excel->groupBy('fullname');
-                
-                if($request->group_id == 35 || $request->group_id == 42) {
-                    $gusers = $this->groupUsers(35);
-                    $gusers2 = $this->groupUsers(42);
-                    $gusers = $gusers->merge($gusers2);
+                if($group_id == 42) {
+                    $gusers = $this->groupUsers(42);
                     $gusers = $gusers->sortBy('name');
                 }
                 
                 $items = [];
+                
                 
                 foreach($usernames as $username => $values) {
                     $item = [];
@@ -210,31 +180,25 @@ class GroupsController extends Controller
                     $item['id'] = 0;
                     $item['dinner'] = true;
 
-                    foreach($values as $val) {
-                        if(is_null($val['data_i_vremya_sozdaniya'])) continue;
-                        //if(!property_exists($val['data_i_vremya_sozdaniya'], timestamp)) continue;
-                        
                  
-                        
-                        
+                    foreach($values as $val) {
+                        if(is_null($val[$date_field])) continue;
+                  
                         try {
-                            if(is_object($val['data_i_vremya_sozdaniya'])) {
-                                $val['data_i_vremya_sozdaniya'] = $val['data_i_vremya_sozdaniya']->timestamp; 
-                            } else {
-                                $val['data_i_vremya_sozdaniya'] = Carbon::parse($val['data_i_vremya_sozdaniya'])->timestamp; 
-                            }
+                            $val[$date_field] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[$date_field])->getTimestamp(); 
                         } catch(\Exception $e) {
                             continue;
                         }
                     }
 
-                    $values = $values->sortBy('data_i_vremya_sozdaniya');
+                
+                    $values = collect($values)->sortBy($date_field);
 
                     $_fv = $values->first();
                     
                     if($_fv) {
                         
-                        $possible_user = $gusers->where('name' , $_fv['imya_sotrudnika'])->where('last_name',$_fv['familiya_sotrudnika'])->first();
+                        $possible_user = $gusers->where('name' , $_fv['Имя сотрудника'])->where('last_name',$_fv['Фамилия сотрудника'])->first();
                         
                         if($possible_user) {
                             $item['id'] = $possible_user->id;
@@ -254,22 +218,11 @@ class GroupsController extends Controller
                     
                     
                     foreach($values as $val) {
-                        if(is_null($val['data_i_vremya_sozdaniya'])) continue;
-                        $ts = $val['data_i_vremya_sozdaniya'];
-                                // if($item['id'] == 12793) {
-                                //     if($ts - $last_date == -27470) {
-
-                                //         dump($ts);
-                                //         dump($last_date);
-                                //         dump(Carbon::createFromTimestamp($ts));
-                                //         dump(Carbon::createFromTimestamp($last_date));
-                                //     }
-                                // }
-                      
-                       
+                        if(is_null($val[$date_field])) continue;
+                        $ts = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[$date_field])->getTimestamp();
 
                         try {
-                            $_duration = $val['dlitelnost_razgovora']->timestamp;
+                            $_duration = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val['Длительность разговора'])->getTimestamp();
                             $duration = date('H', $_duration) * 3600 + date('i', $_duration) * 60 + date('s', $_duration);
                         } catch(\Exception $e) {
                             $duration = 0;
@@ -280,26 +233,9 @@ class GroupsController extends Controller
                             
                             if($ts - $last_date - $last_duration > 930){ // Разница больше 15 минут без разговоров
                                 $hours +=  $latest - $earliest + $last_duration;
-                                // if($item['id'] == 13047) {
-                                //     dump($hours);
-                                // }
-
-                                //if($item['id'] == 4184) dump($hours / 3600);
-                                //if($item['id'] == 4184) dump(Carbon::createFromTimestamp($earliest)->format('H:i:s'));
-                                //if($item['id'] == 4184) dump(Carbon::createFromTimestamp($latest)->format('H:i:s'));
-
+                                
                                 $earliest = $ts;
                                 $latest = $ts;
-                            // dump('ts '. ($ts)); 
-                            // dump('last_date '. ($last_date)); 
-                            // dump('duration '. ($last_duration)); 
-                            // dump('вввв '. ($ts - $last_date - $last_duration)); 
-                            //dump('earliest '. date('Y-m-d H:i:s', $earliest)); 
-                                
-                              // dump('ts '. date('Y-m-d H:i:s', $ts));
-                                
-                              //  dump('last_date '. date('Y-m-d H:i:s', $last_date));
-                              // dump('hours '. $hours);
                             }
                         }
 
@@ -312,11 +248,9 @@ class GroupsController extends Controller
                         if($ts > $latest) $latest = $ts; 
                     }  
 
-                   // if($item['id'] == 4184) dump($hours / 3600);
-                   // if($item['id'] == 4184) dump(Carbon::createFromTimestamp($earliest)->format('H:i:s'));
-                   // if($item['id'] == 4184) dump(Carbon::createFromTimestamp($latest)->format('H:i:s'));
+                  
                     $hours +=  $latest - $earliest;
-                   // if($item['id'] == 4184) dump($hours / 3600);
+         
                     $diff = number_format($hours / 3600, 1);
 
                     if($diff > 11) $diff = 11;
@@ -330,43 +264,43 @@ class GroupsController extends Controller
                     
                 return response()->json([
                     'items' => $items,
-                    'filename' => $file_name,
+                    'filename' => '',
                     'users' => $gusers->values()->all(),
                     'date' => $date,
                     'errors' => []
                 ]);
-            }
+            
         }
     }
 
     private function getMissingFields(array $array_excel) {
         $missingFields = [
-            "imya_sotrudnika",
-            "familiya_sotrudnika",
-            "dlitelnost_razgovora",
-            "data_i_vremya_sozdaniya"
+            "Имя сотрудника",
+            "Фамилия сотрудника",
+            "Длительность разговора",
+            $date_field
         ];
 
         foreach($array_excel as $key => $value) {
-            if($value == 'familiya_sotrudnika') {
+            if($value == 'Фамилия сотрудника') {
                 if (($keyx = array_search($value, $missingFields)) !== false) {
                     unset($missingFields[$keyx]);
                 }
             }
 
-            if($value == 'imya_sotrudnika') {
+            if($value == 'Имя сотрудника') {
                 if (($keyx = array_search($value, $missingFields)) !== false) {
                     unset($missingFields[$keyx]);
                 }
             }
 
-            if($value == 'dlitelnost_razgovora') {
+            if($value == 'Длительность разговора') {
                 if (($keyx = array_search($value, $missingFields)) !== false) {
                     unset($missingFields[$keyx]);
                 }
             }
 
-            if($value == 'data_i_vremya_sozdaniya') {
+            if($value == $date_field) {
                 if (($keyx = array_search($value, $missingFields)) !== false) {
                     unset($missingFields[$keyx]);
                 }
