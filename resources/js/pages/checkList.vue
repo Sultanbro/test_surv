@@ -87,25 +87,22 @@
                       <div style="position: relative;border: 1px solid #dcdcdc" v-if="showModalCheck" >
                         <div class="gen-role-class" style="position: absolute" >
 
-                          <div class="div_role_1">
-                            <a class="role_1"  @click="selectedRoles('1')" >
-                              <i class="fas fa-chalkboard-teacher role_icon_false">  </i>
-                            </a>
 
-<!--                            <a style="padding: 17px 20px 15px 20px; border: 1px solid red;display: block">-->
-<!--                              Группа-->
-<!--                            </a>-->
+                          <a  :class="selectedRole.role_1 ? 'role_1_this' : 'role_1'"    @click="selectedRoles('1')" >
+                            <i class="fas fa-chalkboard-teacher role_icon_false">  </i>
+                          </a>
 
-                          </div>
 
-                          <a class="role_2" @click="selectedRoles('2')">
-
+                          <a :class="selectedRole.role_2 ? 'role_2_this' : 'role_2'"  @click="selectedRoles('2')">
                             <i class="fas fa-chalkboard-teacher role_icon_false"></i>
                           </a>
-                          <a class="role_3" @click="selectedRoles('3')" >
+
+                          <a :class="selectedRole.role_3 ? 'role_3_this' : 'role_3'"  class="role_3" @click="selectedRoles('3')" >
 
                             <i class="fas fa-chalkboard-teacher role_icon_false" ></i>
                           </a>
+
+
                         </div>
                         <div class="popupShowSelected">
                           <div v-if="selectedRole.role_1" >
@@ -143,7 +140,7 @@
 
 
                       <div id="selected-block-array"  class="selected-block-array" @click="showModalCheck = true">
-                        <a v-if="placeholderSelect" style="color: #abb1b8;" >Отделы/Сотрудники</a>
+                        <a href="#" v-if="placeholderSelect" style="color: #abb1b8;" >Отделы/Сотрудники</a>
                           <div class="addElement"  v-for="(item,i) in allValueArray"   >
                             <a class="elementHoverList">
                               <span> {{ item.text }} </span>
@@ -339,6 +336,7 @@
         },
         mounted() {
           this.positions_arr = this.positions;
+
           if (Object.keys(JSON.parse(this.groups)).length > 0) {
             this.groups_arr = JSON.parse(this.groups);
             const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
@@ -353,6 +351,7 @@
           if (Object.keys(this.positions_arr).length > 0) {
             // this.groups_arr = JSON.parse(this.positions_arr);
 
+            console.log(this.positions_arr,'0998898989')
             const arrayFailedGr = Object.entries(this.positions_arr).map((arr) => ({
               code: arr[0],
               name: arr[1],
@@ -363,6 +362,9 @@
           }
 
           if (this.allusers.length > 0) {
+
+            console.log(this.allusers,'users');
+
             for (let i = 0; i < this.allusers.length; i++) {
               if (this.allusers[i]['name'].length > 1) {
                 this.allusers_arr[i] = {
@@ -385,7 +387,7 @@
 
 
 
-          addResponsibility(email){
+            addResponsibility(email){
             this.responsibility.inputText = null;
             this.responsibility.inputText = email;
             this.responsibility.result_text = false;
@@ -393,14 +395,13 @@
 
 
           },
-          viewCheckList(){
-            axios.get('/timetracking/settings/list/check', {
-            }).then(response => {
-              this.arrCheckLists = response.data
-            })
-          },
-
-          fetchResponsibility() {
+            viewCheckList(){
+              axios.get('/timetracking/settings/list/check', {
+              }).then(response => {
+                this.arrCheckLists = response.data
+              })
+            },
+            fetchResponsibility() {
 
 
 
@@ -415,20 +416,6 @@
 
 
            },
-
-
-
-
-            // highlight(text) {
-            //   return text.replace(new RegExp(this.keywords, 'gi'), '<span class="highlighted">$&</span>');
-            // },
-
-          // onUpdateSalary(someData) {
-            //     this.valueGroups = someData['valueGroups'];
-            //     this.valuePositions = someData['valuePositions'];
-            //     this.valueUsers = someData['valueUsers'];
-            //     // Выполняем необходимые действия с `someData`
-            // },
             highlightMatches(text) {
             const matchExists = text.toLowerCase().includes(this.filter.toLowerCase());
             if (!matchExists) return text;
@@ -563,6 +550,9 @@
 
                 if (this.errors.save){
                     axios.post('/timetracking/settings/add/check', {
+                      before: () => {
+                        alert('asdasd')
+                      },
                         allValueArray:this.allValueArray,
                         countView:this.countView,
                         arrCheckInput:this.arrCheckInput,
@@ -799,6 +789,9 @@
 
 <style lang="scss" scoped>
 
+  .isActiveRole{
+    background-color: #2fc6f6;
+  }
 
   .resultR{
     border: 1px solid #dee2e6;
@@ -1035,18 +1028,21 @@
       border-bottom-left-radius: 100%;
       position: absolute;
       cursor: pointer;
-
-      /*background-color: #2fc6f6;*/
-
-      /*padding: 9px 110px 15px 20px;*/
-      /*background-color: #2fc6f6;*/
-      /*margin-left: -150px;*/
-      /*border-top-left-radius: 30%;*/
-      /*border-bottom-left-radius: 30%;*/
-      /*position: absolute;*/
-      /*cursor: pointer;*/
-
     }
+  .role_1_this{
+      padding: 17px 20px 15px 20px;
+      background-color: #2fc6f6;;
+      color: white;
+      margin-left: -66px;
+      border-top-left-radius: 100%;
+      border-bottom-left-radius: 100%;
+      position: absolute;
+      cursor: pointer;
+    }
+
+  .role_1_this > i{
+      color: white;
+  }
 
     .role_2{
       padding: 16px 20px 17px 20px;
@@ -1059,6 +1055,22 @@
       cursor: pointer;
 
     }
+  .role_2_this{
+      padding: 16px 20px 17px 20px;
+      background-color: #2fc6f6;;
+      margin-left: -66px;
+       color: white;
+      border-top-left-radius: 100%;
+      border-bottom-left-radius: 100%;
+      top: 77px;
+      position: relative;
+      cursor: pointer;
+
+    }
+
+  .role_2_this i{
+    color: white;
+  }
 
     .role_3{
       padding: 20px 20px 15px 20px;
@@ -1071,7 +1083,21 @@
       cursor: pointer;
 
     }
+  .role_3_this{
+      padding: 20px 20px 15px 20px;
+      background-color: #2fc6f6;;
+      margin-left: -68px;
+       color: white;
+      border-top-left-radius: 100%;
+      border-bottom-left-radius: 100%;
+      top: 140px;
+      position: relative;
+      cursor: pointer;
+    }
 
+  .role_3_this i {
+  color: white;
+  }
     .role_icon_false{
       font-size: 20px;
       color: #abb1b8;

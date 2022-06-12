@@ -2,6 +2,9 @@
 @section('title', 'Настройка кабинета')
 @section('content')
 
-<cabinet />
+
+
+
+<cabinet authRole::{{ 'admin' }} />
 
 @endsection
