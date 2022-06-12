@@ -18,6 +18,17 @@ class CheckListController extends Controller
 {
 
 
+    public function responsibility(Request $request){
+        $valueUser = $request['search'];
+
+        $resultsUser = User::where('email','like', "%$valueUser%")->select('id','email')
+            ->get()->toArray();
+
+
+        return $resultsUser;
+
+    }
+
     public function store(Request $request,$edit = null){
 
 
