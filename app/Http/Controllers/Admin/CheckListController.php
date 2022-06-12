@@ -197,6 +197,7 @@ class CheckListController extends Controller
 
         if (!empty($request['allValueArray'])){
 
+
            if (count($request['allValueArray']) > 1){
                foreach ($request['allValueArray'] as $keys =>$allValueArray){
                    if ($request['valueFindGr'] != $allValueArray['code']){
@@ -208,6 +209,8 @@ class CheckListController extends Controller
                $this->store($request,$newArrays);
            }
            if (!empty($request['valueFindGr'])){
+
+
 
                $findArray = CheckList::find($request['check_id']);
                $findArray->auth_id = auth()->user()->id;
