@@ -3,12 +3,15 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
-use App\Models\Books\BookGroup;
+use Spatie\Permission\Traits\HasRoles;
 
 class Position extends Model
 {
+    use HasRoles;
+    
     public $timestamps = true;
+
+    protected $guard_name = 'web';
 
     protected $table = 'position';
 
@@ -19,13 +22,5 @@ class Position extends Model
         'sum', // Сумма
     ];
 
-
-    public static function getPositionsArray() {
-        $query = Position::all();
-        $positions = [];
-        foreach($query as $position) {
-            array_push($positions, $position->position); 
-        }
-        return $positions;
-    }
+    
 }

@@ -23,29 +23,11 @@ use Spatie\Permission\Models\Permission;
 class TestController extends Controller { 
  
 	public function test() {
+        $gr = \App\ProfileGroup::with('roles')->find(23);
 
-
-        $users = User::find(1);
-        $users['password'] = \Hash::make('12345');
-        $users->save();
-
-        dd($users);
-
-        $users = \auth()->user();
-
-        dd($users);
-
-        $users = User::whereNull('name')->whereNull('last_name')->get();
-
-		$uds = UserDescription::whereIn('user_id', $users->pluck('id')->toArray())->get();
-		foreach ($uds as $key => $ud) {
-			$ud->is_trainee = 1;
-			$ud->save();
-		}
-		//dd($uds);
-//         \Hash::make('12345');
-//        $user->save();
-        //\Auth::login($user);
+		$role = Role::find(7);
+		$gr->removeRole($role->name);
+        dd($gr);
 
 	}  
 

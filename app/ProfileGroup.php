@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\User;
 use Carbon\Carbon;
+use Spatie\Permission\Traits\HasRoles;
 
 class ProfileGroup extends Model
 {
+    use HasRoles;
+
     protected $table = 'profile_groups';
 
+    protected $guard_name = 'web';
+    
     public $timestamps = true;
 
     protected $casts = [
