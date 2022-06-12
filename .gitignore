@@ -6,6 +6,7 @@
 /public/static/uploads
 /public/test.php
 /public/images/bookcovers
+/public/js/app.js
 /public/css/admin/app.css
 /public/users/
 /public/storage
@@ -31,5 +32,5 @@ composer.lock
 /config/database.php
 /.htaccess
 /public/.htaccess
-/public/css/.app.css
-/public/js/.app.js
+/public/js/app.js
+/public/css/app.css

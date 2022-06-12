@@ -76,7 +76,6 @@
                 :open="showCheckSideBar"
                 @close="showCheckSideBar = false"
                 width="65%">
-
             <div class="col-md-12 p-0">
                 <div class="col-12 p-0">
                   <div class="row">
@@ -85,17 +84,17 @@
                     </div>
                     <div class="col-md-4 p-0">
 
-                      <div style="position: relative;border: 1px solid #dcdcdc">
+                      <div style="position: relative;border: 1px solid #dcdcdc" v-if="showModalCheck" >
                         <div class="gen-role-class" style="position: absolute" >
 
-                          <div class="div_role_1" style="position:relative;margin-left: -90px">
+                          <div class="div_role_1">
                             <a class="role_1"  @click="selectedRoles('1')" >
                               <i class="fas fa-chalkboard-teacher role_icon_false">  </i>
                             </a>
 
-                            <a style="padding: 17px 20px 15px 20px; border: 1px solid red;display: block">
-                              Группа
-                            </a>
+<!--                            <a style="padding: 17px 20px 15px 20px; border: 1px solid red;display: block">-->
+<!--                              Группа-->
+<!--                            </a>-->
 
                           </div>
 
@@ -108,7 +107,6 @@
                             <i class="fas fa-chalkboard-teacher role_icon_false" ></i>
                           </a>
                         </div>
-
                         <div class="popupShowSelected">
                           <div v-if="selectedRole.role_1" >
                             <p class="list-role"  v-for="item in  groups_arr">
@@ -144,8 +142,8 @@
 
 
 
-                      <div id="selected-block-array"  class="selected-block-array" >
-                        <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
+                      <div id="selected-block-array"  class="selected-block-array" @click="showModalCheck = true">
+                        <a v-if="placeholderSelect" style="color: #abb1b8;" >Отделы/Сотрудники</a>
                           <div class="addElement"  v-for="(item,i) in allValueArray"   >
                             <a class="elementHoverList">
                               <span> {{ item.text }} </span>
@@ -154,6 +152,44 @@
                               </div>
                             </a>
                           </div>
+                      </div>
+
+                      <div class="responsibility" v-if="responsibility.block">
+
+                          <span v-if="responsibility.input === false">
+                              +
+                          </span>
+                          <span style="padding: 0px 12px 0px 12px;top: 2px" v-else>
+                              -
+                          </span>
+
+
+                          <a href="#" v-if="responsibility.input === false"  @click="responsibility.input = true" >
+                                Добавить ответственного лица
+                          </a>
+
+                          <a href="#"  v-if="responsibility.input === true"  @click="responsibility.input = false" >
+                                Скрыть ответственного лица
+                          </a>
+
+
+                        <input v-if="responsibility.input" v-model="responsibility.inputText"
+                               @keyup="fetchResponsibility()"  style="position:absolute;" class="form-control responsibility-input"  placeholder="Email Ответственного лица" name="responsibility">
+                      </div>
+                      <div class="resultR" v-if="responsibility.result_text">
+                           <ul class="p-0" v-if="responsibility.results.length > 0">
+
+                             <li class="responsibilityLi" v-for="results in responsibility.results">
+                               <a @click.pr.prevent="addResponsibility(results.email)">
+                                 {{results.email}}
+                               </a>
+                             </li>
+                           </ul>
+                           <ul v-else class="p-0">
+                             <li class="responsibilityLi">
+                               <a>Нет Найденных Ответсвенных лиц</a>
+                             </li>
+                           </ul>
                       </div>
 
                     </div>
@@ -273,7 +309,14 @@
                   role_2:false,
                   role_3:false,
                 },
-
+                responsibility:{
+                    block:false,
+                    input:false,
+                    inputText:null,
+                    results: [],
+                    result_text : false,
+                },
+                showModalCheck : false,
 
 
             }
@@ -287,18 +330,12 @@
               const searchTerm = this.filter.toLowerCase();
 
               return ( title.includes(searchTerm) || authLastName.includes(searchTerm) )
-
             });
           }
         },
-
         created(){
-
-
             this.viewCheckList()
             this.addCheckList()
-
-
         },
         mounted() {
           this.positions_arr = this.positions;
@@ -324,7 +361,8 @@
             }));
             this.positions_arr = arrayFailedGr
           }
-          if (this.allusers) {
+
+          if (this.allusers.length > 0) {
             for (let i = 0; i < this.allusers.length; i++) {
               if (this.allusers[i]['name'].length > 1) {
                 this.allusers_arr[i] = {
@@ -337,12 +375,24 @@
             }
           }
 
-          console.log(this.allusers,'07777')
+          console.log(this.allusers,'07777',this.allusers_arr,'usersssss')
 
         },
 
         methods:{
 
+
+
+
+
+          addResponsibility(email){
+            this.responsibility.inputText = null;
+            this.responsibility.inputText = email;
+            this.responsibility.result_text = false;
+
+
+
+          },
           viewCheckList(){
             axios.get('/timetracking/settings/list/check', {
             }).then(response => {
@@ -350,7 +400,28 @@
             })
           },
 
+          fetchResponsibility() {
 
+
+
+            axios.post('/timetracking/settings/auth/check/user/responsibility', {
+              search:this.responsibility.inputText,
+            }).then(response => {
+              this.responsibility.results = response.data
+              this.responsibility.result_text = true;
+
+
+            })
+
+
+           },
+
+
+
+
+            // highlight(text) {
+            //   return text.replace(new RegExp(this.keywords, 'gi'), '<span class="highlighted">$&</span>');
+            // },
 
           // onUpdateSalary(someData) {
             //     this.valueGroups = someData['valueGroups'];
@@ -358,7 +429,7 @@
             //     this.valueUsers = someData['valueUsers'];
             //     // Выполняем необходимые действия с `someData`
             // },
-          highlightMatches(text) {
+            highlightMatches(text) {
             const matchExists = text.toLowerCase().includes(this.filter.toLowerCase());
             if (!matchExists) return text;
 
@@ -366,6 +437,7 @@
             return text.replace(re, matchedText => `<strong style="color: #80b7ff">${matchedText}</strong>`);
           },
             addNewCheckModalShow(){
+                this.showModalCheck = false,
                 this.showCheckSideBar = true
                 this.addButton = true
                 this.editButton = false
@@ -420,9 +492,6 @@
             editCheck(check_id,type){
 
 
-
-
-
                 this.addButton = false
                 this.editButton = true
                 this.showCheckSideBar = true
@@ -435,10 +504,7 @@
                 }).then(response => {
 
 
-
-
                     this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
-
 
                     this.editValueThis = response.data;
                     this.valueFindGr = response.data.item_id;
@@ -618,6 +684,9 @@
             addDivBlock(item,id,type,edit = null){
               this.flag_type = true;
               this.placeholderSelect = false;
+              this.responsibility.block = true;
+
+
 
               if (edit == 'edit'){
                 this.allValueArray = [];
@@ -674,6 +743,8 @@
 
               if (this.allValueArray.length == 0){
                 this.placeholderSelect = true;
+                this.responsibility.block = false;
+                this.responsibility.input = false;
               }
 
               for (var i = 0; i < this.groups_arr.length;i++){
@@ -700,25 +771,86 @@
 
           },
             refreshArray(){
+
+              if (this.groups_arr.length > 0){
                 for (var i = 0; i < this.groups_arr.length;i++){
-                    this.groups_arr[i]['checked'] = false
+                  this.groups_arr[i]['checked'] = false
                 }
+              }
+
+              if (this.positions_arr.length > 0){
                 for (var i = 0; i < this.positions_arr.length;i++){
-                    this.positions_arr[i]['checked'] = false
+                  this.positions_arr[i]['checked'] = false
                 }
+              }
+
+              if (this.allusers_arr.length > 0){
                 for (var i = 0; i < this.allusers_arr.length;i++){
-                    this.allusers_arr[i]['checked'] = false
+                  this.allusers_arr[i]['checked'] = false
                 }
+              }
+
 
             }
         },
 
     }
-
-
 </script>
 
 <style lang="scss" scoped>
+
+
+  .resultR{
+    border: 1px solid #dee2e6;
+    max-height: 100px;
+    display: block;
+    overflow-x: hidden;
+    margin-top: 30px;
+  }
+
+
+   .responsibilityLi > a{
+     display: block;
+     padding: 0px 15px;
+     background-color: #f1f1f1;
+     border: 1px solid white;
+   }
+
+   .responsibilityLi  a:hover{
+     padding: 0px 15px;
+     background-color: #67dfef;
+   }
+
+   .responsibility{
+     height: 40px;
+     background-color: #e0f6fe;
+     position: relative;
+   }
+
+   .responsibility input{
+     margin-top: 40px;
+
+   }
+
+   .responsibility span{
+     font-size: 20px;
+     font-weight: bold;
+     background-color: #abb1b8;
+     padding-left: 10px;
+     padding-right: 10px;
+     border-radius: 20px;
+     margin-left: 12px;
+     position: absolute;
+     top: 3px;
+     color: white;
+   }
+
+   .responsibility a {
+     margin-left: 55px;
+     /* margin-top: -4px; */
+     position: absolute;
+     top: 5px;
+   }
 
    .div_role_1{
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.2"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>@yield('title') - </title>
+    <title>@yield('title')</title>
     <meta name="description" content="Mediasend.kz Управление">
     <meta name="viewport" content="width=800, initial-scale=0.26">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -61,6 +61,8 @@
 
 
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
+
+@if(auth()->user() && !in_array(auth()->id(), [5,4444]))
 <script src="/js/jquery.iMissYou.min.js"></script>
 <script>
 $(document).ready(function(){
@@ -73,6 +75,7 @@ $(document).ready(function(){
     });
 });
 </script>
+@endif
 <!-- 
 <script src="js/jquery-1.11.2.min.js"></script> -->
   
