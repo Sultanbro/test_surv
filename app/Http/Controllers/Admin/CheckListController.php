@@ -33,13 +33,13 @@ class CheckListController extends Controller
 
 
 
-
+    
         if ($edit != null){
             $request = $edit;
         }
 
         if ($request['countView'] < 11 && $request['countView'] != 0){
-
+        
             if (isset($request['allValueArray'])){
 
 
@@ -50,7 +50,7 @@ class CheckListController extends Controller
                     }
                 }
 
-
+              
                 foreach ($request['allValueArray'] as $allValueArray){
                         if ($allValueArray['type'] == 1){
                             $profileGroups = ProfileGroup::on()->find($allValueArray['code']);
@@ -205,8 +205,9 @@ class CheckListController extends Controller
         return response($check_list);
     }
 
-    public function editSaveCheck(Request$request){
+    public function editSaveCheck(Request $request){
 
+       
         if (!empty($request['allValueArray'])){
 
 
@@ -302,8 +303,7 @@ class CheckListController extends Controller
            }
         }
 
-
-
+   
 
     }
 

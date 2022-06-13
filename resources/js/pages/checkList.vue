@@ -124,11 +124,11 @@
                                 <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
                               </a>
                             </p>
-                          </div>
+                          </div> 
 
                           <div v-if="selectedRole.role_3">
                             <p class="list-role"  v-for="item in   allusers_arr">
-                              <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
+                              <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex" v-if=" item != undefined ">
                                 <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
                                 <span style="margin-top: 5px; margin-left:15px;">{{ item.last_name}} {{ item.name}}</span>
                                 <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
@@ -340,8 +340,8 @@
         },
         mounted() {
           this.positions_arr = this.positions;
-          if (Object.keys(JSON.parse(this.groups)).length > 0) {
-            this.groups_arr = JSON.parse(this.groups);
+          if (Object.keys(this.groups).length > 0) {
+            this.groups_arr = this.groups;
             const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
               code: arr[0],
               name: arr[1],
@@ -372,7 +372,7 @@
                 console.log(this.allusers,'before Users')
                 if (this.allusers.length > 0) {
                   for (let i = 0; i < this.allusers.length; i++) {
-                    if (this.allusers[i]['name'].length > 1) {
+                    if (this.allusers[i]['name'] != null && this.allusers[i]['name'].length > 1) {
                       this.allusers_arr[i] = {
                         name: this.allusers[i]['name'] + '  ' + this.allusers[i]['last_name'],
                         code: this.allusers[i]['id'],
@@ -751,12 +751,18 @@
                   this.positions_arr[i]['checked'] = false
                 }
               }
-
-              for (var i = 0; i < this.allusers_arr.length;i++){
-                if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
-                  this.allusers_arr[i]['checked'] = false
+              
+              this.allusers_arr.forEach(el => {
+                if (el['type'] == type && el['code'] == code){
+                  el['checked'] = false
                 }
-              }
+              });
+
+              // for (var i = 0; i < this.allusers_arr.length;i++){
+              //   if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
+              //     this.allusers_arr[i]['checked'] = false
+              //   }
+              // }
 
 
 
@@ -776,12 +782,16 @@
                   this.positions_arr[i]['checked'] = false
                 }
               }
+  
 
-              if (this.allusers_arr.length > 0){
-                for (var i = 0; i < this.allusers_arr.length;i++){
-                  this.allusers_arr[i]['checked'] = false
-                }
-              }
+              this.allusers_arr.forEach(el => {
+                el['checked'] = false
+              });
+              // if (this.allusers_arr.length > 0){
+              //   for (var i = 0; i < this.allusers_arr.length;i++){
+              //     this.allusers_arr[i]['checked'] = false
+              //   }
+              // }
 
 
             }
