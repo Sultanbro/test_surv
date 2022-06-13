@@ -162,21 +162,8 @@ class PermissionController extends Controller
     
     private function getPages()
     {
-        return [
-            ['key' => 'top', 'name' =>  'ТОП'],
-            ['key' => 'hr','name'=> 'HR'],
-            ['key' => 'analytics','name'=> 'Аналитика'],
-            ['key' => 'tabel','name'=> 'Табель'],
-            ['key' => 'entertime','name'=> 'Время прихода'],
-            ['key' => 'salaries','name'=> 'Начисления'],
-            ['key' => 'quality','name'=> 'Контроль качества'],
-            ['key' => 'settings','name'=> 'Настройки'],
-            ['key' => 'users','name'=> 'Сотрудники'],
-            ['key' => 'courses','name'=> 'Курсы'],
-            ['key' => 'books','name'=> 'Книги'],
-            ['key' => 'videos','name'=> 'Видеокурсы'],
-            ['key' => 'kb','name'=> 'База знаний'],
-        ];
+        $pages = \App\Models\Page::get();
+        return $pages;
     }
 
     /**

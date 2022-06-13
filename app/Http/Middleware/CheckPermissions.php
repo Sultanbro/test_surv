@@ -45,7 +45,8 @@ class CheckPermissions
        
         $new_roles = array_diff($roles, $has_roles);
         $new_roles = array_values($new_roles);
-        $roles = Role::whereIn('id', array_unique($new_roles))->get(['name'])->pluck('name')->toArray();
+
+        $roles = Role::whereIn('id', array_unique($has_roles))->get(['name'])->pluck('name')->toArray();
 
         // $user = User::find(auth()->id());
         //dd($roles);
@@ -55,10 +56,12 @@ class CheckPermissions
         // foreach ($roles as $key => $role) {
         //     auth()->user()->assignRole($role);
         // }
+            
+        auth()->user()->assignRole($roles);
+        auth()->user()->assignRole($new_roles); 
 
-        auth()->user()->syncRoles($roles);
-        
-
+        // dd($roles);
+        //    dd(auth()->user()->can('quality_view'));
         return $next($request);
     }
 }
