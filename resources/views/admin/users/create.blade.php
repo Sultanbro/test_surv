@@ -2,6 +2,7 @@
 @section('title', 'Сотрудник')
 @section('content')
 
+
 <div class="user-page">
     <div class="mt-3">
         <div class="col-md-12 d-flex justify-content-between align-items-start">
@@ -157,10 +158,14 @@
                                                 value="{{ $user->bitrix_id }}"
                                                 name="bitrix_id"
                                                 placeholder="ID профиля в битриксе">
+                                             <profile-kpi-button :user_id="{{ $user->id }}"/>
 
+                                            <div class="">
 
-                                            
-                               <profile-kpi-button :user_id="{{ $user->id }}"/>
+                                                <ul>
+                                                    <li><a href="#">Основный данный</a></li>
+                                                </ul>
+                                            </div>
 
 
 
