@@ -28,6 +28,9 @@ class Kaztel
             141, // Минуты
             0, // Оценка диалога
             137, // Согласия
+            134, // Количество диалогов от 10 секунд
+            131, // OKK
+            136, //Конверсия (согласия/закрытые лиды)
         ],
     ];
 
@@ -47,6 +50,8 @@ class Kaztel
     CONST S_INCORRECT_DIALOGS = 10; // Кол-во некоррект диалогов
     CONST S_LOST_CALLS = 11; // Потерянные звонки
     CONST S_CLOSED_CARDS = 12; // Закрыто карт
+    CONST S_TEN_SEC = 13; // 10 СЕКУНД
+    CONST S_OKK = 14; // OKK
 
     
     public static function defaultSummaryTable() {
@@ -72,6 +77,8 @@ class Kaztel
             self::S_MINUTES => [],
             self::S_OPERATORS => [],
             self::S_AGGREES => [],
+            self::S_TEN_SEC => [],
+            self::S_AVG_CONVERSION => []
         ];
 
         $asis = [
@@ -85,7 +92,24 @@ class Kaztel
                     'group_id' => $group_id,
                     'type' => self::ACTIVITIES[$group_id][2], // согласия
                 ])->get(),
+            self::S_AVG_CONVERSION =>  ASI::where([
+                    'date' => $date->startOfMonth()->format('Y-m-d'),
+                    'group_id' => $group_id,
+                    'type' => self::ACTIVITIES[$group_id][5], // CONVERSIONS
+                ])->get(),
+            self::S_TEN_SEC =>  ASI::where([
+                    'date' => $date->startOfMonth()->format('Y-m-d'),
+                    'group_id' => $group_id,
+                    'type' => self::ACTIVITIES[$group_id][3], // Количество диалогов от 10 секунд
+                ])->get(),
+            self::S_OKK =>  ASI::where([
+                    'date' => $date->startOfMonth()->format('Y-m-d'),
+                    'group_id' => $group_id,
+                    'type' => self::ACTIVITIES[$group_id][4], // Количество диалогов от 10 секунд
+                ])->get(),
         ];
+
+
 
 
         for($i = 1; $i <= $date->daysInMonth; $i++) {
@@ -135,6 +159,30 @@ class Kaztel
                     $arr[self::S_AGGREES][$i] += $data[$i];
                 }
             }
+        }
+
+        for($i = 1; $i <= $date->daysInMonth; $i++) {
+            $arr[self::S_TEN_SEC][$i] = 0;
+            foreach($asis[self::S_TEN_SEC] as $asi) {
+                
+                $data = json_decode($asi->data, true);
+                if(array_key_exists($i, $data)) {
+                    $arr[self::S_TEN_SEC][$i] += $data[$i];
+                }
+            }
+            
+        }
+
+        for($i = 1; $i <= $date->daysInMonth; $i++) {
+            $arr[self::S_AVG_CONVERSION][$i] = 0;
+            foreach($asis[self::S_AVG_CONVERSION] as $asi) {
+                
+                $data = json_decode($asi->data, true);
+                if(array_key_exists($i, $data)) {
+                    $arr[self::S_AVG_CONVERSION][$i] += $data[$i];
+                }
+            }
+            
         }
         
         // for($i = 1; $i <= $date->daysInMonth; $i++) {
