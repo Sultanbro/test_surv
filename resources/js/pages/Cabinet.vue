@@ -2,26 +2,34 @@
 <div class="d-flex">
   <div class="lp">
     <h1 class="page-title">Настройка кабинета</h1>
-    
- 
 
-   
+    <div class="settingCabinet">
+      <ul class="p-0">
+        <li>
+          <a  @click="userRoles = true">Административные настройки</a>
+          <a href="/timetracking/edit-person?id=1" @click="userRoles = false" target="_blank">Настройка профиля</a>
+        </li>
+      </ul>
+    </div>
+
+
+
   </div>
 
 
-  <div class="rp" style="flex: 1 1 0%;">
+  <div class="rp" style="flex: 1 1 0%;" v-if="userRoles">
     <div class="hat">
       <div class="d-flex jsutify-content-between hat-top">
         <div class="bc">
           <a href="#">Настройка кабинета</a>
-           
+
         </div>
-        <div class="control-btns"></div> 
+        <div class="control-btns"></div>
       </div>
     </div>
     <div class="content mt-3 py-3">
 
-      
+
         <div class="p-3">
           <div class="form-group">
             Субдомен
@@ -57,22 +65,29 @@
           <div class="mt-3">
             <button class="btn btn-success" @click="save">Сохранить</button>
           </div>
-      
 
-  
+
+
 
 
       </div>
     </div>
   </div>
 
- 
+
+
+
 
 </div>
 </template>
 <script>
+
+
 export default {
   name: "Cabinet",
+  props: {
+    authRole:'kkikikik'
+  },
   data() {
     return {
       test: 'dsa',
@@ -80,12 +95,20 @@ export default {
       users: [],
       admins: [],
       activeCourse: null,
+      userRoles:false,
     };
   },
   created() {
     this.fetchData();
   },
-  mounted() {},
+  mounted() {
+
+    // this.userRoles = this.authRole;
+    // this.userRoles = JSON.parse(this.authRole);
+
+    // console.log(this.userRoles,'mounted')
+    // console.log(this.authRole,'mounted')
+  },
   methods: {
     addTag(newTag) {
       console.log(newTag)

@@ -15,7 +15,9 @@ class CabinetController extends Controller
         View::share('menu', 'cabinet');
         View::share('link', 'cabinet');
 
-        return view('cabinet');
+        $getRole = auth()->user();
+
+        return view('cabinet',compact('getRole'));
     }
 
     public function get()
@@ -27,10 +29,10 @@ class CabinetController extends Controller
         $users = User::withTrashed()->get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
 
         foreach($users as $user) {
-            if($user->email == '') $user->email = 'x'; 
+            if($user->email == '') $user->email = 'x';
         }
 
-      
+
         $admins = User::withTrashed()
             ->where('is_admin', 1)
             ->get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
@@ -64,6 +66,9 @@ class CabinetController extends Controller
                 $admin->save();
             }
         }
-        
+
     }
+
+
+
 }

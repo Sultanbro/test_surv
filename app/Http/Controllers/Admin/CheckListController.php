@@ -175,6 +175,7 @@ class CheckListController extends Controller
         $check_reports_save['day'] = date('d');
         $check_reports_save['count_check'] = count($request['arrCheckInput']);
         $check_reports_save['count_check_auth'] = 0;
+        $check_reports_save['checked'] = json_encode($request['arrCheckInput']);;
         $check_reports_save['item_type'] = $type;
         $check_reports_save['item_id'] = $profileGroups['id'] ?? $profileGroups->id;
         $check_reports_save->save();
@@ -313,14 +314,37 @@ class CheckListController extends Controller
 
         if (!empty($request['auth_check'])){
             foreach (json_decode($request['auth_check']) as $key => $arrCheckInput){
-
-
                 $check_list['checklist'][$key] = CheckList::on()->where('id',$arrCheckInput->check_list_id)->get()->toArray();
-                $check_list['check'][$key] = CheckReports::find($arrCheckInput->check_reports_id);
+//                $check_list['check'][$key] = CheckReports::find($arrCheckInput->check_reports_id);
+
+
+                $check_list['check_day'][$key] = CheckReports::on()
+                    ->where('item_type',$check_list['checklist'][$key][0]['item_type'])
+                    ->where('item_id',$check_list['checklist'][$key][0]['item_id'])
+                    ->where('check_id',$check_list['checklist'][$key][0]['id'])
+                    ->where('year',date('Y'))
+                    ->where('month',date('n'))
+                    ->where('day',date('d'))
+                    ->get()->toArray();
+
+
+
+                if (!empty($check_list['check_day'][$key])){
+
+                    $title =  $check_list['checklist'][$key][0]['title'];
+                    $check_list['checklist'][$key][0]['title'] =  'imasheeev';
+                    $check_list['checklist'][$key] = $check_list['check_day'][$key];
+                    $check_list['checklist'][$key][0]['flag'] = true;
+                    $check_list['checklist'][$key][0]['title'] =  $title;
+
+                }else{
+                    $check_list['checklist'][$key][0]['flag'] = false;
+                }
+
+
+
+
             }
-
-
-
 
             return response($check_list);
         }
@@ -330,8 +354,10 @@ class CheckListController extends Controller
     {
 
 
+
         if (!empty($request['auth_check'])){
             foreach ($request['auth_check'] as $requestCheck){
+
                 $reports = CheckReports::on()->where('check_id',$requestCheck['id'])
                     ->where('year',date('Y'))
                     ->where('month',date('n'))
@@ -340,29 +366,36 @@ class CheckListController extends Controller
 
                 $countChecked = [];
 
+
                 foreach ($requestCheck['check_input'] as $k => $checkedCount){
                     if ($checkedCount['checked']){
                         $countChecked[$k] = $checkedCount;
                     }
                 }
 
+
                 if (!empty($reports) && $reports != '[]'){
                     foreach ($reports as $report){
                         $editCountCheck_auth = CheckReports::on()->find($report['id']);
                         $editCountCheck_auth['count_check_auth'] = count($countChecked);
+                        $editCountCheck_auth['item_type'] = $requestCheck['type'];
+                        $editCountCheck_auth['item_id'] = $requestCheck['gr_id'];
+                        $editCountCheck_auth['checked'] = json_encode($requestCheck['check_input']);
                         $editCountCheck_auth->save();
                     }
                 }else{
+
                     $check_reports_save = new CheckReports();
                     $check_reports_save['check_id'] = $requestCheck['id'];
                     $check_reports_save['check_users_id'] = auth()->user()->id;
                     $check_reports_save['year'] = date('Y');
                     $check_reports_save['month'] = date('n');
                     $check_reports_save['day'] = date('d');
-                    $check_reports_save['count_check_auth'] = count($countChecked);
                     $check_reports_save['count_check'] = count($requestCheck['check_input']);
-                    $check_reports_save['item_type'] = $request['type'];
+                    $check_reports_save['count_check_auth'] = count($countChecked);
+                    $check_reports_save['item_type'] = $requestCheck['type'];
                     $check_reports_save['item_id'] = $requestCheck['gr_id'];
+                    $check_reports_save['checked'] = json_encode($requestCheck['check_input']);
                     $check_reports_save->save();
                 }
             }
