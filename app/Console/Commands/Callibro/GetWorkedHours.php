@@ -71,7 +71,7 @@ class GetWorkedHours extends Command
         $this->day = $date->day;
         $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
 
-        $groups = [53, 70];
+        $groups = [53,70];
         foreach($groups as $group_id) {
             $this->fetch($group_id);
             $this->line('Fetch completed for group_id: ' . $group_id);
@@ -83,13 +83,17 @@ class GetWorkedHours extends Command
 
     public function fetch($group_id) {
 
+
+
 	    $users_ids = json_decode(ProfileGroup::find($group_id)->users);
         $users = User::whereIn('id', $users_ids)->get();
 
         foreach($users as $user) {
            // if($user->position_id != 32) continue; // Не оператор
             if($group_id == 70) { // Kaztel
+
                 $minutes = Kaztel::getWorkedMinutes($user->email, $this->date);
+
                 if($minutes == 0) continue; // Не записывать ноль
                 if($minutes > 0 && $user->program_id == 1) {
                     $hours = Callibro::getWorkedHours($user->email, $this->date);
@@ -357,6 +361,7 @@ class GetWorkedHours extends Command
 
         // User stat New analytics
 
+DUMP($value);
         $date = Carbon::parse($fields['date'])->day($this->day)->format('Y-m-d');
         $us = UserStat::where([
             'date' => $date,

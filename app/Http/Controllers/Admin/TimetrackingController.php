@@ -138,18 +138,13 @@ class TimetrackingController extends Controller
         }
 
         /// временно
-        $getUsers = User::on()->select('id','name','last_name')->get()->toArray();
-
-        $getUsers = User::where(function($query) {
-            $query->whereNotNull('name')
-                ->orWhere('name', '!=', '')
-                ->orWhere('last_name', '!=', '')
-                ->orWhereNotNull('last_name');
-        })->select('id','name','last_name')->get();
-
-
-
-
+        //$getUsers = User::on()->select('id','name','last_name')->get()->toArray();
+//        $getUsers = User::where(function($query) {
+//            $query->whereNotNull('name')
+//                ->orWhere('name', '!=', '')
+//                ->orWhere('last_name', '!=', '')
+//                ->orWhereNotNull('last_name');
+//        })->select('id','name','last_name')->get();
 
 
         $groupsWithId = ProfileGroup::select('name','id')->get();
@@ -162,8 +157,7 @@ class TimetrackingController extends Controller
             ->with('corpbooks',$corpbooks)
             ->with('active_tab',$active_tab)
             ->with('tab5',$tab5)
-            ->with('groupsWithId',$groupsWithId)
-            ->with('getUsers',$getUsers);
+            ->with('groupsWithId',$groupsWithId);
     }
 
     public function fines()
@@ -1328,16 +1322,17 @@ class TimetrackingController extends Controller
     public function modalcheckuserrole(Request $request)
     {
         
+        $users = [];
         $group = ProfileGroup::find($request['group_id']);
-
-        $editors_id = json_decode($group->editors_id);
-        if (is_array($editors_id) && count($editors_id)) {
-
-            $users = User::whereIn('id', $editors_id)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
-        } else {
-            $users = [];
+        if($group) {
+            $editors_id = json_decode($group->editors_id);
+            if (is_array($editors_id) && count($editors_id)) {
+    
+                $users = User::whereIn('id', $editors_id)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
+            } 
+            
         }
-        
+    
 
         return $users;
     }
@@ -1404,12 +1399,13 @@ class TimetrackingController extends Controller
         if ($request->isMethod('post')) {
             $group = ProfileGroup::find($request->group_id);
             $user_ids = json_decode($group->users);
+        
             $user_ids = array_unique($user_ids);
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
             // Доступ к группе
             
-            if(!auth()->user()->can('entertime_view')) {
+            if(auth()->user()->can('entertime_view')) {
             } else   if (!in_array($currentUser->id, $group_editors)) {
                     return [
                         'error' => 'access',

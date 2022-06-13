@@ -196,7 +196,6 @@ class Kaztel
     public static function getWorkedMinutes($user_email, $day) {
 
         $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
-        
         $full_time = 0; // общее отработанное время
         $dialer_id = 443;
         
@@ -212,12 +211,12 @@ class Kaztel
                     ->select('call_account_id', DB::raw('SUM(calls.billsec) as billsec_sum'))
                     ->whereDate('start_time', $day)
                     ->where('billsec', '>=', 10)
-                    //->where('call_account_id', $call_account_id)
+                    ->where('call_account_id', $call_account_id)
                     ->where('call_dialer_id', $dialer_id)
                     ->where('cause', '!=', 'SYSTEM_SHUTDOWN')
                     ->first();
                     
-
+        
             $call_sec = $calls->billsec_sum;
 
             // $reports = DB::connection('callibro')->table('call_account_actions')
@@ -242,6 +241,8 @@ class Kaztel
             $full_time = (int) ceil(($call_sec) / 60); // отработанное время в минутах
             
         } 
+
+
         return $full_time;
         
     }
@@ -310,7 +311,7 @@ class Kaztel
         
         $aggrees = 0; // общее отработанное время
         $dialer_id = 443;
-        $script_status_ids = [13470, 13471, 13513, 13514, 13515, 13517, 13520]; // Cтатус в скрипте: Дата Визита
+        $script_status_ids = [13470, 13471]; // Cтатус в скрипте: Дата Визита
 
         if($account) {
             $call_account_id = $account->id;

@@ -125,7 +125,7 @@
                               id: response.data['checklist'][i][0]['check_id'],
                               gr_id: response.data['checklist'][i][0]['item_id'],
                               type: response.data['checklist'][i][0]['item_type'],
-                              check_input:JSON.parse(response.data['checklist'][i][0]['checked'])
+                             // check_input:JSON.parse(response.data['checklist'][i][0]['checked'])
                             });
                           }else{
                             this.auth_check.push({
@@ -133,7 +133,7 @@
                               id: response.data['checklist'][i][0]['id'],
                               gr_id: response.data['checklist'][i][0]['item_id'],
                               type: response.data['checklist'][i][0]['item_type'],
-                              check_input:JSON.parse(response.data['checklist'][i][0]['active_check_text'])
+                           //   check_input:JSON.parse(response.data['checklist'][i][0]['active_check_text'])
                             });
                           }
 
