@@ -42,7 +42,7 @@
 
                     <div class="col-md-12 mt-3">
                         <div class="col-md-6 p-0">
-                            <button @click="saveCheck()" type="button"  title="Сохранить" class="btn btn-primary">
+                            <button @click.prevent="saveCheck"   title="Сохранить" class="btn btn-primary">
                                 Выполнить
                             </button>
                         </div>
@@ -70,6 +70,7 @@
         data() {
             return {
                 showAuthUserCheck: false,
+                count:0,
                 auth_check:[]
             };
         },
@@ -89,24 +90,16 @@
 
             saveCheck(){
 
-                console.log(this.auth_check_list,'1aaaa32')
-                console.log(this.auth_check,'132')
+
 
                 axios.post('/timetracking/settings/auth/check/user/send', {
                     auth_check:this.auth_check
                 }).then(response => {
 
-                  console.log(response,'wwwwwx')
-
-
-                    this.auth_check = [];
-                    // this.viewCheck();
-                    // this.auth_check= response.data
-
-
-                    // this.showAuthUserCheck= false
+                    this.showAuthUserCheck= false
                     this.$message.success('Успешно выполнено');
-                    this.showAuthUserCheck = false;
+
+                   ;
 
                 })
 
@@ -121,22 +114,36 @@
 
                 }).then(response => {
 
-                  // this.auth_check= response.data
+                    if (response.data.checklist.length > 0) {
 
-                    for (let i = 0;i < response.data.checklist.length;i++){
-                        this.auth_check.push({
+                      for (let i = 0;i < response.data.checklist.length;i++){
 
+                        if (response.data['checklist'][i].length > 0){
+                          if (response.data['checklist'][i][0]['flag']){
+                            this.auth_check.push({
+                              title: response.data['checklist'][i][0]['title'],
+                              id: response.data['checklist'][i][0]['check_id'],
+                              gr_id: response.data['checklist'][i][0]['item_id'],
+                              type: response.data['checklist'][i][0]['item_type'],
+                              check_input:JSON.parse(response.data['checklist'][i][0]['checked'])
+                            });
+                          }else{
+                            this.auth_check.push({
+                              title: response.data['checklist'][i][0]['title'],
+                              id: response.data['checklist'][i][0]['id'],
+                              gr_id: response.data['checklist'][i][0]['item_id'],
+                              type: response.data['checklist'][i][0]['item_type'],
+                              check_input:JSON.parse(response.data['checklist'][i][0]['active_check_text'])
+                            });
+                          }
 
+                        }
+                      }
 
-                            title: response.data['checklist'][i][0]['title'],
-                            id: response.data['checklist'][i][0]['id'],
-                            gr_id: response.data['checklist'][i][0]['item_id'],
-                            type: response.data['checklist'][i][0]['item_type'],
-                            check_input:JSON.parse(response.data['checklist'][i][0]['active_check_text'])
-
-
-                        });
                     }
+
+
+
                 })
             },
 

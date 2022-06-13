@@ -79,7 +79,7 @@
             <div class="col-md-12 p-0">
                 <div class="col-12 p-0">
                   <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-3 ml-3">
                       <p>Для группы чек лист</p>
                     </div>
                     <div class="col-md-4 p-0">
@@ -177,7 +177,7 @@
                            <ul class="p-0" v-if="responsibility.results.length > 0">
 
                              <li class="responsibilityLi" v-for="results in responsibility.results">
-                               <a @click.pr.prevent="addResponsibility(results.email)">
+                               <a @click.prevent="addResponsibility(results.email)">
                                  {{results.email}}
                                </a>
                              </li>
@@ -192,8 +192,8 @@
                     </div>
                   </div>
                 </div>
-                <div class="row mt-5 pb-3" style="border-bottom: 1px solid #dee2e6">
-                    <div class="col-md-3">
+                <div class="row mt-5 pb-3 ml-3" style="border-bottom: 1px solid #dee2e6">
+                    <div class="col-md-3 p-0">
                         <p>Колво показов</p>
                     </div>
                     <div class="col-md-4 p-0" >
@@ -204,14 +204,14 @@
                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in arrCheckInput">
                       <div class="row">
                           <div class="col-md-5">
-                              <div class="position-absolute" style="margin-left: -15px;top: 2px">
-                                  <b-form-checkbox v-model="item.checked"  ></b-form-checkbox>
-                              </div>
-                              <input v-model="item.text"  type="text" placeholder="Впишите активность чек листа" class="form-control btn-block ml-2">
+<!--                              <div class="position-absolute" style="margin-left: -15px;top: 2px">-->
+<!--                                  <b-form-checkbox v-model="item.checked"  ></b-form-checkbox>-->
+<!--                              </div>-->
+                              <input v-model="item.text"  type="text" placeholder="Впишите активность чек листа" class="form-control btn-block ">
                           </div>
-                          <div class="col-md-3 p-0 mr-3 ml-1">
-                              <input v-model="item.https"  type="text" placeholder="https:" class="form-control btn-block ">
-                          </div>
+<!--                          <div class="col-md-3 p-0 mr-3 ml-1">-->
+<!--                              <input v-model="item.https"  type="text" placeholder="https:" class="form-control btn-block ">-->
+<!--                          </div>-->
 
                           <button v-if="index == '0'"  @click="deleteCheckList(index)"
                                   type="button"  title="Удалить чек-лист"
@@ -361,10 +361,10 @@
             this.positions_arr = arrayFailedGr
           }
 
+
+          console.log(this.allusers.length,'count');
+          console.log(this.allusers,'users');
           if (this.allusers.length > 0) {
-
-            console.log(this.allusers,'users');
-
             for (let i = 0; i < this.allusers.length; i++) {
               if (this.allusers[i]['name'].length > 1) {
                 this.allusers_arr[i] = {
@@ -376,7 +376,6 @@
               }
             }
           }
-
           console.log(this.allusers,'07777',this.allusers_arr,'usersssss')
 
         },
@@ -548,46 +547,52 @@
                 this.validateInput(this.arrCheckInput,this.countView)
 
 
+              if (this.allValueArray.length > 0){
                 if (this.errors.save){
-                    axios.post('/timetracking/settings/add/check', {
-                      before: () => {
-                        alert('asdasd')
-                      },
-                        allValueArray:this.allValueArray,
-                        countView:this.countView,
-                        arrCheckInput:this.arrCheckInput,
+                  axios.post('/timetracking/settings/add/check', {
+                    before: () => {
+                      alert('asdasd')
+                    },
+                    allValueArray:this.allValueArray,
+                    countView:this.countView,
+                    arrCheckInput:this.arrCheckInput,
 
-                    }).then(response => {
+                  }).then(response => {
 
-                        if (response.data.success == false){
-                            this.errors.show = false;
-                            this.errors.msg = null;
-                            // this.showCheckSideBar = false;
-                            for (let i = 0;i < this.allValueArray.length;i++){
-                               if (this.allValueArray[i]['type'] == response.data.exists[0]['item_type'] && this.allValueArray[i]['code'] == response.data.exists[0]['item_id']){
+                    if (response.data.success == false){
+                      this.errors.show = false;
+                      this.errors.msg = null;
+                      // this.showCheckSideBar = false;
+                      for (let i = 0;i < this.allValueArray.length;i++){
+                        if (this.allValueArray[i]['type'] == response.data.exists[0]['item_type'] && this.allValueArray[i]['code'] == response.data.exists[0]['item_id']){
 
 
-                                 if (response.data.exists[0]['item_type'] == 1){
-                                   this.errors.msg = 'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
-                                   this.$message.error(this.errors.msg);
-                                 }else if(response.data.exists[0]['item_type'] == 2){
-                                   this.errors.msg = 'Данная ' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
-                                   this.$message.error(this.errors.msg);
-                                 }else if (response.data.exists[0]['item_type'] == 3){
-                                   this.errors.msg = 'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено';
-                                   this.$message.error(this.errors.msg);
-                                 }
-                               }
-                            }
-                        }else {
-                            this.$message.success('Успешно Добавлено');
-                            this.errors.show = false;
-                            this.showCheckSideBar = false;
-                            this.viewCheckList()
+                          if (response.data.exists[0]['item_type'] == 1){
+                            this.errors.msg = 'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+                            this.$message.error(this.errors.msg);
+                          }else if(response.data.exists[0]['item_type'] == 2){
+                            this.errors.msg = 'Данная ' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
+                            this.$message.error(this.errors.msg);
+                          }else if (response.data.exists[0]['item_type'] == 3){
+                            this.errors.msg = 'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено';
+                            this.$message.error(this.errors.msg);
+                          }
                         }
+                      }
+                    }else {
+                      this.$message.success('Успешно Добавлено');
+                      this.errors.show = false;
+                      this.showCheckSideBar = false;
+                      this.viewCheckList()
+                    }
 
-                    })
+                  })
                 }
+              }else{
+                this.errors.show = true
+                this.errors.message = 'Выбрать Кому будем чик листы добавлять'
+              }
+
 
 
             },

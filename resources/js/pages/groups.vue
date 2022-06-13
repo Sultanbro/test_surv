@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="groups">
     <a-alert v-if="message != null" :message="message" type="info" showIcon />
 
     <div class="row align-items-center">
@@ -925,11 +925,11 @@ span.before {
   background: #017cff !important;
 }
 @media (min-width: 1000px) {
-  .multiselect__tags-wrap {
+  .groups .multiselect__tags-wrap {
     flex-wrap: wrap;
     display: flex !important;
   }
-  .multiselect__tag {
+  .groups .multiselect__tag {
     flex: 0 0 49%;
     /* margin-left: 1% !important; */
     margin-right: 1% !important;
@@ -938,7 +938,7 @@ span.before {
 }
 
 @media (min-width: 1300px) {
-  .multiselect__tag {
+  .groups .multiselect__tag {
     flex: 0 0 32%;
     /* margin-left: 1% !important; */
     margin-right: 1% !important;
@@ -946,7 +946,7 @@ span.before {
   }
 }
 @media (min-width: 1700px) {
-  .multiselect__tag {
+   .groups .multiselect__tag { 
     flex: 0 0 24%;
     /* margin-left: 1% !important; */
     margin-right: 1% !important;

@@ -1,7 +1,7 @@
 <template>
-<div class="super-select" ref="select" :class="posClass">
+<div class="super-select" ref="select" :class="posClass" v-click-outside="close">
 
-    <div class="selected-items" @click="toggleShow">
+    <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
         <div 
             v-for="(value, i) in values"
             :key="i"
@@ -19,21 +19,21 @@
                 type="text"
                 placeholder="Поиск..."
                 ref="search"
-                @change="onSearch">
+                @keyup="onSearch()">
         </div>
         
         <div class="options-window">
             <div class="types"> 
-                <div class="type">
-                    <div class="text" @click="changeType(1)">Сотрудники</div>
+                <div class="type" :class="{'active': type == 1}" @click="changeType(1)">
+                    <div class="text">Сотрудники</div>
                     <i class="fa fa-user"></i>
                 </div>
-                <div class="type">
-                    <div class="text" @click="changeType(2)">Отделы</div>
+                <div class="type" :class="{'active': type == 2}" @click="changeType(2)">
+                    <div class="text" >Отделы</div>
                     <i class="fa fa-users"></i>
                 </div>
-                <div class="type">
-                    <div class="text" @click="changeType(3)">Должности</div>
+                <div class="type" :class="{'active': type == 3}" @click="changeType(3)">
+                    <div class="text">Должности</div>
                     <i class="fa fa-briefcase"></i>
                 </div>
             </div>
@@ -44,17 +44,21 @@
                     v-for="(option, index) in filtered_options"
                     :key="index"
                     @click="addValue(index)"
-                    class="option selected" 
+                    class="option"
+                    :class="{'selected': option.selected}" 
                 >
+                    <i class="fa fa-user" v-if="option.type == 1"></i> 
+                    <i class="fa fa-users" v-if="option.type == 2"></i> 
+                    <i class="fa fa-briefcase" v-if="option.type == 3"></i> 
                     {{ option.name }}
-                    <!-- <i class="fa fa-check"></i> -->
+                    <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i> 
                 </div>
 
             </div>
         </div>
     </div>
    
-
+ 
 </div>
 </template>
 
@@ -64,61 +68,44 @@ export default {
         values: {
             type: Array,
             default: []
+        },
+        single: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
         return {
-            groups: [],
-            positions: [],
-            users: [],
             options: [],
+            filtered_options: [],
             type: 1,
             show: false,
             posClass: 'top',
-            searchText: ''
+            searchText: '',
+            first_time: true
         };
     },
-    mounted() {
-
-        
-
-        // var ignoreClickOnMeElement = document.getElementById('wow-table');
-
-        // var self = this;
-        // document.addEventListener('click', function(event) {
-        //     var isClickInsideElement = ignoreClickOnMeElement.contains(event.target);
-        //     if (!isClickInsideElement) {
-        //         self.hideContextMenu();
-        //     }
-        // });
-
-        this.options = [
-            {id: 1, type: 1, name: 'Text 1'},
-            {id: 2, type: 1, name: 'Text Agl 1'},
-            {id: 3, type: 1, name: 'Text Ali 1'},
-            {id: 4, type: 1, name: 'Text Ruslan 1'},
-            {id: 2, type: 2, name: 'Group Agl 1'},
-            {id: 1, type: 2, name: 'Group 1'},
-            {id: 4, type: 2, name: 'Group Ruslan 1'},
-            {id: 3, type: 2, name: 'Group Ali 1'},
-            {id: 1, type: 3, name: 'Pos 1' },
-            {id: 2, type: 3, name: 'Pos Agl 1'},
-            {id: 4, type: 3, name: 'Poss Ruslan 1'},
-            {id: 3, type: 3, name: 'Pos Ali 1'},
-        ];
-
-        this.filtered_options = this.options;
-    },
     methods: {
+        filterType() {
+            this.filtered_options = this.options.filter((el, index) => {
+                return el.type == this.type
+            });
+        },
+
+        addSelectedAttr() {
+            this.filtered_options.forEach(el => {
+                el.selected = this.values.findIndex(v => v.id == el.id && v.type == el.type) != -1
+            });
+        },
+
         toggleShow() {
             this.show = !this.show;
-            console.log(this.$refs)
-           
+            if(this.first_time) {
+                this.fetch();
+            }
+            
             this.$nextTick(() => {
-                 this.$refs.search.focus();
-                if(this.$refs.search) {
-                   
-                }
+                if(this.$refs.search !== undefined) this.$refs.search.focus();
             });
             this.setPosClass();
         },
@@ -131,35 +118,78 @@ export default {
 
         changeType(i) {
             this.type = i;
-            this.filtered_options = this.options.filter((el, index) => {
-                return el.type = i
-            });
+            this.searchText = '';
+            this.filterType();
+            this.addSelectedAttr();
         },
 
         addValue(index) {
+            if(this.single) this.show = false;
+            if(this.single && this.values.length > 0) {
+                return;
+            };
+            
             let item = this.filtered_options[index];
-            if(this.values.findIndex(v => v.id == item.id && v.type == this.type) == -1) {
+
+            if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
            
                 this.values.push({
                     name: item.name,
                     id: item.id,
-                    type: this.type,
+                    type: item.type
                 });
+            
+                item.selected = true
             }
         },
 
         removeValue(i) {
+            let v = this.values[i];
             this.values.splice(i, 1);
+            
+            let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
+            if(index != -1) this.filtered_options.splice(index, 1);
+        },
+
+        removeValueFromList(i) {
+            let fo = this.filtered_options[i];
+            let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
+            if(index != -1) {
+                this.values.splice(index, 1);
+                fo.selected = false;
+            }
         },
 
         onSearch() {
-            this.filtered_options = this.options.filter((el, index) => {
-                return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
-            });
-
+              
             if(this.searchText == '') {
-                this.filtered_options = this.options;
+                this.filtered_options = this.options; 
+            } else {
+                this.filtered_options = this.options.filter((el, index) => {
+                    return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
+                });
             }
+
+            this.addSelectedAttr();
+        },
+
+        close() {
+            this.show = false;
+        },
+
+        fetch() {
+            axios
+                .get("/superselect/get", {})
+                .then((response) => {
+
+                    this.options = response.data.options;
+
+                    this.filterType();
+                    this.addSelectedAttr();
+                })
+            .catch((error) => {
+                alert(error);
+            });
         }
     },
 

@@ -1,7 +1,28 @@
 <template>
 <div class="p-3 permissions">
 
-<h4 class="title">Настройка доступов<span v-if="role != null">: Роли</span></h4>
+<h4 class="title d-flex">
+  
+  <div>Настройка доступов
+    <span v-if="role != null">: Роли</span>
+  </div>
+
+  <input 
+    class="searcher"
+    v-model="searchText"
+    type="text"
+    placeholder="Поиск..."
+    @keyup="onSearch()">
+
+    <div v-if="role == null" class="d-flex">
+     <div class=" d-flex ml-3">
+        <button class="btn btn-default btn-sm" @click="addItem">Добавить</button>
+      </div>
+      <div class=" d-flex ml-3">
+        <button class="btn btn-success btn-sm" @click="saveItems">Сохранить</button>
+      </div>
+    </div>
+</h4>
 
 <!-- Главная страница -->
 <section>
@@ -10,7 +31,7 @@
       <div class="item d-flex contrast">
         <div class="person"></div>
         <div class="role">Роль</div>
-        <div class="groups">Отделы 
+        <div class="groups">Отделы  
               <i class="fa fa-info-circle ml-2" 
                 v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'" 
                 title="Доступ к отделам">
@@ -20,7 +41,7 @@
       </div>
       
       <permission-item 
-        v-for="(item, i) in items"
+        v-for="(item, i) in filtered_items"
         class="item d-flex" 
         :key="i" 
         @deleteItem="deleteItem(i)"
@@ -30,52 +51,11 @@
         :roles="roles"
       />
 
-      <div class=" d-flex mt-3">
-        <button class="btn btn-default btn-sm" @click="addItem">Добавить</button>
-      </div>
-      <div class=" d-flex mt-3">
-        <button class="btn btn-success btn-sm" @click="saveItems">Сохранить</button>
-      </div>
+     
       
-      <div class="mt-3">
-        <superselect :values="values" />
-      </div>
     </div>
 
-    <!-- Edit роль -->
-    <div v-if="role" class="edit-role">
-      <div class="d-flex mb-3">
-        <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
-      </div>
-
-      <input type="text" v-model="role.name" class="role-title form-control mb-3" />
-
-      <div class="pages">
-        <div class="item d-flex contrast">
-          <div class="name mr-3">Страница</div>
-          <div class="check d-flex">Просмотр</div>
-          <div class="check d-flex">Редактирование</div>
-        </div>
-        <div class="item d-flex" v-for="(page, i) in pages" :key="i">
-          <div class="name mr-3">{{page.name}}</div>
-          <div class="check d-flex">
-              <label class="mb-0 pointer">
-                <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox"  />
-              </label>
-          </div>
-            <div class="check d-flex">
-              <label class="mb-0 pointer">
-                <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox"  />
-              </label>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-3">
-        <button class="btn btn-success btn-sm" @click="updateRole">Сохранить</button>
-      </div>
-    </div>
-
+  
     <!-- Edit роль -->
     <div v-if="role" class="edit-role">
       <div class="d-flex mb-3">
@@ -135,9 +115,11 @@ export default {
   data() { 
     return {
       role: null,
+      searchText: '',
       users: [], // all select
       groups: [], // all select
       items: [],
+      filtered_items: [],
       roles: [],
       values: [],
       pages: [],
@@ -163,6 +145,7 @@ export default {
           this.groups = response.data.groups;
           this.pages = response.data.pages;
           this.items = response.data.items;
+          this.filtered_items = response.data.items;
 
           loader.hide();
         })
@@ -173,23 +156,90 @@ export default {
     },
 
     addItem() {
-      this.items.push(
+      this.searchText = '';
+      this.onSearch();
+      this.items.unshift(
         {
-          user_id: null,
           groups_all: false,
-          user: {
+          target: {
             id: null,
-            name: ''
+            name: '',
+            type: 1
           },
-          role: {
-            id: null,
-            name: ''
-          },
+          roles: [],
           groups: []
         }
       );
     },
 
+    deleteItem(i) {
+
+      if(!confirm('Вы точно хотите удалить доступ этой цели?')) {
+         return false; 
+       }
+
+      if(this.filtered_items[i].target.id == null) {
+        let index = this.items.findIndex(it => it.id == this.filtered_items[i].target.id && it.type == this.filtered_items[i].target.type);
+        if(index != -1) this.items.splice(index, 1);
+
+        this.filtered_items.splice(i,1)
+
+        return false; 
+      }
+
+      let loader = this.$loading.show();
+       axios
+        .post( '/permissions/delete-user', {
+          target: this.filtered_items[i].target
+        })
+        .then((response) => {
+          let index = this.items.findIndex(it => it.id == this.filtered_items[i].target.id && it.type == this.filtered_items[i].target.type);
+          if(index != -1) this.items.splice(index, 1);
+          
+          this.filtered_items.splice(i,1);
+
+          loader.hide();
+           this.$message.success('Пользователь удален!');
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+
+    },
+
+    saveItems() {
+      
+      let loader = this.$loading.show();
+       axios
+        .post( '/permissions/update-user', {
+          items: this.items,
+        })
+        .then((response) => {
+          loader.hide();
+           this.$message.success('Пользователи сохранены!');
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+    },
+
+    onSearch() {
+        if(this.searchText == '') {
+            this.filtered_items = this.items; 
+        } else {
+            this.filtered_items = this.items.filter((el, index) => {
+                return el.target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
+            });
+        }
+     },
+
+    back() {
+      this.showRoles = false;
+      this.role = null;
+    },
+    
     editRole(i) {
       this.showEditRole = true;
 
@@ -244,56 +294,6 @@ export default {
           loader.hide();
           alert(error);
         });
-    },
-
-    deleteItem(i) {
-
-      if(!confirm('Вы точно хотите удалить доступ пользователю?')) {
-         return false; 
-       }
-
-      if(this.items[i].user.id == null) {
-        this.items.splice(i,1)
-        return false; 
-      }
-
-      let loader = this.$loading.show();
-       axios
-        .post( '/permissions/delete-user', {
-          user: this.items[i].user
-        })
-        .then((response) => {
-          this.items.splice(i,1)
-          loader.hide();
-           this.$message.success('Пользователь удален!');
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-
-    },
-
-    saveItems() {
-      
-      let loader = this.$loading.show();
-       axios
-        .post( '/permissions/update-user', {
-          items: this.items,
-        })
-        .then((response) => {
-          loader.hide();
-           this.$message.success('Пользователи сохранены!');
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
-
-    back() {
-      this.showRoles = false;
-      this.role = null;
     },
 
     deleteRole(i) {

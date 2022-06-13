@@ -8,6 +8,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\User;
 use App\ProfileGroup;
+use App\Position;
 
 class PermissionController extends Controller
 {
@@ -39,27 +40,81 @@ class PermissionController extends Controller
 
         $all_users_with_all_their_roles = User::withTrashed()->with('roles')->has('roles')->orderBy('id', 'asc')->get();
         
-        
         foreach ($all_users_with_all_their_roles as $key => $user) {
             $item = [];
 
-            $item['user_id'] = $user->id;
             $item['groups_all'] = $user->groups_all == 1 ? true : false;
-            $item['user'] = [
+            $item['target'] = [
                 'id' => $user->id,
                 'name' => $user->last_name . ' ' . $user->name . ' #' . $user->id,
+                'type' => 1 // user
             ];
+
+            $_roles = [];
             foreach ($user->roles as $key => $role) {
-                $item['role'] = [
+                $_roles[] = [
                     'id' => $role->id,
                     'name' => $role->name,
                 ];
             }
 
+            $item['roles'] = $_roles;
             $item['groups'] = $this->userInGroups($user->id);
             $items[] = $item;
         }
-     
+        
+        $all_groups_with_all_their_roles = ProfileGroup::where('active', 1)->with('roles')->has('roles')->orderBy('id', 'asc')->get();
+        
+        foreach ($all_groups_with_all_their_roles as $key => $group) {
+            $item = [];
+
+            $item['groups_all'] = false;
+            $item['target'] = [
+                'id' => $group->id,
+                'name' => $group->name . ' #' . $group->id,
+                'type' => 2 // group
+            ];
+
+            $_roles = [];
+            foreach ($group->roles as $key => $role) {
+                $_roles[] = [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                ];
+            }
+
+            $item['roles'] = $_roles;
+            $item['groups'] = [];
+
+            $items[] = $item;
+        }
+        
+    
+        $all_positions_with_all_their_roles = Position::with('roles')->has('roles')->orderBy('id', 'asc')->get();
+        
+        foreach ($all_positions_with_all_their_roles as $key => $pos) {
+            $item = [];
+
+            $item['groups_all'] = false;
+            $item['target'] = [
+                'id' => $pos->id,
+                'name' => $pos->position . ' #' . $pos->id,
+                'type' => 3 // group
+            ];
+
+            $_roles = [];
+            foreach ($pos->roles as $key => $role) {
+                $_roles[] = [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                ];
+            }
+
+            $item['roles'] = $_roles;
+            $item['groups'] = [];
+            
+            $items[] = $item;
+        }
 
         $users = User::where(function($query) {
                     $query->whereNotNull('name')
@@ -107,67 +162,89 @@ class PermissionController extends Controller
     
     private function getPages()
     {
-        return [
-            ['key' => 'top', 'name' =>  'ТОП'],
-            ['key' => 'hr','name'=> 'HR'],
-            ['key' => 'analytics','name'=> 'Аналитика'],
-            ['key' => 'tabel','name'=> 'Табель'],
-            ['key' => 'entertime','name'=> 'Время прихода'],
-            ['key' => 'salaries','name'=> 'Начисления'],
-            ['key' => 'quality','name'=> 'Контроль качества'],
-            ['key' => 'settings','name'=> 'Настройки'],
-            ['key' => 'users','name'=> 'Сотрудники'],
-            ['key' => 'courses','name'=> 'Курсы'],
-            ['key' => 'books','name'=> 'Книги'],
-            ['key' => 'videos','name'=> 'Видеокурсы'],
-            ['key' => 'kb','name'=> 'База знаний'],
-        ];
+        $pages = \App\Models\Page::get();
+        return $pages;
     }
 
+    /**
+     * Save item - not user
+     * Rename updateUser to updateItem
+     */
     public function updateUser(Request $request) {
 
         $has_role_after_update = [];
         foreach ($request->items as $key => $item) {
-            if($item['user']['id'] == null) continue;
-            if($item['role']['id'] == null) continue;
 
-         
-            $has_role_after_update[] = $item['user']['id'];
-            $user = User::withTrashed()->with('roles')->find($item['user']['id']);
-        
-            if($user) {
-                $this->assignGroups($user->id, $item['groups'], $item['groups_all']);
+            if($item['target']['id'] == null) continue;
+            if(count($item['roles']) == 0) continue;
 
-                $newrole = Role::find($item['role']['id']);
-         
-                foreach($user->roles as $role) {
-                    if(!($newrole && $role->name == $newrole->name)) {
-                        $user->removeRole($role->name);
-                    }
-                }
+            if($item['target']['type'] == 1) {
+                $has_role_after_update[] = $item['target']['id'];
+                $user = User::withTrashed()->with('roles')->find($item['target']['id']);
 
-                if($newrole) $user->assignRole($newrole->name);
+                if($user) {
+                    $this->assignGroups($user->id, $item['groups'], $item['groups_all']);
+    
+                    $role_ids = [];
+                    foreach ($item['roles'] as $role_item) $role_ids[] = $role_item['id'];
+    
+                    $newroles = Role::whereIn('id', $role_ids)->get()->pluck('name')->toArray();
+                    
+                    $user->syncRoles($newroles);
+    
+                    $user->groups_all = $item['groups_all'] ? 1 : null;
+                    $user->save();
+                    
+                } 
+            }
+            
 
-                $user->groups_all = $item['groups_all'] ? 1 : null;
-                $user->save();
-                
-            } 
+            if($item['target']['type'] == 2) {
+                $has_role_after_update[] = $item['target']['id'];
+                $group = ProfileGroup::where('active', 1)->with('roles')->find($item['target']['id']);
+
+                if($group) {
+                    //$this->assignGroups($user->id, $item['groups'], $item['groups_all']);
+    
+                    $role_ids = [];
+                    foreach ($item['roles'] as $role_item) $role_ids[] = $role_item['id'];
+    
+                    $newroles = Role::whereIn('id', $role_ids)->get()->pluck('name')->toArray();
+                    $group->syncRoles($newroles);
+                } 
+            }
+            
+            if($item['target']['type'] == 3) {
+                $has_role_after_update[] = $item['target']['id'];
+                $pos = Position::with('roles')->find($item['target']['id']);
+
+                if($pos) {
+                    //$this->assignGroups($user->id, $item['groups'], $item['groups_all']);
+    
+                    $role_ids = [];
+                    foreach ($item['roles'] as $role_item) $role_ids[] = $role_item['id'];
+    
+                    $newroles = Role::whereIn('id', $role_ids)->get()->pluck('name')->toArray();
+                    $pos->syncRoles($newroles);
+                } 
+            }
+           
         }
 
 
         // remove roles 
 
-        $all_users_with_all_their_roles = User::withTrashed()->with('roles')->has('roles')->get(['id'])->pluck('id')->toArray();
+        // $all_users_with_all_their_roles = User::withTrashed()->with('roles')->has('roles')->get(['id'])->pluck('id')->toArray();
  
-        $arr = array_diff($has_role_after_update, $all_users_with_all_their_roles);
-        $arr = array_values($arr);
+        // $arr = array_diff($has_role_after_update, $all_users_with_all_their_roles);
+        // $arr = array_values($arr);
 
-        $users = User::withTrashed()->whereIn('id', $arr)->with('roles')->has('roles')->get();
-        foreach ($users as $user) {
-            foreach ($roles as $key => $role) {
-                $user->removeRole($role->name);
-            }
-        }
+        // $users = User::withTrashed()->whereIn('id', $arr)->with('roles')->has('roles')->get();
+        // foreach ($users as $user) {
+        //     foreach ($roles as $key => $role) {
+        //         $user->removeRole($role->name);
+        //     }
+        // }
        
     }
 
@@ -240,12 +317,26 @@ class PermissionController extends Controller
     }   
 
     public function deleteUser(Request $request) {
-        $user = User::withTrashed()->with('roles')->find($request->user['id']);
-        if($user) {
-            foreach ($user->roles as $key => $role) {
-                $user->removeRole($role->name);
+        $item = null;
+
+        if($request->target['type'] == 1) {
+            $item = User::withTrashed()->with('roles')->find($request->target['id']);
+        } 
+        
+        if($request->target['type'] == 2) {
+            $item = ProfileGroup::where('active',1)->with('roles')->find($request->target['id']);
+        } 
+
+        if($request->target['type'] == 3) {
+            $item = Position::with('roles')->find($request->target['id']);
+        } 
+
+        if($item) {
+            foreach ($item->roles as $key => $role) {
+                $item->removeRole($role->name);
             }
         }
+        
     } 
 
     public function deleteRole(Request $request) {
@@ -267,5 +358,50 @@ class PermissionController extends Controller
             $role->delete();
         }
         
+    }
+
+    public function superselect(Request $request)
+    {
+        $options = [];
+        $users = [];
+        $groups = [];
+        $positions = [];
+
+        $_groups = ProfileGroup::whereNotNull('name')->where('active', 1)->get();
+        $_positions = Position::whereNotNull('position')->get();
+        $_users = User::whereNotNull('last_name')->select('id', 'name', 'last_name')->get();
+
+        foreach ($_groups as $key => $group) {
+            $groups[] = [
+                'name' => $group->name,
+                'id' => $group->id,
+                'type' => 2
+            ];
+        }
+
+        foreach ($_positions as $key => $pos) {
+            $positions[] = [
+                'name' => $pos->position,
+                'id' => $pos->id,
+                'type' => 3
+            ];
+        }
+
+        foreach ($_users as $key => $user) {
+            if($user->name == '' || $user->last_name == '') continue;
+            $users[] = [
+                'name' => $user->last_name . ' ' . $user->name,
+                'id' => $user->id,
+                'type' => 1
+            ];
+        }
+
+        $options = array_merge($options, $users);
+        $options = array_merge($options, $groups);
+        $options = array_merge($options, $positions);
+
+        return [
+            'options' => $options,
+        ];
     }
 }
