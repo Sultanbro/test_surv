@@ -203,7 +203,7 @@
               ],
               menubar: false, //'file edit view insert format tools table help',
               toolbar:
-                'styleselect  | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | fullscreen  preview |  media  link | undo redo',
+                'styleselect  | bold italic underline strikethrough | table | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | fullscreen  preview |  media  link | undo redo',
               toolbar_sticky: true,
               content_style:
                 '.lineheight20px { line-height: 20px; }' +

@@ -198,7 +198,7 @@ class TimetrackingController extends Controller
     }
 
     public function getPosition(Request $request) {
-        $pos = Position::where('position', $request->name)->first();
+        $pos = Position::where('id', $request->name)->first();
 
         $pd = PositionDescription::where('position_id', $pos->id)->first();
 

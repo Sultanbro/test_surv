@@ -84,16 +84,19 @@ class KnowBaseController extends Controller
         //             ->where('model_id', $pos->id)
         //             ->get()->pluck('role_id')->toArray());
 
+        if(auth()->user()->is_admin == 1)  {
+            $books = KnowBase::get('id')->pluck('id')->toArray();
+            
+        } else {
+            $books = KnowBaseModel::where([
+                'model_type' => 'App\\User',
+                'model_id' => auth()->id(),
+                'access' => 1
+            ])->get('book_id')->pluck('book_id')->toArray();
+        }
+
         
-
-        $books = KnowBaseModel::where([
-            'model_type' => 'App\\User',
-            'model_id' => auth()->id(),
-            'access' => 1
-        ])->get('book_id')->pluck('book_id')->toArray();
-
-
-
+            
         return $books;
     }
 

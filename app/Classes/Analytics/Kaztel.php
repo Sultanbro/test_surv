@@ -242,7 +242,6 @@ class Kaztel
             $full_time = (int) ceil(($call_sec) / 60); // отработанное время в минутах
             
         } 
-
         return $full_time;
         
     }

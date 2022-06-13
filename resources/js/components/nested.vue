@@ -64,7 +64,7 @@ export default {
     }
   },
   created() {
-    if([5,18,157,84].includes(this.auth_user_id)) {
+    if(this.mode == 'edit') {
       this.handle = '.fa-bars';
     }
   },
