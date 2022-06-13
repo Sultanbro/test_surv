@@ -162,7 +162,12 @@ class PermissionController extends Controller
     
     private function getPages()
     {
-        $pages = \App\Models\Page::get();
+        $pages = \App\Models\Page::whereNull('parent_id')->with('children')->get();
+
+        foreach ($pages as $key => $page) {
+            $page->opened = true;
+        }
+
         return $pages;
     }
 

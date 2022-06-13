@@ -8,6 +8,7 @@
   </div>
 
   <input 
+    v-if="role == null"
     class="searcher"
     v-model="searchText"
     type="text"
@@ -70,19 +71,43 @@
           <div class="check d-flex">Просмотр</div>
           <div class="check d-flex">Редактирование</div>
         </div>
-        <div class="item d-flex" v-for="(page, i) in pages" :key="i">
-          <div class="name mr-3">{{page.name}}</div>
-          <div class="check d-flex">
-              <label class="mb-0 pointer">
-                <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox"  />
-              </label>
-          </div>
-            <div class="check d-flex">
-              <label class="mb-0 pointer">
-                <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox"  />
-              </label>
-          </div>
-        </div>
+
+        <template v-for="(page, i) in pages">
+
+            <div class="item d-flex" :key="i">
+              <div class="name mr-3" @click="page.opened = !page.opened">{{page.name}} 
+                <i class="fa fa-chevron-up" v-if="page.opened && page.children.length > 0"></i>
+                <i class="fa fa-chevron-down" v-if="!page.opened && page.children.length > 0"></i>
+              </div>
+              <div class="check d-flex">
+                  <label class="mb-0 pointer">
+                    <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox" @change="checkParent(i, 'view')"  />
+                  </label>
+              </div>
+                <div class="check d-flex">
+                  <label class="mb-0 pointer">
+                    <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox" @change="checkParent(i, 'edit')" />
+                  </label>
+              </div>
+            </div>
+
+            <template v-if="page.children.length > 0">
+              <div  class="item d-flex child" v-for="children in page.children" v-if="page.opened">
+                <div class="name mr-3">{{children.name}}</div>
+                <div class="check d-flex">
+                    <label class="mb-0 pointer">
+                      <input class="pointer" v-model="role.perms[children.key + '_view']"  type="checkbox" @change="checkChild(i, 'view')"  />
+                    </label>
+                </div>
+                  <div class="check d-flex">
+                    <label class="mb-0 pointer">
+                      <input class="pointer" v-model="role.perms[children.key + '_edit']"  type="checkbox" @change="checkChild(i, 'edit')" />
+                    </label>
+                </div>
+              </div>
+            </template>
+        </template>
+     
       </div>
 
       <div class="mt-3">
@@ -322,6 +347,35 @@ export default {
           alert(error);
         });
     },
+
+    checkParent(i, ability) {
+      let page = this.pages[i];
+      let checked = this.role.perms[page.key + '_' + ability];
+
+      if(ability == 'edit') {
+        this.role.perms[page.key + '_show'] = checked;
+        this.page.children.forEach(c => {
+          this.role.perms[c.key + '_show'] = checked;
+          this.role.perms[c.key + '_edit'] = checked;
+        });      
+      } else {
+        this.page.children.forEach(c => {
+          this.role.perms[c.key + '_show'] = checked;
+        });      
+      }
+
+      
+    },
+
+    checkChild(i, ability) {
+      let page = this.pages[i];
+      let checked = this.role.perms[page.key + '_' + ability];
+
+      if(ability == 'edit') {
+        this.role.perms[page.key + '_show'] = checked;
+      }
+      
+    }
 
   
   },

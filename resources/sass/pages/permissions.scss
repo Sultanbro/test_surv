@@ -113,11 +113,21 @@
   .pages {
 
     .item {
+      background: #fbfbfb;
       border: 1px solid #e8eef3;
       border-bottom: 0;
       align-items: center;
       display: flex;
       padding: 5px 15px;
+
+      &.child {
+        background: #fff;
+        padding: 5px 15px 5px 30px;
+        
+        .check {
+          padding-right: 35px;
+        }
+      }
 
       &:first-child {
         font-weight: 700;
@@ -131,8 +141,16 @@
 
     .name {
       width: 300px;
-    }
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
 
+      i {
+        margin-left: 5px;
+        cursor: pointer;
+      }
+    }
+    
     .check {
       width: 120px;
       padding: 3px;
