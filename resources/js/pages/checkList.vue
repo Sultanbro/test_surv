@@ -266,19 +266,18 @@
     import Multiselect from 'vue-multiselect'
     export default {
         name: "TableQuarter",
-
-        props: {
-            groups:{},
-            allusers:{},
-            positions:{}
-        },
+        props: [
+            'groups',
+            'allusers',
+            'positions',
+        ],
         components: {
             Multiselect
         },
         data() {
             return{
-                valueFindGr:[],
-                arrCheckInput:[],
+                valueFindGr:[], 
+                arrCheckInput:[], 
                 arrCheckLists:[],
                 filter:'',
                 countView:'1',
@@ -337,8 +336,8 @@
         mounted() {
           this.positions_arr = this.positions;
 
-          if (Object.keys(JSON.parse(this.groups)).length > 0) {
-            this.groups_arr = JSON.parse(this.groups);
+          if (Object.keys(this.groups).length > 0) {
+            this.groups_arr = this.groups;
             const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
               code: arr[0],
               name: arr[1],
@@ -348,10 +347,8 @@
 
             this.groups_arr = arrayFailedGr
           }
+          
           if (Object.keys(this.positions_arr).length > 0) {
-            // this.groups_arr = JSON.parse(this.positions_arr);
-
-            console.log(this.positions_arr,'0998898989')
             const arrayFailedGr = Object.entries(this.positions_arr).map((arr) => ({
               code: arr[0],
               name: arr[1],
@@ -362,8 +359,6 @@
           }
 
 
-          console.log(this.allusers.length,'count');
-          console.log(this.allusers,'users');
           if (this.allusers.length > 0) {
             for (let i = 0; i < this.allusers.length; i++) {
               if (this.allusers[i]['name'].length > 1) {
@@ -376,7 +371,6 @@
               }
             }
           }
-          console.log(this.allusers,'07777',this.allusers_arr,'usersssss')
 
         },
 
@@ -495,7 +489,8 @@
                     this.editValueThis = response.data;
                     this.valueFindGr = response.data.item_id;
                     this.countView = response.data.count_view;
-                    this.arrCheckInput = JSON.parse(response.data['active_check_text'])
+                 //   this.arrCheckInput = JSON.parse(response.data['active_check_text'])
+                    this.arrCheckInput = response.data['active_check_text']
 
                     this.editValueThis.view = true
                     this.editValueThis.arr= response.data

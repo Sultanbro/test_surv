@@ -61,40 +61,47 @@ class KnowBaseController extends Controller
 
     private function getBooks() {
 
-        $data = [];
-        
-
-        // $groups = auth()->user()->inGroups();
-        // if(count($groups) > 0) {
-        //     $roles = array_merge($roles, DB::table('model_has_roles')
-        //         ->where('model_type', 'App\\ProfileGroup')
-        //         ->whereIn('model_id', collect($groups)->pluck('id'))
-        //         ->get()->pluck('role_id')->toArray());
-        // }
-
-        // KnowBaseModel::where([
-        //     'model_type' => 'App\\User',
-        //     'model_id' => $item['id'],
-        //     'book_id' => $request->id,
-        //     'access' => 2;
-        // ]);
-        
-        // if($pos) $roles = array_merge($roles, DB::table('model_has_roles')
-        //             ->where('model_type', 'App\\Position')
-        //             ->where('model_id', $pos->id)
-        //             ->get()->pluck('role_id')->toArray());
-
+        $books = [];
         if(auth()->user()->is_admin == 1)  {
             $books = KnowBase::get('id')->pluck('id')->toArray();
             
         } else {
-            $books = KnowBaseModel::where([
-                'model_type' => 'App\\User',
-                'model_id' => auth()->id(),
-                'access' => 1
-            ])->get('book_id')->pluck('book_id')->toArray();
-        }
 
+            $groups = auth()->user()->inGroups();
+            if(count($groups) > 0) {
+                foreach ($groups as $key => $group) {
+                    $up = KnowBaseModel::where('model_type', 'App\\ProfileGroup')
+                    ->where('model_id', $group->id)
+                    ->get('book_id')
+                    ->pluck('book_id')
+                    ->toArray();
+                
+                    $books = array_merge($books, $up);
+                }
+                
+            }
+
+     
+           $pos = KnowBaseModel::where('model_type', 'App\\Position')
+                ->where('model_id', auth()->user()->position_id)
+                ->get('book_id')
+                ->pluck('book_id')
+                ->toArray();
+
+            $books = array_merge($books, $pos);
+
+            $ub = KnowBaseModel::where([
+                    'model_type' => 'App\\User',
+                    'model_id' => auth()->id(),
+                    'access' => 1
+                ])->get('book_id')
+                ->pluck('book_id')
+                ->toArray();
+
+            $books = array_merge($books, $ub);
+
+        
+        }
         
             
         return $books;
