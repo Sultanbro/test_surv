@@ -241,7 +241,7 @@ class Kaztel
             $full_time = (int) ceil(($call_sec) / 60); // отработанное время в минутах
             
         } 
-        dump($full_time);
+
 
         return $full_time;
         
@@ -311,7 +311,7 @@ class Kaztel
         
         $aggrees = 0; // общее отработанное время
         $dialer_id = 443;
-        $script_status_ids = [13470]; // Cтатус в скрипте: Дата Визита
+        $script_status_ids = [13470, 13471]; // Cтатус в скрипте: Дата Визита
 
         if($account) {
             $call_account_id = $account->id;

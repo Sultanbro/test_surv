@@ -235,18 +235,40 @@ class TopValue extends Model
 
         
         if($top_value->activity_id != 0) {
-
+         
             if($top_value->activity_id == -1) {
                 $value = AnalyticStat::getCellValue($top_value->group_id, $top_value->cell, $date);
             } else {
-                $value = UserStat::total_for_month($top_value->activity_id, $date, $top_value->value_type);
+
+                $activity = Activity::withTrashed()->find($top_value->activity_id);
+
+             
+                if($activity && $activity->type == 'quality') {
+
+                    $carbon = Carbon::parse($date);
+                    $value = \App\QualityRecordMonthlyStat::where([
+                            'month' => $carbon->month, 
+                            'year' => $carbon->year,
+                            'group_id' => $top_value->group_id
+                        ])
+                        ->where('total', '!=', 0)
+                        ->get()
+                        ->avg('total');
+
+                    // $count = $items->count();
+                    // $avg = $count > 0 ? round($items->sum('total') / $count, 1) : 0;
+                    // $value = $avg;
+                } else {
+                    $value = UserStat::total_for_month($top_value->activity_id, $date, $top_value->value_type);
+                }
+              
             }
 
             $min_value = $top_value->min_value;
             $max_value = $top_value->max_value;
             $options = json_decode($top_value->options, true);
         } 
-
+    
         if($group_id == Eurasian::ID) {
 
           
@@ -346,6 +368,7 @@ class TopValue extends Model
             'sections' => json_encode($sections),
             'angle' => json_encode($options['angle']),
         ];
+    
     }
 
     public static function getGaugeSections($args) {
@@ -392,6 +415,8 @@ class TopValue extends Model
         } 
 
 
+       
+        
         return [
             'options' => $options,
             'sections' => $sections,
@@ -542,6 +567,7 @@ class TopValue extends Model
 
         array_unshift($table, $total_row);
 
+       
         return $table;
     }
 }

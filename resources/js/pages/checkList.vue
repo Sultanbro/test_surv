@@ -491,7 +491,7 @@
                     this.countView = response.data.count_view;
                  //   this.arrCheckInput = JSON.parse(response.data['active_check_text'])
                     this.arrCheckInput = response.data['active_check_text']
-
+ 
                     this.editValueThis.view = true
                     this.editValueThis.arr= response.data
 
