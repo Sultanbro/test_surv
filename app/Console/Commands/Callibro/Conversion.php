@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\AnalyticsSettings;
 use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Eurasian;
+use App\Classes\Analytics\Kaztel;
 use App\Classes\Analytics\HomeCredit;
 use App\Models\Analytics\UserStat;
 
@@ -68,7 +69,7 @@ class Conversion extends Command
         $this->day = $date->day;
         $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
 
-        $groups = [53];
+        $groups = [53, 70];
         foreach($groups as $group_id) {
             $this->fetch($group_id);
             $this->line('Fetch completed for group_id: ' . $group_id);
@@ -83,6 +84,36 @@ class Conversion extends Command
         foreach($users as $user) {
            // if($user->position_id != 32) continue; // Не оператор
             
+            if($group_id == 70) { // Kaztel
+                $closed = Kaztel::getClosedCards($this->date,$user->email);
+                if($closed == -1) continue; // Не записывать так как нет аккаунта
+
+                $aggrees = Kaztel::getAggrees($user->email, $this->date);
+
+                $this->line($user->id . ' '.  $user->last_name . ' ' . $user->name);
+
+                if($aggrees == 0) {
+                    $conversion = 0; 
+                } else {
+                    $conversion = $aggrees / $closed * 100;
+                    $conversion = number_format($conversion, 1);
+                }
+
+                $this->line('Согласий  '. $aggrees);
+                $this->line('Закрыто   '. $closed);
+                $this->line('Конверсия '. $conversion);
+
+                $this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 136 // Конверсия согласий
+                ], $conversion);
+
+                $this->line('Сохранено');
+                $this->line(' '); 
+            }
+
             if($group_id == 53) { // Eurasian
                 $closed = Eurasian::getClosedCards($this->date,$user->email);
                 if($closed == -1) continue; // Не записывать так как нет аккаунта

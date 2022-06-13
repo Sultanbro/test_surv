@@ -111,7 +111,6 @@ class ActivityController extends Controller
                             $date = $item['date'];
                             $hours = $item['hours'];
 
-                            dump($name . ' ' . $hours);
                             if(!in_array($name, $users)) {
                                 array_push($users, $name);
                                 $sorted_users->push(collect($item));

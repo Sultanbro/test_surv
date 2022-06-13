@@ -15,6 +15,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         \App\ProfileGroup::class => \App\Policies\ProfileGroupPolicy::class,
+        \App\KnowBase::class => \App\Policies\KnowBasePolicy::class,
     ];
 
     /**
@@ -26,7 +27,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-       
         Gate::before(function ($user, $ability) {
             return $user->is_admin == 1  ? true : null;
         });

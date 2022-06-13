@@ -833,7 +833,7 @@ class TimetrackingController extends Controller
         $currentUser = User::bitrixUser();
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if (!in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
+        if (!in_array($currentUser->id, $group_editors) && $currentUser->is_admin != 1) {
             return [
                 'error' => 'access',
             ];
@@ -1400,11 +1400,15 @@ class TimetrackingController extends Controller
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
             // Доступ к группе
-            if (!in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
-                return [
-                    'error' => 'access',
-                ];
-            }
+            
+            if(!auth()->user()->can('entertime_view')) {
+            } else   if (!in_array($currentUser->id, $group_editors)) {
+                    return [
+                        'error' => 'access',
+                    ];
+                }
+            
+            
 
             $users = User::withTrashed()->selectRaw("*,CONCAT(name,' ',last_name) as full_name")->with(['timetracking' => function ($q) use ($request) {
                 $q->selectRaw("*, DATE_FORMAT(`enter`, '%e') as date")
@@ -1419,7 +1423,7 @@ class TimetrackingController extends Controller
 
             $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year);
             
-
+            $data =[];
             foreach ($users as $userData) {
 
                 $userfines = UserFine::where('user_id', $userData->id)
@@ -1435,7 +1439,7 @@ class TimetrackingController extends Controller
                 //if($userfines->count() > 0) dd($userfines);
                    
                 $days = array_unique($userData->timetracking->pluck('date')->toArray());
-
+                
                 if(self::showFiredEmployee($userData, $request->month, $request->year) == true){
                     foreach ($days as $day) {
                         $data[$userData->id][$day] = $userData->timetracking->where('date', $day)->min('enter')->format('H:i');

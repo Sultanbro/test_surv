@@ -25,9 +25,9 @@ class Kaztel
     CONST GROUP_ID = [70];
     CONST ACTIVITIES = [
         '70' => [
-            16, // Минуты
-            17, // Оценка диалога
-            18, // Согласия
+            141, // Минуты
+            0, // Оценка диалога
+            137, // Согласия
         ],
     ];
 
@@ -103,7 +103,8 @@ class Kaztel
 
         ///
         $user_ids = json_decode(ProfileGroup::find(70)->users);
-        $user_ids_1 = User::withTrashed()->whereIn('id', $user_ids)->where('position_id',32)->where('program_id', 1)->get()->pluck('id')->toArray();
+        $user_ids_1 = User::withTrashed()->whereIn('id', $user_ids)->get()->pluck('id')->toArray();
+        //$user_ids_1 = User::withTrashed()->whereIn('id', $user_ids)->where('position_id',32)->where('program_id', 1)->get()->pluck('id')->toArray();
 
         for($i = 1; $i <= $date->daysInMonth; $i++) {
 
@@ -197,7 +198,7 @@ class Kaztel
         $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
         
         $full_time = 0; // общее отработанное время
-        $dialer_id = 398;
+        $dialer_id = 443;
         
         if($account) {
             $call_account_id = $account->id;
@@ -211,7 +212,7 @@ class Kaztel
                     ->select('call_account_id', DB::raw('SUM(calls.billsec) as billsec_sum'))
                     ->whereDate('start_time', $day)
                     ->where('billsec', '>=', 10)
-                    ->where('call_account_id', $call_account_id)
+                    //->where('call_account_id', $call_account_id)
                     ->where('call_dialer_id', $dialer_id)
                     ->where('cause', '!=', 'SYSTEM_SHUTDOWN')
                     ->first();
@@ -254,7 +255,7 @@ class Kaztel
         $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
         
         $full_time = 0; // общее отработанное время
-        $dialer_id = 398;
+        $dialer_id = 443;
         
         if($account) {
             $call_account_id = $account->id;
@@ -267,7 +268,7 @@ class Kaztel
             $calls = DB::connection('callibro')->table('calls')
                     ->select('call_account_id', DB::raw('SUM(calls.opersec) as billsec_sum'))
                     ->whereDate('start_time', $day)
-                    //->where('opersec', '>=', 10)
+                    ->where('opersec', '>=', 10)
                     ->where('call_account_id', $call_account_id)
                     ->where('call_dialer_id', $dialer_id)
                     ->where('cause', '!=', 'SYSTEM_SHUTDOWN')
@@ -309,8 +310,8 @@ class Kaztel
         $account = DB::connection('callibro')->table('call_account')->where('email', $user_email)->first();
         
         $aggrees = 0; // общее отработанное время
-        $dialer_id = 398;
-        $script_status_ids = [2519]; // Cтатус в скрипте: Дата Визита
+        $dialer_id = 443;
+        $script_status_ids = [13470, 13471, 13513, 13514, 13515, 13517, 13520]; // Cтатус в скрипте: Дата Визита
 
         if($account) {
             $call_account_id = $account->id;
@@ -367,32 +368,20 @@ class Kaztel
     public static function getClosedCards($day, $user_email = '') {
 
         $cards = 0; // общее отработанное время
-        $dialer_id = 398;
+        $dialer_id = 443;
         
         /**
          *  Cтатус в скрипте
          */
         $script_status_ids = [
-            2519, // Дата визита
-            2521, // В декрете
-            2529, // Низкий доход
-            2532, // Есть просрочка
-            2533, // Нет пенсионных отчислений
-            2534, // Инвалидность 1, 2 группы
-            2536, // Военные Алматы/Алматинская обл
-            2538, // Не интересует
-            2539, // Негатив к Банку
-            2540, // Не устраивают условия
-            2541, // Подумает
-            2542, // Интересует другой продукт (Автокредит)
-            2543, // Интересует другой продукт (Рефинансирование)
-            2544, // Интересует другой продукт (Ипотека)
-            2545, // Интересует другой продукт (Депозит)
-            2549, // Уточненный номер
-            2551, // Клиент умер
-            2552, // Не гражданин РК
-            12275, // Неверный номер
-            13015, // Согласился онлайн
+            13470, // Заявка
+            13471, // оформлена заявка
+            //13474, // Низкий доход
+            13513, // Отказ
+            13514, // Дорого
+            13515, // Негативный клиент
+            13517, // Услуги подключены
+            13520, // Категорический отказ
         ]; 
 
         $cards = DB::connection('callibro')->table('calls')

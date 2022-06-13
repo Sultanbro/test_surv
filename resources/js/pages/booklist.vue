@@ -16,7 +16,7 @@
           <div class="d-flex">
             <span class="font-16 font-bold">{{ parent_title }}</span>
             <div class="chapter-btns">
-              <i class="fa fa-plus" @click="addPageToTree"></i> 
+              <i class="fa fa-plus" v-if="mode =='edit'" @click="addPageToTree"></i> 
             </div>
           </div>
         </div>

@@ -90,10 +90,8 @@ class GroupAnalyticsController extends Controller
         // Доступ к группе 
 
         $groups = [];
-        $isSuperUser = in_array($currentUser->id, [5,18,157]);
-
         
-        if ($recruting && in_array($currentUser->id, json_decode($recruting->editors_id)) || $isSuperUser) {
+        if ($recruting && auth()->user()->can('hr_view')) {
             $groups[] = [
                 'id' => 48,
                 'name' => $recruting->name,

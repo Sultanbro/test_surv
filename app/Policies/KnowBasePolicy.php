@@ -18,4 +18,14 @@ class KnowBasePolicy
     {
         //
     }
+
+    public function create(User $user, KnowBase $kb)
+    {
+        
+    }
+
+    public function update(User $user, KnowBase $kb)
+    {
+
+    }
 }

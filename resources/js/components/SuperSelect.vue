@@ -128,7 +128,7 @@ export default {
             if(this.single && this.values.length > 0) {
                 return;
             };
-            
+             
             let item = this.filtered_options[index];
 
             if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
