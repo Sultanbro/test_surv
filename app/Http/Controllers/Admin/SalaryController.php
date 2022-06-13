@@ -124,7 +124,8 @@ class SalaryController extends Controller
     }
 
     public function salaries(Request $request)
-    {   
+    {       
+     
         if(!auth()->user()->can('salaries_view')) {
             return [
                 'error' => 'access'
@@ -160,12 +161,13 @@ class SalaryController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if (!in_array($currentUser->id, $group_editors)) {
+        if(!auth()->user()->can('salaries_view')) {
+            
+        } else if (!in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
             ];
         }
-
 
         //////////////////////
 
@@ -223,7 +225,7 @@ class SalaryController extends Controller
 
         $data['accruals'] = GroupSalary::getAccruals($sdate);
 
-        if(in_array(Auth::user()->id, [5,18,157,84])) {
+        if(Auth::user()->is_admin == 1) {
             
         
 

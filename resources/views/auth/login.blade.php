@@ -59,7 +59,7 @@
                             <div id="tab-30" class="tab @if(!isset($_GET['tab'])) active @else js-tab-hidden  @endif">
                                 <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                                     {{ csrf_field() }}
-                                    {{$errors}}
+                                    
                                     <div class="form-subregistration">
                                         <div class="form-registration-row">
                                             <input id="username" type="text" class="form-control" name="username"

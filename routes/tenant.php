@@ -228,6 +228,7 @@ Route::middleware([
     Route::post('/kb/page/create', [KnowBaseController::class, 'createPage']);
     Route::post('/kb/page/delete', [KnowBaseController::class, 'deletePage']);
     Route::post('/kb/page/update-section', [KnowBaseController::class, 'updateSection']);
+    Route::post('/kb/page/get-access', [KnowBaseController::class, 'getAccess']);
 
 
     Route::get('/permissions', [PermissionController::class, 'index']);

@@ -81,11 +81,14 @@ class QualityController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if (!in_array($currentUser->id, $group_editors) && $currentUser->id != 18 && $currentUser->id != 5) {
-            return [
-                'error' => 'access',
-            ];
-        }
+        if(!auth()->user()->can('quality_view')) {
+
+        } else if (!in_array($currentUser->id, $group_editors)) {
+                return [
+                    'error' => 'access',
+                ];
+            }
+        
 
         $user_ids = $this->employees($request->group_id);
         $raw_items = User::whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id','last_name', 'name'])->get();

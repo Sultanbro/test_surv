@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\AnalyticsSettings;
 use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Eurasian;
+use App\Classes\Analytics\Kaztel;
 use App\Classes\Analytics\HomeCredit;
 use App\Models\Analytics\UserStat;
 use App\Classes\Callibro;
@@ -70,7 +71,7 @@ class GetWorkedHours extends Command
         $this->day = $date->day;
         $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
 
-        $groups = [53];
+        $groups = [53, 70];
         foreach($groups as $group_id) {
             $this->fetch($group_id);
             $this->line('Fetch completed for group_id: ' . $group_id);
@@ -87,6 +88,32 @@ class GetWorkedHours extends Command
 
         foreach($users as $user) {
            // if($user->position_id != 32) continue; // Не оператор
+            if($group_id == 70) { // Kaztel
+                $minutes = Kaztel::getWorkedMinutes($user->email, $this->date);
+                if($minutes == 0) continue; // Не записывать ноль
+                if($minutes > 0 && $user->program_id == 1) {
+                    $hours = Callibro::getWorkedHours($user->email, $this->date);
+                    $this->updateHours($user->id, $minutes, $hours);
+                }
+                $aggrees = Kaztel::getAggrees($user->email, $this->date);
+
+                $this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 141 // минуты
+                ], $minutes);
+    
+                $this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 137 // согласия
+                ], $aggrees);
+
+
+
+            }
             
             if($group_id == 53) { // Eurasian
                 $minutes = Eurasian::getWorkedMinutes($user->email, $this->date);
@@ -173,6 +200,26 @@ class GetWorkedHours extends Command
 
                 $data = $as->data;
                 $data[Eurasian::S_CLOSED_CARDS][$this->day] = $closed_cards;
+                $as->data = $data;
+                $as->save();
+            } else {
+                $this->line('Не найден AS $group_id = ' . $group_id . ' Дата: ' . $this->startOfMonth);
+            }
+        }
+
+        if($group_id == 70) {
+            
+            $as = AnalyticsSettings::where([
+                'group_id' => Kaztel::ID,
+                'date' => $this->startOfMonth
+            ])->first();
+
+            if($as && array_key_exists(Eurasian::S_CLOSED_CARDS, $as->data)) {
+                
+                $closed_cards = Kaztel::getClosedCards($this->date);
+
+                $data = $as->data;
+                $data[Kaztel::S_CLOSED_CARDS][$this->day] = $closed_cards;
                 $as->data = $data;
                 $as->save();
             } else {

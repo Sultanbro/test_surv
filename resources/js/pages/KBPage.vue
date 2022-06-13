@@ -152,7 +152,10 @@
         />
 
         <div>
-          <p>Доступы к разделу: еще не реализовано</p>
+          <p class="mb-2">Кто может видеть</p>
+          <superselect :values="who_can_read" class="w-full mb-4" :key="1"/> 
+          <p class="mb-2">Кто может редактировать</p>
+          <superselect :values="who_can_edit" class="w-full mb-4" :key="2"/> 
         </div>
         <button class="btn btn-primary rounded m-auto" @click="updateSection">
           <span>Сохранить</span>
@@ -215,6 +218,8 @@ export default {
       showCreate: false,
       showArchive: false,
       showSearch: false,
+      who_can_read: [],
+      who_can_edit: [],
       showEdit: false,
       show_page_id: 0,
       section_name: '',
@@ -345,8 +350,18 @@ export default {
 
       this.showEdit = true;
       this.update_book = book;
-      
-      
+      console.log(book)
+      axios
+        .post("/kb/page/get-access", {
+          id: book.id,
+        })
+        .then((response) => {
+          this.who_can_edit = response.data.who_can_edit;
+          this.who_can_read = response.data.who_can_read;
+        })
+        .catch((error) => {
+          alert(error);
+        });
     },
 
     addSection() {
@@ -404,6 +419,8 @@ export default {
       axios 
         .post("/kb/page/update-section", {
           title: this.update_book.title,
+          who_can_read: this.who_can_read,
+          who_can_edit: this.who_can_edit,
           id: this.update_book.id,
         })
         .then((response) => {
@@ -415,7 +432,8 @@ export default {
           }
 
           this.update_book = null;
-
+          this.who_can_read = [];
+          this.who_can_edit = [];
 
           this.$message.success("Изменения сохранены!"); 
           loader.hide();

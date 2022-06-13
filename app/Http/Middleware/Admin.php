@@ -22,7 +22,6 @@ class Admin {
         if(!Auth::user()) return $next($request);
         if($request->getPathInfo() =='/logout') return $next($request);
   
-        
         $groups = [];
         
         $_groups = \App\ProfileGroup::where('active', 1)->get();
@@ -33,9 +32,18 @@ class Admin {
             }
         }
 
-        Auth::user()->groups = $groups;
-        Auth::user()->is_admin = Auth::user()->is_admin == 1;
 
+        Auth::user()->groups = $groups;
+
+        if(Auth::user()->is_admin == 1) {
+            Auth::user()->groups = $_groups->pluck('id')->toArray();
+        }
+
+       // if(auth()->id() == 5) dd(auth()->user()->can('salaries_view'));
+      //  Auth::user()->is_admin = Auth::user()->is_admin == 1;
+
+      
+        
         return $next($request);
     }
 }
