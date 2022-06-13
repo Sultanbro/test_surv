@@ -82,28 +82,8 @@ export default {
             show: false,
             posClass: 'top',
             searchText: '',
-            
+            first_time: true
         };
-    },
-    mounted() {
-
-        this.options = [
-            {id: 1, type: 1, name: 'Text 1'},
-            {id: 2, type: 1, name: 'Text Agl 1'},
-            {id: 3, type: 1, name: 'Text Ali 1'},
-            {id: 4, type: 1, name: 'Text Ruslan 1'},
-            {id: 2, type: 2, name: 'Group Agl 1'},
-            {id: 1, type: 2, name: 'Group 1'},
-            {id: 4, type: 2, name: 'Group Ruslan 1'},
-            {id: 3, type: 2, name: 'Group Ali 1'},
-            {id: 1, type: 3, name: 'Pos 1' },
-            {id: 2, type: 3, name: 'Pos Agl 1'},
-            {id: 4, type: 3, name: 'Poss Ruslan 1'},
-            {id: 3, type: 3, name: 'Pos Ali 1'},
-        ];
-
-        this.filterType();
-        this.addSelectedAttr();
     },
     methods: {
         filterType() {
@@ -120,7 +100,10 @@ export default {
 
         toggleShow() {
             this.show = !this.show;
-           
+            if(this.first_time) {
+                this.fetch();
+            }
+            
             this.$nextTick(() => {
                 if(this.$refs.search !== undefined) this.$refs.search.focus();
             });
@@ -141,10 +124,11 @@ export default {
         },
 
         addValue(index) {
+            if(this.single) this.show = false;
             if(this.single && this.values.length > 0) {
-                this.show = false;
                 return;
             };
+            
             let item = this.filtered_options[index];
 
             if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
@@ -191,6 +175,21 @@ export default {
 
         close() {
             this.show = false;
+        },
+
+        fetch() {
+            axios
+                .get("/superselect/get", {})
+                .then((response) => {
+
+                    this.options = response.data.options;
+
+                    this.filterType();
+                    this.addSelectedAttr();
+                })
+            .catch((error) => {
+                alert(error);
+            });
         }
     },
 

@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="groups">
     <a-alert v-if="message != null" :message="message" type="info" showIcon />
 
     <div class="row align-items-center">
       <div class="col-lg-3 col-md-6">
         <b-form-select
-          v-model="group_id"
+          v-model="activebtn"
           :options="statuses"
           size="md"
           @change="selectGroup"
@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <div v-if="group_id != null" class="row">
+    <div v-if="activebtn != null" class="row">
       <div class="col-lg-6 mb-3 mt-4">
         <div class="dialerlist bg mb-2">
           <div class="fl">Время работы с</div>
@@ -470,7 +470,7 @@
         <div class="col-7">
           <select v-model="restore_group" class="form-control form-control-sm">
             <option
-              :value="archived_group.id"
+              :value="archived_group.name"
               v-for="(archived_group, key) in archived_groups"
               :key="key"
             >
@@ -533,7 +533,7 @@ export default {
       showDeleteButton: false,
       showArchiveModal: false,
       showAfterEdit: false,
-      group_id: null,
+      group_id: 0,
       gname: "", // Название группы
       zoom_link: "", // Ссылка zoom для обучения стажеров
       bp_link: "",
@@ -661,7 +661,7 @@ export default {
 
       axios
         .post("/timetracking/users", {
-          group: this.group_id,
+          group: this.activebtn,
         })
         .then((response) => {
           if (response.data) {
@@ -701,12 +701,12 @@ export default {
     },
 
     saveusers() {
-      // save group data 
+      // save group data
       let loader = this.$loading.show();
 
       axios
         .post("/timetracking/users/group/save", {
-          group: this.group_id,
+          group: this.activebtn,
           gname: this.gname,
           users: this.value,
           book_groups: this.bgs,
@@ -725,8 +725,8 @@ export default {
           show_payment_terms: this.show_payment_terms,
         })
         .then((response) => {
-          this.statuses = response.data.groups;
-          this.group_id = this.group_id;
+          this.statuses = Object.values(response.data.groups);
+          this.activebtn = response.data.group;
           this.$message.info("Успешно сохранено");
           this.messageoff();
 
@@ -742,16 +742,12 @@ export default {
       if (this.new_status.length > 0) {
         axios
           .post("/timetracking/group/save", {
-            name: this.new_status,
+            group: this.new_status,
           })
           .then((response) => {
             if (response.data.status == 1) {
               this.$message.success("Добавлено");
-              this.statuses[response.data.group.id] = this.new_status;
-              this.group_id = response.data.group.id;
-              this.selectGroup();
-              this.new_status = "";
-
+              this.statuses.push(this.new_status);
             } else {
               this.$message.error(
                 'Название "' +
@@ -760,8 +756,8 @@ export default {
               );
             }
 
-           
-           
+            this.selectGroup(this.new_status);
+            this.new_status = "";
           });
       }
     },
@@ -769,15 +765,16 @@ export default {
       if (confirm("Вы уверены что хотите удалить группу?")) {
         axios
           .post("/timetracking/group/delete", {
-            id: this.group_id,
+            group: this.activebtn,
           })
           .then((response) => {
             this.$message.info("Удалена");
-          }); 
+          });
 
-        let ind = Object.keys(this.statuses).findIndex(k => k == this.group_id);
-        if (ind > -1) delete this.statuses[ind];
-        this.group_id = null;
+        let ind = this.statuses.indexOf(status);
+        if (index > -1) this.statuses.splice(ind, 1);
+        this.statuses.splice(ind, 1);
+        this.activebtn = null;
       }
     },
     showAlert() {
@@ -804,7 +801,7 @@ export default {
 
       axios
         .post("/timetracking/settings/get_time_addresses", {
-          group_id: this.group_id,
+          group_id: this.activebtn,
         })
         .then((response) => {
           this.time_variants = response.data.time_variants;
@@ -828,8 +825,7 @@ export default {
         })
         .then((response) => {
           this.$message.success("Восстановлен!");
-          this.group_id = this.restore_group
-          this.selectGroup();
+          this.selectGroup(this.restore_group);
           this.restore_group = null;
           this.showArchiveModal = false;
           loader.hide();
@@ -844,7 +840,7 @@ export default {
     saveTimeAddress() {
       axios
         .post("/timetracking/settings/save_time_addresses", {
-          group_id: this.group_id,
+          group_id: this.activebtn,
           time_address: this.time_address,
           time_exceptions: this.time_exceptions,
         })
@@ -929,11 +925,11 @@ span.before {
   background: #017cff !important;
 }
 @media (min-width: 1000px) {
-  .multiselect__tags-wrap {
+  .groups .multiselect__tags-wrap {
     flex-wrap: wrap;
     display: flex !important;
   }
-  .multiselect__tag {
+  .groups .multiselect__tag {
     flex: 0 0 49%;
     /* margin-left: 1% !important; */
     margin-right: 1% !important;
@@ -942,7 +938,7 @@ span.before {
 }
 
 @media (min-width: 1300px) {
-  .multiselect__tag {
+  .groups .multiselect__tag {
     flex: 0 0 32%;
     /* margin-left: 1% !important; */
     margin-right: 1% !important;
@@ -950,7 +946,7 @@ span.before {
   }
 }
 @media (min-width: 1700px) {
-  .multiselect__tag {
+   .groups .multiselect__tag { 
     flex: 0 0 24%;
     /* margin-left: 1% !important; */
     margin-right: 1% !important;

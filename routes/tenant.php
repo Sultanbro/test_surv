@@ -461,6 +461,8 @@ Route::middleware([
     Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
     Route::post('/timetracking/settings/auth/check/user/responsibility', [CheckListController::class, 'responsibility']); /// со стораны пользователя Выполнить сохр в отчет
 
+    Route::get('/superselect/get', [PermissionController::class, 'superselect']);
+    
    
     
     Route::group([

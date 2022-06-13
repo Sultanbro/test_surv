@@ -3,10 +3,14 @@
     width: 400px;
     border: 1px solid #e8ecee;
     position: relative;
-    z-index: 2;
+   // z-index: 2;
+
+    &.w-full {
+        width: 100% !important;
+    }
 
     .show {
-        box-shadow: 0 -5px 5px 5px #f3f3f3;
+        box-shadow: 0 0px 5px 5px rgba(11, 11, 11, 0.06);
         position: absolute;
         left: 0;
         width: 100%;
@@ -14,6 +18,8 @@
         width: calc(100% + 2px);
         background: white;
         margin: 0px -1px;
+        min-width: 370px;
+        z-index: 22;
     }
 
     &.top .show {
@@ -22,6 +28,19 @@
 
     &.bottom .show {
         top: 100%;
+    }
+
+    &.single .selected-items {
+        min-height: 24px;
+        padding: 0;
+
+        .selected-item {
+            margin: 0;
+
+            i {
+                padding: 6px;
+            }
+        }
     }
 
     .selected-items {
