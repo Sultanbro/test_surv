@@ -138,7 +138,13 @@ class TimetrackingController extends Controller
         }
 
         /// временно
-        $getUsers = User::on()->select('id','name','last_name')->get()->toArray();
+        //$getUsers = User::on()->select('id','name','last_name')->get()->toArray();
+        $getUsers = User::where(function($query) {
+                $query->whereNotNull('name')
+                    ->orWhere('name', '!=', '')
+                    ->orWhere('last_name', '!=', '')
+                    ->orWhereNotNull('last_name');
+            })->select('id','name','last_name')->get()->toArray();
 
 
 
@@ -1401,7 +1407,7 @@ class TimetrackingController extends Controller
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
             // Доступ к группе
             
-            if(!auth()->user()->can('entertime_view')) {
+            if(auth()->user()->can('entertime_view')) {
             } else   if (!in_array($currentUser->id, $group_editors)) {
                     return [
                         'error' => 'access',
