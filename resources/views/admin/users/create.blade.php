@@ -84,7 +84,8 @@
                                 
                             <div id="list-example" class="list-group user-nav sticky">
 
-                            
+
+
                                 <!-- PROFILE IMAGE -->
                                 <div class="">
                                     <input type="file" name="file6" id="file-6"
@@ -112,9 +113,6 @@
                                     </div>
                                     @endif
                                     <div class="mt-0 mb-3 font-sm text-ceer " style="width:100%">
-                                       
-
-
                                         @if(isset($user))
                                             @if($user->position_id)
                                                 @foreach ($positions as $position)
@@ -128,9 +126,6 @@
                                         @else
                                             Новый пользователь
                                         @endif
-                                                
-
-
                                         @if(isset($user))
                                             @if($user->bitrix_id != 0)
                                             <p>
@@ -149,8 +144,6 @@
                                                 <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
                                             </p>
                                             @endif
-
-
                                             <input type="text" 
                                                 style="display:none;"
                                                 class="form-control form-control-sm"
@@ -159,23 +152,15 @@
                                                 name="bitrix_id"
                                                 placeholder="ID профиля в битриксе">
                                              <profile-kpi-button :user_id="{{ $user->id }}"/>
-
-                                            <div class="">
-
-                                                <ul>
-                                                    <li><a href="#">Основный данный</a></li>
-                                                </ul>
-                                            </div>
-
-
-
-
                                         @endif
-
-
                                     </div>
 
-                                    
+                                    <div class="">
+
+                                        <ul>
+                                            <li><a href="#">Основный данный</a></li>
+                                        </ul>
+                                    </div>
                                 </div>
 
                             </div>
@@ -187,7 +172,7 @@
                                 <div class="xtab-pane xfade show active" id="contact" role="tabpanel"
                                     aria-labelledby="contact-tab">
                                     
-                                    <h5 class="mb-4">Профиль сотрудника</h5>
+                                    <h5 class="mb-4">Профиль сотрудника </h5>
                                     <!-- PROFILE INFO -->
                                     <div class="d-flex row">
                                         <div class="contacts-info col-md-6">

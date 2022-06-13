@@ -125,6 +125,7 @@
                               </a>
                             </p>
                           </div>
+
                           <div v-if="selectedRole.role_3">
                             <p class="list-role"  v-for="item in   allusers_arr">
                               <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
@@ -134,6 +135,7 @@
                               </a>
                             </p>
                           </div>
+
                         </div>
                       </div>
 
@@ -269,7 +271,7 @@
 
         props: {
             groups:{},
-            allusers:{},
+            // allusers:{},
             positions:{}
         },
         components: {
@@ -300,6 +302,7 @@
                 allValueArray:[],
                 groups_arr:[],
                 allusers_arr:[],
+                allusers:[],
                 positions_arr:[],
                 selectedRole:{
                   role_1:true,
@@ -333,10 +336,10 @@
         created(){
             this.viewCheckList()
             this.addCheckList()
+            this.getUsers()
         },
         mounted() {
           this.positions_arr = this.positions;
-
           if (Object.keys(JSON.parse(this.groups)).length > 0) {
             this.groups_arr = JSON.parse(this.groups);
             const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
@@ -349,49 +352,45 @@
             this.groups_arr = arrayFailedGr
           }
           if (Object.keys(this.positions_arr).length > 0) {
-            // this.groups_arr = JSON.parse(this.positions_arr);
-
-            console.log(this.positions_arr,'0998898989')
-            const arrayFailedGr = Object.entries(this.positions_arr).map((arr) => ({
+          const arrayFailedGr = Object.entries(this.positions_arr).map((arr) => ({
               code: arr[0],
               name: arr[1],
               checked:false,
               type:2,
             }));
-            this.positions_arr = arrayFailedGr
+          this.positions_arr = arrayFailedGr
           }
-
-
-          console.log(this.allusers.length,'count');
-          console.log(this.allusers,'users');
-          if (this.allusers.length > 0) {
-            for (let i = 0; i < this.allusers.length; i++) {
-              if (this.allusers[i]['name'].length > 1) {
-                this.allusers_arr[i] = {
-                  name: this.allusers[i]['name'] + '  ' + this.allusers[i]['last_name'],
-                  code: this.allusers[i]['id'],
-                  checked:false,
-                  type:3,
-                }
-              }
-            }
-          }
-          console.log(this.allusers,'07777',this.allusers_arr,'usersssss')
-
         },
 
         methods:{
+            getUsers(){
+              axios.post('/timetracking/settings/get/modal/', {
+                type:'3',
+              }).then(response => {
+                this.allusers = response.data
+                console.log(response.data,'DB result USERS')
+                console.log(this.allusers,'before Users')
+                if (this.allusers.length > 0) {
+                  for (let i = 0; i < this.allusers.length; i++) {
+                    if (this.allusers[i]['name'].length > 1) {
+                      this.allusers_arr[i] = {
+                        name: this.allusers[i]['name'] + '  ' + this.allusers[i]['last_name'],
+                        code: this.allusers[i]['id'],
+                        checked:false,
+                        type:3,
+                      }
+                    }
+                  }
+                }
+              })
+              console.log(this.allusers_arr,'after Users');
 
 
-
-
-
+            },
             addResponsibility(email){
             this.responsibility.inputText = null;
             this.responsibility.inputText = email;
             this.responsibility.result_text = false;
-
-
 
           },
             viewCheckList(){
@@ -401,16 +400,11 @@
               })
             },
             fetchResponsibility() {
-
-
-
             axios.post('/timetracking/settings/auth/check/user/responsibility', {
               search:this.responsibility.inputText,
             }).then(response => {
               this.responsibility.results = response.data
               this.responsibility.result_text = true;
-
-
             })
 
 
@@ -540,7 +534,6 @@
 
 
             },
-
             saveCheckList(){
                 this.saveButton = true
                 this.errors.save_checkbox = false
@@ -725,6 +718,11 @@
                     }
                   }
                 }else if(type == 3){
+
+
+
+
+
                   for (var i = 0; i < this.allusers_arr.length;i++){
                     if (this.allusers_arr[i]['code'] == id){
                       this.allusers_arr[i]['checked'] = true

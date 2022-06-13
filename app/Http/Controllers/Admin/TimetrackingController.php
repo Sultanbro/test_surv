@@ -140,6 +140,14 @@ class TimetrackingController extends Controller
         /// временно
         $getUsers = User::on()->select('id','name','last_name')->get()->toArray();
 
+        $getUsers = User::where(function($query) {
+            $query->whereNotNull('name')
+                ->orWhere('name', '!=', '')
+                ->orWhere('last_name', '!=', '')
+                ->orWhereNotNull('last_name');
+        })->select('id','name','last_name')->get();
+
+
 
 
 

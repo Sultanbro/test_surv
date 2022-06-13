@@ -401,4 +401,20 @@ class CheckListController extends Controller
             }
         }
     }
+
+
+    public function getModal(Request$request){
+
+       $user = User::where(function($query) {
+                 $query->whereNotNull('name')
+               ->orWhere('name', '!=', '')
+               ->orWhere('last_name', '!=', '')
+               ->orWhereNotNull('last_name');
+                 })->select('id','name','last_name')->get();
+
+       return $user;
+
+    }
+
+
 }

@@ -19,4 +19,6 @@ class CheckSuperUser
         if(!in_array(Auth::user()->id, [5, 18])) return redirect('/videolearning');
         return $next($request); 
     }
+
+
 }
