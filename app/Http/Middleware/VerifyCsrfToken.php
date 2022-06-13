@@ -31,7 +31,7 @@ class VerifyCsrfToken extends Middleware
         '/bp/job/skype/', 
         '/bp/choose_time', 
         '/getpass',
-        '/api/intellect/get_link'
+        '/api/intellect/get_link',
         '/api/intellect/get_name'
     ];
 
