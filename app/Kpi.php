@@ -137,17 +137,7 @@ class Kpi extends Model
                 if($kpi_indicator->group_id == 0)  {
                     $kpi_indicator->completed = 0;
                 } else if(in_array($kpi_indicator->group_id, [48])) { 
-
-                    $kpi_indicator->completed = 0;
-                    if($activity->type == 'conversion') { // Conversion in TableSummaryRecruiting
-                        $as = \App\AnalyticsSettings::where('group_id', $kpi_indicator->group_id)->where('date', $date)->where('type', 'basic')->first();
-                        if($as && array_key_exists(9, $as->data) &&  array_key_exists(0, $as->data) && array_key_exists('fact', $as->data[0]) && array_key_exists('fact', $as->data[9])) {
-                            $kpi_indicator->completed = round($as->data[9]['fact'] / $as->data[0]['fact'] * 100 , 2);
-                        }
-                    } else {
-                        $kpi_indicator->completed = AnalyticsSettingsIndividually::getTotalActivityProgress($user_id, $activity, $date);
-                    }
-                    
+                    $kpi_indicator->completed =  AnalyticsSettingsIndividually::getTotalActivityProgress($user_id, $activity, $date);
                 } else {
                     $kpi_indicator->completed = 0;
                     if($activity) {

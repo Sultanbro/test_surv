@@ -136,7 +136,7 @@ class AnalyticsSettingsIndividually extends Model
                                 $total += (float)$data[$index][$i];
                             }   
                         }
-                    } catch(\Throwable $e) {
+                    } catch(\Exception $e) {
                         
                     }
                     
