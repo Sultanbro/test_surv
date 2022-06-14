@@ -45,7 +45,7 @@ class KnowBaseController extends Controller
     }
 
     private function getBooks($access = 0) {
-
+        
         $books = [];
         if(auth()->user()->is_admin == 1)  {
             $books = KnowBase::whereNull('parent_id')->get('id')->pluck('id')->toArray();
@@ -57,37 +57,38 @@ class KnowBaseController extends Controller
             $user_id =  auth()->id();
 
             $up = KnowBaseModel::
-                where(function($query) use ($group_ids) {
+                where(function($query) use ($group_ids, $access) {
                     $query->where('model_type', 'App\\ProfileGroup')
                         ->whereIn('model_id', $group_ids);
+                    if($access == 2) $query->where('access', 2);
                 })
-                ->orWhere(function($query) use ($position_id) {
+                ->orWhere(function($query) use ($position_id, $access) {
                     $query->where('model_type', 'App\\Position')
                         ->where('model_id', $position_id);
+                    if($access == 2) $query->where('access', 2);
                 })
-                ->orWhere(function($query) use ($user_id) {
+                ->orWhere(function($query) use ($user_id, $access) {
                     $query->where('model_type', 'App\\User')
                         ->where('model_id', $user_id);
+                    if($access == 2) $query->where('access', 2);
                 });
 
-            if($access == 2) $up->where('access',2);
-            
             $up = $up->get('book_id')
                 ->pluck('book_id')
                 ->toArray();
-
+               
             $books = array_merge($books, $up);
             
-            
+           
             $books_with_read_access =  KnowBase::withTrashed()
                 ->whereNull('parent_id')
                 ->whereIn('access', $access == 2 ? [2] : [1,2])
                 ->get('id')->pluck('id')
                 ->toArray();
-
+                
             $books = array_merge($books, $books_with_read_access);
         }
-       
+   
             
         return $books;
     }
@@ -144,6 +145,7 @@ class KnowBaseController extends Controller
 
     public function getTree(Request $request)
     {
+        
         $trees = [];
         $book = null;
 
@@ -171,7 +173,8 @@ class KnowBaseController extends Controller
                 ->where('id', $request->id)
                 ->first();
 
-            if($book) $book->access = in_array($book->id, $this->getBooks(2)) ? 2 : 1;
+       
+           if($book) $book->access = in_array($book->id, $this->getBooks(2)) ? 2 : 1;
             
         }
 
