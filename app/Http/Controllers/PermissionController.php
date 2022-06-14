@@ -51,6 +51,7 @@ class PermissionController extends Controller
             ];
 
             $_roles = [];
+
             foreach ($user->roles as $key => $role) {
                 $_roles[] = [
                     'id' => $role->id,

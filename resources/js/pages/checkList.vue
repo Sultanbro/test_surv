@@ -77,7 +77,7 @@
                 @close="showCheckSideBar = false"
                 width="65%">
             <div class="col-md-12 p-0">
-                <div class="col-12 p-0">
+                <div class="col-12 p-0 mt-5">
                   <div class="row">
                     <div class="col-md-3 ml-3">
                       <p>Для группы чек лист</p>
@@ -106,7 +106,9 @@
                         </div>
                         <div class="popupShowSelected">
                           <div v-if="selectedRole.role_1" >
+                            <input style="position: absolute" class="form-control selected_search"  v-model="selected_search"  @keyup="searchSelected('1')" type="text"   placeholder="поиск по Группам"   >
                             <p class="list-role"  v-for="item in  groups_arr">
+
 
                               <a @click="addDivBlock(item.name,item.code,'1')"  v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
                                 <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
@@ -117,6 +119,7 @@
                             </p>
                           </div>
                           <div v-if="selectedRole.role_2">
+                            <input class="form-control selected_search" v-model="selected_search"  @keyup="searchSelected('2')" type="text"   placeholder="поиск по Должностям"   >
                             <p class="list-role"  v-for="item in  positions_arr">
                               <a @click="addDivBlock(item.name,item.code,'2')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
                                 <i class="fas fa-arrow-alt-circle-right style-icons" ></i>
@@ -127,6 +130,7 @@
                           </div> 
 
                           <div v-if="selectedRole.role_3">
+                            <input class="form-control selected_search" v-model="selected_search"  @keyup="searchSelected('3')" type="text"   placeholder="поиск по Пользователям"   >
                             <p class="list-role"  v-for="item in   allusers_arr">
                               <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex" v-if=" item != undefined ">
                                 <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
@@ -153,7 +157,8 @@
                           </div>
                       </div>
 
-                      <div class="responsibility" v-if="responsibility.block">
+                      <div style="display: none">
+                        <div class="responsibility" v-if="responsibility.block">
 
                           <span v-if="responsibility.input === false">
                               +
@@ -161,34 +166,29 @@
                           <span style="padding: 0px 12px 0px 12px;top: 2px" v-else>
                               -
                           </span>
-
-
                           <a href="#" v-if="responsibility.input === false"  @click="responsibility.input = true" >
-                                Добавить ответственного лица
+                            Добавить ответственного лица
                           </a>
-
                           <a href="#"  v-if="responsibility.input === true"  @click="responsibility.input = false" >
-                                Скрыть ответственного лица
+                            Скрыть ответственного лица
                           </a>
+                          <input v-if="responsibility.input" v-model="responsibility.inputText"
+                        </div>
+                        <div class="resultR" v-if="responsibility.result_text">
+                          <ul class="p-0" v-if="responsibility.results.length > 0">
 
-
-                        <input v-if="responsibility.input" v-model="responsibility.inputText"
-                               @keyup="fetchResponsibility()"  style="position:absolute;" class="form-control responsibility-input"  placeholder="Email Ответственного лица" name="responsibility">
-                      </div>
-                      <div class="resultR" v-if="responsibility.result_text">
-                           <ul class="p-0" v-if="responsibility.results.length > 0">
-
-                             <li class="responsibilityLi" v-for="results in responsibility.results">
-                               <a @click.prevent="addResponsibility(results.email)">
-                                 {{results.email}}
-                               </a>
-                             </li>
-                           </ul>
-                           <ul v-else class="p-0">
-                             <li class="responsibilityLi">
-                               <a>Нет Найденных Ответсвенных лиц</a>
-                             </li>
-                           </ul>
+                            <li class="responsibilityLi" v-for="results in responsibility.results">
+                              <a @click.prevent="addResponsibility(results.email)">
+                                {{results.email}}
+                              </a>
+                            </li>
+                          </ul>
+                          <ul v-else class="p-0">
+                            <li class="responsibilityLi">
+                              <a>Нет Найденных Ответсвенных лиц</a>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
 
                     </div>
@@ -270,9 +270,9 @@
         name: "TableQuarter",
 
         props: {
-            groups:{},
+            // groups:{},
             // allusers:{},
-            positions:{}
+            // positions:{}
         },
         components: {
             Multiselect
@@ -302,7 +302,6 @@
                 allValueArray:[],
                 groups_arr:[],
                 allusers_arr:[],
-                allusers:[],
                 positions_arr:[],
                 selectedRole:{
                   role_1:true,
@@ -317,7 +316,7 @@
                     result_text : false,
                 },
                 showModalCheck : false,
-
+                selected_search:null,
 
             }
         },
@@ -338,54 +337,60 @@
             this.addCheckList()
             this.getUsers()
         },
-        mounted() {
-          this.positions_arr = this.positions;
-          if (Object.keys(this.groups).length > 0) {
-            this.groups_arr = this.groups;
-            const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
-              code: arr[0],
-              name: arr[1],
-              checked:false,
-              type:1,
-            }));
-
-            this.groups_arr = arrayFailedGr
-          }
-          if (Object.keys(this.positions_arr).length > 0) {
-          const arrayFailedGr = Object.entries(this.positions_arr).map((arr) => ({
-              code: arr[0],
-              name: arr[1],
-              checked:false,
-              type:2,
-            }));
-          this.positions_arr = arrayFailedGr
-          }
-        },
 
         methods:{
+            obrabotkaArray(groups,positions,allusers){
+
+
+
+              if (Object.keys(groups).length > 0) {
+                this.groups_arr = groups;
+                const arrayFailedGr = Object.entries(this.groups_arr).map((arr) => ({
+                  code: arr[0],
+                  name: arr[1],
+                  checked:false,
+                  type:1,
+                }));
+
+                this.groups_arr = arrayFailedGr
+              }
+
+
+              this.positions_arr = positions;
+              if (Object.keys(this.positions_arr).length > 0) {
+                const arrayFailedGr = Object.entries(this.positions_arr).map((arr) => ({
+                  code: arr[0],
+                  name: arr[1],
+                  checked:false,
+                  type:2,
+                }));
+                this.positions_arr = arrayFailedGr
+              }
+
+
+              if (allusers.length > 0) {
+                for (let i = 0; i <  allusers.length; i++) {
+                    this.allusers_arr[i] = {
+                      name: allusers[i]['name'] + '  ' + allusers[i]['last_name'],
+                      code: allusers[i]['id'],
+                      checked:false,
+                      type:3,
+                    }
+
+                }
+              }
+
+
+
+
+            },
             getUsers(){
               axios.post('/timetracking/settings/get/modal/', {
                 type:'3',
               }).then(response => {
-                this.allusers = response.data
-                console.log(response.data,'DB result USERS')
-                console.log(this.allusers,'before Users')
-                if (this.allusers.length > 0) {
-                  for (let i = 0; i < this.allusers.length; i++) {
-                    if (this.allusers[i]['name'] != null && this.allusers[i]['name'].length > 1) {
-                      this.allusers_arr[i] = {
-                        name: this.allusers[i]['name'] + '  ' + this.allusers[i]['last_name'],
-                        code: this.allusers[i]['id'],
-                        checked:false,
-                        type:3,
-                      }
-                    }
-                  }
-                }
+                // console.log(response);
+                this.obrabotkaArray(response.data['groups'],response.data['positions'],response.data['users'])
               })
-              console.log(this.allusers_arr,'after Users');
-
-
             },
             addResponsibility(email){
             this.responsibility.inputText = null;
@@ -406,8 +411,19 @@
               this.responsibility.results = response.data
               this.responsibility.result_text = true;
             })
+           },
+            searchSelected(type) {
+            axios.post('/timetracking/settings/auth/check/search/selected', {
+              type:type,
+              query:this.selected_search,
+            }).then(response => {
+              this.allusers_arr = []
+              this.groups_arr = []
+              this.positions_arr = []
 
+              this.obrabotkaArray(response.data['groups'],response.data['positions'],response.data['users'])
 
+            })
            },
             highlightMatches(text) {
             const matchExists = text.toLowerCase().includes(this.filter.toLowerCase());
@@ -424,7 +440,7 @@
                 this.allValueArray = [];
                 this.placeholderSelect = true
                 this.refreshArray()
-
+                this.getUsers()
 
                 this.arrCheckInput=
                       [
@@ -441,36 +457,63 @@
 
                 this.validateInput(arrCheckInput,this.countView)
                 // console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
+              console.log(arrCheckInput,'saveEditCheck')
 
 
+
+
+
+              if (this.allValueArray.length > 0){
                 if (this.errors.save){
-                    axios.post('/timetracking/settings/edit/check/save/', {
-                        check_id:this.check_id,
-                        allValueArray:this.allValueArray,
-                        countView:this.countView,
-                        arrCheckInput:arrCheckInput,
-                        valueFindGr:this.valueFindGr
-                    }).then(response => {
+                  axios.post('/timetracking/settings/edit/check/save/', {
+                    check_id:this.check_id,
+                    allValueArray:this.allValueArray,
+                    countView:this.countView,
+                    arr_check_input:arrCheckInput,
+                    valueFindGr:this.valueFindGr
+                  }).then(response => {
 
-                      console.log(response,'99999',response.data)
+                    console.log(response,'results')
 
-                        if (response.data.type == 1 ){
-                            this.$message.error('Ошибка ');
-                            this.errors.show = true;
-                            this.errors.message = 'Добавленный чек лист существует';
-                        }else {
-                            this.$message.success('Успешно изменен');
-                            this.errors.show = false;
-                            this.showCheckSideBar = false;
-                            this.viewCheckList()
-                        }
-                    })
+                    if (response.data.success === false){
+                      this.errors.msg = null;
+                      this.errors.show = true;
+                      if (response.data.exists[0]['item_type'] == 1){
+                        this.errors.message =  'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
+                        this.errors.msg = 'Данная Группа ' +response.data.exists[0]['title']+  ' Ранне Добавлено  ';
+                        this.$message.error(this.errors.msg);
+                      }else if(response.data.exists[0]['item_type'] == 2){
+                        this.errors.message = 'Данная ' +response.data.exists[0]['title']+  ' Должность Ранне Добавлено ';
+                        this.errors.msg = 'Данная ' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
+                        this.$message.error(this.errors.msg);
+                      }else if(response.data.exists[0]['item_type'] == 3){
+                        this.errors.message = 'Данный Пользователь '+response.data.exists[0]['title']+  ' Ранне Добавлено';
+                        this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+  ' Ранне Добавлено';
+                        this.$message.error(this.errors.msg);
+                      }
+                    }else {
+                      this.$message.success('Успешно изменен');
+                      this.errors.show = false;
+                      this.showCheckSideBar = false;
+                      this.viewCheckList()
+
+
+                    }
+
+
+                  })
                 }
+              }else{
+                this.errors.show = true
+                this.errors.message = 'Выбрать Кому будем чик листы добавлять'
+
+
+              }
+
 
 
             },
             editCheck(check_id,type){
-
 
                 this.addButton = false
                 this.editButton = true
@@ -478,11 +521,14 @@
                 this.check_id = check_id
                 this.errors.show = false
 
+                this.getUsers()
+
                 axios.post('/timetracking/settings/edit/check', {
                     check_id:check_id,
                     type:type,
                 }).then(response => {
 
+                    console.log(response,'click')
 
                     this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
 
@@ -495,7 +541,8 @@
                     this.editValueThis.arr= response.data
 
 
-
+                    this.showModalCheck = true,
+                    this.selectedRoles(type)
 
 
                     // if (response.data.item_type == 1){
@@ -540,7 +587,7 @@
                 this.validateInput(this.arrCheckInput,this.countView)
 
 
-              if (this.allValueArray.length > 0){
+              if (this.allValueArray.length > 0 || this.arrCheckInput.length > 1){
                 if (this.errors.save){
                   axios.post('/timetracking/settings/add/check', {
                     before: () => {
@@ -548,9 +595,13 @@
                     },
                     allValueArray:this.allValueArray,
                     countView:this.countView,
-                    arrCheckInput:this.arrCheckInput,
+                    arr_check_input:this.arrCheckInput,
 
                   }).then(response => {
+
+
+                    console.log(response,'077')
+
 
                     if (response.data.success == false){
                       this.errors.show = false;
@@ -563,12 +614,21 @@
                           if (response.data.exists[0]['item_type'] == 1){
                             this.errors.msg = 'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
                             this.$message.error(this.errors.msg);
+                            this.errors.show = true
+                            this.errors.message =  'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+
+
                           }else if(response.data.exists[0]['item_type'] == 2){
-                            this.errors.msg = 'Данная ' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
+                            this.errors.msg = 'Данная Должность' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
                             this.$message.error(this.errors.msg);
+                            this.errors.show = true
+                            this.errors.message =  'Данная Должность ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+
                           }else if (response.data.exists[0]['item_type'] == 3){
                             this.errors.msg = 'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено';
                             this.$message.error(this.errors.msg);
+                            this.errors.show = true
+                            this.errors.message =  'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
                           }
                         }
                       }
@@ -654,10 +714,14 @@
                 this.errors.show = false;
             },
             selectedRoles(type){
+
+              this.selected_search = null
+
               if (type == 1){
                 this.selectedRole.role_1 = true
                 this.selectedRole.role_2 = false
                 this.selectedRole.role_3 = false
+
               }else if (type == 2){
                 this.selectedRole.role_1 = false
                 this.selectedRole.role_2 = true
@@ -674,12 +738,11 @@
               this.placeholderSelect = false;
               this.responsibility.block = true;
 
-
-
               if (edit == 'edit'){
                 this.allValueArray = [];
                 this.selectedRoles(type)
                 this.refreshArray()
+
               }
 
               if (this.allValueArray.length > 0){
@@ -705,29 +768,47 @@
                 });
 
 
+
+
+
                 if (type == 1){
-                  for (var i = 0; i < this.groups_arr.length;i++){
-                    if (this.groups_arr[i]['code'] == id){
-                      this.groups_arr[i]['checked'] = true
-                    }
-                  }
+                  this.groups_arr.forEach(el => {
+                      if (el['code'] == id){
+
+                        el['checked'] = true
+                      }
+                  });
+                  console.log(this.flag_type,'wwwss',id,'aaaaa',type)
+                  console.log(this.groups_arr,'wwwss',id,'aaaaa',type)
                 }else if(type == 2){
-                  for (var i = 0; i < this.positions_arr.length;i++){
-                    if (this.positions_arr[i]['code'] == id){
-                      this.positions_arr[i]['checked'] = true
-                    }
-                  }
+                  this.positions_arr.forEach(el => {
+                      if (el['code'] === id){
+                        el['checked'] = true
+                      }
+                  });
                 }else if(type == 3){
 
-
-
-
-
-                  for (var i = 0; i < this.allusers_arr.length;i++){
-                    if (this.allusers_arr[i]['code'] == id){
-                      this.allusers_arr[i]['checked'] = true
+                  this.allusers_arr.forEach(el => {
+                    if (el['code'] !== undefined){
+                      if (el['code'] === id){
+                        el['checked'] = true
+                      }
                     }
-                  }
+                  });
+
+
+
+
+                  // for (var i = 0; i < this.allusers_arr.length;i++){
+                  //   if ( this.allusers_arr[i]['code']  !== undefined){
+                  //     console.log(this.allusers_arr[i]['code'],'xzxzxzx',id)
+                  //     if (this.allusers_arr[i]['code'] == id){
+                  //       this.allusers_arr[i]['checked'] = true
+                  //     }
+                  //   }
+                  // }
+
+
                 }
               }
             },
@@ -771,22 +852,18 @@
           },
             refreshArray(){
 
-              if (this.groups_arr.length > 0){
-                for (var i = 0; i < this.groups_arr.length;i++){
-                  this.groups_arr[i]['checked'] = false
-                }
-              }
+              this.groups_arr.forEach(el => {
+                el['checked'] = false
+              });
 
-              if (this.positions_arr.length > 0){
-                for (var i = 0; i < this.positions_arr.length;i++){
-                  this.positions_arr[i]['checked'] = false
-                }
-              }
-  
+              this.positions_arr.forEach(el => {
+                el['checked'] = false
+              });
 
               this.allusers_arr.forEach(el => {
                 el['checked'] = false
               });
+
               // if (this.allusers_arr.length > 0){
               //   for (var i = 0; i < this.allusers_arr.length;i++){
               //     this.allusers_arr[i]['checked'] = false
@@ -802,6 +879,12 @@
 
 <style lang="scss" scoped>
 
+  .selected_search{
+    top: -27px;
+    position: absolute;
+    border-radius: inherit;
+    padding: 2px;
+  }
   .isActiveRole{
     background-color: #2fc6f6;
   }

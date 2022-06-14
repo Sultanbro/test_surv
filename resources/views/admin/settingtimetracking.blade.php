@@ -43,11 +43,13 @@
                                     ></groups>
                             </div>
                             @endif
+
                             @if($active_tab == 4)
                             <div class="tab-pane fade  show active   p-3" id="nav-fines" role="tabpanel" aria-labelledby="nav-fines-tab">
                                 <fines/>
                             </div>
                             @endif
+
                             @if($active_tab == 5 && auth()->user()->is_admin)
                             <div class="tab-pane fade show active   p-3" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
                                 <s-notifications groups_with_id="{{json_encode($groupsWithId) }}"
@@ -56,6 +58,7 @@
                                 />
                             </div>
                             @endif
+
                             @if($active_tab == 6)
                             <div class="tab-pane fade show active   p-3" id="nav-bookgroups" role="tabpanel" aria-labelledby="nav-bookgroups-tab">
                                 <bookgroups></bookgroups>
