@@ -462,6 +462,7 @@ Route::middleware([
     Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
     Route::post('/timetracking/settings/auth/check/user/responsibility', [CheckListController::class, 'responsibility']); ///   Добавить ответственного лица
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
+    Route::post('/timetracking/settings/auth/check/search/selected', [CheckListController::class, 'searchSelected']); ///   ����� ����� ��������� �������������
 
 
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);

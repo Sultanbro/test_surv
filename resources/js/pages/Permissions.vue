@@ -290,8 +290,12 @@ export default {
       let loader = this.$loading.show();
       
       this.permissions = [];
+            console.log(this.role.perms);
       Object.keys(this.role.perms).forEach((key, index) => {
         if(this.role.perms[key]) this.permissions.push(key)
+
+  
+  
       });
 
 

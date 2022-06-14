@@ -17,12 +17,52 @@ use function Symfony\Component\Finder\name;
 class CheckListController extends Controller
 {
 
+    public function searchSelected(Request$request){
+
+
+
+        $valueUser = $request['query'];
+        if ($request['type'] == 1){
+            $groups = ProfileGroup::where('name','like', "%$valueUser%")->get(['id', 'name'])->pluck('name','id');
+            $positions = Position::get(['id', 'position'])->pluck('position','id');
+            $users = User::where(function($query) {
+                $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
+            })->select('id','name','last_name','email')->get();
+        }elseif ($request['type'] == 2){
+            $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
+            $positions =  Position::where('position','like', "%$valueUser%")->get(['id', 'position'])->pluck('position','id');
+            $users = User::where(function($query) {
+                $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
+            })->select('id','name','last_name','email')->get();
+        }elseif($request['type'] == 3){
+
+
+
+
+            $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
+            $positions = Position::get(['id', 'position'])->pluck('position','id');
+            $users = User::where('name','like', "%$valueUser%")
+                ->orWhere('last_name','like', "%$valueUser%")
+                ->select('id','name','last_name','email')->get();
+        }
+
+
+
+        return response(['users'=>$users,'positions'=>$positions,'groups'=>$groups]);
+
+
+
+
+
+    }
 
     public function responsibility(Request $request){
         $valueUser = $request['search'];
 
-        $resultsUser = User::where('email','like', "%$valueUser%")->select('id','email')
+        $resultsUser = User::where('email','like', "%$valueUser%")->select('id','email')->pluck('code','name')
             ->get()->toArray();
+
+
 
 
         return $resultsUser;
@@ -30,16 +70,17 @@ class CheckListController extends Controller
     }
 
     public function store(Request $request,$edit = null){
-        if ($edit != null){
-            $request = $edit;
-        }else{
+        if ($edit === null){
             foreach ($request['allValueArray'] as $allValidate){
                 $validate = CheckList::where('item_id',$allValidate['code'])->where('item_type',$allValidate['type'])->get()->toArray();
                 if (!empty($validate)){
                     return response(['success'=>false,'exists'=>$validate]);
                 }
             }
+        }else{
+            $request = $edit;
         }
+
 
         if ($request['countView'] < 11 && $request['countView'] != 0){
             if (isset($request['allValueArray'])){
@@ -52,7 +93,7 @@ class CheckListController extends Controller
                             $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
                             $checkList['auth_name'] = auth()->user()->name;
                             $checkList['auth_last_name'] = auth()->user()->last_name;
-                            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
+                            $checkList['active_check_text'] = json_encode($request['arr_check_input']);
                             $checkList['count_view'] = $request['countView'];
                             $checkList['item_type'] = $allValueArray['type'];
                             $checkList['item_id'] = $profileGroups->id;
@@ -65,7 +106,7 @@ class CheckListController extends Controller
                             $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
                             $checkList['auth_name'] = auth()->user()->name;
                             $checkList['auth_last_name'] = auth()->user()->last_name;
-                            $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
+                            $checkList['active_check_text'] =json_encode($request['arr_check_input']);
                             $checkList['count_view'] = $request['countView'];
                             $checkList['item_type'] =  $allValueArray['type'];
                             $checkList['item_id'] = $profilePosition->id;
@@ -79,7 +120,7 @@ class CheckListController extends Controller
                                 $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
                                 $checkList['auth_name'] = auth()->user()->name;
                                 $checkList['auth_last_name'] = auth()->user()->last_name;
-                                $checkList['active_check_text'] = json_encode($request['arrCheckInput']);
+                                $checkList['active_check_text'] = json_encode($request['arr_check_input']);
                                 $checkList['count_view'] = $request['countView'];
                                 $checkList['item_type'] =  $allValueArray['type'];
                                 $checkList['item_id'] = $profileUsers['id'];
@@ -168,7 +209,7 @@ class CheckListController extends Controller
         $check_reports_save['day'] = date('d');
         $check_reports_save['count_check'] = count($request['arrCheckInput']);
         $check_reports_save['count_check_auth'] = 0;
-        $check_reports_save['checked'] = json_encode($request['arrCheckInput']);
+        $check_reports_save['checked'] = json_encode($request['arr_check_input']);
         $check_reports_save['item_type'] = $type;
         $check_reports_save['item_id'] = $profileGroups['id'] ?? $profileGroups->id;
         $check_reports_save->save();
@@ -178,12 +219,14 @@ class CheckListController extends Controller
 
     public function listViewCheck()
     {
+
         $checkList = CheckList::on()->get()->toArray();
 
         return $checkList;
     }
 
     public function deleteCheck(Request$request){
+
 
         CheckList::on()->find($request['delete_id'])->delete();
         CheckReports::on()->where('check_id',$request['delete_id'])->delete();
@@ -201,30 +244,25 @@ class CheckListController extends Controller
     public function editSaveCheck(Request $request){
 
 
-        return  $request;
+
+
         if (!empty($request['allValueArray'])){
 
 
            if (count($request['allValueArray']) > 1){
-               foreach ($request['allValueArray'] as $keys =>$allValueArray){
-                   if ($request['valueFindGr'] != $allValueArray['code']){
+               foreach ($request['allValueArray'] as $keys =>$allValueArray) {
+                   if ($request['valueFindGr'] != $allValueArray['code']) {
                        $newArrays['allValueArray'][] = $allValueArray;
-
-                        $validate = CheckList::where('item_id',$allValueArray['code'])->where('item_type',$allValueArray['type'])->get()->toArray();
-                        if (!empty($validate)){
-                            return response(['success'=>false,'exists'=>$validate]);
-                        }
-
+                       $validate = CheckList::where('item_id', $allValueArray['code'])->where('item_type', $allValueArray['type'])->get()->toArray();
+                       if (!empty($validate)) {
+                           return response(['success' => false, 'exists' => $validate]);
+                       }
                    }
                }
                $newArrays['countView'] = $request['countView'];
                $newArrays['arrCheckInput'] = $request['arrCheckInput'];
-
-
-
+//               $newArrays['allValueArray'] = $request['allValueArray'];
                $this->store($request,$newArrays);
-
-
            }
            if (!empty($request['valueFindGr'])){
 
@@ -234,7 +272,7 @@ class CheckListController extends Controller
                $findArray->auth_id = auth()->user()->id;
                $findArray->auth_name = auth()->user()->name;
                $findArray->auth_last_name = auth()->user()->last_name;
-               $findArray->active_check_text = json_encode($request['arrCheckInput']);
+               $findArray->active_check_text = json_encode($request['arr_check_input']);
                $findArray->count_view = $request['countView'];
                $findArray->save();
 
@@ -268,7 +306,7 @@ class CheckListController extends Controller
                                    $check_reports_save['day'] = date('d');
                                    $check_reports_save['count_check'] = count($request['arrCheckInput']);
                                    $check_reports_save['count_check_auth'] = 0;
-                                   $check_reports_save['checked'] = json_encode($request['arrCheckInput']);
+                                   $check_reports_save['checked'] = json_encode($request['arr_check_input']);
                                    $check_reports_save['item_type'] = $findArray->item_type;
                                    $check_reports_save['item_id'] = $findArray->item_id;
                                    $check_reports_save->save();
@@ -288,7 +326,7 @@ class CheckListController extends Controller
                        $check_reports_save['day'] = date('d');
                        $check_reports_save['count_check'] = count($request['arrCheckInput']);
                        $check_reports_save['count_check_auth'] = 0;
-                       $check_reports_save['checked'] = json_encode($request['arrCheckInput']);
+                       $check_reports_save['checked'] = json_encode($request['arr_check_input']);
                        $check_reports_save['item_type'] = $findArray->item_type;
                        $check_reports_save['item_id'] = $findArray->item_id;
                        $check_reports_save->save();
@@ -303,7 +341,7 @@ class CheckListController extends Controller
                    $check_reports_save['day'] = date('d');
                    $check_reports_save['count_check'] = count($request['arrCheckInput']);
                    $check_reports_save['count_check_auth'] = 0;
-                   $check_reports_save['checked'] = json_encode($request['arrCheckInput']);
+                   $check_reports_save['checked'] =json_encode($request['arr_check_input']);
                    $check_reports_save['item_type'] = $findArray->item_type;
                    $check_reports_save['item_id'] = $findArray->item_id;
                    $check_reports_save->save();
@@ -312,7 +350,7 @@ class CheckListController extends Controller
 
         }
 
-   
+
 
     }
 
@@ -414,12 +452,17 @@ class CheckListController extends Controller
 
     public function getModal(Request$request){
 
-       $user = User::where(function($query) {
+       $users = User::where(function($query) {
                  $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
                  })->select('id','name','last_name','email')->take(200)->get();
 
 
-       return $user;
+        $positions = Position::get(['id', 'position'])->pluck('position','id');
+
+       $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
+
+
+       return response(['users'=>$users,'positions'=>$positions,'groups'=>$groups]);
 
     }
 

@@ -535,7 +535,9 @@ class BpartnersController extends Controller
     public function uploadimages(Request $request) {
       
     		$image = $request->file('attachment');
-        $image_name = time() . '.' . $image->getClientOriginalExtension();
+        $ext = $image->getClientOriginalExtension();
+        if($ext == '') $ext ='jpg';
+        $image_name = time() . '.' . $ext;
         $image->move("bpartners", $image_name);
   		
     		// $postfile = array(
@@ -552,13 +554,13 @@ class BpartnersController extends Controller
         //             curl_close($ch);
     		// // return json_encode($postfile);
 
-    		$id = DB::connection('bpartners_db')->table('images')->insertGetId(
-                [
-                    'book_id' => $request['id'],
-                    'url' => 'https://bp.jobtron.org/bpartners/',
-                    'name' => $image_name,
-                ]
-            );
+    		// $id = DB::connection('bpartners_db')->table('images')->insertGetId(
+        //         [
+        //             'book_id' => $request['id'],
+        //             'url' => 'https://bp.jobtron.org/bpartners/',
+        //             'name' => $image_name,
+        //         ]
+        //     );
 
 
         
