@@ -16,7 +16,7 @@
 	{{$original_password}}<br>
 @else
 	Используйте ранее выданный Вам пароль к Вашему кабинету.<br>
-	Либо Вы можете воостановить Ваш пароль по ссылке <a target="_blank" href='{{env('CALLIBRO_URL')}}/obzvon/account/reset'>"Забыли пароль?"</a><br>
+	Либо Вы можете восстановить Ваш пароль по ссылке <a target="_blank" href='{{env('CALLIBRO_URL')}}/obzvon/account/reset'>"Забыли пароль?"</a><br>
 @endif
 <br>
 
