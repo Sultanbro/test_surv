@@ -456,6 +456,9 @@
                     arrCheckInput:arrCheckInput,
                     valueFindGr:this.valueFindGr
                   }).then(response => {
+
+                    console.log(response,'results')
+
                     if (response.data.success === false){
                       this.errors.msg = null;
                       this.errors.show = true;
@@ -497,7 +500,8 @@
             editCheck(check_id,type){
 
 
-              console.log('click');
+              console.log('clicksss',check_id,type);
+
                 this.addButton = false
                 this.editButton = true
                 this.showCheckSideBar = true
@@ -755,9 +759,6 @@
                     }
                   }
                 }else if(type == 3){
-
-
-
 
                   this.allusers_arr.forEach(el => {
                     if (el['code'] !== undefined){

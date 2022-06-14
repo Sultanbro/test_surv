@@ -103,8 +103,6 @@ class GetWorkedHours extends Command
 
                 $correct_minutes = Kaztel::getWorkedMinutes($user->email, $this->date);
 
-                $conversions = Kaztel::getConversionAvg(Carbon::parse($this->date));
-
                 $this->saveASI([
                     'date' => $this->startOfMonth,
                     'employee_id' => $user->id,
@@ -125,13 +123,6 @@ class GetWorkedHours extends Command
                     'group_id' => $group_id,
                     'type' => 134 // звонки от 10 секунд
                 ], $correct_minutes);
-
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 136 // Конверсии
-                ], $conversions);
 
             }
             
@@ -234,9 +225,9 @@ class GetWorkedHours extends Command
                 'date' => $this->startOfMonth
             ])->first();
 
-            if($as && array_key_exists(Eurasian::S_CLOSED_CARDS, $as->data)) {
+            if($as && array_key_exists(Kaztel::S_CLOSED_CARDS, $as->data)) {
                 
-                $closed_cards = Kaztel::getClosedCards($this->date);
+                $closed_cards = Kaztel::getClosedCards($this->date, $user->email);
 
                 $data = $as->data;
                 $data[Kaztel::S_CLOSED_CARDS][$this->day] = $closed_cards;

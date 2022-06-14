@@ -102,13 +102,13 @@
       <booklist 
         ref="booklist"
         :trees="trees" 
-        :can_edit="can_edit"
+        :can_edit="activeBook.access == 2 || can_edit"
         :parent_name="activeBook.title" 
         :parent_id="activeBook.id"
         :show_page_id="show_page_id"
         @back="back" 
         @toggleMode="toggleMode" 
-        :mode="mode"
+        :mode="activeBook.access == 2 || can_edit ? 'edit' : 'read'"
         :auth_user_id="auth_user_id" />
     </div>
 

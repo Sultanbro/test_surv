@@ -32,19 +32,18 @@ class CheckListController extends Controller
     public function store(Request $request,$edit = null){
         if ($edit != null){
             $request = $edit;
+        }else{
+            foreach ($request['allValueArray'] as $allValidate){
+                $validate = CheckList::where('item_id',$allValidate['code'])->where('item_type',$allValidate['type'])->get()->toArray();
+                if (!empty($validate)){
+                    return response(['success'=>false,'exists'=>$validate]);
+                }
+            }
         }
+
         if ($request['countView'] < 11 && $request['countView'] != 0){
             if (isset($request['allValueArray'])){
 
-
-                foreach ($request['allValueArray'] as $allValidate){
-                    $validate = CheckList::where('item_id',$allValidate['code'])->where('item_type',$allValidate['type'])->get()->toArray();
-                    if (!empty($validate)){
-                        return response(['success'=>false,'exists'=>$validate]);
-                    }
-                }
-
-              
                 foreach ($request['allValueArray'] as $allValueArray){
                         if ($allValueArray['type'] == 1){
                             $profileGroups = ProfileGroup::on()->find($allValueArray['code']);
@@ -169,7 +168,7 @@ class CheckListController extends Controller
         $check_reports_save['day'] = date('d');
         $check_reports_save['count_check'] = count($request['arrCheckInput']);
         $check_reports_save['count_check_auth'] = 0;
-        $check_reports_save['checked'] = json_encode($request['arrCheckInput']);;
+        $check_reports_save['checked'] = json_encode($request['arrCheckInput']);
         $check_reports_save['item_type'] = $type;
         $check_reports_save['item_id'] = $profileGroups['id'] ?? $profileGroups->id;
         $check_reports_save->save();
@@ -201,7 +200,8 @@ class CheckListController extends Controller
 
     public function editSaveCheck(Request $request){
 
-       
+
+        return  $request;
         if (!empty($request['allValueArray'])){
 
 
@@ -210,12 +210,10 @@ class CheckListController extends Controller
                    if ($request['valueFindGr'] != $allValueArray['code']){
                        $newArrays['allValueArray'][] = $allValueArray;
 
-
-
-                    $validate = CheckList::where('item_id',$allValueArray['code'])->where('item_type',$allValueArray['type'])->get()->toArray();
-                    if (!empty($validate)){
-                        return response(['success'=>false,'exists'=>$validate]);
-                    }
+                        $validate = CheckList::where('item_id',$allValueArray['code'])->where('item_type',$allValueArray['type'])->get()->toArray();
+                        if (!empty($validate)){
+                            return response(['success'=>false,'exists'=>$validate]);
+                        }
 
                    }
                }
@@ -270,6 +268,7 @@ class CheckListController extends Controller
                                    $check_reports_save['day'] = date('d');
                                    $check_reports_save['count_check'] = count($request['arrCheckInput']);
                                    $check_reports_save['count_check_auth'] = 0;
+                                   $check_reports_save['checked'] = json_encode($request['arrCheckInput']);
                                    $check_reports_save['item_type'] = $findArray->item_type;
                                    $check_reports_save['item_id'] = $findArray->item_id;
                                    $check_reports_save->save();
@@ -289,6 +288,7 @@ class CheckListController extends Controller
                        $check_reports_save['day'] = date('d');
                        $check_reports_save['count_check'] = count($request['arrCheckInput']);
                        $check_reports_save['count_check_auth'] = 0;
+                       $check_reports_save['checked'] = json_encode($request['arrCheckInput']);
                        $check_reports_save['item_type'] = $findArray->item_type;
                        $check_reports_save['item_id'] = $findArray->item_id;
                        $check_reports_save->save();
@@ -303,6 +303,7 @@ class CheckListController extends Controller
                    $check_reports_save['day'] = date('d');
                    $check_reports_save['count_check'] = count($request['arrCheckInput']);
                    $check_reports_save['count_check_auth'] = 0;
+                   $check_reports_save['checked'] = json_encode($request['arrCheckInput']);
                    $check_reports_save['item_type'] = $findArray->item_type;
                    $check_reports_save['item_id'] = $findArray->item_id;
                    $check_reports_save->save();

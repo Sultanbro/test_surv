@@ -102,9 +102,12 @@ export default {
     methods: {
         checkSelectedAll() {
             if(this.values.length == 1
-                && this.values[0].id == 0
-                && this.values[0].type == 0) {
+                && this.values[0]['id']== 0
+                && this.values[0]['type'] == 0) {
                 this.selected_all = true;
+                 console.log('okay');
+            } else {
+                console.log('wtf');
             }
         },
         
