@@ -359,7 +359,7 @@ class Kaztel
         
         $aggrees = 0; // общее отработанное время
         $dialer_id = 443;
-        $script_status_ids = [13470, 13471]; // Cтатус в скрипте: Дата Визита
+        $script_status_ids = [13471]; // Cтатус в скрипте: Оформлена заявка
 
         if($account) {
             $call_account_id = $account->id;
@@ -405,7 +405,6 @@ class Kaztel
                && array_key_exists('avg', $as->data[self::S_AVG_CONVERSION])) {
             $value = $as->data[self::S_AVG_CONVERSION]['avg'];
         }
-        
         return (float)$value;
     }
 
@@ -450,4 +449,6 @@ class Kaztel
         
         return $cards->get()->count();
     }
+
+
 }

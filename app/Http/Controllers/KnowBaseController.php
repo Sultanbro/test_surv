@@ -100,6 +100,12 @@ class KnowBaseController extends Controller
 
             $books = array_merge($books, $ub);
 
+
+            $books_with_read_access =  KnowBase::withTrashed()->where('access', 1)->get('id')->pluck('id')
+                ->toArray();
+
+            $books = array_merge($books, $books_with_read_access);
+            
         
         }
         
@@ -286,34 +292,47 @@ class KnowBaseController extends Controller
             
             KnowBaseModel::where('book_id', $request->id)->delete();
 
-            foreach ($request['who_can_read'] as $key => $item) {
-                if($item['type'] == 1) $model = 'App\\User';
-                if($item['type'] == 2) $model = 'App\\ProfileGroup';
-                if($item['type'] == 3) $model = 'App\\Position';
-
-                KnowBaseModel::create([
-                    'model_type' => $model,
-                    'model_id' => $item['id'],
-                    'book_id' => $request->id,
-                    'access' => 1
-                ]);
+            if(
+                count($request['who_can_read']) == 1  
+                && $request['who_can_read'][0]['id'] == 0 
+                && $request['who_can_read'][0]['type'] == 0
+            ) {
+                $page->access = 1;
+                $page->save();
+            } else {
+                $this->saveBookAccesses($request->id, $request['who_can_read'], 1);
             }
-
-            foreach ($request['who_can_edit'] as $key => $item) {
-                if($item['type'] == 1) $model = 'App\\User';
-                if($item['type'] == 2) $model = 'App\\ProfileGroup';
-                if($item['type'] == 3) $model = 'App\\Position';
-
-                KnowBaseModel::create([
-                    'model_type' => $model,
-                    'model_id' => $item['id'],
-                    'book_id' => $request->id,
-                    'access' => 2 
-                ]);
+            
+            if(
+                count($request['who_can_edit']) == 1  
+                && $request['who_can_edit'][0]['id'] == 0 
+                && $request['who_can_edit'][0]['type'] == 0
+            ) {
+                $page->access = 2;
+                $page->save();
+            } else {
+                $this->saveBookAccesses($request->id, $request['who_can_edit'], 2);
             }
+       
 
         }
 
+    }
+    
+    private function saveBookAccesses($book_id, $items, $level = 1)
+    {
+        foreach ($items as $key => $item) {
+            if($item['type'] == 1) $model = 'App\\User';
+            if($item['type'] == 2) $model = 'App\\ProfileGroup';
+            if($item['type'] == 3) $model = 'App\\Position';
+
+            KnowBaseModel::create([
+                'model_type' => $model,
+                'model_id' => $item['id'],
+                'book_id' => $book_id,
+                'access' => $level
+            ]);
+        }
     }
 
     public function updatePage(Request $request, $id = null)
@@ -451,45 +470,68 @@ class KnowBaseController extends Controller
 
     public function getAccess(Request $request) {
 
-        $read = KnowBaseModel::where([
-            'book_id' => $request->id,
-        ])->get();
+        $book = KnowBase::withTrashed()->find($request->id);
 
-        $edit = KnowBaseModel::where([
-            'book_id' => $request->id,
-        ])->get();
+        
 
         $who_can_read = [];
         $who_can_edit = [];
-        foreach ($read as $key => $item) {
-            $arr = [];
-            $arr['id'] = $item['model_id'];
-
-            if($item->model_type == 'App\\User') {
-                $arr['type'] = 1;
-                $user = User::withTrashed()->find($item->model_id);
-                if(!$user) continue;
-                $arr['name'] = $user->last_name . ' ' . $user->name;
-            }
-
-            if($item->model_type == 'App\\ProfileGroup') {
-                $arr['type'] = 2;
-                $group = ProfileGroup::find($item->model_id);
-                if(!$group) continue;
-                $arr['name'] = $group->name;
-            }
-
-            if($item->model_type == 'App\\Position') {
-                $arr['type'] = 3;
-                $pos = Position::find($item->model_id);
-                if(!$pos) continue;
-                $arr['name'] = $pos->position;
-            }
-
-            if($item->access == 1) $who_can_read[] = $arr;
-            if($item->access == 2) $who_can_edit[] = $arr;
-        }
         
+        // All badge in superselect.vue
+        $selected_all_badge = [
+            'id' => 0,
+            'type' => 0,
+            'name' => 'Все',
+        ];
+
+        // check access level
+        if($book->access == 2) {
+            $who_can_edit[] = $selected_all_badge;
+            $who_can_read[] = $selected_all_badge;
+        } else {
+
+             // get 
+            $read = KnowBaseModel::where([
+                'book_id' => $request->id,
+            ])->get();
+    
+            $edit = KnowBaseModel::where([
+                'book_id' => $request->id,
+            ])->get();
+
+           
+            foreach ($read as $key => $item) {
+
+                $arr = [];
+                $arr['id'] = $item['model_id'];
+
+                if($item->model_type == 'App\\User') {
+                    $arr['type'] = 1;
+                    $user = User::withTrashed()->find($item->model_id);
+                    if(!$user) continue;
+                    $arr['name'] = $user->last_name . ' ' . $user->name;
+                }
+
+                if($item->model_type == 'App\\ProfileGroup') {
+                    $arr['type'] = 2;
+                    $group = ProfileGroup::find($item->model_id);
+                    if(!$group) continue;
+                    $arr['name'] = $group->name;
+                }
+
+                if($item->model_type == 'App\\Position') {
+                    $arr['type'] = 3;
+                    $pos = Position::find($item->model_id);
+                    if(!$pos) continue;
+                    $arr['name'] = $pos->position;
+                }
+
+                $who_can_read[] = $book->access == 1 ? $selected_all_badge : $arr;
+                $who_can_edit[] = $arr;
+            }
+        }
+
+
         return [
             'who_can_edit' => $who_can_edit,
             'who_can_read' => $who_can_read,

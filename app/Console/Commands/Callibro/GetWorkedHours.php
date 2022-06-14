@@ -101,6 +101,10 @@ class GetWorkedHours extends Command
                 }
                 $aggrees = Kaztel::getAggrees($user->email, $this->date);
 
+                $correct_minutes = Kaztel::getWorkedMinutes($user->email, $this->date);
+
+                $conversions = Kaztel::getConversionAvg(Carbon::parse($this->date));
+
                 $this->saveASI([
                     'date' => $this->startOfMonth,
                     'employee_id' => $user->id,
@@ -115,7 +119,19 @@ class GetWorkedHours extends Command
                     'type' => 137 // согласия
                 ], $aggrees);
 
+                $this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 134 // звонки от 10 секунд
+                ], $correct_minutes);
 
+                $this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 136 // Конверсии
+                ], $conversions);
 
             }
             
@@ -361,7 +377,6 @@ class GetWorkedHours extends Command
 
         // User stat New analytics
 
-DUMP($value);
         $date = Carbon::parse($fields['date'])->day($this->day)->format('Y-m-d');
         $us = UserStat::where([
             'date' => $date,

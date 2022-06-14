@@ -368,8 +368,8 @@
                 type:'3',
               }).then(response => {
                 this.allusers = response.data
-                console.log(response.data,'DB result USERS')
-                console.log(this.allusers,'before Users')
+
+                console.log(response.data,'immaassshheevv-0')
                 if (this.allusers.length > 0) {
                   for (let i = 0; i < this.allusers.length; i++) {
                     if (this.allusers[i]['name'] != null && this.allusers[i]['name'].length > 1) {
@@ -383,7 +383,7 @@
                   }
                 }
               })
-              console.log(this.allusers_arr,'after Users');
+
 
 
             },
@@ -441,37 +441,63 @@
 
                 this.validateInput(arrCheckInput,this.countView)
                 // console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
+              console.log(arrCheckInput,'saveEditCheck')
 
 
+
+
+
+              if (this.allValueArray.length > 0){
                 if (this.errors.save){
-                    axios.post('/timetracking/settings/edit/check/save/', {
-                        check_id:this.check_id,
-                        allValueArray:this.allValueArray,
-                        countView:this.countView,
-                        arrCheckInput:arrCheckInput,
-                        valueFindGr:this.valueFindGr
-                    }).then(response => {
+                  axios.post('/timetracking/settings/edit/check/save/', {
+                    check_id:this.check_id,
+                    allValueArray:this.allValueArray,
+                    countView:this.countView,
+                    arrCheckInput:arrCheckInput,
+                    valueFindGr:this.valueFindGr
+                  }).then(response => {
+                    if (response.data.success === false){
+                      this.errors.msg = null;
+                      this.errors.show = true;
+                      if (response.data.exists[0]['item_type'] == 1){
+                        this.errors.message =  'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
+                        this.errors.msg = 'Данная Группа ' +response.data.exists[0]['title']+  ' Ранне Добавлено  ';
+                        this.$message.error(this.errors.msg);
+                      }else if(response.data.exists[0]['item_type'] == 2){
+                        this.errors.message = 'Данная ' +response.data.exists[0]['title']+  ' Должность Ранне Добавлено ';
+                        this.errors.msg = 'Данная ' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
+                        this.$message.error(this.errors.msg);
+                      }else if(response.data.exists[0]['item_type'] == 3){
+                        this.errors.message = 'Данный Пользователь '+response.data.exists[0]['title']+  ' Ранне Добавлено';
+                        this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+  ' Ранне Добавлено';
+                        this.$message.error(this.errors.msg);
+                      }
+                    }else {
+                      this.$message.success('Успешно изменен');
+                      this.errors.show = false;
+                      this.showCheckSideBar = false;
+                      this.viewCheckList()
 
-                      console.log(response,'99999',response.data)
 
-                        if (response.data.type == 1 ){
-                            this.$message.error('Ошибка ');
-                            this.errors.show = true;
-                            this.errors.message = 'Добавленный чек лист существует';
-                        }else {
-                            this.$message.success('Успешно изменен');
-                            this.errors.show = false;
-                            this.showCheckSideBar = false;
-                            this.viewCheckList()
-                        }
-                    })
+                    }
+
+
+                  })
                 }
+              }else{
+                this.errors.show = true
+                this.errors.message = 'Выбрать Кому будем чик листы добавлять'
+
+
+              }
+
 
 
             },
             editCheck(check_id,type){
 
 
+              console.log('click');
                 this.addButton = false
                 this.editButton = true
                 this.showCheckSideBar = true
@@ -483,6 +509,7 @@
                     type:type,
                 }).then(response => {
 
+                    console.log(response,'editCheck')
 
                     this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
 
@@ -552,6 +579,7 @@
 
                   }).then(response => {
 
+
                     if (response.data.success == false){
                       this.errors.show = false;
                       this.errors.msg = null;
@@ -563,12 +591,21 @@
                           if (response.data.exists[0]['item_type'] == 1){
                             this.errors.msg = 'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
                             this.$message.error(this.errors.msg);
+                            this.errors.show = true
+                            this.errors.message =  'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+
+
                           }else if(response.data.exists[0]['item_type'] == 2){
-                            this.errors.msg = 'Данная ' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
+                            this.errors.msg = 'Данная Должность' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
                             this.$message.error(this.errors.msg);
+                            this.errors.show = true
+                            this.errors.message =  'Данная Должность ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+
                           }else if (response.data.exists[0]['item_type'] == 3){
                             this.errors.msg = 'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено';
                             this.$message.error(this.errors.msg);
+                            this.errors.show = true
+                            this.errors.message =  'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
                           }
                         }
                       }
@@ -722,12 +759,27 @@
 
 
 
-
-                  for (var i = 0; i < this.allusers_arr.length;i++){
-                    if (this.allusers_arr[i]['code'] == id){
-                      this.allusers_arr[i]['checked'] = true
+                  this.allusers_arr.forEach(el => {
+                    if (el['code'] !== undefined){
+                      if (el['code'] === id){
+                        el['checked'] = true
+                      }
                     }
-                  }
+                  });
+
+
+
+
+                  // for (var i = 0; i < this.allusers_arr.length;i++){
+                  //   if ( this.allusers_arr[i]['code']  !== undefined){
+                  //     console.log(this.allusers_arr[i]['code'],'xzxzxzx',id)
+                  //     if (this.allusers_arr[i]['code'] == id){
+                  //       this.allusers_arr[i]['checked'] = true
+                  //     }
+                  //   }
+                  // }
+
+
                 }
               }
             },
@@ -771,22 +823,18 @@
           },
             refreshArray(){
 
-              if (this.groups_arr.length > 0){
-                for (var i = 0; i < this.groups_arr.length;i++){
-                  this.groups_arr[i]['checked'] = false
-                }
-              }
+              this.groups_arr.forEach(el => {
+                el['checked'] = false
+              });
 
-              if (this.positions_arr.length > 0){
-                for (var i = 0; i < this.positions_arr.length;i++){
-                  this.positions_arr[i]['checked'] = false
-                }
-              }
-  
+              this.positions_arr.forEach(el => {
+                el['checked'] = false
+              });
 
               this.allusers_arr.forEach(el => {
                 el['checked'] = false
               });
+
               // if (this.allusers_arr.length > 0){
               //   for (var i = 0; i < this.allusers_arr.length;i++){
               //     this.allusers_arr[i]['checked'] = false

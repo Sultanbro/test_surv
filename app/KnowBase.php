@@ -24,6 +24,7 @@ class KnowBase extends Model
         'is_deleted', 
         'order', 
         'hash', // уникальная ссылка чтобы поделиться
+        'access' // доступ   0 - никто, 1 - к просмотру,  2 - к редактированию
     ];
 
 

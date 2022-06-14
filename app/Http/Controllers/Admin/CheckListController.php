@@ -30,16 +30,10 @@ class CheckListController extends Controller
     }
 
     public function store(Request $request,$edit = null){
-
-
-
-    
         if ($edit != null){
             $request = $edit;
         }
-
         if ($request['countView'] < 11 && $request['countView'] != 0){
-        
             if (isset($request['allValueArray'])){
 
 
@@ -103,8 +97,8 @@ class CheckListController extends Controller
 
         if (!empty($positionUser)){
             $check_users = new CheckUsers();
-            $check_users['name'] = $positionUser['name'];
-            $check_users['last_name'] = $positionUser['last_name'];
+            $check_users['name'] = $positionUser['name'] ?? 'Без Имени';
+            $check_users['last_name'] = $positionUser['last_name'] ?? 'Без фамилии';
             $check_users['check_list_id'] = $checkListId['id'];
             $check_users['check_users_id'] = $positionUser['id'];
             $check_users['check_reports_id'] = $this->saveReports($checkListId,$positionUser,$request,$positionUser,$type);
@@ -123,8 +117,8 @@ class CheckListController extends Controller
         if (!empty($positionUsers)){
             foreach ($positionUsers as $positionUser){
                 $check_users = new CheckUsers();
-                $check_users['name'] = $positionUser['name'];
-                $check_users['last_name'] = $positionUser['last_name'];
+                $check_users['name'] = $positionUser['name'] ?? 'Без имени';
+                $check_users['last_name'] = $positionUser['last_name'] ?? 'Без фамилии';
                 $check_users['check_list_id'] = $checkListId['id'];
                 $check_users['check_users_id'] = $positionUser['id'];
                 $check_users['check_reports_id'] = $this->saveReports($checkListId,$positionUser,$request,$profileGroups,$type);
@@ -149,8 +143,8 @@ class CheckListController extends Controller
                     $dataBaseUser = User::on()->find($profile_users_id);
                     if (!empty($dataBaseUser)){
                         $check_users = new CheckUsers();
-                        $check_users['name'] = $dataBaseUser['name'];
-                        $check_users['last_name'] = $dataBaseUser['last_name'];
+                        $check_users['name'] = $dataBaseUser['name'] ?? 'Без имени';;
+                        $check_users['last_name'] = $dataBaseUser['last_name'] ?? 'Без фамилии';;
                         $check_users['check_list_id'] = $checkList->id;
                         $check_users['check_users_id'] = $dataBaseUser['id'];
                         $check_users['check_reports_id'] = $this->saveReports($checkList,$dataBaseUser,$request,$profileGroups,$type);
@@ -215,11 +209,24 @@ class CheckListController extends Controller
                foreach ($request['allValueArray'] as $keys =>$allValueArray){
                    if ($request['valueFindGr'] != $allValueArray['code']){
                        $newArrays['allValueArray'][] = $allValueArray;
+
+
+
+                    $validate = CheckList::where('item_id',$allValueArray['code'])->where('item_type',$allValueArray['type'])->get()->toArray();
+                    if (!empty($validate)){
+                        return response(['success'=>false,'exists'=>$validate]);
+                    }
+
                    }
                }
                $newArrays['countView'] = $request['countView'];
                $newArrays['arrCheckInput'] = $request['arrCheckInput'];
+
+
+
                $this->store($request,$newArrays);
+
+
            }
            if (!empty($request['valueFindGr'])){
 
@@ -301,6 +308,7 @@ class CheckListController extends Controller
                    $check_reports_save->save();
                }
            }
+
         }
 
    
@@ -406,11 +414,9 @@ class CheckListController extends Controller
     public function getModal(Request$request){
 
        $user = User::where(function($query) {
-                 $query->whereNotNull('name')
-               ->orWhere('name', '!=', '')
-               ->orWhere('last_name', '!=', '')
-               ->orWhereNotNull('last_name');
-                 })->select('id','name','last_name')->get();
+                 $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
+                 })->select('id','name','last_name','email')->take(200)->get();
+
 
        return $user;
 

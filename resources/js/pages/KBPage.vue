@@ -153,9 +153,17 @@
 
         <div>
           <p class="mb-2">Кто может видеть</p>
-          <superselect :values="who_can_read" class="w-full mb-4" :key="1"/> 
+          <superselect 
+            :values="who_can_read"
+            class="w-full mb-4" 
+            :key="1"
+            :select_all_btn="true" /> 
           <p class="mb-2">Кто может редактировать</p>
-          <superselect :values="who_can_edit" class="w-full mb-4" :key="2"/> 
+          <superselect
+            :values="who_can_edit" 
+            class="w-full mb-4" 
+            :key="2"
+            :select_all_btn="true" /> 
         </div>
         <button class="btn btn-primary rounded m-auto" @click="updateSection">
           <span>Сохранить</span>
