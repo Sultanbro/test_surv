@@ -366,6 +366,7 @@ Route::middleware([
     Route::post('/timetracking/salaries/recalc', [SalaryController::class, 'recalc']);
     Route::post('/timetracking/salaries/edit-premium', [SalaryController::class, 'editPremium']);
     Route::post('/timetracking/salaries/approve-salary', [SalaryController::class, 'approveSalary']);
+    Route::post('/timetracking/salaries/bonuses', [SalaryController::class, 'bonuses']);
 
 
     Route::any('/timetracking/analytics/save-call-base', [GroupAnalyticsController::class, 'saveCallBase']);

@@ -79,9 +79,9 @@
                 <span>Сотрудники:</span> 
                 <b> {{ users_count }} | {{ total_resources }}</b>
             </p>
-            <b-form-group class="d-flex ddf">
+            <b-form-group class="d-flex ddf" style="justify-content:flex-end;">
                 <b-form-radio v-model="show_user"  name="some-radios2" value="0">Все</b-form-radio>
-                <b-form-radio v-model="show_user"  name="some-radios2" value="1">Есть начисления</b-form-radio>
+                <b-form-radio v-model="show_user"  name="some-radios2" value="1" class="mr-0">Есть начисления</b-form-radio>
             </b-form-group>
         </div>
         <div class="col-12" >
@@ -159,8 +159,7 @@
                         :class="{
                             'fine': data.item.fine !== undefined && data.item.fine[data.field.key.toString()].length > 0,
                             'avans': data.item.avanses !== undefined && data.item.avanses[data.field.key.toString()] !== null,
-                            'bonus': data.item.bonuses !== undefined && data.item.bonuses[data.field.key.toString()] !== null,
-                            'bonus': data.item.awards !== undefined && data.item.awards[data.field.key.toString()] !== null,
+                            'bonus': (data.item.bonuses !== undefined && data.item.bonuses[data.field.key.toString()] !== null) || data.item.awards !== undefined && data.item.awards[data.field.key.toString()] !== null,
                             'training': data.item.trainings !== undefined && data.item.trainings[data.field.key.toString()] !== null,
                         }"
                         >{{ data.value }}
@@ -183,8 +182,19 @@
     <sidebar :title="sidebarTitle" :open="editPremiumSidebar" @close="editPremiumSidebar=false" v-if="editPremiumSidebar" width="400px">
         <div class="px-2">
 
-            <div v-if="editedField.type == 'kpi'">
+            <div>
                 <div v-if="editedField.item.edited_kpi !== null">
+                     <p class="mt-3"><b>Kpi  </b>
+                        <i class="fa fa-info-circle" 
+                            v-b-popover.hover.right.html="'Сумма KPI утвержденная к выдаче'" 
+                            title="Kpi на этот месяц">
+                        </i>
+                       
+                    </p>
+                    <div>
+                        <b>Автор:</b>
+                        <span>{{ editedField.item.edited_kpi.user }}</span>
+                    </div>
                     <div>
                         <b>Изменено на:</b>
                         <span>{{ editedField.item.edited_kpi.amount }}</span>
@@ -193,11 +203,22 @@
                         <b>Комментарии:</b>
                         <span>{{ editedField.item.edited_kpi.comment }}</span>
                     </div>
+                        <hr>
                 </div>
             </div>
 
-            <div v-if="editedField.type == 'bonus'">
+            <div>
                 <div v-if="editedField.item.edited_bonus !== null">
+                    <p class="mt-3"><b>Бонусы  </b>
+                        <i class="fa fa-info-circle" 
+                            v-b-popover.hover.right.html="'Сумма Бонусов, утвержденная к выдаче'" 
+                            title="Бонусы на этот меся ц">
+                        </i> 
+                    </p>
+                    <div>
+                        <b>Автор:</b>
+                        <span>{{ editedField.item.edited_bonus.user }}</span>
+                    </div>
                     <div>
                         <b>Изменено на:</b>
                         <span>{{ editedField.item.edited_bonus.amount }}</span>
@@ -206,11 +227,23 @@
                         <b>Комментарии:</b>
                         <span>{{ editedField.item.edited_bonus.comment }}</span>
                     </div>
+                        <hr>
                 </div>
             </div>
 
-            <div v-if="editedField.type == 'final'">
+            <div>
                 <div v-if="editedField.item.edited_salary !== null">
+                    
+                     <p class="mt-3"><b>К выдаче</b>
+                        <i class="fa fa-info-circle" 
+                            v-b-popover.hover.right.html="'Окончательная суммма утвержденная к выдаче'" 
+                            title="К выдаче на этот месяц">
+                        </i>
+                    </p>
+                    <div>
+                        <b>Автор:</b>
+                        <span>{{ editedField.item.edited_salary.user }}</span>
+                    </div>
                     <div>
                         <b>Изменено на:</b>
                         <span>{{ editedField.item.edited_salary.amount }}</span>
@@ -219,10 +252,42 @@
                         <b>Комментарии:</b>
                         <span>{{ editedField.item.edited_salary.comment }}</span>
                     </div>
+                      <hr>
                 </div>
             </div>
+  
+
+
+            <div class="mt-3">
+                
+                <p class="mt-3"><b>Бонусы локальные </b></p>
+                 <div v-for="(item,index) in Object.keys(editedField.item.bonuses)" >
+                    <p class="fz12" v-if=" editedField.item.bonuses[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.bonuses[item] }}</p>
+                </div>   
+                <hr>
+                
+                <p class="mt-3"><b>Бонусы за активности</b></p>
+                 <div v-for="(item,index) in Object.keys(editedField.item.awards)" >
+                    <p class="fz12" v-if=" editedField.item.awards[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.awards[item] }}</p>
+                </div>  
+                    <hr>
+                <p class="mt-3"><b>Авансы </b></p>
+                 <div v-for="(item,index) in Object.keys(editedField.item.avanses)" >
+                    <p class="fz12" v-if=" editedField.item.avanses[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.avanses[item] }}</p>
+                </div>   
+                <hr>
+
+                <p class="mt-3"><b>История {{ bonus_history.length}}</b></p>
+                <div v-for="(item,index) in bonus_history"  class="mb-3">
+                    <p class="fz12"><b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}</p>
+                    <p class="fz12"><b class="text-black">Автор:</b> {{ item.author }} <br></p>
+                    <p class="fz14 mb-0" v-html="item.description"> </p><br>
+                    <hr>
+                </div>   
+                 
+            </div>
         </div>
-    </sidebar>
+    </sidebar>  
 
      <sidebar :title="sidebarTitle" :open="openSidebar" @close="openSidebar=false" v-if="openSidebar" width="400px" :link="profile_link">
 
@@ -360,6 +425,7 @@ export default {
             data: {},
             groups: [],
             accruals: [],
+            bonus_history: [],
             selectedGroup: null,
             user_types: 0,
             users_count: 0,
@@ -813,12 +879,26 @@ export default {
             if(data.index == 0) {
                 return false;
             }
+            console.log(data)
             data.type = type;
+
+            this.fetchBonusHistory(data.item.user_id);
+            
             this.editedField = data;
             this.editPremiumSidebar = true;
-            this.sidebarTitle = data.item.name + ' : ' + type;
+            this.sidebarTitle = data.item.name + ' : ' + type; 
 
         },
+
+        fetchBonusHistory(user_id) {
+            axios.post('/timetracking/salaries/bonuses',{
+                user_id: user_id,
+                date: this.$moment(this.dateInfo.currentMonth, "MMMM").startOf("month").format("YYYY-MM-DD"),
+            }).then((response) => {
+                this.bonus_history = response.data;
+            });
+        },
+
         editPremium() {
             let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
 

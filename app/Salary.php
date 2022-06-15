@@ -714,8 +714,18 @@ class Salary extends Model
             $user->bonuses = $bonuses; 
             $user->awards = $awards; 
 
+            $user->edited_salary = null;
+            $editedSalary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();
+            if($editedSalary) {
+                $ku = User::withTrashed()->find($editedSalary->user_id);
+                $editedSalary->user = $ku ? $ku->last_name . ' ' . $ku->name : $editedSalary->user_id;
+                $user->edited_salary = $editedSalary;
+            }
+            
 
-            $user->edited_salary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();
+            
+
+
 
             $editedKpi = EditedKpi::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
@@ -725,6 +735,10 @@ class Salary extends Model
             $user->edited_kpi = null;
             if($editedKpi) {
                 $user->kpi = $editedKpi->amount;
+
+                $ku = User::withTrashed()->find($editedKpi->user_id);
+                $editedKpi->user = $ku ? $ku->last_name . ' ' . $ku->name : $editedKpi->user_id;
+
                 $user->edited_kpi = $editedKpi;
             } else {
                 $user->kpi = Kpi::userKpi($user->id, $date);
@@ -737,6 +751,9 @@ class Salary extends Model
 
             $user->edited_bonus = null;
             if($editedBonus) {
+                $ku = User::withTrashed()->find($editedBonus->user_id);
+                $editedBonus->user = $ku ? $ku->last_name . ' ' . $ku->name : $editedBonus->user_id;
+
                 $user->edited_bonus = $editedBonus;
             } 
             
