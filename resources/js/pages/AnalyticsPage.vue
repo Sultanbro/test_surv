@@ -33,10 +33,7 @@
         <div class="col-1" v-else>
 
         </div>
-        <div class="col-2" v-if="activeuserid == 18 || activeuserid == 5 || activeuserid == 157">
-            
-            <group-premission :currentGroup="currentGroup" page="analytic"></group-premission>
-        </div>
+        <div class="col-2"></div>
     </div>
     <div> 
         

@@ -16,7 +16,7 @@
 
         </div>
         <div class="col-3">
-            <group-premission :currentGroup="0" page="page-nps" v-if="activeuserid == 5 || activeuserid == 18"></group-premission>
+            
         </div>
     </div>
 

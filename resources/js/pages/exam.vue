@@ -13,9 +13,7 @@
                         <option v-for="month in $moment.months()" :value="month" :key="month">{{month}}</option>
                     </select>
                 </div>
-                <div class="col-3 offset-3" v-if="activeuserid == 18 || activeuserid == 5 || activeuserid == 157">
-                    <group-premission :currentGroup="currentGroup" page="report"></group-premission>
-                </div>
+                <div class="col-2"></div>
             </div>
 
             <div v-if="hasPremission">

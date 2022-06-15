@@ -38,9 +38,7 @@
                     <i class="fa fa-eye"></i>
                 </a>
             </div>
-            <div class="col-3" v-if="activeuserid == 18 || activeuserid == 5">
-                <group-premission :currentGroup="selectedGroup.id" page="accrual"></group-premission>
-            </div>
+           <div class="col-2"></div>
         </div>
  
     <div class="row" v-if="hasPermission">
