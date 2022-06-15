@@ -32,77 +32,63 @@ class KnowBaseController extends Controller
 
     public function get(Request $request)
     {   
+        $books = KnowBase::whereNull('parent_id')
+                ->orderBy('order');
         
+        if(!auth()->user()->can('kb_edit')) $books->whereIn('id', $this->getBooks());
         
-                    
-        if(auth()->user()->can('kb_edit')) {
-            
-            
-            $books = KnowBase::whereNull('parent_id')
-                ->orderBy('order')
-                    ->whereIn('id', $this->getBooks())
-                    ->get()
-                    ->toArray();
-            
-        } else {
-        
-            $books = KnowBase::whereNull('parent_id')
-                ->orderBy('order')
-                    ->whereIn('id', $this->getBooks())
-                    ->get()
-                    ->toArray();
-        }
+        $books = $books->get();
 
-       
         return [
-            'books' => $books
+            'books' => $books->toArray()
         ];
     }
 
-    private function getBooks() {
-
+    private function getBooks($access = 0) {
+        
         $books = [];
         if(auth()->user()->is_admin == 1)  {
-            $books = KnowBase::get('id')->pluck('id')->toArray();
-            
+            $books = KnowBase::whereNull('parent_id')->get('id')->pluck('id')->toArray();
         } else {
 
             $groups = auth()->user()->inGroups();
-            if(count($groups) > 0) {
-                foreach ($groups as $key => $group) {
-                    $up = KnowBaseModel::where('model_type', 'App\\ProfileGroup')
-                    ->where('model_id', $group->id)
-                    ->get('book_id')
-                    ->pluck('book_id')
-                    ->toArray();
-                
-                    $books = array_merge($books, $up);
-                }
-                
-            }
+            $group_ids = collect($groups)->pluck('id')->toArray();
+            $position_id =  auth()->user()->position_id;
+            $user_id =  auth()->id();
 
-     
-           $pos = KnowBaseModel::where('model_type', 'App\\Position')
-                ->where('model_id', auth()->user()->position_id)
-                ->get('book_id')
+            $up = KnowBaseModel::
+                where(function($query) use ($group_ids, $access) {
+                    $query->where('model_type', 'App\\ProfileGroup')
+                        ->whereIn('model_id', $group_ids);
+                    if($access == 2) $query->where('access', 2);
+                })
+                ->orWhere(function($query) use ($position_id, $access) {
+                    $query->where('model_type', 'App\\Position')
+                        ->where('model_id', $position_id);
+                    if($access == 2) $query->where('access', 2);
+                })
+                ->orWhere(function($query) use ($user_id, $access) {
+                    $query->where('model_type', 'App\\User')
+                        ->where('model_id', $user_id);
+                    if($access == 2) $query->where('access', 2);
+                });
+
+            $up = $up->get('book_id')
                 ->pluck('book_id')
                 ->toArray();
-
-            $books = array_merge($books, $pos);
-
-            $ub = KnowBaseModel::where([
-                    'model_type' => 'App\\User',
-                    'model_id' => auth()->id(),
-                    'access' => 1
-                ])->get('book_id')
-                ->pluck('book_id')
+               
+            $books = array_merge($books, $up);
+            
+           
+            $books_with_read_access =  KnowBase::withTrashed()
+                ->whereNull('parent_id')
+                ->whereIn('access', $access == 2 ? [2] : [1,2])
+                ->get('id')->pluck('id')
                 ->toArray();
-
-            $books = array_merge($books, $ub);
-
-        
+                
+            $books = array_merge($books, $books_with_read_access);
         }
-        
+   
             
         return $books;
     }
@@ -159,13 +145,22 @@ class KnowBaseController extends Controller
 
     public function getTree(Request $request)
     {
-        $arr = $this->getBooks();
+        
+        $trees = [];
+        $book = null;
 
-        if(in_array($request->id, $arr)) {
+        $can_read = false;
+        if(auth()->user()->can('kb_edit')) {
+            $can_read = true;
+        } else if(in_array($request->id, $this->getBooks())) {
+            $can_read = true;  
+        } 
+
+        if($can_read) {
             $trees = KnowBase::where('parent_id', $request->id)
-         
-            ->with('children')
-            ->orderBy('order')->get();
+                ->with('children')
+                ->orderBy('order')
+                ->get();
 
             foreach ($trees as $tree) {
                 $tree->parent_id = null;
@@ -175,17 +170,13 @@ class KnowBaseController extends Controller
         
             $book = KnowBase::whereNull('parent_id')
                 ->orderBy('order')
-                    ->whereIn('id', $this->getBooks())
-                    ->where('id', $request->id)
-                    ->first();
-        }  else {
-            $trees = [];
-            $book = null;
-        }
-       
+                ->where('id', $request->id)
+                ->first();
 
-    
-        
+       
+           if($book) $book->access = in_array($book->id, $this->getBooks(2)) ? 2 : 1;
+            
+        }
 
         return [
             'trees' => $trees,
@@ -195,28 +186,23 @@ class KnowBaseController extends Controller
 
     public function getPage(Request $request)
     {
-        $arr = $this->getBooks();
-        
         $page = KnowBase::withTrashed()->find($request->id);
 
-        $user = User::withTrashed()->find($page->user_id);
+        $author = User::withTrashed()->find($page->user_id);
         $editor = User::withTrashed()->find($page->editor_id);
 
-        $page->author = $user ? $user->last_name . ' ' . $user->name : 'Неизвестный';
+        $page->author = $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';
         $page->editor = $editor ? $editor->last_name . ' ' . $editor->name : 'Неизвестный';
         $page->edited_at = Carbon::parse($page->updated_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->created = Carbon::parse($page->created_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
-
         $page->questions = TestQuestion::where('testable_type', 'App\Knowbase')->where('testable_id', $request->id)->get();
-        $breadcrumbs = $this->getBreadcrumbs($page);
 
-        $trees = [];
-        $top_parent = [];
+        $breadcrumbs = $this->getBreadcrumbs($page);
         $top_parent = $this->getTopParent($request->id);
         
-        if ($request->refresh) {
+        $trees = [];
 
-            
+        if ($request->refresh) {
             if ($top_parent) {
                 $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')->orderBy('order')->get();
                 foreach ($trees as $tree) {
@@ -224,18 +210,24 @@ class KnowBaseController extends Controller
                 }
                 $trees = $trees->toArray();
             }
-
         }
         
-        $data = [
-            'book' => $page,
-            'breadcrumbs' => $breadcrumbs,
-            'tree' => $trees,
-            'top_parent' => $top_parent,
-        ];
 
+        $can_read = false;
+        if($top_parent != null && auth()->user()->can('kb_edit')) {
+            $can_read = true;
+        } else if($top_parent != null && in_array($top_parent->id, $this->getBooks())) {
+            $can_read = true;  
+        } 
 
-        if($top_parent == null && !in_array($top_parent->id, $arr)) {
+        if($can_read) {
+            $data = [
+                'book' => $page,
+                'breadcrumbs' => $breadcrumbs,
+                'tree' => $trees,
+                'top_parent' => $top_parent,
+            ];
+        } else {
             $data = [
                 'book' => null,
                 'breadcrumbs' => [],
@@ -286,34 +278,49 @@ class KnowBaseController extends Controller
             
             KnowBaseModel::where('book_id', $request->id)->delete();
 
-            foreach ($request['who_can_read'] as $key => $item) {
-                if($item['type'] == 1) $model = 'App\\User';
-                if($item['type'] == 2) $model = 'App\\ProfileGroup';
-                if($item['type'] == 3) $model = 'App\\Position';
-
-                KnowBaseModel::create([
-                    'model_type' => $model,
-                    'model_id' => $item['id'],
-                    'book_id' => $request->id,
-                    'access' => 1
-                ]);
+            $access = 0;
+            if(
+                count($request['who_can_read']) == 1  
+                && $request['who_can_read'][0]['id'] == 0 
+                && $request['who_can_read'][0]['type'] == 0
+            ) {
+                $access = 1;
+               
+            } else {
+                $this->saveBookAccesses($request->id, $request['who_can_read'], 1);
             }
-
-            foreach ($request['who_can_edit'] as $key => $item) {
-                if($item['type'] == 1) $model = 'App\\User';
-                if($item['type'] == 2) $model = 'App\\ProfileGroup';
-                if($item['type'] == 3) $model = 'App\\Position';
-
-                KnowBaseModel::create([
-                    'model_type' => $model,
-                    'model_id' => $item['id'],
-                    'book_id' => $request->id,
-                    'access' => 2 
-                ]);
+            
+            if(
+                count($request['who_can_edit']) == 1  
+                && $request['who_can_edit'][0]['id'] == 0 
+                && $request['who_can_edit'][0]['type'] == 0
+            ) {
+                $access = 2;
+            } else {
+                $this->saveBookAccesses($request->id, $request['who_can_edit'], 2);
             }
+            
+            $page->access = $access;
+            $page->save();
 
         }
 
+    }
+    
+    private function saveBookAccesses($book_id, $items, $level = 1)
+    {
+        foreach ($items as $key => $item) {
+            if($item['type'] == 1) $model = 'App\\User';
+            if($item['type'] == 2) $model = 'App\\ProfileGroup';
+            if($item['type'] == 3) $model = 'App\\Position';
+
+            KnowBaseModel::create([
+                'model_type' => $model,
+                'model_id' => $item['id'],
+                'book_id' => $book_id,
+                'access' => $level
+            ]);
+        }
     }
 
     public function updatePage(Request $request, $id = null)
@@ -451,17 +458,31 @@ class KnowBaseController extends Controller
 
     public function getAccess(Request $request) {
 
-        $read = KnowBaseModel::where([
-            'book_id' => $request->id,
-        ])->get();
+        $book = KnowBase::withTrashed()->find($request->id);
 
-        $edit = KnowBaseModel::where([
-            'book_id' => $request->id,
-        ])->get();
+        $selected_all_badge = [ // All badge in superselect.vue
+            'id' => 0,
+            'type' => 0,
+            'name' => 'Все',
+        ];
 
-        $who_can_read = [];
-        $who_can_edit = [];
-        foreach ($read as $key => $item) {
+        return [
+            'who_can_read' => $book->access == 1 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'read'),
+            'who_can_edit' => $book->access == 2 ? [$selected_all_badge] : $this->getWhoCanReadOrEdit($request->id, 'edit'),
+        ];
+    }
+
+    private function getWhoCanReadOrEdit($book_id, $access = 'read')
+    {       
+        $can = [];
+
+        $items = KnowBaseModel::where([
+            'book_id' => $book_id,
+            'access' => $access == 'edit' ? 2 : 1
+        ])->get();
+     
+        foreach ($items as $key => $item) {
+
             $arr = [];
             $arr['id'] = $item['model_id'];
 
@@ -486,14 +507,11 @@ class KnowBaseController extends Controller
                 $arr['name'] = $pos->position;
             }
 
-            if($item->access == 1) $who_can_read[] = $arr;
-            if($item->access == 2) $who_can_edit[] = $arr;
+            $can[] = $arr;
         }
-        
-        return [
-            'who_can_edit' => $who_can_edit,
-            'who_can_read' => $who_can_read,
-        ];
+
+        return $can;
+
     }
 
 }

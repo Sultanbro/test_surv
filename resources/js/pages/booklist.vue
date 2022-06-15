@@ -179,12 +179,19 @@
             api-key="dexbevckx3qi9h3r21bk8e8bypxuef909ox6o1kr91be6uv1"
             :init="{
               images_upload_url: '/upload/images/',
-              automatic_uploads: false,
+              automatic_uploads: true,
               height: editorHeight,
-              resize: true,
+              setup: function (editor) {
+                editor.on('init change', function () {
+                    editor.uploadImages();
+                });
+            },
+             images_upload_handler: submit_tinymce,
+              //paste_data_images: false,
+              resize: true, 
               autosave_ask_before_unload: false,
               powerpaste_allow_local_images: true,
-              browser_spellcheck: true,
+              browser_spellcheck: true, 
               contextmenu: true,
               spellchecker_whitelist: ['Ephox', 'Moxiecode'],
               language: 'ru',
@@ -697,7 +704,8 @@ export default {
         });
     },
 
-    emphasizeTexts() {
+   
+    emphasizeTexts() { 
       this.search.items.forEach(item => {
          item.text = item.text.replace(new RegExp(this.search.input,"gi"), "<b>" + this.search.input +  "</b>");
       });
@@ -709,9 +717,9 @@ export default {
         .post("/books/move/", {
           id: this.actives.id,
           parent: this.selectone,
-        })
-        .then((response) => {});
-    },
+        }) 
+        .then((response) => {}); 
+    }, 
     moveto(tre) {
       $("#perenos").modal("show");
       this.active(tre);
@@ -863,6 +871,25 @@ export default {
         '<img alt="картинка" src="'+ url + '"/>'
       );
     },
+
+    submit_tinymce(blobInfo, success, failure) {
+      
+      this.loader = true;
+      const config = { "content-type": "multipart/form-data" };
+      const formData = new FormData();
+      formData.append('attachment', blobInfo.blob());
+      formData.append("id", this.activesbook.id);
+      axios
+        .post("/upload/images/", formData)
+        .then((response) => {
+          console.log("Загруэенно =>", response.data.location);
+            
+          success(response.data.location);
+          this.loader = false;
+        })
+        .catch((error) => console.log(error));
+    },
+
     submit() {
       this.loader = true;
       const config = { "content-type": "multipart/form-data" };

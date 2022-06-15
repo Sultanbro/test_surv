@@ -1,8 +1,7 @@
 <template>
 <div class="item d-flex">
     <div class="person">
-        <superselect :values="values" :single="true" v-if="item.target.id == null" class="w-full single" /> 
-        <p v-else class="mb-0">{{ item.target.name }}</p>
+        <superselect :values="item.targets" class="w-full single" /> 
     </div>
     <div class="role">
         <multiselect 
@@ -33,9 +32,12 @@
             track-by="name" />
     </div>
     <div class="actions d-flex">
+        <button class="btn btn-default btn-sm" @click="$emit('updateItem')">
+            <i class="fa fa-save" />
+        </button>
         <button class="btn btn-default btn-sm" @click="$emit('deleteItem')">
             <i class="fa fa-times" />
-        </button>
+        </button> 
     </div>
 </div>
 </template>
@@ -43,20 +45,19 @@
 <script>
 export default {
     props: ['item','groups', 'users', 'roles'],
-    watch: {
-        values: {
-            handler (val, oldVal) {
-               this.item.target = this.values[0];
-            },
-            //deep: true
-        },
-    },
     data() {
         return {
             local_groups: [],
             local_roles: [],
-            values: []
         }
+    },
+    watch: {
+        item: {
+            deep: true,
+            handler (val, oldVal) {
+                this.$emit('updated');
+            }
+        },
     },
     created() {
         this.local_groups = this.groups;

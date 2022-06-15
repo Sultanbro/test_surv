@@ -438,6 +438,7 @@ class KpiController extends Controller
                     ]);
                 }  
             }   
+
             $activities[$group_id] = $gr;
         }
  
@@ -558,7 +559,25 @@ class KpiController extends Controller
                     } else {
 
                         if($activity->group_id == 48) {
-                            $completed = AnalyticsSettingsIndividually::getTotalActivityProgress($request->activeuserid, $activity, '', true);
+
+                            if($activity->type == 'conversion') { // Conversion in TableSummaryRecruiting
+                                $as = \App\AnalyticsSettings::where('group_id', $kpi_indicator->group_id)->where('date', $date)->where('type', 'basic')->first();
+                                $completed =[];
+                                $completed['percent'] = 0;
+                                $completed['value'] = 0;
+                               
+                                if($as && array_key_exists(9, $as->data) &&  array_key_exists(0, $as->data) && array_key_exists('fact', $as->data[0]) && array_key_exists('fact', $as->data[9])) {
+
+                                    $res = 0;
+                                    if($as->data[0]['fact'] > 0) $res = round($as->data[9]['fact'] / $as->data[0]['fact'] * 100, 2);
+                                    $completed['percent'] = $res;
+                                    $completed['value'] =  $res;
+                                }
+                            } else {
+                                $completed = AnalyticsSettingsIndividually::getTotalActivityProgress($request->activeuserid, $activity, '', true);
+                            }
+
+                            
                        
                         } else {
                             $completed = UserStat::getTotalActivityProgress($request->activeuserid, $activity, '', true);

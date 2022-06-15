@@ -61,6 +61,7 @@
             max-width: 100%;
             border-radius: 3px;
 
+            &.value0 {background: #f89fa4;}
             &.value2 {background: #e5e49b;}
             &.value3 {background: #80d593;}
 
@@ -111,6 +112,10 @@
             border-radius: 0 50px 50px 0;
             width: fit-content;
 
+            &.all {
+                max-width: 70px;
+            }
+
             &.active {
                 background: rgb(49, 159, 255);
             }
@@ -127,6 +132,7 @@
                 font-size: 12px;
                 overflow: hidden;
                 color: #fff;
+                white-space: nowrap;
                 transition: 0.4s all ease;
             }
 

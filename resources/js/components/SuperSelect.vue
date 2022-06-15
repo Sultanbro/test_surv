@@ -36,15 +36,21 @@
                     <div class="text">Должности</div>
                     <i class="fa fa-briefcase"></i>
                 </div>
+
+                <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
+                    <div class="text">Все</div>
+                    <i class="fa fa-check"></i>  
+                </div>
             </div>
+            
     
             <div class="options">
 
                 <div 
+                    class="option"
                     v-for="(option, index) in filtered_options"
                     :key="index"
                     @click="addValue(index)"
-                    class="option"
                     :class="{'selected': option.selected}" 
                 >
                     <i class="fa fa-user" v-if="option.type == 1"></i> 
@@ -72,7 +78,11 @@ export default {
         single: {
             type: Boolean,
             default: false
-        }
+        },
+        select_all_btn: {
+            type: Boolean,
+            default: false
+        },
     },
     data() {
         return {
@@ -82,10 +92,25 @@ export default {
             show: false,
             posClass: 'top',
             searchText: '',
-            first_time: true
+            first_time: true,
+            selected_all: false
         };
     },
+    created() {
+        this.checkSelectedAll();  
+    },
     methods: {
+        checkSelectedAll() {
+            if(this.values.length == 1
+                && this.values[0]['id']== 0
+                && this.values[0]['type'] == 0) {
+                this.selected_all = true;
+                 console.log('okay');
+            } else {
+                console.log('wtf');
+            }
+        },
+        
         filterType() {
             this.filtered_options = this.options.filter((el, index) => {
                 return el.type == this.type
@@ -128,6 +153,7 @@ export default {
             if(this.single && this.values.length > 0) {
                 return;
             };
+            if(this.selected_all) return;
              
             let item = this.filtered_options[index];
 
@@ -145,6 +171,8 @@ export default {
 
         removeValue(i) {
             let v = this.values[i];
+            if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
+
             this.values.splice(i, 1);
             
             let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
@@ -167,11 +195,11 @@ export default {
             } else {
                 this.filtered_options = this.options.filter((el, index) => {
                     return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
-                });
+                }); 
             }
 
             this.addSelectedAttr();
-        },
+        }, 
 
         close() {
             this.show = false;
@@ -190,6 +218,19 @@ export default {
             .catch((error) => {
                 alert(error);
             });
+        },
+
+        selectAll() {
+            if(this.selected_all) return; 
+            this.values.splice(0, this.values.length);
+            this.values.push({
+                name: 'Все',
+                id: 0,
+                type: 0
+            });
+            this.show = false;
+            this.selected_all = true;
+
         }
     },
 

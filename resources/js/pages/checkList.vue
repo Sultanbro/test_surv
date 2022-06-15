@@ -476,7 +476,11 @@
                   }).then(response => {
                     loader.hide();
 
+<<<<<<< HEAD
                     // console.log(response,'results')
+=======
+                    console.log(response,'results')
+>>>>>>> b4a734b80427fd177cf5ad54b13b78bc413122de
 
                     if (response.data.success === false){
                       this.errors.msg = null;
@@ -534,6 +538,7 @@
                     type:type,
                 }).then(response => {
 
+                    console.log(response,'click')
 
 
                     this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
@@ -604,7 +609,11 @@
                   }).then(response => {
                     loader.hide();
 
+<<<<<<< HEAD
 
+=======
+                    console.log(response,'077')
+>>>>>>> b4a734b80427fd177cf5ad54b13b78bc413122de
 
 
                     if (response.data.success == false){
@@ -782,7 +791,12 @@
                         el['checked'] = true
                       }
                   });
+<<<<<<< HEAD
 
+=======
+                  console.log(this.flag_type,'wwwss',id,'aaaaa',type)
+                  console.log(this.groups_arr,'wwwss',id,'aaaaa',type)
+>>>>>>> b4a734b80427fd177cf5ad54b13b78bc413122de
                 }else if(type == 2){
                   this.positions_arr.forEach(el => {
                       if (el['code'] === id){

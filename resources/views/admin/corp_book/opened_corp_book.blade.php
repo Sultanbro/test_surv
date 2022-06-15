@@ -25,6 +25,29 @@
   </div>
    
 
+
+<script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
+<script>
+function replaceSrc()
+{
+    var images = document.getElementsByTagName('img');
+ 
+    for(var i = 0; i < images.length; i++)
+    {
+        var img = images[i];
+        var link = 'https://bp.jobtron.org/corp_book/';
+       
+        if(img.src .substring(link.length, 0) == link)
+        {
+          img.src = img.src.replace(link, '/');
+        }
+    }
+}
+
+
+window.onload = replaceSrc;
+</script>
+
   
 </body>
 

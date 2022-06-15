@@ -359,7 +359,7 @@ class Kaztel
         
         $aggrees = 0; // общее отработанное время
         $dialer_id = 443;
-        $script_status_ids = [13470, 13471]; // Cтатус в скрипте: Дата Визита
+        $script_status_ids = [13471]; // Cтатус в скрипте: Оформлена заявка
 
         if($account) {
             $call_account_id = $account->id;
@@ -405,7 +405,6 @@ class Kaztel
                && array_key_exists('avg', $as->data[self::S_AVG_CONVERSION])) {
             $value = $as->data[self::S_AVG_CONVERSION]['avg'];
         }
-        
         return (float)$value;
     }
 
@@ -422,14 +421,14 @@ class Kaztel
          *  Cтатус в скрипте
          */
         $script_status_ids = [
-            13470, // Заявка
+            //13470, // Заявка
             13471, // оформлена заявка
             //13474, // Низкий доход
-            13513, // Отказ
-            13514, // Дорого
-            13515, // Негативный клиент
-            13517, // Услуги подключены
-            13520, // Категорический отказ
+            //13513, // Отказ
+            //13514, // Дорого
+            //13515, // Негативный клиент
+            //13517, // Услуги подключены
+            //13520, // Категорический отказ
         ]; 
 
         $cards = DB::connection('callibro')->table('calls')
@@ -450,4 +449,6 @@ class Kaztel
         
         return $cards->get()->count();
     }
+
+
 }

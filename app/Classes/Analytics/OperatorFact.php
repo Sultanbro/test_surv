@@ -57,8 +57,8 @@ class OperatorFact
         
         if(in_array($this->group_id, [31,58,63])) return $this->getAnalyticsMinutes();
 
-        
-        $user_ids = json_decode(ProfileGroup::find($this->group_id)->users);
+        $group = ProfileGroup::find($this->group_id);
+        $user_ids = $group ? json_decode($group->users) : [];
         $user_ids = User::withTrashed()->whereIn('id', $user_ids)->where('position_id', 32)->get()->pluck('id')->toArray();
 
         for ($i = 1; $i <= Carbon::parse($this->date)->daysInMonth; $i++) {
