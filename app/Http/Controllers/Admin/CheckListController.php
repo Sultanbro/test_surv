@@ -260,7 +260,7 @@ class CheckListController extends Controller
                    }
                }
                $newArrays['countView'] = $request['countView'];
-               $newArrays['arr_check_input'] = $request['arrCheckInput'];
+               $newArrays['arr_check_input'] = $request['arr_check_input'];
 //               $newArrays['allValueArray'] = $request['allValueArray'];
                $this->store($request,$newArrays);
            }

@@ -457,14 +457,16 @@
 
                 this.validateInput(arrCheckInput,this.countView)
                 // console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
-              console.log(arrCheckInput,'saveEditCheck')
+
 
 
 
 
 
               if (this.allValueArray.length > 0){
+
                 if (this.errors.save){
+                  let loader = this.$loading.show();
                   axios.post('/timetracking/settings/edit/check/save/', {
                     check_id:this.check_id,
                     allValueArray:this.allValueArray,
@@ -472,6 +474,7 @@
                     arr_check_input:arrCheckInput,
                     valueFindGr:this.valueFindGr
                   }).then(response => {
+                    loader.hide();
 
                     console.log(response,'results')
 
@@ -492,6 +495,9 @@
                         this.$message.error(this.errors.msg);
                       }
                     }else {
+
+
+
                       this.$message.success('Успешно изменен');
                       this.errors.show = false;
                       this.showCheckSideBar = false;
@@ -589,16 +595,14 @@
 
               if (this.allValueArray.length > 0 || this.arrCheckInput.length > 1){
                 if (this.errors.save){
+                  let loader = this.$loading.show();
                   axios.post('/timetracking/settings/add/check', {
-                    before: () => {
-                      alert('asdasd')
-                    },
                     allValueArray:this.allValueArray,
                     countView:this.countView,
                     arr_check_input:this.arrCheckInput,
 
                   }).then(response => {
-
+                    loader.hide();
 
                     console.log(response,'077')
 
