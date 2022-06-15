@@ -198,7 +198,7 @@ class CheckListController extends Controller
                     'last_name'=> $user->last_name,
                     'check_list_id'=> $checkList->id,
                     'check_users_id'=> $user->id,
-                    'check_reports_id'=> 0,//$this->saveReports($checkList, $user, $request, $profileGroups,$type),
+                    'check_reports_id'=> $this->saveReports($checkList, $user, $request, $profileGroups,$type),
                     'count_view'=> $request['countView'],
                     'item_type'=> $type,
                     'item_id'=> $profileGroups->id,
@@ -278,11 +278,6 @@ class CheckListController extends Controller
 
 
 
-
-
-           return '';
-
-           
 
 
 

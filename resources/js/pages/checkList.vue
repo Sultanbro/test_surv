@@ -476,7 +476,7 @@
                   }).then(response => {
                     loader.hide();
 
-                    console.log(response,'results')
+
 
                     if (response.data.success === false){
                       this.errors.msg = null;
@@ -535,6 +535,7 @@
                 }).then(response => {
 
                     console.log(response,'click')
+
 
                     this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
 
@@ -604,7 +605,7 @@
                   }).then(response => {
                     loader.hide();
 
-                    console.log(response,'077')
+
 
 
                     if (response.data.success == false){
@@ -782,8 +783,6 @@
                         el['checked'] = true
                       }
                   });
-                  console.log(this.flag_type,'wwwss',id,'aaaaa',type)
-                  console.log(this.groups_arr,'wwwss',id,'aaaaa',type)
                 }else if(type == 2){
                   this.positions_arr.forEach(el => {
                       if (el['code'] === id){
