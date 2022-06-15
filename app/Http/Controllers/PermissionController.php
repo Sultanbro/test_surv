@@ -92,7 +92,6 @@ class PermissionController extends Controller
      
 
         $all_users_with_all_their_roles = User::withTrashed()->with('roles')->has('roles')->orderBy('id', 'asc')->get();
-<<<<<<< HEAD
         
         foreach ($all_users_with_all_their_roles as $key => $user) {
             $item = [];
@@ -170,8 +169,6 @@ class PermissionController extends Controller
             
             $items[] = $item;
         }
-=======
->>>>>>> b4a734b80427fd177cf5ad54b13b78bc413122de
 
         $users = User::where(function($query) {
                     $query->whereNotNull('name')
