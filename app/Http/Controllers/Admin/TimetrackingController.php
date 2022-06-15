@@ -87,6 +87,7 @@ class TimetrackingController extends Controller
         }
         $positions = $array;
 
+
         ////////////
         $active_tab = 1;
         

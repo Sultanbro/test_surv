@@ -70,8 +70,11 @@ class CheckListController extends Controller
     }
 
     public function store(Request $request,$edit = null){
+<<<<<<< HEAD
+=======
        
         
+>>>>>>> b4a734b80427fd177cf5ad54b13b78bc413122de
         if ($edit === null){
             foreach ($request['allValueArray'] as $allValidate){
                 $validate = CheckList::where('item_id',$allValidate['code'])->where('item_type',$allValidate['type'])->get()->toArray();
@@ -182,6 +185,24 @@ class CheckListController extends Controller
     {
        
         if (!empty($profileGroups['id'])){
+<<<<<<< HEAD
+            foreach (json_decode($profileGroups['users']) as $profile_users_id){
+                if (!empty($profile_users_id)){
+                    $dataBaseUser = User::on()->find($profile_users_id);
+                    if (!empty($dataBaseUser)){
+                        $check_users = new CheckUsers();
+                        $check_users['name'] = $dataBaseUser['name'] ?? 'Без имени';;
+                        $check_users['last_name'] = $dataBaseUser['last_name'] ?? 'Без фамилии';;
+                        $check_users['check_list_id'] = $checkList->id;
+                        $check_users['check_users_id'] = $dataBaseUser['id'];
+                        $check_users['check_reports_id'] = $this->saveReports($checkList,$dataBaseUser,$request,$profileGroups,$type);
+                        $check_users['count_view'] = $request['countView'];
+                        $check_users['item_type'] = $type;
+                        $check_users['item_id'] = $profileGroups['id'];
+                        $check_users->save();
+                    }
+                }
+=======
 
             //$dataBaseUser = User::with('user_description')
                 // ->whereHas('user_description', function ($query) {
@@ -203,6 +224,7 @@ class CheckListController extends Controller
                     'item_type'=> $type,
                     'item_id'=> $profileGroups->id,
                 ]);
+>>>>>>> b4a734b80427fd177cf5ad54b13b78bc413122de
             }
         }
 
@@ -237,6 +259,7 @@ class CheckListController extends Controller
     }
 
     public function deleteCheck(Request $request){
+
 
 
         CheckList::on()->find($request['delete_id'])->delete();

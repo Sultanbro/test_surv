@@ -301,6 +301,9 @@ class QualityController extends Controller
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
 
 
+//        $check_users =CheckReports::where('item_id',$request['group_id'])->get();
+
+
         return response()->json([
             'items' => $items,
             'records' => $group->quality == 'local' ? $records : $null_records,

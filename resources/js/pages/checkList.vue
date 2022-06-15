@@ -477,7 +477,6 @@
                     loader.hide();
 
 
-
                     if (response.data.success === false){
                       this.errors.msg = null;
                       this.errors.show = true;
@@ -604,7 +603,6 @@
 
                   }).then(response => {
                     loader.hide();
-
 
 
 
@@ -783,6 +781,7 @@
                         el['checked'] = true
                       }
                   });
+
                 }else if(type == 2){
                   this.positions_arr.forEach(el => {
                       if (el['code'] === id){
