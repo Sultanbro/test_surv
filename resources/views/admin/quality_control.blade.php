@@ -21,7 +21,14 @@
 
     </div>
     <div class="col-md-12">
-      <t-quality activeuserid="{{ auth()->user()->id }}" :groups="{{ json_encode($groups)}}" ></t-quality>
+
+        @if(isset($type) && isset($id))
+           <t-quality activeuserid="{{ auth()->user()->id }}" :groups="{{ json_encode($groups)}}" :indtype="{{$type}}" :indid="{{$id}}" ></t-quality>
+        @else
+           <t-quality activeuserid="{{ auth()->user()->id }}" :groups="{{ json_encode($groups)}}" :indtype="1" :indid="''" ></t-quality>
+        @endif
+
+
     </div>
     
   </div>

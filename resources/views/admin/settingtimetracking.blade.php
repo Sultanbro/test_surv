@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 @section('title', 'Настройки')
 @section('content')
+
+
+
     <div class="">
         <div class="">
  

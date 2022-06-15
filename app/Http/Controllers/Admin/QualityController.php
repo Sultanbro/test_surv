@@ -39,8 +39,11 @@ class QualityController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index($type = null,$id = null)
     {
+
+
+
         if(!auth()->user()->can('quality_view')) {
             return redirect('/');
         }
@@ -63,12 +66,14 @@ class QualityController extends Controller
 
 
 
+//        if (isset($type) && isset($id)){
+//
+//        }
 
 
 
 
-
-        return view('admin.quality_control', compact('groups'));
+        return view('admin.quality_control', compact('groups','type','id'));
     }
 
     public function getRecords(Request $request) {

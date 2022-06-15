@@ -44,7 +44,7 @@
                             {{arrCheckList.auth_last_name}}         {{arrCheckList.auth_name}}
                         </td>
                         <td class="position-relative">
-                            <a href="/timetracking/quality-control">
+                            <a v-bind:href="'/timetracking/quality-control/'+arrCheckList.item_type+'/'+arrCheckList.id">
                                 <i class="pl-4 far fa-address-card fa-2x"></i>
                             </a>
                             <a class="position-absolute" @click="arrCheckDelete(arrCheckList.id)" style="right: 0">
