@@ -31,6 +31,7 @@ class CheckReports extends Model
     public function filterCheckList($request)
     {
         $group = ProfileGroup::find($request->group_id);
+        $check_users = [];
 
         foreach (json_decode($group->users) as $keys => $check_user){
 

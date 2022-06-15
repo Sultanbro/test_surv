@@ -17,64 +17,11 @@ use function Symfony\Component\Finder\name;
 class CheckListController extends Controller
 {
 
-    public function searchSelected(Request$request){
 
-
-
-        $valueUser = $request['query'];
-        if ($request['type'] == 1){
-            $groups = ProfileGroup::where('name','like', "%$valueUser%")->get(['id', 'name'])->pluck('name','id');
-            $positions = Position::get(['id', 'position'])->pluck('position','id');
-            $users = User::where(function($query) {
-                $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
-            })->select('id','name','last_name','email')->get();
-        }elseif ($request['type'] == 2){
-            $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
-            $positions =  Position::where('position','like', "%$valueUser%")->get(['id', 'position'])->pluck('position','id');
-            $users = User::where(function($query) {
-                $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
-            })->select('id','name','last_name','email')->get();
-        }elseif($request['type'] == 3){
-
-
-
-
-            $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
-            $positions = Position::get(['id', 'position'])->pluck('position','id');
-            $users = User::where('name','like', "%$valueUser%")
-                ->orWhere('last_name','like', "%$valueUser%")
-                ->select('id','name','last_name','email')->get();
-        }
-
-
-
-        return response(['users'=>$users,'positions'=>$positions,'groups'=>$groups]);
-
-
-
-
-
-    }
-
-    public function responsibility(Request $request){
-        $valueUser = $request['search'];
-
-        $resultsUser = User::where('email','like', "%$valueUser%")->select('id','email')->pluck('code','name')
-            ->get()->toArray();
-
-
-
-
-        return $resultsUser;
-
-    }
 
     public function store(Request $request,$edit = null){
-<<<<<<< HEAD
-=======
        
         
->>>>>>> b4a734b80427fd177cf5ad54b13b78bc413122de
         if ($edit === null){
             foreach ($request['allValueArray'] as $allValidate){
                 $validate = CheckList::where('item_id',$allValidate['code'])->where('item_type',$allValidate['type'])->get()->toArray();
@@ -89,7 +36,6 @@ class CheckListController extends Controller
 
         if ($request['countView'] < 11 && $request['countView'] != 0){
             if (isset($request['allValueArray'])){
-
                 foreach ($request['allValueArray'] as $allValueArray){
                         if ($allValueArray['type'] == 1){
                             $profileGroups = ProfileGroup::on()->find($allValueArray['code']);
@@ -104,7 +50,7 @@ class CheckListController extends Controller
                             $checkList['item_id'] = $profileGroups->id;
                             $checkList->save();
 
-                         
+
                             $this->saveGroup($profileGroups,$checkList,$request,1);
                         }elseif ($allValueArray['type'] == 2){
                             $profilePosition = Position::on()->find($allValueArray['code']);
@@ -154,6 +100,9 @@ class CheckListController extends Controller
             $check_users['count_view'] = $request['countView'];
             $check_users['item_type'] = $type;
             $check_users['item_id'] = $positionUser['id'];
+            $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
+            $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
+            $check_users['middleware_time'] =  9;
             $check_users->save();
         }
 
@@ -174,6 +123,9 @@ class CheckListController extends Controller
                 $check_users['count_view'] = $request['countView'];
                 $check_users['item_type'] = $type;
                 $check_users['item_id'] = $profileGroups->id;
+                $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
+                $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
+                $check_users['middleware_time'] =  9;
                 $check_users->save();
             }
         }
@@ -185,24 +137,6 @@ class CheckListController extends Controller
     {
        
         if (!empty($profileGroups['id'])){
-<<<<<<< HEAD
-            foreach (json_decode($profileGroups['users']) as $profile_users_id){
-                if (!empty($profile_users_id)){
-                    $dataBaseUser = User::on()->find($profile_users_id);
-                    if (!empty($dataBaseUser)){
-                        $check_users = new CheckUsers();
-                        $check_users['name'] = $dataBaseUser['name'] ?? 'Без имени';;
-                        $check_users['last_name'] = $dataBaseUser['last_name'] ?? 'Без фамилии';;
-                        $check_users['check_list_id'] = $checkList->id;
-                        $check_users['check_users_id'] = $dataBaseUser['id'];
-                        $check_users['check_reports_id'] = $this->saveReports($checkList,$dataBaseUser,$request,$profileGroups,$type);
-                        $check_users['count_view'] = $request['countView'];
-                        $check_users['item_type'] = $type;
-                        $check_users['item_id'] = $profileGroups['id'];
-                        $check_users->save();
-                    }
-                }
-=======
 
             //$dataBaseUser = User::with('user_description')
                 // ->whereHas('user_description', function ($query) {
@@ -212,19 +146,22 @@ class CheckListController extends Controller
             $users = User::whereIn('id', json_decode($profileGroups['users']))->select(['id','name','last_name'])->get(['id','name','last_name']);
 
             foreach ($users as $user) {
-                $check_users = new CheckUsers();
+//                $check_users = new CheckUsers();
+
 
                 CheckUsers::create([
                     'name'=> $user->name,
                     'last_name'=> $user->last_name,
                     'check_list_id'=> $checkList->id,
                     'check_users_id'=> $user->id,
-                    'check_reports_id'=> 0,//$this->saveReports($checkList, $user, $request, $profileGroups,$type),
+                    'check_reports_id'=> $this->saveReports($checkList, $user, $request, $profileGroups,$type),
                     'count_view'=> $request['countView'],
                     'item_type'=> $type,
                     'item_id'=> $profileGroups->id,
+                    'middleware_time'=> 9,
+                    'work_start'=> $user->work_start ?? '09:00:00',
+                    'work_end'=> $user->work_end ?? '18:00:00',
                 ]);
->>>>>>> b4a734b80427fd177cf5ad54b13b78bc413122de
             }
         }
 
@@ -259,7 +196,6 @@ class CheckListController extends Controller
     }
 
     public function deleteCheck(Request $request){
-
 
 
         CheckList::on()->find($request['delete_id'])->delete();
@@ -301,11 +237,6 @@ class CheckListController extends Controller
 
 
 
-
-
-           return '';
-
-           
 
 
 
@@ -408,8 +339,11 @@ class CheckListController extends Controller
 
 
 
+
         if (!empty($request['auth_check'])){
             foreach (json_decode($request['auth_check']) as $key => $arrCheckInput){
+
+
                 $check_list['checklist'][$key] = CheckList::on()->where('id',$arrCheckInput->check_list_id)->get()->toArray();
 //                $check_list['check'][$key] = CheckReports::find($arrCheckInput->check_reports_id);
 
@@ -426,12 +360,10 @@ class CheckListController extends Controller
 
 
                 if (!empty($check_list['check_day'][$key])){
-
                     $title =  $check_list['checklist'][$key][0]['title'];
                     $check_list['checklist'][$key] = $check_list['check_day'][$key];
                     $check_list['checklist'][$key][0]['flag'] = true;
                     $check_list['checklist'][$key][0]['title'] =  $title;
-
                 }else{
                     $check_list['checklist'][$key][0]['flag'] = false;
                 }
@@ -497,7 +429,6 @@ class CheckListController extends Controller
         }
     }
 
-
     public function getModal(Request$request){
 
        $users = User::where(function($query) {
@@ -511,6 +442,58 @@ class CheckListController extends Controller
 
 
        return response(['users'=>$users,'positions'=>$positions,'groups'=>$groups]);
+
+    }
+
+    public function searchSelected(Request$request){
+
+
+
+        $valueUser = $request['query'];
+        if ($request['type'] == 1){
+            $groups = ProfileGroup::where('name','like', "%$valueUser%")->get(['id', 'name'])->pluck('name','id');
+            $positions = Position::get(['id', 'position'])->pluck('position','id');
+            $users = User::where(function($query) {
+                $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
+            })->select('id','name','last_name','email')->get();
+        }elseif ($request['type'] == 2){
+            $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
+            $positions =  Position::where('position','like', "%$valueUser%")->get(['id', 'position'])->pluck('position','id');
+            $users = User::where(function($query) {
+                $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
+            })->select('id','name','last_name','email')->get();
+        }elseif($request['type'] == 3){
+
+
+
+
+            $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
+            $positions = Position::get(['id', 'position'])->pluck('position','id');
+            $users = User::where('name','like', "%$valueUser%")
+                ->orWhere('last_name','like', "%$valueUser%")
+                ->select('id','name','last_name','email')->get();
+        }
+
+
+
+        return response(['users'=>$users,'positions'=>$positions,'groups'=>$groups]);
+
+
+
+
+
+    }
+
+    public function responsibility(Request $request){
+        $valueUser = $request['search'];
+
+        $resultsUser = User::where('email','like', "%$valueUser%")->select('id','email')->pluck('code','name')
+            ->get()->toArray();
+
+
+
+
+        return $resultsUser;
 
     }
 

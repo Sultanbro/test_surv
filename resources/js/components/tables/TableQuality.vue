@@ -754,12 +754,9 @@ export default {
   methods: {
 
     viewStaticCheck(type){
-
-        console.log(this.fields,'day');
-        console.log(this.monthFields,'mont');
         // console.log(this.currentGroup,'щзешщт')
         // console.log(this.fields,'fields')
-        console.log(this.check_result,'result');
+
         // console.log(this.items,'items')
         if (type == 'w'){
             this.viewStaticButton.weekCheck = true
@@ -863,7 +860,7 @@ export default {
         .then((response) => {
 
 
-          console.log(response,'wsw');
+          console.log(response,'result response');
 
 
           if (response.data.error && response.data.error == "access") {

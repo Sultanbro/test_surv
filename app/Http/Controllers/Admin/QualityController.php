@@ -298,6 +298,8 @@ class QualityController extends Controller
 
 
 
+
+
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
 
 
@@ -314,7 +316,7 @@ class QualityController extends Controller
             'script_id' => $dialer ? $dialer->script_id : null,
             'dialer_id' => $dialer ? $dialer->dialer_id : null,
             'params' => $q_params,
-            'check_users' => $check_users,
+            'check_users' => $check_users ?? null,
         ]);
     }
     /**

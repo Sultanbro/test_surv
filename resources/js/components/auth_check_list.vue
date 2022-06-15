@@ -77,9 +77,6 @@
 
         created() {
             this.viewCheck()
-
-
-
         },
         methods: {
             toggle() {
@@ -106,23 +103,17 @@
             },
 
             viewCheck(){
-
-
-
-
                 axios.post('/timetracking/settings/auth/check/user', {
                     auth_check:this.auth_check_list
 
                 }).then(response => {
 
 
-
-
-
                     if (response.data.checklist.length > 0) {
-                      for (let i = 0;i < response.data.checklist.length;i++){
 
+                      for (let i = 0;i < response.data.checklist.length;i++){
                         if (response.data['checklist'][i].length > 0){
+
                           if (response.data['checklist'][i][0]['flag']){
                             this.auth_check.push({
                               title: response.data['checklist'][i][0]['title'],
@@ -141,12 +132,9 @@
                             });
                           }
 
+
                         }
                       }
-
-
-
-
                     }
 
 
