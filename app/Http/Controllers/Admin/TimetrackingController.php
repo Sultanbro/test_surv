@@ -835,13 +835,15 @@ class TimetrackingController extends Controller
         View::share('menu', 'timetrackingreports');
         $groups = ProfileGroup::where('active', 1)->get();
 
-        $_groups = [];
-        foreach ($groups as $key => $group) {
-            if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
-            $_groups[] = $group;
+        if(auth()->user()->is_admin != 1) {
+            $_groups = [];
+            foreach ($groups as $key => $group) {
+                if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
+                $_groups[] = $group;
+            }
+            $groups = $_groups;
         }
-        $groups = $_groups;
-        
+
         $fines = Fine::selectRaw('id as value, CONCAT(name," <span>(-", penalty_amount,")</span>") as text')->get();
         $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
         return view('admin.reports', compact('groups', 'fines', 'years'));
@@ -1423,13 +1425,16 @@ class TimetrackingController extends Controller
 
         $groups = ProfileGroup::where('active', 1)->get();
         
-        $_groups = [];
-        foreach ($groups as $key => $group) {
-            if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
-            $_groups[] = $group;
-        }
-        $groups = $_groups;
+        if(auth()->user()->is_admin != 1) {
 
+            $_groups = [];
+            foreach ($groups as $key => $group) {
+                if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
+                $_groups[] = $group;
+            }
+            $groups = $_groups;
+        }
+        
         $currentUser = User::bitrixUser();
 
         if ($request->isMethod('post')) {

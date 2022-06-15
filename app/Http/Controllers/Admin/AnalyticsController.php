@@ -91,7 +91,7 @@ class AnalyticsController extends Controller
             
         $groups = $groups->where('active', 1)->get();
     
-
+        //if(auth()->id() == 18) dd($groups);
         if(auth()->user()->is_admin != 1) {
             foreach ($groups as $key => $group) {
                 if(!in_array(auth()->id(), json_decode($group->editors_id)))  continue;
@@ -100,7 +100,7 @@ class AnalyticsController extends Controller
             $groups = $_groups;
         }
        
-        
+      
         View::share('menu', 'timetrackinganalytics');
         return view('admin.analytics-page', compact('groups'));
     }

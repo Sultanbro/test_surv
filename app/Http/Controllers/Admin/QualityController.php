@@ -51,25 +51,16 @@ class QualityController extends Controller
 
         $groups = ProfileGroup::whereIn('id', $acts)->where('has_analytics', 1)->where('active', 1)->get();
 
-        $groups2 = ProfileGroup::on()->get();
+        if(auth()->user()->is_admin != 1) {
+            $_groups = [];
+            foreach ($groups as $key => $group) {
+                if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
+                $_groups[] = $group;
+            }
+            $groups = $_groups;
 
 
-        $groups = $groups->merge($groups2);
-
-        $groups3 = ProfileGroup::on()->get();
-
-        $groups = $groups->merge($groups3);
-
-
-
-        $_groups = [];
-        foreach ($groups as $key => $group) {
-            if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
-            $_groups[] = $group;
         }
-        $groups = $_groups;
-
-
 
 
 
