@@ -86,25 +86,29 @@ class SalaryController extends Controller
 
         $date = Carbon::now()->day(1)->format("Y-m-d");
         
-        $_groups = [];
-        foreach ($groups as $key => $group) {
 
-            if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
-
-            $approval = SalaryApproval::where('group_id', $group->id)->where('date', $date)->first();
-            if($approval) {
-                $user = User::withTrashed()->find($approval->user_id);
-                $group->salary_approved_by = $user ? $user->last_name . ' ' . $user->name : $approval->user_id;
-                $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
-                $group->salary_approved = 1;
-            } else {
-                $group->salary_approved = 0;
+        if(auth()->user()->is_admin != 1) {
+            $_groups = [];
+            foreach ($groups as $key => $group) {
+    
+                if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
+    
+                $approval = SalaryApproval::where('group_id', $group->id)->where('date', $date)->first();
+                if($approval) {
+                    $user = User::withTrashed()->find($approval->user_id);
+                    $group->salary_approved_by = $user ? $user->last_name . ' ' . $user->name : $approval->user_id;
+                    $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
+                    $group->salary_approved = 1;
+                } else {
+                    $group->salary_approved = 0;
+                }
+    
+                $_groups[] = $group;
             }
-
-            $_groups[] = $group;
-        }
+           
+            $groups = $_groups;
+        }   
        
-        $groups = $_groups;
        
         $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
 
