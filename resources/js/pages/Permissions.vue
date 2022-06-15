@@ -19,9 +19,6 @@
      <div class=" d-flex ml-3">
         <button class="btn btn-default btn-sm" @click="addItem">Добавить</button>
       </div>
-      <div class=" d-flex ml-3">
-        <button class="btn btn-success btn-sm" @click="saveItems">Сохранить</button>
-      </div>
     </div>
 </h4>
 
@@ -46,6 +43,7 @@
         class="item d-flex" 
         :key="i" 
         @deleteItem="deleteItem(i)"
+        @updateItem="updateItem(i)"
         :item="item"
         :groups="groups"
         :users="users"
@@ -185,12 +183,9 @@ export default {
       this.onSearch();
       this.items.unshift(
         {
+          id: 0,
           groups_all: false,
-          target: {
-            id: null,
-            name: '',
-            type: 1
-          },
+          targets: [],
           roles: [],
           groups: []
         }
@@ -203,59 +198,82 @@ export default {
          return false; 
        }
 
-      if(this.filtered_items[i].target.id == null) {
-        let index = this.items.findIndex(it => it.id == this.filtered_items[i].target.id && it.type == this.filtered_items[i].target.type);
+      if(this.filtered_items[i].id == 0) {
+        
+        let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
         if(index != -1) this.items.splice(index, 1);
 
         this.filtered_items.splice(i,1)
-
         return false; 
       }
 
       let loader = this.$loading.show();
        axios
-        .post( '/permissions/delete-user', {
-          target: this.filtered_items[i].target
+        .post( '/permissions/delete-target', {
+          id: this.filtered_items[i].id
         })
         .then((response) => {
-          let index = this.items.findIndex(it => it.id == this.filtered_items[i].target.id && it.type == this.filtered_items[i].target.type);
+          let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
           if(index != -1) this.items.splice(index, 1);
           
           this.filtered_items.splice(i,1);
 
           loader.hide();
-           this.$message.success('Пользователь удален!');
+           this.$message.success('Доступ удален!');
         })
         .catch((error) => {
-          loader.hide();
+          loader.hide(); 
           alert(error);
         });
 
     },
 
-    saveItems() {
-      
-      let loader = this.$loading.show();
+    deleteItemsFromBoth(i) {
+
+    },
+ 
+    updateItem(i) {
+
+     
+      let loader = this.$loading.show(); 
        axios
-        .post( '/permissions/update-user', {
-          items: this.items,
+        .post( '/permissions/update-target', {
+          item: this.filtered_items[i],
         })
         .then((response) => {
+
+          let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+          if(index != -1) this.items.id = response.data.id;
+
           loader.hide();
-           this.$message.success('Пользователи сохранены!');
+           this.$message.success('Цели сохранены!');
         })
         .catch((error) => {
           loader.hide();
           alert(error);
-        });
+        }); 
     },
 
-    onSearch() {
+    onSearch() { 
         if(this.searchText == '') {
             this.filtered_items = this.items; 
         } else {
             this.filtered_items = this.items.filter((el, index) => {
-                return el.target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
+              let has = false;
+              el.targets.forEach(target => {
+                 if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
+              });
+
+              el.groups.forEach(target => {
+                 if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
+              });
+
+              el.roles.forEach(target => {
+                 if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
+              });
+
+              return has; 
+
             });
         }
      },
@@ -291,14 +309,15 @@ export default {
       
       this.permissions = [];
             console.log(this.role.perms);
-      Object.keys(this.role.perms).forEach((key, index) => {
-        if(this.role.perms[key]) this.permissions.push(key)
+            
+        Object.keys(this.role.perms).forEach((key, index) => {
+          if(this.role.perms[key]) this.permissions.push(key)
 
-  
-  
-      });
+    
+    
+        });
 
-
+        console.log(this.permissions);
 
       axios
         .post('/permissions/update-role', {
@@ -357,14 +376,14 @@ export default {
       let checked = this.role.perms[page.key + '_' + ability];
 
       if(ability == 'edit') {
-        this.role.perms[page.key + '_show'] = checked;
-        this.page.children.forEach(c => {
-          this.role.perms[c.key + '_show'] = checked;
+        this.role.perms[page.key + '_view'] = checked; 
+        page.children.forEach(c => {
+          this.role.perms[c.key + '_view'] = checked;
           this.role.perms[c.key + '_edit'] = checked;
         });      
       } else {
-        this.page.children.forEach(c => {
-          this.role.perms[c.key + '_show'] = checked;
+        page.children.forEach(c => {
+          this.role.perms[c.key + '_view'] = checked;
         });      
       }
 
@@ -376,7 +395,7 @@ export default {
       let checked = this.role.perms[page.key + '_' + ability];
 
       if(ability == 'edit') {
-        this.role.perms[page.key + '_show'] = checked;
+        this.role.perms[page.key + '_view'] = checked;
       }
       
     }

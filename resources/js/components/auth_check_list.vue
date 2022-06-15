@@ -109,13 +109,17 @@
 
 
 
+
                 axios.post('/timetracking/settings/auth/check/user', {
                     auth_check:this.auth_check_list
 
                 }).then(response => {
 
-                    if (response.data.checklist.length > 0) {
 
+
+
+
+                    if (response.data.checklist.length > 0) {
                       for (let i = 0;i < response.data.checklist.length;i++){
 
                         if (response.data['checklist'][i].length > 0){
@@ -125,7 +129,7 @@
                               id: response.data['checklist'][i][0]['check_id'],
                               gr_id: response.data['checklist'][i][0]['item_id'],
                               type: response.data['checklist'][i][0]['item_type'],
-                             // check_input:JSON.parse(response.data['checklist'][i][0]['checked'])
+                              check_input:JSON.parse(response.data['checklist'][i][0]['checked'])
                             });
                           }else{
                             this.auth_check.push({
@@ -133,12 +137,15 @@
                               id: response.data['checklist'][i][0]['id'],
                               gr_id: response.data['checklist'][i][0]['item_id'],
                               type: response.data['checklist'][i][0]['item_type'],
-                           //   check_input:JSON.parse(response.data['checklist'][i][0]['active_check_text'])
+                             check_input:JSON.parse(response.data['checklist'][i][0]['active_check_text'])
                             });
                           }
 
                         }
                       }
+
+
+
 
                     }
 

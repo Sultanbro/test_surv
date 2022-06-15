@@ -161,7 +161,7 @@ class SalaryController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if(!auth()->user()->can('salaries_view')) {
+        if(auth()->user()->is_admin == 1) {
             
         } else if (!in_array($currentUser->id, $group_editors)) {
             return [

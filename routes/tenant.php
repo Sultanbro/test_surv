@@ -236,8 +236,8 @@ Route::middleware([
 
     Route::post('/permissions/create-role', [PermissionController::class, 'createRole']);
     Route::post('/permissions/update-role', [PermissionController::class, 'updateRole']);
-    Route::post('/permissions/update-user', [PermissionController::class, 'updateUser']);
-    Route::post('/permissions/delete-user', [PermissionController::class, 'deleteUser']);
+    Route::post('/permissions/update-target', [PermissionController::class, 'updateTarget']);
+    Route::post('/permissions/delete-target', [PermissionController::class, 'deleteTarget']);
     Route::post('/permissions/delete-role', [PermissionController::class, 'deleteRole']);
 
 
@@ -462,7 +462,7 @@ Route::middleware([
     Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
     Route::post('/timetracking/settings/auth/check/user/responsibility', [CheckListController::class, 'responsibility']); ///   Добавить ответственного лица
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
-    Route::post('/timetracking/settings/auth/check/search/selected', [CheckListController::class, 'searchSelected']); ///   ����� ����� ��������� �������������
+    Route::post('/timetracking/settings/auth/check/search/selected', [CheckListController::class, 'searchSelected']); ///   ����� ����� ��������� �������������
 
 
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);

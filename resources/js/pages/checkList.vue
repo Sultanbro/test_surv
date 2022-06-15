@@ -157,7 +157,8 @@
                           </div>
                       </div>
 
-                      <div class="responsibility" v-if="responsibility.block">
+                      <div style="display: none">
+                        <div class="responsibility" v-if="responsibility.block">
 
                           <span v-if="responsibility.input === false">
                               +
@@ -165,34 +166,29 @@
                           <span style="padding: 0px 12px 0px 12px;top: 2px" v-else>
                               -
                           </span>
-
-
                           <a href="#" v-if="responsibility.input === false"  @click="responsibility.input = true" >
-                                Добавить ответственного лица
+                            Добавить ответственного лица
                           </a>
-
                           <a href="#"  v-if="responsibility.input === true"  @click="responsibility.input = false" >
-                                Скрыть ответственного лица
+                            Скрыть ответственного лица
                           </a>
+                          <input v-if="responsibility.input" v-model="responsibility.inputText"
+                        </div>
+                        <div class="resultR" v-if="responsibility.result_text">
+                          <ul class="p-0" v-if="responsibility.results.length > 0">
 
-
-                        <input v-if="responsibility.input" v-model="responsibility.inputText"
-                               @keyup="fetchResponsibility()"  style="position:absolute;" class="form-control responsibility-input"  placeholder="Email Ответственного лица" name="responsibility">
-                      </div>
-                      <div class="resultR" v-if="responsibility.result_text">
-                           <ul class="p-0" v-if="responsibility.results.length > 0">
-
-                             <li class="responsibilityLi" v-for="results in responsibility.results">
-                               <a @click.prevent="addResponsibility(results.email)">
-                                 {{results.email}}
-                               </a>
-                             </li>
-                           </ul>
-                           <ul v-else class="p-0">
-                             <li class="responsibilityLi">
-                               <a>Нет Найденных Ответсвенных лиц</a>
-                             </li>
-                           </ul>
+                            <li class="responsibilityLi" v-for="results in responsibility.results">
+                              <a @click.prevent="addResponsibility(results.email)">
+                                {{results.email}}
+                              </a>
+                            </li>
+                          </ul>
+                          <ul v-else class="p-0">
+                            <li class="responsibilityLi">
+                              <a>Нет Найденных Ответсвенных лиц</a>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
 
                     </div>
@@ -461,14 +457,16 @@
 
                 this.validateInput(arrCheckInput,this.countView)
                 // console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
-              console.log(arrCheckInput,'saveEditCheck')
+
 
 
 
 
 
               if (this.allValueArray.length > 0){
+
                 if (this.errors.save){
+                  let loader = this.$loading.show();
                   axios.post('/timetracking/settings/edit/check/save/', {
                     check_id:this.check_id,
                     allValueArray:this.allValueArray,
@@ -476,6 +474,7 @@
                     arr_check_input:arrCheckInput,
                     valueFindGr:this.valueFindGr
                   }).then(response => {
+                    loader.hide();
 
                     console.log(response,'results')
 
@@ -496,6 +495,9 @@
                         this.$message.error(this.errors.msg);
                       }
                     }else {
+
+
+
                       this.$message.success('Успешно изменен');
                       this.errors.show = false;
                       this.showCheckSideBar = false;
@@ -593,16 +595,14 @@
 
               if (this.allValueArray.length > 0 || this.arrCheckInput.length > 1){
                 if (this.errors.save){
+                  let loader = this.$loading.show();
                   axios.post('/timetracking/settings/add/check', {
-                    before: () => {
-                      alert('asdasd')
-                    },
                     allValueArray:this.allValueArray,
                     countView:this.countView,
                     arr_check_input:this.arrCheckInput,
 
                   }).then(response => {
-
+                    loader.hide();
 
                     console.log(response,'077')
 

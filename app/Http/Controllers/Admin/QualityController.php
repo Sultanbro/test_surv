@@ -81,8 +81,8 @@ class QualityController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if(auth()->user()->id == 84) dd(auth()->user()->can('quality_view'));
-        if(auth()->user()->can('quality_view')) {
+        //if(auth()->user()->id == 84) dd(auth()->user()->can('quality_view'));
+        if(auth()->user()->is_admin == 1) {
 
         } else if (!in_array($currentUser->id, $group_editors)) {
             return [
