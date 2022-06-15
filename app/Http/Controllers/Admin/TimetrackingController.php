@@ -95,14 +95,14 @@ class TimetrackingController extends Controller
         }
         
      
-        if($active_tab == 1 && auth()->user()->can('users_view')) {
-
-        } else if($active_tab != 1 && auth()->user()->can('settings_view')){
-            
-        } else {
-            return redirect('/');
-        }
-
+        if($active_tab == 1 && !auth()->user()->can('users_view')) return redirect('/');
+        if($active_tab == 2 && !auth()->user()->can('positions_view')) return redirect('/');
+        if($active_tab == 3 && !auth()->user()->can('groups_view')) return redirect('/');
+        if($active_tab == 4 && !auth()->user()->can('fines_view')) return redirect('/');
+        if($active_tab == 5 && !auth()->user()->can('notifications_view')) return redirect('/');
+        if($active_tab == 6 && !auth()->user()->can('settings_learning_view')) return redirect('/');
+        if($active_tab == 7 && !auth()->user()->is_admin != 1) return redirect('/');
+        if($active_tab == 8 && !auth()->user()->can('checklists_view')) return redirect('/');
      
         $corpbooks = [];
         if($active_tab == 3) {
@@ -126,7 +126,7 @@ class TimetrackingController extends Controller
             // }
     
 
-            $users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
+            $users = User::withTrashed()->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
             $tab5['users'] = array_values($users);
 
             $positions = Position::select('position as name', 'id')->get()->toArray();
