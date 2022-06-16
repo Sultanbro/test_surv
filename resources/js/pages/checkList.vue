@@ -44,9 +44,11 @@
                             {{arrCheckList.auth_last_name}}         {{arrCheckList.auth_name}}
                         </td>
                         <td class="position-relative">
-                            <a v-bind:href="'/timetracking/quality-control/'+arrCheckList.item_type+'/'+arrCheckList.id">
+
+                            <a v-bind:href="'/timetracking/quality-control?type='+arrCheckList.item_type+'&id='+arrCheckList.item_id">
                                 <i class="pl-4 far fa-address-card fa-2x"></i>
                             </a>
+
                             <a class="position-absolute" @click="arrCheckDelete(arrCheckList.id)" style="right: 0">
                                 <i class="fa fa-trash fa-2x" aria-hidden="true"></i>
                             </a>
@@ -325,6 +327,9 @@
         computed: {
 
           filteredRows () {
+
+            console.log(this.arrCheckLists)
+
             return this.arrCheckLists.filter(row => {
               const title = row.title.toString().toLowerCase();
               const authLastName = row.auth_last_name.toLowerCase();
@@ -338,6 +343,9 @@
             this.viewCheckList()
             this.addCheckList()
             this.getUsers()
+
+
+
         },
 
         methods:{

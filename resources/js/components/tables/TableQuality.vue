@@ -1,7 +1,8 @@
 <template>
   <div class="mt-2 px-3 quality quality-page">
     <div class="row">
-      <div class="col-3">
+
+      <div class="col-3" v-if="individual_request">
         <select class="form-control" v-model="currentGroup" @change="fetchData">
           <option v-for="group in groups" :value="group.id" :key="group.id">
             {{ group.name }}
@@ -447,7 +448,7 @@
 
         </a-tab-pane>
 
-        <a-tab-pane tab="Чек Лист" key="3">
+        <a-tab-pane tab="Чек Лист" key="3"  @click="myClickEvent" ref="myBtn" >
 
 
           <div class="col-md-12 p-0">
@@ -474,9 +475,12 @@
                <template v-for="( check_r,index ) in check_result">
                  <tr :key="index">
                    <th class="b-table-sticky-column text-left t-name wd">
-                     {{ check_r.name }}
+                     {{ check_r.last_name }} {{ check_r.name }}
                    </th>
                    <template v-for="(field, key) in fields">
+
+
+
                      <td :class="field.klass" :key="key">
                        <template v-if="currentGroup == check_r.gr_id" >
 
@@ -659,6 +663,14 @@ export default {
   props: {
     activeuserid: String,
     groups: Array,
+    individual_type:{
+      default:null
+    },
+    individual_type_id:{
+      default:null
+    }
+
+
   },
   data() {
     return {
@@ -739,27 +751,67 @@ export default {
         to: 100,
         total: 4866,
       },
+      individual_request:true,
 
       viewStaticButton:{
           weekCheck:true,
           montheCheck:false
       },
+
     };
   },
 
   created() {
+
+
+    if (this.individual_type != null  &&  this.individual_type_id != null){
+
+
+
+      // this.$refs.myBtn.click()
+
+
+      // const elem = this.$refs.myBtn
+      // elem.click()
+
+
+      // this.myClickEvent();
+
+    }
+
+
     this.fetchData();
+
 
   },
   methods: {
 
+    myClickEvent($event) {
+      const elem = this.$refs.myBtn
+      elem.click()
+
+      console.log(this.individual_type , this.individual_type_id)
+      console.log('click')
+    },
+
+
     viewStaticCheck(type){
 
-        console.log(this.fields,'day');
-        console.log(this.monthFields,'mont');
+
+
+
+        console.log(this.individual_type , this.individual_type_id)
+        console.log('imasheev')
+
+
+
+
+
+        // console.log(this.fields,'day');
+        // console.log(this.monthFields,'mont');
         // console.log(this.currentGroup,'щзешщт')
         // console.log(this.fields,'fields')
-        console.log(this.check_result,'result');
+        // console.log(this.check_result,'result');
         // console.log(this.items,'items')
         if (type == 'w'){
             this.viewStaticButton.weekCheck = true
@@ -794,6 +846,10 @@ export default {
     },
 
     normalizeItems() {
+
+      // console.log(this.items)
+      // console.log(this.items.length)
+
       if (this.items.length > 0) {
         this.newRecord.employee_id = this.items[0].id;
         this.newRecord.name = this.items[0].name;
@@ -828,6 +884,10 @@ export default {
     saveSettings() {
       let loader = this.$loading.show();
 
+      // if (this.individual_type != null  &&  this.individual_type_id != null) {
+      //
+      // }
+
       axios
         .post("/timetracking/quality-control/crits/save", {
           crits: this.params,
@@ -835,6 +895,8 @@ export default {
           script_id: this.script_id,
           dialer_id: this.dialer_id,
           group_id: this.currentGroup,
+
+
         })
         .then((response) => {
           console.log(response);
@@ -859,20 +921,23 @@ export default {
           year: this.currentYear,
           employee_id: this.filters.currentEmployee,
           group_id: this.currentGroup,
+          individual_type:this.individual_type,
+          individual_type_id:this.individual_type_id,
         })
         .then((response) => {
 
+          // console.log(response,'response');
+          // console.log(response.data['individual_type'],'ind');
+          // console.log(this.fields,'fields');
 
-          console.log(response,'wsw');
+          if (response.data['individual_type'] == 3 || response.data['individual_type'] == 2){
+            this.individual_request = false
+          }
+          this.currentGroup = response.data['individual_current']
 
 
           if (response.data.error && response.data.error == "access") {
-
-
-
-
-
-
+            console.log(response,'responseError');
             this.hasPermission = false;
             loader.hide();
             return;

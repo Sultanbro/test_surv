@@ -347,7 +347,9 @@ Route::middleware([
     Route::post('/timetracking/top/proceeds/update', [TopController::class, 'updateProceeds']);
 
 
-    Route::any('/timetracking/quality-control/{type?}/{id?}', [QualityController::class, 'index']);
+    Route::any('/timetracking/quality-control/', [QualityController::class, 'index']);
+
+
     Route::any('/timetracking/quality-control/export', [QualityController::class, 'exportExcel']);
     Route::any('/timetracking/quality-control/change-type', [QualityController::class, 'changeType']);
     Route::any('/timetracking/quality-control/exportall', [QualityController::class, 'exportAllExcel']);

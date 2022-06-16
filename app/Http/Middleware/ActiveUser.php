@@ -19,15 +19,17 @@ class ActiveUser
     public function handle($request, Closure $next)
     {
 
-        $user = Auth::user();
-        if ($user->active) {
-            $user->visited = Carbon::now();
+        $user = auth()->user();
+        if ($user) {
 
-            dd($user);
-            return $next($request);
+
+//            $user->visited = Carbon::now();
+
+
+
         }
 
-
+        return $next($request);
 
     }
 }

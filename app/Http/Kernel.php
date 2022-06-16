@@ -42,6 +42,8 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\TestMiddleware::class,
             \App\Http\Middleware\Admin::class,
             \App\Http\Middleware\CheckPermissions::class,
+            \App\Http\Middleware\ActiveUser::class,
+
         ],
 
       
