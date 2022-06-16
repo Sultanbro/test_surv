@@ -490,6 +490,7 @@
                     loader.hide();
 
 
+                    console.log(response,'edit-Imashev')
 
                     if (response.data.success === false){
                       this.errors.msg = null;
