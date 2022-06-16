@@ -66,7 +66,7 @@
                 <div class="col-4 d-flex align-items-center justify-content-end" >
                     <input type="text" :ref="'mylink' + currentGroup" class="hider">
                     <button 
-                        v-if="currentGroup == 42 && editable_time && can_edit"
+                        v-if="currentGroup == 42 && can_edit"
                         @click='showExcelImport = !showExcelImport'
                         class="btn btn-primary mr-2 btn-sm rounded"
                         :style="{'padding': '2px 8px'}"
@@ -168,7 +168,7 @@
 
 
 
-    <sidebar v-if="showExcelImport && editable_time && can_edit"
+    <sidebar v-if="showExcelImport"
         title="Импорт EXCEL" 
         :open="showExcelImport"
         @close="showExcelImport=false"

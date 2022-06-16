@@ -37,6 +37,9 @@ class GroupsController extends Controller
         $additional_minutes_office = $this->getAdditionalMinutes($date, 'inhouse'); // Отсутствие связи доп время для сотрудников Inhouse
 
         $edited_users = [];
+
+        
+
         foreach($request->items as $item) {
             if($item['id'] != 0) {
 
@@ -94,15 +97,13 @@ class GroupsController extends Controller
 
     public function setZeroToUsersStartedTheDay($user_ids, $date) {
 
-        $pgu = ProfileGroupUser::where([
-            'group_id' => 42,
-            'date' => $date,
-        ])->first();
+        $group = ProfileGroup::find(42);
 
-        if($pgu) {
-            $tts = Timetracking::whereDate('enter', $date)
-                ->where('group_id', 42)
-                ->whereNotIn('user_id', $user_ids)
+        $users = array_diff(json_decode($group->users, true), $user_ids);
+        $users = array_values($users);
+
+        $tts = Timetracking::whereDate('enter', $date)
+                ->whereIn('user_id', $users)
                 ->get();
 
             foreach ($tts as $tt) {
@@ -110,7 +111,6 @@ class GroupsController extends Controller
                 $tt->updated = 1;
                 $tt->save();
             }
-        }
 
     }
 
