@@ -168,7 +168,7 @@
 
 
 
-    <sidebar v-if="showExcelImport"
+    <sidebar v-if="showExcelImport && can_edit"
         title="Импорт EXCEL" 
         :open="showExcelImport"
         @close="showExcelImport=false"
@@ -196,69 +196,72 @@
                     <p>История изменения отсутствует</p>
                 </template>
             </b-tab>
-            <b-tab title="📆" >
-                <!-- <div v-html="sidebarContent.history"></div>
-          <div v-html="sidebarContent.historyTotal"></div> -->
-            <template v-if="!sidebarContent.data.item.is_trainee">
-                <div class="temari">
-                    <div v-for="dateType in dateTypes" :key="dateType.label" :class="[dateType.type == 4 ? 'mt-auto' : 'mb-2']">
-                        <b-button block @click="openModalDay(dateType)" :class="'table-day-'+dateType.type">{{ dateType.label }}
-                        </b-button>
-                    </div> 
-                    <div class="mt-auto">
-                        <b-button block @click="openFiringModal({
-                                                label: 'Уволить без отработки',
-                                                color: '#d35dd3',
-                                                type: 4
-                                            }, 1)" :class="'table-day-4'">Уволить без отработки</b-button>
-                    </div>
-                    <div class="mt-2">
-                        <b-button block @click="openFiringModal({
-                                                label: 'Уволить с отработкой',
-                                                color: '#c8a2c8',
-                                                type: 4
-                                            }, 2)" :class="'table-day-4'">Уволить с отработкой</b-button>
+
+            <template v-if="can_edit">
+                <b-tab title="📆" >
+                    <!-- <div v-html="sidebarContent.history"></div>
+            <div v-html="sidebarContent.historyTotal"></div> -->
+                <template v-if="!sidebarContent.data.item.is_trainee">
+                    <div class="temari">
+                        <div v-for="dateType in dateTypes" :key="dateType.label" :class="[dateType.type == 4 ? 'mt-auto' : 'mb-2']">
+                            <b-button block @click="openModalDay(dateType)" :class="'table-day-'+dateType.type">{{ dateType.label }}
+                            </b-button>
+                        </div> 
+                        <div class="mt-auto">
+                            <b-button block @click="openFiringModal({
+                                                    label: 'Уволить без отработки',
+                                                    color: '#d35dd3',
+                                                    type: 4
+                                                }, 1)" :class="'table-day-4'">Уволить без отработки</b-button>
+                        </div>
+                        <div class="mt-2">
+                            <b-button block @click="openFiringModal({
+                                                    label: 'Уволить с отработкой',
+                                                    color: '#c8a2c8',
+                                                    type: 4
+                                                }, 2)" :class="'table-day-4'">Уволить с отработкой</b-button>
+                        </div>
+                        
+                        
                     </div>
                     
-                    
-                </div>
+                </template>
+
+                <template v-else>
+                    <div class="temari">
+                        <button class="btn btn-warning btn-block" @click="openModalAbsence({type: 2, label: 'Отсутствовал на стажировке'})">Отсутствовал на стажировке</button>
+                        <button class="btn btn-primary btn-block" @click="openModalApply({type: 8, label:'Принят на работу' })" v-if="sidebarContent.data.item.requested == null">Принять на работу</button>
+                        <button class="btn btn-info btn-block" @click="setDayWithoutComment(7)">Подключился позже</button>
+
+                        <div class="mt-3" style="color:green;text-align:center">
+                            {{ apllyPersonResponse }}
+                        </div>
+                        
+                        <div class="mt-3" style="color:green;text-align:center" v-if="sidebarContent.data.item.requested !== null">
+                            Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
+                        </div>
+
+                        <button class="btn btn-danger btn-block mt-auto" @click="openFiringModal({
+                                                    label: 'Уволить',
+                                                    color: '#c8a2c8',
+                                                    type: 4
+                                                }, 0)">Уволить</button>
+
+                        
+                        
+                    </div>
+                </template>
+
                 
+
+                </b-tab>
+                <b-tab title="⚠️Штрафы" v-if="!sidebarContent.data.item.is_trainee">
+                    <b-form-group label="Система депремирования" class="fines-modal">
+                        <b-form-checkbox-group v-model="sidebarContent.fines" :options="fines" name="flavour-2a" stacked></b-form-checkbox-group>
+                    </b-form-group>
+                    <b-button variant="primary" @click="openModalFine">Сохранить</b-button>
+                </b-tab>
             </template>
-
-            <template v-else>
-                <div class="temari">
-                    <button class="btn btn-warning btn-block" @click="openModalAbsence({type: 2, label: 'Отсутствовал на стажировке'})">Отсутствовал на стажировке</button>
-                    <button class="btn btn-primary btn-block" @click="openModalApply({type: 8, label:'Принят на работу' })" v-if="sidebarContent.data.item.requested == null">Принять на работу</button>
-                    <button class="btn btn-info btn-block" @click="setDayWithoutComment(7)">Подключился позже</button>
-
-                     <div class="mt-3" style="color:green;text-align:center">
-                        {{ apllyPersonResponse }}
-                    </div>
-                    
-                    <div class="mt-3" style="color:green;text-align:center" v-if="sidebarContent.data.item.requested !== null">
-                        Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
-                    </div>
-
-                    <button class="btn btn-danger btn-block mt-auto" @click="openFiringModal({
-                                                label: 'Уволить',
-                                                color: '#c8a2c8',
-                                                type: 4
-                                            }, 0)">Уволить</button>
-
-                    
-                    
-                </div>
-            </template>
-
-            
-
-            </b-tab>
-            <b-tab title="⚠️Штрафы" v-if="!sidebarContent.data.item.is_trainee">
-                <b-form-group label="Система депремирования" class="fines-modal">
-                    <b-form-checkbox-group v-model="sidebarContent.fines" :options="fines" name="flavour-2a" stacked></b-form-checkbox-group>
-                </b-form-group>
-                <b-button variant="primary" @click="openModalFine">Сохранить</b-button>
-            </b-tab>
         </b-tabs>
     </sidebar>
 
