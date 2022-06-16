@@ -27,12 +27,24 @@
         </div>
 
         <div v-if="hasPermission">
-            <a-slider :defaultValue="defaultScrollValue" :max="maxScrollWidth" v-model="scrollLeft" :tooltipVisible="false" />
+            <a-slider 
+                :defaultValue="defaultScrollValue"
+                :max="maxScrollWidth"
+                v-model="scrollLeft"
+                :tooltipVisible="false"
+            />
 
             <div class="row mb-3">
                 <div class="col-2">
                     <div class="overflow-auto d-flex">
-                        <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0"></b-pagination>
+                        <b-pagination 
+                            v-model="currentPage"
+                            :total-rows="totalRows"
+                            :per-page="perPage"
+                            align="fill"
+                            size="sm"
+                            class="my-0"
+                        ></b-pagination>
                     </div>
                 </div>
                 <div class="col-6 d-flex align-items-center">
@@ -41,9 +53,12 @@
                         <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
                         <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
                     </b-form-group>
-                    <button class="btn btn-sm rounded btn-primary ml-2" v-if="currentGroup != 23 && user_types == 2" @click="copy()" :style="{
-                        'padding': '2px 8px'
-                    }">
+                    <button 
+                        class="btn btn-sm rounded btn-primary ml-2"
+                        v-if="currentGroup != 23 && user_types == 2"
+                        @click="copy()" 
+                        :style="{'padding': '2px 8px'}"
+                        >
                         <i class="fa fa-clone ddpointer"></i>
                         Начать отметку 
                     </button>
@@ -54,9 +69,8 @@
                         v-if="currentGroup == 35 || currentGroup == 42"
                         @click='showExcelImport = !showExcelImport'
                         class="btn btn-primary mr-2 btn-sm rounded"
-                        :style="{
-                            'padding': '2px 8px'
-                        }">
+                        :style="{'padding': '2px 8px'}"
+                        >
                             <i class="fa fa-upload"></i>
                             Импорт EXCEL
                     </button>
@@ -67,7 +81,8 @@
                 </div>
             </div>
             
-            <b-table responsive striped 
+            <b-table 
+                responsive striped 
                 :sticky-header="true" 
                 class="text-nowrap text-right my-table"
                 id="tabelTable" 
@@ -110,17 +125,18 @@
                     <div @mouseover="dayInfo(data)" @click="detectClick(data)" :class="{'updated': data.value.updated}">
 
                         <template v-if="data.value.hour">
-                            <b-form-input @mouseover="$event.preventDefault()" 
-                                        class="form-control cell-input"
-                                        type="number"
-                                        :min="0"
-                                        :max="24"
-                                        :step="0.1"
-                                        :value="data.value.hour"
-                                        :readonly="true"
-                                      
-                                        @dblclick="readOnlyFix"
-                                        @change="openModal"></b-form-input>
+                            <b-form-input 
+                                class="form-control cell-input"
+                                type="number"
+                                @mouseover="$event.preventDefault()" 
+                                :min="0"
+                                :max="24"
+                                :step="0.1"
+                                :value="data.value.hour"
+                                :readonly="true"
+                                @dblclick="readOnlyFix"
+                                @change="openModal"
+                            ></b-form-input>
                         </template>
 
                         <template v-else>
@@ -328,6 +344,7 @@ export default {
         years: Array,
         activeuserid: String,
         activeuserpos: String,
+        can_edit: Boolean
     },
     watch: {
         scrollLeft(value) {
@@ -485,19 +502,6 @@ export default {
                 });
         },
 
-        activeInput(event) {
-            this.editMode ? event.target.readOnly = '' : event.target.readOnly = 'true'
-        },
-        toggleEditMode() {
-            
-            this.editMode = this.editMode ? false : true
-            
-        },
-        handlePagination(value) {
-            let url = '/timetracking/reports?page=' + value;
-            this.fetchData(url);
-        },
-
         openModalDay(dayType) {
             this.modalTitle = this.sidebarTitle + ' (' + dayType.label + ')'
             this.currentDayType = dayType
@@ -593,6 +597,40 @@ export default {
             
                 
             }
+        },
+        
+        openModalFine() {
+            this.modalVisibleFines = true
+        },
+
+        openModal(hour) {
+            let clearedValue = hour.replace(',', '.')
+            let value = parseFloat(clearedValue) * 60
+            this.currentMinutes = value
+            this.modalVisible = true
+
+            try {
+                this.$message.info('C ' + this.currentEditingCell.item[this.currentEditingCell.field.key].hour + ' на ' + hour);
+            } catch(e) {
+                alert(e);
+            }
+        },
+
+        openDay(data) {
+            if(this.editMode) return 
+            
+            if (data.field.key == 'name') return
+            this.openSidebar = true
+            this.sidebarTitle = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth} `
+            this.sidebarContent = {
+                data: data,
+                history: `${data.item[data.field.key] ? data.item[data.field.key].tooltip : ''}`,
+                historyTotal: `Итого: ${data.value.hour} ч.`.replace('undefined', '0.0'),
+                day: data.field.key,
+                user_id: data.item.user_id,
+                fines: data.item.fines[data.field.key]
+            }
+            this.sidebarHistory = data.item.history.filter(x => parseInt(x.day) === parseInt(data.field.key))
         },
 
         setUserFired() {
@@ -721,9 +759,7 @@ export default {
                 this.errors = ['Комментарий обязателен']
             }
         },
-        openModalFine() {
-            this.modalVisibleFines = true
-        },
+        
         saveFines() {
             if (this.commentFines.length > 0) {
                 this.openSidebar = false
@@ -746,30 +782,17 @@ export default {
                 this.errors = ['Комментарий обязателен']
             }
         },
+
         dayInfo(data) {
             // if (!isNaN(data.field.key))
             this.dayInfoText = `${data.item.name} -${data.field.key} ${this.dateInfo.currentMonth}`
         },
-        openDay(data) {
-            if(this.editMode) return 
-            
-            if (data.field.key == 'name') return
-            this.openSidebar = true
-            this.sidebarTitle = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth} `
-            this.sidebarContent = {
-                data: data,
-                history: `${data.item[data.field.key] ? data.item[data.field.key].tooltip : ''}`,
-                historyTotal: `Итого: ${data.value.hour} ч.`.replace('undefined', '0.0'),
-                day: data.field.key,
-                user_id: data.item.user_id,
-                fines: data.item.fines[data.field.key]
-            }
-            this.sidebarHistory = data.item.history.filter(x => parseInt(x.day) === parseInt(data.field.key))
-        },
+      
         //Установка выбранного года
         setYear() {
             this.dateInfo.currentYear = this.dateInfo.currentYear ? this.dateInfo.currentYear : this.$moment().format('YYYY')
         },
+
         //Установка выбранного месяца
         setMonth() {
             let year = this.dateInfo.currentYear
@@ -786,12 +809,11 @@ export default {
             this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
             this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
         },
-        //Установка заголовока таблицы
 
+        //Установка заголовока таблицы
         readOnlyFix(event) { 
-            //if([48,53,65,66].includes(this.currentGroup) || this.activeuserid == 5) {
-            if(this.editable_time) {
-                 event.target.readOnly = ''
+            if(this.editable_time || this.can_edit) {
+                event.target.readOnly = ''
             }
         },
 
@@ -886,26 +908,11 @@ export default {
                     alert(error)
                 });
         },
+        
         //Добавление загруженных данных в таблицу
         loadItems() {
-            //const self = this
+           
             let items = []
-
-            // Итого часов по всем сотрудникам за день
-            // let sum = this.data.sum;
-
-            // let total = {
-            //     name: 'Total',
-            //     user_type: 'Всего',
-            // }
-
-            // let days = this.dateInfo.daysInMonth
-
-            // for (let i = 1; i <= days; i++) {
-            //     total[i] = sum[i];
-            // }
- 
-            //items.push(total);
 
             let daily_totals = {};
 
@@ -1001,7 +1008,7 @@ export default {
                 });
 
       
-                 Object.keys(item.weekdays).forEach(k => {
+                Object.keys(item.weekdays).forEach(k => {
                     if (Number(item.weekdays[k]) == 1) {
                         v[Number(k)] += ' table-day-1'
                     }
@@ -1038,24 +1045,6 @@ export default {
             this.totalRows =  this.items.length
         },
 
-        groupBy(collection, property) {
-            var i = 0,
-                val, index,
-                values = [],
-                result = [];
-            for (; i < collection.length; i++) {
-                val = collection[i][property];
-                index = values.indexOf(val);
-                if (index > -1)
-                    result[index].push(collection[i]);
-                else {
-                    values.push(val);
-                    result.push([collection[i]]);
-                }
-            }
-            return result;
-        },
-
         editDay(data) {
             
             try {
@@ -1069,20 +1058,6 @@ export default {
             this.currentEditingCell = data
         },
 
-        openModal(hour) {
-            let clearedValue = hour.replace(',', '.')
-            let value = parseFloat(clearedValue) * 60
-            this.currentMinutes = value
-            this.modalVisible = true
-
-            try {
-                this.$message.info('C ' + this.currentEditingCell.item[this.currentEditingCell.field.key].hour + ' на ' + hour);
-            } catch(e) {
-                alert(e);
-            }
-            
-
-        },
         updateHour() {
             if(this.isEmpty(this.currentEditingCell)) {
                 this.$message.error('Что-то пошло не так. Выберите поле и попробуйте снова');
@@ -1156,10 +1131,6 @@ export default {
         },
 
         setUserAbsent() {
-
-            // if (this.commentAbsent.length > 4) {
-            //     return '';
-            // }
             
             let day = this.sidebarContent.day;
             let loader = this.$loading.show();
@@ -1201,7 +1172,7 @@ export default {
         
         detectClick(data) { 
             //if([48,53,65,66].includes(this.currentGroup) || this.activeuserid == 5) { // if RECRUITING GROUP ENABLE EDIT HOURS ON DBLCLICK
-            if(this.editable_time) {
+            if(this.editable_time || this.can_edit) {
                 this.numClicks++
                 if (this.numClicks === 1) {
                     var self = this
@@ -1219,8 +1190,6 @@ export default {
                 this.openDay(data);
             }
             
-            
-             
         }
     }
 }
