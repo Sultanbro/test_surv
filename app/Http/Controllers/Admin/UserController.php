@@ -1094,6 +1094,10 @@ class UserController extends Controller
                 ->with(['zarplata', 'downloads', 'user_description'])
                 ->first();
             
+            if($user->weekdays == '' || $user->weekdays == null) {
+                $user->weekdays = '0000000';
+                $user->save();
+            }    
             $user->cards = Card::where('user_id', $user->id)->get();
             $user->delete_time = null;
             $head_in_groups = [];
