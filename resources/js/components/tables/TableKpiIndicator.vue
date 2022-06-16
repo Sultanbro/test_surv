@@ -151,7 +151,7 @@ export default {
                 
             }
 
-            if(this.kpi_indicator.plan_unit == 'percent' || this.kpi_indicator.plan_unit == 'less_avg' || this.kpi_indicator.plan_unit == 'less_sum') {
+            if(this.kpi_indicator.plan_unit == 'percent' || this.kpi_indicator.plan_unit == 'less_avg' || this.kpi_indicator.plan_unit == 'less_sum' || this.kpi_indicator.plan_unit == 'more_sum' ) {
                 return this.kpi_indicator.daily_plan.toString() + this.kpi_indicator.unit;
             }
             

@@ -358,7 +358,12 @@ class UserStat extends Model
                 } 
 
                 if($activity->plan_unit == 'less_sum') {
-                    $result = ($activity->daily_plan - $total) / $activity->daily_plan * 100;
+                    if($activity->daily_plan - $total > 0) {
+                        $result = 100;
+                    } else {
+                        $result = 0;
+                    }
+                   // $result = ($activity->daily_plan - $total) / $activity->daily_plan * 100;
                 }
                 
                 if($activity->plan_unit == 'less_avg') {
@@ -379,6 +384,16 @@ class UserStat extends Model
                         $result = 0;
                         $avg = 0;
                     }
+                    $total = $avg;
+                }
+
+                if($activity->plan_unit == 'more_sum') {
+                    if($total - $activity->daily_plan >= 0) {
+                        $result = 100;
+                    } else {
+                        $result = 0;
+                    }
+
                     $total = $avg;
                 }
                 
