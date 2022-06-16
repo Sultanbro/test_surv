@@ -21,7 +21,7 @@
                         :groups="{{json_encode($groups)}}"
                         :fines="{{json_encode($fines)}}" 
                         :years="{{json_encode($years)}}" 
-                        :can_edit="{{ auth()->user()->can('tabel_edit') }}"
+                        :can_edit="{{ auth()->user()->can('tabel_edit') ? 'true' : 'false' }}"
                         activeuserid="{{json_encode(auth()->user()->id)}}" 
                         activeuserpos="{{json_encode(auth()->user()->position_id)}}" 
                     />
