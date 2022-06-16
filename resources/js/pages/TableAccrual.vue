@@ -90,7 +90,7 @@
                         @click="showBeforeApprove = true" 
                         class="rounded btn-sm" 
                         variant="info">Проверено и готово к выдаче</b-button>
-                <p class="approved-text" v-else>
+                <p class="approved-text" v-if="selectedGroup.salary_approved == 1">
                     <span><img src="/images/double-check.png" alt="" style="width: 20px"> Начисления утверждены</span>
                     <span>{{ selectedGroup.salary_approved_by }}</span>
                     <span>{{ selectedGroup.salary_approved_date }}</span>

@@ -271,8 +271,10 @@ class SalaryController extends Controller
 
             if($approval) {
                 $xuser = User::withTrashed()->find($approval->user_id);
-                $salary_approved['salary_approved_by'] = $xuser ? $xuser->last_name . ' ' . $xuser->name : $approval->user_id;
-                $salary_approved['salary_approved_date'] =  Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
+                $group->salary_approved_by = $xuser ? $xuser->last_name . ' ' . $xuser->name : $approval->user_id;
+                $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
+                $group->salary_approved = 1;
+
                 if($group->id == $request->group_id) $approved = 1;
             } else {
                 $group->salary_approved = 0;
@@ -280,12 +282,10 @@ class SalaryController extends Controller
 
             $_groups[] = $group;
         }
-    
-        $salary_approved['salary_approved'] = $approved;
 
 
         $data['groups'] = $_groups;
-        $data['salary_approved'] = $salary_approved;
+        $data['salary_approved'] = [];
 
         /////
 
