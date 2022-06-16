@@ -413,7 +413,7 @@ export default {
         },
         user_types(val) {
             this.fetchData()
-        },
+        }, 
         show_user(val) {
             this.fetchData()
         },
@@ -488,9 +488,13 @@ export default {
             scrollLeft: 0,
             defaultScrollValue: 0,
             dayPercentage: (new Date().getDate() / 31) * 100,
+            delay: 700,
+            clicks: 0,
+            timer: null
         };
     },
     created() {
+        console.log(this.can_edit)
         this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
             this.dateInfo.currentMonth :
             this.$moment().format("MMMM");
@@ -1045,23 +1049,24 @@ export default {
         },
 
         defineClickNumber(type, data) {
-            this.numClicks++
-            if (this.numClicks === 1) {
-                var self = this
-                setTimeout(function () {
-                    if(self.numClicks === 1) {
-                        self.showEditPremiumSidebar(type, data)
-                    } else {
-                        if(this.can_edit) {
-                            self.showEditPremiumWindow(type, data)
-                        } else {
-                            self.showEditPremiumSidebar(type, data)
-                        }
-                        
-                    }
-                    self.numClicks = 0;
-                }, 300);
-            }
+         
+            //var self = this
+         
+            this.clicks++;
+            if (this.clicks === 1) {
+                this.timer = setTimeout( () => {
+                    this.showEditPremiumSidebar(type, data)
+                    this.clicks = 0
+                }, 350);
+            } else {
+                clearTimeout(this.timer);  
+                if(this.can_edit) {
+                    this.showEditPremiumWindow(type, data);
+                } else {
+                     this.showEditPremiumSidebar(type, data)
+                }
+                this.clicks = 0;
+            } 
         },
 
         openDay(data) {
