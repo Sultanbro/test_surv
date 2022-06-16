@@ -31,7 +31,9 @@
     <div class="">
         <div class="col-xl-12">
             <div class="fast-links">
-                <a href="#how_earn_more">Как можно зарабатывать больше</a>
+                @if($show_payment_terms || ($position_desc && $position_desc->show == 1))
+                    <a href="#how_earn_more">Как можно зарабатывать больше</a>
+                @endif
                 <a href="#personal_info">Ваша личная информация</a>
                 @if(count($head_in_groups) > 0)<a href="#your_grades">Вот как стажеры оценили ваше обучение</a>@endif
                 @if($is_recruiter)
@@ -65,7 +67,7 @@
     
 
  
-    
+    @if($show_payment_terms || ($position_desc && $position_desc->show == 1))
     <!-- Как можно зарабатывать больше -->
     <div id="how_earn_more" class="p-3">
         
@@ -169,114 +171,11 @@
                     </div> 
                 </div>
                 @endif 
-                
-
-                <div class="box" id="box-3">
-                    <div class="third-block">
-                        <h2 class="small-title">
-                            Расскажите о себе
-                            <i class="fa fa-info-circle toooltip">
-                                <div>
-                                Напишите здесь короткий рассказ о себе. Ориентируясь на Ваши навыки и умения, мы предложим Вам позицию с оплатой выше чем сейчас, и Вы быстрее вырастите по карьерной лестнице.
-                                </div>
-                            </i>
-                        </h2>
-                        <div class="ublockx">
-                            <div class="question">
-                                <p class="title">Расскажите, где вы ранее работали и в какой должности?
-                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                </p>
-                                <form class="answer" data-id="1">
-                                    {{ csrf_field() }}
-                                    <textarea class="form-control">{{ $answers[1] }}</textarea>
-                                    <button class="btn btn-primary rounded btn-sm mt-2">Сохранить</button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="ublockx mt-2">
-                            <div class="question">
-                                <p class="title">
-                                    Расскажите, что вы умеете делать очень хорошо?
-                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                </p>
-
-                                <form class="answer" data-id="2">
-                                    {{ csrf_field() }}
-                                    <textarea class="form-control">{{ $answers[2] }}</textarea>
-                                    <button class="btn btn-primary rounded btn-sm mt-2">Сохранить</button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="ublockx mt-2">
-                            <div class="question">
-                                <p class="title">
-                                    Напишите, какие профессиональные тренинги или книги вы проходили?
-                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                </p>
-
-                                <form class="answer" data-id="3">
-                                    {{ csrf_field() }}
-                                    <textarea class="form-control">{{ $answers[3] }}</textarea>
-                                    <button class="btn btn-primary rounded btn-sm mt-2">Сохранить</button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="ublockx mt-2">
-                            <div class="question">
-                                <p class="title">
-                                    Управляли ли вы персоналом?
-                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                </p>
-
-                                <form class="answer" data-id="4">
-                                    {{ csrf_field() }}
-                                    <input class="form-control" id="answer-4" 
-                                        @if($answers[4] == 'true')checked="checked" @endif
-                                        type="checkbox" 
-                                        style="display:inline-block"/>
-                                    <span>Да, управлял</span>
-                                    <button class="btn btn-primary rounded btn-sm mt-2 d-block">Сохранить</button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="ublockx mt-2">
-                            <div class="question">
-                                <p class="title">
-                                    Какие у вас есть сертификаты (Фото)?
-                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                </p>
-                    
-                                <form class="answer" data-id="5" enctype="multipart/form-data">
-                                    {{ csrf_field() }}
-                                    <input type="file" class="form-control" id="answer-5"
-                                            data-multiple-caption="{count} файлов выбрано"
-                                            multiple
-                                            name="files[]"
-                                            accept="image/*">
-                                    <button class="btn btn-primary rounded btn-sm mt-2 d-block">Загрузить</button>
-                                    <div class="certificates mt-2">
-                                        @foreach($answers[5] as $file)
-                                        <a href="{{ $file }}" target="_blank" class="link">Файл</a> 
-                                        @endforeach
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-
-                        
-
-                    </div>
-                </div>
             </div>
         </div>
         
     </div>
-
+    @endif 
     
     <div id="personal_info" class=" rw non-pillar px-3">
         <div class="col-xl2 mt-3">
@@ -683,17 +582,7 @@ function sendFile() {
 </script>
 <script>
 
-@if($blocks_number == 3)
-
-let margin = '1.5%';
-let big = '50%';
-let small = '23.5%';
-let normal = '33.333%';
-
-$('#box-2').css('margin-right', margin);
-$('#box-3').css('margin-left', margin);
-
-@elseif($blocks_number == 2)
+@if($show_payment_terms && ($position_desc && $position_desc->show == 1))
 
 let margin = '1.5%';
 let big = '50%';
@@ -701,9 +590,7 @@ let small = '47.5%';
 let normal = '50%';
 
 $('#box-2').css('margin-right', margin);
-
-
-@else 
+@elseif($show_payment_terms || ($position_desc && $position_desc->show == 1))
 
 let margin = '0%';
 let big = '100%';
@@ -720,47 +607,30 @@ $('#box-1').mousemove(function(){
     $('#box-1').css('width', big);
     $('#box-1').css('opacity', '1');
     $('#box-2').css('opacity', '0.2');
-    $('#box-3').css('opacity', '0.2');
     $('#box-2').css('width', small);
-    $('#box-3').css('width', small);
     $('#owl').trigger('refresh.owl.carousel');
 });
 
 $('#box-2').mousemove(function(){
     $('#box-2').css('width', big);
     $('#box-1').css('width', small);
-    $('#box-3').css('width', small);
     $('#box-2').css('opacity', '1');
-    $('#box-1').css('opacity', '0.2');
-    $('#box-3').css('opacity', '0.2');
-});
-
-$('#box-3').mousemove(function(){
-    $('#box-3').css('width', big); 
-    $('#box-1').css('width', small);
-    $('#box-2').css('width', small);
-    $('#box-3').css('opacity', '1');
-    $('#box-2').css('opacity', '0.2');
     $('#box-1').css('opacity', '0.2');
 });
 
 $('.non-pillar').mousemove(function(){
     $('#box-1').css('width', normal);
     $('#box-2').css('width', normal);
-    $('#box-3').css('width', normal);
     $('#box-1').css('opacity', '1');
     $('#box-2').css('opacity', '1');
-    $('#box-3').css('opacity', '1');
     $('#owl').trigger('refresh.owl.carousel');
 });
 
 $('#left-panel').mousemove(function(){
     $('#box-1').css('width', normal);
     $('#box-2').css('width', normal);
-    $('#box-3').css('width', normal);
     $('#box-1').css('opacity', '1');
     $('#box-2').css('opacity', '1');
-    $('#box-3').css('opacity', '1');
     $('#owl').trigger('refresh.owl.carousel');
 });
 
@@ -1252,7 +1122,7 @@ h2.small-title {
 
     .box {
         transition: 1s ease all;
-        max-width: 70%;
+        max-width: 100%;
         background: #fff;
         max-height: 420px;
         overflow-x: hidden;
