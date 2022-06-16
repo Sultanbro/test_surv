@@ -406,6 +406,7 @@ export default {
         activeuserid: String,
         activeuserpos: Number,
         can_edit: Boolean,
+        is_admin: Boolean,
     },
     watch: {
         scrollLeft(value) {
@@ -1081,9 +1082,9 @@ export default {
             this.openSidebar = true
             this.sidebarContent = data
 
-            if(this.hasPermission) {
-                this.profile_link = '<a href="http://test.u-marketing.org/login-as-employee/' + data.item.user_id + '?auth=' + this.auth_token + '" target="_blank">';
-                this.profile_link += '<i class="fa fa-external-link pointer ml-2 mr-2"></i></a>';
+            if(this.hasPermission && this.is_admin) {
+                this.profile_link = '<a href="https://test.jobtron.org/login-as-employee/' + data.item.user_id + '?auth=' + this.auth_token + '" target="_blank">';
+                this.profile_link += '<i class="fa fa-link pointer ml-2 mr-2"></i></a>';
             } else {
                 this.profile_link = '';
             }
