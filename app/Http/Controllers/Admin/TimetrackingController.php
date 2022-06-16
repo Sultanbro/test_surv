@@ -93,17 +93,37 @@ class TimetrackingController extends Controller
         
         if(isset($_GET['tab'])) {
             $active_tab = (int)$_GET['tab'];  
+
+            if($active_tab == 1 && !auth()->user()->can('users_view')) return redirect('/');
+            if($active_tab == 2 && !auth()->user()->can('positions_view')) return redirect('/');
+            if($active_tab == 3 && !auth()->user()->can('groups_view')) return redirect('/');
+            if($active_tab == 4 && !auth()->user()->can('fines_view')) return redirect('/');
+            if($active_tab == 5 && !auth()->user()->can('notifications_view')) return redirect('/');
+            if($active_tab == 6 && !auth()->user()->can('settings_learning_view')) return redirect('/');
+            if($active_tab == 7 && !auth()->user()->is_admin == 1) return redirect('/');
+            if($active_tab == 8 && !auth()->user()->can('checklists_view')) return redirect('/');
+        } else {
+            if(!(auth()->user()->can('settings_view') ||  
+                auth()->user()->can('users_view') ||
+                auth()->user()->can('positions_view') ||
+                auth()->user()->can('groups_view') ||
+                auth()->user()->can('fines_view') ||
+                auth()->user()->can('notifications_view') ||
+                auth()->user()->can('settings_learning_view') ||
+                auth()->user()->can('checklists_view') 
+            )) {
+                return redirect('/');
+            }
+
+            if(auth()->user()->can('settings_view') || auth()->user()->can('users_view')) { $active_tab = 1;}
+            else if(auth()->user()->can('positions_view')) {$active_tab = 2;}
+            else if(auth()->user()->can('groups_view')) {$active_tab = 3;}
+            else if(auth()->user()->can('fines_view')) {$active_tab = 4;}
+            else if(auth()->user()->can('notifications_view')) {$active_tab = 5;}
+            else if(auth()->user()->can('settings_learning_view')) {$active_tab = 6;}
+            else if(auth()->user()->can('checklists_view')) {$active_tab = 8;}
         }
         
-     
-        if($active_tab == 1 && auth()->user()->can('users_view')) {
-
-        } else if($active_tab != 1 && auth()->user()->can('settings_view')){
-            
-        } else {
-            return redirect('/');
-        }
-
      
         $corpbooks = [];
         if($active_tab == 3) {
@@ -127,7 +147,7 @@ class TimetrackingController extends Controller
             // }
     
 
-            $users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
+            $users = User::withTrashed()->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
             $tab5['users'] = array_values($users);
 
             $positions = Position::select('position as name', 'id')->get()->toArray();
@@ -700,8 +720,8 @@ class TimetrackingController extends Controller
         
         
         return [
-            'groups' => ProfileGroup::pluck('name', 'id')->toArray(),
-            'group' => $group->name
+            'groups' => ProfileGroup::where('active', 1)->pluck('name', 'id')->toArray(),
+            'group' => $group->id
         ];;
     }
 
@@ -814,6 +834,16 @@ class TimetrackingController extends Controller
 
         View::share('menu', 'timetrackingreports');
         $groups = ProfileGroup::where('active', 1)->get();
+
+        if(auth()->user()->is_admin != 1) {
+            $_groups = [];
+            foreach ($groups as $key => $group) {
+                if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
+                $_groups[] = $group;
+            }
+            $groups = $_groups;
+        }
+
         $fines = Fine::selectRaw('id as value, CONCAT(name," <span>(-", penalty_amount,")</span>") as text')->get();
         $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
         return view('admin.reports', compact('groups', 'fines', 'years'));
@@ -1394,7 +1424,17 @@ class TimetrackingController extends Controller
         View::share('menu', 'timetrackingenters');
 
         $groups = ProfileGroup::where('active', 1)->get();
+        
+        if(auth()->user()->is_admin != 1) {
 
+            $_groups = [];
+            foreach ($groups as $key => $group) {
+                if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
+                $_groups[] = $group;
+            }
+            $groups = $_groups;
+        }
+        
         $currentUser = User::bitrixUser();
 
         if ($request->isMethod('post')) {

@@ -18,7 +18,13 @@
       </nav>
     </div>
     <div class="col-md-12">
-        <t-accrual :groupss="{{json_encode($groups)}}" :years="{{json_encode($years)}}" activeuserid="{{json_encode(auth()->user()->id)}}" :activeuserpos="{{json_encode(auth()->user()->position_id)}}"></t-accrual>
+        <t-accrual 
+          :groupss="{{json_encode($groups)}}"
+          :years="{{json_encode($years)}}"
+          activeuserid="{{json_encode(auth()->user()->id)}}"
+          :activeuserpos="{{json_encode(auth()->user()->position_id)}}"
+          :can_edit="{{ auth()->user()->can('salaries_edit') ? 'true' : 'false' }}"
+        ></t-accrual>
       </div>
 
   </div>

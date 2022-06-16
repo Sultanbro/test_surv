@@ -86,19 +86,30 @@ class SalaryController extends Controller
 
         $date = Carbon::now()->day(1)->format("Y-m-d");
         
-        foreach ($groups as $key => $group) {
-            $approval = SalaryApproval::where('group_id', $group->id)->where('date', $date)->first();
-            if($approval) {
-                $user = User::withTrashed()->find($approval->user_id);
-                $group->salary_approved_by = $user ? $user->last_name . ' ' . $user->name : $approval->user_id;
-                $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
-                $group->salary_approved = 1;
-            } else {
-                $group->salary_approved = 0;
+
+        if(auth()->user()->is_admin != 1) {
+            $_groups = [];
+            foreach ($groups as $key => $group) {
+    
+                if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
+    
+                $approval = SalaryApproval::where('group_id', $group->id)->where('date', $date)->first();
+                if($approval) {
+                    $user = User::withTrashed()->find($approval->user_id);
+                    $group->salary_approved_by = $user ? $user->last_name . ' ' . $user->name : $approval->user_id;
+                    $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
+                    $group->salary_approved = 1;
+                } else {
+                    $group->salary_approved = 0;
+                }
+    
+                $_groups[] = $group;
             }
-        }
-
-
+           
+            $groups = $_groups;
+        }   
+       
+       
         $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
 
         return view('admin.salary', compact('groups', 'years'));
@@ -248,15 +259,19 @@ class SalaryController extends Controller
 
         $groups = ProfileGroup::where('active', 1)->get();
 
+        $salary_approved = []; // костыль
         $approved = 0; // костыль
 
+        $_groups = [];
+        
         foreach ($groups as $key => $group) {
-
+     
+            if(auth()->user()->is_admin != 1 && !in_array(auth()->id(), json_decode($group->editors_id))) continue;
             $approval = SalaryApproval::where('group_id', $group->id)->where('date', $sdate)->first();
 
             if($approval) {
-                $user = User::withTrashed()->find($approval->user_id);
-                $group->salary_approved_by = $user ? $user->last_name . ' ' . $user->name : $approval->user_id;
+                $xuser = User::withTrashed()->find($approval->user_id);
+                $group->salary_approved_by = $xuser ? $xuser->last_name . ' ' . $xuser->name : $approval->user_id;
                 $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
                 $group->salary_approved = 1;
 
@@ -264,10 +279,13 @@ class SalaryController extends Controller
             } else {
                 $group->salary_approved = 0;
             }
+
+            $_groups[] = $group;
         }
 
-        $data['groups'] = $groups;
-        $data['salary_approved'] = $approved;
+
+        $data['groups'] = $_groups;
+        $data['salary_approved'] = [];
 
         /////
 
@@ -547,7 +565,15 @@ class SalaryController extends Controller
             $user->user_id = $user->id;  
 
 
-            $user->edited_salary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();
+            $editedSalary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();
+            $user->edited_salary =  $editedSalary;
+            if($editedSalary) {
+                $ku = User::withTrashed()->find($editedSalary->user_id);
+                $editedSalary->user = $ku ? $ku->last_name . ' ' . $ku->name : $editedSalary->user_id;
+                $user->edited_salary = $editedSalary;
+            } 
+
+            
 
             $editedKpi = EditedKpi::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
@@ -557,7 +583,13 @@ class SalaryController extends Controller
             $user->edited_kpi = null;
             if($editedKpi) {
                 $user->kpi = $editedKpi->amount;
-                $user->edited_kpi = $editedKpi;
+                $ku = User::withTrashed()->find($editedKpi->user_id);
+               
+                $user->edited_kpi = [
+                    'user' =>$ku ? $ku->last_name . ' ' . $ku->name : $editedKpi->user_id,
+                    'amount' =>$editedKpi->amount,
+                    'comment' =>$editedKpi->comment,
+                ];
             } else {
                 $user->kpi = Kpi::userKpi($user->id, $date);
             }   
@@ -569,6 +601,8 @@ class SalaryController extends Controller
 
             $user->edited_bonus = null;
             if($editedBonus) {
+                $ku = User::withTrashed()->find($editedBonus->user_id);
+                $editedBonus->user = $ku ? $ku->last_name . ' ' . $ku->name : $editedBonus->user_id;
                 $user->edited_bonus = $editedBonus;
             } 
             
@@ -579,8 +613,7 @@ class SalaryController extends Controller
         }
 
         $_agrees = array_column($data['users'], 'worked_days');
-        array_multisort($_agrees, SORT_DESC, $data['users']); 
-
+      
         $data['auth_token'] = Auth::user()->remember_token;
 
         return $data;
@@ -720,13 +753,14 @@ class SalaryController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if (!in_array($currentUser->id, $group_editors)) {
-            return [
-                'error' => 'access',
-            ];
-        }
 
-        
+        if(auth()->user()->is_admin != 1) {
+            if (!in_array($currentUser->id, $group_editors)) {
+                return [
+                    'error' => 'access',
+                ];
+            }
+        }
         
         //////////////////////
         $date = $request->year . '-' . $request->month . '-01';
@@ -1698,5 +1732,14 @@ class SalaryController extends Controller
         $res = $this->space($res, 3, true);
 
         return $res;
+    }
+
+    public function bonuses(Request $request) {
+        $date  = Carbon::parse($request->date);
+        return TimetrackingHistory::where('user_id', $request->user_id)
+            ->whereYear('date', $date->year)
+            ->whereMonth('date', $date->month)
+            ->where('description', 'like', 'Добавлен <b>бонус</b>%')
+            ->get();
     }
 }

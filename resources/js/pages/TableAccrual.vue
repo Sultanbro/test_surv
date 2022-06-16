@@ -38,67 +38,65 @@
                     <i class="fa fa-eye"></i>
                 </a>
             </div>
-            <div class="col-3" v-if="activeuserid == 18 || activeuserid == 5">
-                <group-premission :currentGroup="selectedGroup.id" page="accrual"></group-premission>
-            </div>
+           <div class="col-2"></div>
         </div>
  
-    <div class="row" v-if="hasPermission">
-        <div class="col-4">
-            <div>
-                <p class="mb-0 fz-08 text-black"><b>Итого действующие ФОТ
-                    
-                    <i class="fa fa-info-circle" 
-                        v-b-popover.hover.right.html="'<b>ФОТ</b>- Фонд оплаты труда<br>Сумма без вычета расходов (Штрафы и авансы)<br>ФОТ = Начисления (Отработанные + Стажировочные) + Бонусы + KPI'" 
-                        title="ФОТ">
-                    </i>
-                    :</b> 
-                     {{ group_total }} тг. 
+        <div class="row" v-if="hasPermission">
+            <div class="col-4">
+                <div>
+                    <p class="mb-0 fz-08 text-black"><b>Итого действующие ФОТ
+                        
+                        <i class="fa fa-info-circle" 
+                            v-b-popover.hover.right.html="'<b>ФОТ</b>- Фонд оплаты труда<br>Сумма без вычета расходов (Штрафы и авансы)<br>ФОТ = Начисления (Отработанные + Стажировочные) + Бонусы + KPI'" 
+                            title="ФОТ">
+                        </i>
+                        :</b> 
+                        {{ group_total }} тг. 
+                    </p>
+                    <p class="mb-0 fz-08 text-black">
+                        <b>Итого уволенные ФОТ:</b> 
+                        {{ group_fired }} тг. 
+                    </p>
+                    <p class="fz-08 text-black mr-1 mb-0" v-if="[5,18,84,157].includes(Number(activeuserid))">
+                        <b>Итого все ФОТ (Действующие):</b> 
+                        {{ allTotal }}тг.
+                    </p>
+                    <p class="fz-08 text-black mr-1 mb-0" v-if="[5,18,84,157].includes(Number(activeuserid))">
+                        <b>Итого все ФОТ (Уволенные):</b>
+                        {{ allTotalFired }}тг.
+                    </p>
+                </div>
+            </div>
+            <div class="col-6">
+                <b-form-group class="d-flex ddf">
+                    <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
+                    <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
+                    <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
+                </b-form-group>
+            </div>
+            <div class="col-2">
+                <p class="text-right fz-09 text-black">
+                    <span>Сотрудники:</span> 
+                    <b> {{ users_count }} | {{ total_resources }}</b>
                 </p>
-                <p class="mb-0 fz-08 text-black">
-                    <b>Итого уволенные ФОТ:</b> 
-                    {{ group_fired }} тг. 
-                </p>
-                <p class="fz-08 text-black mr-1 mb-0" v-if="[5,18,84,157].includes(Number(activeuserid))">
-                    <b>Итого все ФОТ (Действующие):</b> 
-                    {{ allTotal }}тг.
-                </p>
-                <p class="fz-08 text-black mr-1 mb-0" v-if="[5,18,84,157].includes(Number(activeuserid))">
-                    <b>Итого все ФОТ (Уволенные):</b>
-                    {{ allTotalFired }}тг.
+                <b-form-group class="d-flex ddf" style="justify-content:flex-end;">
+                    <b-form-radio v-model="show_user"  name="some-radios2" value="0">Все</b-form-radio>
+                    <b-form-radio v-model="show_user"  name="some-radios2" value="1" class="mr-0">Есть начисления</b-form-radio>
+                </b-form-group>
+            </div>
+            <div class="col-12" >
+                <b-button v-if="selectedGroup.salary_approved == 0 && can_edit"
+                        style="float:right"
+                        @click="showBeforeApprove = true" 
+                        class="rounded btn-sm" 
+                        variant="info">Проверено и готово к выдаче</b-button>
+                <p class="approved-text" v-if="selectedGroup.salary_approved == 1">
+                    <span><img src="/images/double-check.png" alt="" style="width: 20px"> Начисления утверждены</span>
+                    <span>{{ selectedGroup.salary_approved_by }}</span>
+                    <span>{{ selectedGroup.salary_approved_date }}</span>
                 </p>
             </div>
         </div>
-        <div class="col-6">
-            <b-form-group class="d-flex ddf">
-                <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
-                <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
-                <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
-            </b-form-group>
-        </div>
-        <div class="col-2">
-            <p class="text-right fz-09 text-black">
-                <span>Сотрудники:</span> 
-                <b> {{ users_count }} | {{ total_resources }}</b>
-            </p>
-            <b-form-group class="d-flex ddf">
-                <b-form-radio v-model="show_user"  name="some-radios2" value="0">Все</b-form-radio>
-                <b-form-radio v-model="show_user"  name="some-radios2" value="1">Есть начисления</b-form-radio>
-            </b-form-group>
-        </div>
-        <div class="col-12" >
-            <b-button v-if="selectedGroup.salary_approved == 0"
-                    style="float:right"
-                    @click="showBeforeApprove = true" 
-                    class="rounded btn-sm" 
-                    variant="info">Проверено и готово к выдаче</b-button>
-            <p class="approved-text" v-else>
-                <span><img src="/images/double-check.png" alt="" style="width: 20px"> Начисления утверждены</span>
-                <span>{{ selectedGroup.salary_approved_by }}</span>
-                <span>{{ selectedGroup.salary_approved_date }}</span>
-            </p>
-        </div>
-    </div>
         
 
         <div v-if="hasPermission">
@@ -161,8 +159,7 @@
                         :class="{
                             'fine': data.item.fine !== undefined && data.item.fine[data.field.key.toString()].length > 0,
                             'avans': data.item.avanses !== undefined && data.item.avanses[data.field.key.toString()] !== null,
-                            'bonus': data.item.bonuses !== undefined && data.item.bonuses[data.field.key.toString()] !== null,
-                            'bonus': data.item.awards !== undefined && data.item.awards[data.field.key.toString()] !== null,
+                            'bonus': (data.item.bonuses !== undefined && data.item.bonuses[data.field.key.toString()] !== null) || data.item.awards !== undefined && data.item.awards[data.field.key.toString()] !== null,
                             'training': data.item.trainings !== undefined && data.item.trainings[data.field.key.toString()] !== null,
                         }"
                         >{{ data.value }}
@@ -185,8 +182,19 @@
     <sidebar :title="sidebarTitle" :open="editPremiumSidebar" @close="editPremiumSidebar=false" v-if="editPremiumSidebar" width="400px">
         <div class="px-2">
 
-            <div v-if="editedField.type == 'kpi'">
+            <div>
                 <div v-if="editedField.item.edited_kpi !== null">
+                     <p class="mt-3"><b>Kpi  </b>
+                        <i class="fa fa-info-circle" 
+                            v-b-popover.hover.right.html="'Сумма KPI утвержденная к выдаче'" 
+                            title="Kpi на этот месяц">
+                        </i>
+                       
+                    </p>
+                    <div>
+                        <b>Автор:</b>
+                        <span>{{ editedField.item.edited_kpi.user }}</span>
+                    </div>
                     <div>
                         <b>Изменено на:</b>
                         <span>{{ editedField.item.edited_kpi.amount }}</span>
@@ -195,11 +203,22 @@
                         <b>Комментарии:</b>
                         <span>{{ editedField.item.edited_kpi.comment }}</span>
                     </div>
+                        <hr>
                 </div>
             </div>
 
-            <div v-if="editedField.type == 'bonus'">
+            <div>
                 <div v-if="editedField.item.edited_bonus !== null">
+                    <p class="mt-3"><b>Бонусы  </b>
+                        <i class="fa fa-info-circle" 
+                            v-b-popover.hover.right.html="'Сумма Бонусов, утвержденная к выдаче'" 
+                            title="Бонусы на этот меся ц">
+                        </i> 
+                    </p>
+                    <div>
+                        <b>Автор:</b>
+                        <span>{{ editedField.item.edited_bonus.user }}</span>
+                    </div>
                     <div>
                         <b>Изменено на:</b>
                         <span>{{ editedField.item.edited_bonus.amount }}</span>
@@ -208,11 +227,23 @@
                         <b>Комментарии:</b>
                         <span>{{ editedField.item.edited_bonus.comment }}</span>
                     </div>
+                        <hr>
                 </div>
             </div>
 
-            <div v-if="editedField.type == 'final'">
+            <div>
                 <div v-if="editedField.item.edited_salary !== null">
+                    
+                     <p class="mt-3"><b>К выдаче</b>
+                        <i class="fa fa-info-circle" 
+                            v-b-popover.hover.right.html="'Окончательная суммма утвержденная к выдаче'" 
+                            title="К выдаче на этот месяц">
+                        </i>
+                    </p>
+                    <div>
+                        <b>Автор:</b>
+                        <span>{{ editedField.item.edited_salary.user }}</span>
+                    </div>
                     <div>
                         <b>Изменено на:</b>
                         <span>{{ editedField.item.edited_salary.amount }}</span>
@@ -221,10 +252,42 @@
                         <b>Комментарии:</b>
                         <span>{{ editedField.item.edited_salary.comment }}</span>
                     </div>
+                      <hr>
                 </div>
             </div>
+  
+
+
+            <div class="mt-3">
+                
+                <p class="mt-3"><b>Бонусы локальные </b></p>
+                 <div v-for="(item,index) in Object.keys(editedField.item.bonuses)" >
+                    <p class="fz12" v-if=" editedField.item.bonuses[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.bonuses[item] }}</p>
+                </div>   
+                <hr>
+                
+                <p class="mt-3"><b>Бонусы за активности</b></p>
+                 <div v-for="(item,index) in Object.keys(editedField.item.awards)" >
+                    <p class="fz12" v-if=" editedField.item.awards[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.awards[item] }}</p>
+                </div>  
+                    <hr>
+                <p class="mt-3"><b>Авансы </b></p>
+                 <div v-for="(item,index) in Object.keys(editedField.item.avanses)" >
+                    <p class="fz12" v-if=" editedField.item.avanses[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.avanses[item] }}</p>
+                </div>   
+                <hr>
+
+                <p class="mt-3"><b>История {{ bonus_history.length}}</b></p>
+                <div v-for="(item,index) in bonus_history"  class="mb-3">
+                    <p class="fz12"><b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}</p>
+                    <p class="fz12"><b class="text-black">Автор:</b> {{ item.author }} <br></p>
+                    <p class="fz14 mb-0" v-html="item.description"> </p><br>
+                    <hr>
+                </div>   
+                 
+            </div>
         </div>
-    </sidebar>
+    </sidebar>  
 
      <sidebar :title="sidebarTitle" :open="openSidebar" @close="openSidebar=false" v-if="openSidebar" width="400px" :link="profile_link">
 
@@ -256,7 +319,7 @@
                 </p>
                 
             </div>
-            <div class="mb-2" v-if="(user_types == '0' || user_types == '1')">
+            <div class="mb-2" v-if="(user_types == '0' || user_types == '1') && can_edit">
                 <div class="d-flex row">
                     <div class="col-6">
                         <b-button @click="toggleTab('avans')" class="btn-sm rounded btn-primary w-full d-block" :class="{'activex': avans.visible}">Выдать аванс</b-button>  
@@ -341,6 +404,7 @@ export default {
         years: Array,
         activeuserid: String,
         activeuserpos: Number,
+        can_edit: Boolean,
     },
     watch: {
         scrollLeft(value) {
@@ -349,7 +413,7 @@ export default {
         },
         user_types(val) {
             this.fetchData()
-        },
+        }, 
         show_user(val) {
             this.fetchData()
         },
@@ -362,6 +426,7 @@ export default {
             data: {},
             groups: [],
             accruals: [],
+            bonus_history: [],
             selectedGroup: null,
             user_types: 0,
             users_count: 0,
@@ -423,9 +488,13 @@ export default {
             scrollLeft: 0,
             defaultScrollValue: 0,
             dayPercentage: (new Date().getDate() / 31) * 100,
+            delay: 700,
+            clicks: 0,
+            timer: null
         };
     },
     created() {
+        console.log(this.can_edit)
         this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
             this.dateInfo.currentMonth :
             this.$moment().format("MMMM");
@@ -433,32 +502,22 @@ export default {
         
         //Расчет выходных дней
         this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
-        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [
-            6,
-        ]); //Колличество выходных
+        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]); //Колличество выходных
         this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
         this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
-        let firstDay = currentMonth.startOf("month").format("YYYY-MM-DD");
-        let lastDay = currentMonth.endOf("month").format("YYYY-MM-DD");
-        //console.log("текущий месяц" + currentMonth.format("MMMM"));
-        // console.log(
-        //     "количество дней в месяце" +
-        //     this.$moment().isoWeekdayCalc(firstDay, lastDay, [1, 2, 3, 4, 5])
-        // );
-        //console.log("количество рабочих дней в месяце" + this.dateInfo.workDays);
-        //Текущая группа
-        //this.currentGroup = this.groups[0]["id"];
 
         this.groups = this.groupss;
         this.selectedGroup = this.groups[0];
     },
     methods: {
+
         //Установка выбранного года
         setYear() {
             this.dateInfo.currentYear = this.dateInfo.currentYear ?
                 this.dateInfo.currentYear :
                 this.$moment().format("YYYY");
         },
+
         //Установка выбранного месяца
         setMonth() {
             let year = this.dateInfo.currentYear;
@@ -483,6 +542,7 @@ export default {
             this.dateInfo.workDays =
                 this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
         },
+
         //Установка заголовока таблицы
         setFields() {
             let fields = [];
@@ -596,7 +656,7 @@ export default {
                     this.users_count = this.data.users.length;
 
                     this.groups = response.data.groups;
-                    this.selectedGroup.salary_approved = response.data.salary_approved;
+                    //this.selectedGroup.salary_approved = response.data.salary_approved;
                     this.accruals = response.data.accruals;
                     this.auth_token = response.data.auth_token
 
@@ -648,7 +708,8 @@ export default {
                 this.bonus.visible = !this.bonus.visible
             }
         },
-     //Добавление загруженных данных в таблицу
+
+        //Добавление загруженных данных в таблицу
         loadItems() {
             let items = [];
             let daySalariesSum = [];
@@ -798,11 +859,10 @@ export default {
             this.total = total_final;
             this.items = items;
         },
-        //
+
+        // окно редактирования kpi бонус  к выдаче на месяц
         showEditPremiumWindow(type, data) {
-            if(data.index == 0) {
-                return false;
-            }
+            if(data.index == 0) return false;
             data.type = type;
             this.editedField = data;
             
@@ -811,16 +871,32 @@ export default {
             this.editPremiunWindow = true;
         },
 
+        // сайдбар kpi бонус  к выдаче на месяц
         showEditPremiumSidebar(type, data) {
             if(data.index == 0) {
                 return false;
             }
+            console.log(data)
             data.type = type;
+
+            this.fetchBonusHistory(data.item.user_id);
+            
             this.editedField = data;
             this.editPremiumSidebar = true;
-            this.sidebarTitle = data.item.name + ' : ' + type;
+            this.sidebarTitle = data.item.name + ' : ' + type; 
 
         },
+
+        // история бонусов для showEditPremiumSidebar
+        fetchBonusHistory(user_id) {
+            axios.post('/timetracking/salaries/bonuses',{
+                user_id: user_id,
+                date: this.$moment(this.dateInfo.currentMonth, "MMMM").startOf("month").format("YYYY-MM-DD"),
+            }).then((response) => {
+                this.bonus_history = response.data;
+            });
+        },
+
         editPremium() {
             let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
 
@@ -857,6 +933,7 @@ export default {
             });
         },
         
+        // утверждено к выдаче
         approveSalary() {
             axios.post("/timetracking/salaries/approve-salary", {
                 group_id: this.selectedGroup.id,
@@ -952,6 +1029,7 @@ export default {
 
         },
 
+        // excel
         exportData() {
             var link = "/timetracking/salaries/export";
             link += "?group_id=" + this.selectedGroup.id;
@@ -971,18 +1049,24 @@ export default {
         },
 
         defineClickNumber(type, data) {
-            this.numClicks++
-            if (this.numClicks === 1) {
-                var self = this
-                setTimeout(function () {
-                    if(self.numClicks === 1) {
-                        self.showEditPremiumSidebar(type, data)
-                    } else {
-                        self.showEditPremiumWindow(type, data)
-                    }
-                    self.numClicks = 0;
-                }, 300);
-            }
+         
+            //var self = this
+         
+            this.clicks++;
+            if (this.clicks === 1) {
+                this.timer = setTimeout( () => {
+                    this.showEditPremiumSidebar(type, data)
+                    this.clicks = 0
+                }, 350);
+            } else {
+                clearTimeout(this.timer);  
+                if(this.can_edit) {
+                    this.showEditPremiumWindow(type, data);
+                } else {
+                     this.showEditPremiumSidebar(type, data)
+                }
+                this.clicks = 0;
+            } 
         },
 
         openDay(data) {

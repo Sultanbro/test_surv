@@ -725,8 +725,8 @@ export default {
           show_payment_terms: this.show_payment_terms,
         })
         .then((response) => {
-          this.statuses = Object.values(response.data.groups);
-          this.activebtn = response.data.group;
+          this.statuses = response.data.groups;
+         // this.activebtn = response.data.group;
           this.$message.info("Успешно сохранено");
           this.messageoff();
 

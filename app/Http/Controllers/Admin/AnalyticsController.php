@@ -84,11 +84,23 @@ class AnalyticsController extends Controller
         
         $groups = ProfileGroup::whereIn('has_analytics', [0,1]);
 
-        if(!auth()->user()->is_admin) $groups->whereIn('id', auth()->user()->groups);
+
+        $_groups = [];
+    
+        if(auth()->user() && auth()->user()->is_admin == 1) $groups->whereIn('id', auth()->user()->groups);
             
         $groups = $groups->where('active', 1)->get();
-         
-        
+    
+        //if(auth()->id() == 18) dd($groups);
+        if(auth()->user()->is_admin != 1) {
+            foreach ($groups as $key => $group) {
+                if(!in_array(auth()->id(), json_decode($group->editors_id)))  continue;
+                $_groups[] = $group;
+            }
+            $groups = $_groups;
+        }
+       
+      
         View::share('menu', 'timetrackinganalytics');
         return view('admin.analytics-page', compact('groups'));
     }
@@ -156,6 +168,19 @@ class AnalyticsController extends Controller
        
         //dd(AnalyticStat::form($group_id, $date->format('Y-m-d')));
 
+
+        $groups = ProfileGroup::whereIn('has_analytics', [0,1])->where('active', 1)->get();
+
+      
+        if(auth()->user()->is_admin != 1) {
+            $_groups = [];
+            foreach ($groups as $key => $group) {
+                if(!in_array(auth()->id(), json_decode($group->editors_id)))  continue;
+                $_groups[] = $group;
+            }
+            $groups = $_groups;
+        } 
+        
         return [
             'decomposition' => DecompositionValue::table($group_id, $date->format('Y-m-d')),
             'activities' => UserStat::activities($group_id, $date->format('Y-m-d')),
@@ -163,7 +188,7 @@ class AnalyticsController extends Controller
             'columns' => AnalyticStat::columns($group_id, $date->format('Y-m-d')),
             'utility' => $util,
             'totals' => [],
-            'groups' => ProfileGroup::whereIn('has_analytics', [0,1])->where('active', 1)->get(),
+            'groups' => $groups,
             'archived_groups' => ProfileGroup::where('has_analytics', -1)->where('active', 1)->get(),
             'call_bases' => $call_bases,
             'fired_percent_prev' => $fired_percent_prev,

@@ -114,13 +114,19 @@ class GroupAnalyticsController extends Controller
     {
         $currentUser = User::bitrixUser();
 
+        if(!auth()->user()->can('hr_view')) return [
+            'error' => 'access',
+        ];
         // Доступ к группе 
         $group = ProfileGroup::find($request['group_id']);
-        if (!in_array($currentUser->id, json_decode($group->editors_id)) && $currentUser->id != 18) {
-            return [
-                'error' => 'access',
-            ];
+        if(!(auth()->user()->is_admin == 1 || auth()->user()->groups_all == 1)) {
+            if (!in_array($currentUser->id, json_decode($group->editors_id))) {
+                return [
+                    'error' => 'access',
+                ];
+            }
         }
+       
         
         // if(in_array($request['group_id'], [35,42])) {
         //     return $this->kaspiAnalytics($request);

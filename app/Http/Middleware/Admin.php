@@ -35,9 +35,9 @@ class Admin {
 
         Auth::user()->groups = $groups;
 
-        if(Auth::user()->is_admin == 1) {
-            Auth::user()->groups = $_groups->pluck('id')->toArray();
-        }
+        if(Auth::user()->is_admin == 1 || auth()->user()->groups_all == 1) {
+            Auth::user()->groups = \App\ProfileGroup::get(['id'])->pluck('id')->toArray();
+        } 
 
        // if(auth()->id() == 5) dd(auth()->user()->can('salaries_view'));
       //  Auth::user()->is_admin = Auth::user()->is_admin == 1;

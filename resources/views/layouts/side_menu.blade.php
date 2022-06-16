@@ -176,7 +176,15 @@
 
 
     </ul>
-    @if(auth()->user()->can('settings_view') ||  auth()->user()->can('users_view'))
+    @if(auth()->user()->can('settings_view') ||  
+        auth()->user()->can('users_view') ||
+        auth()->user()->can('positions_view') ||
+        auth()->user()->can('groups_view') ||
+        auth()->user()->can('fines_view') ||
+        auth()->user()->can('notifications_view') ||
+        auth()->user()->can('settings_learning_view') ||
+        auth()->user()->can('checklists_view') 
+    )
     <ul class="after-main-menu">
         <li class="menu-item">
             <a href="/timetracking/settings" class="side-btn @if($menu == 'settings') active @endif">

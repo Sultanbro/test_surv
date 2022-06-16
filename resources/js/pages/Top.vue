@@ -17,10 +17,7 @@
           <i class="fa fa-redo-alt"></i>
         </div>
       </div>
-      <div class="col-6">
-        <group-premission :currentGroup="0" page="page-top"
-                          v-if="activeuserid == 5 || activeuserid == 18"></group-premission>
-      </div>
+      <div class="col-6"></div>
     </div>
 
     <!-- <a href="/timetracking/nps" class="btn link-btn" target="_blank">NPS</a> -->
