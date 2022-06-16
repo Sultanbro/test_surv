@@ -31,7 +31,7 @@
                 <a class="btn btn-primary mr-1 rounded text-white" @click="fetchData()">
                     <i class="fa fa-redo-alt"></i>
                 </a>
-                <a  @click="exportData()" class="btn btn-success rounded text-white mr-1">
+                <a  @click="exportData()" class="btn btn-success rounded text-white mr-1" v-if="can_edit">
                     <i class="far fa-file-excel"></i>
                 </a>
                 <a @click="toggleVisible()" class="btn btn-info rounded text-white mr-1">
@@ -90,6 +90,7 @@
                         @click="showBeforeApprove = true" 
                         class="rounded btn-sm" 
                         variant="info">Проверено и готово к выдаче</b-button>
+                        
                 <p class="approved-text" v-if="selectedGroup.salary_approved == 1">
                     <span><img src="/images/double-check.png" alt="" style="width: 20px"> Начисления утверждены</span>
                     <span>{{ selectedGroup.salary_approved_by }}</span>
@@ -656,7 +657,14 @@ export default {
                     this.users_count = this.data.users.length;
 
                     this.groups = response.data.groups;
-                    //this.selectedGroup.salary_approved = response.data.salary_approved;
+                  
+                    if(response.data.currentGroup) {
+                         this.selectedGroup.salary_approved = response.data.currentGroup.salary_approved;
+                    this.selectedGroup.salary_approved_by = response.data.currentGroup.salary_approved_by;
+                    this.selectedGroup.salary_approved_date = response.data.currentGroup.salary_approved_date;
+                    }
+                   
+
                     this.accruals = response.data.accruals;
                     this.auth_token = response.data.auth_token
 

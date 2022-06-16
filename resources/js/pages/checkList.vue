@@ -44,9 +44,11 @@
                             {{arrCheckList.auth_last_name}}         {{arrCheckList.auth_name}}
                         </td>
                         <td class="position-relative">
-                            <a href="/timetracking/quality-control">
+
+                            <a v-bind:href="'/timetracking/quality-control?type='+arrCheckList.item_type+'&id='+arrCheckList.item_id">
                                 <i class="pl-4 far fa-address-card fa-2x"></i>
                             </a>
+
                             <a class="position-absolute" @click="arrCheckDelete(arrCheckList.id)" style="right: 0">
                                 <i class="fa fa-trash fa-2x" aria-hidden="true"></i>
                             </a>
@@ -54,6 +56,8 @@
                     </tr>
                     </tbody>
                 </table>
+
+
             </div>
         </div>
 
@@ -323,6 +327,9 @@
         computed: {
 
           filteredRows () {
+
+            console.log(this.arrCheckLists)
+
             return this.arrCheckLists.filter(row => {
               const title = row.title.toString().toLowerCase();
               const authLastName = row.auth_last_name.toLowerCase();
@@ -336,9 +343,15 @@
             this.viewCheckList()
             this.addCheckList()
             this.getUsers()
+
+
+
         },
 
         methods:{
+
+
+
             obrabotkaArray(groups,positions,allusers){
 
 
@@ -477,6 +490,7 @@
                     loader.hide();
 
 
+
                     if (response.data.success === false){
                       this.errors.msg = null;
                       this.errors.show = true;
@@ -603,6 +617,7 @@
 
                   }).then(response => {
                     loader.hide();
+
 
 
 
@@ -781,7 +796,6 @@
                         el['checked'] = true
                       }
                   });
-
                 }else if(type == 2){
                   this.positions_arr.forEach(el => {
                       if (el['code'] === id){
