@@ -652,7 +652,7 @@ export default {
                     this.users_count = this.data.users.length;
 
                     this.groups = response.data.groups;
-                    this.selectedGroup.salary_approved = response.data.salary_approved;
+                    //this.selectedGroup.salary_approved = response.data.salary_approved;
                     this.accruals = response.data.accruals;
                     this.auth_token = response.data.auth_token
 
