@@ -711,7 +711,7 @@ class AnalyticStat extends Model
      * get value from cell string
      * ex: C4 or A5
      */
-    public static function getCellValue($group_id, $cell, $date)
+    public static function getCellValue($group_id, $cell, $date, $round = 0)
     {
         // get indexes
         $r_index = 0;
@@ -779,9 +779,9 @@ class AnalyticStat extends Model
 
             if($stat) {
                 if($stat->type == 'formula') {
-                    $value = self::calcFormula($stat, $date);
+                    $value = self::calcFormula($stat, $date, $round);
                 } else {
-                    $value = (int)$stat->show_value;
+                    $value = round($stat->show_value, $round);
                 }
             }
         }

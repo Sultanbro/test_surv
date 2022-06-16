@@ -41,6 +41,7 @@ class TopValue extends Model
         'is_main', // ключевой, по которому будет сортировка
         'fixed', // некоторые поля не редактируются
         'value_type', // avg  или sum с активности
+        'reversed', // 
     ];
     
     public function getOptions() {
@@ -220,15 +221,18 @@ class TopValue extends Model
             'max_value' => $max_value,
             'options' => $top_value->getOptions(),
             'zones' => 5,
-            'reverse' => false,
+            'reverse' => $top_value->reversed == 1,
             'round' => $top_value->round,
         ]);
 
+
+
+        
         $sections = $gauge_sections['sections'];
         $options = $gauge_sections['options'];
 
 
-        
+  
 
         
     
@@ -237,7 +241,8 @@ class TopValue extends Model
         if($top_value->activity_id != 0) {
          
             if($top_value->activity_id == -1) {
-                $value = AnalyticStat::getCellValue($top_value->group_id, $top_value->cell, $date);
+                $value = AnalyticStat::getCellValue($top_value->group_id, $top_value->cell, $date, $top_value->round);
+                
             } else {
 
                 $activity = Activity::withTrashed()->find($top_value->activity_id);
@@ -266,7 +271,37 @@ class TopValue extends Model
 
             $min_value = $top_value->min_value;
             $max_value = $top_value->max_value;
-            $options = json_decode($top_value->options, true);
+
+            $gauge_sections = self::getGaugeSections([
+                'value' => $value,
+                'min_value' => $min_value,
+                'max_value' => $max_value,
+                'options' => json_decode($top_value->options, true),
+                'zones' => 5,
+                'reverse' => $top_value->reversed == 1,
+                'round' => $top_value->round,
+            ]);
+
+            // if($top_value->reversed == 1) {
+
+          
+            //     dump($gauge_sections['options']);
+            //     dd(json_decode($top_value->options, true));
+            // }
+            $sections = $gauge_sections['sections'];
+
+            // if($top_value->reversed == 1) {
+            //     dump($options);
+            //     $options = $gauge_sections['options'];
+            //     dd($options);
+            // }
+          
+             $options = $gauge_sections['options'];
+           
+            
+            //$options = json_decode($top_value->options, true);
+
+            //if( $top_value->reversed == 1) dd($options);
         } 
     
         if($group_id == Eurasian::ID) {
@@ -288,7 +323,7 @@ class TopValue extends Model
                     'max_value' => 1.6,
                     'round' => 1,
                     'options' => $top_value->getOptions(),
-                    'reverse' => false,
+                    'reverse' => $top_value->reversed == 1,
                     'zones' => 5
                 ]);
 
@@ -312,7 +347,7 @@ class TopValue extends Model
                     'max_value' => 1.6,
                     'round' => 1,
                     'options' => $top_value->getOptions(),
-                    'reverse' => false,
+                    'reverse' => $top_value->reversed == 1,
                     'zones' => 5,
                 ]);
 
@@ -324,40 +359,21 @@ class TopValue extends Model
             
         }
 
-        // if($group_id == Kaspi::ID) {
-           
-        //     if($top_value->name == 'Просрочка 1-5') {
-        //         $value = Kaspi::getPlace($date, 'pros');
-        //     } else {
-        //         $value = Kaspi::getPlace($date, 'nap');
-        //     }
-            
-        //     $gauge_sections = self::getGaugeSections([
-        //         'value' =>$value,
-        //         'min_value' => $min_value,
-        //         'max_value' => $max_value,
-        //         'round' => 1,
-        //         'options' => $top_value->getOptions(),
-        //         'reverse' => true,
-        //         'zones' => 8,
-        //     ]); 
 
-        //     $sections = [1,2,3,4,5,6,7,8];
-        //     $options = $gauge_sections['options'];
-        //     $options['staticLabels']['labels'] = $sections; 
-        // }
+
+        
 
         $top_value->value = $value;
         $top_value->min_value = $min_value;
         $top_value->max_value = $max_value;
-        $top_value->options = json_encode($options);
+        $top_value->options = $options;
         $top_value->save();
         
         if($alter_name != '') {
             $top_value->name = $alter_name;
         }
 
-        $options['staticLabels']['fractionDigits'] = $top_value->round;
+        //$options['staticLabels']['fractionDigits'] = $top_value->round;
 
         return [
             'name' => $top_value->name,
@@ -365,8 +381,9 @@ class TopValue extends Model
             'min_value' => $min_value,
             'max_value' => $max_value,
             'options' => $options,
-            'sections' => json_encode($sections),
-            'angle' => json_encode($options['angle']),
+            'reversed' => $top_value->reversed,
+           'sections' => json_encode($sections),
+            'angle' =>$options['angle'],
         ];
     
     }
@@ -380,11 +397,12 @@ class TopValue extends Model
         $options = $args['options'];
         $reverse = array_key_exists('reverse', $args) ? $args['reverse'] : false;
 
+        
         $sections = $options['staticLabels']['labels']; //  
   
 
         $sections = [
-            $min,
+            round($min, $round),
             round((($max - $min) * 0.2) + $min, $round),
             round((($max - $min) * 0.4) + $min, $round),
             round((($max - $min) * 0.6) + $min, $round),
@@ -397,6 +415,7 @@ class TopValue extends Model
         $options['staticLabels']['labels'] = $sections;
 
         if($reverse) {
+        
             $options['staticZones'] = [
                 [ 'strokeStyle' => "#30B32D", 'min' => $sections[0], 'max' => $sections[1] ], // Red
                 [ 'strokeStyle' => "#42e467", 'min' => $sections[1], 'max' => $sections[2] ], // Orange
@@ -414,8 +433,7 @@ class TopValue extends Model
             ];
         } 
 
-
-       
+        
         
         return [
             'options' => $options,
