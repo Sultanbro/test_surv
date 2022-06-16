@@ -43,12 +43,12 @@ class GroupsController extends Controller
         foreach($request->items as $item) {
             if($item['id'] != 0) {
 
-                array_push($edited_users, $item['id']);
+                
                 $record = Timetracking::where('user_id', $item['id'])
                     ->whereDate('enter', $date)
                     ->orderBy('enter', 'desc')->first();
                 
-                $user = User::find($item['id']);
+                $user = User::where('position_id', 32)->find($item['id']);
                 if(!$user)continue;
                 if(!$user->user_type)continue;
                 if($user->user_type == 'remote') {
@@ -56,6 +56,8 @@ class GroupsController extends Controller
                 } else {
                     $additional_minutes = $additional_minutes_office;
                 }
+
+                array_push($edited_users, $item['id']);
 
                 $minutes = round($item['hours'] * 60);
 
@@ -90,26 +92,41 @@ class GroupsController extends Controller
             
         }
 
-
+     
         $this->setZeroToUsersStartedTheDay($edited_users, $date);
     }
 
 
     public function setZeroToUsersStartedTheDay($user_ids, $date) {
 
-        $group = ProfileGroup::find(42);
-
+        $group = ProfileGroup::find(42); 
+        
         $users = array_diff(json_decode($group->users, true), $user_ids);
+        
         $users = array_values($users);
-
+        
+        $users = User::with('user_description')
+                ->whereHas('user_description', function ($query) {
+                    $query->where('is_trainee', 0);
+                })
+                ->whereIn('id', $users)->where('position_id', 32)->get('id')->pluck('id')->toArray();
+      
         $tts = Timetracking::whereDate('enter', $date)
                 ->whereIn('user_id', $users)
                 ->get();
-
+             
             foreach ($tts as $tt) {
-                $tt->minutes = 0;
+                $tt->total_hours = 0;
                 $tt->updated = 1;
                 $tt->save();
+
+                TimetrackingHistory::create([
+                    'author_id' => Auth::user()->id,
+                    'author' => Auth::user()->last_name .' '. Auth::user()->name,
+                    'user_id' => $tt->user_id,
+                    'date' => $date,
+                    'description' => 'Импорт из EXCEL файла: 0 минут'
+                ]);
             }
 
     }

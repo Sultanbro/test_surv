@@ -246,8 +246,6 @@ class CheckListController extends Controller
 
            if (!empty($request['valueFindGr'])){
 
-
-
                $findArray = CheckList::find($request['check_id']);
                $findArray->auth_id = auth()->user()->id;
                $findArray->auth_name = auth()->user()->name;
@@ -269,63 +267,67 @@ class CheckListController extends Controller
                        $checkReportSave['count_check'] = count($request['arr_check_input']);
                        $checkReportSave->save();
                    }
-               }
+               }else{
 
-               if ($findArray->item_type == 1){
-                   if (empty($checkReports) && count($checkReports) == 0){
-                       $profileGroups = ProfileGroup::on()->find($request['valueFindGr']);
-                       if (!empty($profileGroups)){
-                           foreach (json_decode($profileGroups['users']) as $profile_users_id){
-                               $dataBaseUser = User::on()->find($profile_users_id);
-                               if (!empty($dataBaseUser)){
-                                   $check_reports_save = new CheckReports();
-                                   $check_reports_save['check_id'] = $findArray->id;
-                                   $check_reports_save['check_users_id'] = $dataBaseUser->id ;
-                                   $check_reports_save['year'] = date('Y');
-                                   $check_reports_save['month'] = date('n');
-                                   $check_reports_save['day'] = date('d');
-                                   $check_reports_save['count_check'] = count($request['arr_check_input']);
-                                   $check_reports_save['count_check_auth'] = 0;
-                                   $check_reports_save['checked'] = json_encode($request['arr_check_input']);
-                                   $check_reports_save['item_type'] = $findArray->item_type;
-                                   $check_reports_save['item_id'] = $findArray->item_id;
-                                   $check_reports_save->save();
+                   if ($findArray->item_type == 1){
+                       if (empty($checkReports) && count($checkReports) == 0){
+                           $profileGroups = ProfileGroup::on()->find($request['valueFindGr']);
+                           if (!empty($profileGroups)){
+                               foreach (json_decode($profileGroups['users']) as $profile_users_id){
+                                   $dataBaseUser = User::on()->find($profile_users_id);
+                                   if (!empty($dataBaseUser)){
+                                       $check_reports_save = new CheckReports();
+                                       $check_reports_save['check_id'] = $findArray->id;
+                                       $check_reports_save['check_users_id'] = $dataBaseUser->id ;
+                                       $check_reports_save['year'] = date('Y');
+                                       $check_reports_save['month'] = date('n');
+                                       $check_reports_save['day'] = date('d');
+                                       $check_reports_save['count_check'] = count($request['arr_check_input']);
+                                       $check_reports_save['count_check_auth'] = 0;
+                                       $check_reports_save['checked'] = json_encode($request['arr_check_input']);
+                                       $check_reports_save['item_type'] = $findArray->item_type;
+                                       $check_reports_save['item_id'] = $findArray->item_id;
+                                       $check_reports_save->save();
 
+                                   }
                                }
                            }
                        }
-                   }
-               }elseif ($findArray->item_type == 2){
+                   }elseif ($findArray->item_type == 2){
                        $positionUsers = User::on()->where('position_id',$request['valueFindGr'])->get()->toArray();
                        if (!empty($positionUsers)){
+                           $check_reports_save = new CheckReports();
+                           $check_reports_save['check_id'] = $findArray->id;
+                           $check_reports_save['check_users_id'] = $positionUsers['id'] ;
+                           $check_reports_save['year'] = date('Y');
+                           $check_reports_save['month'] = date('n');
+                           $check_reports_save['day'] = date('d');
+                           $check_reports_save['count_check'] = count($request['arr_check_input']);
+                           $check_reports_save['count_check_auth'] = 0;
+                           $check_reports_save['checked'] = json_encode($request['arr_check_input']);
+                           $check_reports_save['item_type'] = $findArray->item_type;
+                           $check_reports_save['item_id'] = $findArray->item_id;
+                           $check_reports_save->save();
+                       }
+                   }elseif ($findArray->item_type == 3){
+//                   saveReports($checkListId,$positionUser,$request,$positionUser,$type);
                        $check_reports_save = new CheckReports();
                        $check_reports_save['check_id'] = $findArray->id;
-                       $check_reports_save['check_users_id'] = $positionUsers['id'] ;
+                       $check_reports_save['check_users_id'] = $request['valueFindGr'] ;
                        $check_reports_save['year'] = date('Y');
                        $check_reports_save['month'] = date('n');
                        $check_reports_save['day'] = date('d');
                        $check_reports_save['count_check'] = count($request['arr_check_input']);
                        $check_reports_save['count_check_auth'] = 0;
-                       $check_reports_save['checked'] = json_encode($request['arr_check_input']);
+                       $check_reports_save['checked'] =json_encode($request['arr_check_input']);
                        $check_reports_save['item_type'] = $findArray->item_type;
                        $check_reports_save['item_id'] = $findArray->item_id;
                        $check_reports_save->save();
                    }
-               }elseif ($findArray->item_type == 3){
-//                   saveReports($checkListId,$positionUser,$request,$positionUser,$type);
-                   $check_reports_save = new CheckReports();
-                   $check_reports_save['check_id'] = $findArray->id;
-                   $check_reports_save['check_users_id'] = $request['valueFindGr'] ;
-                   $check_reports_save['year'] = date('Y');
-                   $check_reports_save['month'] = date('n');
-                   $check_reports_save['day'] = date('d');
-                   $check_reports_save['count_check'] = count($request['arr_check_input']);
-                   $check_reports_save['count_check_auth'] = 0;
-                   $check_reports_save['checked'] =json_encode($request['arr_check_input']);
-                   $check_reports_save['item_type'] = $findArray->item_type;
-                   $check_reports_save['item_id'] = $findArray->item_id;
-                   $check_reports_save->save();
+
                }
+
+
            }
 
         }
