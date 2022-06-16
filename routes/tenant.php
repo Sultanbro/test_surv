@@ -347,7 +347,9 @@ Route::middleware([
     Route::post('/timetracking/top/proceeds/update', [TopController::class, 'updateProceeds']);
 
 
-    Route::any('/timetracking/quality-control', [QualityController::class, 'index']);
+    Route::any('/timetracking/quality-control/', [QualityController::class, 'index']);
+
+
     Route::any('/timetracking/quality-control/export', [QualityController::class, 'exportExcel']);
     Route::any('/timetracking/quality-control/change-type', [QualityController::class, 'changeType']);
     Route::any('/timetracking/quality-control/exportall', [QualityController::class, 'exportAllExcel']);
@@ -464,6 +466,7 @@ Route::middleware([
     Route::post('/timetracking/settings/auth/check/user/responsibility', [CheckListController::class, 'responsibility']); ///   Добавить ответственного лица
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
     Route::post('/timetracking/settings/auth/check/search/selected', [CheckListController::class, 'searchSelected']); ///   поиск групп должность пользовотелей
+
 
 
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);

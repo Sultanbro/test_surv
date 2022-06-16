@@ -76,7 +76,10 @@ class User extends Authenticatable implements Authorizable
         return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'id');
     }
 
-    
+//    public function getCheckList()
+//    {
+//        return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'id');
+//    }
 
     /**
      * Получает пользователя из системных таблицы Битрикса

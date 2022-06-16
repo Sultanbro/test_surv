@@ -39,8 +39,18 @@ class QualityController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->has('type') && $request->has('id') ) {
+            $individual_type = $request['type'];
+            $individual_type_id = $request['id'];
+        }else{
+            $individual_type = null;
+            $individual_type_id = null;
+        }
+
+
+
         if(!auth()->user()->can('quality_view')) {
             return redirect('/');
         }
@@ -51,23 +61,32 @@ class QualityController extends Controller
 
         $groups = ProfileGroup::whereIn('id', $acts)->where('has_analytics', 1)->where('active', 1)->get();
 
-        if(auth()->user()->is_admin != 1) {
-            $_groups = [];
-            foreach ($groups as $key => $group) {
-                if(!in_array(auth()->id(), json_decode($group->editors_id))) continue;
-                $_groups[] = $group;
-            }
-            $groups = $_groups;
+        $groups2 = ProfileGroup::on()->get();
 
 
-        }
+        $groups = $groups->merge($groups2);
+
+        $groups3 = ProfileGroup::on()->get();
+
+        $groups = $groups->merge($groups3);
 
 
 
-        return view('admin.quality_control', compact('groups'));
+        return view('admin.quality_control',
+            compact('groups','individual_type','individual_type_id'));
     }
 
     public function getRecords(Request $request) {
+
+
+//        return $request;
+
+        if ($request->individual_type == 1){
+            $request->group_id = $request->individual_type_id;
+        }elseif ($request->individual_type == 3){
+            $request->group_id = 71;
+        }
+
 
 
 
@@ -292,12 +311,17 @@ class QualityController extends Controller
         $getReportsCheck = new CheckReports();
         $check_users = $getReportsCheck->filterCheckList($request);
 
-
-
+        $group = ProfileGroup::find($request->group_id);
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
 
 
 //        $check_users =CheckReports::where('item_id',$request['group_id'])->get();
+
+
+
+
+
+
 
 
         return response()->json([
@@ -310,7 +334,9 @@ class QualityController extends Controller
             'script_id' => $dialer ? $dialer->script_id : null,
             'dialer_id' => $dialer ? $dialer->dialer_id : null,
             'params' => $q_params,
-            'check_users' => $check_users,
+            'check_users' => $check_users['check_users'] ?? null,
+            'individual_type' => $check_users['individual_type'] ?? null,
+            'individual_current' => $check_users['individual_current'] ?? null,
         ]);
     }
     /**

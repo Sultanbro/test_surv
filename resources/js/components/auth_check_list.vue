@@ -26,17 +26,10 @@
                 <div class="row">
                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in auth_check">
                         <span class="font-weight-bold">{{item.title}}</span>
-
-                        <div class="col-12 p-0" v-for="(val,ind) in item.check_input">
-                            <div class="col-md-4 ">
-                                <div class="position-absolute" style="margin-left: -15px;">
-                                    <b-form-checkbox v-model="val.checked" ></b-form-checkbox>
-                                </div>
-                                <label style="cursor: pointer"  class="ml-3">{{val.text}}</label>
-                            </div>
-                            <!--<div class="col-md-3 p-0 mr-3 ml-1 mt-2">-->
-                                <!--<p v-model="val.text">{{val.text}}</p>-->
-                            <!--</div>-->
+                        <div class="col-12 p-0 mt-2" v-for="(val,ind) in item.check_input">
+                           <b-form-checkbox v-model="val.checked" size="sm" >
+                             <span style="cursor: pointer">{{val.text}}</span>
+                           </b-form-checkbox>
                         </div>
                     </div>
 
@@ -77,9 +70,6 @@
 
         created() {
             this.viewCheck()
-
-
-
         },
         methods: {
             toggle() {
@@ -106,23 +96,17 @@
             },
 
             viewCheck(){
-
-
-
-
                 axios.post('/timetracking/settings/auth/check/user', {
                     auth_check:this.auth_check_list
 
                 }).then(response => {
 
 
-
-
-
                     if (response.data.checklist.length > 0) {
-                      for (let i = 0;i < response.data.checklist.length;i++){
 
+                      for (let i = 0;i < response.data.checklist.length;i++){
                         if (response.data['checklist'][i].length > 0){
+
                           if (response.data['checklist'][i][0]['flag']){
                             this.auth_check.push({
                               title: response.data['checklist'][i][0]['title'],
@@ -141,12 +125,9 @@
                             });
                           }
 
+
                         }
                       }
-
-
-
-
                     }
 
 

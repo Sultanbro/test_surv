@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 @section('title', 'Настройки')
 @section('content')
+
+
+
     <div class="">
         <div class="">
  
@@ -69,10 +72,7 @@
 
                             @if($active_tab == 8 && (auth()->user()->can('checklists_view') || auth()->user()->can('settings_view')))
                                     <div class="tab-pane fade show active   p-3" id="checkList" role="tabpanel" aria-labelledby="nav-checkList-tab">
-                                        <check-list
-                                            :groups="{{json_encode($groups) }}"
-                                            :positions="{{json_encode($positions)}}"
-                                        />
+                                        <check-list/>
                                     </div>
                             @endif
                         </div>
