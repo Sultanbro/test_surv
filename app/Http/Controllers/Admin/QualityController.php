@@ -84,7 +84,7 @@ class QualityController extends Controller
         if ($request->individual_type == 1){
             $request->group_id = $request->individual_type_id;
         }elseif ($request->individual_type == 3){
-            $request->group_id = 26;
+            $request->group_id = 71;
         }
 
 

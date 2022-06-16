@@ -66,7 +66,7 @@
                 <div class="col-4 d-flex align-items-center justify-content-end" >
                     <input type="text" :ref="'mylink' + currentGroup" class="hider">
                     <button 
-                        v-if="currentGroup == 35 || currentGroup == 42"
+                        v-if="currentGroup == 42 && can_edit"
                         @click='showExcelImport = !showExcelImport'
                         class="btn btn-primary mr-2 btn-sm rounded"
                         :style="{'padding': '2px 8px'}"
@@ -168,7 +168,7 @@
 
 
 
-    <sidebar v-if="showExcelImport && can_edit"
+    <sidebar v-if="showExcelImport"
         title="Импорт EXCEL" 
         :open="showExcelImport"
         @close="showExcelImport=false"
@@ -197,7 +197,7 @@
                 </template>
             </b-tab>
 
-            <template v-if="can_edit">
+            <template v-if="editable_time && can_edit">
                 <b-tab title="📆" >
                     <!-- <div v-html="sidebarContent.history"></div>
             <div v-html="sidebarContent.historyTotal"></div> -->
@@ -815,7 +815,7 @@ export default {
 
         //Установка заголовока таблицы
         readOnlyFix(event) { 
-            if(this.editable_time || this.can_edit) {
+            if(this.editable_time && this.can_edit) {
                 event.target.readOnly = ''
             }
         },
@@ -1175,7 +1175,7 @@ export default {
         
         detectClick(data) { 
             //if([48,53,65,66].includes(this.currentGroup) || this.activeuserid == 5) { // if RECRUITING GROUP ENABLE EDIT HOURS ON DBLCLICK
-            if(this.editable_time || this.can_edit) {
+            if(this.editable_time && this.can_edit) {
                 this.numClicks++
                 if (this.numClicks === 1) {
                     var self = this

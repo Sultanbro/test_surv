@@ -57,7 +57,7 @@ class TopController extends Controller
         $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
 
         $this->groups = ProfileGroup::where('has_analytics', 1)->get()->pluck('id')->toArray();
-
+      //  dd(TopValue::getUtilityGauges($date, $this->groups)[6]['gauges'][2]);
         return view('admin.top')->with([
             'data' => [
                 'rentability' => TopValue::getRentabilityGauges($date,$this->groups),
@@ -428,15 +428,20 @@ class TopController extends Controller
             $top_value->cell = $gauge['cell'];
             $top_value->activity_id = $gauge['activity_id'];
             $top_value->max_value = $gauge['max_value'];
+            $top_value->reversed = $gauge['reversed'];
             $top_value->options = json_encode($gauge['options']);
             $top_value->unit = $gauge['unit'] ? $gauge['unit'] : '';
             $top_value->save();
             
             $value = $top_value->value;
-            if($top_value->activity_id != 0) {
+            if($top_value->activity_id != 0 && $top_value->activity_id != -1) {
                 $value = UserStat::total_for_month($top_value->activity_id, $top_value->date, $top_value->value_type);
             }
-            return ['code' => 200, 'value' => $value];
+
+            $options = TopValue::getDynamicValue($top_value->group_id, $top_value->date, $top_value)['options'];
+
+
+            return ['code' => 200, 'value' => $value, 'options' => $options];
         } else {
             return ['code' => 404];
         }

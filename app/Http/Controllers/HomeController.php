@@ -50,20 +50,29 @@ class HomeController extends Controller
 
     public function loginAs(Request $request, $id) {
 
-        $token = User::whereIn('id', [5,18, 157 , 84])
-            ->where('remember_token', $request->auth)
-            ->first();
+        if(tenant('id') == 'bp') {
+            $token = User::whereIn('id', [5,18, 157 , 84])
+                ->where('remember_token', $request->auth)
+                ->first();
 
-        if($token) {
-            $user = User::find($id);
+        
+            if($token) {
+                $user = User::find($id);
 
-            if(empty($user->remember_token)){
-                $token = bin2hex(random_bytes(60));
-                $user->remember_token = $token;
-                $user->save();
+                $admins = User::where('is_admin', 1)->get('id')->pluck('id')->toArray();
+                if(in_array($id, $admins) && $token->is_admin != 1) {
+                    return redirect('/');
+                } 
+
+                if(empty($user->remember_token)){
+                    $token = bin2hex(random_bytes(60));
+                    $user->remember_token = $token;
+                    $user->save();
+                }
+
+            
+                Auth::login($user, true);
             }
-
-            Auth::login($user, true);
         }
 
         return redirect('/');

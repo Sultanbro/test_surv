@@ -2352,15 +2352,15 @@ class UserController extends Controller
     protected function mail($to, $template, $subject, $data)
     {
         $from = [
-            'address' => 'no-repl@u-marketing.org', // env('MAIL_FROM_ADDRESS', 'no-reply@u-marketing.org'),
-            'name' => env('MAIL_FROM_NAME', 'U-Marketing'),
+            'address' => 'no-reply@jobtron.org', // env('MAIL_FROM_ADDRESS', 'no-reply@u-marketing.org'),
+            'name' => env('MAIL_FROM_NAME', 'Jobtron'),
         ];
 
-        $transport = (new Swift_SmtpTransport('smtp.mail.ru', '465'))
+        $transport = (new Swift_SmtpTransport('smtp.timeweb.ru', '465'))
             ->setEncryption('ssl')
             //->setUsername(env('MAIL_FROM_ADDRESS', 'no-reply@u-marketing.org'))
-            ->setUsername('no-repl@u-marketing.org')
-            ->setPassword('Asd123102030!'); //env('MAIL_password', 'Asd123102030!!'));
+            ->setUsername('no-reply@jobtron.org')
+            ->setPassword('FgzNZ7Cj!'); //env('MAIL_password', 'Asd123102030!!'));
 
         $mailer = app(Mailer::class);
         $mailer->setSwiftMailer(new Swift_Mailer($transport));

@@ -260,9 +260,12 @@ class SalaryController extends Controller
         $groups = ProfileGroup::where('active', 1)->get();
 
         $salary_approved = []; // костыль
-        $approved = 0; // костыль
 
         $_groups = [];
+        
+        $currentGroup = null;
+
+        $data['salary_approved'] = 0;
         
         foreach ($groups as $key => $group) {
      
@@ -270,14 +273,19 @@ class SalaryController extends Controller
             $approval = SalaryApproval::where('group_id', $group->id)->where('date', $sdate)->first();
 
             if($approval) {
-                $xuser = User::withTrashed()->find($approval->user_id);
+                $xuser = User::withTrashed()->where('id', ($approval->user_id))->first();
                 $group->salary_approved_by = $xuser ? $xuser->last_name . ' ' . $xuser->name : $approval->user_id;
                 $group->salary_approved_date = Carbon::parse($approval->updated_at)->format('H:i d.m.Y');
                 $group->salary_approved = 1;
 
-                if($group->id == $request->group_id) $approved = 1;
+                if($group->id == $request->group_id) {
+                    $currentGroup = $group;
+                }
             } else {
                 $group->salary_approved = 0;
+                if($group->id == $request->group_id) {
+                    $currentGroup = $group;
+                }
             }
 
             $_groups[] = $group;
@@ -285,7 +293,8 @@ class SalaryController extends Controller
 
 
         $data['groups'] = $_groups;
-        $data['salary_approved'] = [];
+        $data['currentGroup'] = $currentGroup;
+    
 
         /////
 
