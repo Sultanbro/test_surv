@@ -49,8 +49,6 @@ class CheckListController extends Controller
                             $checkList['item_type'] = $allValueArray['type'];
                             $checkList['item_id'] = $profileGroups->id;
                             $checkList->save();
-
-
                             $this->saveGroup($profileGroups,$checkList,$request,1);
                         }elseif ($allValueArray['type'] == 2){
                             $profilePosition = Position::on()->find($allValueArray['code']);
@@ -100,9 +98,9 @@ class CheckListController extends Controller
             $check_users['count_view'] = $request['countView'];
             $check_users['item_type'] = $type;
             $check_users['item_id'] = $positionUser['id'];
-//            $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
-//            $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
-//            $check_users['middleware_time'] =  9;
+            $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
+            $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
+            $check_users['middleware_count'] =  0;
             $check_users->save();
         }
 
@@ -123,9 +121,9 @@ class CheckListController extends Controller
                 $check_users['count_view'] = $request['countView'];
                 $check_users['item_type'] = $type;
                 $check_users['item_id'] = $profileGroups->id;
-//                $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
-//                $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
-//                $check_users['middleware_time'] =  9;
+                $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
+                $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
+                $check_users['middleware_count'] =  0;
                 $check_users->save();
             }
         }
@@ -158,9 +156,9 @@ class CheckListController extends Controller
                     'count_view'=> $request['countView'],
                     'item_type'=> $type,
                     'item_id'=> $profileGroups->id,
-//                    'middleware_time'=> 9,
-//                    'work_start'=> $user->work_start ?? '09:00:00',
-//                    'work_end'=> $user->work_end ?? '18:00:00',
+                    'middleware_count'=> 0,
+                    'work_start'=> $user->work_start ?? '09:00:00',
+                    'work_end'=> $user->work_end ?? '18:00:00',
                 ]);
             }
         }
