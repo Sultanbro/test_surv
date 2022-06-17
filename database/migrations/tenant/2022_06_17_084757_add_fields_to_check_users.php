@@ -14,9 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::table('check_users', function (Blueprint $table) {
-            $table->text('middleware_time')->nullable();
+            $table->text('middleware_count')->nullable();
             $table->text('middleware_auth')->nullable();
             $table->string('work_start')->nullable();
+            $table->string('work_end')->nullable();
             $table->string('work_end')->nullable();
         });
     }
