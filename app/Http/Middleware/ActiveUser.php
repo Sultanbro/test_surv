@@ -29,6 +29,7 @@ class ActiveUser
     public function handle($request, Closure $next)
     {
 
+        auth()->user()->show_checklist = 0;
         $user = auth()->user();
 
         if ($user){
