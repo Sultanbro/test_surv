@@ -262,13 +262,27 @@ class CheckListController extends Controller
                    ->get()->toArray();
 
                if (!empty($checkReports) && count($checkReports) > 0){
+
+
+
                    foreach ($checkReports  as $checkReport){
                        $checkReportSave = CheckReports::on()->find($checkReport['id']);
                        $checkReportSave['count_check'] = count($request['arr_check_input']);
+
+                       if (!empty($checkReportSave['checked'])){
+                           $new_arr_check_input = $request['arr_check_input'];
+                           foreach ($new_arr_check_input as $key => $query){
+                               foreach (json_decode($checkReportSave['checked'],true)  as $item){
+                                   if ($query['text'] == $item['text']){
+                                       $new_arr_check_input[$key] = $item;
+                                   }
+                               }
+                           }
+                       }
+                       $checkReportSave['checked'] = json_encode($new_arr_check_input);
                        $checkReportSave->save();
                    }
                }else{
-
                    if ($findArray->item_type == 1){
                        if (empty($checkReports) && count($checkReports) == 0){
                            $profileGroups = ProfileGroup::on()->find($request['valueFindGr']);
@@ -337,10 +351,6 @@ class CheckListController extends Controller
     }
 
     public function viewAuthCheck(Request$request){
-
-
-
-
 
         if (!empty($request['auth_check'])){
             foreach (json_decode($request['auth_check']) as $key => $arrCheckInput){

@@ -57,7 +57,7 @@
                 </div>
 
                 <p class="text-center text-14">
-                    {{ Number(gauge.value).toFixed(gauge.round) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
+                    {{ Number(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
                 </p>
                 
                 <div v-show="gauge.editable" class="mb-5 edit-window">
@@ -109,7 +109,15 @@
                             
                         </template>
 
-                        
+                        <div>
+                            <b-form-checkbox
+                                v-model="gauge.reversed"
+                                :value="1"
+                                :unchecked-value="0"
+                                >
+                                Отразить цвета 
+                            </b-form-checkbox>
+                        </div>
                         <div>
                             <b-form-checkbox
                                 v-model="gauge.is_main"
@@ -316,6 +324,7 @@ export default {
                         let this_gauge = this.utility[group].gauges[gauge_index];
 
                         this_gauge.value = response.data.value;
+                        this_gauge.options = response.data.options;
                         if(this.utility[group].gauges[gauge_index].is_main == 1) {
                             this.utility[group].gauges.splice(gauge_index, 1);
                             this.utility[group].gauges.forEach(item =>  { 
@@ -323,8 +332,12 @@ export default {
                             });
                             this.utility[group].gauges.unshift(this_gauge);
 
+                         
+
                             
                         }
+
+                        this.skey++
                         
                     } else {
                         this.$message.error('Попробуйте нажать еще раз')

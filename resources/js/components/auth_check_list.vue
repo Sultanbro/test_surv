@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="btn-rm">
-            <a @click="toggle()"  class="text-white rounded" >
+        <div @click="toggle()"   class="btn-rm">
+            <a class="text-white rounded" >
                 <span class="far fa-address-card text-white "></span>
             </a>
         </div>
@@ -96,6 +96,9 @@
             },
 
             viewCheck(){
+
+              console.log(this.auth_check_list,'1999')
+
                 axios.post('/timetracking/settings/auth/check/user', {
                     auth_check:this.auth_check_list
 

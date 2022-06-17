@@ -23,6 +23,13 @@ use Spatie\Permission\Models\Permission;
 class TestController extends Controller { 
  
 	public function test() {
+
+
+
+       $kis =   Hash::make('12345');
+
+
+
         $gr = \App\ProfileGroup::with('roles')->find(23);
 
 		$role = Role::find(7);
