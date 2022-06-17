@@ -58,7 +58,10 @@
         name: "auth-check-list",
         props: {
             // user_id:'',
-            auth_check_list:{}
+            auth_check_list:{},
+            open_check:{
+              default:0
+            }
         },
         data() {
             return {
@@ -70,6 +73,10 @@
 
         created() {
             this.viewCheck()
+
+              if (this.open_check == 1){
+                this.showAuthUserCheck = true;
+              }
         },
         methods: {
             toggle() {

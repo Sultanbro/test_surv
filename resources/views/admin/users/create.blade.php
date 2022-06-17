@@ -13,7 +13,7 @@
 
             <div class="data-information d-flex">
                 @if(isset($user))
-                    @if($user->is_trainee)
+                    @if($user->user_description && $user->user_description->is_trainee == 1)
                     <button class="btn btn-warning mr-2 rounded" id="submit_job">Принять на работу</button>
                     <button class="btn btn-primary mr-2 rounded" id="submit_trainee">Сохранить</button>
                     @else
@@ -24,18 +24,18 @@
                     <button class="btn btn-warning mr-2 rounded" id="submit_trainee">Пригласить со стажировкой</button>
                 @endif
                 @if(isset($user))
-                @if ( is_null($user->deleted_at))
+                @if( is_null($user->deleted_at) )
 
-                    @if(!$user->is_trainee)
+                    @if($user->user_description && $user->user_description->is_trainee == 1)
+                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn" v-b-modal.modal-deactivate>
+                        Уволить стажера
+                    </button>
+                    @else
                     <button type="button" class="btn btn-danger rounded mr-2" id="deleteModalBtn" v-b-modal.modal-deactivate>
                         Уволить без отработки
                     </button>
                     <button type="button" class="btn btn-danger rounded" id="deleteModalBtn2" v-b-modal.modal-deactivate>
                         Уволить с отработкой
-                    </button>
-                    @else
-                    <button type="button" class="btn btn-danger rounded" id="deleteModalBtn" v-b-modal.modal-deactivate>
-                        Уволить стажера
                     </button>
                     @endif
 
@@ -766,7 +766,7 @@
                                                     name="phone" id="phone" placeholder="Телефон">
                                                 </div>
                                             </div>
-                                            <div class="d-flex phone-row form-group mb-2">
+                                            <!-- <div class="d-flex phone-row form-group mb-2">
                                                 <label for="phone_1" class="col-sm-4 col-form-label font-weight-bold">Домашний <span class="red">*</span></label>
                                                 <div class="col-sm-8">
                                                     <input class="form-control" class="form-control mr-1 col-sm-8" type="text"
@@ -774,7 +774,7 @@
                                                     name="phone_1" id="phone_1" placeholder="Телефон">
                                                 </div>
                                             </div>
-                                            <div class="d-flex phone-row form-group mb-2">
+                                            <div class="d-flex phone-row form-group mb-2"> 
                                                 <label for="phone_2" class="col-sm-4 col-form-label font-weight-bold">Супруга/Муж <span class="red">*</span></label>
                                                 <div class="col-sm-8">
                                                     <input class="form-control" class="form-control mr-1 col-sm-8" type="text"
@@ -797,7 +797,7 @@
                                                     value="@if(isset($user)){{$user->phone_4}}@else{{old('phone_4')}}@endif"
                                                     name="phone_4" id="phone_4" placeholder="Телефон">
                                                 </div>
-                                            </div>
+                                            </div> -->
 
                                             @if(isset($user))
                                             @foreach($user->profileContacts as $key => $contact)

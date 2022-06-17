@@ -85,7 +85,7 @@ class GetWorkedHours extends Command
 
 
 
-	    $users_ids = json_decode(ProfileGroup::find($group_id)->users);
+        $users_ids = json_decode(ProfileGroup::find($group_id)->users);
         $users = User::whereIn('id', $users_ids)->get();
 
         foreach($users as $user) {
@@ -100,8 +100,10 @@ class GetWorkedHours extends Command
                     $this->updateHours($user->id, $minutes, $hours);
                 }
                 $aggrees = Kaztel::getAggrees($user->email, $this->date);
-
+             
                 $correct_minutes = Kaztel::getWorkedMinutes($user->email, $this->date);
+
+                $closed_cards = Kaztel::getClosedCards($this->date, $user->email);
 
                 $this->saveASI([
                     'date' => $this->startOfMonth,
@@ -124,119 +126,126 @@ class GetWorkedHours extends Command
                     'type' => 134 // звонки от 10 секунд
                 ], $correct_minutes);
 
+                 $this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 152 // звонки от 10 секунд
+                ], $closed_cards);
+
             }
             
-            if($group_id == 53) { // Eurasian
-                $minutes = Eurasian::getWorkedMinutes($user->email, $this->date);
-                if($minutes == 0) continue; // Не записывать ноль
-                if($minutes > 0 && $user->program_id == 1) {
-                    $hours = Callibro::getWorkedHours($user->email, $this->date);
-                    $this->updateHours($user->id, $minutes, $hours);
-                }
-                $aggrees = Eurasian::getAggrees($user->email, $this->date);
+            // if($group_id == 53) { // Eurasian
+            //     $minutes = Eurasian::getWorkedMinutes($user->email, $this->date);
+            //     if($minutes == 0) continue; // Не записывать ноль
+            //     if($minutes > 0 && $user->program_id == 1) {
+            //         $hours = Callibro::getWorkedHours($user->email, $this->date);
+            //         $this->updateHours($user->id, $minutes, $hours);
+            //     }
+            //     $aggrees = Eurasian::getAggrees($user->email, $this->date);
 
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 16 // минуты
-                ], $minutes);
+            //     $this->saveASI([
+            //         'date' => $this->startOfMonth,
+            //         'employee_id' => $user->id,
+            //         'group_id' => $group_id,
+            //         'type' => 16 // минуты
+            //     ], $minutes);
     
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 18 // согласия
-                ], $aggrees);
+            //     $this->saveASI([
+            //         'date' => $this->startOfMonth,
+            //         'employee_id' => $user->id,
+            //         'group_id' => $group_id,
+            //         'type' => 18 // согласия
+            //     ], $aggrees);
 
 
 
-            }
+            // }
 
-            if($group_id == 57) { // Home credit
-                $minutes = HomeCredit::getWorkedMinutes($user->email, $this->date);
-                if($minutes == 0) continue; // Не записывать ноль
-                $aggrees = HomeCredit::getAggrees($user->email, $this->date);
+            // if($group_id == 57) { // Home credit
+            //     $minutes = HomeCredit::getWorkedMinutes($user->email, $this->date);
+            //     if($minutes == 0) continue; // Не записывать ноль
+            //     $aggrees = HomeCredit::getAggrees($user->email, $this->date);
 
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 37 // минуты
-                ], $minutes);
+            //     $this->saveASI([
+            //         'date' => $this->startOfMonth,
+            //         'employee_id' => $user->id,
+            //         'group_id' => $group_id,
+            //         'type' => 37 // минуты
+            //     ], $minutes);
     
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 38 // согласия
-                ], $aggrees);
-            }
+            //     $this->saveASI([
+            //         'date' => $this->startOfMonth,
+            //         'employee_id' => $user->id,
+            //         'group_id' => $group_id,
+            //         'type' => 38 // согласия
+            //     ], $aggrees);
+            // }
 
         }
 
         /**
          * AS
          */
-        if($group_id == 57) {
+        // if($group_id == 57) {
             
-            $as = AnalyticsSettings::where([
-                'group_id' => HomeCredit::ID,
-                'date' => $this->startOfMonth
-            ])->first();
+        //     $as = AnalyticsSettings::where([
+        //         'group_id' => HomeCredit::ID,
+        //         'date' => $this->startOfMonth
+        //     ])->first();
 
-            if($as && array_key_exists(HomeCredit::S_CLOSED_CARDS, $as->data)) {
+        //     if($as && array_key_exists(HomeCredit::S_CLOSED_CARDS, $as->data)) {
                 
-                $closed_cards = HomeCredit::getClosedCards($this->date);
+        //         $closed_cards = HomeCredit::getClosedCards($this->date);
 
-                $data = $as->data;
-                $data[HomeCredit::S_CLOSED_CARDS][$this->day] = $closed_cards;
-                $as->data = $data;
-                $as->save();
-            } else {
-                $this->line('Не найден AS $group_id = ' . $group_id . ' Дата: ' . $this->startOfMonth);
-            }
-        }
+        //         $data = $as->data;
+        //         $data[HomeCredit::S_CLOSED_CARDS][$this->day] = $closed_cards;
+        //         $as->data = $data;
+        //         $as->save();
+        //     } else {
+        //         $this->line('Не найден AS $group_id = ' . $group_id . ' Дата: ' . $this->startOfMonth);
+        //     }
+        // }
 
-        if($group_id == 53) {
+        // if($group_id == 53) {
             
-            $as = AnalyticsSettings::where([
-                'group_id' => Eurasian::ID,
-                'date' => $this->startOfMonth
-            ])->first();
+        //     $as = AnalyticsSettings::where([
+        //         'group_id' => Eurasian::ID,
+        //         'date' => $this->startOfMonth
+        //     ])->first();
 
-            if($as && array_key_exists(Eurasian::S_CLOSED_CARDS, $as->data)) {
+        //     if($as && array_key_exists(Eurasian::S_CLOSED_CARDS, $as->data)) {
                 
-                $closed_cards = Eurasian::getClosedCards($this->date);
+        //         $closed_cards = Eurasian::getClosedCards($this->date);
 
-                $data = $as->data;
-                $data[Eurasian::S_CLOSED_CARDS][$this->day] = $closed_cards;
-                $as->data = $data;
-                $as->save();
-            } else {
-                $this->line('Не найден AS $group_id = ' . $group_id . ' Дата: ' . $this->startOfMonth);
-            }
-        }
+        //         $data = $as->data;
+        //         $data[Eurasian::S_CLOSED_CARDS][$this->day] = $closed_cards;
+        //         $as->data = $data;
+        //         $as->save();
+        //     } else {
+        //         $this->line('Не найден AS $group_id = ' . $group_id . ' Дата: ' . $this->startOfMonth);
+        //     }
+        // }
 
-        if($group_id == 70) {
+        // if($group_id == 70) {
             
-            $as = AnalyticsSettings::where([
-                'group_id' => Kaztel::ID,
-                'date' => $this->startOfMonth
-            ])->first();
+        //     $as = AnalyticsSettings::where([
+        //         'group_id' => Kaztel::ID,
+        //         'date' => $this->startOfMonth
+        //     ])->first();
 
-            if($as && array_key_exists(Kaztel::S_CLOSED_CARDS, $as->data)) {
+        //     if($as && array_key_exists(Kaztel::S_CLOSED_CARDS, $as->data)) {
                 
-                $closed_cards = Kaztel::getClosedCards($this->date, $user->email);
+        //         $closed_cards = Kaztel::getClosedCards($this->date, $user->email);
 
-                $data = $as->data;
-                $data[Kaztel::S_CLOSED_CARDS][$this->day] = $closed_cards;
-                $as->data = $data;
-                $as->save();
-            } else {
-                $this->line('Не найден AS $group_id = ' . $group_id . ' Дата: ' . $this->startOfMonth);
-            }
-        }
+        //         $data = $as->data;
+        //         $data[Kaztel::S_CLOSED_CARDS][$this->day] = $closed_cards;
+        //         $as->data = $data;
+        //         $as->save();
+        //     } else {
+        //         $this->line('Не найден AS $group_id = ' . $group_id . ' Дата: ' . $this->startOfMonth);
+        //     }
+        // }
     }
 
     private function updateHours($user_id, $minutes, $worked_minutes) {

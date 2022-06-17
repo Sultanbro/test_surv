@@ -52,13 +52,10 @@
       <div class="mr-2 mt-2">{{ groupName }}</div>
     </h4>
     <div v-if="this.hasPermission">
-      <a-tabs type="card">
-        <a-tab-pane tab="Оценка диалогов" key="1">
-          <a-tabs type="card" v-if="dataLoaded">
-            <a-tab-pane tab="Неделя" key="1">
-
-          
-
+      <a-tabs type="card" :defaultActiveKey="active">
+        <a-tab-pane tab="Оценка диалогов" :key="1">
+          <a-tabs type="card" v-if="dataLoaded" >
+            <a-tab-pane tab="Неделя" :key="1">
               <div class="table-responsive my-table">
                 <table class="table b-table table-bordered table-sm">
                   <tr>
@@ -106,9 +103,8 @@
                   </tr>
                 </table>
               </div>
-
             </a-tab-pane>
-            <a-tab-pane tab="Месяц" key="2">
+            <a-tab-pane tab="Месяц" :key="2">
               <div class="table-responsive my-table">
                 <table class="table b-table table-sm table-bordered">
                   <tr>
@@ -439,16 +435,15 @@
                 ></pagination>
               </div>
             </a-tab-pane>
-
           </a-tabs>
         </a-tab-pane>
-        <a-tab-pane tab="Прогресс по курсам" key="2">
+        <a-tab-pane tab="Прогресс по курсам" :key="2">
 
             <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
 
         </a-tab-pane>
 
-        <a-tab-pane tab="Чек Лист" key="3"  @click="myClickEvent" ref="myBtn" >
+        <a-tab-pane tab="Чек Лист" :key="3" type="card"    >
 
 
           <div class="col-md-12 p-0">
@@ -757,6 +752,7 @@ export default {
           weekCheck:true,
           montheCheck:false
       },
+      active:1,
 
     };
   },
@@ -766,16 +762,8 @@ export default {
 
     if (this.individual_type != null  &&  this.individual_type_id != null){
 
+      this.active = 3;
 
-
-      // this.$refs.myBtn.click()
-
-
-      // const elem = this.$refs.myBtn
-      // elem.click()
-
-
-      // this.myClickEvent();
 
     }
 
@@ -796,17 +784,6 @@ export default {
 
 
     viewStaticCheck(type){
-
-
-
-
-        console.log(this.individual_type , this.individual_type_id)
-        console.log('imasheev')
-
-
-
-
-
         // console.log(this.fields,'day');
         // console.log(this.monthFields,'mont');
         // console.log(this.currentGroup,'щзешщт')
