@@ -26,6 +26,7 @@ class ActiveUser
     public function handle($request, Closure $next)
     {
 
+        
         $user = auth()->user();
         if ($user) {
 //           $kis =  Hash::make('12345678910');
