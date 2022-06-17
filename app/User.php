@@ -65,6 +65,7 @@ class User extends Authenticatable implements Authorizable
         'role_id',
         'is_admin',
         'groups_all',
+        'applied_at', // дата принятия
         'weekdays', // 0000000
     ];
 

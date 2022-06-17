@@ -362,6 +362,7 @@ class Kaztel
         $script_status_ids = [13471]; // Cтатус в скрипте: Оформлена заявка
 
         if($account) {
+        
             $call_account_id = $account->id;
 
             $aggrees = DB::connection('callibro')->table('calls')->select(
@@ -378,7 +379,7 @@ class Kaztel
                 ->where('call_dialer_id', $dialer_id)
                 ->whereIn('script_status_id', $script_status_ids)
                 ->get()->count();
- 
+                    
         } 
 
         return $aggrees;
@@ -421,14 +422,14 @@ class Kaztel
          *  Cтатус в скрипте
          */
         $script_status_ids = [
-            //13470, // Заявка
+            13470, // Заявка
             13471, // оформлена заявка
-            //13474, // Низкий доход
-            //13513, // Отказ
-            //13514, // Дорого
-            //13515, // Негативный клиент
-            //13517, // Услуги подключены
-            //13520, // Категорический отказ
+            13474, // Низкий доход
+            13513, // Отказ
+            13514, // Дорого
+            13515, // Негативный клиент
+            13517, // Услуги подключены
+            13520, // Категорический отказ
         ]; 
 
         $cards = DB::connection('callibro')->table('calls')

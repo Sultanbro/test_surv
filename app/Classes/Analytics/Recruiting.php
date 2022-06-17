@@ -685,6 +685,7 @@ class Recruiting
             if($key == 5) $quiz[$key]['order'] = 2; 
             if($key == 6) $quiz[$key]['order'] = 4; 
             if($key == 7) $quiz[$key]['order'] = 6; 
+            if($key == 8) $quiz[$key]['order'] = 8; 
         }
 
         $_sort = array_column($quiz, 'order');

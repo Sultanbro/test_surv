@@ -64,6 +64,14 @@ class LayoffQuiz
             ],
             'type' => 'answer'
         ],
+        '8' => [
+            'q' => '8. Посоветуете ли вы нашу компанию вашим знакомым?',
+            'answers' => [
+                ["text" => "Да", "count" => 0],
+                ["text" => "Нет", "count" => 0]
+            ],
+            'type' => 'variant'
+        ],
     ];
 
     public static function getQuestions() {
