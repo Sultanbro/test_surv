@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::table('check_users', function (Blueprint $table) {
             $table->text('middleware_count')->nullable();
             $table->text('middleware_auth')->nullable();
+            $table->text('middleware_next_time')->nullable();
             $table->string('work_start')->nullable();
-            $table->string('work_end')->nullable();
             $table->string('work_end')->nullable();
         });
     }

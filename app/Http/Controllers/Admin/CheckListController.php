@@ -213,9 +213,6 @@ class CheckListController extends Controller
 
     public function editSaveCheck(Request $request){
 
-
-
-
         if (!empty($request['allValueArray'])){
 
 
@@ -238,12 +235,6 @@ class CheckListController extends Controller
 
 
 
-
-
-
-
-
-
            if (!empty($request['valueFindGr'])){
 
                $findArray = CheckList::find($request['check_id']);
@@ -253,6 +244,16 @@ class CheckListController extends Controller
                $findArray->active_check_text = json_encode($request['arr_check_input']);
                $findArray->count_view = $request['countView'];
                $findArray->save();
+
+               $check_users = CheckUsers::where('check_list_id',$request['check_id'])->get()->toArray();
+
+               if (!empty($check_users)){
+                   foreach ($check_users as $check_user){
+                       $check_user = CheckUsers::find($check_user['id']);
+                       $check_user->count_view = $request['countView'];
+                       $check_user->save();
+                   }
+               }
 
 
                $checkReports = CheckReports::on()->where('item_id',$findArray->item_id)->where('item_type',$findArray->item_type)
