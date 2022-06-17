@@ -28,10 +28,10 @@ class ActiveUser
     public function handle($request, Closure $next)
     {
 
-        auth()->user()->show_checklist = 0;
-        $user = auth()->user();
+        if (auth()->user()){
 
-        if ($user){
+            auth()->user()->show_checklist = 0;
+            $user = auth()->user();
 
               if (!empty(auth()->user()->getCheckList->toArray())){
                   foreach (auth()->user()->getCheckList->toArray() as $user_check_list){
