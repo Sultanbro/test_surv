@@ -781,7 +781,7 @@ class AnalyticStat extends Model
                 if($stat->type == 'formula') {
                     $value = self::calcFormula($stat, $date, $round);
                 } else {
-                    $value = round($stat->show_value, $round);
+                    $value = round((float)$stat->show_value, $round);
                 }
             }
         }

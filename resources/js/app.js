@@ -64,7 +64,7 @@ Vue.use(Notifications)
 
 // Vue.use(VueCoreVideoPlayer)
 
-
+ 
 
 Vue.component('timetracking', require('./components/timetracking.vue').default); // шапка начать день
 Vue.component('draggable', draggable); // драг

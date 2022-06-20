@@ -54,14 +54,18 @@ class SetAbsent extends Command
         foreach($groups as $group) {
               
                 if($group->checktime && Carbon::parse($group->checktime)->timestamp - time() < 0) { // если время отметок истекло
-                
-                    $users = \DB::table('users')
-                        ->whereNull('deleted_at')
-                        ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                        ->where('ud.is_trainee', 1)
-                        ->whereIn('users.id', json_decode($group->users))
+                    
+                    $group_users = $group->users ? json_decode($group->users) : [];
+                    
+                    $users = User::with('user_description')
+                        ->withTrashed()
+                        ->whereHas('user_description', function ($query) {
+                            $query->where('is_trainee', 1);
+                        })
+                        ->whereIn('id', $group_users)
                         ->get();
 
+                      //  if($group->id == 26 ) dd($users);
                     foreach($users as $user) {
                         // Check for trainee invited day is passed or today
                         $lead = Lead::where('user_id', $user->id)->first();

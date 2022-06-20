@@ -24,17 +24,30 @@ class TestController extends Controller {
  
 	public function test() {
 
+		$musers = \DB::connection('marketing')->table('b_user')->get();
+
+		foreach ($musers as $key => $mar_user) {
+			$user = User::withTrashed()->where('id', $mar_user->ID)->where('email', $mar_user->EMAIL)->first();
+		
+			if($user) {
+
+				dump([
+					'user_id' => $user->id,
+					'email' => $user->email,
+					'name' => $user->last_name . ' ' . $user->name, 
+					'created_at' => $mar_user->DATE_REGISTER,
+					'deleted_at' => $mar_user->deactivate_date //== '0000-00-00 00:00:00' ? null :  $mar_user->deactivate_date
+				]);
+
+			}
+
+		}
 
 
-       $kis =   Hash::make('12345');
 
 
-
-        $gr = \App\ProfileGroup::with('roles')->find(23);
-
-		$role = Role::find(7);
-		$gr->removeRole($role->name);
-        dd($gr);
+		dd($a);
+  
 
 	}  
 

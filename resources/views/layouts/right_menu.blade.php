@@ -19,11 +19,12 @@
 
 
 
-    @if(!empty(auth()->user()->getCheckList->toArray()))
 
+
+    @if(!empty(auth()->user()->getCheckList->toArray()))
         {{--{{dd(json_encode(auth()->user()->getCheckList->toArray()))}}--}}
         {{--<auth-check-list  authCheckList="{{ json_encode(auth()->user()->getCheckList) }}"/>--}}
-        <auth-check-list auth_check_list="{{json_encode(auth()->user()->getCheckList)}}"></auth-check-list>
+        <auth-check-list auth_check_list="{{json_encode(auth()->user()->getCheckList)}}" :open_check="{{ auth()->user()->show_checklist }}"></auth-check-list>
 
     @endif
 <div class="btn-rm">

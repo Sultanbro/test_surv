@@ -1464,7 +1464,7 @@ class UserController extends Controller
                     'email' => strtolower($request['email']),
                     'status' => Account::ACTIVE_STATUS,
                     'role' => [Account::OPERATOR],
-                    'activate_key' => $activate_key,
+                    'activate_key' => 'activate_key',
                 ]);
             }
 

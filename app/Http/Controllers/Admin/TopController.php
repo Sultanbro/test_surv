@@ -56,7 +56,7 @@ class TopController extends Controller
 
         $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
 
-        $this->groups = ProfileGroup::where('has_analytics', 1)->get()->pluck('id')->toArray();
+        $this->groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get()->pluck('id')->toArray();
       //  dd(TopValue::getUtilityGauges($date, $this->groups)[6]['gauges'][2]);
         return view('admin.top')->with([
             'data' => [

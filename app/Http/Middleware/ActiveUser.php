@@ -10,6 +10,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use DateTime;
 use DateInterval;
+use phpDocumentor\Reflection\Type;
+use function Ramsey\Uuid\v1;
 
 class ActiveUser
 
@@ -17,81 +19,88 @@ class ActiveUser
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
+
 
 
     public function handle($request, Closure $next)
     {
 
+        auth()->user()->show_checklist = 0;
         $user = auth()->user();
-        if ($user) {
-//           $kis =  Hash::make('12345678910');
+
+        if ($user){
+
+              if (!empty(auth()->user()->getCheckList->toArray())){
+                  foreach (auth()->user()->getCheckList->toArray() as $user_check_list){
+                      $editUser_check_list = CheckUsers::find($user_check_list['id']);
 
 
 
+                      $editUser_check_list['middleware_auth'] = date('h:i:s');
 
-            if (auth()->user()->getCheckList->toArray()){
+                      $work_Start = $editUser_check_list['middleware_auth'];
+                      $work_start_h = substr("$work_Start ",0 , 2);
+                      $work_start_m = substr("$work_Start ",3 , 2);
+                      $work_start_s = substr("$work_Start ",6 , 2);
 
-//                $mytime = Carbon::now();
-//                dd($mytime->toDateTimeString());
-//                $now = new DateTime(date('h:i:s'));
-//                $the_interval = new DateInterval('h:i:s');
-//                $now->add($the_interval);
-//
-//
-//
-//                dd($now);
-//
-//
-//
-//
-//
-//
-//                $diff = Carbon::parse('9:00')->getTimestamp() - Carbon::now()->getTimestamp();
-//                $time = Carbon::parse($diff)->format('m:s');
-//                $minutes = Carbon::parse($diff)->format('m');
-//                $seconds = Carbon::parse($diff)->format('s');
-//
-//                dd($diff,$time,$minutes,$seconds,date('h:i:s'));
-//
-//               $kis = Carbon::parse('9:00:00')->diff(Carbon::now())->format('%i minutes');
-//
-//
-//                   dd($kis,date('h:i:s'));
-
-                foreach (auth()->user()->getCheckList->toArray() as $authTime){
+                      $work_End = $editUser_check_list['work_end'];
+                      $work_end_h = substr("$work_End ",0 , 2);
+                      $work_end_m = substr("$work_End ",3 , 2);
+                      $work_end_s = substr("$work_End ",6 , 2);
 
 
+                      $dtStart= Carbon::createFromTime($work_start_h, $work_start_m,$work_start_s);
+                      $dtEnd =  Carbon::createFromTime($work_end_h , $work_end_m, $work_end_s);
+                      $minut = $dtStart->diffInMinutes($dtEnd);
+                      $share_minut = $minut / $editUser_check_list['count_view'];
 
-                    if (date('h:i:s') >= $authTime['middleware_auth']){
-                        $сheck_user = CheckUsers::find($authTime['id']);
-                        $сheck_user['middleware_auth'] = date('h:i:s');
-
-
-
-//                        dd($authTime,'ss');
-//                        $сheck_user->save();
-
+                      $current = Carbon::now();
+                      $trialExpires = $current->addMinute($share_minut);
+                      $trialExpires->toTimeString();
 
 
-                    }else{
+                      if ($editUser_check_list['middleware_count'] == 0){
+
+                          $editUser_check_list['middleware_count'] = 1;
+                          $editUser_check_list['middleware_next_time'] = $trialExpires->toTimeString();
+                          $editUser_check_list->save();
+
+                          auth()->user()->show_checklist = 1;
+
+                      }else{
+                          if ($editUser_check_list['count_view'] > $editUser_check_list['middleware_count']){
+
+                              if ($editUser_check_list['middleware_next_time'] == date('h:i:s')){
+
+                                  $middleware_count = $editUser_check_list['middleware_count'] +1;
+                                  $editUser_check_list['middleware_count'] = $middleware_count;
+                                  $editUser_check_list['middleware_next_time'] = $trialExpires->toTimeString();
+                                  $editUser_check_list->save();
+
+                                  auth()->user()->show_checklist = 1;
+                              }
 
 
-//                        dd($authTime,'qq');
+                          }else if ($editUser_check_list['count_view'] == $editUser_check_list['middleware_count']){
+
+                              $editUser_check_list['middleware_count'] = 0;
+                              $editUser_check_list['middleware_next_time'] = 0;
+                              $editUser_check_list->save();
+
+                              auth()->user()->show_checklist = 1;
+                          }else{
+                              auth()->user()->show_checklist = 0;
+                          }
+                        }
+                      }
+                  }
+              }
 
 
-                    }
-                }
-            }
-//            dd($user,date('d-m-'));
-//            $user->visited = Carbon::now();
-
-
-
-        }
 
         return $next($request);
 
