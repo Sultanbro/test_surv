@@ -138,7 +138,7 @@ export default {
         setPosClass() {
             let pos = this.$refs["select"].getBoundingClientRect();
             let viewport_h = document.documentElement.clientHeight;
-            this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
+            this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'bottom';
         },
 
         changeType(i) {
@@ -152,7 +152,7 @@ export default {
             if(this.single) this.show = false;
             if(this.single && this.values.length > 0) {
                 return;
-            };
+            }; 
             if(this.selected_all) return;
              
             let item = this.filtered_options[index];
@@ -183,7 +183,7 @@ export default {
             let fo = this.filtered_options[i];
             let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
             if(index != -1) {
-                this.values.splice(index, 1);
+                this.values.splice(index, 1); 
                 fo.selected = false;
             }
         },
