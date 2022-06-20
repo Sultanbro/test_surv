@@ -317,7 +317,13 @@ export default {
 
     deleteQuestion(q_index) {
       if (confirm("Удалить вопрос?")) {
-        this.questions.splice(q_index, 1);
+        axios
+            .post("/playlists/delete-question", {
+              id: this.questions[q_index].id
+            })
+            .then((response) => {  
+              this.questions.splice(q_index, 1);
+            });
       }
     },
 

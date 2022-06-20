@@ -174,6 +174,8 @@ Route::middleware([
 
     Route::post('/playlists/delete-cat', [VideoCategoryController::class, 'delete']);
     Route::post('/playlists/add-cat', [VideoCategoryController::class, 'add']);
+    
+    Route::post('/playlists/delete-question',[VideoPlaylistController::class, 'deleteQuestion']);
 
     Route::post('/playlists/video/update', [VideoController::class, 'updateVideo']);
     Route::post('/videos/upload', [VideoController::class, 'upload'])->name('videos.upload');

@@ -35,7 +35,7 @@ export default {
                     type: "video/mp4",
                     src: this.src,
                 }],
-                poster: "/static/images/author.jpg",
+                poster: "/images/author.jpg",
                 userActions: {
                     hotkeys: true
                 }

@@ -43,6 +43,11 @@ class VideoPlaylistController extends Controller {
 		];
 	}
 
+	public function deleteQuestion(Request $request){
+		$question = TestQuestion::find($request->id);
+		$question->delete();
+	}
+
 	public function getPlaylist(Request $request) {
 
 		$pl =  Playlist::with('videos')->find($request->id);
