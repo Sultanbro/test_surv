@@ -176,7 +176,7 @@
             @onKeyUp="editorSave"
             @onChange="editorSave"
             v-model="activesbook.text"
-            api-key="dexbevckx3qi9h3r21bk8e8bypxuef909ox6o1kr91be6uv1"
+            api-key="mve9w0n1tjerlwenki27p4wjid4oqux1xp0yu0zmapbnaafd"
             :init="{
               images_upload_url: '/upload/images/',
               automatic_uploads: true,
