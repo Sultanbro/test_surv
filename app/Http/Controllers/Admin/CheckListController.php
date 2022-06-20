@@ -262,8 +262,6 @@ class CheckListController extends Controller
 
                if (!empty($checkReports) && count($checkReports) > 0){
 
-
-
                    foreach ($checkReports  as $checkReport){
                        $checkReportSave = CheckReports::on()->find($checkReport['id']);
                        $checkReportSave['count_check'] = count($request['arr_check_input']);
@@ -272,7 +270,7 @@ class CheckListController extends Controller
                            $new_arr_check_input = $request['arr_check_input'];
                            foreach ($new_arr_check_input as $key => $query){
                                foreach (json_decode($checkReportSave['checked'],true)  as $item){
-                                   if ($query['text'] == $item['text']){
+                                   if ($query['text'] === $item['text']){
                                        $new_arr_check_input[$key] = $item;
                                    }
                                }
