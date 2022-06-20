@@ -183,7 +183,7 @@ export default {
             let fo = this.filtered_options[i];
             let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
             if(index != -1) {
-                this.values.splice(index, 1);
+                this.values.splice(index, 1); 
                 fo.selected = false;
             }
         },

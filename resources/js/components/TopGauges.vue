@@ -537,6 +537,7 @@ input.form-control.form-control-sm.wiwi {
     font-size: 13px;
     line-height: 16px;
     font-weight: 600;
+    width: 160px;
 }
 .edit-window {
     width: 300px;
