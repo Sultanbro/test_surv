@@ -1355,23 +1355,23 @@ function submitx() {
         phone_errors++
     }
 
-    if (phone_1.length < 6) {
-        $('#beforeSubmit .texter').append('<div>Контакты: <b>Домашний</b></div>');
-        counter++;
-        phone_errors++
-    }
+    // if (phone_1.length < 6) {
+    //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Домашний</b></div>');
+    //     counter++;
+    //     phone_errors++
+    // }
 
-    if (phone_2.length < 11) {
-        $('#beforeSubmit .texter').append('<div>Контакты: <b>Супруга/Муж</b></div>');
-        counter++;
-        phone_errors++
-    }
+    // if (phone_2.length < 11) {
+    //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Супруга/Муж</b></div>');
+    //     counter++;
+    //     phone_errors++
+    // }
 
-    if (phone_3.length < 11) {
-        $('#beforeSubmit .texter').append('<div>Контакты: <b>Друг/Брат/Сестра</b></div>');
-        counter++;
-        phone_errors++
-    }
+    // if (phone_3.length < 11) {
+    //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Друг/Брат/Сестра</b></div>');
+    //     counter++;
+    //     phone_errors++
+    // }
 
 
     // if (workingCity == null) {
