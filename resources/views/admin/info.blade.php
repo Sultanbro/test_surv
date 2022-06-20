@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('title', 'Частые вопросы')
 @section('content')
-<div class="container">
+<div class="container pt-3" style="background:#e4e4e4">
     <div class="card p-3" id="card1">
       <h3>Учет времени</h3>
     <p><strong>Кнопка &laquo;Начать день&raquo;</strong></p>
@@ -172,6 +172,10 @@ ol {
 }
 body {
     background: #f1f2f7;
+}
+.card {
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
 }
 </style>
 <script>

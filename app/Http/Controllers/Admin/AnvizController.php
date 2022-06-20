@@ -38,7 +38,7 @@ class AnvizController extends Controller
         $todays_records = $this->todaysRecords();
 
        
-       dd($todays_records->where('Userid', 14476)->first());
+    //    dd($todays_records->where('Userid', 14476)->first());
         $users_array = $this->getUsersArray($todays_records);
         $todays_timetracking_records = $this->todaysTimetrackingRecords($users_array);
 

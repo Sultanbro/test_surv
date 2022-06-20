@@ -265,6 +265,7 @@ Route::middleware([
 
 
 
+    Route::post('/timetracking/settings/delete-group-bonus', [TimetrackingController::class, 'deleteGroupBonus']); ///   поиск групп должность пользовотелей
 
     Route::post('/timetracking/settings/groups/importexcel', [GroupsController::class, 'import']);
     Route::post('/timetracking/settings/groups/importexcel/save', [GroupsController::class, 'saveTimes']);
@@ -469,6 +470,9 @@ Route::middleware([
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
     Route::post('/timetracking/settings/auth/check/search/selected', [CheckListController::class, 'searchSelected']); ///   поиск групп должность пользовотелей
 
+
+    
+    
 
 
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);

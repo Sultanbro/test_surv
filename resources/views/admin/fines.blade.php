@@ -2,14 +2,14 @@
 @section('title', 'Депремирование')
 @section('content')
 
-<div class="container">
+<div class="container p-4">
   <div class="card p-3 content">
-      <p><strong>Система депремирования&nbsp;</strong></p>
+      <h5 class="mb-3"><strong>Система депремирования&nbsp;</strong></h5>
       <table cellspacing="0" cellpadding="0" class="table table-striped">
         <tbody>
           @foreach($fines as $fine)
           <tr>
-            <td class="pr-5"><span><strong>{{$fine->name}}</strong></span></td>
+            <td class="pr-5 text-left"><span><strong>{{$fine->name}}</strong></span></td>
             <td class="p-3 text-right primary" style="background: #dc354573;
               font-weight: 700;">- {{$fine->penalty_amount}} тенге</td>
           </tr>
