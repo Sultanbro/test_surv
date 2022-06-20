@@ -882,6 +882,7 @@ export default {
         })
         .then((response) => {
             this.bonuses.splice(i, 1);
+            this.$message.success('Бонус удален');
         })
         .catch((error) => {
           alert(error);
