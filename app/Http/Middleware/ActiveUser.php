@@ -40,23 +40,33 @@ class ActiveUser
 
 
 
-                      $editUser_check_list['middleware_auth'] = date('h:i:s');
+                      if (!empty($editUser_check_list['work_end']) && !empty($editUser_check_list['work_start'])){
+                          $editUser_check_list['middleware_auth'] = date('h:i:s');
 
-                      $work_Start = $editUser_check_list['middleware_auth'];
-                      $work_start_h = substr("$work_Start ",0 , 2);
-                      $work_start_m = substr("$work_Start ",3 , 2);
-                      $work_start_s = substr("$work_Start ",6 , 2);
+                          $work_Start = $editUser_check_list['middleware_auth'];
+                          $work_start_h = substr("$work_Start ",0 , 2);
+                          $work_start_m = substr("$work_Start ",3 , 2);
+                          $work_start_s = substr("$work_Start ",6 , 2);
 
-                      $work_End = $editUser_check_list['work_end'];
-                      $work_end_h = substr("$work_End ",0 , 2);
-                      $work_end_m = substr("$work_End ",3 , 2);
-                      $work_end_s = substr("$work_End ",6 , 2);
+                          $work_End = $editUser_check_list['work_end'];
+                          $work_end_h = substr("$work_End ",0 , 2);
+                          $work_end_m = substr("$work_End ",3 , 2);
+                          $work_end_s = substr("$work_End ",6 , 2);
+
+                          $dtStart= Carbon::createFromTime($work_start_h,$work_start_m,$work_start_s);
+                          $dtEnd =  Carbon::createFromTime($work_end_h,$work_end_m, $work_end_s);
+                          $minut = $dtStart->diffInMinutes($dtEnd);
+                          $share_minut = $minut / $editUser_check_list['count_view'];
+                      }else{
+
+                          $dtStart= Carbon::createFromTime('09','00','00');
+                          $dtEnd =  Carbon::createFromTime('19','00','00');
+
+                          $minut = $dtStart->diffInMinutes($dtEnd);
+                          $share_minut = $minut / $editUser_check_list['count_view'];
+                      }
 
 
-                      $dtStart= Carbon::createFromTime($work_start_h, $work_start_m,$work_start_s);
-                      $dtEnd =  Carbon::createFromTime($work_end_h , $work_end_m, $work_end_s);
-                      $minut = $dtStart->diffInMinutes($dtEnd);
-                      $share_minut = $minut / $editUser_check_list['count_view'];
 
                       $current = Carbon::now();
                       $trialExpires = $current->addMinute($share_minut);
