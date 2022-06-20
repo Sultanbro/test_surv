@@ -98,10 +98,13 @@ class FunnelStats extends Command
             ];
     
             foreach($dates as $d) {
+                $this->date = $d;
+
                 $datex = explode("-", $d);
                 $this->year = $datex[0];
                 $this->month = $datex[1];
                 $this->day = $datex[2];
+
                 
                 $this->getData();
                 
@@ -224,7 +227,7 @@ class FunnelStats extends Command
     }
 
     public function fetch($segment, $segment_id) {
-
+        
 
         $not_this_month = Carbon::parse($this->date)->endOfWeek()->month != Carbon::parse($this->date)->month;
         if(Carbon::parse($this->date)->endOfWeek()->day >= 7) {
@@ -243,7 +246,7 @@ class FunnelStats extends Command
             $end = Carbon::parse($this->date)->endOfWeek()->format('Y-m-d');
         }
         
-        
+        dump($start, $end);
         
         $start_hour = $start . 'T00:00:00';
         $end_hour = $end . 'T23:59:59'; 
@@ -270,16 +273,29 @@ class FunnelStats extends Command
             
         //     $hired = array_key_exists('total', $hired) ? $hired['total'] : 0;
         
-        $hired_users = \DB::table('users')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->leftJoin('bitrix_leads as bl', 'bl.user_id', '=', 'users.id')
-            ->where('bl.segment', $segment_id)
-            ->where('users.UF_ADMIN', 1)
-            ->where('ud.is_trainee', 0)
-            ->whereDate('bl.created_at', '>=', $start)
-            ->whereDate('bl.created_at', '<=', $end)
-            ->get();
+        // $hired_users = \DB::table('users')
+        //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        //     ->leftJoin('bitrix_leads as bl', 'bl.user_id', '=', 'users.id')
+        //     ->where('bl.segment', $segment_id)
+        //     ->where('ud.is_trainee', 0)
+        //     ->whereDate('bl.created_at', '>=', $start)
+        //     ->whereDate('bl.created_at', '<=', $end)
+        //     ->get();
         
+        $hired_users = User::withTrashed()
+            ->with('user_description')
+            ->whereHas('user_description', function ($query) {
+                $query->where('is_trainee', 0);
+            })
+            ->with('lead')
+            ->whereHas('lead', function ($query) use ($segment_id, $start, $end){
+                $query->where('segment', $segment_id)
+                    ->whereDate('created_at', '>=', $start)
+                    ->whereDate('created_at', '<=', $end);
+            })
+            ->get(['id','full_time']);
+
+      //  if($hired_users->count() > 0)dd($hired_users->toArray());
         dump('hired  users   '. $hired_users->count());
 
         $hired = 0;

@@ -166,6 +166,11 @@ class User extends Authenticatable implements Authorizable
        return $this->hasOne('App\UserDescription', 'user_id', 'id');
     } 
 
+    public function lead()
+    {
+       return $this->hasOne('App\Models\Bitrix\Lead', 'user_id', 'id');
+    } 
+
     public function integration_token(String $server)
     {
         return Oauth::get_token($this->id, $server);
