@@ -2,10 +2,10 @@
 @section('title', 'Редактор книг')
 @section('content')
 
-<page-upbooks-edit token="{{ csrf_token() }}" access="edit" :can_edit="{{ auth()->user()->is_admin == 1 }}"/>
+<page-upbooks-edit token="{{ csrf_token() }}" :can_edit="{{ auth()->user()->can('books_edit') ? 'true' : 'false' }}"/>
 
 @endsection
-
+ 
 @section('styles')
 <style>
 
