@@ -97,6 +97,9 @@ export default {
         };
     },
     created() {
+
+      console.log(this.values,'019995');
+
         this.checkSelectedAll();  
     },
     methods: {
@@ -138,7 +141,7 @@ export default {
         setPosClass() {
             let pos = this.$refs["select"].getBoundingClientRect();
             let viewport_h = document.documentElement.clientHeight;
-            this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'bottom';
+            this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
         },
 
         changeType(i) {
@@ -152,19 +155,19 @@ export default {
             if(this.single) this.show = false;
             if(this.single && this.values.length > 0) {
                 return;
-            }; 
+            };
             if(this.selected_all) return;
-             
+
             let item = this.filtered_options[index];
 
             if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
-           
+
                 this.values.push({
                     name: item.name,
                     id: item.id,
                     type: item.type
                 });
-            
+
                 item.selected = true
             }
         },
@@ -174,7 +177,7 @@ export default {
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
             this.values.splice(i, 1);
-            
+
             let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
             if(index != -1) this.filtered_options.splice(index, 1);
         },
@@ -183,7 +186,7 @@ export default {
             let fo = this.filtered_options[i];
             let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
             if(index != -1) {
-                this.values.splice(index, 1); 
+                this.values.splice(index, 1);
                 fo.selected = false;
             }
         },
@@ -216,7 +219,7 @@ export default {
                     this.addSelectedAttr();
                 })
             .catch((error) => {
-                alert(error);
+                alert(error,'111');
             });
         },
 

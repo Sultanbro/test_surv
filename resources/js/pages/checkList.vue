@@ -31,26 +31,26 @@
                     <tbody>
 
 
-                      <tr v-for="(arrCheckList, index) in filteredRows" :key="`employee-${index}`">
-                        <td >
+                      <tr class="p-0" v-for="(arrCheckList, index) in filteredRows" :key="`employee-${index}`">
+                        <td  >
                             <a v-html="highlightMatches(arrCheckList.title)"  @click="editCheck(arrCheckList.id,arrCheckList.item_type)" >
                                {{arrCheckList.title}}
                             </a>
                         </td>
-                        <td >
+                        <td  >
                             {{arrCheckList.count_view}}
                         </td>
                         <td>
                             {{arrCheckList.auth_last_name}}         {{arrCheckList.auth_name}}
                         </td>
-                        <td class="position-relative">
+                        <td class=" position-relative" >
 
-                            <a v-bind:href="'/timetracking/quality-control?type='+arrCheckList.item_type+'&id='+arrCheckList.item_id">
-                                <i class="pl-4 far fa-address-card fa-2x"></i>
+                            <a  v-bind:href="'/timetracking/quality-control?type='+arrCheckList.item_type+'&id='+arrCheckList.item_id" target="_blank">
+                                <i class="pl-4 fa fa-signal" aria-hidden="true" style="font-size: 20px"></i>
                             </a>
 
                             <a class="position-absolute" @click="arrCheckDelete(arrCheckList.id)" style="right: 0">
-                                <i class="fa fa-trash fa-2x" aria-hidden="true"></i>
+                                <i class="fa fa-trash" style="font-size: 25px" aria-hidden="true"></i>
                             </a>
                         </td>
                     </tr>
@@ -61,19 +61,6 @@
             </div>
         </div>
 
-<!--        <b-modal id="bv-modal-2" hide-footer>-->
-<!--        <template #modal-title>-->
-<!--              Редактировать-->
-<!--        </template>-->
-<!--&lt;!&ndash;        <div class="d-block">&ndash;&gt;-->
-<!--&lt;!&ndash;          <input value="asdasd" class="form-control"/>&ndash;&gt;-->
-<!--&lt;!&ndash;          <input value="2" class="form-control mt-2"/>&ndash;&gt;-->
-<!--&lt;!&ndash;        </div>&ndash;&gt;-->
-<!--        <div class="d-flex mt-2">-->
-<!--          <b-button variant="primary mr-2" class="" @click.prevent="$bvModal.hide('bv-modal-2')">Сохранить</b-button>-->
-<!--          <b-button variant="danger" class="" @click.prevent="$bvModal.hide('bv-modal-2')">Отменить</b-button>-->
-<!--        </div>-->
-<!--        </b-modal>-->
 
         <sidebar
                 title="Создать чек лист"
@@ -82,126 +69,100 @@
                 width="65%">
             <div class="col-md-12 p-0">
                 <div class="col-12 p-0 mt-5">
-                  <div class="row">
-                    <div class="col-md-3 ml-3">
+                  <div class="row pb-3 ml-3">
+
+                    <div class="col-md-3 p-0">
                       <p>Для группы чек лист</p>
                     </div>
+
                     <div class="col-md-4 p-0">
+                      <div class="person">
+                        <div class="super-select" style="width: unset" ref="select" :class="posClass" v-click-outside="close">
 
-                      <div style="position: relative;border: 1px solid #dcdcdc" v-if="showModalCheck" >
-                        <div class="gen-role-class" style="position: absolute" >
+                          <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
 
-
-                          <a  :class="selectedRole.role_1 ? 'role_1_this' : 'role_1'"    @click="selectedRoles('1')" >
-                            <i class="fas fa-chalkboard-teacher role_icon_false">  </i>
-                          </a>
+                            <a v-if="placeholderSelect">Отделы/Сотрудники</a>
 
 
-                          <a :class="selectedRole.role_2 ? 'role_2_this' : 'role_2'"  @click="selectedRoles('2')">
-                            <i class="fas fa-chalkboard-teacher role_icon_false"></i>
-                          </a>
-
-                          <a :class="selectedRole.role_3 ? 'role_3_this' : 'role_3'"  class="role_3" @click="selectedRoles('3')" >
-
-                            <i class="fas fa-chalkboard-teacher role_icon_false" ></i>
-                          </a>
-
-
-                        </div>
-                        <div class="popupShowSelected">
-                          <div v-if="selectedRole.role_1" >
-                            <input style="position: absolute" class="form-control selected_search"  v-model="selected_search"  @keyup="searchSelected('1')" type="text"   placeholder="поиск по Группам"   >
-                            <p class="list-role"  v-for="item in  groups_arr">
-
-
-                              <a @click="addDivBlock(item.name,item.code,'1')"  v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
-                                <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
-                                <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
-                                <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
-                              </a>
-
-                            </p>
-                          </div>
-                          <div v-if="selectedRole.role_2">
-                            <input class="form-control selected_search" v-model="selected_search"  @keyup="searchSelected('2')" type="text"   placeholder="поиск по Должностям"   >
-                            <p class="list-role"  v-for="item in  positions_arr">
-                              <a @click="addDivBlock(item.name,item.code,'2')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
-                                <i class="fas fa-arrow-alt-circle-right style-icons" ></i>
-                                <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
-                                <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
-                              </a>
-                            </p>
-                          </div> 
-
-                          <div v-if="selectedRole.role_3">
-                            <input class="form-control selected_search" v-model="selected_search"  @keyup="searchSelected('3')" type="text"   placeholder="поиск по Пользователям"   >
-                            <p class="list-role"  v-for="item in   allusers_arr">
-                              <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex" v-if=" item != undefined ">
-                                <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
-                                <span style="margin-top: 5px; margin-left:15px;">{{ item.last_name}} {{ item.name}}</span>
-                                <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
-                              </a>
-                            </p>
+                            <div
+                                v-for="(value, i) in values"
+                                :key="i"
+                                class="selected-item"
+                                :class="'value' + value.type">
+                              {{ value.name }}
+                              <i class="fa fa-times" @click.stop="removeValue(i)"></i>
+                            </div>
                           </div>
 
-                        </div>
-                      </div>
+                          <div class="show" v-if="show">
+                            <div class="search">
+                              <input
+                                  v-model="searchText"
+                                  type="text"
+                                  placeholder="Поиск..."
+                                  ref="search"
+                                  @keyup="onSearch()">
+                            </div>
 
+                            <div class="options-window">
+                              <div class="types">
+                                <div class="type" :class="{'active': type == 1}" @click="changeType(1)">
+                                  <div class="text">Сотрудники</div>
+                                  <i class="fa fa-user"></i>
+                                </div>
+                                <div class="type" :class="{'active': type == 2}" @click="changeType(2)">
+                                  <div class="text" >Отделы</div>
+                                  <i class="fa fa-users"></i>
+                                </div>
+                                <div class="type" :class="{'active': type == 3}" @click="changeType(3)">
+                                  <div class="text">Должности</div>
+                                  <i class="fa fa-briefcase"></i>
+                                </div>
 
-
-                      <div id="selected-block-array"  class="selected-block-array" @click="showModalCheck = true">
-                        <a href="#" v-if="placeholderSelect" style="color: #abb1b8;" >Отделы/Сотрудники</a>
-                          <div class="addElement"  v-for="(item,i) in allValueArray"   >
-                            <a class="elementHoverList">
-                              <span> {{ item.text }} </span>
-                              <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
-                                <span class="ui-tag-selector-remove-icon  ">x</span>
+                                <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
+                                  <div class="text">Все</div>
+                                  <i class="fa fa-check"></i>
+                                </div>
                               </div>
-                            </a>
+
+
+                              <div class="options">
+
+                                <div
+                                    class="option"
+                                    v-for="(option, index) in filtered_options"
+                                    :key="index"
+                                    @click="addValue(index)"
+                                    :class="{'selected': option.selected}"
+                                >
+                                  <i class="fa fa-user" v-if="option.type == 1"></i>
+                                  <i class="fa fa-users" v-if="option.type == 2"></i>
+                                  <i class="fa fa-briefcase" v-if="option.type == 3"></i>
+                                  {{ option.name }}
+                                  <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
+                                </div>
+
+                              </div>
+                            </div>
                           </div>
-                      </div>
 
-                      <div style="display: none">
-                        <div class="responsibility" v-if="responsibility.block">
 
-                          <span v-if="responsibility.input === false">
-                              +
-                          </span>
-                          <span style="padding: 0px 12px 0px 12px;top: 2px" v-else>
-                              -
-                          </span>
-                          <a href="#" v-if="responsibility.input === false"  @click="responsibility.input = true" >
-                            Добавить ответственного лица
-                          </a>
-                          <a href="#"  v-if="responsibility.input === true"  @click="responsibility.input = false" >
-                            Скрыть ответственного лица
-                          </a>
-                          <input v-if="responsibility.input" v-model="responsibility.inputText"
-                        </div>
-                        <div class="resultR" v-if="responsibility.result_text">
-                          <ul class="p-0" v-if="responsibility.results.length > 0">
-
-                            <li class="responsibilityLi" v-for="results in responsibility.results">
-                              <a @click.prevent="addResponsibility(results.email)">
-                                {{results.email}}
-                              </a>
-                            </li>
-                          </ul>
-                          <ul v-else class="p-0">
-                            <li class="responsibilityLi">
-                              <a>Нет Найденных Ответсвенных лиц</a>
-                            </li>
-                          </ul>
                         </div>
                       </div>
-
                     </div>
                   </div>
                 </div>
+
+
+
+
+
                 <div class="row mt-5 pb-3 ml-3" style="border-bottom: 1px solid #dee2e6">
+
                     <div class="col-md-3 p-0">
                         <p>Колво показов</p>
                     </div>
+
                     <div class="col-md-4 p-0" >
                         <input v-model="countView"   placeholder="Максимум 10 " type="number" class="form-control btn-block">
                     </div>
@@ -209,28 +170,33 @@
                 <div class="row mt-4 pl-3">
                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in arrCheckInput">
                       <div class="row">
-                          <div class="col-md-5">
+                          <div class="col-md-6 pr-0 mr-2">
 <!--                              <div class="position-absolute" style="margin-left: -15px;top: 2px">-->
 <!--                                  <b-form-checkbox v-model="item.checked"  ></b-form-checkbox>-->
 <!--                              </div>-->
-                              <input v-model="item.text"  type="text" placeholder="Впишите активность чек листа" class="form-control btn-block ">
+                              <input style="width: 110%"  v-model="item.text"  type="text" placeholder="Впишите активность чек листа" class="form-control btn-block ">
                           </div>
 <!--                          <div class="col-md-3 p-0 mr-3 ml-1">-->
 <!--                              <input v-model="item.https"  type="text" placeholder="https:" class="form-control btn-block ">-->
 <!--                          </div>-->
 
-                          <button v-if="index == '0'"  @click="deleteCheckList(index)"
+                        <div class="col-1" style="position: relative">
+
+                          <button style="position: absolute;right: 11px" v-if="index == '0'"  @click="deleteCheckList(index)"
                                   type="button"  title="Удалить чек-лист"
                                   class="btn btn-secondary btn-sm">
-                              <i class="fa fa-trash" aria-hidden="true"></i>
+                            <i class="fa fa-trash" aria-hidden="true"></i>
                           </button>
 
 
-                          <button v-else  @click="deleteCheckList(index)"
+                          <button style="position: absolute;right: 11px" v-else  @click="deleteCheckList(index)"
                                   type="button"  title="Удалить чек-лист"
                                   class="btn btn-primary btn-sm">
-                              <i class="fa fa-trash" aria-hidden="true"></i>
+                            <i class="fa fa-trash" aria-hidden="true"></i>
                           </button>
+
+                        </div>
+
                       </div>
                     </div>
                     <div class="col-md-12 mt-3">
@@ -272,17 +238,25 @@
     import Multiselect from 'vue-multiselect'
     export default {
         name: "TableQuarter",
+        // props:['item','groups', 'users', 'roles'],
+        props:{
 
-        props: {
-            // groups:{},
-            // allusers:{},
-            // positions:{}
+              single: {
+                type: Boolean,
+                default: false
+              },
+              select_all_btn: {
+                type: Boolean,
+                default: false
+              },
         },
         components: {
             Multiselect
         },
         data() {
             return{
+
+
                 valueFindGr:[],
                 arrCheckInput:[],
                 arrCheckLists:[],
@@ -304,9 +278,9 @@
                 check_id:null,
                 flag_type:true,
                 allValueArray:[],
-                groups_arr:[],
-                allusers_arr:[],
-                positions_arr:[],
+
+
+
                 selectedRole:{
                   role_1:true,
                   role_2:false,
@@ -322,36 +296,49 @@
                 showModalCheck : false,
                 selected_search:null,
 
+                // item:{
+                //     targets:{}
+                //  },
+                values:[],
+                options: [],
+                filtered_options: [],
+                type: 1,
+                show: false,
+                posClass: 'top',
+                searchText: '',
+                first_time: true,
+                selected_all: false,
+
+
+
+
             }
         },
         computed: {
 
           filteredRows () {
 
-            console.log(this.arrCheckLists)
 
             return this.arrCheckLists.filter(row => {
+
               const title = row.title.toString().toLowerCase();
               const authLastName = row.auth_last_name.toLowerCase();
               const searchTerm = this.filter.toLowerCase();
 
               return ( title.includes(searchTerm) || authLastName.includes(searchTerm) )
             });
+
           }
         },
         created(){
+            this.checkSelectedAll();
             this.viewCheckList()
             this.addCheckList()
-            this.getUsers()
-
 
 
         },
 
         methods:{
-
-
-
             obrabotkaArray(groups,positions,allusers){
 
 
@@ -397,6 +384,7 @@
 
 
             },
+
             getUsers(){
               axios.post('/timetracking/settings/get/modal/', {
                 type:'3',
@@ -446,14 +434,17 @@
             return text.replace(re, matchedText => `<strong style="color: #80b7ff">${matchedText}</strong>`);
           },
             addNewCheckModalShow(){
+
                 this.showModalCheck = false,
                 this.showCheckSideBar = true
                 this.addButton = true
                 this.editButton = false
                 this.allValueArray = [];
-                this.placeholderSelect = true
-                this.refreshArray()
-                this.getUsers()
+
+
+                // this.refreshArray()
+
+
 
                 this.arrCheckInput=
                       [
@@ -476,13 +467,13 @@
 
 
 
-              if (this.allValueArray.length > 0){
+              if (this.values.length > 0){
 
                 if (this.errors.save){
                   let loader = this.$loading.show();
                   axios.post('/timetracking/settings/edit/check/save/', {
                     check_id:this.check_id,
-                    allValueArray:this.allValueArray,
+                    allValueArray:this.values,
                     countView:this.countView,
                     arr_check_input:arrCheckInput,
                     valueFindGr:this.valueFindGr
@@ -512,10 +503,15 @@
 
 
 
+                      this.viewCheck()
+
                       this.$message.success('Успешно изменен');
                       this.errors.show = false;
                       this.showCheckSideBar = false;
+
                       this.viewCheckList()
+
+
 
 
                     }
@@ -535,13 +531,13 @@
             },
             editCheck(check_id,type){
 
+
                 this.addButton = false
                 this.editButton = true
                 this.showCheckSideBar = true
                 this.check_id = check_id
                 this.errors.show = false
 
-                this.getUsers()
 
                 axios.post('/timetracking/settings/edit/check', {
                     check_id:check_id,
@@ -551,7 +547,7 @@
                     console.log(response,'click')
 
 
-                    this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
+                    // this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
 
                     this.editValueThis = response.data;
                     this.valueFindGr = response.data.item_id;
@@ -562,8 +558,9 @@
                     this.editValueThis.arr= response.data
 
 
-                    this.showModalCheck = true,
-                    this.selectedRoles(type)
+                    this.showModalCheck = true
+
+                    // this.selectedRoles(type)
 
 
                     // if (response.data.item_type == 1){
@@ -603,16 +600,18 @@
 
             },
             saveCheckList(){
+
+
                 this.saveButton = true
                 this.errors.save_checkbox = false
                 this.validateInput(this.arrCheckInput,this.countView)
 
 
-              if (this.allValueArray.length > 0 || this.arrCheckInput.length > 1){
+              if (this.values.length > 0 || this.values.length > 1){
                 if (this.errors.save){
                   let loader = this.$loading.show();
                   axios.post('/timetracking/settings/add/check', {
-                    allValueArray:this.allValueArray,
+                    allValueArray:this.values,
                     countView:this.countView,
                     arr_check_input:this.arrCheckInput,
 
@@ -620,34 +619,33 @@
                     loader.hide();
 
 
+                    console.log(response,'iimmaasshheevv')
+                    console.log(this.values,'this.values')
 
 
                     if (response.data.success == false){
                       this.errors.show = false;
                       this.errors.msg = null;
                       // this.showCheckSideBar = false;
-                      for (let i = 0;i < this.allValueArray.length;i++){
-                        if (this.allValueArray[i]['type'] == response.data.exists[0]['item_type'] && this.allValueArray[i]['code'] == response.data.exists[0]['item_id']){
+                      for (let i = 0;i < this.values.length;i++){
+                        if (this.values[i]['type'] == response.data.exists[0]['item_type'] && this.values[i]['id'] == response.data.exists[0]['item_id']){
 
 
                           if (response.data.exists[0]['item_type'] == 1){
-                            this.errors.msg = 'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+                            this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено';
                             this.$message.error(this.errors.msg);
                             this.errors.show = true
-                            this.errors.message =  'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
-
-
+                            this.errors.message =  'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                           }else if(response.data.exists[0]['item_type'] == 2){
-                            this.errors.msg = 'Данная Должность' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
+                            this.errors.msg = 'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                             this.$message.error(this.errors.msg);
                             this.errors.show = true
-                            this.errors.message =  'Данная Должность ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
-
+                            this.errors.message =  'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                           }else if (response.data.exists[0]['item_type'] == 3){
-                            this.errors.msg = 'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено';
+                            this.errors.msg = 'Данная Должность' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
                             this.$message.error(this.errors.msg);
                             this.errors.show = true
-                            this.errors.message =  'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+                            this.errors.message =  'Данная Должность ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                           }
                         }
                       }
@@ -732,26 +730,26 @@
             closeAlert() {
                 this.errors.show = false;
             },
-            selectedRoles(type){
-
-              this.selected_search = null
-
-              if (type == 1){
-                this.selectedRole.role_1 = true
-                this.selectedRole.role_2 = false
-                this.selectedRole.role_3 = false
-
-              }else if (type == 2){
-                this.selectedRole.role_1 = false
-                this.selectedRole.role_2 = true
-                this.selectedRole.role_3 = false
-              }else if (type == 3){
-                this.selectedRole.role_1 = false
-                this.selectedRole.role_2 = false
-                this.selectedRole.role_3 = true
-              }
-
-            },
+            // selectedRoles(type){
+            //
+            //   this.selected_search = null
+            //
+            //   if (type == 1){
+            //     this.selectedRole.role_1 = true
+            //     this.selectedRole.role_2 = false
+            //     this.selectedRole.role_3 = false
+            //
+            //   }else if (type == 2){
+            //     this.selectedRole.role_1 = false
+            //     this.selectedRole.role_2 = true
+            //     this.selectedRole.role_3 = false
+            //   }else if (type == 3){
+            //     this.selectedRole.role_1 = false
+            //     this.selectedRole.role_2 = false
+            //     this.selectedRole.role_3 = true
+            //   }
+            //
+            // },
             addDivBlock(item,id,type,edit = null){
               this.flag_type = true;
               this.placeholderSelect = false;
@@ -829,6 +827,7 @@
                 }
               }
             },
+
             deleteDesk(id,code,type){
               this.allValueArray.splice(id,1)
 
@@ -849,7 +848,7 @@
                   this.positions_arr[i]['checked'] = false
                 }
               }
-              
+
               this.allusers_arr.forEach(el => {
                 if (el['type'] == type && el['code'] == code){
                   el['checked'] = false
@@ -867,6 +866,7 @@
 
 
           },
+
             refreshArray(){
 
               this.groups_arr.forEach(el => {
@@ -888,7 +888,180 @@
               // }
 
 
+            },
+
+
+
+          //// select new
+
+          checkSelectedAll() {
+            if(this.values.length == 1
+                && this.values[0]['id']== 0
+                && this.values[0]['type'] == 0) {
+              this.selected_all = true;
+              console.log('okay');
+            } else {
+              console.log('wtf');
             }
+          },
+
+          filterType() {
+            this.filtered_options = this.options.filter((el, index) => {
+              return el.type == this.type
+            });
+          },
+
+          addSelectedAttr() {
+            this.filtered_options.forEach(el => {
+              el.selected = this.values.findIndex(v => v.id == el.id && v.type == el.type) != -1
+            });
+          },
+
+          toggleShow() {
+            this.show = !this.show;
+            if(this.first_time) {
+              this.fetch();
+            }
+
+            this.$nextTick(() => {
+              if(this.$refs.search !== undefined) this.$refs.search.focus();
+            });
+            this.setPosClass();
+          },
+
+          setPosClass() {
+            let pos = this.$refs["select"].getBoundingClientRect();
+            let viewport_h = document.documentElement.clientHeight;
+            this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
+          },
+
+          changeType(i) {
+            this.type = i;
+            this.searchText = '';
+            this.filterType();
+            this.addSelectedAttr();
+          },
+
+          addValue(index) {
+
+
+              console.log(this.single)
+
+            if(this.single) this.show = false;
+
+            if(this.single && this.values.length > 0) {
+              return;
+            };
+
+            if(this.selected_all) return;
+
+            let item = this.filtered_options[index];
+
+            if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
+
+              this.values.push({
+                name: item.name,
+                id: item.id,
+                type: item.type
+              });
+
+              item.selected = true
+
+              this.placeholderSelect = false
+            }
+
+
+            console.log(this.values,'0778')
+
+
+          },
+
+          removeValue(i) {
+            let v = this.values[i];
+            if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
+
+            this.values.splice(i, 1);
+
+            let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
+            if(index != -1) this.filtered_options.splice(index, 1);
+
+            if (this.values.length == 0){
+              this.placeholderSelect = true
+            }
+
+            console.log(this.values,'removes')
+            console.log(this.values.length,'removes')
+          },
+
+          removeValueFromList(i) {
+
+
+            let fo = this.filtered_options[i];
+
+
+
+            let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
+
+
+
+            if(index != -1) {
+              this.values.splice(index, 1);
+              fo.selected = false;
+            }
+
+            if (this.values.length == 0){
+              this.placeholderSelect = true
+            }
+
+
+
+
+          },
+
+          onSearch() {
+
+            if(this.searchText == '') {
+              this.filtered_options = this.options;
+            } else {
+              this.filtered_options = this.options.filter((el, index) => {
+                return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
+              });
+            }
+
+            this.addSelectedAttr();
+          },
+
+          close() {
+            this.show = false;
+          },
+
+          fetch() {
+            axios
+                .get("/superselect/get", {})
+                .then((response) => {
+
+                  this.options = response.data.options;
+
+                  this.filterType();
+                  this.addSelectedAttr();
+                })
+                .catch((error) => {
+                  alert(error,'111');
+                });
+          },
+
+          selectAll() {
+            if(this.selected_all) return;
+            this.values.splice(0, this.values.length);
+            this.values.push({
+              name: 'Все',
+              id: 0,
+              type: 0
+            });
+            this.show = false;
+            this.selected_all = true;
+
+          }
         },
 
     }
@@ -896,6 +1069,9 @@
 
 <style lang="scss" scoped>
 
+  .table td {
+    padding: 2px;
+  }
   .selected_search{
     top: -27px;
     position: absolute;
