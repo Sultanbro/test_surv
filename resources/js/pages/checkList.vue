@@ -620,6 +620,7 @@
 
 
                     console.log(response,'iimmaasshheevv')
+                    console.log(this.values,'this.values')
 
 
                     if (response.data.success == false){
@@ -627,27 +628,24 @@
                       this.errors.msg = null;
                       // this.showCheckSideBar = false;
                       for (let i = 0;i < this.values.length;i++){
-                        if (this.values[i]['type'] == response.data.exists[0]['item_type'] && this.values[i]['code'] == response.data.exists[0]['item_id']){
+                        if (this.values[i]['type'] == response.data.exists[0]['item_type'] && this.values[i]['id'] == response.data.exists[0]['item_id']){
 
 
                           if (response.data.exists[0]['item_type'] == 1){
-                            this.errors.msg = 'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+                            this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено';
                             this.$message.error(this.errors.msg);
                             this.errors.show = true
-                            this.errors.message =  'Данная Группа ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
-
-
+                            this.errors.message =  'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                           }else if(response.data.exists[0]['item_type'] == 2){
-                            this.errors.msg = 'Данная Должность' +this.allValueArray[i]['text']+ ' Должность Ранне Добавлено ';
+                            this.errors.msg = 'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                             this.$message.error(this.errors.msg);
                             this.errors.show = true
-                            this.errors.message =  'Данная Должность ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
-
+                            this.errors.message =  'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                           }else if (response.data.exists[0]['item_type'] == 3){
-                            this.errors.msg = 'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено';
+                            this.errors.msg = 'Данная Должность' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
                             this.$message.error(this.errors.msg);
                             this.errors.show = true
-                            this.errors.message =  'Данный Пользователь ' +this.allValueArray[i]['text']+ ' Ранне Добавлено  ';
+                            this.errors.message =  'Данная Должность ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                           }
                         }
                       }

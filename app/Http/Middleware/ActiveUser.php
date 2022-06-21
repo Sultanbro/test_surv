@@ -84,7 +84,7 @@ class ActiveUser
                       }else{
                           if ($editUser_check_list['count_view'] > $editUser_check_list['middleware_count']){
 
-                              if ($editUser_check_list['middleware_next_time'] == date('h:i:s')){
+                              if ($editUser_check_list['middleware_next_time'] === date('h:i:s')){
 
                                   $middleware_count = $editUser_check_list['middleware_count'] +1;
                                   $editUser_check_list['middleware_count'] = $middleware_count;
@@ -95,16 +95,15 @@ class ActiveUser
                               }
 
 
-                          }else if ($editUser_check_list['count_view'] == $editUser_check_list['middleware_count']){
+                          }else if ($editUser_check_list['count_view'] === $editUser_check_list['middleware_count']){
 
                               $editUser_check_list['middleware_count'] = 0;
                               $editUser_check_list['middleware_next_time'] = 0;
                               $editUser_check_list->save();
 
                               auth()->user()->show_checklist = 1;
-                          }else{
-                              auth()->user()->show_checklist = 0;
                           }
+
                         }
                       }
                   }else{
