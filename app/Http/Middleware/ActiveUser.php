@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Middleware;
-
 use App\Models\CheckUsers;
 use Closure;
 use Carbon\Carbon;
@@ -29,10 +28,10 @@ class ActiveUser
     public function handle($request, Closure $next)
     {
 
-        auth()->user()->show_checklist = 0;
-        $user = auth()->user();
+        if (auth()->user()){
 
-        if ($user){
+            auth()->user()->show_checklist = 0;
+            $user = auth()->user();
 
               if (!empty(auth()->user()->getCheckList->toArray())){
                   foreach (auth()->user()->getCheckList->toArray() as $user_check_list){
@@ -54,11 +53,12 @@ class ActiveUser
                           $work_end_s = substr("$work_End ",6 , 2);
 
                           $dtStart= Carbon::createFromTime($work_start_h,$work_start_m,$work_start_s);
-                          $dtEnd =  Carbon::createFromTime($work_end_h,$work_end_m, $work_end_s);
+                          $dtEnd =  Carbon::createFromTime('19','00','00');
                           $minut = $dtStart->diffInMinutes($dtEnd);
                           $share_minut = $minut / $editUser_check_list['count_view'];
-                      }else{
 
+//                          dd($work_end_h,$work_end_m,$work_end_s);
+                      }else{
                           $dtStart= Carbon::createFromTime('09','00','00');
                           $dtEnd =  Carbon::createFromTime('19','00','00');
 
@@ -66,13 +66,12 @@ class ActiveUser
                           $share_minut = $minut / $editUser_check_list['count_view'];
                       }
 
+//                      dd($editUser_check_list);
 
 
-                      $current = Carbon::now();
-                      $trialExpires = $current->addMinute($share_minut);
-                      $trialExpires->toTimeString();
-
-
+                          $current = Carbon::now();
+                          $trialExpires = $current->addMinute($share_minut);
+                          $trialExpires->toTimeString();
                       if ($editUser_check_list['middleware_count'] == 0){
 
                           $editUser_check_list['middleware_count'] = 1;
@@ -80,7 +79,6 @@ class ActiveUser
                           $editUser_check_list->save();
 
                           auth()->user()->show_checklist = 1;
-
                       }else{
                           if ($editUser_check_list['count_view'] > $editUser_check_list['middleware_count']){
 
@@ -107,10 +105,10 @@ class ActiveUser
                           }
                         }
                       }
-                  }
-              }
-
-
+                  }else{
+                auth()->user()->show_checklist = 0;
+             }
+        }
 
         return $next($request);
 

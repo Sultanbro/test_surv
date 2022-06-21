@@ -512,10 +512,15 @@
 
 
 
+                      this.viewCheck()
+
                       this.$message.success('Успешно изменен');
                       this.errors.show = false;
                       this.showCheckSideBar = false;
+
                       this.viewCheckList()
+
+
 
 
                     }
@@ -533,6 +538,9 @@
 
 
             },
+
+
+
             editCheck(check_id,type){
 
                 this.addButton = false

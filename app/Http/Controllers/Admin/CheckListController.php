@@ -49,8 +49,6 @@ class CheckListController extends Controller
                             $checkList['item_type'] = $allValueArray['type'];
                             $checkList['item_id'] = $profileGroups->id;
                             $checkList->save();
-
-
                             $this->saveGroup($profileGroups,$checkList,$request,1);
                         }elseif ($allValueArray['type'] == 2){
                             $profilePosition = Position::on()->find($allValueArray['code']);
@@ -100,9 +98,9 @@ class CheckListController extends Controller
             $check_users['count_view'] = $request['countView'];
             $check_users['item_type'] = $type;
             $check_users['item_id'] = $positionUser['id'];
-//            $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
-//            $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
-//            $check_users['middleware_time'] =  9;
+            $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
+            $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
+            $check_users['middleware_count'] =  0;
             $check_users->save();
         }
 
@@ -123,9 +121,9 @@ class CheckListController extends Controller
                 $check_users['count_view'] = $request['countView'];
                 $check_users['item_type'] = $type;
                 $check_users['item_id'] = $profileGroups->id;
-//                $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
-//                $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
-//                $check_users['middleware_time'] =  9;
+                $check_users['work_start'] = $positionUser['work_start'] ?? '09:00:00';
+                $check_users['work_end'] = $positionUser['work_end'] ?? '18:00:00';
+                $check_users['middleware_count'] =  0;
                 $check_users->save();
             }
         }
@@ -145,23 +143,23 @@ class CheckListController extends Controller
 
             $users = User::whereIn('id', json_decode($profileGroups['users']))->select(['id','name','last_name'])->get(['id','name','last_name']);
 
-            foreach ($users as $user) {
-//                $check_users = new CheckUsers();
 
-
-                CheckUsers::create([
-                    'name'=> $user->name,
-                    'last_name'=> $user->last_name,
-                    'check_list_id'=> $checkList->id,
-                    'check_users_id'=> $user->id,
-                    'check_reports_id'=> $this->saveReports($checkList, $user, $request, $profileGroups,$type),
-                    'count_view'=> $request['countView'],
-                    'item_type'=> $type,
-                    'item_id'=> $profileGroups->id,
-//                    'middleware_time'=> 9,
-//                    'work_start'=> $user->work_start ?? '09:00:00',
-//                    'work_end'=> $user->work_end ?? '18:00:00',
-                ]);
+            if (!empty($users)){
+                foreach ($users as $user){
+                    $check_users = new CheckUsers();
+                    $check_users['name'] =$user->name;
+                    $check_users['last_name'] = $user->last_name;
+                    $check_users['check_list_id'] = $checkList->id;
+                    $check_users['check_users_id'] =  $user->id;
+                    $check_users['check_reports_id'] = $this->saveReports($checkList, $user, $request, $profileGroups,$type);
+                    $check_users['count_view'] = $request['countView'];
+                    $check_users['item_type'] = $type;
+                    $check_users['item_id'] = $profileGroups->id;
+                    $check_users['middleware_count'] =  0;
+                    $check_users['work_start'] =  $user->work_start ?? '09:00:00';
+                    $check_users['work_end'] = $user->work_end ?? '19:00:00';
+                    $check_users->save();
+                }
             }
         }
 
@@ -264,20 +262,19 @@ class CheckListController extends Controller
 
                if (!empty($checkReports) && count($checkReports) > 0){
 
-
-
                    foreach ($checkReports  as $checkReport){
                        $checkReportSave = CheckReports::on()->find($checkReport['id']);
                        $checkReportSave['count_check'] = count($request['arr_check_input']);
-
+                       $new_arr_check_input = $request['arr_check_input'];
                        if (!empty($checkReportSave['checked'])){
-                           $new_arr_check_input = $request['arr_check_input'];
                            foreach ($new_arr_check_input as $key => $query){
+
                                foreach (json_decode($checkReportSave['checked'],true)  as $item){
-                                   if ($query['text'] == $item['text']){
+                                   if ($query['text'] === $item['text']){
                                        $new_arr_check_input[$key] = $item;
                                    }
                                }
+
                            }
                        }
                        $checkReportSave['checked'] = json_encode($new_arr_check_input);
