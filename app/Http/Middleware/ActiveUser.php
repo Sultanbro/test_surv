@@ -72,6 +72,9 @@ class ActiveUser
                           $current = Carbon::now();
                           $trialExpires = $current->addMinute($share_minut);
                           $trialExpires->toTimeString();
+
+
+
                       if ($editUser_check_list['middleware_count'] == 0){
 
                           $editUser_check_list['middleware_count'] = 1;

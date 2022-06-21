@@ -20,11 +20,12 @@ class CheckListController extends Controller
 
 
     public function store(Request $request,$edit = null){
-       
+
+
         
         if ($edit === null){
             foreach ($request['allValueArray'] as $allValidate){
-                $validate = CheckList::where('item_id',$allValidate['code'])->where('item_type',$allValidate['type'])->get()->toArray();
+                $validate = CheckList::where('item_id',$allValidate['id'])->where('item_type',$allValidate['type'])->get()->toArray();
                 if (!empty($validate)){
                     return response(['success'=>false,'exists'=>$validate]);
                 }
@@ -37,8 +38,8 @@ class CheckListController extends Controller
         if ($request['countView'] < 11 && $request['countView'] != 0){
             if (isset($request['allValueArray'])){
                 foreach ($request['allValueArray'] as $allValueArray){
-                        if ($allValueArray['type'] == 1){
-                            $profileGroups = ProfileGroup::on()->find($allValueArray['code']);
+                        if ($allValueArray['type'] == 2){
+                            $profileGroups = ProfileGroup::on()->find($allValueArray['id']);
                             $checkList = new CheckList();
                             $checkList['title'] = $profileGroups->name;
                             $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
@@ -49,9 +50,9 @@ class CheckListController extends Controller
                             $checkList['item_type'] = $allValueArray['type'];
                             $checkList['item_id'] = $profileGroups->id;
                             $checkList->save();
-                            $this->saveGroup($profileGroups,$checkList,$request,1);
-                        }elseif ($allValueArray['type'] == 2){
-                            $profilePosition = Position::on()->find($allValueArray['code']);
+                            $this->saveGroup($profileGroups,$checkList,$request,2);
+                        }elseif ($allValueArray['type'] == 3){
+                            $profilePosition = Position::on()->find($allValueArray['id']);
                             $checkList = new CheckList();
                             $checkList['title'] = $profilePosition['position'];
                             $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
@@ -62,9 +63,9 @@ class CheckListController extends Controller
                             $checkList['item_type'] =  $allValueArray['type'];
                             $checkList['item_id'] = $profilePosition->id;
                             $checkList->save();
-                            $this->savePosition($profilePosition, $checkList, $request, 2);
-                        }elseif ($allValueArray['type'] == 3){
-                            $profileUsers = User::on()->find($allValueArray['code']);
+                            $this->savePosition($profilePosition, $checkList, $request, 3);
+                        }elseif ($allValueArray['type'] == 1){
+                            $profileUsers = User::on()->find($allValueArray['id']);
                             if (!empty($profileUsers)) {
                                 $checkList = new CheckList();
                                 $checkList['title'] = $profileUsers['last_name'].' '.$profileUsers['name'];
@@ -76,7 +77,7 @@ class CheckListController extends Controller
                                 $checkList['item_type'] =  $allValueArray['type'];
                                 $checkList['item_id'] = $profileUsers['id'];
                                 $checkList->save();
-                                $this->saveUsers($profileUsers, $checkList, $request, 3);
+                                $this->saveUsers($profileUsers, $checkList, $request, 1);
                             }
                         }
                     }
@@ -216,9 +217,9 @@ class CheckListController extends Controller
 
            if (count($request['allValueArray']) > 1){
                foreach ($request['allValueArray'] as $keys =>$allValueArray) {
-                   if ($request['valueFindGr'] != $allValueArray['code']) {
+                   if ($request['valueFindGr'] != $allValueArray['id']) {
                        $newArrays['allValueArray'][] = $allValueArray;
-                       $validate = CheckList::where('item_id', $allValueArray['code'])->where('item_type', $allValueArray['type'])->get()->toArray();
+                       $validate = CheckList::where('item_id', $allValueArray['id'])->where('item_type', $allValueArray['type'])->get()->toArray();
                        if (!empty($validate)) {
                            return response(['success' => false, 'exists' => $validate]);
                        }
@@ -455,44 +456,7 @@ class CheckListController extends Controller
 
     }
 
-    public function searchSelected(Request$request){
 
-
-
-        $valueUser = $request['query'];
-        if ($request['type'] == 1){
-            $groups = ProfileGroup::where('name','like', "%$valueUser%")->get(['id', 'name'])->pluck('name','id');
-            $positions = Position::get(['id', 'position'])->pluck('position','id');
-            $users = User::where(function($query) {
-                $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
-            })->select('id','name','last_name','email')->get();
-        }elseif ($request['type'] == 2){
-            $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
-            $positions =  Position::where('position','like', "%$valueUser%")->get(['id', 'position'])->pluck('position','id');
-            $users = User::where(function($query) {
-                $query->whereNotNull('name')->whereNotNull('last_name')->whereNotNull('email')->where('name', '!=', '')->where('last_name', '!=', '')->where('email', '!=', '');
-            })->select('id','name','last_name','email')->get();
-        }elseif($request['type'] == 3){
-
-
-
-
-            $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
-            $positions = Position::get(['id', 'position'])->pluck('position','id');
-            $users = User::where('name','like', "%$valueUser%")
-                ->orWhere('last_name','like', "%$valueUser%")
-                ->select('id','name','last_name','email')->get();
-        }
-
-
-
-        return response(['users'=>$users,'positions'=>$positions,'groups'=>$groups]);
-
-
-
-
-
-    }
 
     public function responsibility(Request $request){
         $valueUser = $request['search'];

@@ -97,6 +97,9 @@ export default {
         };
     },
     created() {
+
+      console.log(this.values,'019995');
+
         this.checkSelectedAll();  
     },
     methods: {
@@ -216,7 +219,7 @@ export default {
                     this.addSelectedAttr();
                 })
             .catch((error) => {
-                alert(error);
+                alert(error,'111');
             });
         },
 

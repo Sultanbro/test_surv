@@ -3,6 +3,7 @@
     <div class="person">
         <superselect :values="item.targets" class="w-full single" /> 
     </div>
+
     <div class="role">
         <multiselect 
             ref="role_select" 
@@ -60,6 +61,9 @@ export default {
         },
     },
     created() {
+
+        console.log(this.item,'wwwssss')
+
         this.local_groups = this.groups;
         this.local_roles = this.roles;
         if(this.item.groups_all) {
@@ -79,7 +83,6 @@ export default {
                 //this.$refs.group_select.close();
             }   
         },
-        
         selectAll() {
             this.local_groups = [];
             // this.item.groups.splice(0,this.item.groups.length + 1)
@@ -89,7 +92,6 @@ export default {
             // });
             this.item.groups_all = true;
         },
-
         onRemove(removedOption) {
             if(removedOption.id == 0) {
                 this.local_groups = this.groups;
