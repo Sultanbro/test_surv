@@ -215,6 +215,7 @@ class VideoPlaylistController extends Controller {
 
 	public function saveTest(Request $request)
     {
+		$ids = [];
         foreach ($request->questions as $key => $q) {
             $params = [
                 'order' => 0,
@@ -232,11 +233,14 @@ class VideoPlaylistController extends Controller {
                 if ($testq) {
                     $testq->update($params);
                 }
-
+				$ids[] = $testq['id'];
             } else {
-                TestQuestion::create($params);
+                $q = TestQuestion::create($params);
+				$ids[] = $q->id; 
             }
         }
+
+		return $ids; 
     }
 	
 }

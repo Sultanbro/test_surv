@@ -367,9 +367,9 @@ export default {
           id: this.id,
           questions: this.questions,
         })
-        .then((response) => {
+        .then((response) => { 
           this.$message.success("Вопросы сохранены!");
-          this.questions.forEach(function fetchIds(item, index) {
+          this.questions.forEach((item, index) => {
             item.id = response.data[index];
           });
           loader.hide();
