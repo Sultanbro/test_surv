@@ -21,13 +21,15 @@
             tag="div"
             handle=".fa-bars"
             :list="books"
+            :id="null"
             :group="{ name: 'g1' }"
+            @start="startChangeOrder"
             @end="saveOrder">
             <template v-for="(book, b_index) in books">
                   <div
                     class="section d-flex aic jcsb"
-                  
                     :id="book.id"
+                    :key="book.id"
                     @click.stop="selectSection(book)"
                   >
                     <div class="d-flex aic"  >
@@ -450,11 +452,11 @@ export default {
           loader.hide();
           alert(error);
         });
-    },  
+    },    
 
     saveOrder(event) {
-
-        axios.post('/kb/page/save-order', {
+        console.log(event)
+        axios.post('/kb/page/save-order', { 
           id: event.item.id,
           order: event.newIndex, // oldIndex
           parent_id: null
@@ -467,6 +469,10 @@ export default {
 
     toggleMode() {
       this.mode = (this.mode == 'read') ? 'edit' : 'read';
+    },
+
+    startChangeOrder(event) {
+        console.log(event)
     }
 
 

@@ -34,9 +34,9 @@ class VideoPlaylist extends Model
 
     public function groups()
     {
-        return $this->hasMany('App\Models\Videos\VideoGroup', 'category_id', 'id')->with('videos'); 
+        return $this->hasMany('App\Models\Videos\VideoGroup', 'category_id', 'id')->where('parent_id', 0)->with('videos', 'children'); 
     }
-
+    
     public function category()
     {
         return $this->belongsTo('App\Models\Videos\VideoCategory', 'category_id', 'id');

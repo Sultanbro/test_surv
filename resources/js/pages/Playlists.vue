@@ -32,7 +32,7 @@
 
         </div>
 
-
+        
         <div class="rp" style="flex: 1 1 0%;">
           <div class="hat">
             <div class="d-flex jsutify-content-between hat-top">
@@ -63,21 +63,14 @@
 
               <div v-if="activePlaylist != null" class="">
                 <page-playlist-edit 
-                  v-show="mode == 'edit'"
                   ref="playlist"
                   @back="back" 
                   :token="token"
                   :id="activePlaylist.id"
                   :auth_user_id="user_id"
+                  :mode="mode"
                   :myvideo="myvideo" />
-
-                <page-playlist-read
-                  v-show="mode == 'read'"
-                  ref="playlist"
-                  @back="back" 
-                  :id="activePlaylist.id"
-                  :auth_user_id="user_id"
-                  />
+         
               </div>
 
               <div v-else>

@@ -2289,7 +2289,7 @@ class TimetrackingController extends Controller
 
         if($ud) {
             $notifications = $ud->notifications;
-
+            if($notifications == null) $notifications = [];
             foreach($notifications as $noti) {
                 if(!in_array($noti[0], $left_noti)) {
                     $template = NotificationTemplate::find($noti[0]);
