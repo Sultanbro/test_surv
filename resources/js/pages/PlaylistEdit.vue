@@ -69,7 +69,41 @@
       </div>
 
       <div class="col-lg-6">
-        <draggable
+
+        <div v-for="(group, v_index) in playlist.groups" class="group">
+
+
+             <template v-for="(video, v_index) in group.videos">
+                <div
+                  class="video-block"
+                  :key="video.id"
+                  @click.stop="showVideoSettings(video, v_index)"
+                >
+                  <div class="mover">
+                    <i class="fa fa-bars"></i>
+                  </div>
+                  <div class="img">
+                    <img src="/video_learning/noimage.png" alt="text" />
+                  </div>
+                  <div class="desc">
+                    <h4>{{ video.title }}</h4>
+                    <div class="text" v-html="video.desc"></div>
+                  </div>
+                  <div class="controls">
+                    <i class="fas fa-ellipsis-h"></i>
+                    <div class="controls-menu">
+                      <div class="item" @click.stop="removeVideo(v_index)">
+                        <i class="fa far fa-trash"></i>
+                        <div class="text">Убрать из плейлиста</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+        </div>
+
+        <!-- <draggable
           class="videos"
           tag="div"
           handle=".fa-bars"
@@ -77,34 +111,8 @@
           :group="{ name: 'g1' }"
           @end="saveOrder"
         >
-          <template v-for="(video, v_index) in playlist.videos">
-            <div
-              class="video-block"
-              :key="video.id"
-              @click.stop="showVideoSettings(video)"
-            >
-              <div class="mover">
-                <i class="fa fa-bars"></i>
-              </div>
-              <div class="img">
-                <img src="/video_learning/noimage.png" alt="text" />
-              </div>
-              <div class="desc">
-                <h4>{{ video.title }}</h4>
-                <div class="text" v-html="video.desc"></div>
-              </div>
-              <div class="controls">
-                <i class="fas fa-ellipsis-h"></i>
-                <div class="controls-menu">
-                  <div class="item" @click.stop="removeVideo(v_index)">
-                    <i class="fa far fa-trash"></i>
-                    <div class="text">Убрать из плейлиста</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </draggable>
+         
+        </draggable> -->
       </div>
   
     </div>
@@ -281,6 +289,7 @@ export default {
     token: String,
     id: Number,
     auth_user_id: Number,
+    myvideo: Number,
   },
   data: function() {
     return {
@@ -316,23 +325,56 @@ export default {
           show: false,
         },
       },
-
+      mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16)
         
     };
   },
   watch: {
     id(val) {
-      console.log('test')
       this.fetchData();
     },
   },
 
   created() {
-    this.fetchData();
+    console.log(this.myvideo);
+    if(this.myvideo > 0){
+
+     // this.activeVideo = video;
+      console.log(this.id);
+      
+      axios
+        .get("/playlists/get/" + this.id)
+        .then((response) => {
+          this.all_videos = response.data.all_videos;
+          this.modals.addVideo.searchVideos = this.all_videos;
+
+          this.playlist = response.data.playlist;
+          this.categories = response.data.categories;
+          
+          console.log(this.playlist.videos);
+
+          this.activeVideo = this.playlist.videos[this.myvideo-1];
+          this.sidebars.edit_video.show = true;
+
+        })
+        .catch((error) => {
+          alert(error);
+        });
+
+        
+
+    } else {
+
+      this.fetchData();
+    }
+    
   },
 
   mounted() {},
   methods: { 
+    testFun(){
+     alert("hello!"); 
+    },
     showQuestions(v_index) {
       let questions = this.playlist.videos[v_index].questions;
       if (questions == undefined) this.playlist.videos[v_index].questions = [];
@@ -494,14 +536,31 @@ export default {
       this.modals.upload.step = i;
     },
 
-    showVideoSettings(video) {
+    showVideoSettings(video, key) {
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
-
+      if (history.pushState) {
+          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(key+1));
+          history.pushState(null, null, newUrl);
+      }
+      else {
+          console.warn('History API не поддерживает ваш браузер');
+      }
+      console.log(this.$parent.data_category);
     },
 
     closeSidebar() {
       this.sidebars.edit_video.show = false;
+      if (history.pushState) {
+          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist);
+          history.pushState(null, null, newUrl);
+      }
+      else {
+          console.warn('History API не поддерживает ваш браузер');
+      }
+      this.activeVideo = null;
+      console.log(this.$children[3].$children[0]);
+      //syuda
     },
 
     fetchData() {
