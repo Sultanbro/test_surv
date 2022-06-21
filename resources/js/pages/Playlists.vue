@@ -57,20 +57,22 @@
             <div><!----></div> 
           </div>
           <div class="content mt-3">
+            
             <div v-if="activeCat != null" class="p-3 ">
 
 
               <div v-if="activePlaylist != null" class="">
                 <page-playlist-edit 
-                  v-if="mode == 'edit'"
+                  v-show="mode == 'edit'"
                   ref="playlist"
                   @back="back" 
                   :token="token"
                   :id="activePlaylist.id"
-                  :auth_user_id="user_id" />
+                  :auth_user_id="user_id"
+                  :myvideo="myvideo" />
 
                 <page-playlist-read
-                  v-if="mode == 'read'"
+                  v-show="mode == 'read'"
                   ref="playlist"
                   @back="back" 
                   :id="activePlaylist.id"
@@ -189,7 +191,10 @@ export default {
     can_edit: {
       type: Boolean,
       default: false
-    } 
+    },
+    category: Number,
+    playlist: Number,
+    video: Number 
   },
   data: function() {
     return {
@@ -202,29 +207,44 @@ export default {
       activePlaylist: null,
       showAddPlaylist: false,
       showAddCategory: false,
+      mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16),
+      data_category: this.category,
+      data_playlist: this.playlist,
+      myvideo: this.video,
     };
   },
-  watch: {},
 
   created() {
+    // устанавливаем прошлые значения если страница была обновлена
+
+  
+    //конец
+
     if(this.can_edit) {
       this.mode = 'edit';
     } 
-    this.fetchData();
+
+     this.fetchData();
+    
   },
 
-  mounted() {},
   methods: {
-    
+    clearUrl(){
+      var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16);
+      history.pushState(null, null, newUrl);
+    },
+
     fetchData() {
       axios
         .get("/playlists/get")
         .then((response) => {
           this.categories = response.data.categories;
           this.user_id = response.data.user_id;
-
           if(this.categories.length > 0) {
-            this.activeCat = this.categories[0]
+            this.activeCat = this.categories[this.category-1];
+            if(this.playlist > 0){
+              this.activePlaylist = this.activeCat.playlists[this.playlist-1];
+            }
           }
         })
         .catch((error) => {
@@ -234,6 +254,16 @@ export default {
 
     selectPl(i) { 
       this.activePlaylist = this.activeCat.playlists[i];
+      this.data_playlist = i+1;
+
+      console.log(this.mylink.concat('/'+this.data_category, '/'+this.data_playlist));
+      if (history.pushState) {
+          var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
+          history.pushState(null, null, newUrl);
+      }
+      else {
+          console.warn('History API не поддерживает ваш браузер');
+      }
 
     },
     editAccess(i) {
@@ -252,14 +282,26 @@ export default {
         }
      },
       selectCat(i) {
-        console.log('text') 
-        console.log(this.categories[i].playlists)
         this.activeCat = this.categories[i];
         this.activePlaylist = null;
+        this.data_category = i+1;
+        this.data_playlist = 0; 
+        console.log(this.mylink.concat('/'+this.data_category, '/'+this.data_playlist));
+
+        if (history.pushState) {
+            var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
+            history.pushState(null, null, newUrl);
+        }
+        else {
+            console.warn('History API не поддерживает ваш браузер');
+        }
+        this.myvideo = 0;
+
       },
 
       deleteCat(i) {
         if (confirm("Вы уверены что хотите удалить категорию?")) {
+
           axios
             .post("/playlists/delete-cat", {
               id: this.categories[i].id
