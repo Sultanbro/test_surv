@@ -484,6 +484,7 @@ export default {
     },
 
     showVideoSettings(video, key) {
+      console.log(video)
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
       if (history.pushState) {

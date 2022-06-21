@@ -73,7 +73,7 @@ class VideoPlaylistController extends Controller {
 		$pl =  Playlist::with('groups')->find($request->id);
 
 	
-		$no_group_videos = Video::where('group_id', 0)->where('playlist_id', $pl->id)->get();
+		$no_group_videos = Video::where('group_id', 0)->where('playlist_id', $pl->id)->with('questions')->get();
 
 		if($no_group_videos->count() > 0) {
 			$pl->groups->prepend(['title' => 'Без группы', 'id' => 0, 'videos' => $no_group_videos, 'opened' => false]);

@@ -24,8 +24,8 @@ class VideoGroup extends Model
     }
 
     public function videos()
-    {
-        return $this->hasMany('App\Models\Videos\Video', 'group_id', 'id');
+    { 
+        return $this->hasMany('App\Models\Videos\Video', 'group_id', 'id')->with('questions')->orderBy('order', 'asc');
     }
 
     public function playlist() 

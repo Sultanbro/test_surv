@@ -2,7 +2,12 @@
 <div class="video-accordion">
     <div v-for="(group, g_index) in groups" class="group" :class="{'opened': group.opened}">
 
-            <div class="g-title" @click="toggleGroup(g_index)">{{ group.title }}</div>
+            <div class="g-title" @click="toggleGroup(g_index)">
+                <span>{{ group.title }}</span>
+                <div class="btns">
+                    <i class="fa fa-plus"></i>
+                </div>
+            </div>
 
             <template v-for="(child, c_index) in group.children">
                 <div class="child-group group" :class="{'opened': child.opened}">
