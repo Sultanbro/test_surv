@@ -66,7 +66,6 @@ class ActiveUser
                           $share_minut = $minut / $editUser_check_list['count_view'];
                       }
 
-//                      dd($editUser_check_list);
 
 
                           $current = Carbon::now();

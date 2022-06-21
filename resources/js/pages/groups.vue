@@ -215,8 +215,9 @@
           <i class="fa fa-trash"></i> Удалить группу
         </button>
       </div>
+    </div>
 
-      <sidebar
+       <sidebar
         title="KPI"
         :open="showKPI"
         @close="showKPI = false"
@@ -247,6 +248,7 @@
             <th class="mark">ПД</th>
             <th class="mark">Сумма , тг</th>
             <th class="mark">Описание</th>
+            <th class="mark"></th>
           </tr>
 
           <tr v-for="(bonus, index) in bonuses" :key="index">
@@ -317,6 +319,9 @@
                 v-model="bonus.text"
               ></textarea>
             </td>
+            <td class="left">
+              <i class="fa fa-trash" @click="deleteBonusItem(index)"></i>
+            </td>
           </tr>
         </table>
 
@@ -370,7 +375,6 @@
           >
         </div>
       </b-modal>
-    </div>
 
     <!-- Modal  -->
     <a-modal
@@ -861,6 +865,31 @@ export default {
 
       this.showEditTimeAddress = false;
     },
+
+    deleteBonusItem(i) {
+      if(!confirm('Вы уверены?')) {
+        return;
+      }
+
+      if(this.bonuses[i].id == 0) {
+        this.bonuses.splice(i, 1);
+        return;
+      }
+
+      axios
+        .post("/timetracking/settings/delete-group-bonus", {
+          id: this.bonuses[i].id,
+        })
+        .then((response) => {
+            this.bonuses.splice(i, 1);
+            this.$message.success('Бонус удален');
+        })
+        .catch((error) => {
+          alert(error);
+        });
+
+      
+    }
   },
 };
 </script>

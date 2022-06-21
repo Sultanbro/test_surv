@@ -34,11 +34,22 @@
         </button>
         <button class="btn rounded mr-1 p-1" @click="zoom = 0">
           <i class="fa fa-bars"></i>
-        </button>
+        </button> 
         <button class="btn rounded p-1" @click="zoomOut">
           <i class="fa fa-search-minus"></i>
         </button>
       </div>
+
+      <div class="mt-3">
+        <img :src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img" class="w-full" />
+      </div>  
+      <div v-if="isLoading">
+        <p class="text-center mt-3">
+          <b>Загружается...</b>
+        </p>
+      </div>
+
+      
     </div>
 
     <div
@@ -68,6 +79,15 @@
         @link-clicked="linkClicked($event)"
         @num-pages="pageCount = $event"
       ></pdf> -->
+
+      <vue-pdf-embed 
+        v-if="activeBook !== null"
+        :source="activeBook.link"
+        ref="pdfRef"
+        :page="page"
+        class="plugin"
+        @rendered="handleDocumentRender"
+      />
     </div>
 
     <div class="test" style="width:1000px;max-width: 100%;" v-if="status == 'testing'">
@@ -77,11 +97,11 @@
 </template>
 
 <script>
-// import pdf from "vue-pdf";
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 export default {
   name: "UpbooksRead",
   components: {
-    
+    VuePdfEmbed
   },
   props: ["activeBook", "mode"],
   data() {
@@ -91,6 +111,7 @@ export default {
       pageCount: 0,
       zoom: 800,
       questions: [],
+      isLoading:true,
       tests: [],
       checkpoint: 1,
       status: 'reading'
@@ -184,6 +205,11 @@ export default {
       if (this.zoom > 600) {
         this.zoom -= 100;
       }
+    },
+
+    handleDocumentRender() {
+      this.isLoading = false
+      this.pageCount = this.$refs.pdfRef.pageCount
     },
   },
 };

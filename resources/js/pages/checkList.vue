@@ -170,28 +170,33 @@
                 <div class="row mt-4 pl-3">
                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in arrCheckInput">
                       <div class="row">
-                          <div class="col-md-7 pr-0 mr-2">
+                          <div class="col-md-6 pr-0 mr-2">
 <!--                              <div class="position-absolute" style="margin-left: -15px;top: 2px">-->
 <!--                                  <b-form-checkbox v-model="item.checked"  ></b-form-checkbox>-->
 <!--                              </div>-->
-                              <input style="width: 99.6%" v-model="item.text"  type="text" placeholder="Впишите активность чек листа" class="form-control btn-block ">
+                              <input style="width: 110%"  v-model="item.text"  type="text" placeholder="Впишите активность чек листа" class="form-control btn-block ">
                           </div>
 <!--                          <div class="col-md-3 p-0 mr-3 ml-1">-->
 <!--                              <input v-model="item.https"  type="text" placeholder="https:" class="form-control btn-block ">-->
 <!--                          </div>-->
 
-                          <button v-if="index == '0'"  @click="deleteCheckList(index)"
+                        <div class="col-1" style="position: relative">
+
+                          <button style="position: absolute;right: 11px" v-if="index == '0'"  @click="deleteCheckList(index)"
                                   type="button"  title="Удалить чек-лист"
                                   class="btn btn-secondary btn-sm">
-                              <i class="fa fa-trash" aria-hidden="true"></i>
+                            <i class="fa fa-trash" aria-hidden="true"></i>
                           </button>
 
 
-                          <button v-else  @click="deleteCheckList(index)"
+                          <button style="position: absolute;right: 11px" v-else  @click="deleteCheckList(index)"
                                   type="button"  title="Удалить чек-лист"
                                   class="btn btn-primary btn-sm">
-                              <i class="fa fa-trash" aria-hidden="true"></i>
+                            <i class="fa fa-trash" aria-hidden="true"></i>
                           </button>
+
+                        </div>
+
                       </div>
                     </div>
                     <div class="col-md-12 mt-3">

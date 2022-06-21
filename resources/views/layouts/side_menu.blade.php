@@ -101,18 +101,7 @@
                         </a>
                     </li>
                 @endif
-                    <li>
-                        <a href="/timetracking/info" class="link">
-                            <i class="fas fa-question-circle"></i>
-                            <span>Частые вопросы</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/timetracking/fines" class="link">
-                            <i class="fas fa-minus-circle"></i>
-                            <span>Депримирование</span>
-                        </a>
-                    </li>
+                    
                     @if(auth()->user()->can('tabel_view'))
                     <li>
                         <a href="/timetracking/reports" class="link">
@@ -172,7 +161,20 @@
                 <span>Карта</span>
             </a>
         </li>
-      
+
+        <li class="menu-item">
+            <a href="/timetracking/info" class="side-btn @if($menu == 'faq') active @endif">
+                <i class="fas fa-question-circle"></i>
+                <span>Частые вопросы</span>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="/timetracking/fines" class="side-btn @if($menu == 'penalties') active @endif">
+                <i class="fas fa-minus-circle"></i>
+                <span>Депри мирование</span>
+            </a>
+        </li>
+
 
 
     </ul>

@@ -36,6 +36,26 @@ class VideoPlaylistController extends Controller {
 		return view('videolearning.playlists.index'); 
 	}
 
+	public function savedIndex(Request $request){
+		View::share('menu', 'video_edit');
+        View::share('link', 'video_edit');
+		return view('videolearning.playlists.index',[ 
+			'category' => $request->category,
+			'playlist' => $request->playlist
+		]); 
+	}
+
+
+	public function savedIndexVideo(Request $request){
+		View::share('menu', 'video_edit');
+        View::share('link', 'video_edit');
+		return view('videolearning.playlists.index',[ 
+			'category' => $request->category,
+			'playlist' => $request->playlist,
+			'video' => $request->video
+		]); 
+	}
+
 	public function get() {
 		return [
 			'user_id' => auth()->user()->id,
@@ -43,10 +63,15 @@ class VideoPlaylistController extends Controller {
 		];
 	}
 
+	public function deleteQuestion(Request $request){
+		$question = TestQuestion::find($request->id);
+		$question->delete();
+	}
+
 	public function getPlaylist(Request $request) {
 
-		$pl =  Playlist::with('videos')->find($request->id);
-
+		$pl =  Playlist::with('groups')->find($request->id);
+		
 		foreach($pl->videos as $video) {
 			$video->questions = TestQuestion::where('testable_type', 'App\Models\Videos\Video')
 				->where('testable_id', $video->id)

@@ -2384,5 +2384,11 @@ class TimetrackingController extends Controller
             $group->save();
         }
     }
+
+    public function deleteGroupBonus(Request $request)
+    {
+        $bonus = Bonus::where('id', $request->id)->first();
+        if($bonus) $bonus->delete();
+    }
     
 }

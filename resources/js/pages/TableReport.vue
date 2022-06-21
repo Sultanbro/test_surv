@@ -197,7 +197,7 @@
                 </template>
             </b-tab>
 
-            <template v-if="editable_time && can_edit">
+            <template v-if="can_edit">
                 <b-tab title="📆" >
                     <!-- <div v-html="sidebarContent.history"></div>
             <div v-html="sidebarContent.historyTotal"></div> -->
@@ -820,15 +820,15 @@ export default {
             }
         },
 
-        setFields() {
+        setFields() { 
             let fields = [];
 
             fields = [
                 {
-                    key: 'name',
-                    stickyColumn: true,
+                    key: 'name', 
+                    stickyColumn: true, 
                     label: 'Имя',
-                    variant: 'primary',
+                    variant: 'primary', 
                     sortable: true,
                     class: 'text-left px-3 t-name',
                 }, 

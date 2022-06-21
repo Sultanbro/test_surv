@@ -157,17 +157,17 @@ export default {
                 return;
             };
             if(this.selected_all) return;
-             
+
             let item = this.filtered_options[index];
 
             if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
-           
+
                 this.values.push({
                     name: item.name,
                     id: item.id,
                     type: item.type
                 });
-            
+
                 item.selected = true
             }
         },
@@ -177,7 +177,7 @@ export default {
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
             this.values.splice(i, 1);
-            
+
             let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
             if(index != -1) this.filtered_options.splice(index, 1);
         },

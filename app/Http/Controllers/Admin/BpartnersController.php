@@ -574,18 +574,20 @@ class BpartnersController extends Controller
         $audio_name = time() . '.' . $audio->getClientOriginalExtension();
         $audio->move("bpartners/audio/", $audio_name);
   		
-    		$postfile = array(
-                      'upfile' => curl_file_create("bpartners/audio/".$audio_name,'mp3')
-                    );
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, "https://bpartners.kz/kk/get_audio.php");
-                    curl_setopt($ch, CURLOPT_HEADER, false);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:54.0) Gecko/20100101 Firefox/54.0");
-                    curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $postfile);
-                    $result = curl_exec($ch);
-                    curl_close($ch);
+    		// $postfile = array(
+        //               'upfile' => curl_file_create("bpartners/audio/".$audio_name,'mp3')
+        //             );
+        //             $ch = curl_init();
+
+        //             curl_setopt($ch, CURLOPT_URL, "https://bpartners.kz/kk/get_audio.php"); 
+
+        //             curl_setopt($ch, CURLOPT_HEADER, false);
+        //             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //             curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:54.0) Gecko/20100101 Firefox/54.0");
+        //             curl_setopt($ch, CURLOPT_POST, true);
+        //             curl_setopt($ch, CURLOPT_POSTFIELDS, $postfile);
+        //             $result = curl_exec($ch);
+        //             curl_close($ch);
     		// return json_encode($postfile);
         
         return json_encode(array('location' => "/bpartners/audio/".$audio_name));

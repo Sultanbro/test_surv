@@ -127,7 +127,9 @@
       <button
         v-if="['kb','video'].includes(type)"
         class="btn btn-success mr-2" 
-        @click="saveTest">
+        @click="saveTest"
+        :disabled="!can_save"
+        >
           Сохранить
       </button>
       <button class="btn" @click="addQuestion" >Добавить вопрос</button>
@@ -141,6 +143,7 @@ export default {
   props: ["questions", "type", "id", "mode"],
   data() {
     return {
+      can_save: false,
       questionsx: [
         {
           text: "Кто это был?",
@@ -313,11 +316,22 @@ export default {
       this.questions.forEach((q) => (q.editable = false));
       this.questions.push(this.defaultQuestion());
       this.questions[this.questions.length - 1].editable = true;
+      this.can_save = true;
     },
 
     deleteQuestion(q_index) {
       if (confirm("Удалить вопрос?")) {
-        this.questions.splice(q_index, 1);
+          if(this.questions[q_index].id == 0){
+            this.questions.splice(q_index, 1);
+          }else{
+          axios
+            .post("/playlists/delete-question", {
+              id: this.questions[q_index].id
+            })
+            .then((response) => {  
+              this.questions.splice(q_index, 1);
+            })
+        }
       }
     },
 
@@ -355,7 +369,11 @@ export default {
         })
         .then((response) => {
           this.$message.success("Вопросы сохранены!");
+          this.questions.forEach(function fetchIds(item, index) {
+            item.id = response.data[index];
+          });
           loader.hide();
+          this.can_save = false;
         })
         .catch((error) => {
           loader.hide();

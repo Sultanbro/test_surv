@@ -68,12 +68,14 @@ class Bonus extends Model
             $comments[$user_id] = '';
         }
         
+  
         foreach ($bonuses as $bonus) {
             
             if($bonus->sum == 0) continue;
             if($bonus->activity_id == 0) continue;
-       
+            
             if($bonus->unit == self::FOR_ALL) {
+        
                 $best_user = 0;
                 $best_value = 0;
 
@@ -91,6 +93,8 @@ class Bonus extends Model
                     } 
 
                 } else {
+
+            
                     foreach ($users as $user_id) {
                         if($group_id == 48) {
                             $val = self::fetch_value_from_activity_for_recruting($bonus->activity_id, $user_id, $date, $bonus->daypart);
@@ -103,6 +107,11 @@ class Bonus extends Model
                             $best_value = (int)$val;
                         }
                     }
+
+                    // nullify awards if they are not actual
+                    ObtainedBonus::where('bonus_id', $bonus->id)
+                        ->where('date', $date)
+                        ->delete();
 
                     // save award to the best user
                     if($best_user != 0 && (int)$best_value >= $bonus->quantity) {
@@ -117,7 +126,7 @@ class Bonus extends Model
                 }
                 
             }
-    
+            
             if($bonus->unit == self::FOR_ONE) {
                 foreach ($users as $user_id) {
                     
@@ -146,6 +155,7 @@ class Bonus extends Model
             }
         }
 
+ 
         // Save awards to salaries table 
         // foreach ($awards as $user_id => $award) {
         //     $salary = Salary::where([

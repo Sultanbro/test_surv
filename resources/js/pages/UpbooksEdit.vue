@@ -13,12 +13,12 @@
           <p>{{ cat.name }}</p>
           <i
             class="fa fa-trash"
-            v-if="cat.id != 0 && access == 'edit'"
+            v-if="cat.id != 0 && mode == 'edit'"
             @click.stop="deleteCat(c_index)"
           ></i>
         </div>
 
-        <button class="btn-add" @click="modals.add_category.show = true" v-if="access == 'edit'">
+        <button class="btn-add" @click="modals.add_category.show = true" v-if="mode == 'edit'">
           Добавить категорию
         </button>
       </div>
@@ -32,14 +32,19 @@
               </p>
               <!---->
             </div>
-            <div class="control-btns" v-if="activeCategory != null">
+            <div class="control-btns d-flex" v-if="activeCategory != null">
               <button
-                v-if="access == 'edit'"
+                v-if="mode == 'edit'"
                 class="btn btn-success"
                 @click="modals.upload_book.show = true"
               >
                 Добавить книгу
               </button>
+              <div class="mode_changer ml-2" v-if="can_edit">
+                  <i class="fa fa-edit"
+                    @click="toggleMode"
+                    :class="{'active': mode == 'edit'}" />
+              </div>
             </div>
           </div>
           <div><!----></div>
@@ -49,14 +54,15 @@
           <div
             class="box"
             v-for="(book, b_index) in activeCategory.books"
-            :style="'background-image: url(' + (book.img != '' ? book.img : '/images/book_cover.jpg') + ')'"
+           
             :key="book.id"
             @click="go(book)"
           >
+           <img :src="book.img != '' ? book.img  : '/images/book_cover.jpg'"  class="img-fluid"/>
             <div class="cover">
               <p class="title">{{ book.title }}</p>
               <p class="author">{{ book.author }}</p>
-              <div class="buttons" v-if="access == 'edit'">
+              <div class="buttons" v-if="mode == 'edit'">
                 <i
                   class="fa fa-trash mr-1"
                   @click.stop="deleteBook(b_index)"
@@ -226,7 +232,6 @@ export default {
       type: Boolean,
       default: false
     },
-    access: String // read edit
   },
   data() {
     return {
@@ -479,6 +484,11 @@ export default {
           alert(error);
         });
     },
+
+    toggleMode() {
+      this.mode = (this.mode == 'read') ? 'edit' : 'read';
+    }
+
   },
 };
 </script>
