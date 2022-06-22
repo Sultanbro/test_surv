@@ -1620,7 +1620,9 @@ class UserController extends Controller
     }
 
     public function updatePerson(Request $request) {
-        
+
+        dd($request->toArray());
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }

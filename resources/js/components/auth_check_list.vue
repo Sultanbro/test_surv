@@ -151,21 +151,20 @@
 
             viewCheck(){
 
-              console.log(this.auth_check_list,'1999')
+
 
                 axios.post('/timetracking/settings/auth/check/user', {
                     auth_check:this.auth_check_list
 
                 }).then(response => {
 
-                  console.log(response,'wswwwww-9')
+
 
                     if (response.data.checklist.length > 0) {
 
                       for (let i = 0;i < response.data.checklist.length;i++){
                         if (response.data['checklist'][i].length > 0){
 
-                          console.log(response.data['checklist'][i][0]['checked'],'xxx')
 
 
                           if (response.data['checklist'][i][0]['flag']){
@@ -194,8 +193,6 @@
                       }
                     }
 
-
-                    console.log(this.auth_check,'immaasshhwwvv')
 
 
 

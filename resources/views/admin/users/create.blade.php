@@ -196,7 +196,7 @@
                                                     <input class="form-control" type="text" name="last_name" id="lastName" required
                                                         placeholder="Фамилия сотрудника"
                                                         @if(isset($user)) value="{{$user->last_name}}"
-                                                        @else value="{{old('last_name')}}"
+                                                         @else value="{{old('last_name')}}"
                                                         @endif
                                                         >
                                                 </div>
@@ -539,6 +539,9 @@
                                             </div>
 
 
+
+
+
                                             <div class="mb-3 xfade">
                                                 <div class="form-group row " id="selectedCityRU" >
                                                     <div class="col-sm-12">
@@ -546,10 +549,14 @@
                                                                @if(isset($user) && !empty($user->working_country))
                                                                    value="{{$user->working_country}}"
                                                                @endif
-
                                                                placeholder="Поиск городов ">
 
-                                                        <input hidden name="working_city" id="working_city">
+
+                                                        <input hidden @if(isset($user) && !empty($user->working_city) )
+                                                                         value="{{$user->working_city}}"
+                                                                      @endif
+                                                               name="working_city" id="working_city">
+
                                                         <div id="listSearchResult" class="listSearchResult">
                                                             <ul class="p-0 searchResultCountry" id="searchResultCountry" style="margin-bottom: 0px;">
 
