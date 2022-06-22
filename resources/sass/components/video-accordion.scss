@@ -15,6 +15,26 @@
             background: #272c33;
             border-bottom: 1px solid #4e535b;
             align-items: center;
+
+            justify-content: space-between;
+
+            .group-input {
+                background: transparent;
+                border: 0;
+                width: 100%;
+            }
+
+            .btns {
+                display: flex;
+
+                i {
+                    width: 25px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                }
+            }
         }
 
         .child-group .g-title {
