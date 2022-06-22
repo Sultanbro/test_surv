@@ -172,8 +172,10 @@ Route::middleware([
     Route::post('/playlists/add', [VideoPlaylistController::class, 'add']);
     Route::get('/video_playlists', [VideoPlaylistController::class, 'index']);
 
+
     Route::get('/video_playlists/{category}/{playlist}', [VideoPlaylistController::class, 'saveIndex']);
     Route::get('/video_playlists/{category}/{playlist}/{video}', [VideoPlaylistController::class, 'saveIndexVideo']);
+
 
     Route::post('/playlists/delete-cat', [VideoCategoryController::class, 'delete']);
     Route::post('/playlists/add-cat', [VideoCategoryController::class, 'add']);
