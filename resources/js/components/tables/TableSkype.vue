@@ -2,15 +2,16 @@
 <div>
 
     <div class="skypo">
- 
+       
         <div class="row mb-2 align-items-center">
-            
-            <div class="col-4 col-md-4 d-flex align-items-center">
+             
+            <div class="col-4 col-md-4 d-flex align-items-right">
                 <!-- <select class="form-control" v-model="currentDay">
                     0">Все дни</option>
                     <option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
                 </select>    -->
-                <div class="p-o">
+                <div class="p-o pl-3">
+                    <date-picker value="test"  placeholder="Дата подписи" v-model="filter.dates" range multiple ></date-picker>
                     <!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
                 </div>
             </div>
@@ -315,6 +316,7 @@ export default {
     },
     data: function () {
         return {
+            mydate: Date.now(),
             showSkypeFields: {},
             showSkypeFieldsDesc: {},
             fields: [], // поля таблицы
@@ -480,7 +482,12 @@ export default {
     },
 
     methods: {
-
+        getDates(s, e) {
+            for(var a=[],d=new Date(s);d<=new Date(e);d.setDate(d.getDate()+1)){
+                a.push(new Date(d));
+            }
+            return a;
+        },
         setSegments() {
             this.segments['0'] = '-'
         },
@@ -729,6 +736,8 @@ export default {
 
             this.records = []
 
+            var dates = this.getDates(this.filter.dates[0],this.filter.dates[1]);
+
             this.filtered = this.skypes.filter((el, index) => {
 
                 let a = true
@@ -764,8 +773,8 @@ export default {
                 } 
                 
                 let ld = false;
-                if(this.filter.dates.length > 0) {
-                    this.filter.dates.forEach(day => {
+                if(dates.length > 0) {
+                    dates.forEach(day => {
                         ld = ld || day.getDate() ==  moment(el.skyped_old, "YYYY-MM-DD HH:mm:ss").date()
                     })
                 } else {
