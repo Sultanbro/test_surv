@@ -212,6 +212,8 @@ class CheckListController extends Controller
 
     public function editSaveCheck(Request $request){
 
+
+
         if (!empty($request['allValueArray'])){
 
 
@@ -282,7 +284,7 @@ class CheckListController extends Controller
                        $checkReportSave->save();
                    }
                }else{
-                   if ($findArray->item_type == 1){
+                   if ($findArray->item_type == 2){
                        if (empty($checkReports) && count($checkReports) == 0){
                            $profileGroups = ProfileGroup::on()->find($request['valueFindGr']);
                            if (!empty($profileGroups)){
@@ -306,7 +308,7 @@ class CheckListController extends Controller
                                }
                            }
                        }
-                   }elseif ($findArray->item_type == 2){
+                   }elseif ($findArray->item_type == 3){
                        $positionUsers = User::on()->where('position_id',$request['valueFindGr'])->get()->toArray();
                        if (!empty($positionUsers)){
                            $check_reports_save = new CheckReports();
@@ -322,7 +324,7 @@ class CheckListController extends Controller
                            $check_reports_save['item_id'] = $findArray->item_id;
                            $check_reports_save->save();
                        }
-                   }elseif ($findArray->item_type == 3){
+                   }elseif ($findArray->item_type == 1){
 //                   saveReports($checkListId,$positionUser,$request,$positionUser,$type);
                        $check_reports_save = new CheckReports();
                        $check_reports_save['check_id'] = $findArray->id;

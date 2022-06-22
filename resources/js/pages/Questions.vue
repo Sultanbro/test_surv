@@ -65,7 +65,7 @@
               <input
                 type="text"
                 v-model="v.text"
-                placeholder="..."
+                placeholder="Введите вариант ответа..."
                 @keyup.enter="addVariant(q_index, v_index)"
                 @keyup.delete="deleteVariant(q_index, v_index)"
                 :ref="`variant${q_index}_${v_index}`"
@@ -125,7 +125,7 @@
     </template>
     <template v-if="mode == 'edit'">
       <button
-        v-if="['kb','video'].includes(type)"
+        v-if="['kb','video'].includes(type) && questions.length > 0"
         class="btn btn-success mr-2" 
         @click="saveTest"
         :disabled="!can_save"
@@ -362,6 +362,8 @@ export default {
 
       let url = this.type == 'kb' ? "/kb/page/save-test" : "/playlists/save-test";
 
+      this.can_save = false;
+
       axios
         .post(url, {
           id: this.id,
@@ -373,7 +375,7 @@ export default {
             item.id = response.data[index];
           });
           loader.hide();
-          this.can_save = false;
+          this.can_save = true;
         })
         .catch((error) => {
           loader.hide();

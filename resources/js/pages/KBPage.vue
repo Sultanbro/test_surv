@@ -110,7 +110,7 @@
         :show_page_id="show_page_id"
         @back="back" 
         @toggleMode="toggleMode" 
-        :mode="activeBook.access == 2 || can_edit ? 'edit' : 'read'"
+        :mode="mode"
         :auth_user_id="auth_user_id" />
     </div>
 
@@ -243,9 +243,6 @@ export default {
   watch: {},
 
   created() {
-    if(this.can_edit) {
-      this.mode = 'edit';
-    } 
     
     this.fetchData();
 
@@ -470,12 +467,10 @@ export default {
     toggleMode() {
       this.mode = (this.mode == 'read') ? 'edit' : 'read';
     },
-
+ 
     startChangeOrder(event) {
         console.log(event)
-    }
-
-
+    },
     
   },
 };

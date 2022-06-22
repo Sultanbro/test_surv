@@ -26,19 +26,28 @@
                 <div class="row">
                    <div class="col-12 p-0">
 
-                     <div class="col-md-6 pr-0 mt-2" v-for="(item, index) in auth_check">
+                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in auth_check">
                        <span class="font-weight-bold">{{item.title}}</span>
 
                        <div class="col-6 p-0 mt-2" v-for="(val,ind) in item.check_input">
-                         <b-form-checkbox v-model="val.checked" size="sm" >
-                           <span style="cursor: pointer">{{val.text}}</span>
-                         </b-form-checkbox>
 
+                          <div class="mr-5">
+                            <b-form-checkbox v-model="val.checked" size="sm" >
+                              <span style="cursor: pointer">{{val.text}}</span>
+                            </b-form-checkbox>
+                          </div>
 
-                         <div style="position: absolute;right: 0px;top: 0px">
-                            <input v-model="val.https" class="form-control form-control-sm" placeholder="url">
+                          <div style="position: absolute;right: 0px;top: 0px">
+                           <input style="width: 150%" v-model="val.https" class="form-control form-control-sm" placeholder="url">
                          </div>
+
                        </div>
+
+
+
+
+
+
 
 
 
@@ -151,21 +160,20 @@
 
             viewCheck(){
 
-              console.log(this.auth_check_list,'1999')
+
 
                 axios.post('/timetracking/settings/auth/check/user', {
                     auth_check:this.auth_check_list
 
                 }).then(response => {
 
-                  console.log(response,'wswwwww-9')
+
 
                     if (response.data.checklist.length > 0) {
 
                       for (let i = 0;i < response.data.checklist.length;i++){
                         if (response.data['checklist'][i].length > 0){
 
-                          console.log(response.data['checklist'][i][0]['checked'],'xxx')
 
 
                           if (response.data['checklist'][i][0]['flag']){
@@ -194,8 +202,6 @@
                       }
                     }
 
-
-                    console.log(this.auth_check,'immaasshhwwvv')
 
 
 

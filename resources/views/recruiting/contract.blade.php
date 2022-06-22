@@ -103,7 +103,7 @@
 
 
 
-            <div class="bg-gray mt-3 con">
+            <div class="bg-gray mt-3 con"  style="margin-bottom: 50px;">
                 <!-- asdasda -->
                 
 
@@ -160,7 +160,7 @@
 
                     <p class="agger mt">Нажимая "Подписать и продолжить" вы соглашаетесь с условиями данного договора и подтверждаете подлинность приложенных документов</p>
                     {{ csrf_field() }}
-                    <button class="btm btn-success" id="submit">
+                    <button class="btm btn-success" id="submit" style="margin-bottom: 30px;">
                         Подписать и продолжить
                     </button>
                 </form>
