@@ -1,3 +1,4 @@
+
 <template>
   <div class="video-playlist">
     <div class="d-flex jcsb mb-4">
@@ -297,10 +298,8 @@ export default {
 
           this.playlist = response.data.playlist;
           this.categories = response.data.categories;
-          
-          console.log(this.playlist.videos);
 
-          this.activeVideo = this.playlist.videos[this.myvideo-1];
+          this.activeVideo = this.playlist.videos.filter(video => video.id === this.myvideo)[0];//this.playlist.videos[this.myvideo-1];
           this.sidebars.edit_video.show = true;
 
         })
@@ -488,7 +487,7 @@ export default {
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
       if (history.pushState) {
-          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(key+1));
+          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+video.id);
           history.pushState(null, null, newUrl);
       }
       else {
