@@ -910,11 +910,11 @@ export default {
           // console.log(response.data['individual_type'],'ind');
           // console.log(this.fields,'fields');
 
-          if (response.data['individual_type'] == 2 || response.data['individual_type'] == 3){
-            this.individual_request = false
-          }else {
-            this.individual_request = true
-          }
+          // if (response.data['individual_type'] == 2 || response.data['individual_type'] == 3){
+          //   this.individual_request = false
+          // }else {
+          //   this.individual_request = true
+          // }
 
 
           this.currentGroup = response.data['individual_current']

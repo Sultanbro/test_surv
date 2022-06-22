@@ -3,6 +3,9 @@
         height: calc(100vh - 94px);
         overflow-y:auto ;
         overflow-x: hidden;
+        &.expand {
+            height: calc(100vh - 65px);
+        }
     }
     .section {
         padding: 8px 0;

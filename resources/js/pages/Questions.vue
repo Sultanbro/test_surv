@@ -48,62 +48,43 @@
         ></i>
       </div>
 
-      <div v-if="q.editable">
+      <div v-if="q.editable || mode == 'read'">
         <select v-model="q.type" class="type mt-2" v-if="mode == 'edit'">
           <option value="0">Тест</option>
           <option value="1">Открытый вопрос</option>
         </select>
 
-        <template v-if="mode == 'edit'">
-          <div class="variants" v-if="q.type == 0">
-            <div
-              class="variant d-flex aic"
-              v-for="(v, v_index) in q.variants"
-              :key="v_index"
-            >
-              <input type="checkbox" v-model="v.right" class="mr-2" />
-              <input
-                type="text"
-                v-model="v.text"
-                placeholder="Введите вариант ответа..."
-                @keyup.enter="addVariant(q_index, v_index)"
-                @keyup.delete="deleteVariant(q_index, v_index)"
-                :ref="`variant${q_index}_${v_index}`"
-              />
-            </div>
+     
+        <div class="variants" v-if="q.type == 0">
+          <div
+            class="variant d-flex aic"
+            v-for="(v, v_index) in q.variants"
+            :key="v_index"
+          >
+            <input type="checkbox" v-model="mode == 'edit' ? v.right : v.checked" class="mr-2" title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько" />
+          
+            <input
+              type="text"
+              v-model="v.text"
+              :disabled="mode == 'read'"
+              placeholder="Введите вариант ответа..."
+              @keyup.enter="addVariant(q_index, v_index)"
+              @keyup.delete="deleteVariant(q_index, v_index)"
+              :ref="`variant${q_index}_${v_index}`"
+            />
           </div>
-        </template>
+        </div>
+        <div v-else>
+          <input type="text" v-model="q.result" />
+        </div>
+        
 
-        <template v-if="mode == 'read'">
-          <div class="variants" v-if="q.type == 0">
-            <div
-              class="variant d-flex aic"
-              v-for="(v, v_index) in q.variants"
-              :key="v_index"
-            >
-              <input type="checkbox" v-model="v.checked" class="mr-2" />
-              <input
-                type="text"
-                v-model="v.text"
-                disabled
-                placeholder="..."
-                @keyup.enter="addVariant(q_index, v_index)"
-                @keyup.delete="deleteVariant(q_index, v_index)"
-                :ref="`variant${q_index}_${v_index}`"
-              />
-            </div>
-          </div>
-          <div v-else>
-            <input type="text" v-model="q.result" />
-          </div>
-        </template>
 
-        <template v-if="mode == 'edit'">
-          <div class="points">
-            <p>Баллы</p>
-            <input type="number" v-model="q.points" min="0" max="999" />
-          </div>
-        </template>
+        <div class="points" v-if="mode == 'edit'">
+          <p>Баллы</p>
+          <input type="number" v-model="q.points" min="0" max="999" />
+        </div>
+
       </div>
     </div>
 

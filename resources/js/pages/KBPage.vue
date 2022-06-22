@@ -13,7 +13,7 @@
         </div>
         
         
-        <div class="sections-wrap noscrollbar" v-if="!showArchive"> 
+        <div class="sections-wrap noscrollbar" v-if="!showArchive" :class="{ 'expand' : mode == 'read'}"> 
 
 
           <draggable 
@@ -53,13 +53,12 @@
             <div
               class="section d-flex aic jcsb"
              
-              v-if="[5,18,157,84].includes(auth_user_id)"
+              v-if="can_edit"
               @click.stop="selectSection(book)"
             >
               <p>{{ book.title }}</p>
               <div class="section-btns">
-                <i class="fa fa-trash mr-1" @click.stop="restoreSection(b_index)"></i>
-                <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
+                <i class="fa fa-trash-restore mr-1" @click.stop="restoreSection(b_index)"></i>
               </div>
             </div>
           </template>
@@ -67,13 +66,13 @@
 
         <div  v-if="mode == 'edit'">
           <div class="d-flex jscb" v-if="!showArchive">
-            <div class="btn btn-grey w-full mr-1" @click="getArchivedBooks" v-if="[5,18,157,84].includes(auth_user_id)">
-              <i class="fa fa-trash"></i>
-              <span>Архив</span>
-            </div>
-            <div class="btn btn-grey w-full" @click="showCreate = true" v-if="[5,18,157,84].includes(auth_user_id)">
+            
+            <div class="btn btn-grey w-full mr-1" @click="showCreate = true" v-if="can_edit">
               <i class="fa fa-plus"></i>
               <span>Добавить</span>
+            </div>
+            <div class="btn btn-grey" title="Архив" @click="getArchivedBooks" v-if="can_edit">
+              <i class="fa fa-box"></i>
             </div>
           </div>
         </div>
