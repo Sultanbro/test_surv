@@ -29,7 +29,7 @@
                      <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in auth_check">
                        <span class="font-weight-bold">{{item.title}}</span>
 
-                       <div class="col-6 p-0 mt-2" v-for="(val,ind) in item.check_input">
+                       <div class="col-10 p-0 mt-2" v-for="(val,ind) in item.check_input">
 
                           <div class="mr-5">
                             <b-form-checkbox v-model="val.checked" size="sm" >

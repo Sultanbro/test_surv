@@ -1623,6 +1623,8 @@ class UserController extends Controller
 
 
 
+
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1680,6 +1682,10 @@ class UserController extends Controller
         /********** Редактирование user  */
         /*==============================================================*/     
 
+        if (isset($request['selectedCityInput']) && empty($request['selectedCityInput'])){
+            $request['working_city'] = null;
+            $request['selectedCityInput'] = null;
+        }
         $user->email = strtolower($request['email']);
         $user->name = $request['name'];
         $user->last_name = $request['last_name'];
