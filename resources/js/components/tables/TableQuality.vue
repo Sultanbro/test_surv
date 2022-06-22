@@ -491,6 +491,8 @@
                              {{checked_day}}
                            </template>
 
+
+
                          </template>
                        </template>
                      </td>
@@ -753,6 +755,7 @@ export default {
           montheCheck:false
       },
       active:1,
+      selected_active:1,
 
     };
   },
@@ -774,21 +777,14 @@ export default {
   },
   methods: {
 
-    myClickEvent($event) {
-      const elem = this.$refs.myBtn
-      elem.click()
-
-      console.log(this.individual_type , this.individual_type_id)
-      console.log('click')
-    },
 
 
     viewStaticCheck(type){
         // console.log(this.fields,'day');
         // console.log(this.monthFields,'mont');
         // console.log(this.currentGroup,'щзешщт')
-        // console.log(this.fields,'fields')
-        // console.log(this.check_result,'result');
+        console.log(this.fields,'fields')
+        console.log(this.check_result,'result');
         // console.log(this.items,'items')
         if (type == 'w'){
             this.viewStaticButton.weekCheck = true
@@ -891,6 +887,13 @@ export default {
     fetchItems($url = "/timetracking/quality-control/records") {
       let loader = this.$loading.show();
 
+      // selected_active
+      // console.log(this.active,'ssssssssssss')
+
+      if (this.active == 3 && this.individual_type == 2){
+          this.currentGroup = this.individual_type_id
+      }
+
       axios
         .post($url, {
           day: this.currentDay,
@@ -912,6 +915,8 @@ export default {
           }else {
             this.individual_request = true
           }
+
+
           this.currentGroup = response.data['individual_current']
 
 

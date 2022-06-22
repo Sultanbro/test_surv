@@ -90,7 +90,9 @@
                                 class="selected-item"
                                 :class="'value' + value.type">
                               {{ value.name }}
-                              <i class="fa fa-times" @click.stop="removeValue(i)"></i>
+                              <i  v-if="value.checked" class="fa fa-times" @click.stop="removeValue(i,'1')"></i>
+
+                              <i  v-else class="fa fa-times" @click.stop="removeValue(i,'2')"></i>
                             </div>
                           </div>
 
@@ -138,8 +140,12 @@
                                   <i class="fa fa-user" v-if="option.type == 1"></i>
                                   <i class="fa fa-users" v-if="option.type == 2"></i>
                                   <i class="fa fa-briefcase" v-if="option.type == 3"></i>
-                                  {{ option.name }}
-                                  <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
+                                     {{ option.name }}
+                                   <i  class="fa fa-times" v-if="option.selected"
+                                      @click.stop="removeValueFromList(index)">
+                                   </i>
+
+
                                 </div>
 
                               </div>
@@ -435,6 +441,12 @@
           },
             addNewCheckModalShow(){
 
+                if (this.values.length == 0){
+                  this.placeholderSelect = true
+                }else {
+                  this.placeholderSelect = false
+                }
+
                 this.showModalCheck = false,
                 this.showCheckSideBar = true
                 this.addButton = true
@@ -481,29 +493,30 @@
                     loader.hide();
 
 
-                    console.log(response,'edit-Imashev')
+
+                    console.log(response,'imashevss')
 
                     if (response.data.success === false){
                       this.errors.msg = null;
                       this.errors.show = true;
                       if (response.data.exists[0]['item_type'] == 1){
+                        this.errors.message = 'Данный Пользователь '+response.data.exists[0]['title']+  ' Ранне Добавлено';
+                        this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+  ' Ранне Добавлено';
+                        this.$message.error(this.errors.msg);
+                      }else if(response.data.exists[0]['item_type'] == 2){
                         this.errors.message =  'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                         this.errors.msg = 'Данная Группа ' +response.data.exists[0]['title']+  ' Ранне Добавлено  ';
                         this.$message.error(this.errors.msg);
-                      }else if(response.data.exists[0]['item_type'] == 2){
+                      }else if(response.data.exists[0]['item_type'] == 3){
                         this.errors.message = 'Данная ' +response.data.exists[0]['title']+  ' Должность Ранне Добавлено ';
                         this.errors.msg = 'Данная ' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
-                        this.$message.error(this.errors.msg);
-                      }else if(response.data.exists[0]['item_type'] == 3){
-                        this.errors.message = 'Данный Пользователь '+response.data.exists[0]['title']+  ' Ранне Добавлено';
-                        this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+  ' Ранне Добавлено';
                         this.$message.error(this.errors.msg);
                       }
                     }else {
 
 
-
-                      this.viewCheck()
+                      //
+                      // this.viewCheck()
 
                       this.$message.success('Успешно изменен');
                       this.errors.show = false;
@@ -529,6 +542,7 @@
 
 
             },
+
             editCheck(check_id,type){
 
 
@@ -546,6 +560,9 @@
 
                     console.log(response,'click')
 
+                    this.values = []
+                    this.placeholderSelect = false
+
 
                     // this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
 
@@ -553,12 +570,23 @@
                     this.valueFindGr = response.data.item_id;
                     this.countView = response.data.count_view;
                     this.arrCheckInput = JSON.parse(response.data['active_check_text'])
-
                     this.editValueThis.view = true
                     this.editValueThis.arr= response.data
 
 
                     this.showModalCheck = true
+
+
+                    this.values.push({
+                      name: response.data.title,
+                      id: response.data.item_id,
+                      type: response.data.item_type,
+                      checked:false,
+                    });
+
+
+                    console.log(this.values,'xzxzx')
+                    console.log(this.filtered_options,'077777')
 
                     // this.selectedRoles(type)
 
@@ -618,9 +646,6 @@
                   }).then(response => {
                     loader.hide();
 
-
-                    console.log(response,'iimmaasshheevv')
-                    console.log(this.values,'this.values')
 
 
                     if (response.data.success == false){
@@ -899,9 +924,9 @@
                 && this.values[0]['id']== 0
                 && this.values[0]['type'] == 0) {
               this.selected_all = true;
-              console.log('okay');
+              // console.log('okay');
             } else {
-              console.log('wtf');
+              // console.log('wtf');
             }
           },
 
@@ -945,7 +970,7 @@
           addValue(index) {
 
 
-              console.log(this.single)
+
 
             if(this.single) this.show = false;
 
@@ -962,35 +987,43 @@
               this.values.push({
                 name: item.name,
                 id: item.id,
-                type: item.type
+                type: item.type,
+                checked:true,
               });
 
               item.selected = true
 
               this.placeholderSelect = false
+
+              console.log(this.filtered_options,'ffff')
             }
 
 
-            console.log(this.values,'0778')
 
 
           },
 
-          removeValue(i) {
-            let v = this.values[i];
-            if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
+          removeValue(i,type) {
 
-            this.values.splice(i, 1);
+              if (type == 1){
+                let v = this.values[i];
+                if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
-            let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
-            if(index != -1) this.filtered_options.splice(index, 1);
+                this.values.splice(i, 1);
 
-            if (this.values.length == 0){
-              this.placeholderSelect = true
-            }
+                let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
+                if(index != -1) this.filtered_options.splice(index, 1);
 
-            console.log(this.values,'removes')
-            console.log(this.values.length,'removes')
+                if (this.values.length == 0){
+                  this.placeholderSelect = true
+                }
+              }else if (type == 2){
+                this.errors.show = true
+                this.errors.message = 'Невозможно удалить '
+              }
+
+
+
           },
 
           removeValueFromList(i) {
