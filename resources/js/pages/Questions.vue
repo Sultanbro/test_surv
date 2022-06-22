@@ -65,7 +65,7 @@
               <input
                 type="text"
                 v-model="v.text"
-                placeholder="..."
+                placeholder="Введите вариант ответа..."
                 @keyup.enter="addVariant(q_index, v_index)"
                 @keyup.delete="deleteVariant(q_index, v_index)"
                 :ref="`variant${q_index}_${v_index}`"
