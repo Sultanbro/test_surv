@@ -200,6 +200,8 @@ Route::middleware([
     Route::post('/admin/upbooks/update', [UpbookController::class, 'update']);
     Route::post('/admin/upbooks/delete', [UpbookController::class, 'delete']);
 
+    Route::post('/playlists/delete-question',[VideoPlaylistController::class, 'deleteQuestion']);
+
 
     // @TODO CHECK AND DELETE THIS ROUTES
     Route::get('/bp_books', [BookController::class, 'index']);
