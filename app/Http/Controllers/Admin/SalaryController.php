@@ -1042,8 +1042,9 @@ class SalaryController extends Controller
         */
 
      
-
-        return Excel::download(new UsersImport($data,$group),'Начисления ' . $edate .' "'.$group->name . '".xls');
+        $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'],$data[0]['sheet'], $group ,$data[0]['counter']);
+        $exp_title = 'Начисления ' . $edate .' "'.$group->name . '".xlsx';
+        return Excel::download($exp, $exp_title);
         //dd(array_keys($data));
         //return $data['users'];
         //return Excel::download(new UsersExport, 'users.xlsx');

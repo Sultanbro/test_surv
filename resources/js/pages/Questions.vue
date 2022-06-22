@@ -10,6 +10,7 @@
         <textarea
           v-model="q.text"
           placeholder="Текст вопроса..."
+          @keyup="changed = true"
           v-if="q.editable"
         ></textarea>
         <input
@@ -61,8 +62,21 @@
             v-for="(v, v_index) in q.variants"
             :key="v_index"
           >
-            <input type="checkbox" v-model="mode == 'edit' ? v.right : v.checked" class="mr-2" title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько" />
-          
+            <input 
+              v-if="mode == 'edit'"
+              type="checkbox"
+              v-model="v.right" 
+              class="mr-2" 
+              @change="changed = true"
+              title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько" />
+            <input 
+              v-else
+              type="checkbox"
+              v-model="v.checked" 
+              class="mr-2" 
+              @change="changed = true"
+              title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько" />
+
             <input
               type="text"
               v-model="v.text"
@@ -106,7 +120,7 @@
     </template>
     <template v-if="mode == 'edit'">
       <button
-        v-if="['kb','video'].includes(type) && questions.length > 0"
+        v-if="['kb','video'].includes(type) && changed"
         class="btn btn-success mr-2" 
         @click="saveTest"
         :disabled="!can_save"
@@ -124,7 +138,8 @@ export default {
   props: ["questions", "type", "id", "mode"],
   data() {
     return {
-      can_save: false,
+      can_save: true,
+      changed: false,
       questionsx: [
         {
           text: "Кто это был?",
@@ -241,6 +256,8 @@ export default {
           input.focus();
         });
       }
+      
+      this.changed = true;
     },
 
     saveQuestion(q_index) {
@@ -298,6 +315,7 @@ export default {
       this.questions.push(this.defaultQuestion());
       this.questions[this.questions.length - 1].editable = true;
       this.can_save = true;
+      this.changed = true;
     },
 
     deleteQuestion(q_index) {
@@ -313,6 +331,7 @@ export default {
               this.questions.splice(q_index, 1);
             })
         }
+        this.changed = true;
       }
     },
 
@@ -326,6 +345,8 @@ export default {
           v
         ].text;
       }
+      
+      this.changed = true;
     },
 
     saveTest() {
@@ -362,7 +383,7 @@ export default {
           loader.hide();
           alert(error);
         });
-    }
+    },
   },
 };
 </script>

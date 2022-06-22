@@ -64,6 +64,7 @@
               <div v-if="activePlaylist != null" class="">
                 <page-playlist-edit 
                   ref="playlist"
+                  :categories="categories"
                   @back="back" 
                   :token="token"
                   :id="activePlaylist.id"
@@ -332,9 +333,10 @@ export default {
         axios
           .post("/playlists/delete-cat", {
             id: this.categories[i].id
-          })
+          })  
           .then((response) => {
             this.categories.splice(i, 1);
+            this.activeCat = null;
             this.$message.success("Удалено");
           });
       }

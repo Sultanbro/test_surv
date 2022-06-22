@@ -60,10 +60,13 @@ class VideoCategoryController extends Controller {
 	}
 
 	public function add(Request $request) {
-		return Category::create([
+		$cat =  Category::create([
 			'title' => $request->title,
 			'parent_id' => null
-		]); 
+		]);
+
+		$cat->playlists = [];
+		return $cat; 
 	}
 
 	public function delete(Request $request) {

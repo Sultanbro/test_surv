@@ -6,10 +6,14 @@
 }
 
 .ibtn {
-    width: 40px;
+    background: #c3c4c7;
+    padding: 5px;
+    height: 28px;
+    width: 28px;
+    margin-right: 5px;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 }
 .p-title {
     border: none;
