@@ -1,10 +1,25 @@
 <template>
   <div class="video-playlist">
     <div class="d-flex jcsb mb-4">
-      <div class="s">
-        <h5 class="mb-0">{{ playlist.title }}</h5>
+      <div class="s w-full">
+        <div class="d-flex">
+         <input
+              type="text"
+              class="form-control w-full p-title"
+              v-model="playlist.title"
+              name="title"
+              :disabled="mode == 'read'"
+            />
+            <i class="fa fa-eye ibtn" v-if="mode == 'edit'" @click="show_pl_fields = !show_pl_fields"></i>
+          </div>
+          
+          <p class="mr-2">Количество видео: {{ playlist.videos.length }}</p>
       </div>
       <div class="d-flex align-items-start">
+
+         <button class="btn btn-sm  mr-3" @click="modals.upload.show = true" v-if="mode == 'edit'">
+              Загрузить видео
+            </button>
 
         <button class="btn btn-success mr-3" @click="savePlaylist">Сохранить</button>
 
@@ -16,39 +31,70 @@
     </div>
 
    
-    <div class="row">
+    <div class="row" >
 
-          <div class="col-lg-6">
-        <div class="d-flex justify-content-between">
-          <p class="mr-2">Количество видео: {{ playlist.videos.length }}</p>
-          <div class="d-flex align-items-start">
-            <!-- <button
-              class="btn btn-sm mr-2"
-              @click="modals.addVideo.show = true"
-            >
-              Добавить
-            </button> -->
-            <button class="btn btn-sm" @click="modals.upload.show = true">
-              Загрузить видео
-            </button>
-          </div>
+       
+        <div class="col-lg-6">
+
+        <div class="block  br" v-if="activeVideo != null">
+            <v-player :src="activeVideo.links" :key="activeVideo.id" />
+           
+            <div class="row mb-2 mt-2">
+            
+              <div class="col-md-12">
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="activeVideo.title"
+                  :disabled="mode == 'read'"
+                />
+              </div>
+            </div>
+            <div class="row mb-2" v-if="mode == 'edit'">
+              <div class="col-md-12">
+                <input
+                  type="text"
+                  placeholder="Ссылка на видео"
+                  class="form-control"
+                  v-model="activeVideo.links"
+                />
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-md-12">
+                <textarea
+                  class="form-control"
+                  placeholder="Описание видео"
+                  v-model="activeVideo.text"
+                  :disabled="mode == 'read'"
+                ></textarea>
+              </div>
+            </div>
+
+
+            <div class="vid mt-3">
+                <questions
+                    :questions="activeVideo.questions"
+                    :id="activeVideo.id"
+                    type="video"
+                    :mode="mode"
+                    />
+                    
+            </div>
         </div>
-        <div>
-          <label for="title">Название</label>
-          <div class="form-group">
-            <input
-              type="text"
-              class="form-control"
-              v-model="playlist.title"
-              name="title"
-            />
-          </div>
 
+      </div>
+
+      <div class="col-lg-6">
+
+         <div class="xxxx" v-if="show_pl_fields">
+       
           <div class="form-group">
             <label for="playlist_id">Категория</label>
             <select
               name="category_id"
               class="form-control"
+               :disabled="mode == 'read'"
               v-model="playlist.category_id"
             >
               <option v-for="cat in categories" :value="cat.id" :key="cat.id">
@@ -56,63 +102,26 @@
               </option>
             </select>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="text">Описание</label>
-          <textarea
-            name="text"
-            class="form-control textarea"
-            required
-            v-model="playlist.text"
-          ></textarea>
-        </div>
-      </div>
 
-      <div class="col-lg-6">
-
-        <div v-for="(group, v_index) in playlist.groups" class="group">
-
-
-             <template v-for="(video, v_index) in group.videos">
-                <div
-                  class="video-block"
-                  :key="video.id"
-                  @click.stop="showVideoSettings(video, v_index)"
-                >
-                  <div class="mover">
-                    <i class="fa fa-bars"></i>
-                  </div>
-                  <div class="img">
-                    <img src="/video_learning/noimage.png" alt="text" />
-                  </div>
-                  <div class="desc">
-                    <h4>{{ video.title }}</h4>
-                    <div class="text" v-html="video.desc"></div>
-                  </div>
-                  <div class="controls">
-                    <i class="fas fa-ellipsis-h"></i>
-                    <div class="controls-menu">
-                      <div class="item" @click.stop="removeVideo(v_index)">
-                        <i class="fa far fa-trash"></i>
-                        <div class="text">Убрать из плейлиста</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </template>
-
+          <div class="form-group">
+            <label for="text">Описание плейлиста</label>
+            <textarea
+              name="text"
+              class="form-control textarea"
+              required
+              v-model="playlist.text"
+               :disabled="mode == 'read'"
+            ></textarea>
+          </div>
         </div>
 
-        <!-- <draggable
-          class="videos"
-          tag="div"
-          handle=".fa-bars"
-          :list="playlist.videos"
-          :group="{ name: 'g1' }"
-          @end="saveOrder"
-        >
-         
-        </draggable> -->
+        <video-accordion 
+          :groups="playlist.groups"
+          mode="edit"
+          @showVideoSettings="showVideoSettings"
+          />
+
+       
       </div>
   
     </div>
@@ -215,68 +224,6 @@
       </div>
     </b-modal>
 
-    <sidebar
-      title="Редактирование видео"
-      :open="sidebars.edit_video.show"
-      @close="closeSidebar"
-      width="50%"
-    >
-      <div class="fast-edit">
-        <div v-if="activeVideo !== null">
-          <!-- <vue-core-video-player :src="activeVideo.links"  class="mb-3 w65"></vue-core-video-player> -->
-          <v-player :src="activeVideo.links" />
-
-          <div class="row mb-2">
-            <div class="col-md-4">
-              Название
-            </div>
-            <div class="col-md-8">
-              <input
-                type="text"
-                class="form-control"
-                v-model="activeVideo.title"
-              />
-            </div>
-          </div>
-          <div class="row mb-2">
-            <div class="col-md-4">
-              Ссылка на видео
-            </div>
-            <div class="col-md-8">
-              <input
-                type="text"
-                class="form-control"
-                v-model="activeVideo.links"
-                disabled
-              />
-            </div>
-          </div>
-          <div class="row mb-2">
-            <div class="col-md-4">
-              Описание
-            </div>
-            <div class="col-md-8">
-              <textarea
-                class="form-control"
-                v-model="activeVideo.text"
-              ></textarea>
-            </div>
-          </div>
-
-
-           <div class="vid">
-                <questions
-                    :questions="activeVideo.questions"
-                    :id="activeVideo.id"
-                    type="video"
-                    mode="edit"
-                    />
-            </div>
-
-
-        </div>
-      </div>
-    </sidebar>
   </div>
 </template>
 
@@ -290,12 +237,14 @@ export default {
     id: Number,
     auth_user_id: Number,
     myvideo: Number,
+    mode: String
   },
   data: function() {
     return {
       categories: [],
       all_videos: [],
       activeVideo: null,
+      show_pl_fields: false,
       playlist: {
         id: 1,
         category_id: 1,
@@ -330,9 +279,7 @@ export default {
     };
   },
   watch: {
-    id(val) {
-      this.fetchData();
-    },
+  
   },
 
   created() {
@@ -537,6 +484,7 @@ export default {
     },
 
     showVideoSettings(video, key) {
+      console.log(video)
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
       if (history.pushState) {
@@ -591,6 +539,8 @@ export default {
           alert(error);
         });
     },
+
+ 
   },
 };
 </script>

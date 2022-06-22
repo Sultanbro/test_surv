@@ -5,6 +5,19 @@
     overflow-y: auto;
 }
 
+.ibtn {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.p-title {
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    padding: 0;
+}
 .video-block {
     display: flex;
     border: 1px solid #efefef;

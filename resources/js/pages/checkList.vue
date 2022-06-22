@@ -140,9 +140,7 @@
                                   <i class="fa fa-user" v-if="option.type == 1"></i>
                                   <i class="fa fa-users" v-if="option.type == 2"></i>
                                   <i class="fa fa-briefcase" v-if="option.type == 3"></i>
-                                  {{ option.name }}
-
-
+                                     {{ option.name }}
                                    <i  class="fa fa-times" v-if="option.selected"
                                       @click.stop="removeValueFromList(index)">
                                    </i>

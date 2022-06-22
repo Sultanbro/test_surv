@@ -32,7 +32,7 @@ class CheckReports extends Model
     {
         $check_users = [];
 
-        if ($request->individual_type == 1 || $request->individual_type == null){
+        if ($request->individual_type == 2 || $request->individual_type == null){
             $group = ProfileGroup::find($request->group_id);
             foreach (json_decode($group->users) as $keys => $check_user){
 
@@ -70,9 +70,9 @@ class CheckReports extends Model
                 }
 
             }
-            return ['check_users'=>$check_users,'individual_type'=>1,'individual_current'=>$request->group_id];
+            return ['check_users'=>$check_users,'individual_type'=>2,'individual_current'=>$request->group_id];
         }
-        elseif ($request->individual_type == 3) {
+        elseif ($request->individual_type == 1) {
 
             $getUser = User::find($request->individual_type_id);
 
@@ -96,6 +96,8 @@ class CheckReports extends Model
             $monthCountCheckAuth = CheckReports::on()->where('check_users_id',$getUser->id)
                 ->where('year',$request->year)->where('item_id',$getUser->id)->sum('count_check_auth');
 
+
+
             foreach ($allUserReports as $allUserReport){
                 $check_users[0]['name'] = $getUser->name;
                 $check_users[0]['last_name'] = $getUser->last_name;
@@ -104,11 +106,15 @@ class CheckReports extends Model
                 $check_users[0]['gr_id'] = $allUserReport['item_id'];
                 $check_users[0]['total_day'] = $dayCountCheckAuth .'/' .$dayCountCheck;
                 $check_users[0]['total_month'] = $monthCountCheckAuth.'/' .$monthCountCheck;
+
+
+
+
             }
-            return ['check_users'=>$check_users,'individual_type'=>3,'individual_current'=>$getUser->id];
+            return ['check_users'=>$check_users,'individual_type'=>1,'individual_current'=>$getUser->id];
 
         }
-        elseif ($request->individual_type == 2){
+        elseif ($request->individual_type == 3){
 
             $users = User::where('position_id',$request->individual_type_id)->select('id','last_name','name')->get();
 
@@ -148,7 +154,7 @@ class CheckReports extends Model
                 }
 
             }
-            return ['check_users'=>$check_users,'individual_type'=>2,'individual_current'=>$request->individual_type_id];
+            return ['check_users'=>$check_users,'individual_type'=>3,'individual_current'=>$request->individual_type_id];
         }
 
 

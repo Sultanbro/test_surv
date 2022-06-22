@@ -10,20 +10,32 @@ class VideoGroup extends Model
 
     public $timestamps = true;
 
+    protected $appends = ['opened'];
+
     protected $fillable = [
         'title',
         'parent_id',
         'category_id' // Должно быть playlist_id, спутал в миграции. Исправьте пожалуйста
     ];
 
-    public function videos()
+    public function getOpenedAttribute()
     {
-        return $this->hasMany('App\Models\Videos\Video', 'group_id', 'id');
+        return false;
+    }
+
+    public function videos()
+    { 
+        return $this->hasMany('App\Models\Videos\Video', 'group_id', 'id')->with('questions')->orderBy('order', 'asc');
     }
 
     public function playlist() 
     {
         return $this->belongsTo('App\Models\Videos\VideoPlaylist', 'category_id', 'id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id')->with('children','videos');
     }
 
     public function parent() 

@@ -26,19 +26,28 @@
                 <div class="row">
                    <div class="col-12 p-0">
 
-                     <div class="col-md-6 pr-0 mt-2" v-for="(item, index) in auth_check">
+                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in auth_check">
                        <span class="font-weight-bold">{{item.title}}</span>
 
                        <div class="col-6 p-0 mt-2" v-for="(val,ind) in item.check_input">
-                         <b-form-checkbox v-model="val.checked" size="sm" >
-                           <span style="cursor: pointer">{{val.text}}</span>
-                         </b-form-checkbox>
 
+                          <div class="mr-5">
+                            <b-form-checkbox v-model="val.checked" size="sm" >
+                              <span style="cursor: pointer">{{val.text}}</span>
+                            </b-form-checkbox>
+                          </div>
 
-                         <div style="position: absolute;right: 0px;top: 0px">
-                            <input v-model="val.https" class="form-control form-control-sm" placeholder="url">
+                          <div style="position: absolute;right: 0px;top: 0px">
+                           <input style="width: 150%" v-model="val.https" class="form-control form-control-sm" placeholder="url">
                          </div>
+
                        </div>
+
+
+
+
+
+
 
 
 

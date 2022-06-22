@@ -78,14 +78,11 @@ class QualityController extends Controller
 
     public function getRecords(Request $request) {
 
-
 //        return $request;
 
-        if ($request->individual_type == 1){
-            $request->group_id = $request->individual_type_id;
-        }elseif ($request->individual_type == 3){
-            $request->group_id = 26;
-        }
+//        if ($request->individual_type == 1){
+//            $request->group_id = 26;
+//        }
 
 
 

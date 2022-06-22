@@ -71,7 +71,18 @@ class VideoPlaylistController extends Controller {
 	public function getPlaylist(Request $request) {
 
 		$pl =  Playlist::with('groups')->find($request->id);
+
+	
+		$no_group_videos = Video::where('group_id', 0)->where('playlist_id', $pl->id)->with('questions')->get();
+
+		if($no_group_videos->count() > 0) {
+			$pl->groups->prepend(['title' => 'Без группы', 'id' => 0, 'videos' => $no_group_videos, 'opened' => false]);
+		}
 		
+		// if($pl->groups->count() > 0) {
+		// 	$pl->groups[0]['opened'] = true;
+		// }
+
 		foreach($pl->videos as $video) {
 			$video->questions = TestQuestion::where('testable_type', 'App\Models\Videos\Video')
 				->where('testable_id', $video->id)
@@ -204,6 +215,7 @@ class VideoPlaylistController extends Controller {
 
 	public function saveTest(Request $request)
     {
+		$ids = [];
         foreach ($request->questions as $key => $q) {
             $params = [
                 'order' => 0,
@@ -221,11 +233,14 @@ class VideoPlaylistController extends Controller {
                 if ($testq) {
                     $testq->update($params);
                 }
-
+				$ids[] = $testq['id'];
             } else {
-                TestQuestion::create($params);
+                $q = TestQuestion::create($params);
+				$ids[] = $q->id; 
             }
         }
+
+		return $ids; 
     }
 	
 }
