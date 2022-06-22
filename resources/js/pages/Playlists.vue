@@ -208,17 +208,7 @@ export default {
   },
 
   created() {
-    // устанавливаем прошлые значения если страница была обновлена
-
-  
-    //конец
-
-    if(this.can_edit) {
-      this.mode = 'edit';
-    } 
-
      this.fetchData();
-    
   },
 
   methods: {

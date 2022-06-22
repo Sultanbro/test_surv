@@ -49,7 +49,7 @@
       <div class="hat">
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">
-            <a href="#">База знаний</a>
+            <a href="#" @click="$emit('back')">База знаний</a>
             <template v-for="(bc, bc_index) in breadcrumbs">
               <i class="fa fa-chevron-right"></i>
               <a href="#" @click="showPage(bc.id)">{{ bc.title }}</a>

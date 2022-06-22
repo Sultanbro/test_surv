@@ -257,9 +257,6 @@ export default {
     };
   },
   created() {
-    if(this.can_edit) {
-      this.mode = 'edit';
-    } 
 
     this.fetchData();
   },
