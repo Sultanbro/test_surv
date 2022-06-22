@@ -31,8 +31,23 @@ class VerifyCsrfToken extends Middleware
         '/bp/job/skype/', 
         '/bp/choose_time', 
         '/getpass',
+        '/api/intellect/start',
+        '/api/intellect/save',
         '/api/intellect/get_link',
-        '/api/intellect/get_name'
+        '/api/intellect/get_name',
+        '/api/intellect/get_time',
+        '/api/intellect/change_status',
+        '/api/intellect/send_message',
+        '/api/intellect/create_lead',
+        '/api/intellect/save_quiz_after_fire',
+        '/api/intellect/save_estimate_trainer',
+        '/api/bitrix/new-lead',
+        '/api/bitrix/edit-lead',
+        '/api/bitrix/edit-deal',
+        '/api/bitrix/lose-deal',
+        '/api/bitrix/create-link',
+        '/api/bitrix/change-resp',
+        '/api/bitrix/inhouse',
     ];
 
 

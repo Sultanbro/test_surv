@@ -36,7 +36,7 @@ class VideoPlaylistController extends Controller {
 		return view('videolearning.playlists.index'); 
 	}
 
-	public function savedIndex(Request $request){
+	public function saveIndex(Request $request){
 		View::share('menu', 'video_edit');
         View::share('link', 'video_edit');
 		return view('videolearning.playlists.index',[ 
@@ -46,7 +46,7 @@ class VideoPlaylistController extends Controller {
 	}
 
 
-	public function savedIndexVideo(Request $request){
+	public function saveIndexVideo(Request $request){
 		View::share('menu', 'video_edit');
         View::share('link', 'video_edit');
 		return view('videolearning.playlists.index',[ 
