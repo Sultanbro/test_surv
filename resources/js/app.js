@@ -29,7 +29,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
 import VueVideoPlayer from 'vue-video-player'
  
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+ 
 
+Vue.use(DatePicker)
 
 Vue.use(VueVideoPlayer, /* {
   options: global default options,
