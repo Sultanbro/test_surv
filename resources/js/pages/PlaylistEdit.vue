@@ -541,6 +541,9 @@ export default {
           this.modals.addVideo.searchVideos = this.all_videos;
 
           this.playlist = response.data.playlist;
+
+          if(this.playlist.videos.length > 0) this.activeVideo = this.playlist.videos[0];
+
           
         })
         .catch((error) => {
@@ -555,7 +558,6 @@ export default {
         })
         .then((response) => {
           this.$message.success('Сохранено');
-          this.$emit('back');
         })
         .catch((error) => {
           alert(error);

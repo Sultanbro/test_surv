@@ -106,10 +106,15 @@ class KnowBaseController extends Controller
         $items = KnowBase::where('title', 'like', $phrase)
             ->orWhere('text', 'like', $phrase)
             ->orderBy('order')
+            ->limit(10)
             ->get();
+
+    
+           
 
         foreach ($items as $key => $item) {
             $item->text = $this->cutFragment($item->text, $request->text);
+            $item->book = $this->getTopParent($item->id);
         }
 
         return [
@@ -127,7 +132,7 @@ class KnowBaseController extends Controller
             $start_pos = 0;
         }
 
-        return '...' . mb_substr($plainText, $start_pos, 50);
+        return '...' . mb_substr($plainText, $start_pos, 50) . '...';
     }
 
     public function getArchived(Request $request)

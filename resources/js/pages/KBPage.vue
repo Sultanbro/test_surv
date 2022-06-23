@@ -183,23 +183,30 @@
     >
 
       <div>
-        <input
-          type="text"
-          v-model="search.input"
-          @keyup="searchInput"
-          placeholder="Поиск по всей базе..."
-          class="form-control mb-2"
-        />
+        <div class="d-flex relative  mb-2">
+          <input
+            type="text"
+            v-model="search.input"
+            @keyup.enter="searchInput"
+            placeholder="Поиск по всей базе..."
+            class="form-control"
+          />
+          <button class="search-btn btn" v-if="search.input != ''" @click="searchInput">Искать</button>
+        </div>
 
         <div class="s-content">
-         <div class="item" v-for="item in search.items" @click="selectSection(item, item.id)" >
+           <div class="sss" v-if="search.input.length >=3 && search.items.length == 0">
+            <p>По запросу "{{ search.input }}" ничего не найдено.</p>
+          </div>
+         <div class="item" v-for="item in search.items" @click="selectSection(item.book, item.id)" >
+           <p v-if="item.book != null" class="book">{{ item.book.title }}</p>
            <p>{{ item.title }}</p>
            <div class="text" v-html="item.text"></div>
          </div>
         </div>
         
       </div>
-      
+        
     </b-modal>
   </div>
 </template>
