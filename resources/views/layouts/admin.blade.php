@@ -15,8 +15,8 @@
     <link rel="stylesheet" href="/admin/css/custom.css">
     <link rel="stylesheet" href="/css/admin/app.css?6">
     <link rel="stylesheet" href="/admin/css/all.min.css">
+    <link rel="stylesheet" href="/admin/css/croppie.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
-
     @yield('head')
     @yield('styles')
  
@@ -82,6 +82,8 @@ $(document).ready(function(){
 <!-- <script src="/js/manifest.js"></script>
 <script src="/js/vendor.js"></script>  -->
 <script src="{{ url('/js/app.js') }}"></script>
+<script src="{{ url('/js/croppie.js') }}"></script>
+<script src="{{ url('/js/croppie.min.js') }}"></script>
 
 
 @include('includes.admin_notifications_css_js')

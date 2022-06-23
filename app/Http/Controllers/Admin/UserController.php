@@ -77,6 +77,73 @@ class UserController extends Controller
         $this->middleware('auth');
     }
 
+
+    public function uploadPhoto(Request $request)
+    {
+
+
+
+        $data = $request["image"];
+
+        $image_array_1 = explode(";", $data);
+
+        $image_array_2 = explode(",", $image_array_1[1]);
+
+        $data = base64_decode($image_array_2[1]);
+
+        $imageName = time() . '.png';
+
+
+        if (isset($request['user_id']) && $request['user_id'] != 'new_user'){
+
+            $update_user = User::find($request['user_id']);
+            if (!empty($update_user['img_url'])){
+                unlink("users_img/".$update_user['img_url']);
+            }
+            $update_user['img_url'] = $imageName;
+            $update_user->save();
+
+            file_put_contents("users_img/$imageName", $data);
+            $img = '<img src="/users_img/'.$imageName.'"  />';
+
+            return response($img);
+
+        }elseif (isset($request['user_id']) && $request['user_id'] == 'new_user'){
+
+            $img = null;
+
+            return response($img);
+        }
+
+
+
+
+
+
+
+        request()->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($files = $request->file('image')) {
+
+            $fileName =  "image-".time().'.'.$request->image->getClientOriginalExtension();
+            $request->image->storeAs('image', $fileName);
+
+            $image = new Image;
+            $image->image = $fileName;
+            $image->save();
+
+            return Response()->json([
+                "image" => $fileName
+            ], Response::HTTP_OK);
+
+        }
+
+
+    }
+
+
     public function surv(Request $request)
     {
         View::share('menu', 'timetrackinguser');
