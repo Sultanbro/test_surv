@@ -134,22 +134,7 @@
       </div>
 
       <div class="col-lg-6 mb-3 mt-4 sssz">
-        <div class="dialerlist blu">
-          <multiselect
-            v-model="bgs"
-            :options="bookgroups"
-            :multiple="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            placeholder="Выберите группы книг"
-            label="name"
-            track-by="name"
-            :taggable="true"
-            @tag="addTag"
-          >
-          </multiselect>
-        </div>
+        
         <div class="dialerlist blu">
           <multiselect
             v-model="corps"
@@ -159,8 +144,8 @@
             :clear-on-select="false"
             :preserve-search="true"
             placeholder="Выберите корп книги"
-            label="name"
-            track-by="name"
+            label="title"
+            track-by="title"
             :taggable="true"
             @tag="addTag"
           >
@@ -493,7 +478,6 @@ export default {
   name: "groups",
   props: [
     "statuseses",
-    "book_groups",
     "corpbooks",
     "activeuserid",
     "archived_groupss",
@@ -509,9 +493,9 @@ export default {
       new_status: "",
       value: [], // selected users
       options: [], // users options
-      bgs: [], // selected bookgrroups
+   
       corps: [], // selected corp_books
-      bookgroups: [], // bookgroups options
+
       corp_books: [], // corp_books options
       archived_groups: [],
       payment_terms: "", // Условия оплаты труда в группе
@@ -584,7 +568,7 @@ export default {
   mounted() {
     this.statuses = JSON.parse(this.statuseses);
     this.archived_groups = JSON.parse(this.archived_groupss);
-    this.bookgroups = JSON.parse(this.book_groups);
+
     this.corp_books = JSON.parse(this.corpbooks);
   },
 
@@ -636,18 +620,9 @@ export default {
       this.time_exceptions.push(tag);
     },
 
-    addBookGroupTag(newTag) {
-      const tag = {
-        bookgroup: newTag,
-        id: newTag,
-      };
-      this.bookgroups.push(tag);
-      this.bgs.push(tag);
-    },
-
     addCorpBookTag(newTag) {
       const tag = {
-        corp: newTag,
+        title: newTag,
         id: newTag,
       };
       this.corps.push(tag);
@@ -671,7 +646,7 @@ export default {
           if (response.data) {
             this.gname = response.data.name;
             this.value = response.data.users;
-            this.bgs = response.data.book_groups;
+           
             this.timeon = response.data.timeon;
             this.timeoff = response.data.timeoff;
             this.group_id = response.data.group_id;
@@ -713,7 +688,6 @@ export default {
           group: this.activebtn,
           gname: this.gname,
           users: this.value,
-          book_groups: this.bgs,
           corp_books: this.corps, 
           timeon: this.timeon,
           timeoff: this.timeoff,
