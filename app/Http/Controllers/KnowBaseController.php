@@ -10,6 +10,7 @@ use App\ProfileGroup;
 use App\Position;
 use DB;
 use Auth;
+use App\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -42,6 +43,69 @@ class KnowBaseController extends Controller
         return [
             'books' => $books->toArray()
         ];
+    }
+
+    public function getSettings(Request $request)
+    {    
+        $setting = Setting::where('name', 'send_notification_after_edit')
+            ->first();
+        
+        $send_notification_after_edit = false;
+        if($setting) {
+            $send_notification_after_edit = $setting->value == 1 ? true : false;
+        } else {
+            Setting::create([
+                'name' => 'send_notification_after_edit',
+                'value' => false,
+                'description' => 'Отправлять уведомления сотрудникам об изменениях в базе знаний'
+            ]);
+        }
+
+        // 2 правило
+        $setting = Setting::where('name', 'show_page_from_kb_everyday')
+            ->first();
+        
+        $show_page_from_kb_everyday = false;
+        if($setting) {
+            $show_page_from_kb_everyday = $setting->value == 1 ? true : false;
+        } else {
+            Setting::create([
+                'name' => 'show_page_from_kb_everyday',
+                'value' => false,
+                'description' => 'Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"'
+            ]);
+        }
+
+        
+        return [
+            'settings' => [
+                'send_notification_after_edit' => $send_notification_after_edit,
+                'show_page_from_kb_everyday' => $show_page_from_kb_everyday,
+            ]
+        ];
+    }
+
+    public function saveSettings(Request $request)
+    {   
+        $setting = Setting::where('name', 'send_notification_after_edit')
+            ->first();
+
+        if($setting) {
+            $setting->value = $request->send_notification_after_edit;
+            $setting->save();
+        }
+
+        // 2
+        $setting = Setting::where('name', 'show_page_from_kb_everyday')
+            ->first();
+
+        if($setting) {
+            $setting->value = $request->show_page_from_kb_everyday;
+            $setting->save();
+        }
+
+        
+        
     }
 
     private function getBooks($access = 0) {

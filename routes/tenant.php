@@ -223,6 +223,8 @@ Route::middleware([
     // База знаний
     Route::get('/kb', [KnowBaseController::class, 'index']);
     Route::get('/kb/get', [KnowBaseController::class, 'get']);
+    Route::get('/kb/get-settings', [KnowBaseController::class, 'getSettings']);
+    Route::post('/kb/save-settings', [KnowBaseController::class, 'saveSettings']);
     Route::post('/kb/get', [KnowBaseController::class, 'getPage']);
     Route::post('/kb/search', [KnowBaseController::class, 'search']);
     Route::get('/kb/get-archived', [KnowBaseController::class, 'getArchived']);

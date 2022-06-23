@@ -86,27 +86,16 @@
       <div class="mt-3">
         Курс проходят:
 
-        <multiselect
-              v-model="course.users"
-              :options="users"
-              :multiple="true"
-              :close-on-select="false"
-              :clear-on-select="true"
-              :preserve-search="true"
-              placeholder="Выберите"
-              label="email"
-              track-by="email"
-              :taggable="true"
-              :limit="3"
-              :limit-text="limitText"
-              @tag="addTag"
-            >
-            </multiselect>
+        <superselect 
+            :values="course.users"
+            class="w-full mb-4" 
+            :key="1"
+            :select_all_btn="true" />
 
      
         </multiselect>
         <div v-for="user in course.users">{{ user }}</div>
-       
+        
       </div>
     </div>
   </div>
@@ -148,7 +137,6 @@ export default {
         .then((response) => {
           this.course = response.data.course;
           this.all_items = response.data.all_items;
-          this.users = response.data.users;
         })
         .catch((error) => {
           alert(error);
