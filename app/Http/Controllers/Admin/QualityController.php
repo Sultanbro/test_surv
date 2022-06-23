@@ -55,11 +55,9 @@ class QualityController extends Controller
             return redirect('/');
         }
 
-        $acts = Activity::where('type', 'quality')->get()->pluck('group_id')->toArray();
-
-
-
-        $groups = ProfileGroup::whereIn('id', $acts)->where('active', 1)->get();
+       // $acts = Activity::where('type', 'quality')->get()->pluck('group_id')->toArray();
+       
+        $groups = ProfileGroup::where('active', 1)->get();
 
         return view('admin.quality_control',
             compact('groups','individual_type','individual_type_id'));

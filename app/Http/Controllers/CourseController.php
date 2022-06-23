@@ -12,6 +12,7 @@ use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\KnowBase;
 use App\User;
+use Carbon\Carbon;
 use DB;
 
 class CourseController extends Controller
@@ -142,6 +143,11 @@ class CourseController extends Controller
         }
 
         $course = Course::with('items')->find($request->id);
+
+        $author = User::withTrashed()->find($course->user_id);
+        $course->author =  $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';
+       
+        $course->created =  Carbon::parse($course->created_at)->format('d.m.Y');
         
         $course_users = CourseResult::where('course_id', $request->id)->get(['user_id'])->pluck('user_id')->toArray();
         $course->users = User::withTrashed()->whereIn('id', $course_users)->get(['id', DB::raw("CONCAT(name,' ',last_name) as name")]);

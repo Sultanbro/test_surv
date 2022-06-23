@@ -18,6 +18,7 @@ import VGauge from 'vgauge';
 import draggable from 'vuedraggable'
 import Multiselect from 'vue-multiselect'
 import Vue from 'vue'
+import VueCircle from 'vue2-circle-progress'
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
 
@@ -32,6 +33,7 @@ import VueVideoPlayer from 'vue-video-player'
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
  
+
 
 Vue.use(DatePicker)
 
@@ -74,6 +76,7 @@ Vue.component('timetracking', require('./components/timetracking.vue').default);
 Vue.component('draggable', draggable); // драг
 Vue.component('multiselect', Multiselect); // select c множественным выбором
 Vue.component('v-select', vSelect) // select с поиском
+Vue.component('vue-circle', VueCircle) // select с поиском
 Vue.component('editor', require('@tinymce/tinymce-vue').default); // booklist
 Vue.component('pagination', require('laravel-vue-pagination').default); // только в ОКК
 Vue.component('u-modal', require('./components/ui/UModal.vue').default); // модалка НАДО УБРАТЬ
