@@ -69,6 +69,17 @@ class VideoCategoryController extends Controller {
 		return $cat; 
 	}
 
+	public function save(Request $request) {
+		$cat =  Category::where([
+			'id' => $request->id,
+		])->first(); 
+
+		if($cat) {
+			$cat->title = $request->title;
+			$cat->save();
+		}
+	}
+
 	public function delete(Request $request) {
 		$cat = Category::find($request->id)->delete();
 	}

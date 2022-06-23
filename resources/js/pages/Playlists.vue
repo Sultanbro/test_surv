@@ -17,13 +17,20 @@
             @click="selectCat(index)"
           >
             <p class="mb-0">{{ cat.title }}</p>
-
-            <i
-              class="fa fa-trash ml-2"
-              v-if="cat.id != 0 && mode == 'edit'"
-              @click.stop="deleteCat(index)"
-            ></i>
-            </div>
+              
+              <div class="d-flex">
+                  <i
+                  class="fa fa-edit ml-2"
+                  v-if="cat.id != 0 && mode == 'edit'"
+                  @click.stop="editCat(index)"
+                ></i>
+                <i
+                  class="fa fa-trash ml-2"
+                  v-if="cat.id != 0 && mode == 'edit'"
+                  @click.stop="deleteCat(index)"
+                ></i>
+              </div>
+          </div>
             
 
           <button class="btn-add" @click="showAddCategory = true" v-if="mode == 'edit'">
@@ -174,6 +181,26 @@
       </button>
     </b-modal>
 
+     <b-modal
+      v-model="showEditCat"
+      title="Переименовать категорию"
+      size="md"
+      class="modalle"
+      hide-footer
+    >
+      <input
+        type="text"
+        v-model="newcat"
+        placeholder="Название категории..."
+        class="form-control mb-2"
+      />
+      <button class="btn btn-primary rounded m-auto" @click="saveCat">
+        <span>Сохранить</span>
+      </button>
+    </b-modal>
+
+    
+
   </div>
 </template>
 
@@ -193,6 +220,7 @@ export default {
   data: function() {
     return {
       categories: [],
+      showEditCat: false,
       user_id: 0,
       mode: 'read',
       activeCat: null,
@@ -253,6 +281,13 @@ export default {
     editAccess(i) {
       this.$message.info('Настройка доступов не работает');
     },
+
+    editCat(i) {
+      this.showEditCat = true;
+      this.newcat = this.categories[i].title;
+      this.activeCat = this.categories[i];
+    },
+
      deletePl(i) {
        if (confirm("Вы уверены что хотите удалить плейлист?")) {
           axios
@@ -320,6 +355,32 @@ export default {
           this.categories.push(response.data);
 
           this.$message.success("Успешно создана!");
+          loader.hide();
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+    },
+
+    saveCat() {
+      if (this.activeCat.title.length <= 2) {
+        alert("Слишком короткое название!");
+        return "";
+      }
+
+      let loader = this.$loading.show();
+
+      axios
+        .post("/playlists/save-cat", {
+          title: this.newcat,
+          id: this.activeCat.id,
+        })
+        .then((response) => {
+          this.showEditCat = false;
+          this.activeCat.title = this.newcat;
+          this.newcat = '';
+          this.$message.success("Сохранено!");
           loader.hide();
         })
         .catch((error) => {

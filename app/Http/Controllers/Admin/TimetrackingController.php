@@ -127,7 +127,7 @@ class TimetrackingController extends Controller
      
         $corpbooks = [];
         if($active_tab == 3) {
-            $corpbooks = collect([]);
+            $corpbooks = \App\KnowBase::where('parent_id', null)->get();
         }
 
         $tab5 = [
@@ -568,6 +568,8 @@ class TimetrackingController extends Controller
 
     public function getusersgroup(Request $request)
     {
+        $corp_books = [];
+
         if ($request->group) {
             $group =  ProfileGroup::find($request->group);
           //  $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->with('dialer')->first();
@@ -577,12 +579,22 @@ class TimetrackingController extends Controller
                 $users = json_decode($group->users);
                 $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
-            if($group->book_groups == null) $group->book_groups = '[]';
-            $book_groups = BookGroup::whereIn('id', json_decode($group->book_groups))->get();
+           
+            $kbm = \App\Models\KnowBaseModel::
+                where('model_type', 'App\\ProfileGroup')
+                ->where('model_id', $group->id)
+                ->where('access', 1)
+                ->get()
+                ->pluck('book_id')
+                ->toArray();    
 
-            $corpbooks = collect([]);
-            
+            $corp_books = \App\KnowBase::whereIn('id', array_unique($kbm))->get();
+
             $bonus = Bonus::where('group_id', $group->id)->first();
+
+
+            
+
         } else {
             $users = User::get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
 
@@ -591,6 +603,7 @@ class TimetrackingController extends Controller
             }
         }
 
+        
         $bonuses = isset($group) ? Bonus::where('group_id', $group->id)->get() : [];
 
         $activities = isset($group) ? Activity::where('group_id', $group->id)->get(['name', 'id'])->toArray() : [];
@@ -602,8 +615,7 @@ class TimetrackingController extends Controller
         return response()->json([
             'name' => isset($group) ? $group->name : 'Noname',
             'users' => isset($users) ? $users : [],
-            'book_groups' => isset($book_groups) ? $book_groups : [],
-            'corp_books' => isset($corp_books) ? $corp_books : [],
+            'corp_books' => $corp_books,
             'group_id' => isset($group) ? $group->id : 0,
             'timeon' => isset($group->work_start) ? $group->work_start : "00:00",
             'timeoff' => isset($group->work_end) ? $group->work_end : "00:00",
@@ -638,23 +650,29 @@ class TimetrackingController extends Controller
         foreach ($request['users'] as $user) {
             $users_id[] = $user['id'];
         }
-        //
-        $book_groups = [];
-        foreach ($request['book_groups'] as $book_group) {
-            $book_groups[] = $book_group['id'];
-        }
+  
+        $kbm = \App\Models\KnowBaseModel::
+            where('model_type', 'App\\ProfileGroup')
+            ->where('model_id', $group->id)
+            ->where('access', 1)
+            ->delete();
 
         $corp_books = [];
         foreach ($request['corp_books'] as $corp_book) {
-            $corp_books[] = $corp_book['id'];
+            \App\Models\KnowBaseModel::create([
+                'book_id' => $corp_book['id'],
+                'model_id' => $group->id,
+                'model_type' => 'App\\ProfileGroup',
+                'access' => 1,
+            ]);
         }
 
         //
         $group->work_start = $request['timeon'];
         $group->work_end = $request['timeoff'];
         $group->users = json_encode(array_unique($users_id));
-        $group->book_groups = json_encode(array_unique($book_groups));
-        $group->corp_books = json_encode(array_unique($corp_books));
+
+
         $group->name = $request['gname'];
         $group->zoom_link = $request['zoom_link'];
         $group->bp_link = $request['bp_link'];

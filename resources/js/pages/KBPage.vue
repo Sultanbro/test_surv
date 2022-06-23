@@ -84,11 +84,15 @@
               <a href="#">База знаний</a>
               <!---->
             </div>
-            <div class="control-btns">
-              <div class="mode_changer" v-if="can_edit">
+            <div class="control-btns d-flex">
+              <div class="mode_changer mr-2" v-if="can_edit">
                   <i class="fa fa-edit"
                     @click="toggleMode"
                     :class="{'active': mode == 'edit'}" />
+                </div>
+              <div class="mode_changer" v-if="can_edit">
+                  <i class="fa fa-cogs"
+                    @click="get_settings()" />
                 </div>
             </div>
           </div>
@@ -131,6 +135,34 @@
         class="form-control mb-2"
       />
       <button class="btn btn-primary rounded m-auto" @click="addSection">
+        <span>Сохранить</span>
+      </button>
+    </b-modal>
+
+     <b-modal
+      v-model="showBookSettings"
+      title="Настройки раздела"
+      size="md"
+      class="modalle"
+      hide-footer
+    >
+    <div class="d-flex">
+      <input
+        type="checkbox"
+        v-model="send_notification_after_edit"
+        class="form- mb-2 mr-2"
+      />
+      <p>Отправлять уведомления сотрудникам об изменениях в базе знаний</p>
+    </div>
+    <div class="d-flex">
+      <input
+        type="checkbox"
+        v-model="show_page_from_kb_everyday"
+        class="form- mb-2 mr-2"
+      />
+      <p>Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"</p>
+    </div>
+      <button class="btn btn-primary rounded m-auto" @click="save_settings()">
         <span>Сохранить</span>
       </button>
     </b-modal>
@@ -183,23 +215,30 @@
     >
 
       <div>
-        <input
-          type="text"
-          v-model="search.input"
-          @keyup="searchInput"
-          placeholder="Поиск по всей базе..."
-          class="form-control mb-2"
-        />
+        <div class="d-flex relative  mb-2">
+          <input
+            type="text"
+            v-model="search.input"
+            @keyup.enter="searchInput"
+            placeholder="Поиск по всей базе..."
+            class="form-control"
+          />
+          <button class="search-btn btn" v-if="search.input != ''" @click="searchInput">Искать</button>
+        </div>
 
         <div class="s-content">
-         <div class="item" v-for="item in search.items" @click="selectSection(item, item.id)" >
+           <div class="sss" v-if="search.input.length >=3 && search.items.length == 0">
+            <p>По запросу "{{ search.input }}" ничего не найдено.</p>
+          </div>
+         <div class="item" v-for="item in search.items" @click="selectSection(item.book, item.id)" >
+           <p v-if="item.book != null" class="book">{{ item.book.title }}</p>
            <p>{{ item.title }}</p>
            <div class="text" v-html="item.text"></div>
          </div>
         </div>
         
       </div>
-      
+        
     </b-modal>
   </div>
 </template>
@@ -216,15 +255,19 @@ export default {
       default: false
     } 
   },
-  data: function() {
+  data() {
     return {
       books: [],
       mode: 'read',
       archived_books: [],
       trees: [],
+      settings: null,
       section: 0,
       activeBook: null,
       showCreate: false,
+      send_notification_after_edit: false,
+      show_page_from_kb_everyday: false,
+      showBookSettings: false,
       showArchive: false,
       showSearch: false,
       who_can_read: [],
@@ -267,6 +310,34 @@ export default {
         });
     },
     
+    get_settings() {
+
+      axios
+        .get("/kb/get-settings", {})
+        .then((response) => {
+          this.send_notification_after_edit = response.data.settings.send_notification_after_edit;
+          this.show_page_from_kb_everyday = response.data.settings.show_page_from_kb_everyday;
+          this.showBookSettings = true;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
+    save_settings() {
+       axios
+        .post("/kb/save-settings", {
+          send_notification_after_edit: this.send_notification_after_edit,
+          show_page_from_kb_everyday: this.show_page_from_kb_everyday,
+        })
+        .then((response) => {
+          this.showBookSettings = false;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
     selectSection(book, page_id = 0) {
       axios
         .post("kb/tree", {

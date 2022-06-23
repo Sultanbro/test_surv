@@ -179,6 +179,7 @@ Route::middleware([
 
     Route::post('/playlists/delete-cat', [VideoCategoryController::class, 'delete']);
     Route::post('/playlists/add-cat', [VideoCategoryController::class, 'add']);
+    Route::post('/playlists/save-cat', [VideoCategoryController::class, 'save']);
 
     Route::post('/playlists/video/update', [VideoController::class, 'updateVideo']);
     Route::post('/videos/upload', [VideoController::class, 'upload'])->name('videos.upload');
@@ -222,6 +223,8 @@ Route::middleware([
     // База знаний
     Route::get('/kb', [KnowBaseController::class, 'index']);
     Route::get('/kb/get', [KnowBaseController::class, 'get']);
+    Route::get('/kb/get-settings', [KnowBaseController::class, 'getSettings']);
+    Route::post('/kb/save-settings', [KnowBaseController::class, 'saveSettings']);
     Route::post('/kb/get', [KnowBaseController::class, 'getPage']);
     Route::post('/kb/search', [KnowBaseController::class, 'search']);
     Route::get('/kb/get-archived', [KnowBaseController::class, 'getArchived']);

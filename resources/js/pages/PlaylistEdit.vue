@@ -113,12 +113,26 @@
                :disabled="mode == 'read'"
             ></textarea>
           </div>
-        </div>
+        </div>  
 
+        <div v-if="mode == 'edit'" class="mb-3">
+          <button class="btn btn-primary" @click="addGroup">
+            Добавить группу  
+          </button>
+          <button class="btn btn-primary" v-if="!group_edit" @click="group_edit = true">
+            Редактировать группы  
+          </button>
+          <button class="btn btn-primary" v-else  @click="group_edit = false">
+            Сохранить группы  
+          </button>
+        </div>
         <video-accordion 
           :groups="playlist.groups"
-          mode="edit"
+          :mode="mode"
+          :group_edit="group_edit"
           @showVideoSettings="showVideoSettings"
+          @uploadVideo="uploadVideo"
+          
           />
 
        
@@ -240,11 +254,12 @@ export default {
     categories: Array,
     mode: String
   },
-  data: function() {
+  data() {
     return {
       all_videos: [],
       activeVideo: null,
       show_pl_fields: false,
+      group_edit: false,
       playlist: {
         id: 1,
         category_id: 1,
@@ -392,6 +407,14 @@ export default {
         });
     },
 
+    uploadVideo(g, c = -1) {
+      if(c == -1) {
+        console.log('selected group', this.playlist.groups[g]);
+      } else {
+        console.log('selected group', this.playlist.groups[g].children[c]);
+      }
+    },
+
    updateVideo() {
       axios
         .post("/playlists/video/update", {
@@ -518,6 +541,9 @@ export default {
           this.modals.addVideo.searchVideos = this.all_videos;
 
           this.playlist = response.data.playlist;
+
+          if(this.playlist.videos.length > 0) this.activeVideo = this.playlist.videos[0];
+
           
         })
         .catch((error) => {
@@ -532,13 +558,20 @@ export default {
         })
         .then((response) => {
           this.$message.success('Сохранено');
-          this.$emit('back');
         })
         .catch((error) => {
           alert(error);
         });
     },
 
+    addGroup() {
+      this.playlist.groups.push({
+        id: 0,
+        title: 'Тестовая группа',
+        videos:[],
+        groups: []
+      });
+    },
  
   },
 };
