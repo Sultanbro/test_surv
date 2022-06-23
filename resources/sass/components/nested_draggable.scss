@@ -150,7 +150,8 @@ ul {
   .chapter-btns {
     position: absolute;
     right: 0;
-    top: 3px;
+    top: 0px;
+    z-index: 21;
     text-align: center;
     display: none;
   }

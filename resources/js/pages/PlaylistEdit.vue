@@ -10,7 +10,7 @@
               name="title"
               :disabled="mode == 'read'"
             />
-            <i class="fa fa-eye ibtn" v-if="mode == 'edit'" @click="show_pl_fields = !show_pl_fields"></i>
+            <i class="fa fa-eye ibtn btn"  @click="show_pl_fields = !show_pl_fields"></i>
           </div>
           
           <p class="mr-2">Количество видео: {{ playlist.videos.length }}</p>
@@ -237,11 +237,11 @@ export default {
     id: Number,
     auth_user_id: Number,
     myvideo: Number,
+    categories: Array,
     mode: String
   },
   data: function() {
     return {
-      categories: [],
       all_videos: [],
       activeVideo: null,
       show_pl_fields: false,
@@ -296,7 +296,6 @@ export default {
           this.modals.addVideo.searchVideos = this.all_videos;
 
           this.playlist = response.data.playlist;
-          this.categories = response.data.categories;
           
           console.log(this.playlist.videos);
 
@@ -519,7 +518,7 @@ export default {
           this.modals.addVideo.searchVideos = this.all_videos;
 
           this.playlist = response.data.playlist;
-          this.categories = response.data.categories;
+          
         })
         .catch((error) => {
           alert(error);

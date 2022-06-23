@@ -10,6 +10,7 @@
         <textarea
           v-model="q.text"
           placeholder="Текст вопроса..."
+          @keyup="changed = true"
           v-if="q.editable"
         ></textarea>
         <input
@@ -48,62 +49,56 @@
         ></i>
       </div>
 
-      <div v-if="q.editable">
+      <div v-if="q.editable || mode == 'read'">
         <select v-model="q.type" class="type mt-2" v-if="mode == 'edit'">
           <option value="0">Тест</option>
           <option value="1">Открытый вопрос</option>
         </select>
 
-        <template v-if="mode == 'edit'">
-          <div class="variants" v-if="q.type == 0">
-            <div
-              class="variant d-flex aic"
-              v-for="(v, v_index) in q.variants"
-              :key="v_index"
-            >
-              <input type="checkbox" v-model="v.right" class="mr-2" />
-              <input
-                type="text"
-                v-model="v.text"
-                placeholder="..."
-                @keyup.enter="addVariant(q_index, v_index)"
-                @keyup.delete="deleteVariant(q_index, v_index)"
-                :ref="`variant${q_index}_${v_index}`"
-              />
-            </div>
-          </div>
-        </template>
+     
+        <div class="variants" v-if="q.type == 0">
+          <div
+            class="variant d-flex aic"
+            v-for="(v, v_index) in q.variants"
+            :key="v_index"
+          >
+            <input 
+              v-if="mode == 'edit'"
+              type="checkbox"
+              v-model="v.right" 
+              class="mr-2" 
+              @change="changed = true"
+              title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько" />
+            <input 
+              v-else
+              type="checkbox"
+              v-model="v.checked" 
+              class="mr-2" 
+              @change="changed = true"
+              title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько" />
 
-        <template v-if="mode == 'read'">
-          <div class="variants" v-if="q.type == 0">
-            <div
-              class="variant d-flex aic"
-              v-for="(v, v_index) in q.variants"
-              :key="v_index"
-            >
-              <input type="checkbox" v-model="v.checked" class="mr-2" />
-              <input
-                type="text"
-                v-model="v.text"
-                disabled
-                placeholder="..."
-                @keyup.enter="addVariant(q_index, v_index)"
-                @keyup.delete="deleteVariant(q_index, v_index)"
-                :ref="`variant${q_index}_${v_index}`"
-              />
-            </div>
+            <input
+              type="text"
+              v-model="v.text"
+              :disabled="mode == 'read'"
+              placeholder="Введите вариант ответа..."
+              @keyup.enter="addVariant(q_index, v_index)"
+              @keyup.delete="deleteVariant(q_index, v_index)"
+              :ref="`variant${q_index}_${v_index}`"
+            />
           </div>
-          <div v-else>
-            <input type="text" v-model="q.result" />
-          </div>
-        </template>
+        </div>
+        <div v-else>
+          <input type="text" v-model="q.result" />
+        </div>
+        
 
-        <template v-if="mode == 'edit'">
-          <div class="points">
-            <p>Баллы</p>
-            <input type="number" v-model="q.points" min="0" max="999" />
-          </div>
-        </template>
+
+        <div class="points" v-if="mode == 'edit'">
+          <p>Баллы</p>
+          <input type="number" v-model="q.points" min="0" max="999" />
+        </div>
+
       </div>
     </div>
 
@@ -125,7 +120,7 @@
     </template>
     <template v-if="mode == 'edit'">
       <button
-        v-if="['kb','video'].includes(type)"
+        v-if="['kb','video'].includes(type) && changed"
         class="btn btn-success mr-2" 
         @click="saveTest"
         :disabled="!can_save"
@@ -143,7 +138,8 @@ export default {
   props: ["questions", "type", "id", "mode"],
   data() {
     return {
-      can_save: false,
+      can_save: true,
+      changed: false,
       questionsx: [
         {
           text: "Кто это был?",
@@ -260,6 +256,8 @@ export default {
           input.focus();
         });
       }
+      
+      this.changed = true;
     },
 
     saveQuestion(q_index) {
@@ -317,6 +315,7 @@ export default {
       this.questions.push(this.defaultQuestion());
       this.questions[this.questions.length - 1].editable = true;
       this.can_save = true;
+      this.changed = true;
     },
 
     deleteQuestion(q_index) {
@@ -332,6 +331,7 @@ export default {
               this.questions.splice(q_index, 1);
             })
         }
+        this.changed = true;
       }
     },
 
@@ -345,6 +345,8 @@ export default {
           v
         ].text;
       }
+      
+      this.changed = true;
     },
 
     saveTest() {
@@ -362,6 +364,8 @@ export default {
 
       let url = this.type == 'kb' ? "/kb/page/save-test" : "/playlists/save-test";
 
+      this.can_save = false;
+
       axios
         .post(url, {
           id: this.id,
@@ -373,13 +377,13 @@ export default {
             item.id = response.data[index];
           });
           loader.hide();
-          this.can_save = false;
+          this.can_save = true;
         })
         .catch((error) => {
           loader.hide();
           alert(error);
         });
-    }
+    },
   },
 };
 </script>

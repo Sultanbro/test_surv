@@ -172,6 +172,11 @@ Route::middleware([
     Route::post('/playlists/add', [VideoPlaylistController::class, 'add']);
     Route::get('/video_playlists', [VideoPlaylistController::class, 'index']);
 
+
+    Route::get('/video_playlists/{category}/{playlist}', [VideoPlaylistController::class, 'saveIndex']);
+    Route::get('/video_playlists/{category}/{playlist}/{video}', [VideoPlaylistController::class, 'saveIndexVideo']);
+
+
     Route::post('/playlists/delete-cat', [VideoCategoryController::class, 'delete']);
     Route::post('/playlists/add-cat', [VideoCategoryController::class, 'add']);
 
@@ -196,6 +201,8 @@ Route::middleware([
     Route::post('/admin/upbooks/save', [UpbookController::class, 'save']);
     Route::post('/admin/upbooks/update', [UpbookController::class, 'update']);
     Route::post('/admin/upbooks/delete', [UpbookController::class, 'delete']);
+
+    Route::post('/playlists/delete-question',[VideoPlaylistController::class, 'deleteQuestion']);
 
 
     // @TODO CHECK AND DELETE THIS ROUTES

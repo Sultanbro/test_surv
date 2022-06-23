@@ -37,10 +37,10 @@
           <div class="hat">
             <div class="d-flex jsutify-content-between hat-top">
               <div class="bc">
-                <a href="#">Видеоплейлисты</a>
+                <a href="#" @click="back">Видеоплейлисты</a>
                 <template v-if="activeCat">
-                  <i class="fa fa-chevron-right"></i>
-                  <a href="#" >{{ activeCat.title }}</a>
+                  <i class="fa fa-chevron-right"></i> 
+                  <a href="#"  @click="back">{{ activeCat.title }}</a>
                 </template>
                 <template v-if="activePlaylist">
                   <i class="fa fa-chevron-right"></i>
@@ -64,6 +64,7 @@
               <div v-if="activePlaylist != null" class="">
                 <page-playlist-edit 
                   ref="playlist"
+                  :categories="categories"
                   @back="back" 
                   :token="token"
                   :id="activePlaylist.id"
@@ -332,9 +333,10 @@ export default {
         axios
           .post("/playlists/delete-cat", {
             id: this.categories[i].id
-          })
+          })  
           .then((response) => {
             this.categories.splice(i, 1);
+            this.activeCat = null;
             this.$message.success("Удалено");
           });
       }

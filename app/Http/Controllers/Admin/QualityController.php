@@ -59,18 +59,7 @@ class QualityController extends Controller
 
 
 
-        $groups = ProfileGroup::whereIn('id', $acts)->where('has_analytics', 1)->where('active', 1)->get();
-
-        $groups2 = ProfileGroup::on()->get();
-
-
-        $groups = $groups->merge($groups2);
-
-        $groups3 = ProfileGroup::on()->get();
-
-        $groups = $groups->merge($groups3);
-
-
+        $groups = ProfileGroup::whereIn('id', $acts)->where('active', 1)->get();
 
         return view('admin.quality_control',
             compact('groups','individual_type','individual_type_id'));
