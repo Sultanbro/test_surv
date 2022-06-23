@@ -170,13 +170,19 @@ class SetAbsent extends Command
     }
 
     public function notify($targetUser, $group_name) {
-     
+        
+        $lead = Lead::where('user_id', $targetUser->id)->first();
+
         $group_name = '(' . $group_name . ')';
         $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $targetUser->id;
 
         $abs_msg = 'Система: '. $group_name .'  Стажер не был на обучении: <br> <a href="' . $editPersonLink . '" target="_blank">';
         $abs_msg .= $targetUser->last_name . ' ' . $targetUser->name  . ' </a>';
-        $abs_msg .= '<br><a href="/timetracking/analytics/skypes/' . $targetUser->lead_id . '" target="_blank" class="btn btn-primary mr-2 mt-2 rounded btn-sm">Перейти в сделку</a>';
+
+        if($lead) {
+            $abs_msg .= '<br><a href="/timetracking/analytics/skypes/' . $lead->lead_id . '" target="_blank" class="btn btn-primary mr-2 mt-2 rounded btn-sm">Перейти в сделку</a>';
+        } 
+        
         $abs_msg .= '<a class="btn btn-primary mt-2 rounded btn-sm transfer-training" data-userid="' . $targetUser->id . '">Перенести обучение</a>';
 
         $timestamp = Carbon::now(); 
@@ -186,7 +192,7 @@ class SetAbsent extends Command
         $notification_receivers = NotificationTemplate::getReceivers($notification_temp_id);
         
         /////
-        $lead = Lead::where('user_id', $targetUser->id)->first();
+    
 
         if($lead) {
             if(Carbon::parse($lead->invite_at)->day == date('d')) {
