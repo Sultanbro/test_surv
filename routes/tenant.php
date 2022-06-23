@@ -479,6 +479,8 @@ Route::middleware([
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
 
 
+    /////edit upload photo  profile
+    Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto']); /// загрузка аватарки
 
 
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);

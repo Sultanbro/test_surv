@@ -23,10 +23,96 @@ class ActiveUser
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
 
+    function monthToWeeks($month, $year)
+    {
+        $lastDay = date('d.m.Y', mktime(0, 0, 0, $month+1, 1, $year));
+        $weeks = [date('d.m.Y', mktime(0,0,0, $month, 1, $year))];
+
+
+
+
+
+        for ($i = 2; $i < date('t'); $i++) {
+
+            $t = mktime(0, 0, 0, $month, $i, $year);
+
+
+            if (date('N', $t) == 1) {
+                array_push($weeks, date('d.m.Y', $t));
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+
+        array_push($weeks, $lastDay);
+        $countOfWeeks = count($weeks) - 1;
+
+
+
+        $i = 0;
+
+        while ($i < $countOfWeeks) {
+            $kis[$i][] = $weeks[$i];
+            $kis[$i][1] = $weeks[$i+1];
+
+            $i++;
+        }
+
+
+
+
+
+    }
+
+    public function mon($month,$year){
+
+        $weeks = [date('d.m.Y', mktime(0,0,0, $month, 1, $year))];
+        $lastDay = date('d.m.Y', mktime(0, 0, 0, $month+1, 1, $year));
+
+
+
+
+
+
+
+
+    }
 
 
     public function handle($request, Closure $next)
     {
+        if($request->getPathInfo() =='/logout') return $next($request);
+        //        $kis2 = $this->mon(6,2022);
+
+
+
+
+
+
+        //        $kis = Carbon::parse($request->datestart)->format('m');
+
+
+
+
+
+        //        $carbon = new Carbon();
+        //        echo $carbon->addWeeks(3);
+        //       echo $carbon->addWeek();
+        //       echo $carbon->subWeek();
+        //       echo $carbon->subWeeks(3);
+
+
+
+
+
 
         if (auth()->user()){
 

@@ -988,7 +988,7 @@ export default {
         })
         .then((response) => {
 
-          console.log(response,'response');
+          // console.log(response,'response');
           // console.log(response.data['individual_type'],'ind');
           // console.log(this.fields,'fields');
 
@@ -1003,7 +1003,7 @@ export default {
 
 
           if (response.data.error && response.data.error == "access") {
-            console.log(response,'responseError');
+            // console.log(response,'responseError');
             this.hasPermission = false;
             loader.hide();
             return;

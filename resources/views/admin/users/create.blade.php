@@ -86,25 +86,43 @@
 
 
 
+
+
+
                                 <!-- PROFILE IMAGE -->
                                 <div class="">
-                                    <input type="file" name="file6" id="file-6"
-                                        class="inputfile inputfile-6"
-                                        data-multiple-caption="{count} files selected"
-                                        style="    display: none;" accept="image/*,.pdf">
-                                    <label class="label-6" for="file-6" style="cursor:pointer">
-                                        @if(isset($user) && !is_null($user->photo) && $user->photo->path !==
-                                        '')
-                                        <img
-                                            src="/static/profiles/{{$user->id}}/photo/{{$user->photo->path}}">
+{{--                                    <input type="file" name="file6" id="file-6"--}}
+{{--                                        class="inputfile inputfile-6"--}}
+{{--                                        data-multiple-caption="{count} files selected"--}}
+{{--                                        style="    display: none;" accept="image/*,.pdf">--}}
+
+
+                                     <input hidden type="file" name="image" id="upload_image" accept="image/*" />
+                                     @if(isset($user))
+                                         <input id="user_id_img" value="{{$user->id}}" hidden>
+                                     @else
+                                         <input id="user_id_img" hidden value="new_user" name="user_img">
+                                     @endif
+
+
+                                    <label class="label-6" for="upload_image" id="img_url" style="cursor:pointer">
+                                        @if(isset($user) && !is_null($user->img_url))
+
+                                        <img id="{{$user->img_url}}"
+                                            src="/users_img/{{$user->img_url}}"  >
                                         @else
                                         <img src="https://cp.callibro.org/files/img/8.png" alt="img">
                                         @endif
+
                                     </label>
 
-                                    <div class="mt-2 font-weight-bold font-sm " style="width:100%">
+                                    <div class="mt-2 font-weight-bold font-sm text-center " style="width:100%">
                                         
-                                        @if(isset($user)) {{$user->last_name}} {{$user->name }} @else Новый сотрудник @endif
+                                        @if(isset($user))
+                                            {{$user->last_name}} {{$user->name }}
+                                        @else
+                                            Новый сотрудник
+                                        @endif
                                         
                                     </div>
                                     @if(isset($user)) 
@@ -155,11 +173,22 @@
                                         @endif
                                     </div>
 
+
                                     <div class="">
 
-                                        <ul>
-                                            <li><a href="#">Основный данный</a></li>
+                                        <ul class="p-0">
+                                            <li><a href="#" onclick="showBlock('1')">Основный данный</a></li>
+                                            <li><a href="#" onclick="showBlock('2')">Группы</a></li>
+                                            <li><a href="#" onclick="showBlock('3')">База знание</a></li>
+                                            <li><a href="#" onclick="showBlock('9')">Документы</a></li>
+                                            <li><a href="#" onclick="showBlock('4')">Контакты</a></li>
+                                            <li><a href="#" onclick="showBlock('5')">Оплата</a></li>
+                                            <li><a href="#" onclick="showBlock('6')">Проче данные</a></li>
+                                            <li><a href="#" onclick="showBlock('7')">Адаптационные  данные</a></li>
+                                            <li><a href="#" onclick="showBlock('8')">Дополнительная информация</a></li>
                                         </ul>
+
+
                                     </div>
                                 </div>
 
@@ -167,16 +196,15 @@
 
                             <!-- ============================================================== -->
 
-                            <div class="xtab-content card scrollspy-example bg-white p-30" id="xmyTabContent" data-spy="scroll" data-target="#list-example">
+                            <div class="xtab-content card scrollspy-example bg-white p-30" id="xmyTabContent"  data-spy="scroll" data-target="#list-example">
                                 <!-- first tab -->
                                 <div class="xtab-pane xfade show active" id="contact" role="tabpanel"
                                     aria-labelledby="contact-tab">
-                                    
-                                    <h5 class="mb-4">Профиль сотрудника </h5>
+
                                     <!-- PROFILE INFO -->
                                     <div class="d-flex row">
-                                        <div class="contacts-info col-md-6">
-                                            
+                                        <div class="contacts-info col-md-6" id="profile_d" style="display: none">
+                                            <h5 class="mb-4">Профиль сотрудника </h5>
                                             <div class="form-group row">
                                                 <label for="firstName"
                                                     class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
@@ -314,6 +342,36 @@
                                                     </select>
                                                 </div>
                                             </div>
+
+                                            <div class="form-group row">
+                                                <label for="workingDays"
+                                                       class="col-sm-4 col-form-label font-weight-bold">Найти город <span class="red">*</span></label>
+                                                <div class="col-sm-8">
+                                                    <div class="mb-3 xfade">
+                                                        <div class="form-group row " id="selectedCityRU" >
+                                                            <div class="col-sm-12">
+                                                                <input class="form-control" name="selectedCityInput" id="selectedCityInput"
+                                                                       @if(isset($user) && !empty($user->working_country))
+                                                                           value="{{$user->working_country}}"
+                                                                       @endif
+                                                                       placeholder="Поиск городов ">
+
+
+                                                                <input hidden @if(isset($user) && !empty($user->working_city) )
+                                                                    value="{{$user->working_city}}"
+                                                                       @endif
+                                                                       name="working_city" id="working_city">
+
+                                                                <div id="listSearchResult" class="listSearchResult">
+                                                                    <ul class="p-0 searchResultCountry" id="searchResultCountry" style="margin-bottom: 0px;">
+
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             
                                             <div class="form-group row">
                                                 <label for="full_time"
@@ -391,14 +449,16 @@
 
                                         <div class="col-md-6">
                                             @if(isset($user))
-                                            <div class="table-responsive">
-                                                <table class="my-table table user-list">
-                                                    <thead>
-                                                        <tr>
-                                                            <th colspan="2"><span>Дополнительная информация</span></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
+
+                                                <div id="add_info" style="display: none">
+                                                    <div class="table-responsive">
+                                                        <table class="my-table table user-list">
+                                                            <thead>
+                                                            <tr>
+                                                                <th colspan="2"><span>Дополнительная информация</span></th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
                                                             <tr>
                                                                 <td>
                                                                     <span>Дата регистрации</span>
@@ -407,105 +467,110 @@
                                                                     <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
                                                                 </td>
                                                             </tr>
-                                                        @if($user->applied_at != null && $user->is_trainee == 0)
+                                                            @if($user->applied_at != null && $user->is_trainee == 0)
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>Дата принятия на работу</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span>{{ \Carbon\Carbon::parse($user->applied_at)->format('d.m.Y')}}</span>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
+                                                            @if($user->applied_at == null && $user->is_trainee == 0)
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>Дата принятия на работу</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
                                                             <tr>
                                                                 <td>
-                                                                    <span>Дата принятия на работу</span>
+                                                                    <span>Успел стать частью команды ~</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->applied_at)->format('d.m.Y')}}</span>
+                                                                    <span>{{ $user->worked_with_us }}</span>
                                                                 </td>
                                                             </tr>
-                                                        @endif
-                                                        @if($user->applied_at == null && $user->is_trainee == 0)
-                                                            <tr>
-                                                                <td>
-                                                                    <span>Дата принятия на работу</span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                        <tr>
-                                                            <td>
-                                                                <span>Успел стать частью команды ~</span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{ $user->worked_with_us }}</span>
-                                                            </td>
-                                                        </tr>   
 
-                                                        @if($user->delete_time != null)
-                                                            <tr>
-                                                                <td>
-                                                                    <span>Дата отработки</span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->delete_time)->format('d.m.Y')}}</span>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-
-
-                                                        @if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00')
-                                                            <tr>
-                                                                <td>
-                                                                    <span>Дата увольнения</span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->deleted_at)->format('d.m.Y')}}</span>
-                                                                </td>
-                                                            </tr>
-                                                                 
-                                                            @if (isset($user->downloads) && $user->downloads->resignation)
-                                                            <tr>
-                                                                <td>
-                                                                    <span>Заявление об увольнении</span>
-                                                                </td>
-                                                                <td>
-                                                                    <a  download=""
-                                                                        class="d-block"
-                                                                        href="/static/profiles/{{$user->id}}/resignation/{{$user->downloads->resignation}}">Скачать</a>
-                                                                </td>
-                                                            </tr>
+                                                            @if($user->delete_time != null)
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>Дата отработки</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span>{{ \Carbon\Carbon::parse($user->delete_time)->format('d.m.Y')}}</span>
+                                                                    </td>
+                                                                </tr>
                                                             @endif
 
-                                                            @if($user->fire_cause != null)
-                                                            <tr>
-                                                                <td>
-                                                                    <span>Причина увольнения</span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>{{ $user->fire_cause }}</span>
-                                                                </td>
-                                                            </tr>
-                                                            @endif
-                                                        @endif
-                                                  
-                                                        
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
-                                            @foreach($user->adaptation_talks as $key => $talk)
-                                                <div class="adaptation_talk">
-                                                    <div class="div_1">{{ $talk['day'] }}й день
-                                                        <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
-                                                    </div>
-                                                    <div class="div_2">
-                                                        <input type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}"> 
-                                                        
 
-                                                        <input class="form-control" type="date" name="adaptation_talks[{{ $key }}][date]"
-                                                        @if($talk['date'] != null) value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}" 
-                                                        @else  value="null" @endif>
-                                                    </div>
-                                                    <div class="div_3">
-                                                        <textarea name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>
+                                                            @if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00')
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>Дата увольнения</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span>{{ \Carbon\Carbon::parse($user->deleted_at)->format('d.m.Y')}}</span>
+                                                                    </td>
+                                                                </tr>
+
+                                                                @if (isset($user->downloads) && $user->downloads->resignation)
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>Заявление об увольнении</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            <a  download=""
+                                                                                class="d-block"
+                                                                                href="/static/profiles/{{$user->id}}/resignation/{{$user->downloads->resignation}}">Скачать</a>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
+
+                                                                @if($user->fire_cause != null)
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>Причина увольнения</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            <span>{{ $user->fire_cause }}</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
+                                                            @endif
+
+
+                                                            </tbody>
+                                                        </table>
                                                     </div>
                                                 </div>
-                                            @endforeach
+
+
+                                                <div id="adaptation_conversations" style="display: none">
+                                                    <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
+                                                    @foreach($user->adaptation_talks as $key => $talk)
+                                                        <div class="adaptation_talk">
+                                                            <div class="div_1">{{ $talk['day'] }}й день
+                                                                <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
+                                                            </div>
+                                                            <div class="div_2">
+                                                                <input type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
+
+
+                                                                <input class="form-control" type="date" name="adaptation_talks[{{ $key }}][date]"
+                                                                       @if($talk['date'] != null) value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"
+                                                                       @else  value="null" @endif>
+                                                            </div>
+                                                            <div class="div_3">
+                                                                <textarea name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
 
                                             @endif
 
@@ -514,7 +579,7 @@
 
 
                                             <!-- groups tab -->
-                                            <div class="mb-3 xfade" id="iphones3">
+                                            <div class="mb-3 xfade" id="iphones3" style="display: none">
                                                 <!--  -->
 
                                                 <h5 class="mb-4">Группы</h5>
@@ -542,31 +607,9 @@
 
 
 
-                                            <div class="mb-3 xfade">
-                                                <div class="form-group row " id="selectedCityRU" >
-                                                    <div class="col-sm-12">
-                                                        <input class="form-control" name="selectedCityInput" id="selectedCityInput"
-                                                               @if(isset($user) && !empty($user->working_country))
-                                                                   value="{{$user->working_country}}"
-                                                               @endif
-                                                               placeholder="Поиск городов ">
 
 
-                                                        <input hidden @if(isset($user) && !empty($user->working_city) )
-                                                                         value="{{$user->working_city}}"
-                                                                      @endif
-                                                               name="working_city" id="working_city">
-
-                                                        <div id="listSearchResult" class="listSearchResult">
-                                                            <ul class="p-0 searchResultCountry" id="searchResultCountry" style="margin-bottom: 0px;">
-
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-4">
+                                            <div class="mb-4" id="profile_books" style="display: none">
                                                 @if(isset($user))
                                                 <h5 class="mb-4 mt-4">Книги</h5>
 
@@ -584,7 +627,7 @@
                                             <!-- end of groups and books tab -->
 
                                             <!-- documents tab -->
-                                            <div class="xtab-pane xfade" id="iphones4">
+                                            <div class="xtab-pane xfade" id="iphones4" style="display: none">
                                                 <!--  -->
                                                 <h5 class="mb-4 mt-1">Документы (RAR, ZIP)</h5>
 
@@ -758,59 +801,62 @@
                                         </div>
                                     </div>
                                 </div>
+
+
+
                                 <!-- second tab -->
                                 <div class="xtab-pane xfade" id="phones" role="tabpanel" aria-labelledby="phones-tab">
                                     <!--  -->
                                     <!-- PROFILE PHONES -->
                                     <div class="profile-contacts mb-3 row">
-                                        <div class="phones col-md-6">
-                                            <h5 class="mb-4">Номера телефонов</h5>
-                                            <div class="d-flex phone-row form-group mb-2">
-                                                <label for="phone" class="col-sm-4 col-form-label font-weight-bold">Мобильный <span class="red">*</span></label>
-                                                <div class="col-sm-8">
+                                        <div class="phones col-md-6" id="profile_contacts" style="display: none">
+                                            <h5 class="mb-4">Контакты</h5>
+                                            <div class="d-flex phone-row form-group mb-2 ">
+                                                <label for="phone" class="col-sm-6 col-form-label font-weight-bold mr-1">Мобильный <span class="red">*</span></label>
+                                                <div class="col-sm-6 pl-0 ml-2">
                                                     <input class="form-control" class="form-control mr-1 col-sm-8" type="text"
                                                     value="@if(isset($user)){{$user->phone}}@else{{old('phone')}}@endif"
                                                     name="phone" id="phone" placeholder="Телефон">
                                                 </div>
                                             </div>
-                                            <!-- <div class="d-flex phone-row form-group mb-2">
-                                                <label for="phone_1" class="col-sm-4 col-form-label font-weight-bold">Домашний <span class="red">*</span></label>
-                                                <div class="col-sm-8">
-                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"
-                                                    value="@if(isset($user)){{$user->phone_1}}@else{{old('phone_1')}}@endif"
-                                                    name="phone_1" id="phone_1" placeholder="Телефон">
-                                                </div>
-                                            </div>
-                                            <div class="d-flex phone-row form-group mb-2"> 
-                                                <label for="phone_2" class="col-sm-4 col-form-label font-weight-bold">Супруга/Муж <span class="red">*</span></label>
-                                                <div class="col-sm-8">
-                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"
-                                                    value="@if(isset($user)){{$user->phone_2}}@else{{old('phone_2')}}@endif"
-                                                    name="phone_2" id="phone_2" placeholder="Телефон">
-                                                </div>
-                                            </div>
-                                            <div class="d-flex phone-row form-group mb-2">
-                                                <label for="phone_3" class="col-sm-4 col-form-label font-weight-bold">Друг/Брат/Сестра <span class="red">*</span></label>
-                                                <div class="col-sm-8">
-                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"
-                                                    value="@if(isset($user)){{$user->phone_3}}@else{{old('phone_3')}}@endif"
-                                                    name="phone_3" id="phone_3" placeholder="Телефон">
-                                                </div>
-                                            </div>
-                                            <div class="d-flex phone-row form-group mb-2">
-                                                <label for="phone_4" class="col-sm-4 col-form-label font-weight-bold">Сын/Дочь</label>
-                                                <div class="col-sm-8">
-                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"
-                                                    value="@if(isset($user)){{$user->phone_4}}@else{{old('phone_4')}}@endif"
-                                                    name="phone_4" id="phone_4" placeholder="Телефон">
-                                                </div>
-                                            </div> -->
+{{--                                            <!-- <div class="d-flex phone-row form-group mb-2">--}}
+{{--                                                <label for="phone_1" class="col-sm-4 col-form-label font-weight-bold">Домашний <span class="red">*</span></label>--}}
+{{--                                                <div class="col-sm-8">--}}
+{{--                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"--}}
+{{--                                                    value="@if(isset($user)){{$user->phone_1}}@else{{old('phone_1')}}@endif"--}}
+{{--                                                    name="phone_1" id="phone_1" placeholder="Телефон">--}}
+{{--                                                </div>--}}
+{{--                                            </div>--}}
+{{--                                            <div class="d-flex phone-row form-group mb-2"> --}}
+{{--                                                <label for="phone_2" class="col-sm-4 col-form-label font-weight-bold">Супруга/Муж <span class="red">*</span></label>--}}
+{{--                                                <div class="col-sm-8">--}}
+{{--                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"--}}
+{{--                                                    value="@if(isset($user)){{$user->phone_2}}@else{{old('phone_2')}}@endif"--}}
+{{--                                                    name="phone_2" id="phone_2" placeholder="Телефон">--}}
+{{--                                                </div>--}}
+{{--                                            </div>--}}
+{{--                                            <div class="d-flex phone-row form-group mb-2">--}}
+{{--                                                <label for="phone_3" class="col-sm-4 col-form-label font-weight-bold">Друг/Брат/Сестра <span class="red">*</span></label>--}}
+{{--                                                <div class="col-sm-8">--}}
+{{--                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"--}}
+{{--                                                    value="@if(isset($user)){{$user->phone_3}}@else{{old('phone_3')}}@endif"--}}
+{{--                                                    name="phone_3" id="phone_3" placeholder="Телефон">--}}
+{{--                                                </div>--}}
+{{--                                            </div>--}}
+{{--                                            <div class="d-flex phone-row form-group mb-2">--}}
+{{--                                                <label for="phone_4" class="col-sm-4 col-form-label font-weight-bold">Сын/Дочь</label>--}}
+{{--                                                <div class="col-sm-8">--}}
+{{--                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"--}}
+{{--                                                    value="@if(isset($user)){{$user->phone_4}}@else{{old('phone_4')}}@endif"--}}
+{{--                                                    name="phone_4" id="phone_4" placeholder="Телефон">--}}
+{{--                                                </div>--}}
+{{--                                            </div> -->--}}
 
                                             @if(isset($user))
                                             @foreach($user->profileContacts as $key => $contact)
                                             @if($contact->type == 'phone')
                                             <div class="d-flex phone-row form-group m0">
-                                                <input class="form-control" class="form-control mr-1" type="text" value="{{$contact->name}}"
+                                                <input class="form-control mr-2" class="form-control mr-1" type="text" value="{{$contact->name}}"
                                                     name="contacts[phone][{{$key}}][name]" placeholder="Название">
                                                 <input class="form-control" class="form-control mr-1" type="text" value="{{$contact->value}}"
                                                     name="contacts[phone][{{$key}}][value]" placeholder="Телефон">
@@ -829,11 +875,12 @@
                                             </button>
                                         </div>
                                         <!-- end of phones -->
-                                        
-                                         <!-- zarplata tab -->
-                                        <div class="col-md-12 mt-3">
 
-                                            <h5 class="mb-4">Зарплата</h5>
+
+                                         <!-- zarplata tab -->
+                                        <div class="col-md-12 mt-3" id="profile_salary" style="display: none">
+
+                                            <h5 class="mb-4">Оплата</h5>
 
                                             <div class="form-group row">
                                                 <label for="zarplata" class="col-sm-3 col-form-label font-weight-bold">Оклад <span class="red">*</span></label>
@@ -937,93 +984,97 @@
 
                                         @if(isset($user))
                                          <!-- additional tab -->
-                                        <div class="col-md-12 mt-3">
-                                            <h5 class="mb-4">Прочие данные</h5>
-                                        </div>
-                                        <div class="col-md-8 ">
+                                        <div id="other_data" style="display: none">
+                                            <div class="col-md-12 mt-3">
+                                                <h5 class="mb-4">Прочие данные</h5>
+                                            </div>
 
-                                            <div class="form-group row">
-                                                <label for="description"
-                                                    class="col-sm-4 col-form-label font-weight-bold">Примечание для внешнего рекрутера</label>
-                                                <div class="col-sm-8">
+                                            <div class="col-md-8 ">
+
+                                                <div class="form-group row">
+                                                    <label for="description"
+                                                           class="col-sm-4 col-form-label font-weight-bold">Примечание для внешнего рекрутера</label>
+                                                    <div class="col-sm-8">
                                                     <textarea name="recruiter_comment" class="form-control"
-                                                        id="recruiter_comment">{{$user->recruiter_comment}}</textarea>
+                                                              id="recruiter_comment">{{$user->recruiter_comment}}</textarea>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            @if($user->lead)
-                                            <div class="table-responsive">
-                                                <table class="my-table table user-list">
-                                                    <thead>
-                                                        <tr>
-                                                            <th colspan="2"><span>Битрикс</span></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <span>Сегмент</span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{ $user->segment }}</span>
-                                                            </td>
-                                                        </tr>
 
-                                                        @if($user->lead->lead_id != 0)
-                                                        <tr>
-                                                            <td>
-                                                                <span>Лид</span>
-                                                            </td>
-                                                            <td>
+                                            <div class="col-md-4">
+                                                @if($user->lead)
+                                                    <div class="table-responsive">
+                                                        <table class="my-table table user-list">
+                                                            <thead>
+                                                            <tr>
+                                                                <th colspan="2"><span>Битрикс</span></th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <span>Сегмент</span>
+                                                                </td>
+                                                                <td>
+                                                                    <span>{{ $user->segment }}</span>
+                                                                </td>
+                                                            </tr>
+
+                                                            @if($user->lead->lead_id != 0)
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>Лид</span>
+                                                                    </td>
+                                                                    <td>
                                                                 <span>
                                                                     <a href="https://infinitys.bitrix24.kz/crm/lead/details/{{$user->lead->lead_id}}/"
-                                                                        target="_blank">
+                                                                       target="_blank">
                                                                         {{ $user->lead->lead_id }}
                                                                     </a>
                                                                 </span>
-                                                            </td>
-                                                        </tr>
-                                                        @endif
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
 
-                                                        @if($user->lead->deal_id != 0)
-                                                        <tr>
-                                                            <td>
-                                                                <span>Сделка</span>
-                                                            </td>
-                                                            <td>
+                                                            @if($user->lead->deal_id != 0)
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>Сделка</span>
+                                                                    </td>
+                                                                    <td>
                                                                 <span>
                                                                     <a href="https://infinitys.bitrix24.kz/crm/lead/details/{{$user->lead->deal_id}}/"
-                                                                        target="_blank">
+                                                                       target="_blank">
                                                                         {{ $user->lead->deal_id }}
                                                                     </a>
                                                                 </span>
-                                                            </td>
-                                                        </tr>
-                                                        @endif
-                                                    </tbody>
-                                                </table>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                @endif
                                             </div>
-                                            @endif
-                                        </div>
 
 
-                                        <div class="col-md-8">
+                                            <div class="col-md-8">
 
-                                            <div class="form-group row">
-                                                <label for="headphones_amount_checkbox"
-                                                    class="col-sm-4 col-form-label font-weight-bold">Выданы наушники <br> {{ $user->headphones_date }}</label>
-                                                    
-                                                <div class="col-sm-2">
-                                                   <input type="checkbox" class="form-control" id="headphones_amount_checkbox" @if($user->headphones_amount > 0) checked @endif>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label for="headphones_amount"
-                                                        class="col-form-label font-weight-bold">На сумму</label>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <input name="headphones_amount" class="form-control" type="number"
-                                                        id="headphones_amount" value="{{ $user->headphones_amount }}" @if($user->headphones_amount == 0) disabled @endif>
+                                                <div class="form-group row">
+                                                    <label for="headphones_amount_checkbox"
+                                                           class="col-sm-4 col-form-label font-weight-bold">Выданы наушники <br> {{ $user->headphones_date }}</label>
+
+                                                    <div class="col-sm-2">
+                                                        <input type="checkbox" class="form-control" id="headphones_amount_checkbox" @if($user->headphones_amount > 0) checked @endif>
+                                                    </div>
+                                                    <div class="col-sm-3">
+                                                        <label for="headphones_amount"
+                                                               class="col-form-label font-weight-bold">На сумму</label>
+                                                    </div>
+                                                    <div class="col-sm-3">
+                                                        <input name="headphones_amount" class="form-control" type="number"
+                                                               id="headphones_amount" value="{{ $user->headphones_amount }}" @if($user->headphones_amount == 0) disabled @endif>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1045,6 +1096,7 @@
                         <u-modal items="{{ json_encode($errors->all()) }}" title="Не сохранено" />
                         @endif
                     </form>
+
             </div>
         </div>
     </div>
@@ -1177,9 +1229,131 @@
 @endsection
 
 @section('scripts')
-
+    <div id="uploadimageModal" class="modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a onclick="$('#uploadimageModal').modal('hide')"  class="close" >&times;</a>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8 text-center">
+                            <div id="image_demo" style="width:455px; margin-top:15px"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button  class="btn btn-default crop_image" >Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
 <script>
+    $(document).ready(function(){
 
+        $image_crop = $('#image_demo').croppie({
+            enableExif: true,
+            viewport: {
+                width:200,
+                height:200,
+                type:'square' //circle
+            },
+            boundary:{
+                width:300,
+                height:300
+            }
+        });
+
+        $('#upload_image').on('change', function(){
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                $image_crop.croppie('bind', {
+                    url: event.target.result
+                }).then(function(){
+                    console.log('jQuery bind complete');
+                });
+            }
+            reader.readAsDataURL(this.files[0]);
+            $('#uploadimageModal').modal('show');
+        });
+
+
+
+        $('.crop_image').click(function(event){
+            $image_crop.croppie('result', {
+                type: 'canvas',
+                size: 'viewport'
+            }).then(function(response){
+
+                var user_id = $("#user_id_img").val();
+
+                $.ajax({
+                    type:'POST',
+                    url: "/profile/upload/edit/",
+                    data:{"image": response,'user_id':user_id},
+                    success: (data) => {
+                        $('#uploadimageModal').modal('hide');
+                        $("#img_url").html(data)
+
+
+                        // this.reset();
+                        // alert('Image has been uploaded successfully');
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
+                });
+
+                // $.ajax({
+                //     url:"/profile/upload/edit/",
+                //     type: "POST",
+                //     cache:false,
+                //     contentType: false,
+                //     processData: false,
+                //     data:{"image": response},
+                //     success:function(data)
+                //     {
+                //         console.log(data,'888')
+                //
+                //         // $('#uploadimageModal').modal('hide');
+                //         // $('#uploaded_image').html(data);
+                //     }
+                // });
+
+            })
+        });
+
+    });
+
+
+
+    function showBlock(type)
+    {
+
+        if(type == 1){
+
+            $("#profile_d").toggle(" ");
+        }else if(type == 7){
+            $("#adaptation_conversations").toggle(" ")
+        }else if(type == 8){
+            $("#add_info").toggle(" ");
+        }else if(type == 2){
+            $("#iphones3").toggle(" ");
+        }else if(type == 5){
+            $("#profile_salary").toggle(" ");
+        }else if(type == 3){
+            $("#profile_books").toggle(" ");
+        }else if(type == 9){
+            $("#iphones4").toggle(" ");
+        }else if(type == 4){
+            $("#profile_contacts").toggle(" ");
+        }else if(type == 6){
+            $("#other_data").toggle(" ");
+        }
+
+        console.log(type)
+
+    }
 
     function liHoverOver(element){
         $("#li-hover-jquery-"+element).css('background-color','rgb(236 244 249)');
