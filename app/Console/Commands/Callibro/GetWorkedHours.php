@@ -101,7 +101,7 @@ class GetWorkedHours extends Command
                 }
                 $aggrees = Kaztel::getAggrees($user->email, $this->date);
              
-                $correct_minutes = Kaztel::getWorkedMinutes($user->email, $this->date);
+                $call_counts = Kaztel::getCallCounts($user->email, $this->date);
 
                 $closed_cards = Kaztel::getClosedCards($this->date, $user->email);
 
@@ -124,7 +124,7 @@ class GetWorkedHours extends Command
                     'employee_id' => $user->id,
                     'group_id' => $group_id,
                     'type' => 134 // звонки от 10 секунд
-                ], $correct_minutes);
+                ], $call_counts);
 
                  $this->saveASI([
                     'date' => $this->startOfMonth,
