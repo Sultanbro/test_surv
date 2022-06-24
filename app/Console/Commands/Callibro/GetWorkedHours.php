@@ -88,8 +88,6 @@ class GetWorkedHours extends Command
             $this->fetch($group_id);
             $this->line('Fetch completed for group_id: ' . $group_id);
         }
-
-       // $this->saveHoursToTimetracking();
         
     }
 
@@ -105,7 +103,7 @@ class GetWorkedHours extends Command
                 $minutes = Kaztel::getWorkedMinutes($user->email, $this->date);
 
                 if($minutes == 0) continue; // Не записывать ноль
-                if($minutes > 0 && $user->program_id == 1) {
+                if($minutes > 0 {
                     $hours = Callibro::getWorkedHours($user->email, $this->date);
                   
                     if( $this->group && !in_array($user->id, $this->group->time_exceptions)) { // not in exception
@@ -212,46 +210,6 @@ class GetWorkedHours extends Command
             ]);
         }   
         
-    }
-
-    public function saveHoursToTimetracking() 
-    {
-
-        $users = User::where('program_id', 1)
-            ->get();
-
-        $this->line('Found ' . $users->count() . ' UCALLS users');
-
-        $add_minutes = $this->getAdditionalMinutes(); // для home
-        foreach ($users as $key => $user) {
-            $total_hours = Callibro::getWorkedHours($user->email, $this->date);
-
-            $tt = Timetracking::whereDate('enter', $this->date)
-                ->where('user_id', $user->id)
-                ->orderBy('enter', 'asc')
-                ->first();
-
-            if($tt) {
-                if($tt->updated == 0 || $tt->updated == 3) {
-                    $tt->total_hours = $total_hours;
-                    $tt->program_id = 1;
-                    $tt->updated = 3;
-                    $tt->save();
-                } 
-            } else if($total_hours != 0) {
-                
-                Timetracking::create([
-                    'total_hours' => $total_hours,
-                    'user_id' => $user->id,
-                    'enter' => Carbon::parse($this->date),
-                    'exit' => Carbon::parse($this->date),
-                    'program_id' => 1,
-                    'updated' => 3,
-                ]);
-            }
-        } 
-
-
     }
 
     public function saveASI(array $fields, $value) 
