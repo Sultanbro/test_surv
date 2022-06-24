@@ -624,6 +624,8 @@ class TimetrackingController extends Controller
             'bp_link' => isset($group->bp_link) ? $group->bp_link : '',
             'dialer_id' => isset($group->dialer) ? $group->dialer->dialer_id : null,
             'script_id' => isset($group->dialer) ? $group->dialer->script_id : null,
+            'talk_minutes' => isset($group->dialer) ? $group->dialer->talk_minutes : null,
+            'talk_hours' => isset($group->dialer) ? $group->dialer->talk_hours : null,
             'quality' => isset($group) ? $group->quality : 'local',
             'bonuses' => $bonuses,
             'activities' => $activities,
@@ -688,12 +690,16 @@ class TimetrackingController extends Controller
             if($group->dialer) {
                 $group->dialer->dialer_id = $request['dialer_id'];
                 $group->dialer->script_id = $request['script_id'] ?? 0;
+                $group->dialer->talk_hours = $request['talk_hours'] ?? 0;
+                $group->dialer->talk_minutes = $request['talk_minutes'] ?? 0;
                 $group->dialer->save();
             } else {
                 \App\Models\CallibroDialer::create([
                     'group_id' => $group->id,
                     'dialer_id' => $request['dialer_id'],
-                    'script_id' => $request['script_id'] ?? 0
+                    'script_id' => $request['script_id'] ?? 0,
+                    'talk_hours' => $request['talk_hours'] ?? 0,
+                    'talk_minutes' => $request['talk_minutes'] ?? 0
                 ]);
             }
         }

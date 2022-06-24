@@ -15,6 +15,16 @@
       </button>
     </div>
 
+    <div class="info mb-3">
+      <div class="d-flex">
+        <b>Автор:</b>
+        <p>{{ course.author }}</p>
+      </div>
+      <div class="d-flex">
+        <b>Создано:</b>
+        <p>{{ course.created }}</p>
+      </div>
+    </div>
     <div class="d-flex mb-3">
       <div class="w-full">
         <textarea

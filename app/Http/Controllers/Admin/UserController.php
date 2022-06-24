@@ -82,6 +82,10 @@ class UserController extends Controller
     {
 
 
+//        request()->validate([
+//            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+//        ]);
+
 
         $data = $request["image"];
 
@@ -94,13 +98,16 @@ class UserController extends Controller
         $imageName = time() . '.png';
 
 
+
         if (isset($request['user_id']) && $request['user_id'] != 'new_user'){
 
-            $update_user = User::find($request['user_id']);
-            if (!empty($update_user['img_url'])){
-                unlink("users_img/".$update_user['img_url']);
+            $update_user = User::withTrashed()->find($request['user_id']);
+
+
+            if (!empty($update_user->img_url)){
+                unlink("users_img/".$update_user->img_url);
             }
-            $update_user['img_url'] = $imageName;
+            $update_user->img_url = $imageName;
             $update_user->save();
 
             file_put_contents("users_img/$imageName", $data);
@@ -108,7 +115,7 @@ class UserController extends Controller
 
             return response($img);
 
-        }elseif (isset($request['user_id']) && $request['user_id'] == 'new_user'){
+        }elseif (isset($request->img_url) && $request['user_id'] == 'new_user'){
 
             $img = null;
 
@@ -117,28 +124,6 @@ class UserController extends Controller
 
 
 
-
-
-
-
-        request()->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        if ($files = $request->file('image')) {
-
-            $fileName =  "image-".time().'.'.$request->image->getClientOriginalExtension();
-            $request->image->storeAs('image', $fileName);
-
-            $image = new Image;
-            $image->image = $fileName;
-            $image->save();
-
-            return Response()->json([
-                "image" => $fileName
-            ], Response::HTTP_OK);
-
-        }
 
 
     }
