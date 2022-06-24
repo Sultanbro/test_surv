@@ -398,23 +398,40 @@
 
       </div>
 
-       <div class="row" v-if="time_address == -1">
-          <div class="col-5 mt-1">
-            <div class="fl">ID диалера 
-              <i class="fa fa-info-circle ml-2" 
-                  v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" 
-                  title="Диалер в U-Calls">
-              </i>
-            </div>
-          </div>
-          <div class="col-7 mt-1">
-            <div class="fl d-flex">
-              <input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc" />
-              <input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc" />
-            </div>
+      <div class="row" v-if="time_address == -1">
+        <div class="col-5 mt-1">
+          <div class="fl">ID диалера 
+            <i class="fa fa-info-circle ml-2" 
+                v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" 
+                title="Диалер в U-Calls">
+            </i>
           </div>
         </div>
-        
+        <div class="col-7 mt-1">
+          <div class="fl d-flex">
+            <input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc" />
+            <input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc" />
+          </div>
+        </div>
+      </div>
+      
+      <div class="row" v-if="time_address == -1">
+        <div class="col-5 mt-1">
+          <div class="fl">Сколько минут считать, за полный рабочий день
+            <i class="fa fa-info-circle ml-2" 
+                v-b-popover.hover.right.html="'Запишите сколько минут разговора с сервиса cp.callibro.org считать, за полный рабочий день. <br>Пример: 250 минут считается как 8 часов'" 
+                title="Ставить полный рабочий день">
+            </i>
+          </div>
+        </div>
+        <div class="col-7 mt-1">
+          <div class="fl d-flex">
+            <input type="text" v-model="talk_minutes" placeholder="ID" class="form-control scscsc" />
+            <input type="number" v-model="talk_hours" placeholder="ID скрипта" class="form-control scscsc" />
+          </div>
+        </div>
+      </div>
+
       <div class="row mt-1">
         <div class="col-12">
           <p class="">Исключения
@@ -503,6 +520,8 @@ export default {
       timeoff: "18:00",
       dialer_id: null,
       script_id: null,
+      talk_minutes: null,
+      talk_hours: null,
       // time edit
       time_address: 0,
       editable_time: 0,
@@ -653,6 +672,8 @@ export default {
             this.zoom_link = response.data.zoom_link;
             this.bp_link = response.data.bp_link;
             this.dialer_id = response.data.dialer_id;
+            this.talk_minutes = response.data.talk_minutes;
+            this.talk_hours = response.data.talk_hours;
             this.script_id = response.data.script_id;
             this.quality = response.data.quality;
             this.corps = response.data.corp_books;
@@ -695,6 +716,8 @@ export default {
           workdays: this.workdays,
           script_id: this.script_id,
           dialer_id: this.dialer_id,
+          talk_hours: this.talk_hours,
+          talk_minutes: this.talk_minutes,
           bp_link: this.bp_link,
           payment_terms: this.payment_terms,
           editable_time: this.editable_time,

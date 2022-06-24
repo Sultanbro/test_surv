@@ -17,6 +17,8 @@ class CallibroDialer extends Model
         'group_id', 
         'dialer_id', 
         'script_id', // for grades 
+        'talk_hours',
+        'talk_minutes', 
     ];
 
 }
