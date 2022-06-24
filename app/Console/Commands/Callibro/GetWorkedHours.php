@@ -89,7 +89,7 @@ class GetWorkedHours extends Command
             $this->line('Fetch completed for group_id: ' . $group_id);
         }
 
-        $this->saveHoursToTimetracking();
+       // $this->saveHoursToTimetracking();
         
     }
 
@@ -101,14 +101,16 @@ class GetWorkedHours extends Command
         foreach($users as $user) {
            // if($user->position_id != 32) continue; // Не оператор
             if($group_id == 70) { // Kaztel
-
+            
                 $minutes = Kaztel::getWorkedMinutes($user->email, $this->date);
 
                 if($minutes == 0) continue; // Не записывать ноль
                 if($minutes > 0 && $user->program_id == 1) {
                     $hours = Callibro::getWorkedHours($user->email, $this->date);
-                    
+                  
                     if( $this->group && !in_array($user->id, $this->group->time_exceptions)) { // not in exception
+
+                     //   dump($user->id, $user->last_name, $user->name, $this->group->time_exceptions);
                         $this->updateHours($user->id, $minutes, $hours);
                     }
                     
@@ -154,7 +156,7 @@ class GetWorkedHours extends Command
 
     private function updateHours($user_id, $minutes, $worked_minutes) 
     {
-        
+   
         $date = $this->date;
 
         $timetracking = Timetracking::where('user_id', $user_id)
