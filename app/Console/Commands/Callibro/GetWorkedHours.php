@@ -103,7 +103,7 @@ class GetWorkedHours extends Command
                 $minutes = Kaztel::getWorkedMinutes($user->email, $this->date);
 
                 if($minutes == 0) continue; // Не записывать ноль
-                if($minutes > 0 {
+                if($minutes > 0) {
                     $hours = Callibro::getWorkedHours($user->email, $this->date);
                   
                     if( $this->group && !in_array($user->id, $this->group->time_exceptions)) { // not in exception
