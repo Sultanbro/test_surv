@@ -578,6 +578,7 @@ class Salary extends Model
                     ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp); 
             
             $trainee_days = $user->daytypes->whereIn('type', [5,6,7]);
+            $absent_days = $user->daytypes->whereIn('type', [2]);
 
           
             $tts_before_apply = $user->timetracking
@@ -624,9 +625,13 @@ class Salary extends Model
 
                 $x = $tts->where('day', $i);
                 $y = $tts_before_apply->where('day', $i);
-                $a = $trainee_days->where('day', $i)->first();
+                $t = $trainee_days->where('day', $i)->first();
+                $a = $absent_days->where('day', $i)->first();
 
-                if($a) { // день отмечен как стажировка
+                if($a) {
+                    $earnings[$i] = 0;
+                    $hours[$i] = 0;
+                } else if($t) { // день отмечен как стажировка
                     $trainings[$i] = true;
                     
                     $earning = $hourly_pay * $worktime * $internshipPayRate;
