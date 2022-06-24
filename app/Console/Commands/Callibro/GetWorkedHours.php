@@ -53,6 +53,10 @@ class GetWorkedHours extends Command
     
     protected $dialer;
 
+
+
+    protected $group;
+
     /**
      * Create a new command instance.
      *
@@ -78,7 +82,7 @@ class GetWorkedHours extends Command
 
         $groups = [70];
         foreach($groups as $group_id) {
-
+            $this->group = ProfileGroup::find($group_id);
             $this->dialer = CallibroDialer::where('group_id', $group_id)->first();
 
             $this->fetch($group_id);
@@ -103,7 +107,11 @@ class GetWorkedHours extends Command
                 if($minutes == 0) continue; // Не записывать ноль
                 if($minutes > 0 && $user->program_id == 1) {
                     $hours = Callibro::getWorkedHours($user->email, $this->date);
-                    $this->updateHours($user->id, $minutes, $hours);
+                    
+                    if( $this->group && !in_array($user->id, $this->group->time_exceptions)) { // not in exception
+                        $this->updateHours($user->id, $minutes, $hours);
+                    }
+                    
                 }
                 $aggrees = Kaztel::getAggrees($user->email, $this->date);
              
