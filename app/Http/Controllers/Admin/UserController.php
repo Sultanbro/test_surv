@@ -97,19 +97,16 @@ class UserController extends Controller
 
         $imageName = time() . '.png';
 
-	
+
 
         if (isset($request['user_id']) && $request['user_id'] != 'new_user'){
 
-            $update_user = User::find($request['user_id']);
+            $update_user = User::withTrashed()->find($request['user_id']);
 
-
-		 return  $update_user;		
 
             if (!empty($update_user->img_url)){
                 unlink("users_img/".$update_user->img_url);
             }
- 	    $update_user->img_url = null;
             $update_user->img_url = $imageName;
             $update_user->save();
 
@@ -2370,7 +2367,6 @@ class UserController extends Controller
 
         View::share('title', 'Сотрудник уволен');
         View::share('menu', 'timetrackinguser');
-
 
         return view('admin.users.create', $this->preparePersonInputs($request->id));
     }

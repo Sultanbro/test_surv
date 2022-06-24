@@ -67,6 +67,7 @@ class User extends Authenticatable implements Authorizable
         'groups_all',
         'applied_at', // дата принятия
         'weekdays', // 0000000
+        'img_url'/// найменование аватарки
     ];
 
 
