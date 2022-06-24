@@ -556,7 +556,7 @@ export default {
         {
           title: "За все, каждому",
           value: "all",
-        },
+        }, 
       ],
       dayparts: [
         {

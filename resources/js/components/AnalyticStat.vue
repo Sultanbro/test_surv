@@ -239,7 +239,7 @@
                                             <li>
                                                 <div class="d-flex decimals">
                                                     <p>Дробные</p>
-                                                    <input v-model="item[field.key].decimals"  type="number" @change="setDecimals"/>
+                                                    <input v-model="item[field.key].decimals"  type="number" @change="setDecimals(item[field.key])"/>
                                                 </div>
                                             </li>
                                             <li  @click="change_type('initial', i_index, field.key)">
@@ -693,13 +693,15 @@ export default {
 
             if([1,2,3].includes(i) && f == 0) return ""
 
-                console.log(i,f)
-                console.log(this.focused_item,this.focused_field )
+  
+
             if(!(this.focused_item == i && this.focused_field == f)) {
                 console.log('hide');
                  this.hideContextMenu();
             }
            
+                console.log(i,f)
+
             // indexes
             this.focused_item = i
             this.focused_field = f
@@ -1019,25 +1021,20 @@ export default {
             });
         },
  
-        setDecimals() {
-
-            let item = this.items[this.focused_item][this.focused_field];
-            this.itemy = item;
-         
+        setDecimals(item) {
 
             axios.post("/timetracking/analytics/set-decimals", {
                 date: this.$moment(
                     `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
                     "MMMM YYYY"
                 ).format("YYYY-MM-DD"),
-                row_id: this.itemy.row_id,
-                column_id: this.itemy.column_id,
-                decimals: this.itemy.decimals
+                row_id: item.row_id,
+                column_id: item.column_id,
+                decimals: item.decimals
             })
             .then((response) => {
                 this.$message.success('Сохранено!');
                 this.hideContextMenu();
-                this.itemy = null;
             }).catch(error => {
                 this.$message.error('Не сохранено');
                 console.log(error)
