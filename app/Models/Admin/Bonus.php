@@ -127,6 +127,33 @@ class Bonus extends Model
                 }
                 
             }
+
+            if($bonus->unit == self::FOR_ALL) {
+                
+                // nullify awards if they are not actual
+                ObtainedBonus::where('bonus_id', $bonus->id)
+                    ->where('date', $date)
+                    ->delete();
+
+                foreach ($users as $user_id) {
+                    if($group_id == 48) {
+                        $val = self::fetch_value_from_activity_for_recruting($bonus->activity_id, $user_id, $date, $bonus->daypart);
+                    } else {
+                        $val = self::fetch_value_from_activity_new($bonus->activity_id, $user_id, $date);
+                    }
+                    
+                    if((int)$val >= $bonus->quantity) {
+                        ObtainedBonus::createOrUpdate([
+                            'user_id' => $user_id,
+                            'date' => $date,
+                            'bonus_id' => $bonus->id,
+                            'amount' => $bonus->sum,
+                            'comment' => $bonus->title . ' : ' . (int)$val . ';'
+                        ]);
+                    }
+                }
+                
+            }
             
             if($bonus->unit == self::FOR_ONE) {
                 foreach ($users as $user_id) {
@@ -155,32 +182,6 @@ class Bonus extends Model
                 }
             }
         }
-
- 
-        // Save awards to salaries table 
-        // foreach ($awards as $user_id => $award) {
-        //     $salary = Salary::where([
-        //         'date' => $date,
-        //         'user_id' => $user_id
-        //     ])->first();
-            
-        //     $comm = $comments[$user_id];
-        //     if($salary) {
-        //         $salary->comment_award = mb_substr($comm,0,255);
-        //         $salary->award = (int)$salary->award  + (int)$award;
-        //         $salary->update();
-        //     } else {
-        //         Salary::create([
-        //             'user_id' => $user_id,
-        //             'award' => $award,
-        //             'comment_award' => mb_substr($comm,0,255),
-        //             'date' => $date,
-        //             'bonus' => 0,
-        //             'paid' => 0,
-        //             'amount' => 0,
-        //         ]);
-        //     }
-        // }
 
         return $awards;
     }
