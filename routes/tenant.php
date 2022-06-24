@@ -56,6 +56,7 @@ use App\Http\Controllers\LinkController;
 use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\GlossaryController;
+use App\Http\Controllers\CallibroController;
 
 /*
 |--------------------------------------------------------------------------
@@ -484,6 +485,7 @@ Route::middleware([
 
 
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);
+    Route::get('/callibro/login', [CallibroController::class, 'login']);
     
    
     

@@ -101,4 +101,31 @@ class Callibro
         return $full_time;
     }
 
+    public static function startedDay($user_email, $day) {
+
+        $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
+        
+        $full_time = 0; // общее отработанное время
+      
+        if($account) {
+            $call_account_id = $account->id;
+
+    
+            $reports = DB::connection('callibro')->table('call_account_actions')
+                    ->select(
+                        DB::raw('SUM(state_duration) as state_duration'),
+                        'account_id',
+                        'operator_status_id',
+                        'created_at',
+                        'state')
+                    ->where('account_id', $call_account_id)
+                    ->whereDate('created_at', $day)
+                    ->orderBy('created_at')->first();
+
+           if($reports) return $reports->created_at;
+            
+        } 
+
+        return null;
+    }
 }

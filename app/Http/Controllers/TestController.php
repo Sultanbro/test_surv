@@ -23,30 +23,25 @@ use Spatie\Permission\Models\Permission;
 class TestController extends Controller { 
  
 	public function test() {
+		dd(env('APP_ENV'));
+		dd(\App\Components\TelegramBot::send('OOps oh'));
+		$mail = 'ruslan.tasshmetov@mail.ru';
 
-		$musers = \DB::connection('marketing')->table('b_user')->get();
+		$data = [
+            'user_name' => 'RUSLANISHE',
+            'name' => 'PROGRAMIISST',
+            'email' => $mail,
+            'password' => 'asdasdasd asdasdasdasd',
+            'subdomain' => tenant('id')
+        ];
 
-		foreach ($musers as $key => $mar_user) {
-			$user = User::withTrashed()->where('id', $mar_user->ID)->where('email', $mar_user->EMAIL)->first();
+
+		\Mail::to($mail)->send(new \App\Mail\SendInvitation($data));
 		
-			if($user) {
-
-				dump([
-					'user_id' => $user->id,
-					'email' => $user->email,
-					'name' => $user->last_name . ' ' . $user->name, 
-					'created_at' => $mar_user->DATE_REGISTER,
-					'deleted_at' => $mar_user->deactivate_date //== '0000-00-00 00:00:00' ? null :  $mar_user->deactivate_date
-				]);
-
-			}
-
-		}
+		dd('sent ' . $mail);
 
 
-
-
-		dd($a);
+		
   
 
 	}  

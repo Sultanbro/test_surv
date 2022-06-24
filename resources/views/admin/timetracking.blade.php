@@ -590,7 +590,7 @@ let small = '47.5%';
 let normal = '50%';
 
 $('#box-2').css('margin-right', margin);
-@elseif($show_payment_terms || ($position_desc && $position_desc->show == 1))
+@else
 
 let margin = '0%';
 let big = '100%';
