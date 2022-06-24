@@ -144,33 +144,39 @@
                                         @else
                                             Новый пользователь
                                         @endif
+
                                         @if(isset($user))
+
+                                        <div id="other_data_bitrix" style="display: none">
                                             @if($user->bitrix_id != 0)
-                                            <p>
-                                                <b>Битрикс: <span class="text-green">Есть</span></b>
-                                                <a href="https://infinitys.bitrix24.kz/company/personal/user/{{ $user->bitrix_id }}/" target="_blank">
-                                                    <i class="fa fa-link pointer"></i>
-                                                </a>
-                                                <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
-                                            </p>
+                                                <p>
+                                                    <b>Битрикс: <span class="text-green">Есть</span></b>
+                                                    <a href="https://infinitys.bitrix24.kz/company/personal/user/{{ $user->bitrix_id }}/" target="_blank">
+                                                        <i class="fa fa-link pointer"></i>
+                                                    </a>
+                                                    <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
+                                                </p>
                                             @else
-                                            <p>
-                                                <b>
-                                                    Битрикс:
-                                                    <span class="text-red">Нет</span>
-                                                </b> 
-                                                <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
-                                            </p>
+                                                <p>
+                                                    <b>
+                                                        Битрикс:
+                                                        <span class="text-red">Нет</span>
+                                                    </b>
+                                                    <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
+                                                </p>
                                             @endif
-                                            <input type="text" 
-                                                style="display:none;"
-                                                class="form-control form-control-sm"
-                                                id="bitrix_id_input"
-                                                value="{{ $user->bitrix_id }}"
-                                                name="bitrix_id"
-                                                placeholder="ID профиля в битриксе">
-                                             <profile-kpi-button :user_id="{{ $user->id }}"/>
+                                            <input type="text"
+                                                   style="display:none;"
+                                                   class="form-control form-control-sm"
+                                                   id="bitrix_id_input"
+                                                   value="{{ $user->bitrix_id }}"
+                                                   name="bitrix_id"
+                                                   placeholder="ID профиля в битриксе">
+                                            <profile-kpi-button :user_id="{{ $user->id }}"/>
+                                        </div>
+
                                         @endif
+
                                     </div>
 
 
@@ -1105,14 +1111,6 @@
 
 
 
-
-
-
-
-
-
-
-
 @if(isset($user))
 @if (is_null($user->deleted_at))
 <b-modal id="modal-deactivate" hide-footer hide-header>
@@ -1252,6 +1250,9 @@
     $(document).ready(function(){
 
         $image_crop = $('#image_demo').croppie({
+
+
+
             enableExif: true,
             viewport: {
                 width:200,
@@ -1274,6 +1275,12 @@
                 });
             }
             reader.readAsDataURL(this.files[0]);
+
+            // var user_id = $("#user_id_img").val();
+            //
+            // console.log(user_id,'077');
+
+
             $('#uploadimageModal').modal('show');
         });
 
@@ -1287,11 +1294,18 @@
 
                 var user_id = $("#user_id_img").val();
 
+                console.log(user_id,'077');
+
                 $.ajax({
                     type:'POST',
                     url: "/profile/upload/edit/",
                     data:{"image": response,'user_id':user_id},
                     success: (data) => {
+
+                        console.log(data,'dataaaaaaa');
+                        console.log(user_id,'0ssssqqqqq');
+
+
                         $('#uploadimageModal').modal('hide');
                         $("#img_url").html(data)
 
@@ -1349,6 +1363,7 @@
             $("#profile_contacts").toggle(" ");
         }else if(type == 6){
             $("#other_data").toggle(" ");
+            $("#other_data_bitrix").toggle(" ");
         }
 
         console.log(type)

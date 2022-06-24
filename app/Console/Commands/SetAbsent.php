@@ -181,9 +181,12 @@ class SetAbsent extends Command
 
         if($lead) {
             $abs_msg .= '<br><a href="/timetracking/analytics/skypes/' . $lead->lead_id . '" target="_blank" class="btn btn-primary mr-2 mt-2 rounded btn-sm">Перейти в сделку</a>';
-        } 
+            $abs_msg .= '<a class="btn btn-primary mt-2 rounded btn-sm transfer-training" data-userid="' . $targetUser->id . '">Перенести обучение</a>';
+        } else {
+            $abs_msg .= '<br><a class="btn btn-primary mt-2 rounded btn-sm transfer-training" data-userid="' . $targetUser->id . '">Перенести обучение</a>';
+        }
         
-        $abs_msg .= '<a class="btn btn-primary mt-2 rounded btn-sm transfer-training" data-userid="' . $targetUser->id . '">Перенести обучение</a>';
+      
 
         $timestamp = Carbon::now(); 
 
