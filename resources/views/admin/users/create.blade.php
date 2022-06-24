@@ -61,7 +61,7 @@
 
 
     <div class="">
-        <div class="col-md-12">
+        <div class="col-md-12 p-0">
             <div class="contact-information">
 
                 @if(isset($user))
@@ -105,7 +105,7 @@
                                      @endif
 
 
-                                    <label class="label-6" for="upload_image" id="img_url" style="cursor:pointer">
+                                    <label class="my-label-6" for="upload_image" id="img_url" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
                                         @if(isset($user) && !is_null($user->img_url))
 
                                         <img id="{{$user->img_url}}"
@@ -145,57 +145,55 @@
                                             Новый пользователь
                                         @endif
 
-                                        @if(isset($user))
 
-                                        <div id="other_data_bitrix">
-                                            @if($user->bitrix_id != 0)
-                                                <p>
-                                                    <b>Битрикс: <span class="text-green">Есть</span></b>
-                                                    <a href="https://infinitys.bitrix24.kz/company/personal/user/{{ $user->bitrix_id }}/" target="_blank">
-                                                        <i class="fa fa-link pointer"></i>
-                                                    </a>
-                                                    <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
-                                                </p>
-                                            @else
-                                                <p>
-                                                    <b>
-                                                        Битрикс:
-                                                        <span class="text-red">Нет</span>
-                                                    </b>
-                                                    <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
-                                                </p>
-                                            @endif
-                                            <input type="text"
-                                                   style="display:none;"
-                                                   class="form-control form-control-sm"
-                                                   id="bitrix_id_input"
-                                                   value="{{ $user->bitrix_id }}"
-                                                   name="bitrix_id"
-                                                   placeholder="ID профиля в битриксе">
-                                            <profile-kpi-button :user_id="{{ $user->id }}"/>
-                                        </div>
-
-                                        @endif
 
                                     </div>
 
 
-                                    <div class="">
-
+                                    <div class="list-item">
                                         <ul class="p-0">
-                                            <li><a href="#" onclick="showBlock('1')">Основные данные</a></li>
-                                            <li><a href="#" onclick="showBlock('2')">Группы</a></li>
-                                            <li><a href="#" onclick="showBlock('3')">База знаний</a></li>
-                                            <li><a href="#" onclick="showBlock('9')">Документы</a></li>
-                                            <li><a href="#" onclick="showBlock('4')">Контакты</a></li>
-                                            <li><a href="#" onclick="showBlock('5')">Оплата</a></li>
-                                            <li><a href="#" onclick="showBlock('6')">Прочие данные</a></li>
-                                            <li><a href="#" onclick="showBlock('7')">Адаптационные  данные</a></li>
-                                            <li><a href="#" onclick="showBlock('8')">Дополнительная информация</a></li>
+                                            <li  class="bg-this" id="bg-this-1" style="background-color: #e2e2e2" onclick="showBlock('1',this)">
+                                                <a href="#" >Основные данные </a>
+                                                <span id="check-1"  class="ml-2 fa fa-check none-check" ></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-2" onclick="showBlock('2',this)">
+                                                <a href="#" >Группы</a>
+                                                <span id="check-2"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-3" onclick="showBlock('3',this)">
+                                                <a href="#" >База знание</a>
+                                                <span id="check-3"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-9" onclick="showBlock('9',this)">
+                                                <a href="#" >Документы</a>
+                                                <span id="check-9"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-4" onclick="showBlock('4',this)">
+                                                <a href="#" >Контакты</a>
+                                                <span id="check-4"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-5"  onclick="showBlock('5',this)">
+                                                <a href="#">Оплата</a>
+                                                <span id="check-5"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-6" onclick="showBlock('6',this)">
+                                                <a href="#" >Проче данные</a>
+                                                <span id="check-6"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-7" onclick="showBlock('7',this)">
+                                                <a href="#" >Адаптационные  данные</a>
+                                                <span id="check-7"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-8" onclick="showBlock('8',this)">
+                                                <a href="#" >Дополнительная информация</a>
+                                                <span id="check-8"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
                                         </ul>
-
-
                                     </div>
+
+
+
+
                                 </div>
 
                             </div>
@@ -209,7 +207,7 @@
 
                                     <!-- PROFILE INFO -->
                                     <div class="d-flex row">
-                                        <div class="contacts-info col-md-6" id="profile_d">
+                                        <div class="contacts-info col-md-6 none-block" id="profile_d">
                                             <h5 class="mb-4">Профиль сотрудника </h5>
                                             <div class="form-group row">
                                                 <label for="firstName"
@@ -264,7 +262,7 @@
                                                 </div>
                                             @endif
 
-                                            
+
                                             <div class="form-group row">
                                                 <label for="lastName"
                                                     class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
@@ -289,14 +287,14 @@
                                                         </option>
                                                         @endforeach
                                                     </select>
-                                                    
+
                                                     @if(isset($user))
-                                                    <profile-groups id="position_group" 
+                                                    <profile-groups id="position_group"
                                                         :groups="{{ $groups }}"
                                                         :user_id="{{ $user->id }}"
                                                         :in_groups="{{ json_encode($user->head_in_groups) }}"
                                                         :user_role="2" />
-                                                    @endif   
+                                                    @endif
                                                 </div>
                                             </div>
 
@@ -378,7 +376,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="form-group row">
                                                 <label for="full_time"
                                                     class="col-sm-4 col-form-label font-weight-bold">Ставка</label>
@@ -387,7 +385,7 @@
                                                         <input class="form-control" id="ftr1" type="radio" name="full_time" value="1" @if(isset($user) && $user->full_time == 1) checked="checked"@endif> <span>Full-Time</span>
                                                     </label>
                                                     <label class="radio mb-0" for="ftr0">
-                                                        <input class="form-control" id="ftr0" type="radio" name="full_time" value="0" @if(isset($user) && $user->full_time == 0) checked="checked"@endif @if(!isset($user)) checked="checked" @endif> <span>Part-Time</span>  
+                                                        <input class="form-control" id="ftr0" type="radio" name="full_time" value="0" @if(isset($user) && $user->full_time == 0) checked="checked"@endif @if(!isset($user)) checked="checked" @endif> <span>Part-Time</span>
                                                     </label>
                                                 </div>
                                             </div>
@@ -420,20 +418,20 @@
                                                         value="@if(isset($user)){{$user->work_end}}@endif">
                                                 </div>
                                             </div>
-                                         
+
                                             <div class="form-group row" id="weekdays">
                                                 <label for="workingTimes"
                                                     class="col-sm-4 col-form-label font-weight-bold">Выходные</label>
                                                 <div class="col-sm-8 form-inline">
                                                     <input type="hidden" name="weekdays" value="" id="weekdays-input">
 
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[1] == 1 ) active @endif" data-id="1" >Пн</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[2] == 1 ) active @endif" data-id="2">Вт</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[3] == 1 ) active @endif" data-id="3">Ср</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[4] == 1 ) active @endif" data-id="4">Чт</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[5] == 1 ) active @endif" data-id="5">Пт</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[6] == 1 ) active @endif" data-id="6">Сб</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[0] == 1 ) active @endif" data-id="0">Вс</div>   
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[1] == 1 ) active @endif" data-id="1" >Пн</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[2] == 1 ) active @endif" data-id="2">Вт</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[3] == 1 ) active @endif" data-id="3">Ср</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[4] == 1 ) active @endif" data-id="4">Чт</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[5] == 1 ) active @endif" data-id="5">Пт</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[6] == 1 ) active @endif" data-id="6">Сб</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[0] == 1 ) active @endif" data-id="0">Вс</div>
                                                 </div>
                                             </div>
 
@@ -447,16 +445,10 @@
                                             </div>
 
                                         </div>
-
-
-
-
-
-
                                         <div class="col-md-6">
                                             @if(isset($user))
 
-                                                <div id="add_info">
+                                                <div id="add_info" class="none-block" style="display: none">
                                                     <div class="table-responsive">
                                                         <table class="my-table table user-list">
                                                             <thead>
@@ -556,14 +548,14 @@
                                                 </div>
 
 
-                                                <div id="adaptation_conversations">
+                                                <div id="adaptation_conversations" class="none-block" style="display: none">
                                                     <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
                                                     @foreach($user->adaptation_talks as $key => $talk)
                                                         <div class="adaptation_talk">
                                                             <div class="div_1">{{ $talk['day'] }}й день
                                                                 <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
                                                             </div>
-                                                            <div class="div_2">
+                                                            <div class="div_2" style="flex-direction:unset">
                                                                 <input type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
 
 
@@ -585,12 +577,12 @@
 
 
                                             <!-- groups tab -->
-                                            <div class="mb-3 xfade" id="iphones3">
+                                            <div class="mb-3 xfade none-block" id="iphones3" style="display: none">
                                                 <!--  -->
 
                                                 <h5 class="mb-4">Группы</h5>
 
-                                              
+
                                                 @if(isset($user))
                                                 <profile-groups :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />
                                                 @else
@@ -602,10 +594,10 @@
                                                 </select>
                                                 @endif
 
-                                                  
-                                                
-                                               
-                                                
+
+
+
+
                                                 <!--  -->
                                             </div>
 
@@ -615,25 +607,25 @@
 
 
 
-                                            <div class="mb-4" id="profile_books">
+                                            <div class="mb-4 none-block" id="profile_books" style="display: none">
                                                 @if(isset($user))
                                                 <h5 class="mb-4 mt-4">Книги</h5>
 
-                                                <profile-books :books="{{ $corpbooks }}" :user_id="{{ $user->id }}" 
-                                                    @if(isset($user->in_books)) 
+                                                <profile-books :books="{{ $corpbooks }}" :user_id="{{ $user->id }}"
+                                                    @if(isset($user->in_books))
                                                         :in_books="{{ $user->in_books }}"
                                                     @else
                                                         :in_books="[]"
                                                     @endif
                                                     />
-                                                        
+
                                                 @endif
                                             </div>
 
                                             <!-- end of groups and books tab -->
 
                                             <!-- documents tab -->
-                                            <div class="xtab-pane xfade" id="iphones4">
+                                            <div class="xtab-pane xfade none-block" id="iphones4" style="display: none">
                                                 <!--  -->
                                                 <h5 class="mb-4 mt-1">Документы (RAR, ZIP)</h5>
 
@@ -791,8 +783,8 @@
                                                         @endif
                                                     </div>
 
-                                                    
-                                                
+
+
 
                                                     <!-- может лишний -->
                                                     <input type="file" name="logo" id="file-6" class="inputfile inputfile-1"
@@ -815,7 +807,7 @@
                                     <!--  -->
                                     <!-- PROFILE PHONES -->
                                     <div class="profile-contacts mb-3 row">
-                                        <div class="phones col-md-6" id="profile_contacts">
+                                        <div class="phones col-md-6 none-block" id="profile_contacts" style="display: none">
                                             <h5 class="mb-4">Контакты</h5>
                                             <div class="d-flex phone-row form-group mb-2 ">
                                                 <label for="phone" class="col-sm-6 col-form-label font-weight-bold mr-1">Мобильный <span class="red">*</span></label>
@@ -884,7 +876,7 @@
 
 
                                          <!-- zarplata tab -->
-                                        <div class="col-md-12 mt-3" id="profile_salary">
+                                        <div class="col-md-12 mt-3 none-block" id="profile_salary" style="display: none">
 
                                             <h5 class="mb-4">Оплата</h5>
 
@@ -892,7 +884,7 @@
                                                 <label for="zarplata" class="col-sm-3 col-form-label font-weight-bold">Оклад <span class="red">*</span></label>
                                                 <div class="col-sm-3">
                                                     <input class="form-control" type="text" name="zarplata" id="zarplata" required
-                                                    placeholder="Оклад" 
+                                                    placeholder="Оклад"
                                                     @if(isset($user->zarplata))
                                                         @if($user->zarplata->zarplata == 0) value="0"
                                                         @else  value="{{$user->zarplata->zarplata}}"
@@ -964,7 +956,7 @@
                                                         value="@if(isset($user->zarplata)){{$user->zarplata->card_jysan}}@else{{old('card_jysan')}}@endif">
                                                 </div>
                                             </div>
-                
+
                                             <div class="cards">
                                                 @if(isset($user))
                                                 @foreach($user->cards as $card)
@@ -990,7 +982,7 @@
 
                                         @if(isset($user))
                                          <!-- additional tab -->
-                                        <div id="other_data">
+                                        <div id="other_data" class="none-block" style="display: none">
                                             <div class="col-md-12 mt-3">
                                                 <h5 class="mb-4">Прочие данные</h5>
                                             </div>
@@ -1082,6 +1074,40 @@
                                                                id="headphones_amount" value="{{ $user->headphones_amount }}" @if($user->headphones_amount == 0) disabled @endif>
                                                     </div>
                                                 </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                        <div id="other_data_bitrix" class="none-block" style="display: none">
+                                            <div class="col-md-12">
+                                                @if($user->bitrix_id != 0)
+                                                    <p>
+                                                        <b>Битрикс: <span class="text-green">Есть</span></b>
+                                                        <a href="https://infinitys.bitrix24.kz/company/personal/user/{{ $user->bitrix_id }}/" target="_blank">
+                                                            <i class="fa fa-link pointer"></i>
+                                                        </a>
+                                                        <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
+                                                    </p>
+                                                @else
+                                                    <p>
+                                                        <b>
+                                                            Битрикс:
+                                                            <span class="text-red">Нет</span>
+                                                        </b>
+                                                        <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
+                                                    </p>
+                                                @endif
+                                                <input type="text"
+                                                       style="display:none;"
+                                                       class="form-control form-control-sm"
+                                                       id="bitrix_id_input"
+                                                       value="{{ $user->bitrix_id }}"
+                                                       name="bitrix_id"
+                                                       placeholder="ID профиля в битриксе">
+                                                <profile-kpi-button :user_id="{{ $user->id }}"/>
                                             </div>
                                         </div>
 
@@ -1339,32 +1365,46 @@
 
     });
 
+    $("#profile_d").show();
 
-
-    function showBlock(type)
+    function showBlock(type,elem)
     {
 
-        if(type == 1){
+        console.log(elem,'09996')
 
-            $("#profile_d").toggle(" ");
+        $(".none-block").hide();
+        $(".none-check").hide();
+        $(".bg-this").css('background-color','rgb(248 248 248)')
+
+
+
+        $("#check-"+type).show();
+        $("#bg-this-"+type).css('background-color','rgb(227 229 232)')
+
+
+
+        if(type == 1){
+            $("#profile_d").show(" ");
         }else if(type == 7){
-            $("#adaptation_conversations").toggle(" ")
+            $("#adaptation_conversations").show(" ")
         }else if(type == 8){
-            $("#add_info").toggle(" ");
+            $("#add_info").show(" ");
         }else if(type == 2){
-            $("#iphones3").toggle(" ");
+            $("#iphones3").show(" ");
         }else if(type == 5){
-            $("#profile_salary").toggle(" ");
+            $("#profile_salary").show(" ");
         }else if(type == 3){
-            $("#profile_books").toggle(" ");
+            $("#profile_books").show(" ");
         }else if(type == 9){
-            $("#iphones4").toggle(" ");
+            $("#iphones4").show(" ");
         }else if(type == 4){
-            $("#profile_contacts").toggle(" ");
+            $("#profile_contacts").show(" ");
         }else if(type == 6){
-            $("#other_data").toggle(" ");
-            $("#other_data_bitrix").toggle(" ");
+            $("#other_data").show(" ");
+            $("#other_data_bitrix").show(" ");
         }
+
+
 
         console.log(type)
 
@@ -1865,8 +1905,63 @@ function selectedCountry() {
 .modal-backdrop {
     opacity: 0.4;
 }
-</style>
-<style>
+
+#other_data{
+    width: 100%;
+}
+
+.bg-this a {
+    color: black;
+}
+
+.bg-this{
+    cursor: pointer;
+}
+
+.none-block{
+    display: none;
+}
+
+    .my-label-6{
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        width: fit-content;
+        align-items: center;
+        background: #e9ecef;
+        margin: 0 auto;
+        border-radius: 3px
+    }
+  #list-example{
+      flex: 0 0 290px;
+      max-width: 290px;
+      overflow-x: hidden;
+      float: left;
+      padding: 10px;
+      background: #f8f8f8;
+      display: flex;
+      height: 100%;
+      min-height: 100vh;
+      border-right: 1px solid #dfdfdf;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      width: 290px;
+      flex-direction: column;
+  }
+
+  .list-item li{
+      padding: 5px;
+
+  }
+
+  .list-item ul li a {
+
+  }
+
+  .list-item ul li  {
+      margin-top: 2px;
+  }
 
 .listSearchResult{
     border: 1px solid #d9d9d9;
