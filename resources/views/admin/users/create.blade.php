@@ -262,7 +262,7 @@
                                                 </div>
                                             @endif
 
-                                            
+
                                             <div class="form-group row">
                                                 <label for="lastName"
                                                     class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
@@ -287,14 +287,14 @@
                                                         </option>
                                                         @endforeach
                                                     </select>
-                                                    
+
                                                     @if(isset($user))
-                                                    <profile-groups id="position_group" 
+                                                    <profile-groups id="position_group"
                                                         :groups="{{ $groups }}"
                                                         :user_id="{{ $user->id }}"
                                                         :in_groups="{{ json_encode($user->head_in_groups) }}"
                                                         :user_role="2" />
-                                                    @endif   
+                                                    @endif
                                                 </div>
                                             </div>
 
@@ -376,7 +376,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="form-group row">
                                                 <label for="full_time"
                                                     class="col-sm-4 col-form-label font-weight-bold">Ставка</label>
@@ -385,7 +385,7 @@
                                                         <input class="form-control" id="ftr1" type="radio" name="full_time" value="1" @if(isset($user) && $user->full_time == 1) checked="checked"@endif> <span>Full-Time</span>
                                                     </label>
                                                     <label class="radio mb-0" for="ftr0">
-                                                        <input class="form-control" id="ftr0" type="radio" name="full_time" value="0" @if(isset($user) && $user->full_time == 0) checked="checked"@endif @if(!isset($user)) checked="checked" @endif> <span>Part-Time</span>  
+                                                        <input class="form-control" id="ftr0" type="radio" name="full_time" value="0" @if(isset($user) && $user->full_time == 0) checked="checked"@endif @if(!isset($user)) checked="checked" @endif> <span>Part-Time</span>
                                                     </label>
                                                 </div>
                                             </div>
@@ -418,20 +418,20 @@
                                                         value="@if(isset($user)){{$user->work_end}}@endif">
                                                 </div>
                                             </div>
-                                         
+
                                             <div class="form-group row" id="weekdays">
                                                 <label for="workingTimes"
                                                     class="col-sm-4 col-form-label font-weight-bold">Выходные</label>
                                                 <div class="col-sm-8 form-inline">
                                                     <input type="hidden" name="weekdays" value="" id="weekdays-input">
 
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[1] == 1 ) active @endif" data-id="1" >Пн</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[2] == 1 ) active @endif" data-id="2">Вт</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[3] == 1 ) active @endif" data-id="3">Ср</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[4] == 1 ) active @endif" data-id="4">Чт</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[5] == 1 ) active @endif" data-id="5">Пт</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[6] == 1 ) active @endif" data-id="6">Сб</div>   
-                                                    <div class="weekday @if(isset($user) && $user->weekdays[0] == 1 ) active @endif" data-id="0">Вс</div>   
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[1] == 1 ) active @endif" data-id="1" >Пн</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[2] == 1 ) active @endif" data-id="2">Вт</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[3] == 1 ) active @endif" data-id="3">Ср</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[4] == 1 ) active @endif" data-id="4">Чт</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[5] == 1 ) active @endif" data-id="5">Пт</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[6] == 1 ) active @endif" data-id="6">Сб</div>
+                                                    <div class="weekday @if(isset($user) && $user->weekdays[0] == 1 ) active @endif" data-id="0">Вс</div>
                                                 </div>
                                             </div>
 
@@ -588,7 +588,7 @@
 
                                                 <h5 class="mb-4">Группы</h5>
 
-                                              
+
                                                 @if(isset($user))
                                                 <profile-groups :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />
                                                 @else
@@ -600,10 +600,10 @@
                                                 </select>
                                                 @endif
 
-                                                  
-                                                
-                                               
-                                                
+
+
+
+
                                                 <!--  -->
                                             </div>
 
@@ -617,14 +617,14 @@
                                                 @if(isset($user))
                                                 <h5 class="mb-4 mt-4">Книги</h5>
 
-                                                <profile-books :books="{{ $corpbooks }}" :user_id="{{ $user->id }}" 
-                                                    @if(isset($user->in_books)) 
+                                                <profile-books :books="{{ $corpbooks }}" :user_id="{{ $user->id }}"
+                                                    @if(isset($user->in_books))
                                                         :in_books="{{ $user->in_books }}"
                                                     @else
                                                         :in_books="[]"
                                                     @endif
                                                     />
-                                                        
+
                                                 @endif
                                             </div>
 
@@ -789,8 +789,8 @@
                                                         @endif
                                                     </div>
 
-                                                    
-                                                
+
+
 
                                                     <!-- может лишний -->
                                                     <input type="file" name="logo" id="file-6" class="inputfile inputfile-1"
@@ -890,7 +890,7 @@
                                                 <label for="zarplata" class="col-sm-3 col-form-label font-weight-bold">Оклад <span class="red">*</span></label>
                                                 <div class="col-sm-3">
                                                     <input class="form-control" type="text" name="zarplata" id="zarplata" required
-                                                    placeholder="Оклад" 
+                                                    placeholder="Оклад"
                                                     @if(isset($user->zarplata))
                                                         @if($user->zarplata->zarplata == 0) value="0"
                                                         @else  value="{{$user->zarplata->zarplata}}"
@@ -962,7 +962,7 @@
                                                         value="@if(isset($user->zarplata)){{$user->zarplata->card_jysan}}@else{{old('card_jysan')}}@endif">
                                                 </div>
                                             </div>
-                
+
                                             <div class="cards">
                                                 @if(isset($user))
                                                 @foreach($user->cards as $card)
