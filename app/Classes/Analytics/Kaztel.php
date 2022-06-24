@@ -465,13 +465,13 @@ class Kaztel
             
             
             $calls = DB::connection('callibro')->table('calls')
-                    ->select('call_account_id', DB::raw('SUM(calls.billsec) as billsec_sum'))
+                    ->select('id')
                     ->whereDate('start_time', $day)
                     ->where('billsec', '>=', 10)
                     ->where('call_account_id', $call_account_id)
                     ->where('call_dialer_id', $dialer_id)
                     ->where('cause', '!=', 'SYSTEM_SHUTDOWN')
-                    ->first();
+                    ->get();
             $mycount = count($calls);
         } 
 
