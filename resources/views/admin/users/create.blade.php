@@ -207,7 +207,7 @@
 
                                     <!-- PROFILE INFO -->
                                     <div class="d-flex row">
-                                        <div class="contacts-info col-md-6 none-block" id="profile_d" style="display: none">
+                                        <div class="contacts-info col-md-6 none-block" id="profile_d">
                                             <h5 class="mb-4">Профиль сотрудника </h5>
                                             <div class="form-group row">
                                                 <label for="firstName"
@@ -445,12 +445,6 @@
                                             </div>
 
                                         </div>
-
-
-
-
-
-
                                         <div class="col-md-6">
                                             @if(isset($user))
 
@@ -561,7 +555,7 @@
                                                             <div class="div_1">{{ $talk['day'] }}й день
                                                                 <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
                                                             </div>
-                                                            <div class="div_2">
+                                                            <div class="div_2" style="flex-direction:unset">
                                                                 <input type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
 
 
@@ -1371,7 +1365,7 @@
 
     });
 
-
+    $("#profile_d").show();
 
     function showBlock(type,elem)
     {
@@ -1383,30 +1377,31 @@
         $(".bg-this").css('background-color','rgb(248 248 248)')
 
 
+
         $("#check-"+type).show();
         $("#bg-this-"+type).css('background-color','rgb(227 229 232)')
 
 
 
         if(type == 1){
-            $("#profile_d").toggle(" ");
+            $("#profile_d").show(" ");
         }else if(type == 7){
-            $("#adaptation_conversations").toggle(" ")
+            $("#adaptation_conversations").show(" ")
         }else if(type == 8){
-            $("#add_info").toggle(" ");
+            $("#add_info").show(" ");
         }else if(type == 2){
-            $("#iphones3").toggle(" ");
+            $("#iphones3").show(" ");
         }else if(type == 5){
-            $("#profile_salary").toggle(" ");
+            $("#profile_salary").show(" ");
         }else if(type == 3){
-            $("#profile_books").toggle(" ");
+            $("#profile_books").show(" ");
         }else if(type == 9){
-            $("#iphones4").toggle(" ");
+            $("#iphones4").show(" ");
         }else if(type == 4){
-            $("#profile_contacts").toggle(" ");
+            $("#profile_contacts").show(" ");
         }else if(type == 6){
-            $("#other_data").toggle(" ");
-            $("#other_data_bitrix").toggle(" ");
+            $("#other_data").show(" ");
+            $("#other_data_bitrix").show(" ");
         }
 
 

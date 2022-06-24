@@ -110,7 +110,12 @@ class UserController extends Controller
 
 
                 if (file_exists($filename)) {
-                    unlink("users_img/".$update_user->img_url);
+
+
+
+                    unlink( public_path('users_img/'.$update_user->img_url));
+
+//                    unlink("users_img/".$update_user->img_url);
                 }
 
             }
