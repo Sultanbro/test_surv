@@ -105,8 +105,16 @@ class UserController extends Controller
 
 
             if (!empty($update_user->img_url)){
-                unlink("users_img/".$update_user->img_url);
+
+                $filename = "users_img/".$update_user->img_url;
+
+
+                if (file_exists($filename)) {
+                    unlink("users_img/".$update_user->img_url);
+                }
+
             }
+
             $update_user->img_url = $imageName;
             $update_user->save();
 
