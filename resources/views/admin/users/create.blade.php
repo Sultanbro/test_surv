@@ -61,7 +61,7 @@
 
 
     <div class="">
-        <div class="col-md-12">
+        <div class="col-md-12 p-0">
             <div class="contact-information">
 
                 @if(isset($user))
@@ -105,7 +105,7 @@
                                      @endif
 
 
-                                    <label class="label-6" for="upload_image" id="img_url" style="cursor:pointer">
+                                    <label class="my-label-6" for="upload_image" id="img_url" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
                                         @if(isset($user) && !is_null($user->img_url))
 
                                         <img id="{{$user->img_url}}"
@@ -145,57 +145,55 @@
                                             Новый пользователь
                                         @endif
 
-                                        @if(isset($user))
 
-                                        <div id="other_data_bitrix" style="display: none">
-                                            @if($user->bitrix_id != 0)
-                                                <p>
-                                                    <b>Битрикс: <span class="text-green">Есть</span></b>
-                                                    <a href="https://infinitys.bitrix24.kz/company/personal/user/{{ $user->bitrix_id }}/" target="_blank">
-                                                        <i class="fa fa-link pointer"></i>
-                                                    </a>
-                                                    <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
-                                                </p>
-                                            @else
-                                                <p>
-                                                    <b>
-                                                        Битрикс:
-                                                        <span class="text-red">Нет</span>
-                                                    </b>
-                                                    <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
-                                                </p>
-                                            @endif
-                                            <input type="text"
-                                                   style="display:none;"
-                                                   class="form-control form-control-sm"
-                                                   id="bitrix_id_input"
-                                                   value="{{ $user->bitrix_id }}"
-                                                   name="bitrix_id"
-                                                   placeholder="ID профиля в битриксе">
-                                            <profile-kpi-button :user_id="{{ $user->id }}"/>
-                                        </div>
-
-                                        @endif
 
                                     </div>
 
 
-                                    <div class="">
-
+                                    <div class="list-item">
                                         <ul class="p-0">
-                                            <li><a href="#" onclick="showBlock('1')">Основный данный</a></li>
-                                            <li><a href="#" onclick="showBlock('2')">Группы</a></li>
-                                            <li><a href="#" onclick="showBlock('3')">База знание</a></li>
-                                            <li><a href="#" onclick="showBlock('9')">Документы</a></li>
-                                            <li><a href="#" onclick="showBlock('4')">Контакты</a></li>
-                                            <li><a href="#" onclick="showBlock('5')">Оплата</a></li>
-                                            <li><a href="#" onclick="showBlock('6')">Проче данные</a></li>
-                                            <li><a href="#" onclick="showBlock('7')">Адаптационные  данные</a></li>
-                                            <li><a href="#" onclick="showBlock('8')">Дополнительная информация</a></li>
+                                            <li  class="bg-this" id="bg-this-1" style="background-color: #e2e2e2" onclick="showBlock('1',this)">
+                                                <a href="#" >Основные данные </a>
+                                                <span id="check-1"  class="ml-2 fa fa-check none-check" ></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-2" onclick="showBlock('2',this)">
+                                                <a href="#" >Группы</a>
+                                                <span id="check-2"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-3" onclick="showBlock('3',this)">
+                                                <a href="#" >База знание</a>
+                                                <span id="check-3"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-9" onclick="showBlock('9',this)">
+                                                <a href="#" >Документы</a>
+                                                <span id="check-9"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-4" onclick="showBlock('4',this)">
+                                                <a href="#" >Контакты</a>
+                                                <span id="check-4"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-5"  onclick="showBlock('5',this)">
+                                                <a href="#">Оплата</a>
+                                                <span id="check-5"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-6" onclick="showBlock('6',this)">
+                                                <a href="#" >Проче данные</a>
+                                                <span id="check-6"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-7" onclick="showBlock('7',this)">
+                                                <a href="#" >Адаптационные  данные</a>
+                                                <span id="check-7"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
+                                            <li class="bg-this" id="bg-this-8" onclick="showBlock('8',this)">
+                                                <a href="#" >Дополнительная информация</a>
+                                                <span id="check-8"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                            </li>
                                         </ul>
-
-
                                     </div>
+
+
+
+
                                 </div>
 
                             </div>
@@ -209,7 +207,7 @@
 
                                     <!-- PROFILE INFO -->
                                     <div class="d-flex row">
-                                        <div class="contacts-info col-md-6" id="profile_d" style="display: none">
+                                        <div class="contacts-info col-md-6 none-block" id="profile_d" style="display: none">
                                             <h5 class="mb-4">Профиль сотрудника </h5>
                                             <div class="form-group row">
                                                 <label for="firstName"
@@ -456,7 +454,7 @@
                                         <div class="col-md-6">
                                             @if(isset($user))
 
-                                                <div id="add_info" style="display: none">
+                                                <div id="add_info" class="none-block" style="display: none">
                                                     <div class="table-responsive">
                                                         <table class="my-table table user-list">
                                                             <thead>
@@ -556,7 +554,7 @@
                                                 </div>
 
 
-                                                <div id="adaptation_conversations" style="display: none">
+                                                <div id="adaptation_conversations" class="none-block" style="display: none">
                                                     <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
                                                     @foreach($user->adaptation_talks as $key => $talk)
                                                         <div class="adaptation_talk">
@@ -585,7 +583,7 @@
 
 
                                             <!-- groups tab -->
-                                            <div class="mb-3 xfade" id="iphones3" style="display: none">
+                                            <div class="mb-3 xfade none-block" id="iphones3" style="display: none">
                                                 <!--  -->
 
                                                 <h5 class="mb-4">Группы</h5>
@@ -615,7 +613,7 @@
 
 
 
-                                            <div class="mb-4" id="profile_books" style="display: none">
+                                            <div class="mb-4 none-block" id="profile_books" style="display: none">
                                                 @if(isset($user))
                                                 <h5 class="mb-4 mt-4">Книги</h5>
 
@@ -633,7 +631,7 @@
                                             <!-- end of groups and books tab -->
 
                                             <!-- documents tab -->
-                                            <div class="xtab-pane xfade" id="iphones4" style="display: none">
+                                            <div class="xtab-pane xfade none-block" id="iphones4" style="display: none">
                                                 <!--  -->
                                                 <h5 class="mb-4 mt-1">Документы (RAR, ZIP)</h5>
 
@@ -815,7 +813,7 @@
                                     <!--  -->
                                     <!-- PROFILE PHONES -->
                                     <div class="profile-contacts mb-3 row">
-                                        <div class="phones col-md-6" id="profile_contacts" style="display: none">
+                                        <div class="phones col-md-6 none-block" id="profile_contacts" style="display: none">
                                             <h5 class="mb-4">Контакты</h5>
                                             <div class="d-flex phone-row form-group mb-2 ">
                                                 <label for="phone" class="col-sm-6 col-form-label font-weight-bold mr-1">Мобильный <span class="red">*</span></label>
@@ -884,7 +882,7 @@
 
 
                                          <!-- zarplata tab -->
-                                        <div class="col-md-12 mt-3" id="profile_salary" style="display: none">
+                                        <div class="col-md-12 mt-3 none-block" id="profile_salary" style="display: none">
 
                                             <h5 class="mb-4">Оплата</h5>
 
@@ -990,7 +988,7 @@
 
                                         @if(isset($user))
                                          <!-- additional tab -->
-                                        <div id="other_data" style="display: none">
+                                        <div id="other_data" class="none-block" style="display: none">
                                             <div class="col-md-12 mt-3">
                                                 <h5 class="mb-4">Прочие данные</h5>
                                             </div>
@@ -1082,6 +1080,40 @@
                                                                id="headphones_amount" value="{{ $user->headphones_amount }}" @if($user->headphones_amount == 0) disabled @endif>
                                                     </div>
                                                 </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                        <div id="other_data_bitrix" class="none-block" style="display: none">
+                                            <div class="col-md-12">
+                                                @if($user->bitrix_id != 0)
+                                                    <p>
+                                                        <b>Битрикс: <span class="text-green">Есть</span></b>
+                                                        <a href="https://infinitys.bitrix24.kz/company/personal/user/{{ $user->bitrix_id }}/" target="_blank">
+                                                            <i class="fa fa-link pointer"></i>
+                                                        </a>
+                                                        <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
+                                                    </p>
+                                                @else
+                                                    <p>
+                                                        <b>
+                                                            Битрикс:
+                                                            <span class="text-red">Нет</span>
+                                                        </b>
+                                                        <i class="fa fa-cogs pointer" title="Редактировать" id="bitrix_editor"></i>
+                                                    </p>
+                                                @endif
+                                                <input type="text"
+                                                       style="display:none;"
+                                                       class="form-control form-control-sm"
+                                                       id="bitrix_id_input"
+                                                       value="{{ $user->bitrix_id }}"
+                                                       name="bitrix_id"
+                                                       placeholder="ID профиля в битриксе">
+                                                <profile-kpi-button :user_id="{{ $user->id }}"/>
                                             </div>
                                         </div>
 
@@ -1341,11 +1373,22 @@
 
 
 
-    function showBlock(type)
+    function showBlock(type,elem)
     {
 
-        if(type == 1){
+        console.log(elem,'09996')
 
+        $(".none-block").hide();
+        $(".none-check").hide();
+        $(".bg-this").css('background-color','rgb(248 248 248)')
+
+
+        $("#check-"+type).show();
+        $("#bg-this-"+type).css('background-color','rgb(227 229 232)')
+
+
+
+        if(type == 1){
             $("#profile_d").toggle(" ");
         }else if(type == 7){
             $("#adaptation_conversations").toggle(" ")
@@ -1365,6 +1408,8 @@
             $("#other_data").toggle(" ");
             $("#other_data_bitrix").toggle(" ");
         }
+
+
 
         console.log(type)
 
@@ -1865,8 +1910,63 @@ function selectedCountry() {
 .modal-backdrop {
     opacity: 0.4;
 }
-</style>
-<style>
+
+#other_data{
+    width: 100%;
+}
+
+.bg-this a {
+    color: black;
+}
+
+.bg-this{
+    cursor: pointer;
+}
+
+.none-block{
+    display: none;
+}
+
+    .my-label-6{
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        width: fit-content;
+        align-items: center;
+        background: #e9ecef;
+        margin: 0 auto;
+        border-radius: 3px
+    }
+  #list-example{
+      flex: 0 0 290px;
+      max-width: 290px;
+      overflow-x: hidden;
+      float: left;
+      padding: 10px;
+      background: #f8f8f8;
+      display: flex;
+      height: 100%;
+      min-height: 100vh;
+      border-right: 1px solid #dfdfdf;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      width: 290px;
+      flex-direction: column;
+  }
+
+  .list-item li{
+      padding: 5px;
+
+  }
+
+  .list-item ul li a {
+
+  }
+
+  .list-item ul li  {
+      margin-top: 2px;
+  }
 
 .listSearchResult{
     border: 1px solid #d9d9d9;
