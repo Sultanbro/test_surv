@@ -1342,16 +1342,19 @@ class UserController extends Controller
         /*******  Приглашение на почту  */
         /*==============================================================*/
 
-        if (env('APP_ENV','local') == 'prod'){
-            try { // если письмо с прилашением отправилось
+      
+       
+        try { // если письмо с прилашением отправилось
 
-                \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
-
-            } catch (Swift_TransportException $e) { // Если письмо по каким то причинам не отправилось
-                return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
-            }
+            \App\Components\TelegramBot::send('start mail');
+            \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
+            \App\Components\TelegramBot::send('end mail');
+        } catch (Throwable $e) { // Если письмо по каким то причинам не отправилось
+            \App\Components\TelegramBot::send($e);
+            return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
         }
-
+    
+        \App\Components\TelegramBot::send('end');
 
         /*==============================================================*/
         /*******  Создание пользователя в U-marketing.org  */
