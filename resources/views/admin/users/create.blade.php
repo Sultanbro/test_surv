@@ -147,7 +147,7 @@
 
                                         @if(isset($user))
 
-                                        <div id="other_data_bitrix" style="display: none">
+                                        <div id="other_data_bitrix">
                                             @if($user->bitrix_id != 0)
                                                 <p>
                                                     <b>Битрикс: <span class="text-green">Есть</span></b>
@@ -183,13 +183,13 @@
                                     <div class="">
 
                                         <ul class="p-0">
-                                            <li><a href="#" onclick="showBlock('1')">Основный данный</a></li>
+                                            <li><a href="#" onclick="showBlock('1')">Основные данные</a></li>
                                             <li><a href="#" onclick="showBlock('2')">Группы</a></li>
-                                            <li><a href="#" onclick="showBlock('3')">База знание</a></li>
+                                            <li><a href="#" onclick="showBlock('3')">База знаний</a></li>
                                             <li><a href="#" onclick="showBlock('9')">Документы</a></li>
                                             <li><a href="#" onclick="showBlock('4')">Контакты</a></li>
                                             <li><a href="#" onclick="showBlock('5')">Оплата</a></li>
-                                            <li><a href="#" onclick="showBlock('6')">Проче данные</a></li>
+                                            <li><a href="#" onclick="showBlock('6')">Прочие данные</a></li>
                                             <li><a href="#" onclick="showBlock('7')">Адаптационные  данные</a></li>
                                             <li><a href="#" onclick="showBlock('8')">Дополнительная информация</a></li>
                                         </ul>
@@ -209,7 +209,7 @@
 
                                     <!-- PROFILE INFO -->
                                     <div class="d-flex row">
-                                        <div class="contacts-info col-md-6" id="profile_d" style="display: none">
+                                        <div class="contacts-info col-md-6" id="profile_d">
                                             <h5 class="mb-4">Профиль сотрудника </h5>
                                             <div class="form-group row">
                                                 <label for="firstName"
@@ -456,7 +456,7 @@
                                         <div class="col-md-6">
                                             @if(isset($user))
 
-                                                <div id="add_info" style="display: none">
+                                                <div id="add_info">
                                                     <div class="table-responsive">
                                                         <table class="my-table table user-list">
                                                             <thead>
@@ -556,7 +556,7 @@
                                                 </div>
 
 
-                                                <div id="adaptation_conversations" style="display: none">
+                                                <div id="adaptation_conversations">
                                                     <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
                                                     @foreach($user->adaptation_talks as $key => $talk)
                                                         <div class="adaptation_talk">
@@ -585,7 +585,7 @@
 
 
                                             <!-- groups tab -->
-                                            <div class="mb-3 xfade" id="iphones3" style="display: none">
+                                            <div class="mb-3 xfade" id="iphones3">
                                                 <!--  -->
 
                                                 <h5 class="mb-4">Группы</h5>
@@ -615,7 +615,7 @@
 
 
 
-                                            <div class="mb-4" id="profile_books" style="display: none">
+                                            <div class="mb-4" id="profile_books">
                                                 @if(isset($user))
                                                 <h5 class="mb-4 mt-4">Книги</h5>
 
@@ -633,7 +633,7 @@
                                             <!-- end of groups and books tab -->
 
                                             <!-- documents tab -->
-                                            <div class="xtab-pane xfade" id="iphones4" style="display: none">
+                                            <div class="xtab-pane xfade" id="iphones4">
                                                 <!--  -->
                                                 <h5 class="mb-4 mt-1">Документы (RAR, ZIP)</h5>
 
@@ -815,7 +815,7 @@
                                     <!--  -->
                                     <!-- PROFILE PHONES -->
                                     <div class="profile-contacts mb-3 row">
-                                        <div class="phones col-md-6" id="profile_contacts" style="display: none">
+                                        <div class="phones col-md-6" id="profile_contacts">
                                             <h5 class="mb-4">Контакты</h5>
                                             <div class="d-flex phone-row form-group mb-2 ">
                                                 <label for="phone" class="col-sm-6 col-form-label font-weight-bold mr-1">Мобильный <span class="red">*</span></label>
@@ -884,7 +884,7 @@
 
 
                                          <!-- zarplata tab -->
-                                        <div class="col-md-12 mt-3" id="profile_salary" style="display: none">
+                                        <div class="col-md-12 mt-3" id="profile_salary">
 
                                             <h5 class="mb-4">Оплата</h5>
 
@@ -990,7 +990,7 @@
 
                                         @if(isset($user))
                                          <!-- additional tab -->
-                                        <div id="other_data" style="display: none">
+                                        <div id="other_data">
                                             <div class="col-md-12 mt-3">
                                                 <h5 class="mb-4">Прочие данные</h5>
                                             </div>
