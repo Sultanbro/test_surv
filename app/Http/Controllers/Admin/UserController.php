@@ -105,16 +105,10 @@ class UserController extends Controller
 
 
             if (!empty($update_user->img_url)){
-
                 $filename = "users_img/".$update_user->img_url;
-
-
+                
                 if (file_exists($filename)) {
-
-
-
                     unlink( public_path('users_img/'.$update_user->img_url));
-
 //                    unlink("users_img/".$update_user->img_url);
                 }
 
@@ -126,13 +120,27 @@ class UserController extends Controller
             file_put_contents("users_img/$imageName", $data);
             $img = '<img src="/users_img/'.$imageName.'"  />';
 
-            return response($img);
+            return response(['src'=>$img,'filename'=>$imageName]);
 
-        }elseif (isset($request->img_url) && $request['user_id'] == 'new_user'){
+        }elseif ($request['user_id'] == 'new_user'){
 
-            $img = null;
 
-            return response($img);
+            if ($request['file_name'] != 'empty'){
+                $filename = "users_img/".$request['file_name'];
+
+                if (file_exists($filename)) {
+                    unlink( public_path('users_img/'.$request['file_name'] ));
+//                    unlink("users_img/".$update_user->img_url);
+                }
+            }
+
+
+            file_put_contents("users_img/$imageName", $data);
+            $img = '<img src="/users_img/'.$imageName.'"  />';
+
+
+
+            return response(['src'=>$img,'filename'=>$imageName]);
         }
 
 

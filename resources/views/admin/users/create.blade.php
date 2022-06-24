@@ -100,9 +100,12 @@
                                      <input hidden type="file" name="image" id="upload_image" accept="image/*" />
                                      @if(isset($user))
                                          <input id="user_id_img" value="{{$user->id}}" hidden>
+                                         <input name="file_name_img" value="empty" id="file_name_img" hidden>
                                      @else
                                          <input id="user_id_img" hidden value="new_user" name="user_img">
+                                         <input name="file_name_img" value="empty" id="file_name_img" hidden>
                                      @endif
+
 
 
                                     <label class="my-label-6" for="upload_image" id="img_url" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
@@ -1319,21 +1322,25 @@
             }).then(function(response){
 
                 var user_id = $("#user_id_img").val();
+                var file_name = $("#file_name_img").val();
+
 
                 console.log(user_id,'077');
 
                 $.ajax({
                     type:'POST',
                     url: "/profile/upload/edit/",
-                    data:{"image": response,'user_id':user_id},
+                    data:{"image": response,'user_id':user_id,'file_name':file_name},
                     success: (data) => {
 
                         console.log(data,'dataaaaaaa');
                         console.log(user_id,'0ssssqqqqq');
 
-
                         $('#uploadimageModal').modal('hide');
-                        $("#img_url").html(data)
+
+                        $("#img_url").html(data['src'])
+
+                        $("#file_name_img").attr('value',data['filename'])
 
 
                         // this.reset();
