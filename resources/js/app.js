@@ -132,12 +132,9 @@ Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); 
 
 Vue.component('permission-item', require('./components/PermissionItem.vue').default); // 
 
-Vue.component('video-accordion', require('./components/VideoAccordion.vue').default); // 
-<<<<<<< HEAD
-// Vue.component('video-list', require('./components/VideoList.vue').default); //
-=======
-Vue.component('video-list', require('./components/VideoList.vue').default); // 
->>>>>>> f3fb66d41b5a436785953becad3f3668aca27e2b
+Vue.component('video-accordion', require('./components/VideoAccordion.vue').default); //
+
+Vue.component('video-list', require('./components/VideoList.vue').default); //
 
 Vue.component('superselect', require('./components/SuperSelect.vue').default); // 
 
