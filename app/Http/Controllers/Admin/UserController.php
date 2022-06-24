@@ -1346,22 +1346,22 @@ class UserController extends Controller
        
         try { // если письмо с прилашением отправилось
 
-            \App\Components\TelegramBot::send('start mail');
+      
             \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
-            \App\Components\TelegramBot::send('end mail');
+         
         } catch (Throwable $e) { // Если письмо по каким то причинам не отправилось
-            \App\Components\TelegramBot::send($e);
+      
             return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
         }
     
-        \App\Components\TelegramBot::send('end');
+      
 
         /*==============================================================*/
         /*******  Создание пользователя в U-marketing.org  */
         /*==============================================================*/
 
 
-
+        
 
 
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
