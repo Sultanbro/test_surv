@@ -550,7 +550,11 @@ export default {
           value: "one",
         },
         {
-          title: "За все",
+          title: "За все, первому",
+          value: "first",
+        },
+        {
+          title: "За все, каждому",
           value: "all",
         },
       ],

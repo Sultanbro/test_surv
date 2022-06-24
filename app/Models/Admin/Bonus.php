@@ -25,6 +25,7 @@ class Bonus extends Model
      */
     CONST FOR_ONE = 'one';
     CONST FOR_ALL = 'all';
+    CONST FOR_FIRST = 'first';
 
     /**
      * Daypart
@@ -74,7 +75,7 @@ class Bonus extends Model
             if($bonus->sum == 0) continue;
             if($bonus->activity_id == 0) continue;
             
-            if($bonus->unit == self::FOR_ALL) {
+            if($bonus->unit == self::FOR_FIRST) {
         
                 $best_user = 0;
                 $best_value = 0;
