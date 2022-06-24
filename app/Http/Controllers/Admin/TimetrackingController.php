@@ -697,8 +697,8 @@ class TimetrackingController extends Controller
                 \App\Models\CallibroDialer::create([
                     'group_id' => $group->id,
                     'dialer_id' => $request['dialer_id'],
-                    'script_id' => $request['script_id'] ?? 0
-                    'talk_hours' => $request['talk_hours'] ?? 0
+                    'script_id' => $request['script_id'] ?? 0,
+                    'talk_hours' => $request['talk_hours'] ?? 0,
                     'talk_minutes' => $request['talk_minutes'] ?? 0
                 ]);
             }
