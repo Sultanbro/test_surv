@@ -142,7 +142,7 @@ class Bonus extends Model
                         $val = self::fetch_value_from_activity_new($bonus->activity_id, $user_id, $date);
                     }
                     
-                    if((int)$val >= $bonus->quantity) {
+                    if((int)$val >= $bonus->quantity) { 
                         ObtainedBonus::createOrUpdate([
                             'user_id' => $user_id,
                             'date' => $date,
