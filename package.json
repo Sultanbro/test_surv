@@ -65,6 +65,7 @@
         "vue-simple-context-menu": "^3.4.2",
         "vue-simple-flowchart": "^0.1.8",
         "vue-video-player": "^5.0.2",
+        "vue2-circle-progress": "^1.2.3",
         "vue2-datepicker": "^3.11.0",
         "vuedraggable": "^2.23.2",
         "vuejs-uploader": "^0.6.5",

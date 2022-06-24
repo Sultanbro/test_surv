@@ -55,6 +55,7 @@ use App\Http\Controllers\IntellectController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\MapsController;
+use App\Http\Controllers\GlossaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -151,7 +152,8 @@ Route::middleware([
     Route::get('/my-courses/get/{id}', [MyCourseController::class, 'getMyCourse']);
 
     Route::post('/course-results/get', [CourseResultController::class, 'get']);
-
+    
+    Route::get('/glossary/get', [GlossaryController::class, 'get']);
 
     // @TODO DELETE USELESS ROUTES AND CONTROLLERS
     Route::any('/videolearning/{id?}', [VideolearningController::class, 'list'])->name('videos.playlists');

@@ -89,25 +89,25 @@ class ActiveUser
 
     public function handle($request, Closure $next)
     {
-
-//        $kis2 = $this->mon(6,2022);
-
-
-
-
-
-
-//        $kis = Carbon::parse($request->datestart)->format('m');
+        if($request->getPathInfo() =='/logout') return $next($request);
+        //        $kis2 = $this->mon(6,2022);
 
 
 
 
 
-//        $carbon = new Carbon();
-//        echo $carbon->addWeeks(3);
-//       echo $carbon->addWeek();
-//       echo $carbon->subWeek();
-//       echo $carbon->subWeeks(3);
+
+        //        $kis = Carbon::parse($request->datestart)->format('m');
+
+
+
+
+
+        //        $carbon = new Carbon();
+        //        echo $carbon->addWeeks(3);
+        //       echo $carbon->addWeek();
+        //       echo $carbon->subWeek();
+        //       echo $carbon->subWeeks(3);
 
 
 
