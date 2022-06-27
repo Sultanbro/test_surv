@@ -42,8 +42,6 @@ use App\Models\Analytics\ActivityPlan;
 use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
 use App\QualityRecordMonthlyStat;
-use App\Models\CallCenter\Directory;
-use App\Models\CallCenter\Agent;
 use App\Models\Analytics\RecruiterStat;
 use App\Classes\Analytics\FunnelTable;
 use App\Models\User\NotificationTemplate;
@@ -832,29 +830,6 @@ class GroupAnalyticsController extends Controller
             }
 
             $lead->save();
-
-            
-            /*==============================================================*/
-            /*******  Создание пользователя в Callibro.org */
-            /*==============================================================*/
-
-            // $account = Account::where('email', $email)->first();
-            // if (!$account) {
-
-            //     if($lead->name == '') {
-            //         $lead->name = 'Без имени';
-            //     }
-            //     $account = Account::create([
-            //         'password' => User::randString(16),
-            //         'owner_uid' => 5,
-            //         'name' => $uname,
-            //         'surname' => '',
-            //         'email' => strtolower($email),
-            //         'status' => Account::ACTIVE_STATUS,
-            //         'role' => [Account::OPERATOR],
-            //         'activate_key' => '',
-            //     ]);
-            // }
 
             /** zarplata */
             $zarplata = Zarplata::where('user_id', $user->id)->first();

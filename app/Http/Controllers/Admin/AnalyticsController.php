@@ -556,6 +556,8 @@ class AnalyticsController extends Controller
         $stat = AnalyticStat::where('column_id', $request->column_id)
             ->where('row_id', $request->row_id)
             ->first();
+
+        
             if($stat) {
                 $stat->decimals = $request->decimals;
                 $stat->save();
