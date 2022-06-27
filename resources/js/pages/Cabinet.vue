@@ -90,40 +90,36 @@
       <div class="">
 
 
-        <input hidden type="file" name="image" id="upload_image" accept="image/*" />
-        <input hidden type="file" name="photo" id="photo" >
+        <div class="form-group row">
+          <div class="col-sm-4">
+
+            <input hidden type="file" name="image" id="upload_image" accept="image/*" />
+            <input hidden type="file" name="photo" id="photo" >
+
+            <input id="user_id_img" value="1" hidden>
+            <input name="file_name_img" value="empty" id="file_name_img" hidden>
+
+            <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;" >
+              <img src="https://cp.callibro.org/files/img/8.png" alt="img">
+
+
+              <div class="mt-2 font-weight-bold font-sm text-center " style="width:100%">
+                {{userArray.name}}
+              </div>
+
+              <div class="mt-0 mb-3 font-sm text-center " style="width:100%">
+                {{userArray.email}}
+              </div>
+            </label>
 
 
 
-        <input id="user_id_img" value="1" hidden>
-        <input name="file_name_img" value="empty" id="file_name_img" hidden>
+
+          </div>
 
 
 
-
-        <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
-
-          <img src="https://cp.callibro.org/files/img/8.png" alt="img">
-
-
-        </label>
-
-
-
-        <div class="mt-2 font-weight-bold font-sm text-center " style="width:100%">
-          {{userArray.name}}
         </div>
-
-        <div class="mt-0 mb-3 font-sm text-center " style="width:100%">
-          {{userArray.email}}
-        </div>
-
-
-
-
-
-
-
 
       </div>
 
@@ -163,8 +159,7 @@
           <label for="lastName"
                  class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
           <div class="col-sm-8">
-            <input class="form-control" type="date" name="birthday" id="birthday" required
-                  >
+            <input class="form-control" type="date" name="birthday" id="birthday" required>
           </div>
         </div>
 
@@ -177,30 +172,29 @@
 </div>
 
 
-  <div id="uploadimageModal" class="modal" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-<!--          <a onclick="$('#uploadimageModal').modal('hide')"  class="close" >&times;</a>-->
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-8 text-center">
-              <div id="image_demo" style="width:455px; margin-top:15px"></div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-<!--          <button  class="btn btn-default crop_image" onclick="crop_image()" >Сохранить</button>-->
-        </div>
-      </div>
-    </div>
-  </div>
+<!--  <div id="uploadimageModal" class="modal" role="dialog">-->
+<!--    <div class="modal-dialog">-->
+<!--      <div class="modal-content">-->
+<!--        <div class="modal-header">-->
+<!--&lt;!&ndash;          <a onclick="$('#uploadimageModal').modal('hide')"  class="close" >&times;</a>&ndash;&gt;-->
+<!--        </div>-->
+<!--        <div class="modal-body">-->
+<!--          <div class="row">-->
+<!--            <div class="col-md-8 text-center">-->
+<!--              <div id="image_demo" style="width:455px; margin-top:15px"></div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="modal-footer">-->
+<!--&lt;!&ndash;          <button  class="btn btn-default crop_image" onclick="crop_image()" >Сохранить</button>&ndash;&gt;-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 
 
 </template>
 <script>
-
 
 export default {
   name: "Cabinet",
