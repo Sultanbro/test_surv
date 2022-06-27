@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\KnowBase;
+use App\Models\KnowBaseModel;
 
 class KnowBase extends Model
 {   
@@ -64,6 +66,69 @@ class KnowBase extends Model
             
             self::getArray($arr, $child);
         }
+    }
+
+
+    public  static function getRandomPage()
+    {
+        $corp_book_ids = $this->getBooks(); // книги в группе
+        if(count($corp_book_ids) == 0) return null;
+
+        $book = KnowBase::where('text', '!=' ,'')
+            ->where('id', $corp_books[rand(0, count($corp_book_ids) - 1)])
+            ->first();
+      
+        return $book;  
+    }
+
+
+    private function getBooks($access = 0) {
+        
+        $books = [];
+        if(auth()->user()->is_admin == 1)  {
+            $books = KnowBase::whereNull('parent_id')->get('id')->pluck('id')->toArray();
+        } else {
+
+            $groups = auth()->user()->inGroups();
+            $group_ids = collect($groups)->pluck('id')->toArray();
+            $position_id =  auth()->user()->position_id;
+            $user_id =  auth()->id();
+
+            $up = KnowBaseModel::
+                where(function($query) use ($group_ids, $access) {
+                    $query->where('model_type', 'App\\ProfileGroup')
+                        ->whereIn('model_id', $group_ids);
+                    if($access == 2) $query->where('access', 2);
+                })
+                ->orWhere(function($query) use ($position_id, $access) {
+                    $query->where('model_type', 'App\\Position')
+                        ->where('model_id', $position_id);
+                    if($access == 2) $query->where('access', 2);
+                })
+                ->orWhere(function($query) use ($user_id, $access) {
+                    $query->where('model_type', 'App\\User')
+                        ->where('model_id', $user_id);
+                    if($access == 2) $query->where('access', 2);
+                });
+
+            $up = $up->get('book_id')
+                ->pluck('book_id')
+                ->toArray();
+               
+            $books = array_merge($books, $up);
+            
+           
+            $books_with_read_access =  KnowBase::withTrashed()
+                ->whereNull('parent_id')
+                ->whereIn('access', $access == 2 ? [2] : [1,2])
+                ->get('id')->pluck('id')
+                ->toArray();
+                
+            $books = array_merge($books, $books_with_read_access);
+        }
+   
+            
+        return $books;
     }
     
 }
