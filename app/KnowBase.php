@@ -71,7 +71,7 @@ class KnowBase extends Model
 
     public  static function getRandomPage()
     {
-        $corp_book_ids = $this->getBooks(); // книги в группе
+        $corp_book_ids = self::getBooks(); // книги в группе
         if(count($corp_book_ids) == 0) return null;
 
         $book = KnowBase::where('text', '!=' ,'')
@@ -82,7 +82,7 @@ class KnowBase extends Model
     }
 
 
-    private function getBooks($access = 0) {
+    private static function getBooks($access = 0) {
         
         $books = [];
         if(auth()->user()->is_admin == 1)  {
