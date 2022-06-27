@@ -73,12 +73,13 @@ class KnowBase extends Model
     {
         $corp_book_ids = self::getBooks(); // книги в группе
         if(count($corp_book_ids) == 0) return null;
+       
+        $books = KnowBase::
+            where('text', '!=' ,'')
+            ->whereIn('id', $corp_book_ids)
+            ->get();
 
-        $book = KnowBase::where('text', '!=' ,'')
-            ->where('id', $corp_book_ids[rand(0, count($corp_book_ids) - 1)])
-            ->first();
-      
-        return $book;  
+        return $books->count() > 0 ? $books->random() : null;  
     }
 
 
@@ -86,7 +87,7 @@ class KnowBase extends Model
         
         $books = [];
         if(auth()->user()->is_admin == 1)  {
-            $books = KnowBase::whereNull('parent_id')->get('id')->pluck('id')->toArray();
+            $books = KnowBase::get('id')->pluck('id')->toArray();
         } else {
 
             $groups = auth()->user()->inGroups();
@@ -119,7 +120,6 @@ class KnowBase extends Model
             
            
             $books_with_read_access =  KnowBase::withTrashed()
-                ->whereNull('parent_id')
                 ->whereIn('access', $access == 2 ? [2] : [1,2])
                 ->get('id')->pluck('id')
                 ->toArray();
