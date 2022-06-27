@@ -75,7 +75,7 @@ class KnowBase extends Model
         if(count($corp_book_ids) == 0) return null;
 
         $book = KnowBase::where('text', '!=' ,'')
-            ->where('id', $corp_books[rand(0, count($corp_book_ids) - 1)])
+            ->where('id', $corp_book_ids[rand(0, count($corp_book_ids) - 1)])
             ->first();
       
         return $book;  
