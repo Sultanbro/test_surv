@@ -6,7 +6,7 @@
     <div class="settingCabinet">
       <ul class="p-0">
         <li>
-          <a style="color: black" v-if="auth_role === '1'" @click="userRoles = true">Административные настройки</a>
+          <a style="color: black" v-if="auth_role == '1'" @click="userRoles = true">Административные настройки</a>
           <a href="/timetracking/edit-person?id=1">  Настройка собственного профиля</a>
         </li>
       </ul>
