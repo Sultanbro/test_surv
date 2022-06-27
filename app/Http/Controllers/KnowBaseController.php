@@ -411,7 +411,7 @@ class KnowBaseController extends Controller
                 if(!$TOP_parent) return;
 
 
-                $users = KnowBase::getUsersWithAccess();
+                $users = $page->getUsersWithAccess();
 
                 foreach ($users as $key => $user_id) {
                     \App\UserNotification::create([
