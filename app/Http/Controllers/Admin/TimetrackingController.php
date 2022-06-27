@@ -396,13 +396,13 @@ class TimetrackingController extends Controller
         // corp book page 
         $page = null;
             $has_corp_book = false;
-        // if(!$user->readCorpBook()) {
-        //     $has_corp_book = true;
-        //     $page = Book::getRandomPage();
-        // } else {
-        //     $page = null;
-        //     $has_corp_book = false;
-        // }
+        if(!$user->readCorpBook()) {
+            $has_corp_book = true;
+            $page =  \App\KnowBase::getRandomPage();
+        } else {
+            $page = null;
+            $has_corp_book = false;
+        }
 
             $data = [
                 'status' => $action,
