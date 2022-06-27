@@ -480,7 +480,7 @@ Route::middleware([
 
 
     /////edit upload photo  profile
-    Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto']); /// загрузка аватарки
+    Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки
 
 
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);

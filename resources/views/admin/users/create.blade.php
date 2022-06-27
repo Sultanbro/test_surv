@@ -97,7 +97,11 @@
 {{--                                        style="    display: none;" accept="image/*,.pdf">--}}
 
 
-                                     <input hidden type="file" name="image" id="upload_image" accept="image/*" />
+
+                                        <input hidden type="file" name="image" id="upload_image" accept="image/*" />
+                                        <input hidden type="file" name="photo" id="photo" >
+
+
                                      @if(isset($user))
                                          <input id="user_id_img" value="{{$user->id}}" hidden>
                                          <input name="file_name_img" value="empty" id="file_name_img" hidden>
@@ -108,7 +112,7 @@
 
 
 
-                                    <label class="my-label-6" for="upload_image" id="img_url" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
+                                    <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
                                         @if(isset($user) && !is_null($user->img_url))
 
                                         <img id="{{$user->img_url}}"
@@ -118,6 +122,8 @@
                                         @endif
 
                                     </label>
+
+
 
                                     <div class="mt-2 font-weight-bold font-sm text-center " style="width:100%">
                                         
@@ -133,12 +139,12 @@
                                     {{$user->email}}
                                     </div>
                                     @endif
-                                    <div class="mt-0 mb-3 font-sm text-ceer " style="width:100%">
+                                    <div class="mt-0 mb-3 font-weight-bold font-sm text-center " style="width:100%">
                                         @if(isset($user))
                                             @if($user->position_id)
                                                 @foreach ($positions as $position)
                                                     @if($user->position_id == $position->id)
-                                                        {{$position->position}}
+                                                     {{$position->position}}
                                                     @endif
                                                 @endforeach
                                             @else
@@ -187,10 +193,10 @@
                                                 <a href="#" >Адаптационные  данные</a>
                                                 <span id="check-7"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
                                             </li>
-                                            <li class="bg-this" id="bg-this-8" onclick="showBlock('8',this)">
-                                                <a href="#" >Дополнительная информация</a>
-                                                <span id="check-8"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
-                                            </li>
+{{--                                            <li class="bg-this" id="bg-this-8" onclick="showBlock('8',this)">--}}
+{{--                                                <a href="#" >Дополнительная информация</a>--}}
+{{--                                                <span id="check-8"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>--}}
+{{--                                            </li>--}}
                                         </ul>
                                     </div>
 
@@ -448,10 +454,10 @@
                                             </div>
 
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 mt-5">
                                             @if(isset($user))
 
-                                                <div id="add_info" class="none-block" style="display: none">
+                                                <div id="add_info" class="none-block" >
                                                     <div class="table-responsive">
                                                         <table class="my-table table user-list">
                                                             <thead>
@@ -1256,6 +1262,10 @@
 @endsection
 
 @section('scripts')
+
+
+
+
     <div id="uploadimageModal" class="modal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -1270,18 +1280,20 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button  class="btn btn-default crop_image" >Сохранить</button>
+                    <button  class="btn btn-default crop_image" onclick="crop_image()" >Сохранить</button>
                 </div>
             </div>
         </div>
     </div>
 <script>
+
+ var getFileKis;
+
     $(document).ready(function(){
 
+
+
         $image_crop = $('#image_demo').croppie({
-
-
-
             enableExif: true,
             viewport: {
                 width:200,
@@ -1294,95 +1306,89 @@
             }
         });
 
+
         $('#upload_image').on('change', function(){
+
             var reader = new FileReader();
             reader.onload = function (event) {
                 $image_crop.croppie('bind', {
                     url: event.target.result
                 }).then(function(){
+
+
                     console.log('jQuery bind complete');
                 });
             }
+
+             getFileKis = this.files[0];
+
             reader.readAsDataURL(this.files[0]);
 
-            // var user_id = $("#user_id_img").val();
-            //
-            // console.log(user_id,'077');
-
-
             $('#uploadimageModal').modal('show');
+
+
         });
 
-
-
-        $('.crop_image').click(function(event){
-            $image_crop.croppie('result', {
-                type: 'canvas',
-                size: 'viewport'
-            }).then(function(response){
-
-                var user_id = $("#user_id_img").val();
-                var file_name = $("#file_name_img").val();
-
-
-                console.log(user_id,'077');
-
-                $.ajax({
-                    type:'POST',
-                    url: "/profile/upload/edit/",
-                    data:{"image": response,'user_id':user_id,'file_name':file_name},
-                    success: (data) => {
-
-                        console.log(data,'dataaaaaaa');
-                        console.log(user_id,'0ssssqqqqq');
-
-                        $('#uploadimageModal').modal('hide');
-
-                        $("#img_url").html(data['src'])
-
-                        $("#file_name_img").attr('value',data['filename'])
-
-
-                        // this.reset();
-                        // alert('Image has been uploaded successfully');
-                    },
-                    error: function(data){
-                        console.log(data);
-                    }
-                });
-
-                // $.ajax({
-                //     url:"/profile/upload/edit/",
-                //     type: "POST",
-                //     cache:false,
-                //     contentType: false,
-                //     processData: false,
-                //     data:{"image": response},
-                //     success:function(data)
-                //     {
-                //         console.log(data,'888')
-                //
-                //         // $('#uploadimageModal').modal('hide');
-                //         // $('#uploaded_image').html(data);
-                //     }
-                // });
-
-            })
-        });
 
     });
 
+    function crop_image(){
+        $image_crop.croppie('result', {
+            type: 'canvas',
+            size: 'viewport'
+        }).then(function(response){
+            var user_id = $("#user_id_img").val();
+            var file_name = $("#file_name_img").val();
+            var origin_file = $("#upload_image").val();
+
+
+            var k = getFileKis;
+
+
+            console.log(k,'0789')
+
+            console.log(getFileKis,'789465312')
+
+            $.ajax({
+                type:'POST',
+                url: "/profile/upload/edit/",
+                data:{
+                    "image": response,
+                    'user_id':user_id,
+                    'file_name':file_name,
+                     file:getFileKis
+                },
+                // cache: false,
+                contentType: 'json',
+                processData: false,
+                success: (data) => {
+
+                    console.log(data,'imasheev kis')
+
+                    $('#uploadimageModal').modal('hide');
+                    $(".img_url_md").html(data['src'])
+                    $(".img_url_sm").html(data['src'])
+                    $("#file_name_img").attr('value',data['filename'])
+
+                    this.reset();
+                    alert('Image has been uploaded successfully');
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            });
+        })
+    }
+
     $("#profile_d").show();
+    $("#add_info").show(" ");
 
     function showBlock(type,elem)
     {
 
-        console.log(elem,'09996')
-
         $(".none-block").hide();
         $(".none-check").hide();
         $(".bg-this").css('background-color','rgb(248 248 248)')
-
 
 
         $("#check-"+type).show();
@@ -1392,10 +1398,9 @@
 
         if(type == 1){
             $("#profile_d").show(" ");
+            $("#add_info").show(" ");
         }else if(type == 7){
             $("#adaptation_conversations").show(" ")
-        }else if(type == 8){
-            $("#add_info").show(" ");
         }else if(type == 2){
             $("#iphones3").show(" ");
         }else if(type == 5){
@@ -1413,7 +1418,6 @@
 
 
 
-        console.log(type)
 
     }
 
@@ -1864,7 +1868,7 @@ function selectedCountry() {
     success:function(response){
 
 
-        console.log(response);
+
 
 
 
@@ -1900,7 +1904,7 @@ function selectedCountry() {
     }
     });
 
-    console.log(value,'imasheev')
+
 
 }
 </script>

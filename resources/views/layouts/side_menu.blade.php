@@ -1,8 +1,22 @@
 <aside class="side-menu">
 
     <div class="user pointer">
-        <a href="/profile">
-            <img src="/images/logo2.jpg" alt="avatar">
+
+
+
+
+        <a href="/profile" class="img_url_sm" >
+
+            @if(isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url))
+                <img id="{{ auth()->user()->img_url }}"
+                     src="/users_img/{{auth()->user()->img_url}}" alt="avatar" >
+            @else
+                <img src="https://cp.callibro.org/files/img/8.png" alt="img">
+            @endif
+
+
+
+
         </a>
         
        

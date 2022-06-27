@@ -82,17 +82,50 @@ class UserController extends Controller
     {
 
 
+        return $request->toArray();
+
 //        request()->validate([
-//            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+//            'file'  => 'required|mimes:doc,docx,pdf,txt|max:2048',
 //        ]);
+//
+//
+//        $fileName = time().'.'.$request->file->extension();
+//
+//        $request->file->move(public_path('file'), $fileName);
+//
+//        File::create(['name' => $fileName]);
+//
+//        return response()->json('File uploaded successfully');
+//
+//
+//        return $request;
+
+        $data = $request->origin_file;
+
+
+        $image_array_1 = explode(";", $data);
+        $image_array_2 = explode(",", $image_array_1[1]);
+        $data = base64_decode($image_array_2[1]);
+
+        $imageName = time() . '.png';
+
+
+
+        file_put_contents($path, $data);
+
+
+        $request->origin_file->extension();
+        $request->origin_file->move(public_path('users_img/'), '1122');
+
+
+//        die();
 
 
         $data = $request["image"];
 
+
         $image_array_1 = explode(";", $data);
-
         $image_array_2 = explode(",", $image_array_1[1]);
-
         $data = base64_decode($image_array_2[1]);
 
         $imageName = time() . '.png';
@@ -106,7 +139,7 @@ class UserController extends Controller
 
             if (!empty($update_user->img_url)){
                 $filename = "users_img/".$update_user->img_url;
-                
+
                 if (file_exists($filename)) {
                     unlink( public_path('users_img/'.$update_user->img_url));
 //                    unlink("users_img/".$update_user->img_url);
@@ -1134,8 +1167,9 @@ class UserController extends Controller
         
     }
 
-    public function editPerson(Request $request)
-    {   
+    public function editPerson(Request $request,$type = null)
+    {
+
         if(!Auth::user()) return redirect('/');
         View::share('title', 'Редактировать сотрудника');
         View::share('menu', 'timetrackingusercreate');
@@ -1145,7 +1179,10 @@ class UserController extends Controller
             return redirect('/');
         }
 
-        return view('admin.users.create', $this->preparePersonInputs($request->id));
+        return view('admin.users.create',
+            $this->preparePersonInputs($request->id)
+
+        );
         
     }
 
@@ -1419,7 +1456,8 @@ class UserController extends Controller
                 'working_country' =>$request['selectedCityInput'],
                 'working_city' =>$request['working_city'],
                 'role_id' => 1,
-                'is_admin' => 0 
+                'is_admin' => 0,
+                'img_url' => $request['file_name']
             ]);
         }
 

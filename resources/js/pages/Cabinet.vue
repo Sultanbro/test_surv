@@ -6,8 +6,8 @@
     <div class="settingCabinet">
       <ul class="p-0">
         <li>
-          <a  @click="userRoles = true">Административные настройки</a>
-          <a href="/timetracking/edit-person?id=1" @click="userRoles = false" target="_blank">Настройка профиля</a>
+          <a style="color: black" v-if="auth_role === '1'" @click="userRoles = true">Административные настройки</a>
+          <a href="/timetracking/edit-person?id=1">  Настройка собственного профиля</a>
         </li>
       </ul>
     </div>
@@ -15,8 +15,6 @@
 
 
   </div>
-
-
   <div class="rp" style="flex: 1 1 0%;" v-if="userRoles">
     <div class="hat">
       <div class="d-flex jsutify-content-between hat-top">
@@ -73,11 +71,6 @@
       </div>
     </div>
   </div>
-
-
-
-
-
 </div>
 </template>
 <script>
@@ -86,7 +79,9 @@
 export default {
   name: "Cabinet",
   props: {
-    authRole:'kkikikik'
+    auth_role:'',
+    auth_id:Number,
+
   },
   data() {
     return {
@@ -100,6 +95,10 @@ export default {
   },
   created() {
     this.fetchData();
+
+    console.log(this.auth_role,'authRole_id')
+    console.log(this.auth_id,'id')
+
   },
   mounted() {
 
@@ -111,7 +110,6 @@ export default {
   },
   methods: {
     addTag(newTag) {
-      console.log(newTag)
       const tag = {
         email: newTag,
         id: newTag,
@@ -120,6 +118,11 @@ export default {
     },
 
     fetchData() {
+
+
+
+
+
       axios
         .get("/cabinet/get")
         .then((response) => {
