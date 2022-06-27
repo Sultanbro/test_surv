@@ -82,7 +82,7 @@ class KnowBase extends Model
         return $books->count() > 0 ? $books->random() : null;  
     }
 
-    public  static function getUsersWithAccess()
+    public  function getUsersWithAccess()
     {
         $items = \App\Models\KnowBaseModel::where('book_id',$this->id)->get();
         
