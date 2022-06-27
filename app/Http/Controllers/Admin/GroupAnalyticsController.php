@@ -1990,7 +1990,7 @@ class GroupAnalyticsController extends Controller
         $arr = [];
 
         $date = Carbon::parse($request->date);
-
+        $date = $date->addDay();
         $groups1 = ProfileGroup::whereIn('id', [42])->get();
         $groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get();
         $groups = $groups->merge($groups1);
@@ -2020,7 +2020,7 @@ class GroupAnalyticsController extends Controller
             $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);
             //dd($date->toDateString());
-            $item['active'] = DayType::where('date',$date->toDateString())->whereIn('user_id', $correct_trainee_users->pluck('id')->toArray())->where('type',5)->get()->count();//$item['sent'];
+            $item['active'] = DayType::where('date',$date->toDateString())->whereIn('user_id', $correct_trainee_users->pluck('id')->toArray())->whereIn('type',[5,7])->get()->count();//$item['sent'];
             array_push($arr, $item);
         }
 
