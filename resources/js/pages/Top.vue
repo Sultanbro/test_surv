@@ -331,8 +331,8 @@ export default {
       axios.post('/timetracking/top/save_group_plan', {
         group_id: this.prognoz_groups[index].id,
         plan: this.prognoz_groups[index].plan,
-      })
-          .then(response => {
+      }).then(response => {
+            
             this.$message.success('Успешно сохранено!')
             this.prognoz_groups[index].left_to_apply = Number(this.prognoz_groups[index].plan) - Number(this.prognoz_groups[index].fired);
             loader.hide()

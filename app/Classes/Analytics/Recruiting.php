@@ -539,9 +539,18 @@ class Recruiting
      * Расчет колво требуемых сотрудников 
      */
     public function planRequired($arr) {
-
-        $groupsForCount = ProfileGroup::where('active', 1)->get();
-        $arr[self::S_APPLIED]['plan'] = $groupsForCount->sum('required');
+        $groupsForCount = ProfileGroup::where('active', 1)->whereIn('id',[31,42,63,66,70,71])->get();
+      
+        $required = 0;
+        foreach($groupsForCount as $group){
+            
+            $my_array = json_decode($group->users, TRUE);
+            $my_users = UserDescription::whereIn('user_id',$my_array)->where('is_trainee',0)->whereNull('fire_date')->pluck('user_id');
+            $my_users = User::whereIn('id',$my_users)->whereNull('deleted_at')->pluck('id');
+            dump(count($my_users));
+            $required += ($group->required - count($my_users));
+        }
+        $arr[self::S_APPLIED]['plan'] = $required;//$groupsForCount->sum('required') - $count_working_users;
 
         return $arr;
     }
@@ -1500,6 +1509,8 @@ class Recruiting
                 
             $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);
+
+            $item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', $leads->pluck('user_id')->toArray())->where('type',5)->get()->count();//$item['sent'];
             array_push($arr, $item);
         }
 

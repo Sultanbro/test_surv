@@ -42,6 +42,8 @@ use App\Models\Analytics\ActivityPlan;
 use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
 use App\QualityRecordMonthlyStat;
+use App\Models\CallCenter\Directory;
+use App\Models\CallCenter\Agent;
 use App\Models\Analytics\RecruiterStat;
 use App\Classes\Analytics\FunnelTable;
 use App\Models\User\NotificationTemplate;
@@ -130,6 +132,7 @@ class GroupAnalyticsController extends Controller
         //     return $this->kaspiAnalytics($request);
         // } else 
         if($request['group_id'] == RM::GROUP_ID) {
+           
             return $this->recrutingAnalytics($request);
         } else {
             return $this->formAnalytics($request);
@@ -567,6 +570,8 @@ class GroupAnalyticsController extends Controller
         $indicators['today'] = date('d');
         $indicators['month'] = $request->month;
 
+
+
         return [
             'date' => $month->startOfMonth()->format('Y-m-d'),
             'records' => $data, // Сводная таблица
@@ -594,7 +599,8 @@ class GroupAnalyticsController extends Controller
             'funnels' => FunnelTable::getTables($month->startOfMonth()->format('Y-m-d')), // Воронки
             'decomposition' => DecompositionValue::table($request->group_id, $month->format('Y-m-d')),
             'trainee_report' => TraineeReport::getBlocks($month->format('Y-m-d')), // оценки первого дня и присутствие стажеров
-            'workdays' => ProfileGroup::find(48)->workdays
+            'workdays' => ProfileGroup::find(48)->workdays,
+            'trainee_participation' => 'testing'
         ];
     }
 
@@ -830,6 +836,29 @@ class GroupAnalyticsController extends Controller
             }
 
             $lead->save();
+
+            
+            /*==============================================================*/
+            /*******  Создание пользователя в Callibro.org */
+            /*==============================================================*/
+
+            // $account = Account::where('email', $email)->first();
+            // if (!$account) {
+
+            //     if($lead->name == '') {
+            //         $lead->name = 'Без имени';
+            //     }
+            //     $account = Account::create([
+            //         'password' => User::randString(16),
+            //         'owner_uid' => 5,
+            //         'name' => $uname,
+            //         'surname' => '',
+            //         'email' => strtolower($email),
+            //         'status' => Account::ACTIVE_STATUS,
+            //         'role' => [Account::OPERATOR],
+            //         'activate_key' => '',
+            //     ]);
+            // }
 
             /** zarplata */
             $zarplata = Zarplata::where('user_id', $user->id)->first();
@@ -1955,6 +1984,47 @@ class GroupAnalyticsController extends Controller
      */
     public function changeRecruiterProfile(Request $request){
         RecruiterStat::changeProfile($request['user_id'], $request['profile'], Carbon::createFromDate($request->year, $request->month, $request->day));
+    }
+
+    public function getActiveTrainees(Request $request){
+        $arr = [];
+
+        $date = Carbon::parse($request->date);
+
+        $groups1 = ProfileGroup::whereIn('id', [42])->get();
+        $groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get();
+        $groups = $groups->merge($groups1);
+        foreach($groups as $group) {
+            $item = [];
+
+            $item['name'] = $group->name;
+            
+            $leads = Lead::whereYear('invite_at', $date->year)
+                ->whereMonth('invite_at', $date->month)
+                ->where('invite_group_id', $group->id)
+                ->get();
+            $trainee_users = UserDescription::whereIn('user_id',$leads->pluck('user_id')->toArray())->where('is_trainee',1)->whereNull('fire_date')->get();
+            $correct_trainee_users = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->whereIn('id', $trainee_users->pluck('user_id')->toArray()) 
+                ->get();
+            $item['sent'] = $leads->count();
+
+            $item['working'] = \DB::table('users')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 0)
+                ->whereIn('users.id', $leads->pluck('user_id')->toArray())
+                ->get()
+                ->count();
+                
+            $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
+            $item['percent'] = round($percent, 1);
+            //dd($date->toDateString());
+            $item['active'] = DayType::where('date',$date->toDateString())->whereIn('user_id', $correct_trainee_users->pluck('id')->toArray())->where('type',5)->get()->count();//$item['sent'];
+            array_push($arr, $item);
+        }
+
+        return ['ocenka_svod' => $arr];
     }
     
 }

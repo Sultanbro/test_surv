@@ -84,12 +84,13 @@
                             <a-tabs type="card">
 
                                 <a-tab-pane tab="Сводная" key="1">
-                                    <table class="table b-table table-striped table-bordered table-sm"  style="width:700px">
+                                    <table class="table b-table table-striped table-bordered table-sm"  style="width:900px">
                                         <thead>
                                             <th class="text-left t-name table-title" style="background:#90d3ff;width:250px;">Группа</th>
                                             <th class="text-center t-name table-title">Кол-во <br>переданных <br> стажеров</th>
                                             <th class="text-center t-name table-title">Кол-во <br>приступивших <br>к работе</th>
                                             <th class="text-center t-name table-title">Процент <br>прохождения<br> стажировки</th>
+                                            <th class="text-center t-name table-title">Кол-во<br> стажирующихся активных<br> <date-picker value="test"  :placeholder="trainee_date" v-model="trainee_date" @change="getTraineesByDate()"></date-picker> </th>
                                         </thead>
                                         <tbody v-for="ocenka in recruiting.ocenka_svod">
                                             <tr>
@@ -97,6 +98,7 @@
                                                 <td class="text-center t-name table-title align-middle">{{ ocenka.sent }}</td>
                                                 <td class="text-center t-name table-title align-middle">{{ ocenka.working }}</td>
                                                 <td class="text-center t-name table-title align-middle">{{ ocenka.percent }}</td>
+                                                <td class="text-center t-name table-title align-middle">{{ ocenka.active }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -109,7 +111,13 @@
                                   
                                     
                                 </a-tab-pane>
-                                <a-tab-pane tab="Отсутствие стажеров" key="3">
+                                <a-tab-pane tab="Оценка тренера за месяц" key="3">
+                                    
+                                    <svod-table :trainee_report="recruiting.trainee_report" :groups="groups" ></svod-table>
+                                  
+                                    
+                                </a-tab-pane>
+                                <a-tab-pane tab="Отсутствие стажеров" key="4">
                                     <div class="row">
                                         <div class="col-md-4">
                                             <table class="table b-table table-striped table-bordered table-sm">
@@ -275,6 +283,7 @@ export default {
     props: ['groups', 'activeuserid'],
     data() {
         return {
+            trainee_date: new Date(Date.now()).toISOString().substring(0, 10),
             totals: [],
             fn: '',
             data: [],
@@ -476,7 +485,6 @@ export default {
                     this.componentKeys[8]++
                     this.componentKeys[9]++
                 }
-
                 window.history.replaceState({ id: "100" }, "Аналитика групп", "/timetracking/analytics?group=" + this.currentGroup + "&active=" + this.active);
                 this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, response.data.workdays)
                 loader.hide()
@@ -485,7 +493,12 @@ export default {
                 alert(error)
             });
         },
-
+        getTraineesByDate(){
+            axios.post('/timetracking/getactivetrainees',{date: this.trainee_date}).then(response => {
+                console.log(response.data.ocenka_svod);
+                this.recruiting.ocenka_svod = response.data.ocenka_svod;
+            });
+        },
          getBusinessDateCount(month, year, workdays) {
   
             month = month - 1; 

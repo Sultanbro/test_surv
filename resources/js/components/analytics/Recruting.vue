@@ -94,7 +94,7 @@
                 </div>
 
 
-                <div class="lbox blue  shadow hover pointer" @click="orderVisible = !orderVisible">
+                <div class="lbox blue  shadow" >
                     <p>
                         <span>Принято</span>
                         <i class="fa fa-info-circle" 
