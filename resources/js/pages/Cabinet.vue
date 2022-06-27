@@ -172,25 +172,7 @@
 </div>
 
 
-<!--  <div id="uploadimageModal" class="modal" role="dialog">-->
-<!--    <div class="modal-dialog">-->
-<!--      <div class="modal-content">-->
-<!--        <div class="modal-header">-->
-<!--&lt;!&ndash;          <a onclick="$('#uploadimageModal').modal('hide')"  class="close" >&times;</a>&ndash;&gt;-->
-<!--        </div>-->
-<!--        <div class="modal-body">-->
-<!--          <div class="row">-->
-<!--            <div class="col-md-8 text-center">-->
-<!--              <div id="image_demo" style="width:455px; margin-top:15px"></div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="modal-footer">-->
-<!--&lt;!&ndash;          <button  class="btn btn-default crop_image" onclick="crop_image()" >Сохранить</button>&ndash;&gt;-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+
 
 
 </template>
