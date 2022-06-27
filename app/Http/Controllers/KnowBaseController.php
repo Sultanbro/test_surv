@@ -400,7 +400,34 @@ class KnowBaseController extends Controller
             $page->title = $request->title ?? 'Без названия';
             $page->editor_id = Auth::user()->id;
             $page->save();
+
+            $setting = Setting::where('name', 'send_notification_after_edit')
+                ->first();
+
+            if($setting && $setting->value == 1) {
+
+                $TOP_parent = $this->getTopParent($item->id);
+
+                if(!$TOP_parent) return;
+
+
+                $users = $this->getUsersWithAccess();
+
+                foreach ($users as $key => $user_id) {
+                    \App\UserNotification::create([
+                        'user_id' => $user_id,
+                        'about_id' => 0,
+                        'title' => 'Изменения в базе знаний',
+                        'group' => now(),
+                        'message' => '<b>' . $TOP_parent->title . '</b><br>' . $page->title
+                    ]);
+                } 
+                
+            }
         }
+
+        
+
 
     }
 

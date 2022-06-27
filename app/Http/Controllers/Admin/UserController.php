@@ -2276,7 +2276,7 @@ class UserController extends Controller
 
     public function corp_book_read(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(auth()->id());
         $user->read_corp_book_at = now();
         $user->save();
 

@@ -82,6 +82,33 @@ class KnowBase extends Model
         return $books->count() > 0 ? $books->random() : null;  
     }
 
+    public  static function getUsersWithAccess()
+    {
+        $items = \App\KnowBaseModel::where('book_id',$this->id)->get();
+        
+        $arr = [];
+
+        foreach ($items as $key => $item) {
+
+            if($item->model_type == 'App\\User') {
+                $arr[] = $item->model_id;
+            }
+
+            if($item->model_type == 'App\\ProfileGroup') {
+                $group = ProfileGroup::find($item->model_id);
+                if(!$group) continue;
+                $arr = array_merge($arr, json_decode($group->users));
+            }
+
+            if($item->model_type == 'App\\Position') {
+                $users = \App\User::where('position_id', $item->model_id)->get('id')->toArray();
+                $arr = array_merge($arr, $users);
+            }
+
+        }
+
+        return array_unique($arr); 
+    }
 
     private static function getBooks($access = 0) {
         
