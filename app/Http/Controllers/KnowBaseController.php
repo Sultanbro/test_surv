@@ -406,7 +406,7 @@ class KnowBaseController extends Controller
 
             if($setting && $setting->value == 1) {
 
-                $TOP_parent = $this->getTopParent($item->id);
+                $TOP_parent = $this->getTopParent($page->id);
 
                 if(!$TOP_parent) return;
 
