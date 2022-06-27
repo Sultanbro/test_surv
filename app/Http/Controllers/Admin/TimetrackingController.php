@@ -482,7 +482,7 @@ class TimetrackingController extends Controller
         ];
          if(!$user->readCorpBook()) {
             $has_corp_book = false;
-            //$page = Book::getRandomPage();
+            $page = \App\KnowBase::getRandomPage();
         } else {
             $page = [
                 'title' => '',

@@ -94,7 +94,6 @@ class AppServiceProvider extends ServiceProvider
                        
                         $corp_book_page_show = true;
                         $corp_book_page = \App\KnowBase::getRandomPage();
-                        $corp_book_page = null;
 
                         $xuser = User::find($user->id);
 
