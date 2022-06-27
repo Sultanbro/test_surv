@@ -69,6 +69,8 @@ Vue.use(Notifications)
 // Vue.use(VueCoreVideoPlayer)
 
  
+ 
+Vue.component('svod-table', require('./components/SvodTable.vue').default);//сводная таблица для аналитики
 
 Vue.component('timetracking', require('./components/timetracking.vue').default); // шапка начать день
 Vue.component('draggable', draggable); // драг
