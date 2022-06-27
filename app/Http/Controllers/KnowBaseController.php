@@ -411,15 +411,15 @@ class KnowBaseController extends Controller
                 if(!$TOP_parent) return;
 
 
-                $users = $page->getUsersWithAccess();
-
+                $users = $TOP_parent->getUsersWithAccess();
+           
                 foreach ($users as $key => $user_id) {
                     \App\UserNotification::create([
                         'user_id' => $user_id,
                         'about_id' => 0,
                         'title' => 'Изменения в базе знаний',
                         'group' => now(),
-                        'message' => '<b>' . $TOP_parent->title . '</b><br>' . $page->title
+                        'message' => 'Раздел: <b>' . $TOP_parent->title . '</b><br>' . $page->title
                     ]);
                 } 
                 

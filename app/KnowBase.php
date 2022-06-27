@@ -101,7 +101,7 @@ class KnowBase extends Model
             }
 
             if($item->model_type == 'App\\Position') {
-                $users = \App\User::where('position_id', $item->model_id)->get('id')->toArray();
+                $users = \App\User::where('position_id', $item->model_id)->get('id')->pluck('id')->toArray();
                 $arr = array_merge($arr, $users);
             }
 
