@@ -84,7 +84,7 @@ class KnowBase extends Model
 
     public  static function getUsersWithAccess()
     {
-        $items = \App\KnowBaseModel::where('book_id',$this->id)->get();
+        $items = \App\Models\KnowBaseModel::where('book_id',$this->id)->get();
         
         $arr = [];
 
@@ -95,7 +95,7 @@ class KnowBase extends Model
             }
 
             if($item->model_type == 'App\\ProfileGroup') {
-                $group = ProfileGroup::find($item->model_id);
+                $group = \App\ProfileGroup::find($item->model_id);
                 if(!$group) continue;
                 $arr = array_merge($arr, json_decode($group->users));
             }
