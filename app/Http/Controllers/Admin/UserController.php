@@ -82,8 +82,6 @@ class UserController extends Controller
     {
 
 
-        return $request->toArray();
-
 //        request()->validate([
 //            'file'  => 'required|mimes:doc,docx,pdf,txt|max:2048',
 //        ]);
@@ -100,22 +98,6 @@ class UserController extends Controller
 //
 //        return $request;
 
-        $data = $request->origin_file;
-
-
-        $image_array_1 = explode(";", $data);
-        $image_array_2 = explode(",", $image_array_1[1]);
-        $data = base64_decode($image_array_2[1]);
-
-        $imageName = time() . '.png';
-
-
-
-        file_put_contents($path, $data);
-
-
-        $request->origin_file->extension();
-        $request->origin_file->move(public_path('users_img/'), '1122');
 
 
 //        die();
@@ -133,15 +115,13 @@ class UserController extends Controller
 
 
         if (isset($request['user_id']) && $request['user_id'] != 'new_user'){
-
             $update_user = User::withTrashed()->find($request['user_id']);
-
 
             if (!empty($update_user->img_url)){
                 $filename = "users_img/".$update_user->img_url;
 
                 if (file_exists($filename)) {
-                    unlink( public_path('users_img/'.$update_user->img_url));
+                    unlink(public_path('users_img/'.$update_user->img_url));
 //                    unlink("users_img/".$update_user->img_url);
                 }
 
@@ -151,7 +131,8 @@ class UserController extends Controller
             $update_user->save();
 
             file_put_contents("users_img/$imageName", $data);
-            $img = '<img src="/users_img/'.$imageName.'"  />';
+
+            $img = '<img src="'.asset('/users_img/').''.$imageName.'"  />';
 
             return response(['src'=>$img,'filename'=>$imageName]);
 
@@ -169,9 +150,8 @@ class UserController extends Controller
 
 
             file_put_contents("users_img/$imageName", $data);
-            $img = '<img src="/users_img/'.$imageName.'"  />';
 
-
+            $img = '<img src="'.asset('/users_img/').''.$imageName.'"  />';
 
             return response(['src'=>$img,'filename'=>$imageName]);
         }

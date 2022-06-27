@@ -165,14 +165,8 @@
                                                 <a href="#" >Основные данные </a>
                                                 <span id="check-1"  class="ml-2 fa fa-check none-check" ></span>
                                             </li>
-                                            <li class="bg-this" id="bg-this-2" onclick="showBlock('2',this)">
-                                                <a href="#" >Группы</a>
-                                                <span id="check-2"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
-                                            </li>
-                                            <li class="bg-this" id="bg-this-3" onclick="showBlock('3',this)">
-                                                <a href="#" >База знание</a>
-                                                <span id="check-3"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
-                                            </li>
+
+
                                             <li class="bg-this" id="bg-this-9" onclick="showBlock('9',this)">
                                                 <a href="#" >Документы</a>
                                                 <span id="check-9"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
@@ -189,14 +183,13 @@
                                                 <a href="#" >Проче данные</a>
                                                 <span id="check-6"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
                                             </li>
+                                            @if(isset($user))
                                             <li class="bg-this" id="bg-this-7" onclick="showBlock('7',this)">
                                                 <a href="#" >Адаптационные  данные</a>
                                                 <span id="check-7"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
                                             </li>
-{{--                                            <li class="bg-this" id="bg-this-8" onclick="showBlock('8',this)">--}}
-{{--                                                <a href="#" >Дополнительная информация</a>--}}
-{{--                                                <span id="check-8"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>--}}
-{{--                                            </li>--}}
+                                            @endif
+
                                         </ul>
                                     </div>
 
@@ -560,21 +553,25 @@
                                                 <div id="adaptation_conversations" class="none-block" style="display: none">
                                                     <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
                                                     @foreach($user->adaptation_talks as $key => $talk)
-                                                        <div class="adaptation_talk">
-                                                            <div class="div_1">{{ $talk['day'] }}й день
+                                                        <div class="adaptation_talk col-12 mt-3">
+
+                                                            <div class="col-2 div_1 ml-0 p-0">{{ $talk['day'] }} й день
                                                                 <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
                                                             </div>
-                                                            <div class="div_2" style="flex-direction:unset">
-                                                                <input type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
 
+                                                            <div class="col-3 div_2 p-0" style="flex-direction:unset">
 
-                                                                <input class="form-control" type="date" name="adaptation_talks[{{ $key }}][date]"
+                                                                <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
+
+                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"
                                                                        @if($talk['date'] != null) value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"
                                                                        @else  value="null" @endif>
                                                             </div>
-                                                            <div class="div_3">
+
+                                                            <div class="col-6 div_3 p-0 ml-4">
                                                                 <textarea name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>
                                                             </div>
+
                                                         </div>
                                                     @endforeach
                                                 </div>
@@ -586,7 +583,7 @@
 
 
                                             <!-- groups tab -->
-                                            <div class="mb-3 xfade none-block" id="iphones3" style="display: none">
+                                            <div class="mb-3 xfade none-block" id="iphones3" >
                                                 <!--  -->
 
                                                 <h5 class="mb-4">Группы</h5>
@@ -616,7 +613,7 @@
 
 
 
-                                            <div class="mb-4 none-block" id="profile_books" style="display: none">
+                                            <div class="mb-4 none-block" id="profile_books" >
                                                 @if(isset($user))
                                                 <h5 class="mb-4 mt-4">Книги</h5>
 
@@ -817,47 +814,53 @@
                                     <!-- PROFILE PHONES -->
                                     <div class="profile-contacts mb-3 row">
                                         <div class="phones col-md-6 none-block" id="profile_contacts" style="display: none">
-                                            <h5 class="mb-4">Контакты</h5>
-                                            <div class="d-flex phone-row form-group mb-2 ">
-                                                <label for="phone" class="col-sm-6 col-form-label font-weight-bold mr-1">Мобильный <span class="red">*</span></label>
-                                                <div class="col-sm-6 pl-0 ml-2">
-                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"
-                                                    value="@if(isset($user)){{$user->phone}}@else{{old('phone')}}@endif"
-                                                    name="phone" id="phone" placeholder="Телефон">
-                                                </div>
+                                         <h5 class="mb-4">Контакты</h5>
+
+                                         <div class="d-flex phone-row form-group mb-2 ">
+                                             <label for="phone" class="col-sm-4 col-form-label font-weight-bold">Мобильный <span class="red">*</span></label>
+
+                                             <div class="col-sm-12">
+                                                 <input  class="form-control mr-1 col-sm-8" type="text"
+                                                 value="@if(isset($user)){{$user->phone}}@else{{old('phone')}}@endif"
+                                                 name="phone" id="phone" placeholder="Телефон">
+                                             </div>
+
+                                         </div>
+
+                                        <div class="d-flex phone-row form-group mb-2">
+                                            <label for="phone_1" class="col-sm-4 col-form-label font-weight-bold">Домашний <span class="red">*</span></label>
+                                            <div class="col-sm-12">
+                                                <input class="form-control mr-1 col-sm-8" type="text"
+                                                value="@if(isset($user)){{$user->phone_1}}@else{{old('phone_1')}}@endif"
+                                                name="phone_1" id="phone_1" placeholder="Телефон">
                                             </div>
-{{--                                            <!-- <div class="d-flex phone-row form-group mb-2">--}}
-{{--                                                <label for="phone_1" class="col-sm-4 col-form-label font-weight-bold">Домашний <span class="red">*</span></label>--}}
-{{--                                                <div class="col-sm-8">--}}
-{{--                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"--}}
-{{--                                                    value="@if(isset($user)){{$user->phone_1}}@else{{old('phone_1')}}@endif"--}}
-{{--                                                    name="phone_1" id="phone_1" placeholder="Телефон">--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                            <div class="d-flex phone-row form-group mb-2"> --}}
-{{--                                                <label for="phone_2" class="col-sm-4 col-form-label font-weight-bold">Супруга/Муж <span class="red">*</span></label>--}}
-{{--                                                <div class="col-sm-8">--}}
-{{--                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"--}}
-{{--                                                    value="@if(isset($user)){{$user->phone_2}}@else{{old('phone_2')}}@endif"--}}
-{{--                                                    name="phone_2" id="phone_2" placeholder="Телефон">--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                            <div class="d-flex phone-row form-group mb-2">--}}
-{{--                                                <label for="phone_3" class="col-sm-4 col-form-label font-weight-bold">Друг/Брат/Сестра <span class="red">*</span></label>--}}
-{{--                                                <div class="col-sm-8">--}}
-{{--                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"--}}
-{{--                                                    value="@if(isset($user)){{$user->phone_3}}@else{{old('phone_3')}}@endif"--}}
-{{--                                                    name="phone_3" id="phone_3" placeholder="Телефон">--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                            <div class="d-flex phone-row form-group mb-2">--}}
-{{--                                                <label for="phone_4" class="col-sm-4 col-form-label font-weight-bold">Сын/Дочь</label>--}}
-{{--                                                <div class="col-sm-8">--}}
-{{--                                                    <input class="form-control" class="form-control mr-1 col-sm-8" type="text"--}}
-{{--                                                    value="@if(isset($user)){{$user->phone_4}}@else{{old('phone_4')}}@endif"--}}
-{{--                                                    name="phone_4" id="phone_4" placeholder="Телефон">--}}
-{{--                                                </div>--}}
-{{--                                            </div> -->--}}
+
+                                        </div>
+
+                                        <div class="d-flex phone-row form-group mb-2">
+                                            <label for="phone_2" class="col-sm-4 col-form-label font-weight-bold">Супруга/Муж <span class="red">*</span></label>
+                                            <div class="col-sm-12">
+                                                <input class="form-control mr-1 col-sm-8" type="text"
+                                                value="@if(isset($user)){{$user->phone_2}}@else{{old('phone_2')}}@endif"
+                                                name="phone_2" id="phone_2" placeholder="Телефон">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex phone-row form-group mb-2">
+                                            <label for="phone_3" class="col-sm-4 col-form-label font-weight-bold">Друг/Брат/Сестра <span class="red">*</span></label>
+                                            <div class="col-sm-12">
+                                                <input class="form-control mr-1 col-sm-8" type="text"
+                                                value="@if(isset($user)){{$user->phone_3}}@else{{old('phone_3')}}@endif"
+                                                name="phone_3" id="phone_3" placeholder="Телефон">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex phone-row form-group mb-2">
+                                            <label for="phone_4" class="col-sm-4 col-form-label font-weight-bold">Сын/Дочь</label>
+                                            <div class="col-sm-12">
+                                                <input  class="form-control mr-1 col-sm-8" type="text"
+                                                value="@if(isset($user)){{$user->phone_4}}@else{{old('phone_4')}}@endif"
+                                                name="phone_4" id="phone_4" placeholder="Телефон">
+                                            </div>
+                                        </div>
 
                                             @if(isset($user))
                                             @foreach($user->profileContacts as $key => $contact)
@@ -890,8 +893,14 @@
                                             <h5 class="mb-4">Оплата</h5>
 
                                             <div class="form-group row">
-                                                <label for="zarplata" class="col-sm-3 col-form-label font-weight-bold">Оклад <span class="red">*</span></label>
-                                                <div class="col-sm-3">
+                                                <label for="zarplata"
+
+                                                       @if(isset($user)) class="col-sm-3 col-form-label font-weight-bold" @else class="col-sm-2 col-form-label font-weight-bold mr-3"  @endif
+
+
+                                                      >Оклад <span class="red">*</span></label>
+
+                                                <div @if(isset($user)) class="col-sm-3" @else class="col-sm-4 p-0 "  @endif>
                                                     <input class="form-control" type="text" name="zarplata" id="zarplata" required
                                                     placeholder="Оклад"
                                                     @if(isset($user->zarplata))
@@ -907,7 +916,7 @@
                                                 </div>
 
 
-                                                <div class="col-sm-3">
+                                                <div @if(isset($user)) class="col-sm-3" @else class="col-sm-5 pl-1 pr-0"  @endif  >
                                                     <select name="currency" id="currency" class="form-control form-control-sm">
                                                         <option selected disabled> Валюта</option>
                                                         <option value="kzt" @if(isset($user) && $user->currency == 'kzt') @endif>KZT Казахстанский тенге</option>
@@ -927,6 +936,7 @@
 
 
                                             </div>
+                                            @if(isset($user))
                                             <div class="form-group row">
                                                 <label for="kaspi" class="col-sm-3 col-form-label font-weight-bold">KASPI BANK</label>
                                                 <div class="col-sm-3">
@@ -966,18 +976,48 @@
                                                 </div>
                                             </div>
 
+                                            @endif
+
+
+                                            @if(isset($user))
+                                            <div class="form-group row">
+                                                <label for="headphones_amount_checkbox"
+                                                       class="col-sm-3 col-form-label font-weight-bold">Выданы наушники <br>
+                                                    @if(isset($user))
+                                                        {{ $user->headphones_date }}
+                                                    @endif
+                                                </label>
+
+                                                <div class="col-sm-1">
+                                                    <input type="checkbox" class="form-control" id="headphones_amount_checkbox"
+                                                           @if(isset($user))
+                                                                 @if($user->headphones_amount > 0) checked @endif
+                                                           @endif
+                                                    >
+                                                </div>
+                                                <div class="col-sm-2" >
+                                                    <label for="headphones_amount"
+                                                           class="col-form-label font-weight-bold">На сумму</label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <input name="headphones_amount" class="form-control" type="number"
+                                                           id="headphones_amount" value="{{ $user->headphones_amount }}" @if(isset($user)) @if($user->headphones_amount == 0) disabled @endif @endif>
+                                                </div>
+                                            </div>
+                                            @endif
+
                                             <div class="cards">
                                                 @if(isset($user))
-                                                @foreach($user->cards as $card)
-                                                    <div class="d-flex form-group m0 card-row">
-                                                        <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][bank]" placeholder="Банк" value="{{ $card->bank }}">
-                                                        <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][country]" placeholder="Страна" value="{{ $card->country }}">
-                                                        <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][cardholder]" placeholder="Имя на карте" value="{{ $card->cardholder }}">
-                                                        <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][phone]" placeholder="Телефон" value="{{ $card->phone }}">
-                                                        <input  class="form-control mr-1 col-sm-3 card-number" type="text" name="cards[1{{$card->id}}][number]" placeholder="Номер карты" value="{{ $card->number }}">
-                                                        <button class="btn btn-danger btn-sm card-delete rounded" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
-                                                    </div>
-                                                @endforeach
+                                                    @foreach($user->cards as $card)
+                                                        <div class="d-flex form-group m0 card-row">
+                                                            <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][bank]" placeholder="Банк" value="{{ $card->bank }}">
+                                                            <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][country]" placeholder="Страна" value="{{ $card->country }}">
+                                                            <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][cardholder]" placeholder="Имя на карте" value="{{ $card->cardholder }}">
+                                                            <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][phone]" placeholder="Телефон" value="{{ $card->phone }}">
+                                                            <input  class="form-control mr-1 col-sm-3 card-number mr-5" type="text" name="cards[1{{$card->id}}][number]" placeholder="Номер карты" value="{{ $card->number }}">
+                                                            <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
+                                                        </div>
+                                                    @endforeach
                                                 @endif
                                             </div>
 
@@ -985,11 +1025,16 @@
                                                     onclick="addCard()">
                                                     <i class="fa fa-plus"></i> Добавить карту
                                             </button>
+
+
+
+
                                             <!-- END OF OKLAD -->
                                         </div>
 
 
-                                        @if(isset($user))
+
+
                                          <!-- additional tab -->
                                         <div id="other_data" class="none-block" style="display: none">
                                             <div class="col-md-12 mt-3">
@@ -1003,12 +1048,18 @@
                                                            class="col-sm-4 col-form-label font-weight-bold">Примечание для внешнего рекрутера</label>
                                                     <div class="col-sm-8">
                                                     <textarea name="recruiter_comment" class="form-control"
-                                                              id="recruiter_comment">{{$user->recruiter_comment}}</textarea>
+                                                              id="recruiter_comment"  placeholder="Коментарии">
+                                                         @if(isset($user))
+                                                              {{$user->recruiter_comment}}
+                                                         @endif
+
+                                                    </textarea>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-4">
+                                              @if(isset($user))
                                                 @if($user->lead)
                                                     <div class="table-responsive">
                                                         <table class="my-table table user-list">
@@ -1062,36 +1113,20 @@
                                                         </table>
                                                     </div>
                                                 @endif
+                                              @endif
                                             </div>
 
 
-                                            <div class="col-md-8">
-
-                                                <div class="form-group row">
-                                                    <label for="headphones_amount_checkbox"
-                                                           class="col-sm-4 col-form-label font-weight-bold">Выданы наушники <br> {{ $user->headphones_date }}</label>
-
-                                                    <div class="col-sm-2">
-                                                        <input type="checkbox" class="form-control" id="headphones_amount_checkbox" @if($user->headphones_amount > 0) checked @endif>
-                                                    </div>
-                                                    <div class="col-sm-3">
-                                                        <label for="headphones_amount"
-                                                               class="col-form-label font-weight-bold">На сумму</label>
-                                                    </div>
-                                                    <div class="col-sm-3">
-                                                        <input name="headphones_amount" class="form-control" type="number"
-                                                               id="headphones_amount" value="{{ $user->headphones_amount }}" @if($user->headphones_amount == 0) disabled @endif>
-                                                    </div>
-                                                </div>
-                                            </div>
 
 
                                         </div>
 
 
 
+                                        @if(isset($user))
                                         <div id="other_data_bitrix" class="none-block" style="display: none">
                                             <div class="col-md-12">
+
                                                 @if($user->bitrix_id != 0)
                                                     <p>
                                                         <b>Битрикс: <span class="text-green">Есть</span></b>
@@ -1119,10 +1154,11 @@
                                                 <profile-kpi-button :user_id="{{ $user->id }}"/>
                                             </div>
                                         </div>
+                                        @endif
 
 
                                         
-                                        @endif
+
 
                                     </div>
                                     <!--  -->
@@ -1344,10 +1380,10 @@
 
             var k = getFileKis;
 
-
-            console.log(k,'0789')
-
-            console.log(getFileKis,'789465312')
+            //
+            // console.log(k,'0789')
+            //
+           console.log(response,'789465312')
 
             $.ajax({
                 type:'POST',
@@ -1356,22 +1392,24 @@
                     "image": response,
                     'user_id':user_id,
                     'file_name':file_name,
-                     file:getFileKis
+                     // file:getFileKis
                 },
                 // cache: false,
-                contentType: 'json',
-                processData: false,
+                // contentType: 'json',
+                // processData: false,
                 success: (data) => {
 
                     console.log(data,'imasheev kis')
 
                     $('#uploadimageModal').modal('hide');
+
                     $(".img_url_md").html(data['src'])
+
                     $(".img_url_sm").html(data['src'])
+
                     $("#file_name_img").attr('value',data['filename'])
 
-                    this.reset();
-                    alert('Image has been uploaded successfully');
+
                 },
                 error: function(data){
                     console.log(data);
@@ -1381,7 +1419,10 @@
     }
 
     $("#profile_d").show();
-    $("#add_info").show(" ");
+    $("#add_info").show(" ");///доп инф
+    $("#profile_books").show(" "); /// база знание
+    $("#iphones3").show(" "); /// группы
+
 
     function showBlock(type,elem)
     {
@@ -1397,16 +1438,16 @@
 
 
         if(type == 1){
-            $("#profile_d").show(" ");
-            $("#add_info").show(" ");
+            $("#profile_d").show();
+            $("#add_info").show(" ");///доп инф
+            $("#profile_books").show(" "); /// база знание
+            $("#iphones3").show(" "); /// группы
         }else if(type == 7){
             $("#adaptation_conversations").show(" ")
         }else if(type == 2){
             $("#iphones3").show(" ");
         }else if(type == 5){
             $("#profile_salary").show(" ");
-        }else if(type == 3){
-            $("#profile_books").show(" ");
         }else if(type == 9){
             $("#iphones4").show(" ");
         }else if(type == 4){
@@ -1764,8 +1805,8 @@ function addCard(e) {
         <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][country]" placeholder="Страна">
         <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][cardholder]" placeholder="Имя на карте">
         <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][phone]" placeholder="Телефон">
-        <input class="form-control mr-1 col-sm-3 card-number" type="text" name="cards[${index}][number]" placeholder="Номер карты">
-        <button class="btn btn-danger btn-sm card-delete rounded" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
+        <input class="form-control mr-1 col-sm-3 card-number mr-5" type="text" name="cards[${index}][number]" placeholder="Номер карты">
+        <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
     </div>`);
 
     $(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
