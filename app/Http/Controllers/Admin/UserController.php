@@ -51,8 +51,6 @@ use App\Classes\Analytics\Recruiting as RM;
 use App\Models\Analytics\RecruiterStat;
 use App\AnalyticsSettings;
 use App\AnalyticsSettingsIndividually;
-use App\Models\CallCenter\Directory;
-use App\Models\CallCenter\Agent;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Admin\History;
 use App\UserReport;
@@ -214,57 +212,6 @@ class UserController extends Controller
 
                     $user->email = $new_email;
                     $user->save();
-
-                    $account = Account::where('owner_uid', 5)->where('email', $new_email)->first();
-
-                    // if(!$account) {
-                        
-                    //     $account = Account::create([
-                    //         'password' => User::randString(16),
-                    //         'owner_uid' => 5,
-                    //         'name' => $user->name,
-                    //         'surname' => $user->last_name,
-                    //         'email' => $new_email,
-                    //         'status' => Account::ACTIVE_STATUS,
-                    //         'role' => [Account::OPERATOR],
-                    //         'activate_key' => '000',
-                    //     ]);
-
-                    //     $agent_name = $account->id . '@voip.cfpsa.ru';
-                    //     $agent = Agent::where('name', $agent_name)->first();
-                    //     if(!$agent) {
-                    //         $agent = Agent::create([
-                    //             'name' => $agent_name,
-                    //             'system' => 'single_box',
-                    //             'type' => 'callback',
-                    //             'contact' => Agent::CONTACT_PREFIX . $agent_name,
-                    //             'status' => 'Logged Out',
-                    //             'state' => 'Waiting'
-                    //         ]);
-                    //     }
-                        
-                    //     $directory = Directory::where('account', $account->id)->first();
-                    //     if(!$directory) {
-                    //         $directory = Directory::create([
-                    //             'account' => $account->id,
-                    //             'password' => $account->password,
-                    //             'domain' => 'voip.cfpsa.ru',
-                    //             'context' => 'voip.cfpsa.ru_context',
-                    //             'provider' => '600',
-                    //             'toll_allow' => '600',
-                    //             'state' => 'active',
-                    //         ]);
-                    //     } else {
-                    //         $directory->password = $account->password;
-                    //         $directory->toll_allow = '600';
-                    //         $directory->provider = '600';
-                    //         $directory->domain = 'voip.cfpsa.ru';
-                    //         $directory->context = 'voip.cfpsa.ru_context';
-                    //         $directory->state = 'active';
-                    //         $directory->save();
-                    //     }
-                    // }
-        
                 }
                
             } 
@@ -706,14 +653,9 @@ class UserController extends Controller
 
     public function getpersons(Request $request)
     {
-        //$accounts = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->get(['id', 'email']);
+        
         $groups = ProfileGroup::where('active', 1)->get();
-        // $array_accounts_email = [];
-        // foreach ($accounts as $key => $account) {
-        //     $array_accounts_email[] = $account->email;
-        // }
-
-
+  
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
             //$users = User::withTrashed()->whereIn('email', $array_accounts_email);
@@ -1367,23 +1309,26 @@ class UserController extends Controller
         /*******  Приглашение на почту  */
         /*==============================================================*/
 
-        if (env('APP_ENV','local') == 'prod'){
-            try { // если письмо с прилашением отправилось
+      
+       
+        try { // если письмо с прилашением отправилось
 
-                \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
-
-            } catch (Swift_TransportException $e) { // Если письмо по каким то причинам не отправилось
-                return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
-            }
+      
+            \Mail::to($request['email'])->send(new \App\Mail\SendInvitation($data));
+         
+        } catch (Throwable $e) { // Если письмо по каким то причинам не отправилось
+      
+            return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
         }
-
+    
+      
 
         /*==============================================================*/
         /*******  Создание пользователя в U-marketing.org  */
         /*==============================================================*/
 
 
-
+        
 
 
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
@@ -1538,64 +1483,6 @@ class UserController extends Controller
             }
         }
 
-
-        /*==============================================================*/
-        /*******  Создание пользователя в Callibro.org */
-        /*==============================================================*/
-
-
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'bp.jobtron.org')) {
-            $account = Account::where('email', $request['email'])->first();
-            if (!$account) {
-                $account = Account::create([
-                    'password' => User::randString(16),
-                    'owner_uid' => 5,
-                    'name' => $request['name'],
-                    'surname' => $request['last_name'],
-                    'email' => strtolower($request['email']),
-                    'status' => Account::ACTIVE_STATUS,
-                    'role' => [Account::OPERATOR],
-                    'activate_key' => 'activate_key',
-                ]);
-            }
-
-            // $agent_name = $account->id . '@voip.cfpsa.ru';
-            // $agent = Agent::where('name', $agent_name)->first();
-            // if(!$agent) {
-            //     $agent = Agent::create([
-            //         'name' => $agent_name,
-            //         'system' => 'single_box',
-            //         'type' => 'callback',
-            //         'contact' => Agent::CONTACT_PREFIX . $agent_name,
-            //         'status' => 'Logged Out',
-            //         'state' => 'Waiting'
-            //     ]);
-            // }
-            
-            // $directory = Directory::where('account', $account->id)->first();
-            // if(!$directory) {
-            //     $directory = Directory::create([
-            //         'account' => $account->id,
-            //         'password' => $account->password,
-            //         'domain' => 'voip.cfpsa.ru',
-            //         'context' => 'voip.cfpsa.ru_context',
-            //         'provider' => '600',
-            //         'toll_allow' => '600',
-            //         'state' => 'active',
-            //     ]);
-            // } else {
-            //     $directory->password = $account->password;
-            //     $directory->toll_allow = '600';
-            //     $directory->provider = '600';
-            //     $directory->domain = 'voip.cfpsa.ru';
-            //     $directory->context = 'voip.cfpsa.ru_context';
-            //     $directory->state = 'active';
-            //     $directory->save();
-            // }
-        }
-
-        
-        
         /*==============================================================*/
         /*******  Документы пользователя в U-marketing.org  */
         /*==============================================================*/
@@ -1640,8 +1527,6 @@ class UserController extends Controller
             $archive = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move("static/profiles/" . $user->id . "/archive", $archive);
         }
-
-        
 
         $downloads = Downloads::create([
             'user_id' => $user->id,
@@ -2082,57 +1967,6 @@ class UserController extends Controller
         }
 
         /*==============================================================*/
-        /********** Редактирование аккаунта в callibro.org */
-        /*==============================================================*/
-
-        if($_SERVER['HTTP_HOST'] == env('ADMIN_DOMAIN', 'bp.jobtron.org')) {
-            $account = Account::where('email', $request['email'])->first();
-            if ($account) {
-                $account->name = $request['name'];
-                $account->surname = $request['last_name'];
-                $account->status = Account::ACTIVE_STATUS;
-                $account->email = strtolower($request['email']);
-                $account->save();
-
-
-                // $agent_name = $account->id . '@voip.cfpsa.ru';
-                // $agent = Agent::where('name', $agent_name)->first();
-                // if(!$agent) {
-                //     $agent = Agent::create([
-                //         'name' => $agent_name,
-                //         'system' => 'single_box',
-                //         'type' => 'callback',
-                //         'contact' => Agent::CONTACT_PREFIX . $agent_name,
-                //         'status' => 'Logged Out',
-                //         'state' => 'Waiting'
-                //     ]);
-                // }
-                
-                // $directory = Directory::where('account', $account->id)->first();
-                // if(!$directory) {
-                //     $directory = Directory::create([
-                //         'account' => $account->id,
-                //         'password' => $account->password,
-                //         'domain' => 'voip.cfpsa.ru',
-                //         'context' => 'voip.cfpsa.ru_context',
-                //         'provider' => '600',
-                //         'toll_allow' => '600',
-                //         'state' => 'active',
-                //     ]);
-                // } else {
-                //     $directory->password = $account->password;
-                //     $directory->toll_allow = '600';
-                //     $directory->provider = '600';
-                //     $directory->domain = 'voip.cfpsa.ru';
-                //     $directory->context = 'voip.cfpsa.ru_context';
-                //     $directory->state = 'active';
-                //     $directory->save();
-                // }
-            }
-        }
-        
-        
-        /*==============================================================*/
         /********** Редактирование зарплаты */
         /*==============================================================*/
 
@@ -2468,7 +2302,7 @@ class UserController extends Controller
 
     public function corp_book_read(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(auth()->id());
         $user->read_corp_book_at = now();
         $user->save();
 

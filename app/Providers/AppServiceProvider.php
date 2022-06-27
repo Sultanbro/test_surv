@@ -93,8 +93,7 @@ class AppServiceProvider extends ServiceProvider
                     if(!$user->readCorpBook()) {
                        
                         $corp_book_page_show = true;
-                        //$corp_book_page = \App\Book::getRandomPage();
-                        $corp_book_page = null;
+                        $corp_book_page = \App\KnowBase::getRandomPage();
 
                         $xuser = User::find($user->id);
 
@@ -105,8 +104,10 @@ class AppServiceProvider extends ServiceProvider
                         if(\Carbon\Carbon::now()->hour >= 6 && $unread > 0 && $user->has_noti == 0) {
                             $reminder = true;
 
-                            $user->has_noti = 1;
-                            $user->save();
+                            $xuser = User::find($user->id);
+
+                            $xuser->has_noti = 1;
+                            $xuser->save();
 
                         }
                     }

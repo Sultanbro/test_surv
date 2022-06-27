@@ -146,7 +146,7 @@
               <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей корпоративной книги</h5>
               <h3 class="text-center">{{ corp_book_page.title }}</h3>
 
-              <div v-html="corp_book_page.description"></div>
+              <div v-html="corp_book_page.text"></div>
 
               <button class="btn btn-primary rounded m-auto" id="readCorpBook" @click="hideBook" disabled>
                   <span class="text">Я прочитал</span>
@@ -173,7 +173,7 @@ export default {
       showCorpBookPage: false,
       corp_book_page: {
         title: '',
-        description: '',
+        text: '',
       },
       total_earned: '',
       groups: [],

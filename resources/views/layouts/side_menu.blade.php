@@ -188,9 +188,16 @@
                 <span>Депри мирование</span>
             </a>
         </li>
+        @if(auth()->user() && auth()->user()->program_id == 1 && tenant('id') == 'bp')
+        <li class="menu-item">
+            <a href="/callibro/login" class="side-btn">
+                <i class="fas fa-headset"></i>
+                <span>U-calls</span>
+            </a>
+        </li>
+        @endif
 
-
-
+        
     </ul>
     @if(auth()->user()->can('settings_view') ||  
         auth()->user()->can('users_view') ||

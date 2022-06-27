@@ -394,15 +394,18 @@ class TimetrackingController extends Controller
 
 
         // corp book page 
-        $page = null;
+
+        if(!$user->readCorpBook()) {
+
+            $has_corp_book = true;
+            $page =  \App\KnowBase::getRandomPage();
+        } else {
+            $page = [
+                'title' => '',
+                'description' => ''
+            ];
             $has_corp_book = false;
-        // if(!$user->readCorpBook()) {
-        //     $has_corp_book = true;
-        //     $page = Book::getRandomPage();
-        // } else {
-        //     $page = null;
-        //     $has_corp_book = false;
-        // }
+        }
 
             $data = [
                 'status' => $action,
@@ -476,21 +479,19 @@ class TimetrackingController extends Controller
 
 
          // corp book page 
-         $page = [
+        $page = [
             'title' => '',
             'description' => ''
         ];
+        
+        $has_corp_book = false;
+     
          if(!$user->readCorpBook()) {
-            $has_corp_book = false;
-            //$page = Book::getRandomPage();
-        } else {
-            $page = [
-                'title' => '',
-                'description' => ''
-            ];
-            $has_corp_book = false;
+            $has_corp_book = true;
+            $page = \App\KnowBase::getRandomPage();
         }
 
+     
         return response()->json([
             'status' => $status,
             'groupsall' => $groupsall,

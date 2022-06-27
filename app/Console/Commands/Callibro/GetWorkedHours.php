@@ -13,6 +13,7 @@ use App\AnalyticsSettings;
 use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Eurasian;
 use App\Classes\Analytics\Kaztel;
+use App\Classes\Analytics\Euras2;
 use App\Classes\Analytics\HomeCredit;
 use App\Models\Analytics\UserStat;
 use App\Classes\Callibro;
@@ -80,7 +81,7 @@ class GetWorkedHours extends Command
         $this->day = $date->day;
         $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
 
-        $groups = [70];
+        $groups = [79,70];
         foreach($groups as $group_id) {
             $this->group = ProfileGroup::find($group_id);
             $this->dialer = CallibroDialer::where('group_id', $group_id)->first();
@@ -146,6 +147,48 @@ class GetWorkedHours extends Command
                     'group_id' => $group_id,
                     'type' => 152 // звонки от 10 секунд
                 ], $closed_cards);
+
+            }
+
+
+            if($group_id == 79) {
+
+               // $minutes = Euras2::getWorkedMinutes($user->email, $this->date);
+
+                // if($minutes == 0) continue; // Не записывать ноль
+                // if($minutes > 0) {
+
+                    
+                // }
+
+                $startedDay = Callibro::startedDay($user->email, $this->date);
+                    
+                if($startedDay) {
+                    if($this->group && !in_array($user->id, $this->group->time_exceptions)) { // not in exception
+                        $timetracking = Timetracking::where('user_id', $user->id)
+                            ->whereDate('enter', $this->date)
+                            ->orderBy('enter', 'asc')
+                            ->first();
+    
+                        if($timetracking) {
+                            if($timetracking->updated != 1) {
+                                $timetracking->enter = $startedDay;
+                            
+                                $timetracking->updated = 2;
+                                $timetracking->save();
+                            } 
+                        } else {
+                            Timetracking::create([
+                                'enter' => $startedDay,
+                                'exit' => Carbon::parse($this->date),
+                                'total_hours' => 0,
+                                'updated' => 2,
+                                'user_id' => $user->id
+                            ]);
+                        }
+                    }
+                }   
+               
 
             }
         }
