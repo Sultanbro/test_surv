@@ -21,6 +21,17 @@ class GlossaryController extends Controller
     public function get(Request $request)
     {
         return Word::orderBy('word')->get();
+    }   
+
+
+    /**
+     * @param Request $request
+     * 
+     * @return Collection
+     */
+    public function delete(Request $request)
+    {
+        Word::where('id', $request->id)->delete();
     }
 
 

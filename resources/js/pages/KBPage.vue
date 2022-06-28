@@ -9,7 +9,6 @@
         </div>
 
         <div class="btn btn-grey mb-3" v-if="activeBook === null" @click="openGlossary">
-          <i class="fa fa-arrow-left"></i>
           <span>Глоссарий</span>
         </div>
         
@@ -257,8 +256,7 @@
 import Glossary from '../components/Glossary.vue'
 export default {
   name: "KBPage",
-  p
-    Glossaryrops: {
+  props: {
     auth_user_id: {
       type:Number
     },

@@ -156,6 +156,7 @@ Route::middleware([
     
     Route::get('/glossary/get', [GlossaryController::class, 'get']);
     Route::post('/glossary/save', [GlossaryController::class, 'save']);
+    Route::post('/glossary/delete', [GlossaryController::class, 'delete']);
 
     // @TODO DELETE USELESS ROUTES AND CONTROLLERS
     Route::any('/videolearning/{id?}', [VideolearningController::class, 'list'])->name('videos.playlists');
