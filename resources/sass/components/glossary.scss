@@ -1,2 +1,34 @@
 .glossary {
+
+    .buttons {
+
+        display: flex;
+        justify-content: space-between;
+
+        .search {
+            margin-right: 15px;
+            width: 100%;
+        }
+
+        button {
+            margin-left: 15px;
+        }
+
+
+    }
+
+    .block {
+
+        .word {
+            
+        }   
+
+        .definition {
+
+        }
+
+        .action {
+
+        }
+    }
 }
