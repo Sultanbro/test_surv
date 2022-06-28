@@ -538,17 +538,23 @@ class Recruiting
     /** 
      * Расчет колво требуемых сотрудников 
      */
-    public function planRequired($arr) {
-        $groupsForCount = ProfileGroup::where('active', 1)->whereIn('id',[31,42,63,66,70,71])->get();
+public function planRequired($arr) {
+        $groupsForCount = ProfileGroup::whereIn('id',[31,42,63,79,70,71])->get();
       
         $required = 0;
         foreach($groupsForCount as $group){
+            $my_users =DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', json_decode($group->users))
+                ->where('ud.is_trainee', 0) 
+                ->whereNull('ud.fire_date')
+                ->get(['users.id'])
+                ->pluck('id')
+                ->toArray();
+                dump(count($my_users));
+                $required += ($group->required - count($my_users));
             
-            $my_array = json_decode($group->users, TRUE);
-            $my_users = UserDescription::whereIn('user_id',$my_array)->where('is_trainee',0)->whereNull('fire_date')->pluck('user_id');
-            $my_users = User::whereIn('id',$my_users)->whereNull('deleted_at')->pluck('id');
-            dump(count($my_users));
-            $required += ($group->required - count($my_users));
         }
         $arr[self::S_APPLIED]['plan'] = $required;//$groupsForCount->sum('required') - $count_working_users;
 
