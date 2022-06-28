@@ -538,19 +538,15 @@ class Recruiting
     /** 
      * Расчет колво требуемых сотрудников 
      */
-    public function planRequired($arr) {
-        $groupsForCount = ProfileGroup::where('active', 1)->whereIn('id',[31,42,63,66,70,71])->get();
-      
-        $required = 0;
-        foreach($groupsForCount as $group){
-            
-            $my_array = json_decode($group->users, TRUE);
-            $my_users = UserDescription::whereIn('user_id',$my_array)->where('is_trainee',0)->whereNull('fire_date')->pluck('user_id');
-            $my_users = User::whereIn('id',$my_users)->whereNull('deleted_at')->pluck('id');
-            dump(count($my_users));
-            $required += ($group->required - count($my_users));
-        }
-        $arr[self::S_APPLIED]['plan'] = $required;//$groupsForCount->sum('required') - $count_working_users;
+public function planRequired($arr) {
+        $counter = 0;
+        $date = Carbon::now()->startOfMonth();
+        $get_required = self::getPrognozGroups($date);
+            foreach($get_required as $req){
+                if($req['left_to_apply'] > 0)
+                    $counter += $req['left_to_apply'];
+            }
+        $arr[self::S_APPLIED]['plan'] = $counter;//$groupsForCount->sum('required') - $count_working_users;
 
         return $arr;
     }
@@ -1511,7 +1507,16 @@ class Recruiting
             $item['percent'] = round($percent, 1);
 
             $item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', $leads->pluck('user_id')->toArray())->where('type',5)->get()->count();//$item['sent'];
+            $get_required = self::getPrognozGroups($date);
+            foreach($get_required as $req){
+                if($req['id'] == $group->id){
+                    $item['required'] = $req['left_to_apply'];
+                }
+            }
+            //$this->getPrognozGroups($date);
             array_push($arr, $item);
+
+
         }
 
         return $arr;
@@ -1687,8 +1692,8 @@ class Recruiting
         $end = $_date->endOfMonth()->timestamp;
 
         $ratings_leads = UserDescription::where(function($query) {
-			$query->whereNotNull('rating1')
-				->orWhereNotNull('rating2');
+            $query->whereNotNull('rating1')
+                ->orWhereNotNull('rating2');
         })->get();  
         
         foreach($ratings_leads as $rl) {

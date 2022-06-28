@@ -1994,6 +1994,7 @@ class GroupAnalyticsController extends Controller
         $groups1 = ProfileGroup::whereIn('id', [42])->get();
         $groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get();
         $groups = $groups->merge($groups1);
+                $startDate = Carbon::now();
         foreach($groups as $group) {
             $item = [];
 
@@ -2003,11 +2004,16 @@ class GroupAnalyticsController extends Controller
                 ->whereMonth('invite_at', $date->month)
                 ->where('invite_group_id', $group->id)
                 ->get();
-            $trainee_users = UserDescription::whereIn('user_id',$leads->pluck('user_id')->toArray())->where('is_trainee',1)->whereNull('fire_date')->get();
-            $correct_trainee_users = \DB::table('users')
+
+            $trainee_users = DB::table('users')
                 ->whereNull('deleted_at')
-                ->whereIn('id', $trainee_users->pluck('user_id')->toArray()) 
-                ->get();
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', json_decode($group->users))
+                ->where('ud.is_trainee', 1) 
+                ->get(['users.id'])
+                ->pluck('id')
+                ->toArray();
+
             $item['sent'] = $leads->count();
 
             $item['working'] = \DB::table('users')
@@ -2019,8 +2025,8 @@ class GroupAnalyticsController extends Controller
                 
             $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);
-            //dd($date->toDateString());
-            $item['active'] = DayType::where('date',$date->toDateString())->whereIn('user_id', $correct_trainee_users->pluck('id')->toArray())->whereIn('type',[5,7])->get()->count();//$item['sent'];
+
+            $item['active'] = DayType::where('date',$date->toDateString())->whereIn('user_id', $trainee_users)->whereIn('type',[5,7])->get()->count();//$item['sent'];
             array_push($arr, $item);
         }
 

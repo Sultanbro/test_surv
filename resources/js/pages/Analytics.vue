@@ -87,6 +87,7 @@
                                     <table class="table b-table table-striped table-bordered table-sm"  style="width:900px">
                                         <thead>
                                             <th class="text-left t-name table-title" style="background:#90d3ff;width:250px;">Группа</th>
+                                            <th class="text-center t-name table-title">Требуется нанять</th>
                                             <th class="text-center t-name table-title">Кол-во <br>переданных <br> стажеров</th>
                                             <th class="text-center t-name table-title">Кол-во <br>приступивших <br>к работе</th>
                                             <th class="text-center t-name table-title">Процент <br>прохождения<br> стажировки</th>
@@ -95,6 +96,7 @@
                                         <tbody v-for="ocenka in recruiting.ocenka_svod">
                                             <tr>
                                                 <td class="text-left t-name table-title align-middle" style="background:#90d3ff">{{ ocenka.name }}</td>
+                                                <td class="text-center t-name table-title align-middle">{{ ocenka.required }}</td>
                                                 <td class="text-center t-name table-title align-middle">{{ ocenka.sent }}</td>
                                                 <td class="text-center t-name table-title align-middle">{{ ocenka.working }}</td>
                                                 <td class="text-center t-name table-title align-middle">{{ ocenka.percent }}</td>

@@ -45,7 +45,7 @@
         </ol>
 
         <div class="bp-text"><p>&nbsp;</p>
-<p><span style="font-family: arial, helvetica, sans-serif; font-size: 12pt;"><span style="font-size: 13pt;color: #010101;"><strong>Сервис вовлеченности</strong></span> разработан с целью облегчить работу сотрудника и автоматизировать учета рабочего времени.&nbsp;</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif; font-size: 12pt;"><span style="font-family: arial, helvetica, sans-serif; font-size: 12pt;"><span style="font-size: 13pt; color: #0065aa;"><strong>Корпоративный&nbsp; портал Jobtron</strong></span> разработан с целью облегчить понимание сотрудника о том сколько он заработал на текущий момент времени и как заработать больше, а также чтобы коммуницировать с коллегами и обучаться новым навыкам. А также портал помогает руководителям анализировать показатели продуктивности своего отдела на основе ежедневных автоматических отчетов.</span></p>
 <p><span style="font-family: arial, helvetica, sans-serif; font-size: 12pt;">Каждый сотрудник может ежедневно видеть, сколько он заработал денег на текущий момент времени.</span></p>
 <p><img src="/bpartners/1653044718.png" alt="картинка" width="947" height="382"></p>
 <p>&nbsp;</p>
