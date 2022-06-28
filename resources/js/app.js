@@ -140,6 +140,8 @@ Vue.component('video-list', require('./components/VideoList.vue').default); //
 
 Vue.component('superselect', require('./components/SuperSelect.vue').default); // 
 
+Vue.component('glossary', require('./components/Glossary.vue').default); // 
+
 
 /**
  * Pages

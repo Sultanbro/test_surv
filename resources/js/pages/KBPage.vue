@@ -7,6 +7,12 @@
           <i class="fa fa-search"></i>
           <span>Искать в базе...</span>
         </div>
+
+        <div class="btn btn-grey mb-3" v-if="activeBook === null" @click="openGlossary">
+          <i class="fa fa-arrow-left"></i>
+          <span>Глоссарий</span>
+        </div>
+        
         <div class="btn btn-grey mb-3" @click="showArchive = false" v-if="showArchive">
           <i class="fa fa-arrow-left"></i>
           <span>Выйти из архива</span>
@@ -96,9 +102,13 @@
                 </div>
             </div>
           </div>
-          <div><!----></div>
+          <div></div>
         </div>
-        <div class="content mt-3"></div>
+
+        <!-- content -->
+        <div class="content mt-3">
+            <glossary v-if="show_glossary" :mode="mode"></glossary>
+        </div>
       </div>
     </div>
 
@@ -244,9 +254,11 @@
 </template>
 
 <script>
+import Glossary from '../components/Glossary.vue'
 export default {
   name: "KBPage",
-  props: {
+  p
+    Glossaryrops: {
     auth_user_id: {
       type:Number
     },
@@ -265,6 +277,7 @@ export default {
       section: 0,
       activeBook: null,
       showCreate: false,
+      show_glossary: false,
       send_notification_after_edit: false,
       show_page_from_kb_everyday: false,
       showBookSettings: false,
@@ -541,6 +554,10 @@ export default {
     startChangeOrder(event) {
         console.log(event)
     },
+
+    openGlossary() {
+      this.show_glossary = true;
+    }
     
   },
 };
