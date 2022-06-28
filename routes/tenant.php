@@ -40,7 +40,7 @@ use App\Http\Controllers\Video\VideoController;
 use App\Http\Controllers\Video\VideolearningController;
 
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\UploadController;
+use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CabinetController;
@@ -461,7 +461,8 @@ Route::middleware([
 
     // Controllers with one method
 
-    Route::post('/file/upload', [UploadController::class, 'resumableUpload']);
+    Route::post('/file/upload', [FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
+
     Route::get('/corp_book/{id}', [LinkController::class, 'opened_corp_book']);
     Route::any('/timetracking/analytics/funnels', [LeadController::class, 'funnel_segment']);
     Route::post('/timetracking/user-fine', [UserFineController::class, 'update']);
