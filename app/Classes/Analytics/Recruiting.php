@@ -543,13 +543,14 @@ public function planRequired($arr) {
       
         $required = 0;
         foreach($groupsForCount as $group){
+            $group_count = 0;
             $my_users =DB::table('users')
-                ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', json_decode($group->users))
-                ->where('ud.is_trainee', 0) 
+                ->whereNull('users.deleted_at')
+                ->where('ud.is_trainee', 0)
                 ->whereNull('ud.fire_date')
-                ->get(['users.id'])
+                ->get()
                 ->pluck('id')
                 ->toArray();
                 dump(count($my_users));
