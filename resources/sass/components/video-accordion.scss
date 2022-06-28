@@ -15,8 +15,11 @@
             background: #272c33;
             border-bottom: 1px solid #4e535b;
             align-items: center;
-
             justify-content: space-between;
+
+            &:hover{
+                background: #464c55;
+            }
 
             .group-input {
                 background: transparent;

@@ -29,9 +29,20 @@
     margin-bottom: 2px;
     align-items: center;
 
+    &:hover {
+        background: #f9f9f9;
+
+        .mover {
+            background: transparent;
+        }
+    }
+
+    
+    
     h4 {
         margin-bottom: 0;
-        font-size: 16px;
+        font-size: 12px;
+        word-break: break-word;
     }
 
     .img {
@@ -53,15 +64,18 @@
         align-items: center;
         justify-content: center;
         font-size: 14px;
-        background: #fff;
         position: relative;
         margin-left: auto;
         height: 100%;
-
+        
         i {
             cursor: pointer;
             display: block;
             position: relative;
+
+            &:hover {
+                background: #0d64b5;
+            }
         }
 
         .controls-menu {

@@ -2,7 +2,7 @@
 <div class="trainee_report">
                                     
     <div>
-        <div class="ramka mt-2" v-for="(g, rdate) in all_groups" v-if="g['quiz'][4]['avg'] > 0">
+        <div class="ramka mt-2" v-for="(g, rdate) in all_groups"  v-if="g['quiz'][4]['avg'] > 0">
             
             <p class="mt-2"><b>{{ g.group }}</b></p>
             <table class="table b-table table-striped table-bordered table-sm">
@@ -190,7 +190,7 @@ export default {
                 }else{
                     if(item['quiz'][4]['avg'] > 0){
                         helper[groups.indexOf(item.group)].repeated++;
-                        for(let i = 0; i < 4; i++){
+                        for(let i = 1; i < 4; i++){
                             for(let j = 0; j < 3; j++){
                                 items.filter(my_item => my_item.group == item.group)[0]['quiz'][i][j].count += item['quiz'][i][j].count;
                                 items.filter(my_item => my_item.group == item.group)[0]['quiz'][i][j].percent += item['quiz'][i][j].percent;
@@ -198,7 +198,6 @@ export default {
                         }
                         items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['avg'] += item['quiz'][4]['avg'];
                         items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['count'] += item['quiz'][4]['count'];
-
                         items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
 
                         for(let i = 1; i < 8; i++){
