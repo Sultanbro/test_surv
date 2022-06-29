@@ -268,8 +268,12 @@ class SalaryController extends Controller
         $data['salary_approved'] = 0;
         
         foreach ($groups as $key => $group) {
-     
-            if(auth()->user()->is_admin != 1 && !in_array(auth()->id(), json_decode($group->editors_id))) continue;
+
+            $editors_id = json_decode($group->editors_id);
+            if ($group->editors_id != null) $editors_id = [];
+
+            if(auth()->user()->is_admin != 1 && !in_array(auth()->id(), $editors_id)) continue;
+            
             $approval = SalaryApproval::where('group_id', $group->id)->where('date', $sdate)->first();
 
             if($approval) {

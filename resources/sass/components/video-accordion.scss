@@ -51,12 +51,16 @@
         }
 
         &.opened {
-            .g-title ,
-            .child-group .g-title {
+            .g-title  {
                 background: #274166;
             }
+
+            
         }
-        
+
+        .child-group.opened .g-title {
+            background: #4c18d5;
+        }
        
         &.opened {
             height: auto;

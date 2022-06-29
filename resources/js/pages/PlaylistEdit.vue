@@ -92,7 +92,7 @@
             <i class="fa fa-edit mr-2"></i>
             Редактировать группы  
           </button>
-          <button class="btn btn-primary" v-else  @click="group_edit = false">
+          <button class="btn btn-primary" v-else  @click="saveGroups()">
             <i class="fa fa-save mr-2"></i>
             Сохранить группы  
           </button>
@@ -579,9 +579,26 @@ export default {
         id: 0,
         title: 'Тестовая группа',
         videos:[],
-        groups: []
+        children: []
       });
     },
+
+
+    saveGroups() {
+      this.group_edit = false
+
+      axios
+        .post("/playlists/save", {
+          playlist: this.playlist,
+        })
+        .then((response) => {
+          this.$message.success('Сохранено');
+        })
+        .catch((error) => {
+          alert(error);
+        });
+      
+    }
  
   },
 };

@@ -485,7 +485,7 @@ class TimetrackingController extends Controller
             'title' => '',
             'description' => ''
         ];
-        
+         
         $has_corp_book = false;
      
          if(!$user->readCorpBook()) {

@@ -10,7 +10,7 @@
                     <i class="fa fa-upload" @click.stop="$emit('uploadVideo', g_index)" title="Загрузить видео"  v-if="!group_edit"></i>
                     <i class="fa fa-trash"  @click.stop="deleteGroup(g_index)"  title="Удалить группу" v-if="group.title != 'Без группы' && group_edit"></i>
                 </div>
-            </div>
+            </div> 
 
             <template v-for="(child, c_index) in group.children">
                 <div class="child-group group" :class="{'opened': child.opened}">
@@ -63,6 +63,7 @@ export default {
     },
     methods: {
         toggleGroup(i) {
+            console.log('togglegroup ' + i)
             let status = this.groups[i].opened;
             this.groups.forEach(el => {
                 el.opened = false;
@@ -71,6 +72,10 @@ export default {
         }, 
 
         toggleChild(i, g) {
+
+            console.log('togglegroup ' + i + ' ' + g)
+
+
             let status = this.groups[g].children[i].opened;
             this.groups[g].children.forEach(el => {
                 el.opened = false;
