@@ -1012,6 +1012,7 @@
                                             @endif
 
                                             <div class="cards">
+
                                                 @if(isset($user))
                                                     @foreach($user->cards as $card)
                                                         <div class="d-flex form-group m0 card-row">

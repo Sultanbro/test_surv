@@ -5,13 +5,24 @@
 
     <div class="settingCabinet">
       <ul class="p-0">
-        <li>
-          <a style="color: black" v-if="user.is_admin === 1"  @click="userRoles = true , userProfile = false ">Административные настройки</a>
+        <li><a style="color: black" v-if="user.is_admin === 1"  @click="userRoles = true , userProfile = false "  v-bind:class="{ active: userRoles }" >Административные настройки</a></li>
+        <li class="position-relative">
+          <a style="color: black"  @click="userProfile = true , userRoles = false"  v-bind:class="{ active: userProfile }" >Настройка собственного профиля</a>
 
-          <a style="color: black"  @click="userProfile = true , userRoles = false">Настройка собственного профиля</a>
+          <ul v-if="userProfile" class="position-absolute " style="right: 0px;top: 20px">
+
+            <li >
+              <a @click="payment_data = false , basic_data = true"   v-bind:class="{ active: basic_data }"  >Основные данные</a>
+            </li>
+            <li>
+              <a @click="payment_data = true , basic_data = false"   v-bind:class="{ active: payment_data }" >Платежные данные</a>
+            </li>
 
 
+          </ul>
         </li>
+
+
       </ul>
     </div>
 
@@ -79,42 +90,28 @@
 
       <div class="d-flex jsutify-content-between hat-top">
         <div class="bc">
-          <a href="#">Настройка профиля</a>
+          <a v-if="basic_data" href="#">Настройка профиля</a>
+          <a v-else href="#">Настройка платежные данный</a>
         </div>
         <div class="control-btns"></div>
       </div>
 
 
 
-    <div class="content mt-3 py-3">
-
-
+    <div class="content mt-3 py-3" v-if="basic_data">
 
       <div class="contacts-info col-md-6 none-block mt-10" id="profile_d" >
-
         <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
-
-         <div style="border: 2px solid #ced4da;padding: 5px">
-
-           <img style="width: 200px;height: 200px"
-                class="image-card__image"
-                :src="img" :alt="img">
-
-           <form @submit="formSubmit" enctype="multipart/form-data">
-             <input id="upload_image" hidden type="file" class="form-control" v-on:change="onChange">
-             <button class="btn btn-primary btn-block">Сохранить</button>
-           </form>
-
-         </div>
-
-
-
-
+          <div style="border: 2px solid #ced4da;padding: 5px">
+            <img style="width: 200px;height: 200px"
+                 class="image-card__image"
+                 :src="img" :alt="img">
+            <form @submit="formSubmit" enctype="multipart/form-data">
+              <input id="upload_image" hidden type="file" class="form-control" v-on:change="onChange">
+              <button class="btn btn-primary btn-block">Сохранить</button>
+            </form>
+          </div>
         </label>
-
-
-
-
         <div class="form-group row">
           <label for="firstName"
                  class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
@@ -141,7 +138,6 @@
                    >
           </div>
         </div>
-
         <div class="form-group row">
           <label for="lastName"
                  class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
@@ -149,17 +145,76 @@
             <input class="form-control" type="date" name="birthday" id="birthday" required>
           </div>
         </div>
-
-
         <div class="col-4 p-0">
           <div class="form-group row">
             <button style="color: white" @click.prevent="userSaveData()" class="btn btn-success ml-3 btn-block" type="button">Сохранить</button>
           </div>
         </div>
+      </div>
+
+    </div>
 
 
+    <div class="content mt-3 py-3" v-if="payment_data">
+
+
+
+      <div class="col-12 row payment-profile" v-for="(payment,index) in payments">
+
+        <div class="col-2">
+          <input v-model="payment.bank" class="form-control" placeholder="Банк">
+        </div>
+
+        <div class="col-2">
+          <input v-model="payment.country" class="form-control" placeholder="Страна">
+        </div>
+
+        <div class="col-2">
+          <input v-model="payment.name_cart" class="form-control" placeholder="Имя на карте">
+        </div>
+
+        <div class="col-2">
+          <input v-model="payment.phone" class="form-control" placeholder="Телефон">
+        </div>
+
+        <div class="col-2">
+          <input v-model="payment.number_cart" class="form-control" placeholder="Номер карты">
+        </div>
+
+
+        <div class="col-2">
+          <button v-if="payment.delete" class="btn btn-danger btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index)">
+            <span class="fa fa-trash"></span>
+          </button>
+
+
+          <button v-else class="btn btn-primary btn-sm card-delete rounded ml-5 mt-1" >
+            <span class="fa fa-trash"></span>
+          </button>
+
+        </div>
 
       </div>
+
+
+      <div class="col-8 row mt-5">
+
+
+        <div class="col-3">
+            <button   @click="addPayment(index)" style="color: white" class="btn btn-phone btn-primary  btn-block">
+              Добавить карту
+            </button>
+        </div>
+
+        <div class="col-3">
+            <button style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
+        </div>
+
+      </div>
+
+
+
+
 
     </div>
   </div>
@@ -189,10 +244,26 @@ export default {
       admins: [],
       activeCourse: null,
       userRoles:false,
-      userProfile:true,
+      userProfile:false,
       img:'',
       success: '',
-      password:''
+      password:'',
+
+      basic_data:true,
+      payment_data:false,
+      payments:[
+        {
+        bank: '',
+        country: '',
+        name_cart: '',
+        phone: '',
+        number_cart: '',
+        delete:false,
+        },
+
+
+      ]
+
     };
   },
   mounted() {
@@ -202,16 +273,11 @@ export default {
     this.fetchData();
     this.user = JSON.parse(this.auth_role)
 
+    console.log(this.payments,'09999')
   },
   methods: {
     onChange(e) {
       this.file = e.target.files[0];
-
-
-      // console.log(this.file)
-      // console.log(this.img,'img')
-
-
     },
     formSubmit(e) {
 
@@ -256,6 +322,31 @@ export default {
       console.log(coordinates, canvas);
     },
 
+    addPayment(){
+
+      this.payments.push({
+        bank:'',
+        country:'',
+        name_cart:'',
+        phone:'',
+        number_cart:'',
+        delete:true,
+      });
+
+
+    },
+
+    removePaymentCart(index){
+
+      // console.log(this.valueGroups ,'07777')
+
+      if (index != 0){
+        this.payments.splice(index, 1)
+      }else {
+        alert('К сожалению последний позиция не удаляется');
+      }
+
+    },
 
     addTag(newTag) {
       const tag = {
@@ -335,6 +426,20 @@ export default {
 
 <style>
 .contacts-info{
-  margin-top: 100px;
+  margin-top:30px;
+}
+.active{
+  color: blue;
+  font-weight: bold;
+}
+
+.payment-profile{
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.addPayment{
+  padding: 15px;
+  margin-top:-15px;
 }
 </style>

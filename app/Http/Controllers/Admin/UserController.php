@@ -1143,6 +1143,7 @@ class UserController extends Controller
             return redirect('/');
         }
 
+
         return view('admin.users.create',
             $this->preparePersonInputs($request->id)
 
@@ -1644,6 +1645,7 @@ class UserController extends Controller
 
 
 
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1729,6 +1731,7 @@ class UserController extends Controller
         $user->working_country = $request['selectedCityInput'];
         $user->working_city = $request['working_city'];
         
+
         if($request->new_pwd != '') {
             $user->password = \Hash::make($request->new_pwd);
         } 
