@@ -134,7 +134,12 @@
                 <td v-if="item.editable && editable" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
                     <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" class="form-control cell-input"></div>
                 </td>
-                <td v-else @click="editMode(item)" :class="[item[day] > 0 ? 'px-0 day-minute text-center Fri table-' + item._cellVariants[day] : 'px-0 day-minute text-center Fri table-text-center']">
+                <td v-else-if="holidays.includes(day)" @click="editMode(item)" :class="'px-0 day-minute text-center Fri mywarning'">
+
+                    <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
+                </td>
+                <td v-else @click="editMode(item)" :class="[item[day] > 0 || holidays.includes(day) ? 'px-0 day-minute text-center Fri table-' + item._cellVariants[day] : 'px-0 day-minute text-center Fri table-text-center']">
+
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                 </td>
             </template>
@@ -231,6 +236,7 @@ export default {
     },
     data() {
         return {
+            holidays: [],
             items: [],
             sorts: {},
             filtered: [],
@@ -276,11 +282,41 @@ export default {
         },
     },
     created() {
+        this.getWeekends();
         this.fetchData();
         this.local_activity = this.activity
     },
     methods: {
-        
+            getWeekends(){
+            /*
+            var d = new Date();
+            var getTot = daysInMonth(d.getMonth(),d.getFullYear()); //Get total days in a month
+            var sat = new Array();   //Declaring array for inserting Saturdays
+            var sun = new Array();   //Declaring array for inserting Sundays
+
+            for(var i=1;i<=getTot;i++){    //looping through days in month
+                var newDate = new Date(d.getFullYear(),d.getMonth(),i)
+                if(newDate.getDay()==0){   //if Sunday
+                    sun.push(i);
+                }
+                if(newDate.getDay()==6){   //if Saturday
+                    sat.push(i);
+                }
+
+            }
+            console.log(sat);*/
+            var d = new Date(this.month.currentYear +'-'+ this.month.month +'-01');
+            
+            for(var i = 1;i <= this.month.daysInMonth; i++){
+                var newDate = new Date(d.getFullYear(),d.getMonth(),i)
+                if(newDate.getDay()==0){   //if Sunday
+                    this.holidays.push(i);
+                }
+                if(newDate.getDay()==6){   //if Saturday
+                    this.holidays.push(i);
+                }
+            }
+        },
         setFirstRowAsTotals() {
 
             this.totalRowName = 'Итого'
@@ -292,6 +328,7 @@ export default {
         },
         addCellVariantsArrayToRecords(){
             this.itemsArray.forEach((element, key) => {
+
                 this.itemsArray[key]["_cellVariants"] = [];
             });
         },
@@ -340,10 +377,11 @@ export default {
             if(!this.show_headers) this.setLeaders();
             this.items = this.itemsArray;
             this.filtered = this.itemsArray;
-
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
             loader.hide();    
+
+
         },
 
        
@@ -477,7 +515,6 @@ export default {
                                         }
                                     }
                                 }
-                                
                             }
                         }
                     });
@@ -498,7 +535,7 @@ export default {
         updateSettings(e, data, index, key) {
            
             data.editable = false
-            
+            console.log(key);
             var clearedValue = e.target.value.replace(",", ".");
             var value = null;
             if(this.activity.plan_unit == 'minutes') value = parseFloat(clearedValue);
@@ -523,6 +560,8 @@ export default {
 
             this.updateTable(filtered); 
             
+
+
             axios 
                 .post("/timetracking/analytics/update-stat", {
                     month: this.month.month,
@@ -531,7 +570,7 @@ export default {
                     employee_id: employee_id,
                     id: this.activity.id,
                     day: key,
-                    value: value,
+                    value: value
                 })
                 .then((response) => {
                     loader.hide();
@@ -877,5 +916,8 @@ export default {
 }
 .table-primary, .table-primary>td, .table-primary>th {
     background-color: #dddfe5;
+}
+.mywarning{
+    background-color: #f7f2a6;
 }
 </style>
