@@ -118,7 +118,7 @@
                                         <img style="width: 200px;height: 200px" id="{{$user->img_url}}"
                                             src="/users_img/{{$user->img_url}}"  >
                                         @else
-                                        <img style="width: 200px;height: 200px" src="https://cp.callibro.org/files/img/8.png" alt="img">
+                                        <img style="width: 200px;height: 200px" src="/users_img/noavatar.png" alt="img">
                                         @endif
 
                                     </label>
@@ -447,7 +447,7 @@
                                             </div>
 
                                         </div>
-                                        <div class="col-md-6 mt-5">
+                                        <div class="col-md-6  add_info">
                                             @if(isset($user))
 
                                                 <div id="add_info" class="none-block" >
@@ -2090,6 +2090,11 @@ function selectedCountry() {
 input[type="checkbox"],
 input[type="radio"] {
     width: auto !important;
+}
+
+.add_info{
+
+    margin-top: 100px;
 }
 </style>
 @endsection

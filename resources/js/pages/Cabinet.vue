@@ -124,7 +124,6 @@
             >
           </div>
         </div>
-
         <div class="form-group row">
           <label for="lastName"
                  class="col-sm-4 col-form-label font-weight-bold">Фамилия <span class="red">*</span></label>
@@ -134,7 +133,6 @@
             >
           </div>
         </div>
-
         <div v-if="user.is_admin === 1" class="form-group row">
           <label for="email" class="col-sm-4 col-form-label font-weight-bold">Новый пароль </label>
           <div class="col-sm-8">
@@ -144,7 +142,6 @@
           </div>
         </div>
 
-
         <div class="form-group row">
           <label for="lastName"
                  class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
@@ -153,9 +150,11 @@
           </div>
         </div>
 
-        <div class="form-group row">
 
-          <button @click.prevent="userSaveData()" class="btn btn-success ml-3" type="button">Сохранить</button>
+        <div class="col-4 p-0">
+          <div class="form-group row">
+            <button style="color: white" @click.prevent="userSaveData()" class="btn btn-success ml-3 btn-block" type="button">Сохранить</button>
+          </div>
         </div>
 
 
@@ -208,6 +207,7 @@ export default {
     onChange(e) {
       this.file = e.target.files[0];
 
+
       // console.log(this.file)
       // console.log(this.img,'img')
 
@@ -234,7 +234,7 @@ export default {
 
           .then(function (res) {
 
-
+            console.log(res,'0777')
 
             // existingObj.success = res.data.success;
             existingObj.img = 'public/users_img/'+res.data.file_name;
@@ -275,11 +275,12 @@ export default {
           this.users = response.data.users;
           this.user = response.data.user;
 
+          console.log(this.user,'user_cabinet')
 
           if (this.user.img_url != null){
-            this.img = 'public/users_img/'+response.data.user.img_url;
+            this.img = '/users_img/'+response.data.user.img_url;
           }else{
-            this.img = '/public/users_img/noavatar.png';
+            this.img = '/users_img/noavatar.png';
           }
 
 
@@ -332,3 +333,8 @@ export default {
 
 </script>
 
+<style>
+.contacts-info{
+  margin-top: 100px;
+}
+</style>
