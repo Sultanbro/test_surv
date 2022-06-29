@@ -20,7 +20,7 @@ import Multiselect from 'vue-multiselect'
 import Vue from 'vue'
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
-
+import VueCircle from 'vue2-circle-progress'
 
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
@@ -76,6 +76,7 @@ Vue.component('timetracking', require('./components/timetracking.vue').default);
 Vue.component('draggable', draggable); // драг
 Vue.component('multiselect', Multiselect); // select c множественным выбором
 Vue.component('v-select', vSelect) // select с поиском
+Vue.component('vue-circle', VueCircle) // circle indicator
 Vue.component('editor', require('@tinymce/tinymce-vue').default); // booklist
 Vue.component('pagination', require('laravel-vue-pagination').default); // только в ОКК
 Vue.component('u-modal', require('./components/ui/UModal.vue').default); // модалка НАДО УБРАТЬ

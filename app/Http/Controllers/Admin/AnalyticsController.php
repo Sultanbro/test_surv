@@ -94,7 +94,8 @@ class AnalyticsController extends Controller
         //if(auth()->id() == 18) dd($groups);
         if(auth()->user()->is_admin != 1) {
             foreach ($groups as $key => $group) {
-                if(!in_array(auth()->id(), json_decode($group->editors_id)))  continue;
+                $editors_id = $group->editors_id == null ? [] : json_decode($group->editors_id);
+                if(!in_array(auth()->id(), $editors_id))  continue;
                 $_groups[] = $group;
             }
             $groups = $_groups;

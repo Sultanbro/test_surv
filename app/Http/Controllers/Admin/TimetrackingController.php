@@ -399,6 +399,8 @@ class TimetrackingController extends Controller
 
             $has_corp_book = true;
             $page =  \App\KnowBase::getRandomPage();
+            if($page == null) $has_corp_book = false;
+
         } else {
             $page = [
                 'title' => '',
@@ -489,6 +491,7 @@ class TimetrackingController extends Controller
          if(!$user->readCorpBook()) {
             $has_corp_book = true;
             $page = \App\KnowBase::getRandomPage();
+            if($page == null) $has_corp_book = false;
         }
 
      
@@ -881,6 +884,8 @@ class TimetrackingController extends Controller
 
         $year = $request['year'];
 
+        $users_ids = [];
+        $head_ids = [];
         if ($request['group_id']) {
             $group = ProfileGroup::find($request['group_id']);
             if (!empty($group) && $group->users != null) {
@@ -1463,11 +1468,12 @@ class TimetrackingController extends Controller
         }
         
         $currentUser = User::bitrixUser();
-
+        
         if ($request->isMethod('post')) {
             $group = ProfileGroup::find($request->group_id);
             $user_ids = json_decode($group->users);
-        
+            if($group->users == null) $user_ids = [];
+            
             $user_ids = array_unique($user_ids);
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];

@@ -34,7 +34,8 @@ class CheckReports extends Model
 
         if ($request->individual_type == 2 || $request->individual_type == null){
             $group = ProfileGroup::find($request->group_id);
-            foreach (json_decode($group->users) as $keys => $check_user){
+            $user_ids = $group->users == null ? [] : json_decode($group->users);
+            foreach ($user_ids as $keys => $check_user){
 
 
                 $getUset = User::find($check_user);

@@ -561,9 +561,11 @@ class QualityController extends Controller
 
         foreach($groups as $group) {
             $gr = $group->groupUsers();
-
-            foreach($gr as $g) {
-                array_push($users, $g->id); 
+            
+            if($gr != null ) {
+                foreach($gr as $g) {
+                    array_push($users, $g->id); 
+                }
             }
         }
         
