@@ -1337,10 +1337,4 @@ export default {
 </script>
 
 <style>
-.inner-div{
-    z-index: 0 !important;
-}
-.in-cell{
-    z-index: 0 !important;
-}
 </style> 
