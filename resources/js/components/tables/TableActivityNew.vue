@@ -134,7 +134,7 @@
                 <td v-if="item.editable && editable" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
                     <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" class="form-control cell-input"></div>
                 </td>
-                <td v-else @click="editMode(item)" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
+                <td v-else @click="editMode(item)" :class="[item[day] > 0 ? 'px-0 day-minute text-center Fri table-' + item._cellVariants[day] : 'px-0 day-minute text-center Fri table-text-center']">
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                 </td>
             </template>
