@@ -180,7 +180,7 @@
                                                 <span id="check-5"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
                                             </li>
                                             <li class="bg-this" id="bg-this-6" onclick="showBlock('6',this)">
-                                                <a href="#" >Проче данные</a>
+                                                <a href="#" >Прочие данные</a>
                                                 <span id="check-6"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
                                             </li>
                                             @if(isset($user))

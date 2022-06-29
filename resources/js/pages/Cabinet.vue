@@ -208,7 +208,7 @@ export default {
 
     this.user = JSON.parse(this.auth_role)
   //
-  //   console.log(this.user);
+    console.log(this.user);
 
 
 
