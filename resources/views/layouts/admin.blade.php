@@ -81,6 +81,7 @@ $(document).ready(function(){
 
 <!-- <script src="/js/manifest.js"></script>
 <script src="/js/vendor.js"></script>  -->
+<script src="https://unpkg.com/vue-upload-multiple-image@1.1.6/dist/vue-upload-multiple-image.js"></script>
 <script src="{{ url('/js/app.js') }}"></script>
 <script src="{{ url('/js/croppie.js') }}"></script>
 <script src="{{ url('/js/croppie.min.js') }}"></script>
