@@ -32,7 +32,6 @@ use App\Models\Bitrix\Lead;
 use App\AnalyticsSettingsIndividually;
 use App\Downloads;
 use App\Http\Controllers\IntellectController as IC;
-use App\BookCategory;
 use App\Classes\Helpers\Phone;
 use App\Models\Admin\Bonus;
 use App\Classes\Helpers\Currency;
@@ -45,7 +44,6 @@ use App\Models\Admin\EditedKpi;
 use App\Timeboard\UserPresence;
 use App\PositionDescription;
 use App\ProfileGroupUser as PGU;
-use App\Book;
 
 class TimetrackingController extends Controller
 {
@@ -58,20 +56,10 @@ class TimetrackingController extends Controller
 
     public function settings()
     {
-      
-
-
         View::share('title', 'Настройки');
-
-
-
         View::share('menu', 'timetrackingsetting');
 
         $groups = ProfileGroup::where('active', 1)->get(['id', 'name'])->pluck('name','id');
-
-
-
-//        dd($groups);
 
 
         $archived_groups = ProfileGroup::where('active', 0)->get(['id', 'name']);
@@ -138,15 +126,6 @@ class TimetrackingController extends Controller
         
         if($active_tab == 5 || $active_tab == 1) {
 
-            // if(!auth()->user()->is_admin) {
-            //     return redirect('/');
-            // }
-
-            // if(auth()->id() == 9974) {
-            //     dd(auth()->user()->can('settings_view'));
-            // }
-    
-
             $users = User::withTrashed()->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
             $tab5['users'] = array_values($users);
 
@@ -154,19 +133,7 @@ class TimetrackingController extends Controller
 
             $tab5['positions'] = array_values($positions);
 
-
-
         }
-
-        /// временно
-        //$getUsers = User::on()->select('id','name','last_name')->get()->toArray();
-//        $getUsers = User::where(function($query) {
-//            $query->whereNotNull('name')
-//                ->orWhere('name', '!=', '')
-//                ->orWhere('last_name', '!=', '')
-//                ->orWhereNotNull('last_name');
-//        })->select('id','name','last_name')->get();
-
 
         $groupsWithId = ProfileGroup::select('name','id')->get();
         return view(
@@ -552,6 +519,8 @@ class TimetrackingController extends Controller
         } else {
             $added = ProfileGroup::create([
                 'name' => $request->group,
+                'editors_id' => '[]',
+                'users' => '[]',
             ]);
             return response()->json([
                 'status' => 1,

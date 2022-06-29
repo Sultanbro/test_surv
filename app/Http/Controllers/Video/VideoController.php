@@ -15,7 +15,6 @@ use App\Models\Videos\VideoComment as Comment;
 use App\Models\Videos\VideoPlaylist as Playlist;
 use App\Models\Videos\VideoGroup as Group;
 use Illuminate\Support\Facades\View;
-use App\BpartnersBooksPass;
 use Session;
 
 // $x, $y => побочные переменные в роуте указаны как admin.{domain}.{tld}

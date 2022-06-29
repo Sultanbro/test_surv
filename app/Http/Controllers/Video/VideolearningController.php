@@ -14,7 +14,6 @@ use App\Models\Videos\VideoComment as Comment;
 use App\Models\Videos\VideoPlaylist as Playlist;
 use App\Models\Videos\VideoGroup as Group;
 use Illuminate\Support\Facades\View;
-use App\BpartnersBooksPass;
 
 // $x, $y => побочные переменные в роуте указаны как admin.{domain}.{tld}
 class VideolearningController extends Controller {
@@ -26,54 +25,6 @@ class VideolearningController extends Controller {
        // $this->middleware('auth');
     }
 
-
-	public function list(Request $request, $id = 0) {
-		
-		if(is_null(Auth::user())) {
-
-			if(request()->isMethod('post')) {
-
-				$access = BpartnersBooksPass::all();
-				$access = $access[0];
-				
-				if($request->login != $access->login) {
-					session(['key' => 'getoutahere']);
-				} elseif($request->password != $access->password) {
-					session(['key' => 'getoutahere']);
-				} else {
-					session(['key' => 'cooper']);
-				}
-				
-			}
-
-			if(session('key') != 'cooper') return view('videolearning.login');
-		}
-
-		/////////////////////////
-		if($id != 0) {
-			$playlists = Playlist::where('category_id', $id)->paginate(10);	
-		} else {
-			$playlists = Playlist::paginate(10);	
-		}
-		
-		////////////
-		$cats = Category::all();
-
-		foreach($cats as $cat) {
-			if($cat->id == $id) {
-				$cat->active = 'active';
-			} else {
-				$cat->active = '';
-			}
-		}
-		///////////////
-
-		$category = Category::find($id);
-
-		$cat = $category ? $category->title : 'Все категории';
-		return view('videolearning.list', compact('playlists', 'cats', 'cat'));
-	}
- 
 	public function playlist($id) {
 
 		if(is_null(Auth::user()) && session('key') != 'cooper') return view('videolearning.login');
