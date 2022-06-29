@@ -6,10 +6,11 @@
     <div class="settingCabinet">
       <ul class="p-0">
         <li>
-<!--          v-if="auth_role == '1'"-->
-          <a style="color: black" v-if="userArray.is_admin === 1"  @click="userRoles = true , userProfile = false ">Административные настройки</a>
+          <a style="color: black"   @click="userRoles = true , userProfile = false ">Административные настройки</a>
 
           <a style="color: black"  @click="userProfile = true , userRoles = false">Настройка собственного профиля</a>
+
+
         </li>
       </ul>
     </div>
@@ -17,7 +18,7 @@
 
 
   </div>
-  <div class="rp" style="flex: 1 1 0%;" v-if="userRoles">
+  <div  v-if="userRoles" class="rp" style="flex: 1 1 0%;"   >
     <div class="hat">
       <div class="d-flex jsutify-content-between hat-top">
         <div class="bc">
@@ -83,45 +84,35 @@
         <div class="control-btns"></div>
       </div>
 
+      <div class="col-5" style="max-height: 200px">
+        <cropper
+            class="cropper"
+            :src="img"
+            :stencil-props="{
+      aspectRatio: 10/12
+      }"
+            @change="change"
+        ></cropper>
+
+
+      </div>
+
+    <div class="col-5">
+
+
+    </div>
+
+    <div class="col-12 w-25">
+
+      <div ref="dropzone" class="p-5 bg-dark">
+          Upload
+      </div>
+
+    </div>
+
     <div class="content mt-3 py-3">
 
 
-
-      <div class="">
-
-
-        <div class="form-group row">
-          <div class="col-sm-4">
-
-            <input hidden type="file" name="image" id="upload_image" accept="image/*" />
-            <input hidden type="file" name="photo" id="photo" >
-
-            <input id="user_id_img" value="1" hidden>
-            <input name="file_name_img" value="empty" id="file_name_img" hidden>
-
-            <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;" >
-              <img src="https://cp.callibro.org/files/img/8.png" alt="img">
-
-
-              <div class="mt-2 font-weight-bold font-sm text-center " style="width:100%">
-                {{userArray.name}}
-              </div>
-
-              <div class="mt-0 mb-3 font-sm text-center " style="width:100%">
-                {{userArray.email}}
-              </div>
-            </label>
-
-
-
-
-          </div>
-
-
-
-        </div>
-
-      </div>
 
       <div class="contacts-info col-md-6 none-block mt-10" id="profile_d" >
 
@@ -130,7 +121,7 @@
                  class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
           <div class="col-sm-8">
             <input class="form-control" type="text" name="name" id="firstName" required
-                   placeholder="Имя сотрудника" v-model="userArray.name"
+                   placeholder="Имя сотрудника"
             >
           </div>
         </div>
@@ -140,7 +131,7 @@
                  class="col-sm-4 col-form-label font-weight-bold">Фамилия <span class="red">*</span></label>
           <div class="col-sm-8">
             <input class="form-control" type="text" name="last_name" id="lastName" required
-                   placeholder="Фамилия сотрудника" v-model="userArray.last_name"
+                   placeholder="Фамилия сотрудника"
             >
           </div>
         </div>
@@ -163,6 +154,11 @@
           </div>
         </div>
 
+        <div class="form-group row">
+
+          <button class="btn btn-primary ml-3" type="button">Сохранить</button>
+        </div>
+
 
 
       </div>
@@ -177,6 +173,9 @@
 
 </template>
 <script>
+// import { Cropper } from 'vue-advanced-cropper'
+// import 'vue-advanced-cropper/dist/style.css';
+import Dropzone from 'dropzone'
 
 export default {
   name: "Cabinet",
@@ -189,40 +188,41 @@ export default {
       test: 'dsa',
       items: [],
       users: [],
+      user:[],
       admins: [],
       activeCourse: null,
       userRoles:false,
       userProfile:false,
-      userArray:[]
+      img: '',
+      image:'',
+      dropzone:null
     };
+  },
+  mounted() {
+    this.dropzone = new Dropzone(this.refs.dropzone,{
+      url:'get'
+    })
   },
   created() {
     this.fetchData();
-    this.authRole();
 
-this.userProfile = true
-
-
-
+    this.user = JSON.parse(this.auth_role)
+  //
+    console.log(this.user);
 
 
-  },
-  mounted() {
 
-    // this.userRoles = this.authRole;
-    // this.userRoles = JSON.parse(this.authRole);
-
-    // console.log(this.userRoles,'mounted')
-    // console.log(this.authRole,'mounted')
   },
   methods: {
 
-    authRole(){
-      this.userArray = JSON.parse(this.auth_role)
+    change({ coordinates, canvas }) {
 
-      console.log(this.userArray,'0999');
+      this.canvas = canvas,
 
+      console.log(coordinates, canvas);
     },
+
+
     addTag(newTag) {
       const tag = {
         email: newTag,
@@ -234,9 +234,6 @@ this.userProfile = true
     fetchData() {
 
 
-
-
-
       axios
         .get("/cabinet/get")
         .then((response) => {
@@ -246,6 +243,7 @@ this.userProfile = true
         .catch((error) => {
           alert(error);
         });
+
     },
 
 
@@ -263,101 +261,8 @@ this.userProfile = true
     },
 
   },
+
 };
 
 </script>
 
-
-<!--<script>-->
-
-<!--$(document).ready(function(){-->
-
-<!--  // $image_crop = $('#image_demo').croppie({-->
-<!--  //   enableExif: true,-->
-<!--  //   viewport: {-->
-<!--  //     width:200,-->
-<!--  //     height:200,-->
-<!--  //     type:'square' //circle-->
-<!--  //   },-->
-<!--  //   boundary:{-->
-<!--  //     width:300,-->
-<!--  //     height:300-->
-<!--  //   }-->
-<!--  // });-->
-
-
-<!--  $('#upload_image').on('change', function(){-->
-
-<!--    var reader = new FileReader();-->
-<!--    reader.onload = function (event) {-->
-<!--      $image_crop.croppie('bind', {-->
-<!--        url: event.target.result-->
-<!--      }).then(function(){-->
-
-
-<!--        console.log('jQuery bind complete');-->
-<!--      });-->
-<!--    }-->
-
-
-
-<!--    reader.readAsDataURL(this.files[0]);-->
-
-<!--    $('#uploadimageModal').modal('show');-->
-
-
-<!--  });-->
-
-
-<!--});-->
-
-<!--function crop_image(){-->
-<!--  $image_crop.croppie('result', {-->
-<!--    type: 'canvas',-->
-<!--    size: 'viewport'-->
-<!--  }).then(function(response){-->
-<!--    var user_id = $("#user_id_img").val();-->
-<!--    var file_name = $("#file_name_img").val();-->
-<!--    var origin_file = $("#upload_image").val();-->
-
-
-<!--    var k = getFileKis;-->
-
-<!--    //-->
-<!--    // console.log(k,'0789')-->
-<!--    //-->
-<!--    console.log(response,'789465312')-->
-
-<!--    $.ajax({-->
-<!--      type:'POST',-->
-<!--      url: "/profile/upload/edit/",-->
-<!--      data:{-->
-<!--        "image": response,-->
-<!--        'user_id':user_id,-->
-<!--        'file_name':file_name,-->
-<!--        // file:getFileKis-->
-<!--      },-->
-<!--      // cache: false,-->
-<!--      // contentType: 'json',-->
-<!--      // processData: false,-->
-<!--      success: (data) => {-->
-
-<!--        console.log(data,'imasheev kis')-->
-
-<!--        $('#uploadimageModal').modal('hide');-->
-
-<!--        $(".img_url_md").html(data['src'])-->
-
-<!--        $(".img_url_sm").html(data['src'])-->
-
-<!--        $("#file_name_img").attr('value',data['filename'])-->
-
-
-<!--      },-->
-<!--      error: function(data){-->
-<!--        console.log(data);-->
-<!--      }-->
-<!--    });-->
-<!--  })-->
-<!--}-->
-<!--</script>-->

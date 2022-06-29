@@ -28,14 +28,14 @@
             </div>
             <ul> 
        
-                @if(auth()->user()->is_admin)
+
                 <li>
                     <a href="/cabinet" class="link link-start">
                         <i class="fas fa-cogs"></i>
                         <span>Настройки</span> 
                     </a>
                 </li> 
-                @endif
+
                 <li>
                     <form action="/logout" method="POST">
                         <button class="link link-start">

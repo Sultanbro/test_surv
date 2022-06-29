@@ -1990,7 +1990,6 @@ class GroupAnalyticsController extends Controller
         $arr = [];
 
         $date = Carbon::parse($request->date);
-        $date = $date->addDay();
         $groups1 = ProfileGroup::whereIn('id', [42])->get();
         $groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get();
         $groups = $groups->merge($groups1);
