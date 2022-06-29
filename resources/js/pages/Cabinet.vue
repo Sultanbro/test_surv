@@ -170,7 +170,7 @@
         </div>
 
         <div class="col-2">
-          <input v-model="payment.name_cart" class="form-control" placeholder="Имя на карте">
+          <input v-model="payment.cardholder" class="form-control" placeholder="Имя на карте">
         </div>
 
         <div class="col-2">
@@ -178,15 +178,14 @@
         </div>
 
         <div class="col-2">
-          <input v-model="payment.number_cart" class="form-control" placeholder="Номер карты">
+          <input v-model="payment.number" class="form-control card-number" placeholder="Номер карты">
         </div>
 
 
         <div class="col-2">
-          <button v-if="payment.delete" class="btn btn-danger btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index)">
+          <button v-if="index !== 0"  class="btn btn-danger btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index)">
             <span class="fa fa-trash"></span>
           </button>
-
 
           <button v-else class="btn btn-primary btn-sm card-delete rounded ml-5 mt-1" >
             <span class="fa fa-trash"></span>
@@ -201,13 +200,13 @@
 
 
         <div class="col-3">
-            <button   @click="addPayment(index)" style="color: white" class="btn btn-phone btn-primary  btn-block">
+            <button   @click="addPayment()" style="color: white" class="btn btn-phone btn-primary  btn-block">
               Добавить карту
             </button>
         </div>
 
         <div class="col-3">
-            <button style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
+            <button @click="addPaymentCartSave()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
         </div>
 
       </div>
@@ -241,6 +240,7 @@ export default {
       items: [],
       users: [],
       user:[],
+      user_card:[],
       admins: [],
       activeCourse: null,
       userRoles:false,
@@ -253,12 +253,11 @@ export default {
       payment_data:false,
       payments:[
         {
-        bank: '',
-        country: '',
-        name_cart: '',
-        phone: '',
-        number_cart: '',
-        delete:false,
+          bank:'',
+          cardholder:'',
+          country:'',
+          number:'',
+          phone:'',
         },
 
 
@@ -326,11 +325,10 @@ export default {
 
       this.payments.push({
         bank:'',
+        cardholder:'',
         country:'',
-        name_cart:'',
+        number:'',
         phone:'',
-        number_cart:'',
-        delete:true,
       });
 
 
@@ -348,6 +346,27 @@ export default {
 
     },
 
+    addPaymentCartSave(){
+
+
+      console.log(this.payments,'07777')
+
+      axios.post('/profile/add/payment/cart/', {
+
+       cards:this.payments,
+
+      }).then(response => {
+
+        console.log(response,'imashev cards');
+
+
+        if (response.data.success){
+          this.$message.success('Успешно Сохранено')
+        }
+
+      })
+
+    },
     addTag(newTag) {
       const tag = {
         email: newTag,
@@ -366,7 +385,10 @@ export default {
           this.users = response.data.users;
           this.user = response.data.user;
 
-          console.log(this.user,'user_cabinet')
+          if (response.data.user_payment.length > 0){
+            this.payments = response.data.user_payment;
+          }
+
 
           if (this.user.img_url != null){
             this.img = '/users_img/'+response.data.user.img_url;
@@ -387,7 +409,7 @@ export default {
 
 
 
-      axios.post('/timetracking/update/save/', {
+      axios.post('/profile/update/save/', {
         query:this.user,
         password:this.password,
       }).then(response => {

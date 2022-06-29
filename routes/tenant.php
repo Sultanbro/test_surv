@@ -194,6 +194,12 @@ Route::middleware([
     Route::get('/cabinet/get', [CabinetController::class, 'get']);
     Route::post('/cabinet/save', [CabinetController::class, 'save']);
 
+    ///Настройка профайл
+    Route::any('/profile/upload/edit/profile', [UserController::class, 'uploadPhotoProfile'])->name('uploadPhotoProfile'); /// загрузка аватарки vue внутри profile
+    Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
+    Route::any('/profile/update/save/', [UserController::class, 'userUpdateSave']); ///profile save name,last_name,date
+    Route::any('/profile/add/payment/cart/', [UserController::class, 'addPaymentSave']); ///profile save name,last_name,date
+
     // Книги
     Route::get('/admin/upbooks', [UpbookController::class, 'index']);
     Route::get('/admin/upbooks/get', [UpbookController::class, 'admin_get']);
@@ -464,10 +470,8 @@ Route::middleware([
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
 
 
-    /////edit upload photo  profile
-    Route::any('/profile/upload/edit/profile', [UserController::class, 'uploadPhotoProfile'])->name('uploadPhotoProfile'); /// загрузка аватарки vue внутри profile
-    Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
-    Route::any('/timetracking/update/save/', [UserController::class, 'userUpdateSave']); ///profile save name,last_name,date
+
+
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
 
