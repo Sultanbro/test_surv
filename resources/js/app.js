@@ -69,6 +69,8 @@ Vue.use(Notifications)
 // Vue.use(VueCoreVideoPlayer)
 
  
+ 
+Vue.component('svod-table', require('./components/SvodTable.vue').default);//сводная таблица для аналитики
 
 Vue.component('timetracking', require('./components/timetracking.vue').default); // шапка начать день
 Vue.component('draggable', draggable); // драг
@@ -137,6 +139,8 @@ Vue.component('video-accordion', require('./components/VideoAccordion.vue').defa
 Vue.component('video-list', require('./components/VideoList.vue').default); //
 
 Vue.component('superselect', require('./components/SuperSelect.vue').default); // 
+
+Vue.component('glossary', require('./components/Glossary.vue').default); // 
 
 
 /**

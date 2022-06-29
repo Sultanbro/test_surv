@@ -40,7 +40,7 @@ use App\Http\Controllers\Video\VideoController;
 use App\Http\Controllers\Video\VideolearningController;
 
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\UploadController;
+use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CabinetController;
@@ -155,6 +155,8 @@ Route::middleware([
     Route::post('/course-results/get', [CourseResultController::class, 'get']);
     
     Route::get('/glossary/get', [GlossaryController::class, 'get']);
+    Route::post('/glossary/save', [GlossaryController::class, 'save']);
+    Route::post('/glossary/delete', [GlossaryController::class, 'delete']);
 
     // @TODO DELETE USELESS ROUTES AND CONTROLLERS
     Route::any('/videolearning/{id?}', [VideolearningController::class, 'list'])->name('videos.playlists');
@@ -423,6 +425,7 @@ Route::middleware([
     Route::post('/timetracking/analytics/restore_analytics', [AnalyticsController::class, 'restore_analytics']);
     Route::post('/timetracking/analytics/add-formula-1-31', [AnalyticsController::class, 'addFormula_1_31']);
     Route::post('/timetracking/analytics/add-remote-inhouse', [AnalyticsController::class, 'addRemoteInhouse']);
+    Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
 
     Route::get('/books/{id?}', [BpartnersController::class, 'books']);
@@ -458,7 +461,8 @@ Route::middleware([
 
     // Controllers with one method
 
-    Route::post('/file/upload', [UploadController::class, 'resumableUpload']);
+    Route::post('/file/upload', [FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
+
     Route::get('/corp_book/{id}', [LinkController::class, 'opened_corp_book']);
     Route::any('/timetracking/analytics/funnels', [LeadController::class, 'funnel_segment']);
     Route::post('/timetracking/user-fine', [UserFineController::class, 'update']);

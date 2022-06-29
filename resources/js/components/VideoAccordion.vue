@@ -25,8 +25,12 @@
                     <video-list 
                         :videos="child.videos"
                         :mode="mode"
+                        :g_index="g_index"
+                        :c_index="c_index"
                         :group_edit="group_edit"
-                        @showVideoSettings="showVideoSettings"
+                        @showVideo="showVideo"
+                        @deleteVideo="deleteVideo"
+                        
                     />
                 </div>
             </template>
@@ -34,8 +38,11 @@
             <video-list 
                 :videos="group.videos"
                 :mode="mode"
+                :g_index="g_index"
+                :c_index="-1"
                 :group_edit="group_edit"
-                @showVideoSettings="showVideoSettings"
+                @showVideo="showVideo"
+                @deleteVideo="deleteVideo"
             />
              
     </div>
@@ -71,8 +78,29 @@ export default {
             this.groups[g].children[i].opened = !status;
         },
 
-        showVideoSettings(video, v_index) {
-            this.$emit('showVideoSettings', video, v_index);
+        showVideo(video, v_index) {
+            this.$emit('showVideo', video, v_index);
+        },
+
+        deleteVideo(o) {
+
+            axios
+            .post("/playlists/delete-video", {
+                id: o.video.id,
+            })
+            .then((response) => {
+                this.$message.success("Файл удален");
+                
+                // remove video from group
+                if(o.c_index == -1) {
+                    this.groups[o.g_index].videos.splice(o.v_index, 1)
+                } else {
+                    this.groups[o.g_index].children[o.c_index].videos.splice(o.v_index, 1)
+                } 
+                
+            })
+            .catch(error => alert(error));
+           
         },
 
         addGroup(g) {
@@ -82,7 +110,7 @@ export default {
                 videos:[]
             }]);
         },
-
+        
         deleteGroup(g, c = -1) {
             if(c == -1) {
                 this.groups.splice(g, 1);

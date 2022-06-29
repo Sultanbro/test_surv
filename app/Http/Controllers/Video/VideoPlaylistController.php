@@ -124,12 +124,12 @@ class VideoPlaylistController extends Controller {
 
 	public function save_video(Request $request) {
 
-
 		$video = Video::find($request->video['id']);
 
 		if($video) {
 			$video->playlist_id = $request->id;
 			$video->title = $request['video']['title'];
+			$video->group_id = $request['group_id'];
 			$video->save();
 		}
 		
@@ -147,8 +147,13 @@ class VideoPlaylistController extends Controller {
 
 	public function delete_video(Request $request) {
 		$video = Video::find($request->id);
+		
 		if($video) {
+
+			$video->playlist_id = 0;
+
 			\Storage::delete('public/' . $video->links);
+
 			$video->delete();
 		}
 	}

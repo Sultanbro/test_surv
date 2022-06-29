@@ -2,7 +2,7 @@
 <div class="trainee_report">
                                     
     <div>
-        <div class="ramka mt-2" v-for="(g, rdate) in all_groups">
+        <div class="ramka mt-2" v-for="(g, rdate) in all_groups"  v-if="g['quiz'][4]['avg'] > 0">
             
             <p class="mt-2"><b>{{ g.group }}</b></p>
             <table class="table b-table table-striped table-bordered table-sm">
@@ -188,44 +188,24 @@ export default {
                     helper.push({group : item.group, repeated : 1});
                     items.push(structuredClone(item));
                 }else{
-                    helper[groups.indexOf(item.group)].repeated++;
+                    if(item['quiz'][4]['avg'] > 0){
+                        helper[groups.indexOf(item.group)].repeated++;
+                        for(let i = 1; i < 4; i++){
+                            for(let j = 0; j < 3; j++){
+                                items.filter(my_item => my_item.group == item.group)[0]['quiz'][i][j].count += item['quiz'][i][j].count;
+                                items.filter(my_item => my_item.group == item.group)[0]['quiz'][i][j].percent += item['quiz'][i][j].percent;
+                            }
+                        }
+                        items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['avg'] += item['quiz'][4]['avg'];
+                        items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['count'] += item['quiz'][4]['count'];
+                        items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
 
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][1][0].count += item['quiz'][1][0].count;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][1][1].count += item['quiz'][1][1].count;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][1][2].count += item['quiz'][1][2].count;
-
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][1][0].percent += item['quiz'][1][0].percent;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][1][1].percent += item['quiz'][1][1].percent;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][1][2].percent += item['quiz'][1][2].percent;
-
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][2][0].count += item['quiz'][2][0].count;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][2][1].count += item['quiz'][2][1].count;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][2][2].count += item['quiz'][2][2].count;
-
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][2][0].percent += item['quiz'][2][0].percent;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][2][1].percent += item['quiz'][2][1].percent;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][2][2].percent += item['quiz'][2][2].percent;
+                        for(let i = 1; i < 8; i++){
+                            items.filter(my_item => my_item.group == item.group)[0]['presence'][i] += item['presence'][i];
+                        }
+                    }
                     
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][3][0].count += item['quiz'][3][0].count;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][3][1].count += item['quiz'][3][1].count;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][3][2].count += item['quiz'][3][2].count;
 
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][3][0].percent += item['quiz'][3][0].percent;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][3][1].percent += item['quiz'][3][1].percent;
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][3][2].percent += item['quiz'][3][2].percent;
-
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['avg'] += item['quiz'][4]['avg'];
-                    items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['count'] += item['quiz'][4]['count'];
-
-                    items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
-
-                    items.filter(my_item => my_item.group == item.group)[0]['presence'][1] += item['presence'][1];
-                    items.filter(my_item => my_item.group == item.group)[0]['presence'][2] += item['presence'][2];
-                    items.filter(my_item => my_item.group == item.group)[0]['presence'][3] += item['presence'][3];
-                    items.filter(my_item => my_item.group == item.group)[0]['presence'][4] += item['presence'][4];
-                    items.filter(my_item => my_item.group == item.group)[0]['presence'][5] += item['presence'][5];
-                    items.filter(my_item => my_item.group == item.group)[0]['presence'][6] += item['presence'][6];
-                    items.filter(my_item => my_item.group == item.group)[0]['presence'][7] += item['presence'][7];
                     /*sorted_array.forEach(function(answer, index){
                         answer.percent += item['quiz'][1][index].percent;
                         answer.count += item['quiz'][1][index].count;
