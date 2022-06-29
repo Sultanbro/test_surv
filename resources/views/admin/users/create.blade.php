@@ -180,7 +180,7 @@
                                                 <span id="check-5"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
                                             </li>
                                             <li class="bg-this" id="bg-this-6" onclick="showBlock('6',this)">
-                                                <a href="#" >Проче данные</a>
+                                                <a href="#" >Прочие данные</a>
                                                 <span id="check-6"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
                                             </li>
                                             @if(isset($user))
@@ -937,7 +937,9 @@
 
                                             </div>
                                             @if(isset($user))
-                                            <div class="form-group row">
+
+                                             @if(isset($user->zarplata->kaspi_cardholder) && !empty($user->zarplata->kaspi_cardholder))
+                                                 <div class="form-group row">
                                                 <label for="kaspi" class="col-sm-3 col-form-label font-weight-bold">KASPI BANK</label>
                                                 <div class="col-sm-3">
                                                     <input class="form-control" type="text" name="kaspi_cardholder" id="kaspi_cardholder"
@@ -955,8 +957,10 @@
                                                         value="@if(isset($user->zarplata)){{$user->zarplata->card_kaspi}}@else{{old('card_kaspi')}}@endif">
                                                 </div>
                                             </div>
+                                             @endif
 
-                                            <div class="form-group row">
+                                            @if (isset($user->zarplata->jysan_cardholder) && !empty($user->zarplata->jysan_cardholder))
+                                                 <div class="form-group row">
                                                 <label for="jysan"
                                                     class="col-sm-3 col-form-label font-weight-bold">JYSAN BANK</label>
                                                 <div class="col-sm-3">
@@ -975,6 +979,7 @@
                                                         value="@if(isset($user->zarplata)){{$user->zarplata->card_jysan}}@else{{old('card_jysan')}}@endif">
                                                 </div>
                                             </div>
+                                            @endif
 
                                             @endif
 

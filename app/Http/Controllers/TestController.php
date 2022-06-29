@@ -23,27 +23,13 @@ use Spatie\Permission\Models\Permission;
 class TestController extends Controller { 
  
 	public function test() {
-		dd(env('APP_ENV'));
-		dd(\App\Components\TelegramBot::send('OOps oh'));
-		$mail = 'ruslan.tasshmetov@mail.ru';
+	
+		$disk = \Storage::disk('s3');
+		$url = $disk->temporaryUrl(
+			'videoplayback.mp4', now()->addMinutes(5)
+		);
 
-		$data = [
-            'user_name' => 'RUSLANISHE',
-            'name' => 'PROGRAMIISST',
-            'email' => $mail,
-            'password' => 'asdasdasd asdasdasdasd',
-            'subdomain' => tenant('id')
-        ];
-
-
-		\Mail::to($mail)->send(new \App\Mail\SendInvitation($data));
-		
-		dd('sent ' . $mail);
-
-
-		
-  
-
+		dd($url);
 	}  
 
 	public function hhRefresher() {

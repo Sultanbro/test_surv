@@ -17,16 +17,15 @@
       </div>
       <div class="d-flex align-items-start">
 
-         <button class="btn btn-sm  mr-3" @click="modals.upload.show = true" v-if="mode == 'edit'">
-              Загрузить видео
-            </button>
+        <button class="btn btn-sm mr-3"  v-if="mode == 'edit'">
+          Загрузить видео
+        </button>
 
-        <button class="btn btn-success mr-3" @click="savePlaylist">Сохранить</button>
+        <button class="btn btn-success mr-3" @click="savePlaylist">
+          <i class="fa fa-save"></i>
+        </button>
 
-        <div class="btn btn-grey" @click="$emit('back')">
-          <i class="fa fa-arrow-left"></i>
-          <span>Вернуться к разделам</span>
-        </div>
+  
       </div>
     </div>
 
@@ -116,21 +115,22 @@
         </div>  
 
         <div v-if="mode == 'edit'" class="mb-3">
-          <button class="btn btn-primary" @click="addGroup">
-            Добавить группу  
-          </button>
+          
           <button class="btn btn-primary" v-if="!group_edit" @click="group_edit = true">
             Редактировать группы  
           </button>
           <button class="btn btn-primary" v-else  @click="group_edit = false">
             Сохранить группы  
           </button>
+          <button class="btn btn-default" v-if="group_edit" @click="addGroup">
+            Добавить группу  
+          </button>
         </div>
         <video-accordion 
           :groups="playlist.groups"
           :mode="mode"
           :group_edit="group_edit"
-          @showVideoSettings="showVideoSettings"
+          @showVideo="showVideo"
           @uploadVideo="uploadVideo"
           
           />
@@ -281,6 +281,8 @@ export default {
             links: "",
             text: "",
           },
+          group_index: -1,
+          children_index: -1,
           file: null,
         },
       },
@@ -316,7 +318,7 @@ export default {
 
           this.activeVideo = this.playlist.videos[this.myvideo-1];
           this.sidebars.edit_video.show = true;
-
+          this.setActiveVideo();
         })
         .catch((error) => {
           alert(error);
@@ -385,20 +387,23 @@ export default {
       console.log("openControlsMenu");
       video.show_controls = true;
     },
+    
     saveVideo() {
       console.log("saveVideo");
-
+  
       axios
         .post("/playlists/save-video", {
           id: this.playlist.id,
           video: this.modals.upload.file.model,
-          //size: this.modals.upload.file.size,
+          group_id: this.selectedGroup().id
         })
         .then((response) => {
           this.modals.upload.step = 1;
           this.modals.upload.show = false;
 
-          this.playlist.videos.push(response.data.video);
+          this.addVideoToPlaylist(response.data.video)
+          
+
           this.$message.success("Добавлен");
           this.modals.upload.file = null;
         })
@@ -406,8 +411,24 @@ export default {
           alert(error);
         });
     },
+    
+    selectedGroup() {
+      return this.modals.upload.children_index == -1 
+        ? this.playlist.groups[this.modals.upload.group_index]
+        : this.playlist.groups[this.modals.upload.group_index].children[this.modals.upload.children_index] 
+    },
+
+    addVideoToPlaylist(video) {
+      this.playlist.videos.push(video);
+      this.selectedGroup().videos.push(video);
+    },
 
     uploadVideo(g, c = -1) {
+
+      this.modals.upload.show = true;
+      this.modals.upload.group_index = g;
+      this.modals.upload.children_index = c;
+
       if(c == -1) {
         console.log('selected group', this.playlist.groups[g]);
       } else {
@@ -505,7 +526,7 @@ export default {
       this.modals.upload.step = i;
     },
 
-    showVideoSettings(video, key) {
+    showVideo(video, key) {
       console.log(video)
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
@@ -541,14 +562,37 @@ export default {
           this.modals.addVideo.searchVideos = this.all_videos;
 
           this.playlist = response.data.playlist;
-
-          if(this.playlist.videos.length > 0) this.activeVideo = this.playlist.videos[0];
-
+          
+          this.setActiveVideo();
+          
           
         })
         .catch((error) => {
           alert(error);
         });
+    },  
+    
+    setActiveVideo() {
+
+      // check playlist has videos
+      if(this.playlist.videos.length > 0) {
+          // set active video
+          this.activeVideo = this.playlist.videos[0];
+          this.setActiveGroup();
+          
+      } 
+    },
+
+    setActiveGroup() {
+      // check playlist has videos in groups  
+      console.log('text')
+      console.log(this.playlist.groups.length)
+      console.log(this.playlist.groups[0].videos.length > 0)
+      console.log('end')
+      if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
+        // set group opened
+        this.playlist.groups[0].opened = true;
+      } 
     },
 
     savePlaylist() {

@@ -130,7 +130,7 @@ class UserController extends Controller
 
             file_put_contents("users_img/$imageName", $data);
 
-            $img = '<img src="'.asset('/users_img/').''.$imageName.'"  />';
+            $img = '<img src="'.url('/users_img/').''.$imageName.'"  />';
 
             return response(['src'=>$img,'filename'=>$imageName]);
 

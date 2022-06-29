@@ -55,12 +55,23 @@ return [
             'visibility' => 'public',
         ],
 
+        // 's3' => [
+        //     'driver' => 's3',
+        //     'key' => env('AWS_ACCESS_KEY_ID'),
+        //     'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        //     'region' => env('AWS_DEFAULT_REGION'),
+        //     'bucket' => env('AWS_BUCKET'),
+        // ],
+
         's3' => [
             'driver' => 's3',
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET'),
+			'key' => 'O4493_admin',
+			'secret' => 'nzxk4iNukQWx',
+			'region' => 'us-east-1',
+			'bucket' => 'video',
+			'endpoint' => 'https://storage.oblako.kz:443',
+			'use_path_style_endpoint' => true,
+			'throw' => false
         ],
 
         'ftp' => [

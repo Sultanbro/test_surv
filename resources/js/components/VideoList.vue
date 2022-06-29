@@ -10,7 +10,7 @@
     >
         <div class="video-block" v-for="(video, v_index) in videos"
                 :key="video.id"
-                @click.stop="$emit('showVideoSettings', video, v_index)">
+                @click="$emit('showVideo', video, v_index)">
             <div class="mover" v-if="mode == 'edit' && !group_edit">
                 <i class="fa fa-bars"></i> 
             </div>
@@ -21,8 +21,18 @@
                 <h4>{{ video.title }}</h4>
                 <div class="text" v-html="video.desc"></div>
             </div>
-            <div class="controls d-flex" v-if="mode == 'edit' && !group_edit">
-                <i class="fa far fa-trash mr-3" title="Убрать из плейлиста"></i>
+            <div class="controls d-flex" 
+                v-if="mode == 'edit' && !group_edit"
+            >
+                <i  class="fa far fa-trash mr-3" 
+                    title="Убрать из плейлиста" 
+                    @click.stop="$emit('deleteVideo', {
+                        video: video,
+                        v_index: v_index,
+                        g_index: g_index,
+                        c_index: c_index
+                    })"
+                ></i>
                 <i class="fa fa-arrow-alt-circle-right" title="Переместить из группы"></i>
             </div>
         </div>
@@ -33,7 +43,7 @@
 <script>
 export default {
     name: 'VideoList',
-    props: ['videos', 'mode','group_edit'],
+    props: ['videos', 'mode','group_edit', 'g_index', 'c_index'],
     data(){
         return {
           
