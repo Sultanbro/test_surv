@@ -17,14 +17,14 @@
           <template #head(avanses)="data">
 
               <i class="fa fa-info-circle"
-                 v-b-popover.hover.right.html="'Авансы'">
+                 v-b-popover.hover.right.html="'Авансы отмечены зеленым'">
               </i>
 
           </template>
           <template #head(fines)="data">
 
               <i class="fa fa-info-circle"
-                 v-b-popover.hover.right.html="'Депримирование'">
+                 v-b-popover.hover.right.html="'Депримирование отмечено красным'">
               </i>
 
           </template>
