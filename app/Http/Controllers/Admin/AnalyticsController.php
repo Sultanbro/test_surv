@@ -176,7 +176,6 @@ class AnalyticsController extends Controller
             $_groups = [];
             foreach ($groups as $key => $group) {
                 if(!in_array(auth()->id(), json_decode($group->editors_id)))  continue;
-                $_groups[] = $group ? $group : [];
                 $_groups[] = is_array($group) ? $group : [];
             }
             $groups = $_groups;
