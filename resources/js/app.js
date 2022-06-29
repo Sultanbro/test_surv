@@ -150,9 +150,8 @@ Vue.component('glossary', require('./components/Glossary.vue').default); //
 Vue.component('page-courses', require('./pages/Courses.vue').default); // курсы
 Vue.component('course', require('./pages/Course.vue').default); // курс
 
-Vue.component('page-upbooks', require('./pages/Upbooks.vue').default); // книги
 Vue.component('page-upbooks-read', require('./pages/UpbooksRead.vue').default); // книга чтение
-Vue.component('page-upbooks-edit', require('./pages/UpbooksEdit.vue').default); // книги редактирование
+Vue.component('page-upbooks', require('./pages/Upbooks.vue').default); // книги редактирование
 
 Vue.component('page-playlist-edit', require('./pages/PlaylistEdit.vue').default); // редактирование плейлиста
 Vue.component('page-playlist-read', require('./pages/PlaylistRead.vue').default); // чтение плейлиста

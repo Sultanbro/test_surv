@@ -179,7 +179,7 @@
 
                                         <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index" 
                                                 v-model="item[field.key].value" @change="change_stat(i_index, field.key)"/>
-                                            <input v-else type="text" class="in-cell" :value="item[field.key].show_value + (i_index == 2 && field.key == 'sum' ? '%' : '')" />
+                                            <input v-else type="text" class="in-cell" :value="item[field.key].show_value  ? item[field.key].show_value : '' + (i_index == 2 && field.key == 'sum' ? '%' : '')" />
                                             
                                     
                                 

@@ -80,8 +80,6 @@ class UserController extends Controller
     public function userUpdateSave(Request$request){
 
 
-
-
         $user = User::find(auth()->user()->getAuthIdentifier());
         $user['name'] = $request['query']['name'];
         if (!empty($request->password)){
@@ -92,7 +90,6 @@ class UserController extends Controller
         if ($user->save()){
             return response(['success'=>'1']);
         }
-
 
 
     }
@@ -1304,6 +1301,7 @@ class UserController extends Controller
     public function storePerson(Request $request) {
 
 
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1711,6 +1709,10 @@ class UserController extends Controller
         $user->name = $request['name'];
         $user->last_name = $request['last_name'];
         $user->phone = $request['phone'];
+        $user->phone_1 = $request['phone_1'] ?? null;
+        $user->phone_2 = $request['phone_2'] ?? null;
+        $user->phone_3 = $request['phone_3'] ?? null;
+        $user->phone_4 = $request['phone_4'] ?? null;
         $user->birthday = $request['birthday'];
         $user->full_time = $request['full_time'];
         $user->description = $request['description'];
