@@ -16,15 +16,24 @@ class Book extends Model
         'title',
         'group_id',
         'author',
+        'description',
         'link',
         'img',
     ];
 
+    /**
+     * @return 
+     */
     public function questions()
     {
         return $this->morphMany('App\Models\TestQuestion', 'testable');
     }
     
+    /**
+     * @param int $group_id
+     * 
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public static function withGroups(int $group_id = 0) {
         $books = Book::all();
  
@@ -63,6 +72,13 @@ class Book extends Model
         return $books;
     }
 
+    /**
+     * @param mixed $title
+     * @param mixed $author
+     * @param mixed $link
+     * 
+     * @return int
+     */
     public static function createBook($title, $author, $link)
     {
         $id = self::create([
@@ -73,6 +89,14 @@ class Book extends Model
         return $id;
     }
 
+    /**
+     * @param mixed $id
+     * @param mixed $title
+     * @param mixed $author
+     * @param mixed $link
+     * 
+     * @return array
+     */
     public static function editBook($id, $title, $author, $link)
     {   
         $status = [];
@@ -92,10 +116,11 @@ class Book extends Model
         return $status;
     }
 
-    public function getGroup() {
-        
-    }
-
+    /**
+     * @param mixed $book_id
+     * 
+     * @return String
+     */
     public static function getBookTitle($book_id) {
         $book = self::find($book_id);
         if($book) {
@@ -106,6 +131,11 @@ class Book extends Model
         return $title;
     }
 
+    /**
+     * @param mixed $book_id
+     * 
+     * @return String
+     */
     public static function getLink($book_id) {
         $book = self::find($book_id);
         if($book) {
