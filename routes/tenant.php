@@ -119,6 +119,9 @@ Route::middleware([
     Route::post('/timetracking/edit-person/book', [UserController::class, 'editPersonBook']); // Удалять добавлять корп книги пользователю
     Route::any('/timetracking/delete-person', [UserController::class, 'deleteUser'])->name('removeUser');
     Route::any('/timetracking/recover-person', [UserController::class, 'recoverUser'])->name('recoverUser');
+    Route::any('/timetracking/update/save/', [UserController::class, 'userUpdateSave'])->name('recoverUser'); ///profile save name,last_name,date
+
+
 
     /* Самостоятельная отметка стажеров */
     Route::get('/autocheck/{id}', [TraineeController::class, 'autocheck']); // cтраница со ссылками для отметки стажерами
@@ -486,6 +489,8 @@ Route::middleware([
 
     /////edit upload photo  profile
     Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки
+    Route::any('/profile/upload/edit/profile', [UserController::class, 'uploadPhotoProfile'])->name('uploadPhotoProfile'); /// загрузка аватарки
+    Route::post('/register', [UserController::class, 'process_signup'])->name('process_signup'); /// загрузка аватарки
 
 
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);
