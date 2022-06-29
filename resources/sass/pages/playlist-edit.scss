@@ -25,9 +25,10 @@
 .video-block {
     display: flex;
     border: 1px solid #efefef;
+    border-top: 0;
     padding: 0 0;
-    margin-bottom: 2px;
     align-items: center;
+    cursor: pointer;
 
     &:hover {
         background: #f9f9f9;
@@ -41,8 +42,11 @@
     
     h4 {
         margin-bottom: 0;
-        font-size: 12px;
+        font-size: 13px;
         word-break: break-word;
+        max-height: 3em;
+        line-height: 18px;
+        overflow: hidden;
     }
 
     .img {
@@ -55,11 +59,12 @@
     }
 
     .desc {
-        padding: 15px;
+        padding: 3px 8px;
+        overflow: hidden;
     }
 
     .controls {
-        padding: 10px 30px;
+        padding: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -74,7 +79,7 @@
             position: relative;
 
             &:hover {
-                background: #0d64b5;
+                color: #0d64b5;
             }
         }
 
@@ -83,7 +88,6 @@
         }
 
         &:hover {
-            background: #efefef;
 
             .controls-menu {
                 position: absolute;

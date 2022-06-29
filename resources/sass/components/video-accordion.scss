@@ -5,6 +5,7 @@
         overflow: hidden;
         transition: 1s ease all;
 
+        
         .g-title {
             height: 40px;
             width: 100%;
@@ -43,8 +44,20 @@
         .child-group .g-title {
             padding: 5px 10px 5px 30px;
             background: #444d59;
+
+            &:hover{
+                background: #464c55;
+            }
         }
 
+        &.opened {
+            .g-title ,
+            .child-group .g-title {
+                background: #274166;
+            }
+        }
+        
+       
         &.opened {
             height: auto;
         }

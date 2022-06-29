@@ -1,40 +1,43 @@
 <template>
   <div class="video-playlist">
-    <div class="d-flex jcsb mb-4">
+    <div class="d-flex jcsb mb-3">
       <div class="s w-full">
         <div class="d-flex">
          <input
-              type="text"
-              class="form-control w-full p-title"
-              v-model="playlist.title"
-              name="title"
-              :disabled="mode == 'read'"
-            />
-            <i class="fa fa-eye ibtn btn"  @click="show_pl_fields = !show_pl_fields"></i>
-          </div>
-          
-          <p class="mr-2">Количество видео: {{ playlist.videos.length }}</p>
+            type="text"
+            class="form-control form-control-sm w-full p-itle mb-0 mr-2"
+            v-model="playlist.title"
+            name="title"
+            :disabled="mode == 'read'" />
+        </div>
+         
       </div>
+
       <div class="d-flex align-items-start">
-
-        <button class="btn btn-sm mr-3"  v-if="mode == 'edit'">
-          Загрузить видео
-        </button>
-
-        <button class="btn btn-success mr-3" @click="savePlaylist">
+        <button class="btn btn-success px-2" @click="savePlaylist">
           <i class="fa fa-save"></i>
         </button>
-
-  
       </div>
     </div>
 
    
-    <div class="row" >
+    <div class="row">
 
+      <div class="col-lg-12">
+        <div class="form-group">
+          <textarea
+            name="text"
+            class="form-control textarea"
+            required
+            title="Описание плейлиста"
+            placeholder="Описание плейлиста"
+            v-model="playlist.text"
+              :disabled="mode == 'read'"
+          ></textarea>
+        </div>
+      </div>  
        
-        <div class="col-lg-6">
-
+      <div class="col-lg-6">
         <div class="block  br" v-if="activeVideo != null">
             <v-player :src="activeVideo.links" :key="activeVideo.id" />
            
@@ -81,48 +84,20 @@
                     
             </div>
         </div>
-
       </div>
 
       <div class="col-lg-6">
-
-         <div class="xxxx" v-if="show_pl_fields">
-       
-          <div class="form-group">
-            <label for="playlist_id">Категория</label>
-            <select
-              name="category_id"
-              class="form-control"
-               :disabled="mode == 'read'"
-              v-model="playlist.category_id"
-            >
-              <option v-for="cat in categories" :value="cat.id" :key="cat.id">
-                {{ cat.title }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="text">Описание плейлиста</label>
-            <textarea
-              name="text"
-              class="form-control textarea"
-              required
-              v-model="playlist.text"
-               :disabled="mode == 'read'"
-            ></textarea>
-          </div>
-        </div>  
-
         <div v-if="mode == 'edit'" class="mb-3">
-          
           <button class="btn btn-primary" v-if="!group_edit" @click="group_edit = true">
+            <i class="fa fa-edit mr-2"></i>
             Редактировать группы  
           </button>
           <button class="btn btn-primary" v-else  @click="group_edit = false">
+            <i class="fa fa-save mr-2"></i>
             Сохранить группы  
           </button>
           <button class="btn btn-default" v-if="group_edit" @click="addGroup">
+            <i class="fa fa-plus mr-2"></i>
             Добавить группу  
           </button>
         </div>
@@ -132,16 +107,9 @@
           :group_edit="group_edit"
           @showVideo="showVideo"
           @uploadVideo="uploadVideo"
-          
           />
-
-       
       </div>
-  
     </div>
-
-
-
 
     <b-modal
       v-model="modals.addVideo.show"
@@ -251,14 +219,12 @@ export default {
     id: Number,
     auth_user_id: Number,
     myvideo: Number,
-    categories: Array,
     mode: String
   },
   data() {
     return {
       all_videos: [],
       activeVideo: null,
-      show_pl_fields: false,
       group_edit: false,
       playlist: {
         id: 1,
