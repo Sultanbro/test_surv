@@ -41,8 +41,12 @@ class CabinetController extends Controller
             ->where('is_admin', 1)
             ->get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
 
+        $user = User::find(auth()->user()->getAuthIdentifier());
+
+
         return [
             'users' => $users,
+            'user' => $user,
             'admins' => $admins
         ];
     }

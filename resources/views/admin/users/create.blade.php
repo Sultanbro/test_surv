@@ -115,10 +115,10 @@
                                     <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
                                         @if(isset($user) && !is_null($user->img_url))
 
-                                        <img id="{{$user->img_url}}"
+                                        <img style="width: 200px;height: 200px" id="{{$user->img_url}}"
                                             src="/users_img/{{$user->img_url}}"  >
                                         @else
-                                        <img src="https://cp.callibro.org/files/img/8.png" alt="img">
+                                        <img style="width: 200px;height: 200px" src="https://cp.callibro.org/files/img/8.png" alt="img">
                                         @endif
 
                                     </label>

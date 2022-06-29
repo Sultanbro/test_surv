@@ -6,7 +6,7 @@
     <div class="settingCabinet">
       <ul class="p-0">
         <li>
-          <a style="color: black"   @click="userRoles = true , userProfile = false ">Административные настройки</a>
+          <a style="color: black" v-if="user.is_admin === 1"  @click="userRoles = true , userProfile = false ">Административные настройки</a>
 
           <a style="color: black"  @click="userProfile = true , userRoles = false">Настройка собственного профиля</a>
 
@@ -84,31 +84,7 @@
         <div class="control-btns"></div>
       </div>
 
-      <div class="col-5" style="max-height: 200px">
-        <cropper
-            class="cropper"
-            :src="img"
-            :stencil-props="{
-      aspectRatio: 10/12
-      }"
-            @change="change"
-        ></cropper>
 
-
-      </div>
-
-    <div class="col-5">
-
-
-    </div>
-
-    <div class="col-12 w-25">
-
-      <div ref="dropzone" class="p-5 bg-dark">
-          Upload
-      </div>
-
-    </div>
 
     <div class="content mt-3 py-3">
 
@@ -116,12 +92,35 @@
 
       <div class="contacts-info col-md-6 none-block mt-10" id="profile_d" >
 
+        <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
+
+         <div style="border: 2px solid #ced4da;padding: 5px">
+
+           <img style="width: 200px;height: 200px"
+                class="image-card__image"
+                :src="img" :alt="img">
+
+           <form @submit="formSubmit" enctype="multipart/form-data">
+             <input id="upload_image" hidden type="file" class="form-control" v-on:change="onChange">
+             <button class="btn btn-primary btn-block">Сохранить</button>
+           </form>
+
+         </div>
+
+
+
+
+        </label>
+
+
+
+
         <div class="form-group row">
           <label for="firstName"
                  class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
           <div class="col-sm-8">
             <input class="form-control" type="text" name="name" id="firstName" required
-                   placeholder="Имя сотрудника"
+                   placeholder="Имя сотрудника" v-model="user.name"
             >
           </div>
         </div>
@@ -131,15 +130,15 @@
                  class="col-sm-4 col-form-label font-weight-bold">Фамилия <span class="red">*</span></label>
           <div class="col-sm-8">
             <input class="form-control" type="text" name="last_name" id="lastName" required
-                   placeholder="Фамилия сотрудника"
+                   placeholder="Фамилия сотрудника" v-model="user.last_name"
             >
           </div>
         </div>
 
-        <div class="form-group row">
+        <div v-if="user.is_admin === 1" class="form-group row">
           <label for="email" class="col-sm-4 col-form-label font-weight-bold">Новый пароль </label>
           <div class="col-sm-8">
-            <input class="form-control" type="text" name="new_pwd" id="new_pwd"
+            <input v-model="password" minlength="5" class="form-control" type="password" name="new_pwd" id="new_pwd"
                    placeholder="********"
                    >
           </div>
@@ -156,7 +155,7 @@
 
         <div class="form-group row">
 
-          <button class="btn btn-primary ml-3" type="button">Сохранить</button>
+          <button @click.prevent="userSaveData()" class="btn btn-success ml-3" type="button">Сохранить</button>
         </div>
 
 
@@ -175,13 +174,12 @@
 <script>
 // import { Cropper } from 'vue-advanced-cropper'
 // import 'vue-advanced-cropper/dist/style.css';
-import Dropzone from 'dropzone'
+
 
 export default {
   name: "Cabinet",
   props: {
     auth_role:{},
-
   },
   data() {
     return {
@@ -192,28 +190,64 @@ export default {
       admins: [],
       activeCourse: null,
       userRoles:false,
-      userProfile:false,
-      img: '',
-      image:'',
-      dropzone:null
+      userProfile:true,
+      img:'',
+      success: '',
+      password:''
     };
   },
   mounted() {
-    this.dropzone = new Dropzone(this.refs.dropzone,{
-      url:'get'
-    })
+
   },
   created() {
     this.fetchData();
-
     this.user = JSON.parse(this.auth_role)
-  //
-    console.log(this.user);
-
-
 
   },
   methods: {
+    onChange(e) {
+      this.file = e.target.files[0];
+
+      // console.log(this.file)
+      // console.log(this.img,'img')
+
+
+    },
+    formSubmit(e) {
+
+      e.preventDefault();
+      let existingObj = this;
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      }
+
+      //
+      //
+      // console.log(this.img,'999')
+      // this.img = null;
+      // console.log(this.img,'888')
+      let data = new FormData();
+      data.append('file', this.file);
+      axios.post('/profile/upload/edit/profile', data, config)
+
+          .then(function (res) {
+
+
+
+            // existingObj.success = res.data.success;
+            existingObj.img = 'public/users_img/'+res.data.file_name;
+            existingObj.$message.success('Успешно Удалено');
+
+          })
+          .catch(function (err) {
+            existingObj.output = err;
+          });
+
+
+
+    },
 
     change({ coordinates, canvas }) {
 
@@ -239,6 +273,17 @@ export default {
         .then((response) => {
           this.admins = response.data.admins;
           this.users = response.data.users;
+          this.user = response.data.user;
+
+
+          if (this.user.img_url != null){
+            this.img = 'public/users_img/'+response.data.user.img_url;
+          }else{
+            this.img = '/public/users_img/noavatar.png';
+          }
+
+
+
         })
         .catch((error) => {
           alert(error);
@@ -246,11 +291,30 @@ export default {
 
     },
 
+    userSaveData() {
 
-     save() {
+
+
+      axios.post('/timetracking/update/save/', {
+        query:this.user,
+        password:this.password,
+      }).then(response => {
+
+
+        if (response.data.success){
+
+          this.$message.success('Успешно Сохранено')
+        }
+
+      })
+
+    },
+
+
+    save() {
       axios
         .post("/cabinet/save", {
-          admins: this.admins
+          admins: this.admins,
         })
         .then((response) => {
           this.$message.success('Сохранено')
@@ -259,6 +323,8 @@ export default {
           alert(error);
         });
     },
+
+
 
   },
 

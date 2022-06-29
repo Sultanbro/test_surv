@@ -8,6 +8,7 @@
         <a href="/profile" class="img_url_sm" >
 
             @if(isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url))
+
                 <img id="{{ auth()->user()->img_url }}"
                      src="/users_img/{{auth()->user()->img_url}}" alt="avatar" >
             @else

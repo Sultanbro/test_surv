@@ -66,7 +66,8 @@ use App\Models\Analytics\IndividualKpi;
 use App\Models\Analytics\TraineeReport;
 use App\AdaptationTalk;
 use http\Env;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -76,36 +77,81 @@ class UserController extends Controller
     }
 
 
-    public function uploadPhoto(Request $request)
+
+    public function userUpdateSave(Request$request){
+
+
+
+
+        $user = User::find(auth()->user()->getAuthIdentifier());
+        $user['name'] = $request['query']['name'];
+        if (!empty($request->password)){
+            $user['password'] = Hash::make($request->password);
+        }
+        $user['last_name'] = $request['query']['last_name'];
+
+        if ($user->save()){
+            return response(['success'=>'1']);
+        }
+
+
+
+    }
+
+
+
+    public function uploadPhotoProfile(Request $request)
     {
 
+        $request->validate([
+            'file' => 'required|mimes:jpg,jpeg,png,csv,txt,xlx,xls,pdf'
+        ]);
 
-//        request()->validate([
-//            'file'  => 'required|mimes:doc,docx,pdf,txt|max:2048',
-//        ]);
-//
-//
-//        $fileName = time().'.'.$request->file->extension();
-//
-//        $request->file->move(public_path('file'), $fileName);
-//
-//        File::create(['name' => $fileName]);
-//
-//        return response()->json('File uploaded successfully');
-//
-//
-//        return $request;
+        $upload_path = public_path('users_img/');
+        $file_name = $request->file->getClientOriginalName();
+        $generated_new_name = time() . '.' . $request->file->getClientOriginalExtension();
+        $request->file->move($upload_path, $generated_new_name);
+
+        $insertUser = User::find(auth()->user()->getAuthIdentifier());
+        if (!empty($insertUser->img_url)){
+            $filename = "users_img/".$insertUser->img_url;
+            if (file_exists($filename)) {
+                unlink(public_path('users_img/'.$insertUser->img_url));
+            }
+            $insertUser['img_url'] = null;
+        }
+
+
+        $insertUser['img_url'] = $generated_new_name;
+        $insertUser->save();
 
 
 
-//        die();
+        return response()->json([
+             'success' => 'You have successfully uploaded "' . $file_name . '"',
+             'file_name'=>$generated_new_name,
+        ]);
+
+
+
+    }
+
+
+
+    public function uploadPhoto(Request $request)
+    {
 
 
         $data = $request["image"];
 
 
         $image_array_1 = explode(";", $data);
+
+
+
         $image_array_2 = explode(",", $image_array_1[1]);
+
+
         $data = base64_decode($image_array_2[1]);
 
         $imageName = time() . '.png';
