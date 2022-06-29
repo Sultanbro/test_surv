@@ -32,7 +32,6 @@ use App\Models\Bitrix\Lead;
 use App\AnalyticsSettingsIndividually;
 use App\Downloads;
 use App\Http\Controllers\IntellectController as IC;
-use App\BookCategory;
 use App\Classes\Helpers\Phone;
 use App\Models\Admin\Bonus;
 use App\Classes\Helpers\Currency;
@@ -45,7 +44,6 @@ use App\Models\Admin\EditedKpi;
 use App\Timeboard\UserPresence;
 use App\PositionDescription;
 use App\ProfileGroupUser as PGU;
-use App\Book;
 
 class TimetrackingController extends Controller
 {

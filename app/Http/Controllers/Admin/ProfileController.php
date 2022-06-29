@@ -27,7 +27,6 @@ use App\UserDescription;
 use App\UserDeletePlan;
 use App\UserContact;
 use App\Zarplata;
-use App\BookCategory;
 use App\TimetrackingHistory;
 use App\Photo;
 use App\Models\Admin\ObtainedBonus;

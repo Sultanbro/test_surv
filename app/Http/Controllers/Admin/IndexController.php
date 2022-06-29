@@ -23,8 +23,6 @@ use App\Statistic;
 use App\Contact;
 use App\Jobs\ProcessEmail;
 use App\GetResponceApi;
-use App\BookCategory;
-use App\BpartnersBooksPass;
 use Illuminate\Http\Request;
 use App\Mail as Mailable;
 use Illuminate\Support\Facades\Auth;
@@ -751,66 +749,6 @@ class IndexController extends Controller
         return redirect()->back();
     }
 
-    public function balanceUpdate(Request $request, $domain, $tld, $id)
-    {
-        View::share('title', 'Баланс пользователей');
-
-        $user = User::find($id);
-
-        if ($request->isMethod('post') && $request->balance > 0) {
-
-            Payment::add('umar', $user->id, 1, $request->balance, 'Новый платёж', '', '', 'Пополнение баланса менеджером');
-
-
-            $template = 'admin.balance_email';
-            $mmTo    = env( 'MEDIASEND_SUPPORT_email', 'u-support@u-marketing.org' );
-            $subject = 'Пополнение баланса админсистратором пользователю '.$user->email;
-            $data = [
-                'who' => Auth::user()->id.' '.Auth::user()->name.' '.Auth::user()->email,
-                'name' => $user->name,
-                'email' => $user->email,
-                'amount' => $request->balance,
-                'idUser' => $user->id
-            ];
-
-            Mail::to($mmTo)->send(new Mailable($template, $subject, $data));
-
-            // маркер в getrecpons об оплате админом и сумма баланса
-            GetResponceApi::ChangedFieldsVal(array(
-                'email' => $user->email,
-                'fields' => array(
-                    [
-                        "customFieldId" => 'enKb0', // admin_payament
-                        "value" => [
-                            "confirmed"
-                        ]
-                    ],
-                    [
-                        "customFieldId" => 'ep1mn', // total_balance
-                        "value" => [
-                            User::balanceByUser($user->id)
-                        ]
-                    ],
-                    [
-                        "customFieldId" => "eceib", // last_payment
-                        "value" => [
-                            $request->balance
-                        ]
-                    ]
-                )
-            ));
-
-            return redirect( '/balance/' );
-        }
-
-
-        $user = User::find($id);
-
-        return view('admin.balance_update')->with('user', $user);
-
-
-
-    }
 
     public function bonus(Request $request)
     {

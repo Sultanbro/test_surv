@@ -161,11 +161,6 @@ Route::middleware([
     Route::post('/glossary/save', [GlossaryController::class, 'save']);
     Route::post('/glossary/delete', [GlossaryController::class, 'delete']);
 
-    // @TODO DELETE USELESS ROUTES AND CONTROLLERS
-    Route::any('/videolearning/{id?}', [VideolearningController::class, 'list'])->name('videos.playlists');
-    Route::any('/videolearning/playlists/{id}', [VideolearningController::class, 'playlist'])->name('videos.playlist');
-    Route::post('/videos/views', [VideolearningController::class, 'views'])->name('videos.views');
-
     Route::post('/setting/reset', [SettingController::class, 'reset']);
 
     Route::get('/playlists/get', [VideoPlaylistController::class, 'get']);
@@ -432,26 +427,10 @@ Route::middleware([
 
 
     Route::get('/books/{id?}', [BpartnersController::class, 'books']);
-    Route::any('/books/create/', [BpartnersController::class, 'bookscreate']);
-    Route::any('/books/delete/', [BpartnersController::class, 'booksdelete']);
-    Route::any('/books/order/', [BpartnersController::class, 'orderbooks']);
-    Route::any('/books/rename/', [BpartnersController::class, 'renamebooks']);
-    Route::any('/books/move/', [BpartnersController::class, 'movebooks']);
-    Route::post('/books/get_book/', [BpartnersController::class, 'getBook']);
-    Route::get('/timetracking/books', [BpartnersController::class, 'redirectToBpartnersBooks']);
-    Route::get('/timetracking/kk', [BpartnersController::class, 'corp_book']);
-    Route::any('/timetrakicking/kk/ajax', [BpartnersController::class, 'corp_book_ajax']);
     Route::any('/pages/update/', [BpartnersController::class, 'pagesupdate']);
-    Route::any('/pages/create/', [BpartnersController::class, 'pagescreate']);
     Route::any('/pages/delete/', [BpartnersController::class, 'pagesdelete']);
-    Route::any('/pages/order/', [BpartnersController::class, 'orderpages']);
-    Route::any('/pages/search/', [BpartnersController::class, 'searchpages']);
-    Route::any('/pages/rename/', [BpartnersController::class, 'renamepages']);
-    Route::any('/page/copy/', [BpartnersController::class, 'copypages']);
-    Route::any('/page/move/', [BpartnersController::class, 'movepages']);
     Route::any('/upload/images/', [BpartnersController::class, 'uploadimages']);
     Route::any('/upload/audio/', [BpartnersController::class, 'uploadaudio']);
-    Route::any('/books/password/', [BpartnersController::class, 'password']);
 
 
     /* Intellect Recruiting */
