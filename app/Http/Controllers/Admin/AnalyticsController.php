@@ -179,7 +179,7 @@ class AnalyticsController extends Controller
                 $editors_id = json_decode($group->editors_id); 
                 if ($group->editors_id == null) $editors_id = [];
                 if(!in_array(auth()->id(), $editors_id))  continue;
-                $_groups[] = is_array($group) ? $group : [];
+                $_groups[] = $group;
             }
             $groups = $_groups;
         } 
