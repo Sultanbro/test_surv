@@ -195,8 +195,7 @@ Route::middleware([
     Route::post('/cabinet/save', [CabinetController::class, 'save']);
 
     // Книги
-    Route::get('/upbooks', [UpbookController::class, 'index']);
-    Route::get('/admin/upbooks', [UpbookController::class, 'edit']);
+    Route::get('/admin/upbooks', [UpbookController::class, 'index']);
     Route::get('/admin/upbooks/get', [UpbookController::class, 'admin_get']);
     Route::post('/admin/upbooks/category/create', [UpbookController::class, 'createCategory']);
     Route::post('/admin/upbooks/category/delete', [UpbookController::class, 'deleteCategory']);

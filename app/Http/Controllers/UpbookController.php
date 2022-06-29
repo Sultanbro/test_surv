@@ -15,18 +15,10 @@ class UpbookController extends Controller
 
     public function index(Request $request)
     {   
-        View::share('menu', 'learning');
+        View::share('menu', 'upbook');
         View::share('link', 'upbook');
 
         return view('upbooks');
-    }
-
-    public function edit(Request $request)
-    {   
-        View::share('menu', 'upbook_edit');
-        View::share('link', 'upbook');
-
-        return view('admin.upbooks-edit');
     }
 
     public function admin_get(Request $request)
@@ -92,6 +84,7 @@ class UpbookController extends Controller
         if($b) {
             $b->title = $request->book['title'];
             $b->author = $request->book['author'];
+            $b->description = $request->book['description'];
             $b->group_id = $request->book['group_id'];
             $b->save();
 
@@ -128,6 +121,7 @@ class UpbookController extends Controller
         if($b) {
             $b->title = $request->book['title'];
             $b->author = $request->book['author'];
+            $b->description = $request->book['description'];
             $b->group_id = $request->book['group_id'];
             $b->save();
 
