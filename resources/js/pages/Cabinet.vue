@@ -7,17 +7,17 @@
       <ul class="p-0">
 
 
-        <li><a  v-if="user.is_admin === 1" style="color: black" @click="userRoles = true , userProfile = false "  v-bind:class="{ active: userRoles }" >Административные настройки</a></li>
+        <li><a  v-if="user.is_admin === 1" style="color: black" @click="userRoles = true , userProfile = false "  v-bind:class="{ profile_active: userRoles }" >Административные настройки</a></li>
         <li class="position-relative">
-          <a style="color: black"  @click="userProfile = true , userRoles = false"  v-bind:class="{ active: userProfile }" >Настройка собственного профиля</a>
+          <a style="color: black"  @click="userProfile = true , userRoles = false"  v-bind:class="{ profile_active: userProfile }" >Настройка собственного профиля</a>
 
           <ul v-if="userProfile" class="position-absolute " style="right: 0px;top: 20px">
 
             <li >
-              <a @click="payment_data = false , basic_data = true"   v-bind:class="{ active: basic_data }"  >Основные данные</a>
+              <a @click="payment_data = false , basic_data = true"   v-bind:class="{ profile_active: basic_data }"  >Основные данные</a>
             </li>
             <li>
-              <a @click="payment_data = true , basic_data = false"   v-bind:class="{ active: payment_data }" >Платежные данные</a>
+              <a @click="payment_data = true , basic_data = false"   v-bind:class="{ profile_active: payment_data }" >Платежные данные</a>
             </li>
 
 
@@ -380,14 +380,14 @@ export default {
       });
 
 
+      console.log(this.payments,'0.99')
+
+
 
       if (this.cardValidatre.type){
-
-        alert('asd')
         axios.post('/profile/add/payment/cart/', {
           cards:this.payments,
         }).then(response => {
-          console.log(response,'imashev cards');
           this.$message.success('Успешно Сохранено')
         })
       }else{
@@ -414,10 +414,10 @@ export default {
           this.user = response.data.user;
 
 
-          console.log(response,'res')
-          console.log(this.admins,'admins')
-          console.log(this.users,'users')
-          console.log(this.user,'user')
+          // console.log(response,'res')
+          // console.log(this.admins,'admins')
+          // console.log(this.users,'users')
+          // console.log(this.user,'user')
 
           if (response.data.user_payment != null && response.data.user_payment != undefined){
               if (response.data.user_payment.length > 0){
@@ -425,6 +425,10 @@ export default {
               }
           }
 
+
+          console.log(response.data.user_payment,'response.data.user_payment')
+
+          console.log(this.payments,'imasheev')
 
           if (this.user.img_url != null && this.user.img_url != undefined){
             this.img = '/users_img/'+response.data.user.img_url;
@@ -463,7 +467,6 @@ export default {
 
     },
 
-
     save() {
       axios
         .post("/cabinet/save", {
@@ -489,8 +492,7 @@ export default {
 .contacts-info{
   margin-top:30px;
 }
-.active{
-  color: blue;
+.profile_active{
   font-weight: bold;
 }
 

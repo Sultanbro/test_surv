@@ -1924,7 +1924,6 @@ class UserController extends Controller
             $zarplata->save();
         } else {
 
-      
 
 
             $user->zarplata()->update([
@@ -2256,6 +2255,9 @@ class UserController extends Controller
 
     /////добавление карты через профиль
     public function addPaymentSave(Request $request){
+
+
+
 
         Card::where('user_id',auth()->user()->getAuthIdentifier())->delete();
 
