@@ -186,11 +186,12 @@
 
 
         <div class="col-2">
-          <button v-if="index !== 0"  class="btn btn-danger btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index)">
+
+          <button v-if="payment.id"  class="btn btn-danger btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index,payment.id)">
             <span class="fa fa-trash"></span>
           </button>
 
-          <button v-else class="btn btn-primary btn-sm card-delete rounded ml-5 mt-1" >
+          <button v-else class="btn btn-primary btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index,'dev')" >
             <span class="fa fa-trash"></span>
           </button>
 
@@ -212,7 +213,7 @@
             </button>
         </div>
 
-        <div class="col-3">
+        <div class="col-3" v-if="addCart" >
             <button @click.prevent="addPaymentCartSave()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
         </div>
 
@@ -270,7 +271,8 @@ export default {
           number:'',
           phone:'',
         },
-      ]
+      ],
+      addCart:true,
 
     };
   },
@@ -336,6 +338,8 @@ export default {
 
     addPayment(){
 
+      this.addCart = true,
+
       this.payments.push({
         bank:'',
         cardholder:'',
@@ -347,21 +351,34 @@ export default {
 
     },
 
-    removePaymentCart(index){
+    removePaymentCart(index,type_id){
 
-      // console.log(this.valueGroups ,'07777')
+      console.log(this.payments,'imasheev')
+
+      this.addCart = true
 
       let confirmDelte = confirm("Вы действительно хотите безвозвратно удалить ?");
-
       if (confirmDelte){
-        if (index != 0){
-          this.payments.splice(index, 1)
-        }else {
-          alert('К сожалению последний позиция не удаляется');
+
+        this.payments.splice(index, 1)
+        this.$message.success('Успешно Удалено')
+
+        if (type_id != 'dev'){
+          axios.post("/profile/remove/card/",{
+            card_id:type_id,
+          }).then((response) => {
+
+           }).catch((error) => {
+             alert(error);
+           });
+
+        }
+        if (this.payments != null){
+          if (this.payments.length === 0){
+            this.addCart = false
+          }
         }
       }
-
-
     },
 
     addPaymentCartSave(){
@@ -378,10 +395,6 @@ export default {
         }
 
       });
-
-
-      console.log(this.payments,'0.99')
-
 
 
       if (this.cardValidatre.type){
@@ -413,7 +426,6 @@ export default {
           this.users = response.data.users;
           this.user = response.data.user;
 
-
           // console.log(response,'res')
           // console.log(this.admins,'admins')
           // console.log(this.users,'users')
@@ -422,13 +434,13 @@ export default {
           if (response.data.user_payment != null && response.data.user_payment != undefined){
               if (response.data.user_payment.length > 0){
                 this.payments = response.data.user_payment;
+              }else{
+                this.payments = [],
+                this.addCart = false
               }
           }
 
 
-          console.log(response.data.user_payment,'response.data.user_payment')
-
-          console.log(this.payments,'imasheev')
 
           if (this.user.img_url != null && this.user.img_url != undefined){
             this.img = '/users_img/'+response.data.user.img_url;

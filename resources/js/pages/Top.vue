@@ -104,6 +104,12 @@
                      title="Опережение плана">
                   </i>
                 </template>
+                <template v-if="['%'].includes(field)">
+                  <i class="fa fa-info-circle"
+                     v-b-popover.hover.right.html="'( План * Кол-во календарных дней ) / (Итого * Кол-во отработанных дней) * 100'"
+                     title="Выполнение плана">
+                  </i>
+                </template>
                 {{ field }}  <i class="fa fa-plus-square" v-if="field == 'Группа'" @click="addRow()"></i>
               </th>
             </tr>

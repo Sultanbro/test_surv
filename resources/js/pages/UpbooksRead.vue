@@ -19,7 +19,7 @@
         />
       </div>
 
-      <div class="d-flex justify-content-center">
+      <div class="d-flex justify-content-center"> 
         <button class="btn rounded mr-2" @click="prevPage">
           <i class="fa fa-chevron-left"></i>
         </button>
@@ -36,9 +36,16 @@
           <i class="fa fa-bars"></i>
         </button> 
         <button class="btn rounded p-1" @click="zoomOut">
-          <i class="fa fa-search-minus"></i>
+          <i class="fa fa-search-minus"></i> 
         </button>
+      </div>  
+
+      <div class="chapters mt-3">
+        <div class="item" v-for="test in tests" :class="{'pass': test.pass}">
+          <p class="mb-0">Вопросы на странице: {{ test.page }}</p>
+        </div>
       </div>
+
 
       <div class="mt-3">
         <img :src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img" class="w-full" />
@@ -54,8 +61,8 @@
 
     <div
       class="pdf"
-       v-if="mode == 'edit' || (mode == 'read' && status == 'reading')"
       :class="{
+        'show': activeTest == null,
         w600: zoom == 600,
         w700: zoom == 700,
         w800: zoom == 800,
@@ -70,15 +77,6 @@
         full: zoom == 0,
       }"
     >
-      <!-- <pdf
-        :src="activeBook.link"
-        v-if="activeBook !== null"
-        class="plugin"
-        :page="page"
-        @keyup.right="keypress"
-        @link-clicked="linkClicked($event)"
-        @num-pages="pageCount = $event"
-      ></pdf> -->
 
       <vue-pdf-embed 
         v-if="activeBook !== null"
@@ -90,8 +88,16 @@
       />
     </div>
 
-    <div class="test" style="width:1000px;max-width: 100%;" v-if="status == 'testing'">
-      <questions :questions="questions" :id="0" type="book" mode="read" @continueRead="continueRead"/>
+    <div class="test" style="width:1000px;max-width: 100%;" v-if="activeTest !== null">
+      <questions
+        :questions="activeTest.questions"
+        :pass="activeTest.pass"
+        :id="0"
+        type="book"
+        :mode="mode" 
+        @continueRead="nextPage"
+        @passed="activeTest.pass = true"
+      />
     </div>
   </div>
 </template>
@@ -108,18 +114,29 @@ export default {
     return {
       page: 1,
       activeCategory: null,
+      activeTest: null,
       pageCount: 0,
       zoom: 800,
-      questions: [],
       isLoading:true,
       tests: [],
-      checkpoint: 1,
-      status: 'reading'
+      checkpoint: 1, // last page
+      pass: false // pass test
     };
   },
   created() {
-    if (this.mode == "read") {
+    
       this.checkpoint = this.pageCount
+      this.getTests()
+
+  },
+
+  mounted() {
+    document.addEventListener("keyup", this.keyup);
+  },
+
+  methods: {
+
+    getTests() {
       let loader = this.$loading.show();
 
       axios
@@ -128,30 +145,14 @@ export default {
         })
         .then((response) => {
           this.tests = response.data.tests;
-          this.getCheckpoint()
+
+
           loader.hide();
         })
         .catch((error) => {
           loader.hide();
           alert(error);
         });
-    }
-  },
-  mounted() {
-    document.addEventListener("keyup", this.keyup);
-  },
-  methods: {
-
-    continueRead() {
-      this.status = 'reading';
-      this.page++;
-    },
-
-    getCheckpoint() { // read
-      if(this.tests.length > 0) {
-        this.checkpoint = this.tests[0].page
-        this.questions = this.tests[0].questions
-      }
     },
 
     keyup(e) {
@@ -163,32 +164,77 @@ export default {
       }
     },
 
-    linkClicked(e) {
-      e.preventDefault();
+    setCurrentTest(action = 'nothing') {
+      
+
+      let last_test = this.activeTest;
+      // find current test
+      let i = this.tests.findIndex(el => el.page == this.page);
+
+      // already passed
+      if(i != -1) {
+        this.activeTest = this.tests[i]
+          
+        if(action == 'prev')  {
+
+          if(last_test) {
+            this.activeTest = null;
+          } else {
+
+            if(this.activeTest) {
+              return false;
+            } else {
+              return true;
+            }
+            
+          }
+          
+        }
+      } else {
+
+        // if(action == 'prev') {
+        //   let x = this.tests.findIndex(el => el.page == this.page - 1);
+        //   if(x != -1) {
+        //     return false;
+        //   }
+        // }
+        this.activeTest = null; 
+        return true;
+      }
+
+      if(action == 'next' && this.activeTest && this.activeTest.pass)return true;  
+
+      return false;
     },
 
     nextPage() {
       if (this.page == this.pageCount) return 0;
-      if(this.status == 'testing') {
+      console.log(this.page)
+      let move = this.setCurrentTest('next')
+
+      // prevent click 
+      if(this.activeTest && !this.activeTest.pass) {
+        this.$message.info('Ответьте на вопросы, чтобы пройти дальше');
         return;
       }
-      
-      if(this.checkpoint == this.page)  {
-        this.status = 'testing'; 
-      } else {
-        this.page++;
+
+      if(this.activeTest && this.activeTest.pass) {
+        this.activeTest = null;
       }
+      
+      // move to next page
+      if(move) this.page++;
       
     }, 
 
-    prevPage() {
+    prevPage() { 
       if (this.page == 1) return 0;
-      if(this.status == 'testing') {
-        return;
-      }
-      if(this.checkpoint == this.page)  {
-        this.status = 'testing'; 
-      } else {
+      console.log(this.page)
+      let move = this.setCurrentTest('prev')
+
+      
+      // move to prev page
+      if(move) {
         this.page--;
       }
     },
@@ -214,3 +260,12 @@ export default {
   },
 };
 </script>
+
+<style>
+.pdf {
+  display:none;
+}
+.pdf.show {
+  display:block;
+}
+</style>

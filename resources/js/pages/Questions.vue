@@ -109,7 +109,7 @@
         </button>
         <button
           class="btn btn-primary"
-          @click="continueRead"
+          @click="$emit('continueRead')"
           v-if="points != -1 && total == points && type == 'book'"
         >
           Читать дальше
@@ -135,7 +135,7 @@
 <script>
 export default {
   name: "Questions",
-  props: ["questions", "type", "id", "mode"],
+  props: ["questions", "type", "id", "mode", 'pass'],
   data() {
     return {
       can_save: true,
@@ -175,16 +175,17 @@ export default {
     this.prepareVariants();
     // this.mode = 'edit';
     if (this.mode == "read") {
+
       this.questions.forEach((q) => {
         q.editable = true;
         this.total += q.points;
-        if (q.type == 0) {
-          q.result = false;
-          q.variants.forEach((v) => {
-            v.checked = 0;
-          });
-        }
       });
+
+      if(this.pass) {
+        this.points = this.total;
+        this.page = this.page;
+      }
+      
     }
   },
   mounted() {},
@@ -198,11 +199,6 @@ export default {
           });
         }
       });
-    },
-
-    continueRead() {
-      //read
-      this.$emit('continueRead')
     },
 
     checkAnswers() {
@@ -237,7 +233,7 @@ export default {
         }
       });
 
-      if(this.points == this.totals) {
+      if(this.points == this.total) {
         this.$emit('passed');
       }
     },

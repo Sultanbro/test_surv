@@ -195,24 +195,6 @@ class SalaryController extends Controller
         $data['year'] = $request['year'];
     
 
-        // // FIRED USER TOTAL IN GROUP
-
-        // $x_users = User::withTrashed()
-        //     ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
-        //     ->get(['id','last_group']);
-
-        // $fired_users = [];
-        // foreach($x_users as $d_user) {
-        //     if($d_user->last_group) { 
-        //         $lg = json_decode($d_user->last_group);
-        //         if(in_array($request['group_id'], $lg)) {
-        //             array_push($fired_users, $d_user->id);
-        //         }
-        //     } 
-        // }
-
-
-
         // total on group
 
         $group = ProfileGroup::find($request->group_id);
@@ -223,8 +205,6 @@ class SalaryController extends Controller
             ->where('date', $sdate)
             ->where('type', 1)
             ->get()->sum('total');
-        
-       
         
         // group fired 
 
@@ -237,9 +217,6 @@ class SalaryController extends Controller
         $data['accruals'] = GroupSalary::getAccruals($sdate);
 
         if(Auth::user()->is_admin == 1) {
-            
-        
-
             $data['all_total'] = GroupSalary::where('date', $sdate)
                 ->where('type', 1)
                 ->whereNotIn('group_id', [34])
@@ -254,9 +231,7 @@ class SalaryController extends Controller
             $data['all_total_fired'] = 0;
         }
         
-
         //////
-
         $groups = ProfileGroup::where('active', 1)->get();
 
         $salary_approved = []; // костыль
@@ -270,7 +245,7 @@ class SalaryController extends Controller
         foreach ($groups as $key => $group) {
 
             $editors_id = json_decode($group->editors_id);
-            if ($group->editors_id != null) $editors_id = [];
+            if ($group->editors_id == null) $editors_id = [];
 
             if(auth()->user()->is_admin != 1 && !in_array(auth()->id(), $editors_id)) continue;
             
@@ -295,13 +270,9 @@ class SalaryController extends Controller
             $_groups[] = $group;
         }
 
-
         $data['groups'] = $_groups;
         $data['currentGroup'] = $currentGroup;
     
-
-        /////
-
         return $data;
     }
 

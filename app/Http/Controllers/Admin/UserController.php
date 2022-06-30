@@ -990,7 +990,6 @@ class UserController extends Controller
         
     }
 
-    
     public function createPerson()
     {   
         // $user = Auth::user();
@@ -1519,8 +1518,6 @@ class UserController extends Controller
     }
 
     public function updatePerson(Request $request) {
-
-
 
 
         if(!auth()->user()->can('users_view')) {
@@ -2277,6 +2274,7 @@ class UserController extends Controller
 
 
     }
+
     /////измение данный через профиль
     public function userUpdateSave(Request$request){
 
@@ -2294,6 +2292,7 @@ class UserController extends Controller
 
 
     }
+
     /////загрузка аватарки через профиль в компоненте ( vue.js )
     public function uploadPhotoProfile(Request $request)
     {
@@ -2330,6 +2329,7 @@ class UserController extends Controller
 
 
     }
+
     /////загрузка аватарки через настроки ( в шаблоне blade )
     public function uploadPhoto(Request $request)
     {
@@ -2404,4 +2404,11 @@ class UserController extends Controller
 
     }
 
+    ///Удаление карты через профиль индивидуально
+    public function removeCardProfile(Request$request){
+
+
+        Card::find($request['card_id'])->delete();
+
+    }
 }

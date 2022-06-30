@@ -127,6 +127,7 @@
         />
         <textarea 
           class="form-control mt-2 mb-2"
+          placeholder="Описание..."
           v-model="modals.upload_book.file.model.description"
         />
         <select
@@ -166,6 +167,7 @@
         
         <textarea 
           class="form-control mt-2 mb-2"
+          placeholder="Описание..."
           v-model="modals.edit_book.item.description"
         />
 
