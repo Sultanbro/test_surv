@@ -39,7 +39,7 @@ class ActivityController extends Controller
             $import = new UserStatsImport;
             Excel::import($import, $request->file('file'));
           
-            $headings = $import->headings; // first row
+            $headings = $import->headings[0]->toArray(); // first row
             $sheet = $import->data[0]; // first Sheet
 
             // missing fiels
@@ -48,12 +48,12 @@ class ActivityController extends Controller
                 $table_type = 'minutes'; // минуты
 
                 if(in_array('Менеджер', $headings)) $table_type = 'gatherings';   // сборы  
-                if(in_array('cреднее время разговора', $headings)) $table_type = 'avg_time';   // ср время разговора      
+                if(in_array('среднее время разговора', $headings)) $table_type = 'avg_time';   // ср время разговора      
               
-               
+           
                 
                 // date
-                $excel_date = count($sheet) > 0 ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($sheet[0]['ДАТА']) : Carbon::now();
+                $excel_date = count($sheet) > 0 && array_key_exists('ДАТА', $sheet[0]) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($sheet[0]['ДАТА']) : Carbon::now();
                 $date = $excel_date ? $excel_date->format('Y-m-d') : date('Y-m-d');
 
               
@@ -62,10 +62,12 @@ class ActivityController extends Controller
 
 
                 foreach($sheet as $row) {
+                    $item = [];
                     //me($row);
                     $item['group_id'] = $request->group_id;
                     $item['activity_id'] = $request->activity_id;
 
+                
                     if($group_id == 42) {
 
                        
@@ -88,9 +90,9 @@ class ActivityController extends Controller
                         
                         if($table_type == 'avg_time') { 
                             $item['name'] = $row['Менеджер'];
-                            $item['avg_time'] = Carbon::parse($row['среднее время разговора'])->format('i:s');
+                            $item['avg_time'] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['среднее время разговора'])->format('i:s');
                             $item['id'] = $item['name'] ? $this->getPossibleUser($gusers, $item['name']) : 0;
-                            if($row['menedzher'] == '') continue;
+                            if($row['Менеджер'] == '') continue;
                         }
                         
                         
