@@ -1897,19 +1897,8 @@ class UserController extends Controller
         /********** Редактирование зарплаты */
         /*==============================================================*/
 
-        if ($user->zarplata === null) {
-            $zarplata = new Zarplata();
-            $zarplata->user_id = $user->id;
-            $zarplata->zarplata = $request->zarplata == 0 ? 70000 : $request->zarplata;
-            $zarplata->kaspi = $request->kaspi;
-            $zarplata->jysan = $request->jysan;
-            $zarplata->card_kaspi = $request->card_kaspi;
-            $zarplata->kaspi_cardholder = $request->kaspi_cardholder;
-            $zarplata->card_jysan = $request->card_jysan;
-            $zarplata->jysan_cardholder = $request->jysan_cardholder;
-            $zarplata->card_number = intval(preg_replace('/\s+/', '', $request->card_number));
-            $zarplata->save();
-        } else {
+        ////приобрести наушники
+
             if ($request->zarplata == 0){
                 $cash = 70000;
             }else{
@@ -1919,6 +1908,23 @@ class UserController extends Controller
             if (isset($request['headphones_amount']) && $request['headphones_amount'] > 0){
                 $cash = $cash - $request['headphones_amount'];
             }
+        /////
+
+        if ($user->zarplata === null) {
+            $zarplata = new Zarplata();
+            $zarplata->user_id = $user->id;
+            $zarplata->zarplata = $cash;
+            $zarplata->kaspi = $request->kaspi;
+            $zarplata->jysan = $request->jysan;
+            $zarplata->card_kaspi = $request->card_kaspi;
+            $zarplata->kaspi_cardholder = $request->kaspi_cardholder;
+            $zarplata->card_jysan = $request->card_jysan;
+            $zarplata->jysan_cardholder = $request->jysan_cardholder;
+            $zarplata->card_number = intval(preg_replace('/\s+/', '', $request->card_number));
+            $zarplata->save();
+        } else {
+
+      
 
 
             $user->zarplata()->update([
