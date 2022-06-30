@@ -5,14 +5,14 @@
 
 
 
-        <a href="/profile" class="img_url_sm" >
+        <a href="/profile" class="img_url_sm">
 
             @if(isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url))
 
-                <img id="{{ auth()->user()->img_url }}"
+                <img id="img_url_sm"
                      src="/users_img/{{auth()->user()->img_url}}" alt="avatar" >
             @else
-                <img src="https://cp.callibro.org/files/img/8.png" alt="img">
+                <img id="img_url_sm" src="https://cp.callibro.org/files/img/8.png" alt="img">
             @endif
 
 

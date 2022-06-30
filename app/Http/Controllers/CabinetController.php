@@ -27,9 +27,9 @@ class CabinetController extends Controller
 
     public function get()
     {
-        if(!auth()->user()->is_admin) {
-            return redirect('/');
-        }
+//        if(!auth()->user()->is_admin) {
+//            return redirect('/');
+//        }
 
         $users = User::withTrashed()->get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
 

@@ -356,7 +356,7 @@
                                                     <div class="mb-3 xfade">
                                                         <div class="form-group row " id="selectedCityRU" >
                                                             <div class="col-sm-12">
-                                                                <input class="form-control" name="selectedCityInput" id="selectedCityInput"
+                                                                <input class="form-control" name="selectedCityInput" id="selectedCityInput" required
                                                                        @if(isset($user) && !empty($user->working_country))
                                                                            value="{{$user->working_country}}"
                                                                        @endif
@@ -1385,7 +1385,6 @@
 
 
 
-           console.log(response,'789465312')
 
             $.ajax({
                 type:'POST',
@@ -1597,7 +1596,8 @@ function submitx() {
         birthday = $('#birthday').val(),
         email = $('#email').val(),
         zarplata = $('#zarplata').val();
-        workingCity = $('#workingCity').val();
+        selectedCityInput = $('#selectedCityInput').val();
+
 
 
 
@@ -1609,6 +1609,11 @@ function submitx() {
 
     let profile_errors = 0;
 
+    if (selectedCityInput.length < 2) {
+        $('#beforeSubmit .texter').append('<div>Поиск: <b>Стран</b> <b>Город</b></div>');
+        counter++;
+        profile_errors++
+    }
 
 
 
@@ -1719,6 +1724,9 @@ function submit_trainee() {
         birthday = $('#birthday').val(),
         email = $('#email').val(),
         zarplata = $('#zarplata').val();
+        country = $("#selectedCityInput").val();
+
+
 
     $('#beforeSubmit .texter').html('');
 
@@ -1727,6 +1735,12 @@ function submit_trainee() {
 
 
     let profile_errors = 0;
+
+    if (country.length < 2) {
+        $('#beforeSubmit .texter').append('<div>Найти:<b>страну</b>  <b>Город</b> : </div>');
+        counter++;
+        profile_errors++
+    }
 
     if (name.length < 2) {
         $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');

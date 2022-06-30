@@ -5,7 +5,9 @@
 
     <div class="settingCabinet">
       <ul class="p-0">
-        <li><a style="color: black" v-if="user.is_admin === 1"  @click="userRoles = true , userProfile = false "  v-bind:class="{ active: userRoles }" >Административные настройки</a></li>
+
+
+        <li><a  v-if="user.is_admin === 1" style="color: black" @click="userRoles = true , userProfile = false "  v-bind:class="{ active: userRoles }" >Административные настройки</a></li>
         <li class="position-relative">
           <a style="color: black"  @click="userProfile = true , userRoles = false"  v-bind:class="{ active: userProfile }" >Настройка собственного профиля</a>
 
@@ -106,9 +108,8 @@
             <img style="width: 200px;height: 200px"
                  class="image-card__image"
                  :src="img" :alt="img">
-            <form @submit="formSubmit" enctype="multipart/form-data">
-              <input id="upload_image" hidden type="file" class="form-control" v-on:change="onChange">
-              <button class="btn btn-primary btn-block">Сохранить</button>
+            <form enctype="multipart/form-data">
+              <input id="upload_image" hidden type="file" class="form-control" v-on:change.prevent="onChange">
             </form>
           </div>
         </label>
@@ -130,7 +131,8 @@
             >
           </div>
         </div>
-        <div v-if="user.is_admin === 1" class="form-group row">
+
+        <div  v-if="user.is_admin === 1" class="form-group row">
           <label for="email" class="col-sm-4 col-form-label font-weight-bold">Новый пароль </label>
           <div class="col-sm-8">
             <input v-model="password" minlength="5" class="form-control" type="password" name="new_pwd" id="new_pwd"
@@ -138,6 +140,7 @@
                    >
           </div>
         </div>
+
         <div class="form-group row">
           <label for="lastName"
                  class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
@@ -278,15 +281,16 @@ export default {
     this.fetchData();
     this.user = JSON.parse(this.auth_role)
 
-    console.log(this.payments,'09999')
   },
   methods: {
     onChange(e) {
       this.file = e.target.files[0];
-    },
-    formSubmit(e) {
 
-      e.preventDefault();
+      this.formSubmit()
+    },
+    formSubmit() {
+
+      // e.preventDefault();
       let existingObj = this;
       const config = {
         headers: {
@@ -305,11 +309,14 @@ export default {
 
           .then(function (res) {
 
-            console.log(res,'0777')
+
 
             // existingObj.success = res.data.success;
-            existingObj.img = 'public/users_img/'+res.data.file_name;
+            existingObj.img = '/users_img/'+res.data.file_name;
             existingObj.$message.success('Успешно Удалено');
+
+
+            $("#img_url_sm").attr('src',existingObj.img)
 
           })
           .catch(function (err) {
@@ -401,16 +408,25 @@ export default {
       axios
         .get("/cabinet/get")
         .then((response) => {
+
           this.admins = response.data.admins;
           this.users = response.data.users;
           this.user = response.data.user;
 
-          if (response.data.user_payment.length > 0){
-            this.payments = response.data.user_payment;
+
+          console.log(response,'res')
+          console.log(this.admins,'admins')
+          console.log(this.users,'users')
+          console.log(this.user,'user')
+
+          if (response.data.user_payment != null && response.data.user_payment != undefined){
+              if (response.data.user_payment.length > 0){
+                this.payments = response.data.user_payment;
+              }
           }
 
 
-          if (this.user.img_url != null){
+          if (this.user.img_url != null && this.user.img_url != undefined){
             this.img = '/users_img/'+response.data.user.img_url;
           }else{
             this.img = '/users_img/noavatar.png';
@@ -420,7 +436,10 @@ export default {
 
         })
         .catch((error) => {
+
           alert(error);
+
+
         });
 
     },
@@ -454,7 +473,7 @@ export default {
           this.$message.success('Сохранено')
         })
         .catch((error) => {
-          alert(error);
+          alert(error,'6565');
         });
     },
 

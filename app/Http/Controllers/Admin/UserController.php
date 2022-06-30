@@ -1523,8 +1523,6 @@ class UserController extends Controller
 
 
 
-
-
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1912,8 +1910,19 @@ class UserController extends Controller
             $zarplata->card_number = intval(preg_replace('/\s+/', '', $request->card_number));
             $zarplata->save();
         } else {
+            if ($request->zarplata == 0){
+                $cash = 70000;
+            }else{
+                $cash = $request->zarplata;
+            }
+
+            if (isset($request['headphones_amount']) && $request['headphones_amount'] > 0){
+                $cash = $cash - $request['headphones_amount'];
+            }
+
+
             $user->zarplata()->update([
-                'zarplata' => $request->zarplata == 0 ? 70000 : $request->zarplata,
+                'zarplata' => $cash,
                 'card_number' => $request->card_number,
                 'kaspi' => $request->kaspi,
                 'jysan' => $request->jysan,
@@ -2318,6 +2327,9 @@ class UserController extends Controller
     {
 
 
+
+
+
         $data = $request["image"];
 
 
@@ -2352,7 +2364,7 @@ class UserController extends Controller
 
             file_put_contents("users_img/$imageName", $data);
 
-            $img = '<img src="'.url('/users_img/').''.$imageName.'"  />';
+            $img = '<img src="'.url('/users_img').'/'.$imageName.'"  />';
 
             return response(['src'=>$img,'filename'=>$imageName]);
 
