@@ -199,6 +199,7 @@ Route::middleware([
     Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
     Route::any('/profile/update/save/', [UserController::class, 'userUpdateSave']); ///profile save name,last_name,date
     Route::any('/profile/add/payment/cart/', [UserController::class, 'addPaymentSave']); ///profile save name,last_name,date
+    Route::post('/profile/remove/card/', [UserController::class, 'removeCardProfile']); ///удаление карты индивидуально
 
     // Книги
     Route::get('/admin/upbooks', [UpbookController::class, 'index']);

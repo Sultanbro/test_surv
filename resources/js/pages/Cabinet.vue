@@ -7,17 +7,17 @@
       <ul class="p-0">
 
 
-        <li><a  v-if="user.is_admin === 1" style="color: black" @click="userRoles = true , userProfile = false "  v-bind:class="{ active: userRoles }" >Административные настройки</a></li>
+        <li><a  v-if="user.is_admin === 1" style="color: black" @click="userRoles = true , userProfile = false "  v-bind:class="{ profile_active: userRoles }" >Административные настройки</a></li>
         <li class="position-relative">
-          <a style="color: black"  @click="userProfile = true , userRoles = false"  v-bind:class="{ active: userProfile }" >Настройка собственного профиля</a>
+          <a style="color: black"  @click="userProfile = true , userRoles = false"  v-bind:class="{ profile_active: userProfile }" >Настройка собственного профиля</a>
 
           <ul v-if="userProfile" class="position-absolute " style="right: 0px;top: 20px">
 
             <li >
-              <a @click="payment_data = false , basic_data = true"   v-bind:class="{ active: basic_data }"  >Основные данные</a>
+              <a @click="payment_data = false , basic_data = true"   v-bind:class="{ profile_active: basic_data }"  >Основные данные</a>
             </li>
             <li>
-              <a @click="payment_data = true , basic_data = false"   v-bind:class="{ active: payment_data }" >Платежные данные</a>
+              <a @click="payment_data = true , basic_data = false"   v-bind:class="{ profile_active: payment_data }" >Платежные данные</a>
             </li>
 
 
@@ -186,11 +186,12 @@
 
 
         <div class="col-2">
-          <button v-if="index !== 0"  class="btn btn-danger btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index)">
+
+          <button v-if="payment.id"  class="btn btn-danger btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index,payment.id)">
             <span class="fa fa-trash"></span>
           </button>
 
-          <button v-else class="btn btn-primary btn-sm card-delete rounded ml-5 mt-1" >
+          <button v-else class="btn btn-primary btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index,'dev')" >
             <span class="fa fa-trash"></span>
           </button>
 
@@ -212,7 +213,7 @@
             </button>
         </div>
 
-        <div class="col-3">
+        <div class="col-3" v-if="addCart" >
             <button @click.prevent="addPaymentCartSave()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
         </div>
 
@@ -270,7 +271,8 @@ export default {
           number:'',
           phone:'',
         },
-      ]
+      ],
+      addCart:true,
 
     };
   },
@@ -336,6 +338,8 @@ export default {
 
     addPayment(){
 
+      this.addCart = true,
+
       this.payments.push({
         bank:'',
         cardholder:'',
@@ -347,21 +351,34 @@ export default {
 
     },
 
-    removePaymentCart(index){
+    removePaymentCart(index,type_id){
 
-      // console.log(this.valueGroups ,'07777')
+      console.log(this.payments,'imasheev')
+
+      this.addCart = true
 
       let confirmDelte = confirm("Вы действительно хотите безвозвратно удалить ?");
-
       if (confirmDelte){
-        if (index != 0){
-          this.payments.splice(index, 1)
-        }else {
-          alert('К сожалению последний позиция не удаляется');
+
+        this.payments.splice(index, 1)
+        this.$message.success('Успешно Удалено')
+
+        if (type_id != 'dev'){
+          axios.post("/profile/remove/card/",{
+            card_id:type_id,
+          }).then((response) => {
+
+           }).catch((error) => {
+             alert(error);
+           });
+
+        }
+        if (this.payments != null){
+          if (this.payments.length === 0){
+            this.addCart = false
+          }
         }
       }
-
-
     },
 
     addPaymentCartSave(){
@@ -380,14 +397,10 @@ export default {
       });
 
 
-
       if (this.cardValidatre.type){
-
-        alert('asd')
         axios.post('/profile/add/payment/cart/', {
           cards:this.payments,
         }).then(response => {
-          console.log(response,'imashev cards');
           this.$message.success('Успешно Сохранено')
         })
       }else{
@@ -413,17 +426,20 @@ export default {
           this.users = response.data.users;
           this.user = response.data.user;
 
-
-          console.log(response,'res')
-          console.log(this.admins,'admins')
-          console.log(this.users,'users')
-          console.log(this.user,'user')
+          // console.log(response,'res')
+          // console.log(this.admins,'admins')
+          // console.log(this.users,'users')
+          // console.log(this.user,'user')
 
           if (response.data.user_payment != null && response.data.user_payment != undefined){
               if (response.data.user_payment.length > 0){
                 this.payments = response.data.user_payment;
+              }else{
+                this.payments = [],
+                this.addCart = false
               }
           }
+
 
 
           if (this.user.img_url != null && this.user.img_url != undefined){
@@ -463,7 +479,6 @@ export default {
 
     },
 
-
     save() {
       axios
         .post("/cabinet/save", {
@@ -489,8 +504,7 @@ export default {
 .contacts-info{
   margin-top:30px;
 }
-.active{
-  color: blue;
+.profile_active{
   font-weight: bold;
 }
 

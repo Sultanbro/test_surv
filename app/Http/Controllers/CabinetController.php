@@ -44,7 +44,7 @@ class CabinetController extends Controller
 
         $user = User::find(auth()->user()->getAuthIdentifier());
 
-        $user_payment = Card::where('user_id',auth()->user()->getAuthIdentifier())->get('bank','cardholder','country','number','phone')->toArray();
+        $user_payment = Card::where('user_id',auth()->user()->getAuthIdentifier())->select('id','bank','cardholder','country','number','phone')->get()->toArray();
 
 
 

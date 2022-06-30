@@ -226,6 +226,9 @@ export default {
       all_videos: [],
       activeVideo: null,
       group_edit: false,
+      gran_cardon: {
+        9 : [1,1],10 : [1,2],11 : [1,3],12: [1,4],13: [1,5],15: [2,1],16: [2,2],17: [2,3],18: [2,4],19: [2,5],21: [3,1],22: [3,2],23: [3,3],24: [3,4],25: [3,5],26: [3,6],27: [3,7],28: [3,8],30: [4,1],31: [4,2], 32: [4,3],33: [4,4],35: [5,1],36: [5,2],37: [5,3],38: [5,4],39: [5,5],40: [5,6],41: [5,7],42: [5,8],43: [5,9],45: [6,1],46: [6,2],47: [6,3],49: [7,1],50: [7,2],51: [7,3],52: [7,4],53: [7,5],54: [7,6],55: [7,7],56: [7,8],57: [7,9],58: [7,10],60: [8,1],61: [8,2],62: [8,3],63: [8,4],65: [9,1],66: [9,2],67: [9,3],68: [9,4],69: [9,5],70: [9,6],71: [9,7],72: [9,8],73: [9,9],74: [9,10],76: [10,1],77: [10,2],78: [10,3],79: [11],80: [12],82: [13,1],83: [13,2]
+        },
       playlist: {
         id: 1,
         category_id: 1,
@@ -283,7 +286,18 @@ export default {
           console.log(this.playlist.videos);
 
           this.activeVideo = this.playlist.videos.filter(video => video.id === this.myvideo)[0];
-          this.playlist.groups[this.activeVideo.group_id].opened = true;
+          if(this.playlist.groups[this.activeVideo.group_id] == null){
+            
+            if( this.gran_cardon[this.activeVideo.group_id].length > 1 ){
+              this.playlist.groups[ this.gran_cardon[this.activeVideo.group_id][0] ].opened = true;
+              this.playlist.groups[ this.gran_cardon[this.activeVideo.group_id][0] ].children[ this.gran_cardon[this.activeVideo.group_id][1] ].opened = true;
+            }else{
+              this.playlist.groups[ this.gran_cardon[this.activeVideo.group_id][0] ].opened = true;
+            }
+            console.log(this.gran_cardon[this.activeVideo.group_id]);
+          }else{
+            this.playlist.groups[this.activeVideo.group_id].opened = true;
+          }
           this.sidebars.edit_video.show = true;
           
         })
