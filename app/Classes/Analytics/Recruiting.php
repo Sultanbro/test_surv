@@ -1243,19 +1243,25 @@ public function planRequired($arr) {
                         ->whereIn('users.id', $pgu->assigned)
                         ->where('is_trainee', 0)
                         ->get();
-                    foreach ($assigneds as $us) {
-                        $assigned += $us->full_time == 1 ? 1 : 0.5;
-                    }
+
+                    $assigned = $assigneds->count();
+
+
+                    // foreach ($assigneds as $us) {
+                    //     $assigned += $us->full_time == 1 ? 1 : 0.5;
+                    // }
 
                     $fireds = \DB::table('users')
                         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                         ->whereIn('users.id', $pgu->fired)
                         ->where('is_trainee', 0)
                         ->get();
+                    
+                        $fired = $fireds->count();
 
-                    foreach ($fireds as $us) {
-                        $fired += $us->full_time == 1 ? 1 : 0.5;
-                    }
+                    // foreach ($fireds as $us) {
+                    //     $fired += $us->full_time == 1 ? 1 : 0.5;
+                    // }
                 }
 
                 $worked = $assigned + $fired;
