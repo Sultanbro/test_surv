@@ -185,13 +185,13 @@
         </div>
 
 
-        <div class="col-2">
+        <div class="col-2 position-relative">
 
-          <button v-if="payment.id"  class="btn btn-danger btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index,payment.id)">
+          <button v-if="payment.id"  style="position: absolute;left: 0px" class=" btn btn-danger btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,payment.id)">
             <span class="fa fa-trash"></span>
           </button>
 
-          <button v-else class="btn btn-primary btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index,'dev')" >
+          <button v-else style="position: absolute;left: 0px" class=" btn btn-primary btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,'dev')" >
             <span class="fa fa-trash"></span>
           </button>
 
@@ -299,12 +299,6 @@ export default {
           'content-type': 'multipart/form-data'
         }
       }
-
-      //
-      //
-      // console.log(this.img,'999')
-      // this.img = null;
-      // console.log(this.img,'888')
       let data = new FormData();
       data.append('file', this.file);
       axios.post('/profile/upload/edit/profile', data, config)
@@ -328,14 +322,12 @@ export default {
 
 
     },
-
     change({ coordinates, canvas }) {
 
       this.canvas = canvas,
 
       console.log(coordinates, canvas);
     },
-
     addPayment(){
 
       this.addCart = true,
@@ -353,8 +345,6 @@ export default {
 
     removePaymentCart(index,type_id){
 
-      console.log(this.payments,'imasheev')
-
       this.addCart = true
 
       let confirmDelte = confirm("Вы действительно хотите безвозвратно удалить ?");
@@ -367,7 +357,6 @@ export default {
           axios.post("/profile/remove/card/",{
             card_id:type_id,
           }).then((response) => {
-
            }).catch((error) => {
              alert(error);
            });
@@ -382,20 +371,20 @@ export default {
     },
 
     addPaymentCartSave(){
-
       this.cardValidatre.type = false;
       this.cardValidatre.error = false;
 
-      this.payments.forEach(el => {
 
+      this.payments.forEach(el => {
+        this.cardValidatre.type = false;
         if (el['bank'] != null && el['cardholder'] != null && el['country'] != null && el['number'] != null && el['phone'] != null){
           if (el['bank'].length > 2 && el['cardholder'].length > 2 && el['country'].length > 2 && el['number'].length > 2 && el['phone'].length > 2){
             this.cardValidatre.type = true;
           }
+
         }
 
       });
-
 
       if (this.cardValidatre.type){
         axios.post('/profile/add/payment/cart/', {
@@ -407,6 +396,7 @@ export default {
         this.cardValidatre.error = true;
       }
     },
+
     addTag(newTag) {
       const tag = {
         email: newTag,
@@ -426,11 +416,6 @@ export default {
           this.users = response.data.users;
           this.user = response.data.user;
 
-          // console.log(response,'res')
-          // console.log(this.admins,'admins')
-          // console.log(this.users,'users')
-          // console.log(this.user,'user')
-
           if (response.data.user_payment != null && response.data.user_payment != undefined){
               if (response.data.user_payment.length > 0){
                 this.payments = response.data.user_payment;
@@ -440,14 +425,11 @@ export default {
               }
           }
 
-
-
           if (this.user.img_url != null && this.user.img_url != undefined){
             this.img = '/users_img/'+response.data.user.img_url;
           }else{
             this.img = '/users_img/noavatar.png';
           }
-
 
 
         })

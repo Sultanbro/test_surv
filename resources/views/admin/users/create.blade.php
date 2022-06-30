@@ -103,10 +103,10 @@
 
 
                                      @if(isset($user))
-                                         <input id="user_id_img" value="{{$user->id}}" hidden>
+                                         <input id="user_id_img" data-auth-id="{{auth()->user()->getAuthIdentifier()}}" value="{{$user->id}}" hidden>
                                          <input name="file_name_img" value="empty" id="file_name_img" hidden>
                                      @else
-                                         <input id="user_id_img" hidden value="new_user" name="user_img">
+                                         <input id="user_id_img" data-auth-id='new_user' hidden value="new_user" name="user_img">
                                          <input name="file_name_img" value="empty" id="file_name_img" hidden>
                                      @endif
 
@@ -987,7 +987,7 @@
                                             @if(isset($user))
                                             <div class="form-group row">
                                                 <label for="headphones_amount_checkbox"
-                                                       class="col-sm-3 col-form-label font-weight-bold">Выданы наушники <br>
+                                                       class="col-sm-3 col-form-label font-weight-bold">Выданы оборудование счет зарплаты <br>
                                                     @if(isset($user))
                                                         {{ $user->headphones_date }}
                                                     @endif
@@ -1385,7 +1385,6 @@
 
 
 
-
             $.ajax({
                 type:'POST',
                 url: "/profile/upload/edit/",
@@ -1402,15 +1401,15 @@
 
                     console.log(data,'imasheev kis')
 
+                    var auth_user_id = $("#user_id_img").attr('data-auth-id');
+
+                    if (auth_user_id === user_id){
+                        $(".img_url_sm").html(data['src'])
+                    }
+
                     $('#uploadimageModal').modal('hide');
-
                     $(".img_url_md").html(data['src'])
-
-                    $(".img_url_sm").html(data['src'])
-
                     $("#file_name_img").attr('value',data['filename'])
-
-
                 },
                 error: function(data){
                     console.log(data);
