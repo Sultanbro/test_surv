@@ -2355,6 +2355,8 @@ class UserController extends Controller
 
             return response(['src'=>$img,'filename'=>$imageName]);
 
+
+
         }elseif ($request['user_id'] == 'new_user'){
 
 
@@ -2370,7 +2372,7 @@ class UserController extends Controller
 
             file_put_contents("users_img/$imageName", $data);
 
-            $img = '<img src="'.asset('/users_img/').''.$imageName.'"  />';
+            $img = '<img src="'.asset('users_img/').''.$imageName.'"  />';
 
             return response(['src'=>$img,'filename'=>$imageName]);
         }

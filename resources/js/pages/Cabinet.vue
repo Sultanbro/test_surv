@@ -174,11 +174,11 @@
         </div>
 
         <div class="col-2">
-          <input v-model="payment.phone" class="form-control" placeholder="Телефон">
+          <input type="number" v-model="payment.phone" class="form-control" placeholder="Телефон">
         </div>
 
         <div class="col-2">
-          <input v-model="payment.number" class="form-control card-number" placeholder="Номер карты">
+          <input type="number"  v-model="payment.number" class="form-control card-number" placeholder="Номер карты">
         </div>
 
 
@@ -195,9 +195,13 @@
 
       </div>
 
+      <div class="col-12" v-if="cardValidatre.error">
+        <div class="alert alert-danger">
+          <span>Заполните все поля</span>
+        </div>
+      </div>
 
-      <div class="col-8 row mt-5">
-
+      <div class="col-8 row mt-3">
 
         <div class="col-3">
             <button   @click="addPayment()" style="color: white" class="btn btn-phone btn-primary  btn-block">
@@ -206,7 +210,7 @@
         </div>
 
         <div class="col-3">
-            <button @click="addPaymentCartSave()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
+            <button @click.prevent="addPaymentCartSave()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
         </div>
 
       </div>
@@ -251,6 +255,10 @@ export default {
 
       basic_data:true,
       payment_data:false,
+      cardValidatre:{
+          error:false,
+          type:false,
+      },
       payments:[
         {
           bank:'',
@@ -259,8 +267,6 @@ export default {
           number:'',
           phone:'',
         },
-
-
       ]
 
     };
@@ -338,34 +344,48 @@ export default {
 
       // console.log(this.valueGroups ,'07777')
 
-      if (index != 0){
-        this.payments.splice(index, 1)
-      }else {
-        alert('К сожалению последний позиция не удаляется');
+      let confirmDelte = confirm("Вы действительно хотите безвозвратно удалить ?");
+
+      if (confirmDelte){
+        if (index != 0){
+          this.payments.splice(index, 1)
+        }else {
+          alert('К сожалению последний позиция не удаляется');
+        }
       }
+
 
     },
 
     addPaymentCartSave(){
 
+      this.cardValidatre.type = false;
+      this.cardValidatre.error = false;
 
-      console.log(this.payments,'07777')
+      this.payments.forEach(el => {
 
-      axios.post('/profile/add/payment/cart/', {
-
-       cards:this.payments,
-
-      }).then(response => {
-
-        console.log(response,'imashev cards');
-
-
-        if (response.data.success){
-          this.$message.success('Успешно Сохранено')
+        if (el['bank'] != null && el['cardholder'] != null && el['country'] != null && el['number'] != null && el['phone'] != null){
+          if (el['bank'].length > 2 && el['cardholder'].length > 2 && el['country'].length > 2 && el['number'].length > 2 && el['phone'].length > 2){
+            this.cardValidatre.type = true;
+          }
         }
 
-      })
+      });
 
+
+
+      if (this.cardValidatre.type){
+
+        alert('asd')
+        axios.post('/profile/add/payment/cart/', {
+          cards:this.payments,
+        }).then(response => {
+          console.log(response,'imashev cards');
+          this.$message.success('Успешно Сохранено')
+        })
+      }else{
+        this.cardValidatre.error = true;
+      }
     },
     addTag(newTag) {
       const tag = {

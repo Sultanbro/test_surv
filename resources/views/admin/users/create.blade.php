@@ -1384,11 +1384,7 @@
             var origin_file = $("#upload_image").val();
 
 
-            var k = getFileKis;
 
-            //
-            // console.log(k,'0789')
-            //
            console.log(response,'789465312')
 
             $.ajax({
