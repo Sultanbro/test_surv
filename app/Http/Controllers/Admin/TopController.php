@@ -178,6 +178,7 @@ class TopController extends Controller
                         $plan = AnalyticStat::getProceedsPlan($group_id, $date);
                     }
                   
+                    $row['%'] = 2;
                     $row['План'] = $plan;
                     $row['+/-'] = 2;
                     $total_row['План'] += $plan;
@@ -202,10 +203,16 @@ class TopController extends Controller
     
                     $row['+/-'] = '';
                     $total_row['+/-'] = '';
+
+                    $row['%'] = '';
+                    $total_row['%'] = '';
                     
                     if($filled_days > 0 && $plan > 0) {
                         $row['+/-'] = (int)$sum / ($plan / $calendar_days * $filled_days) * 100;
                         $row['+/-'] = (round($row['+/-'],1) - 100) . '%';
+
+                        $row['%'] = ((int)$sum * 100) / $plan;
+                        $row['%'] = round($row['%'],1) . '%';
                     }
                     
                     
@@ -338,6 +345,7 @@ class TopController extends Controller
     private function getProceedFields($days) {
         $fields = [];
         array_push($fields, 'Группа');
+        array_push($fields, '%');
         array_push($fields, 'План');
         array_push($fields, 'Итого');
         array_push($fields, '+/-');
