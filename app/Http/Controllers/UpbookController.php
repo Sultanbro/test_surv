@@ -27,7 +27,6 @@ class UpbookController extends Controller
         $cats = BookGroup::with('books')->get();
 
      
-
         $nocat_books = Book::where('group_id', 0)->get();
 
         if($nocat_books->count() > 0) {
@@ -69,10 +68,20 @@ class UpbookController extends Controller
 
         $arr = [];
         foreach($qs as $id => $test) {
+
+            $_test = [];
+            foreach ($test as $key => $q) {
+                $q = $q->toArray();
+                $q['checked'] = 0;
+                $q['result'] = 0;
+                $_test[] = $q;
+            }
+
             array_push($arr, [
                 'page' => $id,
                 'pages' => $id,
-                'questions' => $test 
+                'pass' => false,
+                'questions' => $_test 
             ]);
         }
         return ['tests' => $arr];

@@ -134,8 +134,10 @@ class IntellectController extends Controller {
 
                 $this->send_msg($phone, 'Добрый день, ' . $request->namex . '! %0aВы откликнулись на нашу вакансию менеджера по работе с клиентами. %0aМеня зовут Мадина 😊 . %0aЯ чат-бот, который поможет Вам устроиться на работу 😉');
                 usleep(2000000); // 2 sec
-                $this->send_msg($phone, '/unset_tag:recruiter_bot%0a/set_tag:recruiter_bot');
-             
+                //$this->send_msg($phone, '/unset_tag:recruiter_bot%0a/set_tag:recruiter_bot');
+                $this->send_msg($phone, '/set_tag:recruiter_bot');
+                //$this->send_msg($phone, '++recruiter_bot');
+      
                 
             }        
             
