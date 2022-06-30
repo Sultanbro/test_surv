@@ -83,7 +83,7 @@
             </table>
             </a-tab-pane>
 
-            <a-tab-pane v-for="(item, index) in trainee_report" v-if="item.group_id == g.group_id" :tab="item.date" key="index">
+            <a-tab-pane v-for="(item, index) in trainee_report" v-if="item.group_id == g.group_id" :tab="item.date" :key="index">
                 <p class="mt-2"><b>{{ item.group }}</b></p>
             <table class="table b-table table-striped table-bordered table-sm">
                 <thead>
