@@ -5,13 +5,26 @@
 
     <div class="settingCabinet">
       <ul class="p-0">
-        <li>
-          <a style="color: black" v-if="user.is_admin === 1"  @click="userRoles = true , userProfile = false ">Административные настройки</a>
-
-          <a style="color: black"  @click="userProfile = true , userRoles = false">Настройка собственного профиля</a>
 
 
+        <li><a  v-if="user.is_admin === 1" style="color: black" @click="userRoles = true , userProfile = false "  v-bind:class="{ active: userRoles }" >Административные настройки</a></li>
+        <li class="position-relative">
+          <a style="color: black"  @click="userProfile = true , userRoles = false"  v-bind:class="{ active: userProfile }" >Настройка собственного профиля</a>
+
+          <ul v-if="userProfile" class="position-absolute " style="right: 0px;top: 20px">
+
+            <li >
+              <a @click="payment_data = false , basic_data = true"   v-bind:class="{ active: basic_data }"  >Основные данные</a>
+            </li>
+            <li>
+              <a @click="payment_data = true , basic_data = false"   v-bind:class="{ active: payment_data }" >Платежные данные</a>
+            </li>
+
+
+          </ul>
         </li>
+
+
       </ul>
     </div>
 
@@ -79,42 +92,27 @@
 
       <div class="d-flex jsutify-content-between hat-top">
         <div class="bc">
-          <a href="#">Настройка профиля</a>
+          <a v-if="basic_data" href="#">Настройка профиля</a>
+          <a v-else href="#">Настройка платежные данный</a>
         </div>
         <div class="control-btns"></div>
       </div>
 
 
 
-    <div class="content mt-3 py-3">
-
-
+    <div class="content mt-3 py-3" v-if="basic_data">
 
       <div class="contacts-info col-md-6 none-block mt-10" id="profile_d" >
-
         <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
-
-         <div style="border: 2px solid #ced4da;padding: 5px">
-
-           <img style="width: 200px;height: 200px"
-                class="image-card__image"
-                :src="img" :alt="img">
-
-           <form @submit="formSubmit" enctype="multipart/form-data">
-             <input id="upload_image" hidden type="file" class="form-control" v-on:change="onChange">
-             <button class="btn btn-primary btn-block">Сохранить</button>
-           </form>
-
-         </div>
-
-
-
-
+          <div style="border: 2px solid #ced4da;padding: 5px">
+            <img style="width: 200px;height: 200px"
+                 class="image-card__image"
+                 :src="img" :alt="img">
+            <form enctype="multipart/form-data">
+              <input id="upload_image" hidden type="file" class="form-control" v-on:change.prevent="onChange">
+            </form>
+          </div>
         </label>
-
-
-
-
         <div class="form-group row">
           <label for="firstName"
                  class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
@@ -133,7 +131,8 @@
             >
           </div>
         </div>
-        <div v-if="user.is_admin === 1" class="form-group row">
+
+        <div  v-if="user.is_admin === 1" class="form-group row">
           <label for="email" class="col-sm-4 col-form-label font-weight-bold">Новый пароль </label>
           <div class="col-sm-8">
             <input v-model="password" minlength="5" class="form-control" type="password" name="new_pwd" id="new_pwd"
@@ -149,17 +148,79 @@
             <input class="form-control" type="date" name="birthday" id="birthday" required>
           </div>
         </div>
-
-
         <div class="col-4 p-0">
           <div class="form-group row">
             <button style="color: white" @click.prevent="userSaveData()" class="btn btn-success ml-3 btn-block" type="button">Сохранить</button>
           </div>
         </div>
+      </div>
+
+    </div>
 
 
+    <div class="content mt-3 py-3" v-if="payment_data">
+
+
+
+      <div class="col-12 row payment-profile" v-for="(payment,index) in payments">
+
+        <div class="col-2">
+          <input v-model="payment.bank" class="form-control" placeholder="Банк">
+        </div>
+
+        <div class="col-2">
+          <input v-model="payment.country" class="form-control" placeholder="Страна">
+        </div>
+
+        <div class="col-2">
+          <input v-model="payment.cardholder" class="form-control" placeholder="Имя на карте">
+        </div>
+
+        <div class="col-2">
+          <input type="number" v-model="payment.phone" class="form-control" placeholder="Телефон">
+        </div>
+
+        <div class="col-2">
+          <input type="number"  v-model="payment.number" class="form-control card-number" placeholder="Номер карты">
+        </div>
+
+
+        <div class="col-2">
+          <button v-if="index !== 0"  class="btn btn-danger btn-sm card-delete rounded ml-5 mt-1" @click="removePaymentCart(index)">
+            <span class="fa fa-trash"></span>
+          </button>
+
+          <button v-else class="btn btn-primary btn-sm card-delete rounded ml-5 mt-1" >
+            <span class="fa fa-trash"></span>
+          </button>
+
+        </div>
 
       </div>
+
+      <div class="col-12" v-if="cardValidatre.error">
+        <div class="alert alert-danger">
+          <span>Заполните все поля</span>
+        </div>
+      </div>
+
+      <div class="col-8 row mt-3">
+
+        <div class="col-3">
+            <button   @click="addPayment()" style="color: white" class="btn btn-phone btn-primary  btn-block">
+              Добавить карту
+            </button>
+        </div>
+
+        <div class="col-3">
+            <button @click.prevent="addPaymentCartSave()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
+        </div>
+
+      </div>
+
+
+
+
 
     </div>
   </div>
@@ -186,13 +247,31 @@ export default {
       items: [],
       users: [],
       user:[],
+      user_card:[],
       admins: [],
       activeCourse: null,
       userRoles:false,
-      userProfile:true,
+      userProfile:false,
       img:'',
       success: '',
-      password:''
+      password:'',
+
+      basic_data:true,
+      payment_data:false,
+      cardValidatre:{
+          error:false,
+          type:false,
+      },
+      payments:[
+        {
+          bank:'',
+          cardholder:'',
+          country:'',
+          number:'',
+          phone:'',
+        },
+      ]
+
     };
   },
   mounted() {
@@ -207,15 +286,11 @@ export default {
     onChange(e) {
       this.file = e.target.files[0];
 
-
-      // console.log(this.file)
-      // console.log(this.img,'img')
-
-
+      this.formSubmit()
     },
-    formSubmit(e) {
+    formSubmit() {
 
-      e.preventDefault();
+      // e.preventDefault();
       let existingObj = this;
       const config = {
         headers: {
@@ -234,11 +309,14 @@ export default {
 
           .then(function (res) {
 
-            console.log(res,'0777')
+
 
             // existingObj.success = res.data.success;
-            existingObj.img = 'public/users_img/'+res.data.file_name;
+            existingObj.img = '/users_img/'+res.data.file_name;
             existingObj.$message.success('Успешно Удалено');
+
+
+            $("#img_url_sm").attr('src',existingObj.img)
 
           })
           .catch(function (err) {
@@ -256,7 +334,66 @@ export default {
       console.log(coordinates, canvas);
     },
 
+    addPayment(){
 
+      this.payments.push({
+        bank:'',
+        cardholder:'',
+        country:'',
+        number:'',
+        phone:'',
+      });
+
+
+    },
+
+    removePaymentCart(index){
+
+      // console.log(this.valueGroups ,'07777')
+
+      let confirmDelte = confirm("Вы действительно хотите безвозвратно удалить ?");
+
+      if (confirmDelte){
+        if (index != 0){
+          this.payments.splice(index, 1)
+        }else {
+          alert('К сожалению последний позиция не удаляется');
+        }
+      }
+
+
+    },
+
+    addPaymentCartSave(){
+
+      this.cardValidatre.type = false;
+      this.cardValidatre.error = false;
+
+      this.payments.forEach(el => {
+
+        if (el['bank'] != null && el['cardholder'] != null && el['country'] != null && el['number'] != null && el['phone'] != null){
+          if (el['bank'].length > 2 && el['cardholder'].length > 2 && el['country'].length > 2 && el['number'].length > 2 && el['phone'].length > 2){
+            this.cardValidatre.type = true;
+          }
+        }
+
+      });
+
+
+
+      if (this.cardValidatre.type){
+
+        alert('asd')
+        axios.post('/profile/add/payment/cart/', {
+          cards:this.payments,
+        }).then(response => {
+          console.log(response,'imashev cards');
+          this.$message.success('Успешно Сохранено')
+        })
+      }else{
+        this.cardValidatre.error = true;
+      }
+    },
     addTag(newTag) {
       const tag = {
         email: newTag,
@@ -271,13 +408,25 @@ export default {
       axios
         .get("/cabinet/get")
         .then((response) => {
+
           this.admins = response.data.admins;
           this.users = response.data.users;
           this.user = response.data.user;
 
-          console.log(this.user,'user_cabinet')
 
-          if (this.user.img_url != null){
+          console.log(response,'res')
+          console.log(this.admins,'admins')
+          console.log(this.users,'users')
+          console.log(this.user,'user')
+
+          if (response.data.user_payment != null && response.data.user_payment != undefined){
+              if (response.data.user_payment.length > 0){
+                this.payments = response.data.user_payment;
+              }
+          }
+
+
+          if (this.user.img_url != null && this.user.img_url != undefined){
             this.img = '/users_img/'+response.data.user.img_url;
           }else{
             this.img = '/users_img/noavatar.png';
@@ -287,7 +436,10 @@ export default {
 
         })
         .catch((error) => {
+
           alert(error);
+
+
         });
 
     },
@@ -296,7 +448,7 @@ export default {
 
 
 
-      axios.post('/timetracking/update/save/', {
+      axios.post('/profile/update/save/', {
         query:this.user,
         password:this.password,
       }).then(response => {
@@ -321,7 +473,7 @@ export default {
           this.$message.success('Сохранено')
         })
         .catch((error) => {
-          alert(error);
+          alert(error,'6565');
         });
     },
 
@@ -335,6 +487,20 @@ export default {
 
 <style>
 .contacts-info{
-  margin-top: 100px;
+  margin-top:30px;
+}
+.active{
+  color: blue;
+  font-weight: bold;
+}
+
+.payment-profile{
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.addPayment{
+  padding: 15px;
+  margin-top:-15px;
 }
 </style>

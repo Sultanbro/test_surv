@@ -77,130 +77,8 @@ class UserController extends Controller
 
 
 
-    public function userUpdateSave(Request$request){
 
 
-        $user = User::find(auth()->user()->getAuthIdentifier());
-        $user['name'] = $request['query']['name'];
-        if (!empty($request->password)){
-            $user['password'] = Hash::make($request->password);
-        }
-        $user['last_name'] = $request['query']['last_name'];
-
-        if ($user->save()){
-            return response(['success'=>'1']);
-        }
-
-
-    }
-
-
-
-    public function uploadPhotoProfile(Request $request)
-    {
-
-        $request->validate([
-            'file' => 'required|mimes:jpg,jpeg,png,csv,txt,xlx,xls,pdf'
-        ]);
-
-        $upload_path = public_path('users_img/');
-        $file_name = $request->file->getClientOriginalName();
-        $generated_new_name = time() . '.' . $request->file->getClientOriginalExtension();
-        $request->file->move($upload_path, $generated_new_name);
-
-        $insertUser = User::find(auth()->user()->getAuthIdentifier());
-        if (!empty($insertUser->img_url)){
-            $filename = "users_img/".$insertUser->img_url;
-            if (file_exists($filename)) {
-                unlink(public_path('users_img/'.$insertUser->img_url));
-            }
-            $insertUser['img_url'] = null;
-        }
-
-
-        $insertUser['img_url'] = $generated_new_name;
-        $insertUser->save();
-
-
-
-        return response()->json([
-             'success' => 'You have successfully uploaded "' . $file_name . '"',
-             'file_name'=>$generated_new_name,
-        ]);
-
-
-
-    }
-
-
-
-    public function uploadPhoto(Request $request)
-    {
-
-
-        $data = $request["image"];
-
-
-        $image_array_1 = explode(";", $data);
-
-
-
-        $image_array_2 = explode(",", $image_array_1[1]);
-
-
-        $data = base64_decode($image_array_2[1]);
-
-        $imageName = time() . '.png';
-
-
-
-        if (isset($request['user_id']) && $request['user_id'] != 'new_user'){
-            $update_user = User::withTrashed()->find($request['user_id']);
-
-            if (!empty($update_user->img_url)){
-                $filename = "users_img/".$update_user->img_url;
-
-                if (file_exists($filename)) {
-                    unlink(public_path('users_img/'.$update_user->img_url));
-//                    unlink("users_img/".$update_user->img_url);
-                }
-
-            }
-
-            $update_user->img_url = $imageName;
-            $update_user->save();
-
-            file_put_contents("users_img/$imageName", $data);
-
-            $img = '<img src="'.url('/users_img/').''.$imageName.'"  />';
-
-            return response(['src'=>$img,'filename'=>$imageName]);
-
-        }elseif ($request['user_id'] == 'new_user'){
-
-
-            if ($request['file_name'] != 'empty'){
-                $filename = "users_img/".$request['file_name'];
-
-                if (file_exists($filename)) {
-                    unlink( public_path('users_img/'.$request['file_name'] ));
-//                    unlink("users_img/".$update_user->img_url);
-                }
-            }
-
-
-            file_put_contents("users_img/$imageName", $data);
-
-            $img = '<img src="'.asset('/users_img/').''.$imageName.'"  />';
-
-            return response(['src'=>$img,'filename'=>$imageName]);
-        }
-
-
-
-
-
-    }
 
 
     public function surv(Request $request)
@@ -777,7 +655,8 @@ class UserController extends Controller
             $users = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 1);
+                ->where('is_trainee', 1)
+                ->whereNull('ud.fire_date');
             
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
@@ -1142,6 +1021,7 @@ class UserController extends Controller
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
+
 
         return view('admin.users.create',
             $this->preparePersonInputs($request->id)
@@ -1643,7 +1523,6 @@ class UserController extends Controller
 
 
 
-
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1728,7 +1607,8 @@ class UserController extends Controller
         $user->weekdays = $request['weekdays'];
         $user->working_country = $request['selectedCityInput'];
         $user->working_city = $request['working_city'];
-        
+
+
         if($request->new_pwd != '') {
             $user->password = \Hash::make($request->new_pwd);
         } 
@@ -2017,10 +1897,23 @@ class UserController extends Controller
         /********** Редактирование зарплаты */
         /*==============================================================*/
 
+        ////приобрести наушники
+
+            if ($request->zarplata == 0){
+                $cash = 70000;
+            }else{
+                $cash = $request->zarplata;
+            }
+
+            if (isset($request['headphones_amount']) && $request['headphones_amount'] > 0){
+                $cash = $cash - $request['headphones_amount'];
+            }
+        /////
+
         if ($user->zarplata === null) {
             $zarplata = new Zarplata();
             $zarplata->user_id = $user->id;
-            $zarplata->zarplata = $request->zarplata == 0 ? 70000 : $request->zarplata;
+            $zarplata->zarplata = $cash;
             $zarplata->kaspi = $request->kaspi;
             $zarplata->jysan = $request->jysan;
             $zarplata->card_kaspi = $request->card_kaspi;
@@ -2030,8 +1923,12 @@ class UserController extends Controller
             $zarplata->card_number = intval(preg_replace('/\s+/', '', $request->card_number));
             $zarplata->save();
         } else {
+
+      
+
+
             $user->zarplata()->update([
-                'zarplata' => $request->zarplata == 0 ? 70000 : $request->zarplata,
+                'zarplata' => $cash,
                 'card_number' => $request->card_number,
                 'kaspi' => $request->kaspi,
                 'jysan' => $request->jysan,
@@ -2354,6 +2251,155 @@ class UserController extends Controller
         $user->save();
 
         return ['code' => 200];
+    }
+
+
+    /////добавление карты через профиль
+    public function addPaymentSave(Request $request){
+
+        Card::where('user_id',auth()->user()->getAuthIdentifier())->delete();
+
+
+        foreach ($request->cards as $card) {
+            Card::create([
+                'user_id' => auth()->user()->getAuthIdentifier(),
+                'bank' => $card['bank'],
+                'country'=> $card['country'],
+                'cardholder'=> $card['cardholder'],
+                'phone' => $card['phone'],
+                'number'=> $card['number'],
+            ]);
+        }
+
+
+
+
+    }
+    /////измение данный через профиль
+    public function userUpdateSave(Request$request){
+
+
+        $user = User::find(auth()->user()->getAuthIdentifier());
+        $user['name'] = $request['query']['name'];
+        if (!empty($request->password)){
+            $user['password'] = Hash::make($request->password);
+        }
+        $user['last_name'] = $request['query']['last_name'];
+
+        if ($user->save()){
+            return response(['success'=>'1']);
+        }
+
+
+    }
+    /////загрузка аватарки через профиль в компоненте ( vue.js )
+    public function uploadPhotoProfile(Request $request)
+    {
+
+        $request->validate([
+            'file' => 'required|mimes:jpg,jpeg,png,csv,txt,xlx,xls,pdf'
+        ]);
+
+        $upload_path = public_path('users_img/');
+        $file_name = $request->file->getClientOriginalName();
+        $generated_new_name = time() . '.' . $request->file->getClientOriginalExtension();
+        $request->file->move($upload_path, $generated_new_name);
+
+        $insertUser = User::find(auth()->user()->getAuthIdentifier());
+        if (!empty($insertUser->img_url)){
+            $filename = "users_img/".$insertUser->img_url;
+            if (file_exists($filename)) {
+                unlink(public_path('users_img/'.$insertUser->img_url));
+            }
+            $insertUser['img_url'] = null;
+        }
+
+
+        $insertUser['img_url'] = $generated_new_name;
+        $insertUser->save();
+
+
+
+        return response()->json([
+            'success' => 'You have successfully uploaded "' . $file_name . '"',
+            'file_name'=>$generated_new_name,
+        ]);
+
+
+
+    }
+    /////загрузка аватарки через настроки ( в шаблоне blade )
+    public function uploadPhoto(Request $request)
+    {
+
+
+
+
+
+        $data = $request["image"];
+
+
+        $image_array_1 = explode(";", $data);
+
+
+
+        $image_array_2 = explode(",", $image_array_1[1]);
+
+
+        $data = base64_decode($image_array_2[1]);
+
+        $imageName = time() . '.png';
+
+
+
+        if (isset($request['user_id']) && $request['user_id'] != 'new_user'){
+            $update_user = User::withTrashed()->find($request['user_id']);
+
+            if (!empty($update_user->img_url)){
+                $filename = "users_img/".$update_user->img_url;
+
+                if (file_exists($filename)) {
+                    unlink(public_path('users_img/'.$update_user->img_url));
+//                    unlink("users_img/".$update_user->img_url);
+                }
+
+            }
+
+            $update_user->img_url = $imageName;
+            $update_user->save();
+
+            file_put_contents("users_img/$imageName", $data);
+
+            $img = '<img src="'.url('/users_img').'/'.$imageName.'"  />';
+
+            return response(['src'=>$img,'filename'=>$imageName]);
+
+
+
+        }elseif ($request['user_id'] == 'new_user'){
+
+
+            if ($request['file_name'] != 'empty'){
+                $filename = "users_img/".$request['file_name'];
+
+                if (file_exists($filename)) {
+                    unlink( public_path('users_img/'.$request['file_name'] ));
+//                    unlink("users_img/".$update_user->img_url);
+                }
+            }
+
+
+            file_put_contents("users_img/$imageName", $data);
+
+            $img = '<img src="'.asset('users_img/').''.$imageName.'"  />';
+
+            return response(['src'=>$img,'filename'=>$imageName]);
+        }
+
+
+
+
+
     }
 
 }

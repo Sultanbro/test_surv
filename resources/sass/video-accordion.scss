@@ -1,0 +1,33 @@
+.video-accordion {
+
+    .group {
+        height: 40px;
+        overflow: hidden;
+        transition: 1s ease all;
+
+        .g-title {
+            height: 40px;
+            width: 100%;
+            color: #eee;
+            font-weight: 400;
+            display: flex;
+            padding: 5px 10px;
+            background: #272c33;
+            border-bottom: 1px solid #4e535b;
+            align-items: center;
+        }
+
+        .child-group .g-title {
+            padding: 5px 10px 5px 30px;
+            background: #444d59;
+        }
+
+        &.opened {
+            height: auto;
+        }
+
+        .items {
+            height: 30px;
+        }
+    }
+}

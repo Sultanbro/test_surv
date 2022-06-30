@@ -115,7 +115,7 @@
               <td v-for="(field, findex) in proceeds.fields" :key="findex"
                   class="text-center t-name table-title" :class="{'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field)}">
 
-                <template v-if="!['План', 'Итого', '+/-', 'Группа'].includes(field)">
+                <template v-if="!['%', 'План', 'Итого', '+/-', 'Группа'].includes(field)">
                   <div v-if="record['group_id'] < 0">
                     <input type="number"
                            class="input"
@@ -152,7 +152,6 @@
             </tbody>
           </table>
         </div>
-
 
       </a-tab-pane>
       <a-tab-pane tab="" key="6">

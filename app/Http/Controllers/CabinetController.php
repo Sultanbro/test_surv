@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User\Card;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\User;
@@ -26,9 +27,9 @@ class CabinetController extends Controller
 
     public function get()
     {
-        if(!auth()->user()->is_admin) {
-            return redirect('/');
-        }
+//        if(!auth()->user()->is_admin) {
+//            return redirect('/');
+//        }
 
         $users = User::withTrashed()->get(['id', DB::raw("CONCAT(name,' ',last_name) as email")]);
 
@@ -43,11 +44,15 @@ class CabinetController extends Controller
 
         $user = User::find(auth()->user()->getAuthIdentifier());
 
+        $user_payment = Card::where('user_id',auth()->user()->getAuthIdentifier())->get('bank','cardholder','country','number','phone')->toArray();
+
+
 
         return [
             'users' => $users,
             'user' => $user,
-            'admins' => $admins
+            'admins' => $admins,
+            'user_payment'=>$user_payment,
         ];
     }
 

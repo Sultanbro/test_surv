@@ -282,9 +282,10 @@ export default {
           
           console.log(this.playlist.videos);
 
-          this.activeVideo = this.playlist.videos[this.myvideo-1];
+          this.activeVideo = this.playlist.videos.filter(video => video.id === this.myvideo)[0];
+          this.playlist.groups[this.activeVideo.group_id].opened = true;
           this.sidebars.edit_video.show = true;
-          this.setActiveVideo();
+          
         })
         .catch((error) => {
           alert(error);
@@ -497,7 +498,7 @@ export default {
       this.activeVideo = video;
       this.sidebars.edit_video.show = true;
       if (history.pushState) {
-          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(key+1));
+          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(video.id));
           history.pushState(null, null, newUrl);
       }
       else {
