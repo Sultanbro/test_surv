@@ -457,7 +457,7 @@ class SalaryController extends Controller
                 $hourly_pays[$i] = null;  
                 $hours[$i] = null;  
                 $trainings[$i] = null; 
-
+                dd('fuck');
                 $x = $tts->where('day', $i);
                 $y = $tts_before_apply->where('day', $i);
                 $a = $trainee_days->where('day', $i)->first();

@@ -16,66 +16,116 @@ use App\Models\Videos\VideoGroup as Group;
 use Illuminate\Support\Facades\View;
 
 
-// $x, $y => побочные переменные в роуте указаны как admin.{domain}.{tld}
 class VideoGroupController extends Controller {
-
-	const PAGE = '/video_groups';
 
 	public function __construct()
     {
 		$this->middleware('auth');
-		View::share('menu', 'video_editor');
-		//$this->middleware('superuser');
     }
 
-	public function index() {
-		$groups = Group::paginate(10);
-		return view('videolearning.groups.index', compact('groups')); 
+	public function save(Request $request) {
+
+		$playlist_id = $request->playlist['id'];
+		$groups = $request->playlist['groups'];
+
+		return [
+			'groups' => $this->saveGroups($playlist_id, $groups)
+		];
 	}
 
-	public function create() {
-		$playlists = Playlist::orderBy('title', 'asc')->get();
-		$groups = Group::where('parent_id', null)->get();
-		$groups2 = Group::where('parent_id', 0)->get();
-		$groups = $groups->merge($groups2);
+
+	/**
+	 * @param int $playlist_id
+	 * @param array $groups
+	 * 
+	 * @return array
+	 */
+	private function saveGroups($playlist_id, $groups)
+	{
+		$ids = []; 
+
+		// Save groups
+		foreach ($groups as $key => $group) {
+			
+			// Main groups
+
+			$g_input = [
+				'title' => $group['title'],
+				'parent_id' => 0,
+				'category_id' => $playlist_id
+			];
+
+			if($group['id'] == 0) {
+				$g = Group::create($g_input);
+				$groups[$key]['id'] = $g->id;
+				$ids[] = $g->id;
+			} else {
+				Group::where('id', $group['id'])->update($g_input);
+				$ids[] = $group['id'];
+			}
+			
+			// Children groups
+
+			foreach ($group['children'] as $c_key => $child) {
+				
+			
+				$c_input = [
+					'title' => $child['title'],
+					'parent_id' => $groups[$key]['id'],
+					'category_id' => $playlist_id
+				];
+	
+				if($child['id'] == 0) {
+					$g = Group::create($c_input);
+					$groups[$key]['children'][$c_key]['id'] = $g->id;
+					$ids[] = $g->id;
+				} else {
+					Group::where('id', $child['id'])->update($c_input);
+					$ids[] = $group['id'];
+				}
+
+			}
+
+		}
+
+		// delete groups not in Ids array
+		$this->deleteGroups($playlist_id, $ids);
+	
+		// return array of groups with Ids
+		return $groups;
+	}
+
+	/**
+	 * delete groups not in Ids array
+	 * 
+	 * @param int $playlist_id
+	 * @param array $ids
+	 * 
+	 * @return void
+	 */
+	private function deleteGroups($playlist_id, $ids)
+	{
+		// fetch group_ids should delete 
+		$vgroups = Group::where('category_id', $playlist_id)->where('parent_id', 0)->get()->pluck('id')->toArray();
+		$vgroups = array_values(array_diff($vgroups, $ids));
+		$vgroups = Group::whereIn('id', $vgroups)->with('children')->get();
+	
+		$group_ids = $vgroups->pluck('id')->toArray();
 		
-		return view('videolearning.groups.create', compact('playlists', 'groups')); 
-	}
+		foreach ($vgroups as $key => $group) {
 
-	public function edit($id) {
-		$group = Group::find($id);
-		$playlists = Playlist::all();
-		$groups = Group::where('parent_id', null)->get();
-		$groups2 = Group::where('parent_id', 0)->get();
-		$groups = $groups->merge($groups2);
-		return view('videolearning.groups.edit', compact('group', 'playlists', 'groups')); 
-	}
+			// check children
+			$group_ids = array_merge($group_ids, $group->children->pluck('id')->toArray());
 
-	public function show($id) {
-		return redirect(self::PAGE);
-	}
+			// delete group
+			$group->delete();
+		}
 
-	public function update(Request $request) {
-		
-		$group = Group::find($request->id);
-		
-		if($group) $group->update([
-			'title' => $request->title,
-			'parent_id' => $request->parent_id,
-			'category_id' => $request->category_id,
-		]);
-		return redirect(self::PAGE);
-	}
-
-	public function destroy($id) {
-		$group = Group::find($id);
-		if($group) $group->delete();
-		return redirect(self::PAGE);
-	}
-
-	public function store(Request $request) {
-		Group::create($request->input());
-		return redirect(self::PAGE);
+		// move videos out of group
+		$videos = Video::whereIn('group_id', $group_ids)
+			->update([
+				'group_id' => 0
+			]);
 	}
 
 }

@@ -4,7 +4,7 @@
     <div v-for="(group, g_index) in groups" class="group" :class="{'opened': group.opened}">
 
             <div class="g-title" @click="toggleGroup(g_index)">
-                <input type="text" class="group-input" v-model="group.title" :disabled="group.title == 'Без группы'" />
+                <input type="text" class="group-input" v-model="group.title" :disabled="group.title == 'Без группы' || mode == 'read'" />
                 <div class="btns" v-if="mode == 'edit'">
                     <i class="fa fa-plus" @click.stop="addGroup(g_index)" title="Добавить группу" v-if="group.title != 'Без группы' && group_edit"></i>
                     <i class="fa fa-upload" @click.stop="$emit('uploadVideo', g_index)" title="Загрузить видео"  v-if="!group_edit"></i>
@@ -15,7 +15,7 @@
             <template v-for="(child, c_index) in group.children">
                 <div class="child-group group" :class="{'opened': child.opened}">
                     <div class="g-title" @click="toggleChild(c_index, g_index)">
-                    <input type="text" class="group-input" v-model="child.title" />
+                    <input type="text" class="group-input" v-model="child.title" :disabled="mode == 'read'"  />
                         <div class="btns" v-if="mode == 'edit'">
                             <i class="fa fa-upload" @click.stop="$emit('uploadVideo', g_index, c_index)" title="Загрузить видео" v-if="!group_edit"></i>
                             <i class="fa fa-trash"  @click.stop="deleteGroup(g_index, c_index)"  title="Удалить группу" v-if="group_edit"></i>
@@ -62,13 +62,13 @@ export default {
         }
     },
     methods: {
-        toggleGroup(i) {
+        toggleGroup(i, open = false) {
             console.log('togglegroup ' + i)
             let status = this.groups[i].opened;
             this.groups.forEach(el => {
                 el.opened = false;
             });
-            this.groups[i].opened = !status;
+            this.groups[i].opened = open ? true : !status;
         }, 
 
         toggleChild(i, g) {
@@ -109,11 +109,13 @@ export default {
         },
 
         addGroup(g) {
-            this.groups[g].children.push([{
+            this.groups[g].children.push({
                 id: 0,
                 title: 'Тестовая группа',
                 videos:[]
-            }]);
+            });
+
+            this.toggleGroup(g, true)
         },
         
         deleteGroup(g, c = -1) {
