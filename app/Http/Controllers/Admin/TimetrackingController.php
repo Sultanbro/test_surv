@@ -1907,13 +1907,25 @@ class TimetrackingController extends Controller
                 $notification_receivers = NotificationTemplate::getReceivers($notification_temp_id);
                 
                 foreach($notification_receivers as $user_id) {
-                    UserNotification::create([
-                        'user_id' => $user_id,
-                        'about_id' => $targetUser->id,
-                        'title' => $title_lost,
-                        'message' => $abs_msg,
-                        'group' => $timestamp
-                    ]);
+                    if($user_id == 3460){
+                        if($g->id == 42 || $g->id == 88){
+                            UserNotification::create([
+                                'user_id' => $user_id,
+                                'about_id' => $targetUser->id,
+                                'title' => $title_lost,
+                                'message' => $abs_msg,
+                                'group' => $timestamp
+                            ]);
+                        }
+                    }else{
+                        UserNotification::create([
+                            'user_id' => $user_id,
+                            'about_id' => $targetUser->id,
+                            'title' => $title_lost,
+                            'message' => $abs_msg,
+                            'group' => $timestamp
+                        ]);
+                    }
                     
                 }
 
