@@ -603,11 +603,13 @@ export default {
       this.group_edit = false
 
       axios
-        .post("/playlists/save", {
+        .post("/playlists/groups/save", {
           playlist: this.playlist,
         })
         .then((response) => {
           this.$message.success('Сохранено');
+
+          this.playlist.groups = response.data.groups;
         })
         .catch((error) => {
           alert(error);
