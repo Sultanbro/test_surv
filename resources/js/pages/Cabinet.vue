@@ -10,18 +10,6 @@
         <li><a  v-if="user.is_admin === 1" style="color: black" @click="userRoles = true , userProfile = false "  v-bind:class="{ profile_active: userRoles }" >Административные настройки</a></li>
         <li class="position-relative">
           <a style="color: black"  @click="userProfile = true , userRoles = false"  v-bind:class="{ profile_active: userProfile }" >Настройка собственного профиля</a>
-
-          <ul v-if="userProfile" class="position-absolute " style="right: 0px;top: 20px">
-
-            <li >
-              <a @click="payment_data = false , basic_data = true"   v-bind:class="{ profile_active: basic_data }"  >Основные данные</a>
-            </li>
-            <li>
-              <a @click="payment_data = true , basic_data = false"   v-bind:class="{ profile_active: payment_data }" >Платежные данные</a>
-            </li>
-
-
-          </ul>
         </li>
 
 
@@ -89,19 +77,13 @@
   </div>
 
   <div  v-if="userProfile" class="col-12 p-0">
-
-      <div class="d-flex jsutify-content-between hat-top">
+     <div class="d-flex jsutify-content-between hat-top">
         <div class="bc">
-          <a v-if="basic_data" href="#">Настройка профиля</a>
-          <a v-else href="#">Настройка платежные данный</a>
+          <a  href="#">Настройка профиля</a>
         </div>
         <div class="control-btns"></div>
       </div>
-
-
-
-    <div class="content mt-3 py-3" v-if="basic_data">
-
+     <div class="content mt-3 py-3" >
       <div class="contacts-info col-md-6 none-block mt-10" id="profile_d" >
         <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
           <div style="border: 2px solid #ced4da;padding: 5px">
@@ -145,23 +127,13 @@
           <label for="lastName"
                  class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
           <div class="col-sm-8">
-            <input class="form-control" type="date" name="birthday" id="birthday" required>
+            <input   v-model="birthday" class="form-control" type="date" name="birthday" id="birthday" required>
           </div>
         </div>
-        <div class="col-4 p-0">
-          <div class="form-group row">
-            <button style="color: white" @click.prevent="userSaveData()" class="btn btn-success ml-3 btn-block" type="button">Сохранить</button>
-          </div>
-        </div>
+
       </div>
-
     </div>
-
-
-    <div class="content mt-3 py-3" v-if="payment_data">
-
-
-
+     <div class="content mt-3 py-3">
       <div class="col-12 row payment-profile" v-for="(payment,index) in payments">
 
         <div class="col-2">
@@ -198,13 +170,11 @@
         </div>
 
       </div>
-
       <div class="col-12" v-if="cardValidatre.error">
         <div class="alert alert-danger">
           <span>Заполните все поля</span>
         </div>
       </div>
-
       <div class="col-8 row mt-3">
 
         <div class="col-3">
@@ -213,16 +183,10 @@
             </button>
         </div>
 
-        <div class="col-3" v-if="addCart" >
-            <button @click.prevent="addPaymentCartSave()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
+        <div class="col-3" >
+            <button @click.prevent="editProfileUser()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
         </div>
-
       </div>
-
-
-
-
-
     </div>
   </div>
 </div>
@@ -256,9 +220,7 @@ export default {
       img:'',
       success: '',
       password:'',
-
-      basic_data:true,
-      payment_data:false,
+      birthday:'',
       cardValidatre:{
           error:false,
           type:false,
@@ -272,7 +234,7 @@ export default {
           phone:'',
         },
       ],
-      addCart:true,
+
 
     };
   },
@@ -283,8 +245,21 @@ export default {
     this.fetchData();
     this.user = JSON.parse(this.auth_role)
 
+    this.format_date(this.user.birthday)
+
   },
   methods: {
+
+    format_date(value){
+
+      console.log(value,'iks');
+
+      if (value) {
+          return  this.birthday = moment(String(value)).format('YYYY-MM-DD')
+      }
+
+
+    },
     onChange(e) {
       this.file = e.target.files[0];
 
@@ -330,7 +305,7 @@ export default {
     },
     addPayment(){
 
-      this.addCart = true,
+
 
       this.payments.push({
         bank:'',
@@ -342,10 +317,9 @@ export default {
 
 
     },
-
     removePaymentCart(index,type_id){
 
-      this.addCart = true
+
 
       let confirmDelte = confirm("Вы действительно хотите безвозвратно удалить ?");
       if (confirmDelte){
@@ -362,15 +336,10 @@ export default {
            });
 
         }
-        if (this.payments != null){
-          if (this.payments.length === 0){
-            this.addCart = false
-          }
-        }
+
       }
     },
-
-    addPaymentCartSave(){
+    editProfileUser(){
       this.cardValidatre.type = false;
       this.cardValidatre.error = false;
 
@@ -387,16 +356,20 @@ export default {
       });
 
       if (this.cardValidatre.type){
-        axios.post('/profile/add/payment/cart/', {
+        axios.post('/profile/edit/user/cart/', {
           cards:this.payments,
+          query:this.user,
+          password:this.password,
+          birthday:this.birthday,
         }).then(response => {
-          this.$message.success('Успешно Сохранено')
+          if (response.data.success){
+            this.$message.success('Успешно Сохранено')
+          }
         })
       }else{
         this.cardValidatre.error = true;
       }
     },
-
     addTag(newTag) {
       const tag = {
         email: newTag,
@@ -404,7 +377,6 @@ export default {
       };
       this.users.push(tag);
     },
-
     fetchData() {
 
 
@@ -420,8 +392,8 @@ export default {
               if (response.data.user_payment.length > 0){
                 this.payments = response.data.user_payment;
               }else{
-                this.payments = [],
-                this.addCart = false
+                this.payments = []
+
               }
           }
 
@@ -430,6 +402,10 @@ export default {
           }else{
             this.img = '/users_img/noavatar.png';
           }
+
+
+
+
 
 
         })
@@ -441,26 +417,6 @@ export default {
         });
 
     },
-
-    userSaveData() {
-
-
-
-      axios.post('/profile/update/save/', {
-        query:this.user,
-        password:this.password,
-      }).then(response => {
-
-
-        if (response.data.success){
-
-          this.$message.success('Успешно Сохранено')
-        }
-
-      })
-
-    },
-
     save() {
       axios
         .post("/cabinet/save", {
@@ -473,9 +429,6 @@ export default {
           alert(error,'6565');
         });
     },
-
-
-
   },
 
 };
