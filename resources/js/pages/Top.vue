@@ -106,7 +106,7 @@
                 </template>
                 <template v-if="['%'].includes(field)">
                   <i class="fa fa-info-circle"
-                     v-b-popover.hover.right.html="'( План * Кол-во календарных дней ) / (Итого * Кол-во отработанных дней) * 100'"
+                     v-b-popover.hover.right.html="'( Итого / План ) * 100'"
                      title="Выполнение плана">
                   </i>
                 </template>

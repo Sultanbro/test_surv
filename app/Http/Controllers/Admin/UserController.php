@@ -1012,6 +1012,7 @@ class UserController extends Controller
     public function editPerson(Request $request,$type = null)
     {
 
+
         if(!Auth::user()) return redirect('/');
         View::share('title', 'Редактировать сотрудника');
         View::share('menu', 'timetrackingusercreate');
@@ -1604,6 +1605,7 @@ class UserController extends Controller
         $user->weekdays = $request['weekdays'];
         $user->working_country = $request['selectedCityInput'];
         $user->working_city = $request['working_city'];
+        $user->headphones_sum = $request['headphones_sum'];
 
 
         if($request->new_pwd != '') {
@@ -1894,23 +1896,10 @@ class UserController extends Controller
         /********** Редактирование зарплаты */
         /*==============================================================*/
 
-        ////приобрести наушники
-
-            if ($request->zarplata == 0){
-                $cash = 70000;
-            }else{
-                $cash = $request->zarplata;
-            }
-
-            if (isset($request['headphones_amount']) && $request['headphones_amount'] > 0){
-                $cash = $cash - $request['headphones_amount'];
-            }
-        /////
-
         if ($user->zarplata === null) {
             $zarplata = new Zarplata();
             $zarplata->user_id = $user->id;
-            $zarplata->zarplata = $cash;
+            $zarplata->zarplata =  $request->zarplata == 0 ? 70000 : $request->zarplata;
             $zarplata->kaspi = $request->kaspi;
             $zarplata->jysan = $request->jysan;
             $zarplata->card_kaspi = $request->card_kaspi;
@@ -1924,7 +1913,7 @@ class UserController extends Controller
 
 
             $user->zarplata()->update([
-                'zarplata' => $cash,
+                'zarplata' => $request->zarplata == 0 ? 70000 : $request->zarplata,
                 'card_number' => $request->card_number,
                 'kaspi' => $request->kaspi,
                 'jysan' => $request->jysan,
