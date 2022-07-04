@@ -489,9 +489,9 @@ class GroupAnalyticsController extends Controller
         if($group) {
             $users_ids = json_decode($group->users);
 
-            if(!($args['month'] == date('m') && $args['year'] == date('Y')) && empty($args['users']) ? 0 : count($args['users']) > 0) {
-                $users_ids = $args['users'];
-            } 
+            // if(!($args['month'] == date('m') && $args['year'] == date('Y')) && empty($args['users']) ? 0 : count($args['users']) > 0) {
+            //     $users_ids = $args['users'];
+            // } 
         }
         
         /** Уволенные */

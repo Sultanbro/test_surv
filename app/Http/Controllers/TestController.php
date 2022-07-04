@@ -24,12 +24,23 @@ class TestController extends Controller {
  
 	public function test() {
 	
-		$disk = \Storage::disk('s3');
+		$disk = \Storage::build([
+			'driver' => 's3',
+			'key' => 'O4493_admin',
+			'secret' => 'nzxk4iNukQWx',
+			'region' => 'us-east-1',
+			'bucket' => 'tenantbp',
+			'endpoint' => 'https://storage.oblako.kz:443',
+			'use_path_style_endpoint' => true,
+			'throw' => false,
+			'visibility' => 'public'
+		]);
 		$url = $disk->temporaryUrl(
-			'videoplayback.mp4', now()->addMinutes(5)
+			'videos/videoplayback_bc103f2bed680d07e482aed7f0a2a793.mp4', now()->addMinutes(5)
 		);
-
 		dd($url);
+
+		//dd($disk->response('videos/videoplayback_f5bd9da50549a093e0f04a769dd7f59e.mp4'));
 	}  
 
 	public function hhRefresher() {

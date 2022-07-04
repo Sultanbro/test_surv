@@ -556,7 +556,8 @@ class AnalyticStat extends Model
                     $text = str_replace("[" . $match. "]", (float)$cell->show_value, $text);
                 }
             } else {
-                $text = str_replace("[" . $match. "]", $col_keys[$exp[0]] . $row_keys[$exp[1]], $text);
+                //dd($exp);
+                //$text = str_replace("[" . $match. "]", $col_keys[$exp[0]] . $row_keys[$exp[1]], $text);
             }
 
 

@@ -52,8 +52,22 @@ class FileUploadController extends Controller {
             // 	\Storage::disk('local')->get('videos/5_1642510994.png')
             // ));
 
-            $disk = Storage::disk(config('filesystems.default'));
+            //$disk = Storage::disk(config('filesystems.default'));
+
+            $disk = \Storage::build([
+                'driver' => 's3',
+                'key' => 'O4493_admin',
+                'secret' => 'nzxk4iNukQWx',
+                'region' => 'us-east-1',
+                'bucket' => 'tenantbp',
+                'endpoint' => 'https://storage.oblako.kz:443',
+                'use_path_style_endpoint' => true,
+                'throw' => false,
+                'visibility' => 'public'
+            ]);
+
             $path = $disk->putFileAs('videos', $file, $fileName);
+            $path = $disk->url($path);
 
             if($extension == 'mp4') {
                 $file_path = 'videos';
@@ -61,7 +75,7 @@ class FileUploadController extends Controller {
                 $file_path = 'books';
             }
 
-            $model = $this->saveModel($extension, $file_path . '/' . $fileName, $fileName);
+            $model = $this->saveModel($extension, $path, $fileName);
                 
             // delete chunked file
             unlink($file->getPathname());
