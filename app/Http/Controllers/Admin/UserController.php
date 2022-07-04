@@ -2239,38 +2239,28 @@ class UserController extends Controller
     }
 
 
-    /////добавление карты через профиль
-    public function addPaymentSave(Request $request){
+    /////добавление карты и измение данный через профиль
+    public function editUserProfile(Request $request){
 
 
-
-
-        Card::where('user_id',auth()->user()->getAuthIdentifier())->delete();
-
-
-        foreach ($request->cards as $card) {
-            Card::create([
-                'user_id' => auth()->user()->getAuthIdentifier(),
-                'bank' => $card['bank'],
-                'country'=> $card['country'],
-                'cardholder'=> $card['cardholder'],
-                'phone' => $card['phone'],
-                'number'=> $card['number'],
-            ]);
+        if (isset($request->cards) && !empty($request->cards)){
+            Card::where('user_id',auth()->user()->getAuthIdentifier())->delete();
+            foreach ($request->cards as $card) {
+                Card::create([
+                    'user_id' => auth()->user()->getAuthIdentifier(),
+                    'bank' => $card['bank'],
+                    'country'=> $card['country'],
+                    'cardholder'=> $card['cardholder'],
+                    'phone' => $card['phone'],
+                    'number'=> $card['number'],
+                ]);
+            }
         }
-
-
-
-
-    }
-
-    /////измение данный через профиль
-    public function userUpdateSave(Request$request){
-
 
         $user = User::find(auth()->user()->getAuthIdentifier());
         $user['name'] = $request['query']['name'];
-        if (!empty($request->password)){
+        $user['birthday'] = $request['birthday'];
+        if (isset($request->password) && !empty($request->password)){
             $user['password'] = Hash::make($request->password);
         }
         $user['last_name'] = $request['query']['last_name'];
@@ -2280,7 +2270,10 @@ class UserController extends Controller
         }
 
 
+
+
     }
+
 
     /////загрузка аватарки через профиль в компоненте ( vue.js )
     public function uploadPhotoProfile(Request $request)
