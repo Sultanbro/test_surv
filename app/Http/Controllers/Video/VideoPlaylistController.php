@@ -87,6 +87,8 @@ class VideoPlaylistController extends Controller {
 			$video->questions = TestQuestion::where('testable_type', 'App\Models\Videos\Video')
 				->where('testable_id', $video->id)
 				->get();
+
+			
 		}
 		return [
 			'playlist' => $pl,
@@ -94,6 +96,44 @@ class VideoPlaylistController extends Controller {
 			'all_videos' => Video::select('id', 'title', 'links')->where('playlist_id', 0)->get(),
 		];
 	}
+
+	public function getVideo(Request $request) {
+
+		$video =  Video::find($request->id);
+
+		$url = '';
+
+		if($video) {
+
+			if($video->domain != 'storage.oblako.kz') {
+				$url = $video->links;
+			} else {
+				$disk = \Storage::build([
+					'driver' => 's3',
+					'key' => 'O4493_admin',
+					'secret' => 'nzxk4iNukQWx',
+					'region' => 'us-east-1',
+					'bucket' => 'tenantbp',
+					'endpoint' => 'https://storage.oblako.kz:443',
+					'use_path_style_endpoint' => true,
+					'throw' => false,
+					'visibility' => 'public'
+				]);
+	
+				$url = $disk->temporaryUrl(
+					$video->links, now()->addMinutes(360)
+				);
+			}
+
+		}
+	
+
+		return [
+			'links' => $url,
+		];
+	}
+
+	
 
 	public function add_video(Request $request) {
 		$video = Video::find($request->video_id);

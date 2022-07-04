@@ -20,7 +20,8 @@ class Video extends Model
         'views',
         'playlist_id',
         'group_id',
-        'order'
+        'order',
+        'domain'
     ];
 
     public function questions()

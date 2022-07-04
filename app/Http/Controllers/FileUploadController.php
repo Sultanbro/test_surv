@@ -32,21 +32,8 @@ class FileUploadController extends Controller {
         if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
             $file = $fileReceived->getFile(); // get file
             $extension = $file->getClientOriginalExtension();
-            $fileName = str_replace('.'.$extension, '', $file->getClientOriginalName()); //file name without extenstion
-            $fileName .= '_' . md5(time()) . '.' . $extension; // a unique file name
+            $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
 
-        
-            // $disk = \Storage::build([
-            //     'driver' => 's3',
-            //     'key' => 'O4493_admin',
-            //     'secret' => 'nzxk4iNukQWx',
-            //     'region' => 'us-east-1',
-            //     'bucket' => 'video',
-            //     'endpoint' => 'https://storage.oblako.kz:443',
-            //     'use_path_style_endpoint' => true,
-            //     'throw' => false
-            // ]);
-            
             // dd($disk->put(
             // 	'cloud-filename.txt',
             // 	\Storage::disk('local')->get('videos/5_1642510994.png')
@@ -75,7 +62,7 @@ class FileUploadController extends Controller {
                 $file_path = 'books';
             }
 
-            $model = $this->saveModel($extension, $path, $fileName);
+            $model = $this->saveModel($extension, $file_path, $fileName);
                 
             // delete chunked file
             unlink($file->getPathname());
@@ -103,7 +90,8 @@ class FileUploadController extends Controller {
 
             $model = Video::create([
                 'title' => $filename,
-                'links' => $path,
+                'links' =>  '/' . $path . '/' . $filename,
+                'domain' => 'storage.oblako.kz',
                 'duration' => 0,
                 'views' => 0,
                 'playlist_id' => 0,
@@ -120,7 +108,7 @@ class FileUploadController extends Controller {
 
             $model = Book::create([
                 'title' => $filename,
-                'link' => $path,
+                'link' =>  '/' . $path . '/' . $filename,
                 'author' => 'Неизвестный',
                 'img' => '',
                 'group_id' => 0,

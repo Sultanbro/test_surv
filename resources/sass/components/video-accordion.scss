@@ -50,18 +50,42 @@
             }
         }
 
+        .chevron,
+        .chevron2 {
+            transition: 0.5s ease all;
+        }
+
         &.opened {
             .g-title  {
                 background: #274166;
             }
 
+            .chevron {
+                transform: rotate(180deg);
+            }
             
         }
 
-        .child-group.opened .g-title {
-            background: #4c18d5;
+        .child-group .g-title {
+            background: #050910;
         }
+
+        .child-group.opened {
+
+            border-bottom: 1px solid #494949;
+
+            .g-title {
+                background: #4c18d5;
+            }
+        }
+        
        
+        .child-group.opened {
+            .chevron2 {
+                transform: rotate(180deg);
+            }
+        }
+
         &.opened {
             height: auto;
         }
