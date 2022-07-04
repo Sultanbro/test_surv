@@ -72,7 +72,6 @@ class UpbookController extends Controller
             $_test = [];
             foreach ($test as $key => $q) {
                 $q = $q->toArray();
-                $q['checked'] = 0;
                 $q['result'] = 0;
                 $_test[] = $q;
             }
@@ -83,7 +82,11 @@ class UpbookController extends Controller
                 'pass' => false,
                 'questions' => $_test 
             ]);
+
+            $_pages = array_column($arr, 'page');
+            array_multisort($_pages, SORT_ASC, $arr); 
         }
+
         return ['tests' => $arr];
     }
     

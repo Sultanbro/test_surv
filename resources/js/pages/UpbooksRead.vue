@@ -1,66 +1,72 @@
 <template>
   <div class="upbook-read-page">
+
+    <!-- left side bar -->
     <div class="controls">
-      <div @click="$emit('back')" class="btn">
+      <div @click="$emit('back')" class="btn w-full btn-success" v-if="showBackBtn">
         <i class="fa fa-arrow-left"></i>
         Назад
       </div>
-      <div>
-        <p class="text-center">
-          <b>{{ page }} / {{ pageCount }}</b>
-        </p>
-        <input
-          v-model.number="page"
-          class="form-control text-center mt-2 mb-2"
-          type="number"
-          min="1"
-          disabled
-          :max="pageCount"
-        />
-      </div>
 
-      <div class="d-flex justify-content-center"> 
-        <button class="btn rounded mr-2" @click="prevPage">
-          <i class="fa fa-chevron-left"></i>
-        </button>
-        <button class="btn rounded" @click="nextPage">
-          <i class="fa fa-chevron-right"></i>
-        </button>
-      </div>
+      <div class="d-flex mt-3 first-block">
 
-      <div class="d-flex justify-content-center mt-2">
-        <button class="btn rounded mr-1 p-1" @click="zoomIn">
-          <i class="fa fa-search-plus"></i>
-        </button>
-        <button class="btn rounded mr-1 p-1" @click="zoom = 0">
-          <i class="fa fa-bars"></i>
-        </button> 
-        <button class="btn rounded p-1" @click="zoomOut">
-          <i class="fa fa-search-minus"></i> 
-        </button>
+        <!-- left -->
+        <div>
+          <img :src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img" 
+            class="w-full pr-3" />
+          <div v-if="isLoading">
+            <p class="text-center mt-3">
+              <b>Загружается...</b>
+            </p>
+          </div>
+        </div>
+
+        <!-- right -->
+        <div>
+           <div>
+            <p class="text-center">
+              <b>{{ page }} / {{ pageCount }}</b>
+            </p>
+          </div>
+
+          <div class="d-flex justify-content-center"> 
+            <button class="btn rounded mr-2" @click="prevPage">
+              <i class="fa fa-chevron-left"></i>
+            </button>
+            <button class="btn rounded" @click="nextPage">
+              <i class="fa fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <div class="d-flex justify-content-center mt-2">
+            <button class="btn rounded mr-1 p-2" @click="zoomIn">
+              <i class="fa fa-search-plus"></i>
+            </button>
+            <button class="btn rounded mr-1 p-2" @click="zoom = 0">
+              <i class="fa fa-bars"></i>
+            </button> 
+            <button class="btn rounded p-2" @click="zoomOut">
+              <i class="fa fa-search-minus"></i> 
+            </button>
+          </div>  
+        </div>
       </div>  
-
+     
+      <!-- Page numbers -->
       <div class="chapters mt-3">
+        <div class="item font-bold mb-2">
+          <p class="mb-0">Вопросы на странице:</p>
+        </div>
+
         <div class="item" v-for="test in tests" :class="{'pass': test.pass}">
-          <p class="mb-0">Вопросы на странице: {{ test.page }}</p>
+          <p class="mb-0">Стр. {{ test.page }} : {{ test.questions.length }} вопрос (-ов)</p>
         </div>
       </div>
 
-
-      <div class="mt-3">
-        <img :src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img" class="w-full" />
-      </div>  
-      <div v-if="isLoading">
-        <p class="text-center mt-3">
-          <b>Загружается...</b>
-        </p>
-      </div>
-
-      
     </div>
 
-    <div
-      class="pdf"
+    <!-- PDF viewer -->
+    <div class="pdf"
       :class="{
         'show': activeTest == null,
         w600: zoom == 600,
@@ -88,7 +94,8 @@
       />
     </div>
 
-    <div class="test" style="width:1000px;max-width: 100%;" v-if="activeTest !== null">
+    <!-- Test viewer -->
+    <div class="test" v-if="activeTest !== null">
       <questions
         :questions="activeTest.questions"
         :pass="activeTest.pass"
@@ -99,6 +106,7 @@
         @passed="activeTest.pass = true"
       />
     </div>
+
   </div>
 </template>
 
@@ -109,7 +117,7 @@ export default {
   components: {
     VuePdfEmbed
   },
-  props: ["activeBook", "mode"],
+  props: ["activeBook", "mode", 'showBackBtn'],
   data() {
     return {
       page: 1,
@@ -124,7 +132,7 @@ export default {
     };
   },
   created() {
-    
+
       this.checkpoint = this.pageCount
       this.getTests()
 
@@ -262,10 +270,5 @@ export default {
 </script>
 
 <style>
-.pdf {
-  display:none;
-}
-.pdf.show {
-  display:block;
-}
+
 </style>

@@ -1,53 +1,46 @@
 <template>
 <div class="d-flex mycourse">
 
+  <!-- левый сайдбар -->
   <div class="lp">
     <h1 class="page-title">Мои курсы</h1>
 
+    <!-- список курсов -->
     <div v-if="activeCourse == null">
-      <!-- список курсов -->
-         <div
-          class="section d-flex aic jcsb my-2"
+         <div class="section d-flex aic jcsb my-2"
           v-for="(course, c_index) in courses"
           :key="course.id"
           @click="getCourse(course.course_id)"
         >
           <p class="mb-0">{{ course.course.name }}</p>
         </div>
-
-
     </div>
 
-
-
-
-
+    <!-- выбранный курс -->
     <div v-else>
-      <!-- выбран курс -->
-      <div class="btn btn-grey mb-3 mt-3" @click="back">
-        <i class="fa fa-arrow-left"></i>
-        <span>Вернуться к моим курсам</span> 
+       <div class="fixed-height py-3">
+          <div class="course-item" v-for="(item, c_index) in items"
+            :key="item.id"
+            :class="{'active': item.active}"
+            @click="selectCourseItem(c_index)"
+          >
+            <div class="title">
+                {{ item.title }}
+            </div>
+            <div v-if="item.status == 2">
+              <div class="section d-flex aic jcsb my-2" v-for="(step, i) in item.steps"
+                @click="selectStep(step, item)"
+              >
+                <p class="mb-0">{{ step.title }}</p>
+              </div>
+            </div>
+          </div>
       </div>
-      <div>
-        <p>{{ activeCourse.course.name }}</p>
-        <img class="course-img w-full" :src="activeCourse.course.img" />
-
-      </div>
-
-        <div>
-        Пройдено: 0%
-         <progress value="0" max="100"></progress>
-      </div>
-
-      <div class="mt-3 " v-html="activeCourse.course.text"></div>
     </div>
-      
-   
 
-   
   </div>
 
-
+  <!-- правая часть -->
   <div class="rp" style="flex: 1 1 0%; padding-bottom: 0px;">
     <div class="hat">
       <div class="d-flex jsutify-content-between hat-top">
@@ -57,14 +50,11 @@
             <i class="fa fa-chevron-right"></i>
             <a href="#" >{{ activeCourse.course.name }}</a>
           </template>
-          <!---->
         </div>
         <div class="control-btns">
-
             <div v-if="activeStep">
               <button class="btn btn-primary py-0" @click="nextStep"> Перейти к следующему</button>
             </div>
-
         </div>
       </div>
       <div><!----></div>
@@ -77,35 +67,7 @@
 
           <div class="">
 
-            <div class="col-md-3 fixed-height py-3 ">
-
-
-
-                <div v-for="(item, c_index) in items"
-                        :key="item.id" class="course-item" :class="{
-                          'active': item.active
-                        }"
-                        @click="selectCourseItem(c_index)"
-                        >
-
-                      <div class="title">
-                          {{ item.title }}
-                      </div>
-
-                      <div v-if="item.status == 2">
-                          <div
-                            class="section d-flex aic jcsb my-2"
-                            @click="selectStep(step, item)"
-                            v-for="(step, i) in item.steps"
-                          >
-                            <p class="mb-0">{{ step.title }}</p>
-                        </div>
-                      </div>
-
-                    
-                    </div>
-              </div>
-
+           
 
 
             <div class="fixed-height ">
@@ -145,7 +107,7 @@
             </div>
 
 
-            </div>
+           
           </div>
  
 

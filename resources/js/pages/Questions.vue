@@ -62,30 +62,38 @@
             v-for="(v, v_index) in q.variants"
             :key="v_index"
           >
-            <input 
-              v-if="mode == 'edit'"
-              type="checkbox"
-              v-model="v.right" 
-              class="mr-2" 
-              @change="changed = true"
-              title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько" />
-            <input 
-              v-else
-              type="checkbox"
-              v-model="v.checked" 
-              class="mr-2" 
-              @change="changed = true"
-              title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько" />
 
-            <input
-              type="text"
-              v-model="v.text"
-              :disabled="mode == 'read'"
-              placeholder="Введите вариант ответа..."
-              @keyup.enter="addVariant(q_index, v_index)"
-              @keyup.delete="deleteVariant(q_index, v_index)"
-              :ref="`variant${q_index}_${v_index}`"
-            />
+            <label class="d-flex" v-if="mode == 'edit'">
+              <input 
+                type="checkbox"
+                v-model="v.right" 
+                class="mr-2" 
+                @change="changed = true"
+                title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
+              /> 
+              
+              <input
+                type="text"
+                v-model="v.text"
+                placeholder="Введите вариант ответа..."
+                @keyup.enter="addVariant(q_index, v_index)"
+                @keyup.delete="deleteVariant(q_index, v_index)"
+                :ref="`variant${q_index}_${v_index}`"
+              />
+            </label>
+
+            <label class="d-flex" v-if="mode == 'read'">
+              <input 
+                  type="checkbox"
+                  v-model="v.checked" 
+                  class="mr-2" 
+                  @change="changed = true"
+                  title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
+              />
+              <p class="mb-0">{{ v.text }}</p>
+            </label>
+          
+         
           </div>
         </div>
         <div v-else>
@@ -140,40 +148,13 @@ export default {
     return {
       can_save: true,
       changed: false,
-      questionsx: [
-        {
-          text: "Кто это был?",
-          order: 0,
-          type: "abc",
-          editable: false,
-          points: 10,
-          variants: [
-            {
-              text: "Asan",
-              right: 1,
-            },
-            {
-              text: "Dolik",
-              right: 0,
-            },
-            {
-              text: "Burda",
-              right: 0,
-            },
-            {
-              text: "Bobik",
-              right: 0,
-            },
-          ],
-        },
-      ],
       total: 0,
       points: -1,
     };
   },
   created() {
     this.prepareVariants();
-    // this.mode = 'edit';
+
     if (this.mode == "read") {
 
       this.questions.forEach((q) => {

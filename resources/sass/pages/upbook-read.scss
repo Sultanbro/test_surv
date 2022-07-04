@@ -1,35 +1,97 @@
 .upbook-read-page {
+
   display: flex;
   background: #272c33;
+
   .pdf {
     height: 100vh;
     width: auto;
     overflow-y: auto;
+    padding: 5px;
+    display:none;
+    margin: 0 auto;
 
     &.full {
       width: 100%;
       max-width: 100%;
     }
-    &.w600 {width: 600px;}
-    &.w700 {width: 700px;}
-    &.w800 {width: 800px;}
-    &.w900 {width: 900px;}
-    &.w1000 {width: 1000px;}
-    &.w1100 {width: 1100px;}
-    &.w1200 {width: 1200px;}
-    &.w1300 {width: 1300px;}
-    &.w1400 {width: 1400px;}
-    &.w1500 {width: 1500px;}
-    &.w1600 {width: 1600px;}
+
+    &.show {
+      display: block;
+    }
+
+    &.w600 {width: 621px;}
+    &.w700 {width: 721px;}
+    &.w800 {width: 821px;}
+    &.w900 {width: 921px;}
+    &.w1000 {width: 1021px;}
+    &.w1100 {width: 1121px;}
+    &.w1200 {width: 1221px;}
+    &.w1300 {width: 1321px;}
+    &.w1400 {width: 1421px;}
+    &.w1500 {width: 1521px;}
+    &.w1600 {width: 1621px;}
 
     
   }
 
+
+  .test {
+    width: 100%;
+  }
+
+  .questions {
+    height: 100vh;
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow: auto;
+    border: 0;
+    border-radius: 0px;
+    box-shadow: none;
+    
+    .question {
+      background: #fff !important;
+    }
+    
+    .title {
+      p {
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+  }
+
   .controls {
-    width: 120px;
+    flex: 0 0 290px;
+    max-width: 290px;
+    overflow-x: hidden;
     min-height: 100vh;
     padding: 10px;
-    background: #ccc;
+    background: #f8f8f8;
     border-right: 1px solid #dee7ec;
   }
+
+  .first-block {
+    background: #9badc0;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .chapters {
+
+    .item {
+
+      color: #d6d6d6;
+      cursor: pointer;
+      margin: 3px 0;
+
+      &.pass p {
+        color: #3a6ac1;
+      } 
+      
+    }
+
+  }
+
+
 }
