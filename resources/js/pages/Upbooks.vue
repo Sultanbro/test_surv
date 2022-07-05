@@ -76,7 +76,7 @@
     </div>
 
     <page-upbooks-read v-else 
-      :activeBook="activeBook" 
+      :book_id="activeBook.id" 
       mode="read"
       @back="back"
       :showBackBtn="true"  

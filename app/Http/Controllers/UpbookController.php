@@ -64,6 +64,7 @@ class UpbookController extends Controller
 
     public function getTests(Request $request)
     {
+        $book = Book::find($request->id);
         $qs = TestQuestion::where('testable_type', 'App\Models\Books\Book')->where('testable_id', $request->id)->get()->groupBy('page');
 
         $arr = [];
@@ -87,7 +88,10 @@ class UpbookController extends Controller
             array_multisort($_pages, SORT_ASC, $arr); 
         }
 
-        return ['tests' => $arr];
+        return [
+            'tests' => $arr,
+            'activeBook' => $book,
+        ];
     }
     
     public function save(Request $request)

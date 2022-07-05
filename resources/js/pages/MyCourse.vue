@@ -3,7 +3,7 @@
 
   <!-- левый сайдбар -->
   <div class="lp">
-    <h1 class="page-title">Мои курсы</h1>
+    <h1 class="page-title">Мои курсы</h1> 
 
     <!-- список курсов -->
     <div v-if="activeCourse == null">
@@ -18,7 +18,7 @@
 
     <!-- выбранный курс -->
     <div v-else>
-       <div class="fixed-height py-3">
+       <div class="py-3">
           <div class="course-item" v-for="(item, c_index) in items"
             :key="item.id"
             :class="{'active': item.active}"
@@ -26,13 +26,6 @@
           >
             <div class="title">
                 {{ item.title }}
-            </div>
-            <div v-if="item.status == 2">
-              <div class="section d-flex aic jcsb my-2" v-for="(step, i) in item.steps"
-                @click="selectStep(step, item)"
-              >
-                <p class="mb-0">{{ step.title }}</p>
-              </div>
             </div>
           </div>
       </div>
@@ -70,28 +63,39 @@
            
 
 
-            <div class="fixed-height ">
-              <div v-if="activeStep">
+            <div class="mmmm-block">
+              <div v-if="activeCourseItem">
 
 
-                  <div v-if="activeStep.type == 'book'">
-                    <page-upbooks-read :activeBook="activeStep" mode="read"  />
+                  <div v-if="activeCourseItem.item_model == 'App\\Models\\Books\\Book'">
+                    <page-upbooks-read :book_id="activeCourseItem.item_id" mode="read"  />
+                  </div>
+
+                  <div class="p-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\Video'">
+                      <page-playlist-edit 
+                          :id="activeCourseItem.item_id"
+                          mode="read" />
                   </div>
 
 
 
-                  <div v-if="activeStep.type == 'video'">
-                      <vue-core-video-player :src="activeStep.links"  class="mb-3 w65"></vue-core-video-player>
-                  </div>
+                  <div v-if="activeCourseItem.item_model == 'App\\KnowBase'" class="p">
+                      <!-- <div class="text-container" v-html="activeStep.text"></div> -->
 
+                       <booklist 
+                        ref="booklist"
+                        :trees="trees" 
+                        :parent_name="activeCourseItem.title" 
+                        :parent_id="activeCourseItem.item_id"
+                        :show_page_id="0" 
+                        mode="read"
+                        :course_page="true"
+                        :auth_user_id="0" /> 
 
-
-                  <div v-if="activeStep.type == 'kb'" class="py-3 ">
-                      <div class="text-container" v-html="activeStep.text"></div>
                   </div>
 
                  
-                  <div class="py-3">
+                  <!-- <div class="py-3">
                     <questions
                       :questions="activeStep.questions"
                       :id="activeStep.id"
@@ -101,7 +105,7 @@
                       />
 
                       
-                  </div>  
+                  </div>   -->
                   
               </div>
             </div>
@@ -133,6 +137,7 @@ export default {
       activeCourseItem: null,
       activeCourse: null,
       activeStep: null,
+      trees: []
     };
   },
   created() {
@@ -175,10 +180,29 @@ export default {
     },
 
   selectCourseItem(i) {
-   
-    
+     this.activeCourseItem = this.items[i];
+      if(this.activeCourseItem.model_type == 'App\\KnowBase') {
+        this.selectKnowbaseSection();
+      }
   },
     
+
+    selectKnowbaseSection(book, page_id = 0) {
+      axios
+        .post("kb/tree", {
+          id: id,
+        })
+        .then((response) => {
+          if(response.data.error) {
+            this.$message.info('Раздел не найден');
+          }
+          this.trees = response.data.trees;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
     setStepStatus() {
       let index = this.activeCourseItem.steps.findIndex(s => s.id == this.activeStep.id);
       this.activeCourseItem.steps[index].status = 1;

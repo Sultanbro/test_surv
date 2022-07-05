@@ -117,12 +117,13 @@ export default {
   components: {
     VuePdfEmbed
   },
-  props: ["activeBook", "mode", 'showBackBtn'],
+  props: ["book_id", "mode", 'showBackBtn'],
   data() {
     return {
       page: 1,
       activeCategory: null,
       activeTest: null,
+      activeBook: null,
       pageCount: 0,
       zoom: 800,
       isLoading:true,
@@ -149,10 +150,11 @@ export default {
 
       axios
         .post("/admin/upbooks/tests/get", {
-          id: this.activeBook.id,
+          id: this.book_id,
         })
         .then((response) => {
           this.tests = response.data.tests;
+          this.activeBook = response.data.activeBook;
 
 
           loader.hide();
