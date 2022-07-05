@@ -90,8 +90,8 @@
                     <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 170px;">Суть работы</th>
                     <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 170px;">График работы</th>
                     <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 200px;">Какая ЗП?</th>
-
                     <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 230px;">Общая ценка тренера</th>
+                    <th class="text-left t-name table-title" style="background:#90d3ff">Рекомендации</th>
                 </thead>
             
           <tbody>
@@ -127,6 +127,11 @@
                     <div class="d-flex" style="flex-direction:column">
                         <Rating :grade="Number(item['quiz'][4]['avg']).toFixed(0)" :maxStars="10" :hasCounter="false" />
                         <p class="mb-0">{{ item['quiz'][4]['avg'].toFixed(2) + ' (' + item['quiz'][4]['count'] + ')' }}</p>
+                    </div>
+                </td>
+                <td class="text-left t-name table-title align-middle">
+                    <div v-for="(answer, ind) in item['quiz'][5]"  :key="ind" class="d-flex">
+                        <p class="fz12">{{ answer }}</p>
                     </div>
                 </td>
             </tr>
@@ -283,6 +288,11 @@ export default {
                         items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['count'] += item['quiz'][4]['count'];
                         items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
 
+                        for(let i = 1; i < 8; i++){
+                            items.filter(my_item => my_item.group == item.group)[0]['presence'][i] += item['presence'][i];
+                        }
+                    }else{
+                        items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
                         for(let i = 1; i < 8; i++){
                             items.filter(my_item => my_item.group == item.group)[0]['presence'][i] += item['presence'][i];
                         }
