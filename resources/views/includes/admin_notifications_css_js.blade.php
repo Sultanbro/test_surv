@@ -479,6 +479,13 @@ $('#setRead').click(function() {
   }
 } 
 
+.blink-notification {
+    -webkit-box-shadow: 0 0 4px #61bfe9;
+    box-shadow: 0 0 4px #61bfe9;
+    border: 1px solid #61bfe9;
+    -webkit-animation: blinktwo infinite 1.5s;
+    animation: blinktwo infinite 1.5s;
+}
 
 .bgpanel {
   display: none;
