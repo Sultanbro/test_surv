@@ -8,6 +8,7 @@
   
 <div class="btn-rm" id="toggle_panel">
     <i class="fa fa-bell"></i>
+     <div class="blink-notification" style="border-color: rgb(0, 242, 246); position: absolute; inset: 0px; border-radius: 50%;z-index: -1;"></div>
     @if($unread > 0)
     <div class="nn-number" style="display:none">
        
