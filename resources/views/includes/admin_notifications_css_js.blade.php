@@ -420,8 +420,12 @@ $('#setRead').click(function() {
   background: #00a3ff;
 }
 
-.right-menu .btn-rm i.fa-bell {
-  animation: bell 1s ease-out infinite;
+.belly {
+  position: absolute;
+  display: block !important;
+}
+.right-menu .btn-rm i.belly {
+  animation: bell 2s ease-out infinite;
 }
 
 @keyframes pulse {
@@ -454,28 +458,38 @@ $('#setRead').click(function() {
 
 @keyframes bell {
   0% {
-      -webkit-transform: scale(1);
-      opacity: 0.8;
+      -webkit-transform: scale(1.2);
+      opacity: 1;
   }
 
-  25% {
-      -webkit-transform: scale(0.9) rotate(10deg);
+  15% {
+      -webkit-transform: scale(1) rotate(1deg);
+      opacity: 0.9;
+  }
+
+  20% {
+      -webkit-transform: scale(1.2);
+      opacity: 1;
+  }
+
+  30% {
+      -webkit-transform: scale(1) rotate(1deg);
       opacity: 0.9;
   }
 
   50% {
-      -webkit-transform: scale(1.1) rotate(-10deg);
-      opacity: 1;
+      -webkit-transform: scale(1.3) rotate(-1deg);
+      opacity: 0.5;
   }
 
   75% {
-      -webkit-transform: scale(1) rotate(10deg);
-      opacity: 0.9;
+      -webkit-transform: scale(1.8) rotate(1deg);
+      opacity: 0.3;
     }
 
   100% {
-      -webkit-transform: scale(1);
-      opacity: 1;
+      -webkit-transform: scale(2);
+      opacity: 0;
   }
 } 
 
