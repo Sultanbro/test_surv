@@ -664,37 +664,18 @@ export default {
   created() {
 
     this.getTree();
-    // this.tree = this.trees;
+
     this.parent_title = this.parent_name;
+
+ 
     this.id = this.parent_id;
     
   },
 
   mounted() {
     
-    this.books = [];
-
-
-    const urlParams = new URLSearchParams(window.location.search);
-    let book_id = urlParams.get('b');
-    this.breadcrumbs = [{id:this.id, title: this.parent_title}];
-    console.log('book_id '  + book_id)
-    
-    
-    let result = null
-    this.tree.every(obj => {
-      result = this.deepSearchId(obj, book_id)
-      if (result != null) {
-        console.log(result);
-        this.showPage(book_id, false, true);
-        return false;
-      }
-      return true;
-    });
-   
-
-
   },
+
   methods: {
     
     nextElement() {
@@ -718,6 +699,26 @@ export default {
         })
         .then((response) => {
           this.tree = response.data.trees;
+
+          this.books = [];
+
+          const urlParams = new URLSearchParams(window.location.search);
+          let book_id = urlParams.get('b');
+          this.breadcrumbs = [{id:this.id, title: this.parent_title}];
+          console.log('book_id '  + book_id)
+          
+          
+          let result = null
+          this.tree.every(obj => {
+            result = this.deepSearchId(obj, book_id)
+            if (result != null) { 
+              console.log(result);
+              this.showPage(book_id, false, true);
+              return false;
+            }
+            return true;
+          });
+
         })
         .catch((error) => {
           alert(error);

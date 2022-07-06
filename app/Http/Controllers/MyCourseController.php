@@ -36,6 +36,37 @@ class MyCourseController extends Controller
         ];
     }   
 
+    /**
+     * Save passed course element to user
+     * @param Request $request
+     * 
+     * @return [type]
+     */
+    public function pass(Request $request) {
+        $model = CourseItemModel::where('user_id', auth()->id())
+            ->where('type', $request->type)
+            ->where('item_id', $request->id)
+            ->where('course_item_id', $request->course_item_id)
+            ->first();
+
+        if($model) {
+            $model->status = 1;
+            $model->save();
+        } else {
+            $model = CourseItemModel::create([
+                'type' =>  $request->type,
+                'item_id' =>  $request->id,
+                'course_item_id' =>  $request->course_item_id,
+                'status' =>  1,
+            ]);
+        }
+        
+        
+        return [
+            'item_model' => $model,
+        ];
+    }   
+
     public function getMyCourse(Request $request) {
         $user_id = auth()->user()->id;
        

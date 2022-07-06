@@ -63,7 +63,7 @@
             :key="v_index"
           >
 
-            <label class="d-flex" v-if="mode == 'edit'">
+            <label class="d-flex  w-full" v-if="mode == 'edit'">
               <input 
                 type="checkbox"
                 v-model="v.right" 
@@ -82,7 +82,7 @@
               />
             </label>
 
-            <label class="d-flex" v-if="mode == 'read'">
+            <label class="d-flex w-full" v-if="mode == 'read'">
               <input 
                   type="checkbox"
                   v-model="v.checked" 

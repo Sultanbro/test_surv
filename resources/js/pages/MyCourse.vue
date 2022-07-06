@@ -84,11 +84,11 @@
  
                   <div class="px-3 pt-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\Video'">
                       <page-playlist-edit 
-                        ref="playlist"
+                          ref="playlist"
                           :id="activeCourseItem.item_id"
                           :is_course="true"
                           :myvideo="activeCourseItem.last_item"
-                           :enable_url_manipulation="false"
+                          :enable_url_manipulation="false"
                           mode="read" />
                   </div>
 
