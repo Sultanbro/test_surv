@@ -59,16 +59,15 @@ class Euras2
             ['rownumber' => 2,'headers' => 0, 'pr' => 0,'plan' => 0],
             ['rownumber' => 3,'headers' => 'Impl', 'pr' => 0,'plan' => 0],
             ['rownumber' => 4,'headers' => 'Pr, cstll', 'pr' => 0,'plan' => 0],
-            ['rownumber' => 5,'headers' => 'Факт согласий', 'pr' => 0,'avg' => 0],
+            ['rownumber' => 5,'headers' => 'Средняя конверсия', 'pr' => 0,'avg' => 0],
             ['rownumber' => 6,'headers' => 'Plan согласий', 'pr' => 0],
-            ['rownumber' => 7,'headers' => 'Средняя конверсия', 'avg' => 0],
-            ['rownumber' => 8,'headers' => 'Минуты штатных', 'pr' => 0,'avg' => 0],
-            ['rownumber' => 9,'headers' => 'Поступление лидов', 'pr' => 0,],
-            ['rownumber' => 10,'headers' => 'План операторов', 'pr' => 0],
-            ['rownumber' => 11,'headers' => 'Кол-во операторов', 'pr' => 0],
-            ['rownumber' => 12,'headers' => 'Кол-во некоррект диалогов', 'pr' => 0],
-            ['rownumber' => 13,'headers' => 'Потерянные звонки', 'pr' => 0],
-            ['rownumber' => 14,'headers' => 'Закрыто карт', 'pr' => 0,'avg' => 0],
+            ['rownumber' => 7,'headers' => 'Факт согласий', 'avg' => 0],
+            ['rownumber' => 8,'headers' => 'Минуты операторов', 'pr' => 0,'avg' => 0],
+            ['rownumber' => 9,'headers' => 'План операторов', 'pr' => 0],
+            ['rownumber' => 10,'headers' => 'Кол-во операторов', 'pr' => 0],
+            ['rownumber' => 11,'headers' => 'Кол-во некоррект диалогов', 'pr' => 0],
+            ['rownumber' => 12,'headers' => 'Потерянные звонки', 'pr' => 0],
+            ['rownumber' => 13,'headers' => 'Закрыто карт', 'pr' => 0,'avg' => 0],
         ];
     }
 
@@ -126,7 +125,7 @@ class Euras2
 
 
         ///
-        $user_ids = json_decode(ProfileGroup::find(70)->users);
+        $user_ids = json_decode(ProfileGroup::find(79)->users);
         $user_ids_1 = User::withTrashed()->whereIn('id', $user_ids)->get()->pluck('id')->toArray();
         //$user_ids_1 = User::withTrashed()->whereIn('id', $user_ids)->where('position_id',32)->where('program_id', 1)->get()->pluck('id')->toArray();
 
@@ -264,7 +263,6 @@ class Euras2
                     ->where('cause', '!=', 'SYSTEM_SHUTDOWN')
                     ->first();
                     
-        
             $call_sec = $calls->billsec_sum;
 
             // $reports = DB::connection('callibro')->table('call_account_actions')
@@ -289,7 +287,6 @@ class Euras2
             $full_time = (int) ceil(($call_sec) / 60); // отработанное время в минутах
             
         } 
-
 
         return $full_time;
         
@@ -358,8 +355,8 @@ class Euras2
         $account = DB::connection('callibro')->table('call_account')->where('email', $user_email)->first();
         
         $aggrees = 0; // общее отработанное время
-        $dialer_id = 443;
-        $script_status_ids = [13471]; // Cтатус в скрипте: Оформлена заявка
+        $dialer_id = 444;
+        $script_status_ids = [13559]; // Cтатус в скрипте: Оформлена заявка
 
         if($account) {
         
@@ -416,20 +413,13 @@ class Euras2
     public static function getClosedCards($day, $user_email = '') {
 
         $cards = 0; // общее отработанное время
-        $dialer_id = 443;
+        $dialer_id = 444;
         
         /**
          *  Cтатус в скрипте
          */
         $script_status_ids = [
-            13470, // Заявка
-            13471, // оформлена заявка
-            13474, // Низкий доход
-            13513, // Отказ
-            13514, // Дорого
-            13515, // Негативный клиент
-            13517, // Услуги подключены
-            13520, // Категорический отказ
+            13559, // Заявка
         ]; 
 
         $cards = DB::connection('callibro')->table('calls')
@@ -454,7 +444,7 @@ class Euras2
     public static function getCallCounts($user_email, $day){
                 $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
         $full_time = 0; // общее отработанное время
-        $dialer_id = 443;
+        $dialer_id = 444;
         $mycount = 0;
         if($account) {
             $call_account_id = $account->id;
