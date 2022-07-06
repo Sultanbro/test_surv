@@ -299,6 +299,9 @@ class QualityController extends Controller
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
 
 
+        return response()->json([
+            'check_users' => $check_users['check_users']
+        ]);
 //        $check_users =CheckReports::where('item_id',$request['group_id'])->get();
 
 

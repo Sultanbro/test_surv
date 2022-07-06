@@ -1521,6 +1521,8 @@ class UserController extends Controller
     public function updatePerson(Request $request) {
 
 
+
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1574,6 +1576,7 @@ class UserController extends Controller
         }
 
 
+
         /*==============================================================*/
         /********** Редактирование user  */
         /*==============================================================*/     
@@ -1605,7 +1608,7 @@ class UserController extends Controller
         $user->weekdays = $request['weekdays'];
         $user->working_country = $request['selectedCityInput'];
         $user->working_city = $request['working_city'];
-        $user->headphones_sum = $request['headphones_sum'];
+        $user->headphones_sum = $request['headphones_amount'];
 
 
         if($request->new_pwd != '') {

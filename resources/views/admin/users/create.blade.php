@@ -905,7 +905,7 @@
                                                     placeholder="Оклад"
                                                     @if(isset($user->zarplata))
                                                         @if($user->zarplata->zarplata == 0) value="0"
-                                                        @else  value="{{$user->zarplata->zarplata}}"
+                                                        @else  value="{{$user->zarplata->zarplata - $user->headphones_sum}}"
                                                         @endif
                                                     @else
                                                         @if(old('zarplata') == '')  value="0"
@@ -996,7 +996,7 @@
                                                 <div class="col-sm-1">
                                                     <input type="checkbox" class="form-control" id="headphones_amount_checkbox"
                                                            @if(isset($user))
-                                                                 @if($user->headphones_amount > 0) checked @endif
+                                                                 @if($user->headphones_sum > 0) checked @endif
                                                            @endif
                                                     >
                                                 </div>
@@ -1006,7 +1006,7 @@
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <input name="headphones_amount" class="form-control" type="number"
-                                                           id="headphones_amount" value="{{ $user->headphones_amount }}" @if(isset($user)) @if($user->headphones_amount == 0) disabled @endif @endif>
+                                                           id="headphones_amount" value="{{ $user->headphones_sum }}" @if(isset($user)) @if($user->headphones_sum == 0) disabled @endif @endif>
                                                 </div>
                                             </div>
                                             @endif
