@@ -5,10 +5,11 @@
 
             <div class="g-title" @click="toggleGroup(g_index)">
                 <input type="text" class="group-input" v-model="group.title" :disabled="group.title == 'Без группы' || mode == 'read'" />
-                <div class="btns" v-if="mode == 'edit'">
-                    <i class="fa fa-plus" @click.stop="addGroup(g_index)" title="Добавить группу" v-if="group.title != 'Без группы' && group_edit"></i>
-                    <i class="fa fa-upload" @click.stop="$emit('uploadVideo', g_index)" title="Загрузить видео"  v-if="!group_edit"></i>
-                    <i class="fa fa-trash"  @click.stop="deleteGroup(g_index)"  title="Удалить группу" v-if="group.title != 'Без группы' && group_edit"></i>
+                <div class="btns">
+                    <i class="fa fa-chevron-down chevron"></i>
+                    <i class="fa fa-plus" @click.stop="addGroup(g_index)" title="Добавить группу" v-if="group.title != 'Без группы' && group_edit && mode == 'edit'"></i>
+                    <i class="fa fa-upload" @click.stop="$emit('uploadVideo', g_index)" title="Загрузить видео"  v-if="!group_edit && mode == 'edit'"></i>
+                    <i class="fa fa-trash"  @click.stop="deleteGroup(g_index)"  title="Удалить группу" v-if="group.title != 'Без группы' && group_edit && mode == 'edit'"></i>
                 </div>
             </div> 
 
@@ -16,20 +17,23 @@
                 <div class="child-group group" :class="{'opened': child.opened}">
                     <div class="g-title" @click="toggleChild(c_index, g_index)">
                     <input type="text" class="group-input" v-model="child.title" :disabled="mode == 'read'"  />
-                        <div class="btns" v-if="mode == 'edit'">
-                            <i class="fa fa-upload" @click.stop="$emit('uploadVideo', g_index, c_index)" title="Загрузить видео" v-if="!group_edit"></i>
-                            <i class="fa fa-trash"  @click.stop="deleteGroup(g_index, c_index)"  title="Удалить группу" v-if="group_edit"></i>
+                        <div class="btns">
+                            <i class="fa fa-chevron-down chevron2"></i>
+                            <i class="fa fa-upload" @click.stop="$emit('uploadVideo', g_index, c_index)" title="Загрузить видео" v-if="!group_edit && mode == 'edit'"></i>
+                            <i class="fa fa-trash"  @click.stop="deleteGroup(g_index, c_index)"  title="Удалить группу" v-if="group_edit && mode == 'edit'"></i>
                         </div>
                     </div>
    
                     <video-list 
                         :videos="child.videos"
                         :mode="mode"
+                        :active="active"
                         :g_index="g_index"
                         :c_index="c_index"
                         :group_edit="group_edit"
                         @showVideo="showVideo"
                         @deleteVideo="deleteVideo"
+                        :is_course="is_course"
                         
                     />
                 </div>
@@ -38,11 +42,13 @@
             <video-list 
                 :videos="group.videos"
                 :mode="mode"
+                :active="active"
                 :g_index="g_index"
                 :c_index="-1"
                 :group_edit="group_edit"
                 @showVideo="showVideo"
                 @deleteVideo="deleteVideo"
+                :is_course="is_course"
             />
              
     </div>
@@ -55,7 +61,7 @@
 <script>
 export default {
     name: 'VideoAccordion',
-    props: ['mode','groups','group_edit'],
+    props: ['mode','groups','group_edit', 'active', 'is_course'],
     data(){
         return {
             edit: false,

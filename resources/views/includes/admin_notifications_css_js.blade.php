@@ -396,15 +396,15 @@ $('#setRead').click(function() {
 <style>
  .pulse {
   position: absolute;
-  top: -10px;
-  right: -9px;
+  top: -20px;
+  right: -19px;
   height: 20px;
   width: 20px;    
   z-index: 10;  
-  border: 5px solid #00a3ff;
+  border: 20px solid #00a3ff;
   border-radius: 70px;
   animation: pulse 1s ease-out infinite;
-}
+} 
 
 .kolokolchik {
   right: 534px;
@@ -420,6 +420,13 @@ $('#setRead').click(function() {
   background: #00a3ff;
 }
 
+.belly {
+  position: absolute;
+  display: block !important;
+}
+.right-menu .btn-rm i.belly {
+  animation: bell 2s ease-out infinite;
+}
 
 @keyframes pulse {
   0% {
@@ -439,7 +446,7 @@ $('#setRead').click(function() {
 
   75% {
       -webkit-transform: scale(0.8);
-      opacity: 0.5;
+      opacity: 0.7;
     }
 
   100% {
@@ -448,6 +455,51 @@ $('#setRead').click(function() {
   }
 } 
 
+
+@keyframes bell {
+  0% {
+      -webkit-transform: scale(1.2);
+      opacity: 1;
+  }
+
+  15% {
+      -webkit-transform: scale(1) rotate(1deg);
+      opacity: 0.9;
+  }
+
+  20% {
+      -webkit-transform: scale(1.2);
+      opacity: 1;
+  }
+
+  30% {
+      -webkit-transform: scale(1) rotate(1deg);
+      opacity: 0.9;
+  }
+
+  50% {
+      -webkit-transform: scale(1.3) rotate(-1deg);
+      opacity: 0.5;
+  }
+
+  75% {
+      -webkit-transform: scale(1.8) rotate(1deg);
+      opacity: 0.3;
+    }
+
+  100% {
+      -webkit-transform: scale(2);
+      opacity: 0;
+  }
+} 
+
+.blink-notification {
+    -webkit-box-shadow: 0 0 4px #61bfe9;
+    box-shadow: 0 0 4px #61bfe9;
+    border: 1px solid #61bfe9;
+    -webkit-animation: blinktwo infinite 1.5s;
+    animation: blinktwo infinite 1.5s;
+}
 
 .bgpanel {
   display: none;

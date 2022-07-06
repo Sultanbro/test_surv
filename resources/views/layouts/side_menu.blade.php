@@ -8,7 +8,6 @@
         <a href="/profile" class="img_url_sm">
 
             @if(isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url))
-
                 <img id="img_url_sm"
                      src="/users_img/{{auth()->user()->img_url}}" alt="avatar" >
             @else
@@ -27,6 +26,7 @@
                 <p class="name">{{ auth()->user()->last_name }} {{ auth()->user()->name }} <span>#{{ auth()->user()->id }} </span></p>
                 <p class="email">{{ auth()->user()->email }} </p>
             </div>
+
             <ul> 
        
 
@@ -61,7 +61,7 @@
         </li>
 
         <li class="menu-item">
-            <a href="/upbooks" class="side-btn @if($menu == 'learning') active @endif">
+            <a href="/admin/upbooks" class="side-btn @if($menu == 'learning') active @endif">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span>Обучение</span>
             </a>

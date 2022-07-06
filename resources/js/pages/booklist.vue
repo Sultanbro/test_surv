@@ -1,11 +1,11 @@
 <template>
   <div class="d-flex">
     <aside id="left-panel" class="lp">
-      <div class="btn btn-search mb-3" @click="showSearch = true">
+      <div class="btn btn-search mb-3" @click="showSearch = true" v-if="!course_page">
         <i class="fa fa-search"></i>
         <span>Искать в базе...</span>
       </div>
-      <div class="btn btn-grey mb-3" @click="$emit('back')">
+      <div class="btn btn-grey mb-3" @click="$emit('back')"  v-if="!course_page">
         <i class="fa fa-arrow-left"></i>
         <span>Вернуться к разделам</span> 
       </div>
@@ -32,13 +32,6 @@
         />
       </div>
       
-
-      <!-- <div class="btn-add" @click="addPage" v-if="[5,18,157,84].includes(auth_user_id)">
-        <i class="fa fa-plus"></i>
-        <span>Добавить страницу</span>
-      </div> -->
-
-          
     </aside>
     <!-- /#left-panel -->
 
@@ -46,7 +39,7 @@
     <!-- Right Panel -->
 
     <div class="rp" style="flex: 1;padding-bottom: 0px;flex: 1 1 0%;height: 100vh;overflow-y: auto;">
-      <div class="hat">
+      <div class="hat"  v-if="!course_page">
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">
             <a href="#" @click="$emit('back')">База знаний</a>
@@ -163,7 +156,7 @@
           <template v-if="activesbook != null">
             <input
               type="text"
-              class="article_title"
+              class="article_title px-4 py-3"
               v-model="activesbook.title"
             />
           </template>
@@ -619,7 +612,17 @@
 import nestedDraggable from "../components/nested";
 export default { 
   name: "booklist",
-  props: ["trees", 'parent_id', 'auth_user_id', 'parent_name', 'show_page_id', 'can_edit', 'mode'],
+  props: [
+    "trees",
+    'parent_id',
+    'auth_user_id',
+    'parent_name',
+    'show_page_id',
+    'can_edit',
+    'mode',
+    'course_page',
+    'enable_url_manipulation'
+  ],
   components: { 
     nestedDraggable,
   }, 
@@ -657,14 +660,14 @@ export default {
       breadcrumbs: []                                                                            
     }
   },
+
   created() {
 
-    this.tree = this.trees;
+    this.getTree();
+    // this.tree = this.trees;
     this.parent_title = this.parent_name;
     this.id = this.parent_id;
-    if(this.show_page_id != 0) {
-      this.showPage(this.show_page_id, true, true)
-    }
+    
   },
 
   mounted() {
@@ -694,11 +697,38 @@ export default {
   },
   methods: {
     
+    nextElement() {
+      
+      // let index = this.playlist.videos.findIndex(el => el.id == this.activeVideo.id);
+
+      // if(index != -1 && this.playlist.videos.length - 1 > index) {
+      //   console.log(this.playlist.videos[index]);
+      //   console.log(this.playlist.videos[index + 1]);
+      //   this.activeVideo = this.playlist.videos[index + 1];
+      // } else {
+         
+      // }
+      this.$parent.after_click_next_element();
+    },
+
+    getTree() {
+       axios
+        .post("/kb/tree", {
+          id: this.parent_id,
+        })
+        .then((response) => {
+          this.tree = response.data.trees;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
      searchInput() {
       if(this.search.input.length <= 2) return null;
       
       axios
-        .post("kb/search", {
+        .post("/kb/search", {
           text: this.search.input,
         })
         .then((response) => {
@@ -1197,8 +1227,10 @@ export default {
         if(expand)  this.expandTree();
         this.setTargetBlank();
         
-
-        window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
+        if(this.enable_url_manipulation) {
+          window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
+        }
+        
       });
       
     },

@@ -163,6 +163,7 @@ Route::middleware([
     Route::post('/setting/reset', [SettingController::class, 'reset']);
 
     Route::get('/playlists/get', [VideoPlaylistController::class, 'get']);
+    Route::post('/playlists/video', [VideoPlaylistController::class, 'getVideo']);
     Route::get('/playlists/get/{id}', [VideoPlaylistController::class, 'getPlaylist']);
     Route::post('/playlists/add-video', [VideoPlaylistController::class, 'add_video']);
     Route::post('/playlists/save-video', [VideoPlaylistController::class, 'save_video']);

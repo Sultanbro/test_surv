@@ -10,15 +10,23 @@
     >
         <div class="video-block" v-for="(video, v_index) in videos"
                 :key="video.id"
-                @click="$emit('showVideo', video, v_index)">
+                :class="{
+                    'active': (active == video.id),
+                    'disabled': is_course && video.item_models.length == 0
+                }"
+                @click="showVideo(video, v_index)"
+            >
             <div class="mover" v-if="mode == 'edit' && !group_edit">
                 <i class="fa fa-bars"></i> 
             </div>
             <div class="img">
-                <img src="/video_learning/noimage.png" alt="text" />
+                <img src="/images/author.jpg" alt="text" /> 
             </div>
             <div class="desc"> 
-                <h4>{{ video.title }}</h4>
+                <h4>
+                    <i class="fa fa-lock mr-1"></i>     
+                    {{ video.title }}
+                </h4>
                 <div class="text" v-html="video.desc"></div>
             </div>
             <div class="controls d-flex" 
@@ -27,7 +35,7 @@
                 <i  class="fa far fa-trash mr-3" 
                     title="Убрать из плейлиста" 
                     @click.stop="$emit('deleteVideo', {
-                        video: video,
+                        video: video, 
                         v_index: v_index,
                         g_index: g_index,
                         c_index: c_index
@@ -43,23 +51,29 @@
 <script>
 export default {
     name: 'VideoList',
-    props: ['videos', 'mode','group_edit', 'g_index', 'c_index'],
+    props: ['videos', 'mode','group_edit', 'g_index', 'c_index', 'active' , 'is_course'],
     data(){
         return {
           
         }
     },
-    methods: {
-        saveOrder(event) {
 
-            // axios.post('/kb/page/save-order', {
-            //     id: event.item.id,
-            //     order: event.newIndex, // oldIndex
-            //     parent_id: event.to.id
-            // })
-            // .then(response => {
-            //     // this.$message.success('Очередь сохранена');
-            // });
+    created() {
+        let i = this.videos.findIndex(el => el.id == this.active);
+   
+        if(i != -1) {
+            this.videos[i].item_models.push({status:0})
+        }
+    },
+
+    methods: {
+        saveOrder(e) {
+
+        },
+
+        showVideo(video, v_index) {
+            if(this.is_course && video.item_models.length == 0) return;
+            this.$emit('showVideo', video, v_index);
         }
     }
 }

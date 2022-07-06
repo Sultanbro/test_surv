@@ -670,10 +670,10 @@ class User extends Authenticatable implements Authorizable
         return $this->hasOne('App\Photo');
     }
 
-    // public function groups()
-    // {
-    //     return $this->hasMany('App\Group');
-    // }
+    public function groups()
+    {
+        return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id');
+    }
 
     public function fines()
     {

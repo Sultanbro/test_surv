@@ -75,7 +75,12 @@
       </div>
     </div>
 
-    <page-upbooks-read v-else :activeBook="activeBook" mode="read" @back="back" />
+    <page-upbooks-read v-else 
+      :book_id="activeBook.id" 
+      mode="read"
+      @back="back"
+      :showBackBtn="true"  
+    />
 
     <b-modal
       v-model="modals.add_category.show"

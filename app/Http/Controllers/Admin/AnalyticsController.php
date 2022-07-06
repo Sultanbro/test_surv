@@ -398,7 +398,12 @@ class AnalyticsController extends Controller
             }
 
             $stat->type = $request->type;
-            $stat->class = $request->class;
+            if($request->value == 0 || isset($request->value)){
+               $stat->class = 'text-center text-center'; 
+            }
+            else{
+                $stat->class = $request->class;
+            }
             $stat->save(); 
         }
     }

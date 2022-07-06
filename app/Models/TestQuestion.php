@@ -10,7 +10,7 @@ class TestQuestion extends Model
 
     public $timestamps = true;
 
-    protected $appends = ['editable'];
+    protected $appends = ['editable', 'checked'];
 
     protected $casts = [
         'variants' => 'array',
@@ -37,6 +37,11 @@ class TestQuestion extends Model
     }
 
     public function getEditableAttribute()
+    {
+        return false;
+    }
+
+    public function getCheckedAttribute()
     {
         return false;
     }

@@ -23,6 +23,11 @@
 
   .variant {
     margin-bottom: 5px;
+
+    input, p {
+      cursor: pointer;
+    }
+
   }
 
   textarea {

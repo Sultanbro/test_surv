@@ -1,20 +1,22 @@
 <template>
   <div class="video-playlist">
-    <div class="d-flex jcsb mb-3">
+    <div class="d-flex jcsb mb-1" v-if="!is_course">
       <div class="s w-full">
         <div class="d-flex">
          <input
+            v-if="mode == 'edit'"
             type="text"
             class="form-control form-control-sm w-full p-itle mb-0 mr-2"
             v-model="playlist.title"
             name="title"
-            :disabled="mode == 'read'" />
+          />
+          <p v-else class="p-title mb-0"> {{ playlist.title }} </p>
         </div>
          
       </div>
 
       <div class="d-flex align-items-start">
-        <button class="btn btn-success px-2" @click="savePlaylist">
+        <button class="btn btn-success px-2" @click="savePlaylist" v-if="mode == 'edit'">
           <i class="fa fa-save"></i>
         </button>
       </div>
@@ -23,53 +25,48 @@
    
     <div class="row">
 
-      <div class="col-lg-12">
+      <div class="col-lg-12" v-if="!is_course">
         <div class="form-group">
           <textarea
+            v-if="mode == 'edit'"
             name="text"
-            class="form-control textarea"
+            class="form-control textarea h-70"
             required
             title="Описание плейлиста"
             placeholder="Описание плейлиста"
             v-model="playlist.text"
-              :disabled="mode == 'read'"
           ></textarea>
+          <p v-else class="p-desc">{{ playlist.title }}</p>
         </div>
       </div>  
        
-      <div class="col-lg-6">
+      <div class="col-lg-6 pr-0">
         <div class="block  br" v-if="activeVideo != null">
-            <v-player :src="activeVideo.links" :key="activeVideo.id" />
+            <v-player :src="activeVideoLink" :key="video_changed" />
            
-            <div class="row mb-2 mt-2">
-            
+            <div class="row mb-2 mt-3">
               <div class="col-md-12">
                 <input
                   type="text"
+                  v-if="mode == 'edit'"
                   class="form-control"
                   v-model="activeVideo.title"
                   :disabled="mode == 'read'"
                 />
+                <p v-else class="v-title mb-0"> {{ activeVideo.title }} </p>
               </div>
             </div>
-            <div class="row mb-2" v-if="mode == 'edit'">
-              <div class="col-md-12">
-                <input
-                  type="text"
-                  placeholder="Ссылка на видео"
-                  class="form-control"
-                  v-model="activeVideo.links"
-                />
-              </div>
-            </div>
+
             <div class="row mb-2">
               <div class="col-md-12">
                 <textarea
                   class="form-control"
+                  v-if="mode == 'edit'"
                   placeholder="Описание видео"
                   v-model="activeVideo.text"
                   :disabled="mode == 'read'"
                 ></textarea>
+                <p v-else class="v-desc"> {{ activeVideo.title }} </p>
               </div>
             </div>
 
@@ -105,8 +102,10 @@
           :groups="playlist.groups"
           :mode="mode"
           :group_edit="group_edit"
+          :active="activeVideo ? activeVideo.id : -1"
           @showVideo="showVideo"
           @uploadVideo="uploadVideo"
+          :is_course="is_course"
           />
       </div>
     </div>
@@ -219,16 +218,22 @@ export default {
     id: Number,
     auth_user_id: Number,
     myvideo: Number,
-    mode: String
+    mode: String,
+    enable_url_manipulation: {
+      default: true
+    },
+    is_course: {
+      default: false
+    }
   },
+  
   data() {
     return {
       all_videos: [],
+      video_changed: 1,
       activeVideo: null,
+      activeVideoLink: '',
       group_edit: false,
-      gran_cardon: {
-        9 : [1,1],10 : [1,2],11 : [1,3],12: [1,4],13: [1,5],15: [2,1],16: [2,2],17: [2,3],18: [2,4],19: [2,5],21: [3,1],22: [3,2],23: [3,3],24: [3,4],25: [3,5],26: [3,6],27: [3,7],28: [3,8],30: [4,1],31: [4,2], 32: [4,3],33: [4,4],35: [5,1],36: [5,2],37: [5,3],38: [5,4],39: [5,5],40: [5,6],41: [5,7],42: [5,8],43: [5,9],45: [6,1],46: [6,2],47: [6,3],49: [7,1],50: [7,2],51: [7,3],52: [7,4],53: [7,5],54: [7,6],55: [7,7],56: [7,8],57: [7,9],58: [7,10],60: [8,1],61: [8,2],62: [8,3],63: [8,4],65: [9,1],66: [9,2],67: [9,3],68: [9,4],69: [9,5],70: [9,6],71: [9,7],72: [9,8],73: [9,9],74: [9,10],76: [10,1],77: [10,2],78: [10,3],79: [11],80: [12],82: [13,1],83: [13,2]
-        },
       playlist: {
         id: 1,
         category_id: 1,
@@ -283,19 +288,11 @@ export default {
 
           this.playlist = response.data.playlist;
           
-          console.log(this.playlist.videos);
-
           this.activeVideo = this.playlist.videos.filter(video => video.id === this.myvideo)[0];
-          if(this.playlist.groups[this.activeVideo.group_id] == null){
-            
-            if( this.gran_cardon[this.activeVideo.group_id].length > 1 ){
-              this.playlist.groups[ this.gran_cardon[this.activeVideo.group_id][0] ].opened = true;
-              this.playlist.groups[ this.gran_cardon[this.activeVideo.group_id][0] ].children[ this.gran_cardon[this.activeVideo.group_id][1] ].opened = true;
-            }else{
-              this.playlist.groups[ this.gran_cardon[this.activeVideo.group_id][0] ].opened = true;
-            }
-            console.log(this.gran_cardon[this.activeVideo.group_id]);
-          }else{
+          
+          this.activeVideoLink = this.activeVideo.links;
+
+          if(this.playlist.groups[this.activeVideo.group_id] != null){
             this.playlist.groups[this.activeVideo.group_id].opened = true;
           }
           this.sidebars.edit_video.show = true;
@@ -312,13 +309,25 @@ export default {
       this.fetchData();
     }
     
+
+    
   },
 
   mounted() {},
+
+
   methods: { 
-    testFun(){
-     alert("hello!"); 
+
+    nextElement() {
+      let index = this.playlist.videos.findIndex(el => el.id == this.activeVideo.id);
+
+      if(index != -1 && this.playlist.videos.length - 1 > index) {
+        this.activeVideo = this.playlist.videos[index + 1];
+      } else {
+         this.$parent.after_click_next_element();
+      }
     },
+
     showQuestions(v_index) {
       let questions = this.playlist.videos[v_index].questions;
       if (questions == undefined) this.playlist.videos[v_index].questions = [];
@@ -508,28 +517,50 @@ export default {
     },
 
     showVideo(video, key) {
-      console.log(video)
+    
       this.activeVideo = video;
+      
+       axios
+        .post("/playlists/video", {
+          id: video.id,
+        })
+        .then((response) => {
+          this.activeVideoLink = response.data.links;
+          this.video_changed++;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+
+
       this.sidebars.edit_video.show = true;
-      if (history.pushState) {
+
+      if(this.enable_url_manipulation)
+      {
+        if (history.pushState) {
           var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(video.id));
           history.pushState(null, null, newUrl);
-      }
-      else {
-          console.warn('History API не поддерживает ваш браузер');
-      }
-      console.log(this.$parent.data_category);
+        } else {
+            console.warn('History API не поддерживает ваш браузер');
+        }
+      } 
+     
+
     },
 
     closeSidebar() {
       this.sidebars.edit_video.show = false;
-      if (history.pushState) {
-          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist);
-          history.pushState(null, null, newUrl);
+
+      if(this.enable_url_manipulation)
+      {
+        if (history.pushState) {
+            var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist);
+            history.pushState(null, null, newUrl);
+        } else {
+            console.warn('History API не поддерживает ваш браузер');
+        }
       }
-      else {
-          console.warn('History API не поддерживает ваш браузер');
-      }
+      
       this.activeVideo = null;
       console.log(this.$children[3].$children[0]);
       //syuda
@@ -559,6 +590,7 @@ export default {
       if(this.playlist.videos.length > 0) {
           // set active video
           this.activeVideo = this.playlist.videos[0];
+          this.activeVideoLink = this.activeVideo.links;
           this.setActiveGroup();
           
       } 

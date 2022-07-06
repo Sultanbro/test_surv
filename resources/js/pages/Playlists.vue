@@ -71,7 +71,6 @@
               <div v-if="activePlaylist != null" class="">
                 <page-playlist-edit 
                   ref="playlist"
-                  :categories="categories"
                   @back="back" 
                   :token="token"
                   :id="activePlaylist.id"

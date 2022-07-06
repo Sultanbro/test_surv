@@ -5,9 +5,10 @@
             ref="videoPlayer"
             :options="playerOptions"
             :playsinline="true"
-            @play="onPlayerPlay($event)"
-            @pause="onPlayerPause($event)"
-            @statechanged="playerStateChanged($event)" />
+            @play="onPlayerPlay"
+            @pause="onPlayerPause"
+            @ready="playerReadied"
+            @statechanged="playerStateChanged" />
     </div>
 </template>
 
@@ -16,21 +17,17 @@ export default {
     props: [
         'src',
     ],
-    mounted() {
-        let self = this; 
-        window.addEventListener('keyup', function(ev) {
-            self.pauseVideo(ev);
-        });
-    },
+
     data(){
         return {
             playerOptions: {
                 // videojs options
                 muted: false,
-                state: true,
+                autoplay: true,
+                height:  360,
                 width: 100,
                 language: 'ru',
-                playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0],
+                playbackRates: [0.5, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2.0, 3.0],
                 sources: [{
                     type: "video/mp4",
                     src: this.src,
@@ -42,6 +39,7 @@ export default {
             },
         }
     },
+    
     methods: {
         // listen event
         onPlayerPlay(player) {
@@ -58,20 +56,8 @@ export default {
         },
 
         playerReadied(player) {
-            console.log('the player is readied', player)
+            console.log(player)
         },
-
-        pauseVideo(event){
-            if(event.code == 'Space'){
-                if(this.state){
-                    this.$refs.videoPlayer.player.play()
-                    this.state = false;       
-                }else{
-                    this.$refs.videoPlayer.player.pause()
-                    this.state = true;  
-                }
-            }
-        }
     }
 }
 </script>

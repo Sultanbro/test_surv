@@ -10,7 +10,7 @@
     <i class="fa fa-bell"></i>
     @if($unread > 0)
     <div class="nn-number" style="display:none">
-       
+
         <div class="pulse"></div>
         <div class="marker"></div>
     </div>

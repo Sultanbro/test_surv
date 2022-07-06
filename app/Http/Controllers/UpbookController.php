@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\View;
 use App\Models\Books\Book;
 use App\Models\Books\BookGroup;
 use App\Models\TestQuestion;
+use App\Models\Course;
+use App\Models\CourseItemModel;
 
 class UpbookController extends Controller
 {
@@ -64,6 +66,7 @@ class UpbookController extends Controller
 
     public function getTests(Request $request)
     {
+        $book = Book::find($request->id);
         $qs = TestQuestion::where('testable_type', 'App\Models\Books\Book')->where('testable_id', $request->id)->get()->groupBy('page');
 
         $arr = [];
@@ -72,7 +75,6 @@ class UpbookController extends Controller
             $_test = [];
             foreach ($test as $key => $q) {
                 $q = $q->toArray();
-                $q['checked'] = 0;
                 $q['result'] = 0;
                 $_test[] = $q;
             }
@@ -83,8 +85,15 @@ class UpbookController extends Controller
                 'pass' => false,
                 'questions' => $_test 
             ]);
+
+            $_pages = array_column($arr, 'page');
+            array_multisort($_pages, SORT_ASC, $arr); 
         }
-        return ['tests' => $arr];
+
+        return [
+            'tests' => $arr,
+            'activeBook' => $book,
+        ];
     }
     
     public function save(Request $request)

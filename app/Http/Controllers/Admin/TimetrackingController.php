@@ -724,12 +724,6 @@ class TimetrackingController extends Controller
 
     public function applyPerson(Request $request) {
         
-        $trainee = Trainee::where('user_id', $request->user_id)->first();
-        
-        $trainee->requested = now();
-        $trainee->applied = now();
-        $trainee->save();
-
         UserDescription::make([
             'user_id' => $request->user_id,
             'applied' => now(),
@@ -739,7 +733,7 @@ class TimetrackingController extends Controller
         $user = User::find($request->user_id);
         
         
-
+        
         ///////////////////////////////////////////    
         $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
         $recruiters = User::where('position_id', 46)->get();
@@ -750,7 +744,7 @@ class TimetrackingController extends Controller
         $msg .= 'Рабочий график: ' . $request->schedule;
 
         $notification_receivers = NotificationTemplate::getReceivers(7);
-                
+     
         foreach($notification_receivers as $user_id) {
             UserNotification::create([
                 'user_id' => $user_id,
@@ -760,7 +754,7 @@ class TimetrackingController extends Controller
                 'message' => $msg
             ]);
         }
-
+    
         //////////////////////// Set old notification read
         $absent_notifications = UserNotification::where('about_id',$request->user_id)
             ->where(function($query) {
@@ -768,22 +762,22 @@ class TimetrackingController extends Controller
                     ->orWhere('title', 'Пропал с обучения: 1 день')
                     ->orWhere('title', 'Пропал с обучения: 2 день');
             })
-            ->get();
-        
-        foreach($absent_notifications as $noti) {
-            $noti->read_at = now();
-            $noti->save();
-        }
+            ->whereNull('read_at')
+            ->update([
+                'read_at' => now()
+            ]);
+
+
         ///////////////////////////////////// 
         TimetrackingHistory::create([
-            'author_id' => User::bitrixUser()->id,
-            'author' => User::bitrixUser()->name.' '.User::bitrixUser()->last_name,
+            'author_id' => auth()->user()->id,
+            'author' => auth()->user()->name.' '.auth()->user()->last_name,
             'user_id' => $request->user_id,
             'description' => 'Заявка на принятие на работу стажера',
             'date' => date('Y-m-d')
         ]);
 
-
+     
 
         // убрать отметку стажера в этот день
 

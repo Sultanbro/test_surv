@@ -22,4 +22,36 @@ class Course extends Model
     {
         return $this->hasMany(CourseItem::class, 'course_id')->orderBy('order');
     }
+
+    public function items_models()
+    {
+        $user_id = auth()->user()->id;
+        return $this->hasMany(CourseItem::class, 'course_id')->orderBy('order')->with('elements', function ($query) use ($user_id){
+            $query->where('user_id', $user_id);
+        });
+    }
+
+    
+
+    /**
+     * Найти точку, где остановились при прохождении курса
+     * 
+     * @param Collection $items CourseItem
+     * 
+     * @return Collection
+     */
+    public function setCheckpoint($items)
+    {
+        $disabled = false;
+        foreach ($items as $key => $item) {
+            if(!$disabled) {
+                $item->status = $item->countItems() == $item->elements->count() ? CourseResult::COMPLETED : CourseResult::ACTIVE;
+                if($item->status == CourseResult::ACTIVE) $disabled = true;
+            } else {
+                $item->status = CourseResult::INITIAL;
+            }
+        }
+
+        return $items;
+    }
 }

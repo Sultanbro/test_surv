@@ -106,14 +106,14 @@
                                     </table>
                                 </a-tab-pane>
 
-                                <a-tab-pane tab="Оценка тренера" key="2">
+                                <!--<a-tab-pane tab="Оценка тренера" key="2">
                                     
 
                                     <trainee-report :trainee_report="recruiting.trainee_report" :groups="groups"></trainee-report>
                                   
                                     
-                                </a-tab-pane>
-                                <a-tab-pane tab="Оценка тренера за месяц" key="3">
+                                </a-tab-pane>-->
+                                <a-tab-pane tab="Оценка тренера" key="2">
                                     
                                     <svod-table :trainee_report="recruiting.trainee_report" :groups="groups" ></svod-table>
                                   

@@ -54,9 +54,11 @@ class Adaptation extends Command
 
         foreach($leads as $lead) {
 
-            $user = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0)
+            $user = User::with('user_description')
+                ->withTrashed()
+                ->whereHas('user_description', function ($query) {
+                    $query->where('is_trainee', 0);
+                })
                 ->where('users.id', $lead->user_id)
                 ->first();
 
