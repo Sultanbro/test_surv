@@ -73,7 +73,12 @@ class VideoPlaylistController extends Controller {
 		$pl =  Playlist::with('groups')->find($request->id);
 
 	
-		$no_group_videos = Video::where('group_id', 0)->where('playlist_id', $pl->id)->with('questions')->get();
+		$no_group_videos = Video::where('group_id', 0)
+			->where('playlist_id', $pl->id)
+			->with('questions')
+			->with('item_models', function ($query){
+				$query->where('type', 2);
+			})->get();
 
 		if($no_group_videos->count() > 0) {
 			$pl->groups->prepend(['title' => 'Без группы', 'id' => 0, 'videos' => $no_group_videos, 'opened' => false]);
@@ -92,8 +97,8 @@ class VideoPlaylistController extends Controller {
 		}
 		return [
 			'playlist' => $pl,
-			'categories' => Category::all(),
-			'all_videos' => Video::select('id', 'title', 'links')->where('playlist_id', 0)->get(),
+			'categories' => [],//Category::all(),
+			'all_videos' => [] //Video::select('id', 'title', 'links')->where('playlist_id', 0)->get(),
 		];
 	}
 

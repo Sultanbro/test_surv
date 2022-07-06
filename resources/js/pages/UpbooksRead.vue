@@ -145,6 +145,18 @@ export default {
 
   methods: {
 
+    nextElement() {
+
+      let index = this.tests.findIndex(el => el.page >= this.page);
+
+      if(index != -1 && this.tests.length - 1 > index) {
+        this.activeTest = this.tests[index + 1];
+      } else {
+        this.$parent.after_click_next_element();
+      }
+      
+    },
+
     getTests() {
       let loader = this.$loading.show();
 

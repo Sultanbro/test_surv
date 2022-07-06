@@ -1,6 +1,6 @@
 <template>
   <div class="video-playlist">
-    <div class="d-flex jcsb mb-1">
+    <div class="d-flex jcsb mb-1" v-if="!is_course">
       <div class="s w-full">
         <div class="d-flex">
          <input
@@ -16,7 +16,7 @@
       </div>
 
       <div class="d-flex align-items-start">
-        <button class="btn btn-success px-2" @click="savePlaylist">
+        <button class="btn btn-success px-2" @click="savePlaylist" v-if="mode == 'edit'">
           <i class="fa fa-save"></i>
         </button>
       </div>
@@ -25,7 +25,7 @@
    
     <div class="row">
 
-      <div class="col-lg-12">
+      <div class="col-lg-12" v-if="!is_course">
         <div class="form-group">
           <textarea
             v-if="mode == 'edit'"
@@ -105,6 +105,7 @@
           :active="activeVideo ? activeVideo.id : -1"
           @showVideo="showVideo"
           @uploadVideo="uploadVideo"
+          :is_course="is_course"
           />
       </div>
     </div>
@@ -217,8 +218,15 @@ export default {
     id: Number,
     auth_user_id: Number,
     myvideo: Number,
-    mode: String
+    mode: String,
+    enable_url_manipulation: {
+      default: true
+    },
+    is_course: {
+      default: false
+    }
   },
+  
   data() {
     return {
       all_videos: [],
@@ -281,6 +289,9 @@ export default {
           this.playlist = response.data.playlist;
           
           this.activeVideo = this.playlist.videos.filter(video => video.id === this.myvideo)[0];
+          
+          this.activeVideoLink = this.activeVideo.links;
+
           if(this.playlist.groups[this.activeVideo.group_id] != null){
             this.playlist.groups[this.activeVideo.group_id].opened = true;
           }
@@ -298,13 +309,25 @@ export default {
       this.fetchData();
     }
     
+
+    
   },
 
   mounted() {},
+
+
   methods: { 
-    testFun(){
-     alert("hello!"); 
+
+    nextElement() {
+      let index = this.playlist.videos.findIndex(el => el.id == this.activeVideo.id);
+
+      if(index != -1 && this.playlist.videos.length - 1 > index) {
+        this.activeVideo = this.playlist.videos[index + 1];
+      } else {
+         this.$parent.after_click_next_element();
+      }
     },
+
     showQuestions(v_index) {
       let questions = this.playlist.videos[v_index].questions;
       if (questions == undefined) this.playlist.videos[v_index].questions = [];
@@ -511,25 +534,33 @@ export default {
 
 
       this.sidebars.edit_video.show = true;
-      if (history.pushState) {
+
+      if(this.enable_url_manipulation)
+      {
+        if (history.pushState) {
           var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(video.id));
           history.pushState(null, null, newUrl);
-      }
-      else {
-          console.warn('History API не поддерживает ваш браузер');
-      }
+        } else {
+            console.warn('History API не поддерживает ваш браузер');
+        }
+      } 
+     
 
     },
 
     closeSidebar() {
       this.sidebars.edit_video.show = false;
-      if (history.pushState) {
-          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist);
-          history.pushState(null, null, newUrl);
+
+      if(this.enable_url_manipulation)
+      {
+        if (history.pushState) {
+            var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist);
+            history.pushState(null, null, newUrl);
+        } else {
+            console.warn('History API не поддерживает ваш браузер');
+        }
       }
-      else {
-          console.warn('History API не поддерживает ваш браузер');
-      }
+      
       this.activeVideo = null;
       console.log(this.$children[3].$children[0]);
       //syuda
@@ -559,6 +590,7 @@ export default {
       if(this.playlist.videos.length > 0) {
           // set active video
           this.activeVideo = this.playlist.videos[0];
+          this.activeVideoLink = this.activeVideo.links;
           this.setActiveGroup();
           
       } 

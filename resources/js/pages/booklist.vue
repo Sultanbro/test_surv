@@ -612,7 +612,17 @@
 import nestedDraggable from "../components/nested";
 export default { 
   name: "booklist",
-  props: ["trees", 'parent_id', 'auth_user_id', 'parent_name', 'show_page_id', 'can_edit', 'mode', 'course_page'],
+  props: [
+    "trees",
+    'parent_id',
+    'auth_user_id',
+    'parent_name',
+    'show_page_id',
+    'can_edit',
+    'mode',
+    'course_page',
+    'enable_url_manipulation'
+  ],
   components: { 
     nestedDraggable,
   }, 
@@ -687,9 +697,23 @@ export default {
   },
   methods: {
     
+    nextElement() {
+      
+      // let index = this.playlist.videos.findIndex(el => el.id == this.activeVideo.id);
+
+      // if(index != -1 && this.playlist.videos.length - 1 > index) {
+      //   console.log(this.playlist.videos[index]);
+      //   console.log(this.playlist.videos[index + 1]);
+      //   this.activeVideo = this.playlist.videos[index + 1];
+      // } else {
+         
+      // }
+      this.$parent.after_click_next_element();
+    },
+
     getTree() {
        axios
-        .post("kb/tree", {
+        .post("/kb/tree", {
           id: this.parent_id,
         })
         .then((response) => {
@@ -704,7 +728,7 @@ export default {
       if(this.search.input.length <= 2) return null;
       
       axios
-        .post("kb/search", {
+        .post("/kb/search", {
           text: this.search.input,
         })
         .then((response) => {
@@ -1203,8 +1227,10 @@ export default {
         if(expand)  this.expandTree();
         this.setTargetBlank();
         
-
-        window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
+        if(this.enable_url_manipulation) {
+          window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
+        }
+        
       });
       
     },

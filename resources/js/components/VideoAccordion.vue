@@ -33,6 +33,7 @@
                         :group_edit="group_edit"
                         @showVideo="showVideo"
                         @deleteVideo="deleteVideo"
+                        :is_course="is_course"
                         
                     />
                 </div>
@@ -47,6 +48,7 @@
                 :group_edit="group_edit"
                 @showVideo="showVideo"
                 @deleteVideo="deleteVideo"
+                :is_course="is_course"
             />
              
     </div>
@@ -59,7 +61,7 @@
 <script>
 export default {
     name: 'VideoAccordion',
-    props: ['mode','groups','group_edit', 'active'],
+    props: ['mode','groups','group_edit', 'active', 'is_course'],
     data(){
         return {
             edit: false,
