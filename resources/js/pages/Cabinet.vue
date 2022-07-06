@@ -114,7 +114,18 @@
           </div>
         </div>
 
-        <div  v-if="user.is_admin === 1" class="form-group row">
+        <div class="form-group row">
+          <label for="email"
+                 class="col-sm-4 col-form-label font-weight-bold">Email <span class="red">*</span></label>
+          <div class="col-sm-8">
+            <input class="form-control" type="text" name="email" id="lastName" required
+                   placeholder="email" v-model="user.email"
+            >
+          </div>
+        </div>
+
+
+        <div class="form-group row">
           <label for="email" class="col-sm-4 col-form-label font-weight-bold">Новый пароль </label>
           <div class="col-sm-8">
             <input v-model="password" minlength="5" class="form-control" type="password" name="new_pwd" id="new_pwd"

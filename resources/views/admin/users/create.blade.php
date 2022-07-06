@@ -2,6 +2,7 @@
 @section('title', 'Сотрудник')
 @section('content')
 
+{{--    {{dd($corpbooks,'99',$user)}}--}}
 
 <div class="user-page">
     <div class="mt-3">
@@ -165,7 +166,6 @@
                                                 <a href="#" >Основные данные </a>
                                                 <span id="check-1"  class="ml-2 fa fa-check none-check" ></span>
                                             </li>
-
 
                                             <li class="bg-this" id="bg-this-9" onclick="showBlock('9',this)">
                                                 <a href="#" >Документы</a>
@@ -555,7 +555,7 @@
                                                     @foreach($user->adaptation_talks as $key => $talk)
                                                         <div class="adaptation_talk col-12 mt-3">
 
-                                                            <div class="col-2 div_1 ml-0 p-0">{{ $talk['day'] }} й день
+                                                            <div class="col-2 div_1 ml-0 p-0 adap_day">{{ $talk['day'] }} й день
                                                                 <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
                                                             </div>
 
@@ -564,8 +564,9 @@
                                                                 <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
 
                                                                 <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"
-                                                                       @if($talk['date'] != null) value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"
-                                                                       @else  value="null" @endif>
+                                                                       @if($talk['date'] != null)
+                                                                           value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"
+                                                                       @endif>
                                                             </div>
 
                                                             <div class="col-6 div_3 p-0 ml-4">
@@ -617,13 +618,29 @@
                                                 @if(isset($user))
                                                 <h5 class="mb-4 mt-4">Книги</h5>
 
-                                                <profile-books :books="{{ $corpbooks }}" :user_id="{{ $user->id }}"
-                                                    @if(isset($user->in_books))
-                                                        :in_books="{{ $user->in_books }}"
-                                                    @else
-                                                        :in_books="[]"
-                                                    @endif
-                                                    />
+
+
+
+                                                    <select class="form-control form-control-sm" >
+                                                        @if(!empty($corpbooks))
+                                                            @foreach($corpbooks as $corpbook)
+                                                                <option>{{$corpbook->title}}</option>
+                                                            @endforeach
+                                                        @else
+                                                            <option>Нет добавленных книг</option>
+                                                        @endif
+                                                    </select>
+
+
+
+
+{{--                                                <profile-books :books="{{json_encode($corpbooks) }}" :user_id="{{ $user->id }}"--}}
+{{--                                                    @if(isset($user->in_books))--}}
+{{--                                                        :in_books="{{ $user->in_books }}"--}}
+{{--                                                    @else--}}
+{{--                                                        :in_books="[]"--}}
+{{--                                                    @endif--}}
+{{--                                                    />--}}
 
                                                 @endif
                                             </div>
@@ -987,7 +1004,7 @@
                                             @if(isset($user))
                                             <div class="form-group row">
                                                 <label for="headphones_amount_checkbox"
-                                                       class="col-sm-3 col-form-label font-weight-bold">Выданы оборудование счет зарплаты <br>
+                                                       class="col-sm-3 col-form-label font-weight-bold">Выдано оборудование в счет зарплаты <br>
                                                     @if(isset($user))
                                                         {{ $user->headphones_date }}
                                                     @endif
@@ -1969,6 +1986,11 @@ function selectedCountry() {
 @section('styles')
 @include('admin.users.common')
 <style>
+
+.adap_day{
+ margin-right: -80px;
+}
+
 .modal-backdrop {
     opacity: 0.4;
 }
@@ -2064,7 +2086,7 @@ function selectedCountry() {
     display: flex;
 }
 .adaptation_talk .div_1 {
-    margin-right: 7px;
+    /*margin-right: 7px;*/
     font-size: 12px;
     width: 69px;
     font-weight: 600;
@@ -2104,7 +2126,7 @@ input[type="radio"] {
 
 .add_info{
 
-    margin-top: 100px;
+    margin-top: 80px;
 }
 </style>
 @endsection

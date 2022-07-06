@@ -76,11 +76,6 @@ class UserController extends Controller
     }
 
 
-
-
-
-
-
     public function surv(Request $request)
     {
         View::share('menu', 'timetrackinguser');
@@ -90,7 +85,6 @@ class UserController extends Controller
     function quarter(\DateTime $dateTime){
         return (int) ceil($dateTime->format('n') / 3);
     }
-
 
     public function profile(Request $request)
     {
@@ -1013,6 +1007,7 @@ class UserController extends Controller
     {
 
 
+
         if(!Auth::user()) return redirect('/');
         View::share('title', 'Редактировать сотрудника');
         View::share('menu', 'timetrackingusercreate');
@@ -1024,7 +1019,7 @@ class UserController extends Controller
 
 
         return view('admin.users.create',
-            $this->preparePersonInputs($request->id)
+                 $this->preparePersonInputs($request->id)
 
         );
         
@@ -1035,7 +1030,20 @@ class UserController extends Controller
         $positions = Position::all();
         $groups = ProfileGroup::where('active', 1)->get();
         $corpbooks = '[]';
-        
+
+        $knowbase_models = DB::table('knowbase_model')->where('model_id',auth()->user()->getAuthIdentifier())->get()->toArray();
+
+        if (!empty($knowbase_models)){
+            foreach ($knowbase_models as $knowbase_model){
+                $corpbooks = DB::table('kb')->where('id',$knowbase_model->book_id)->get()->toArray();
+            }
+        }
+
+
+
+
+
+
         $programs = Program::orderBy('id', 'desc')->get();
         $workingDays = WorkingDay::all();
         $workingTimes = WorkingTime::all();
@@ -1171,9 +1179,11 @@ class UserController extends Controller
             $user->adaptation_talks = AdaptationTalk::getTalks($user->id);
 
             $arr['user'] = $user;
-        } 
-        
-        
+        }
+
+
+
+
 
         return $arr;
     }
