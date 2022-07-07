@@ -2277,7 +2277,8 @@ class UserController extends Controller
             $user['password'] = Hash::make($request->password);
         }
         $user['last_name'] = $request['query']['last_name'];
-
+        $user['working_country'] = $request['working_country'];
+        $user['working_city'] = $request['working_city'];
         if ($user->save()){
             return response(['success'=>'1']);
         }
@@ -2286,7 +2287,6 @@ class UserController extends Controller
 
 
     }
-
 
     /////загрузка аватарки через профиль в компоненте ( vue.js )
     public function uploadPhotoProfile(Request $request)
@@ -2404,6 +2404,15 @@ class UserController extends Controller
 
 
         Card::find($request['card_id'])->delete();
+
+    }
+
+    //// поиск городов  через профиль
+    public function searchCountry(Request $request)
+    {
+
+        $data = DB::table('coordinates')->where('city', 'LIKE','%'.$request->keyword.'%')->get();
+        return response()->json($data); ;
 
     }
 }

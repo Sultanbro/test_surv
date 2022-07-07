@@ -118,7 +118,7 @@
           <label for="email"
                  class="col-sm-4 col-form-label font-weight-bold">Email <span class="red">*</span></label>
           <div class="col-sm-8">
-            <input class="form-control" type="text" name="email" id="lastName" required
+            <input class="form-control" type="text" name="email" id="email" required
                    placeholder="email" v-model="user.email"
             >
           </div>
@@ -140,6 +140,28 @@
           <div class="col-sm-8">
             <input   v-model="birthday" class="form-control" type="date" name="birthday" id="birthday" required>
           </div>
+        </div>
+
+        <div class="form-group row">
+          <label for="lastName"
+                 class="col-sm-4 col-form-label font-weight-bold">Город<span class="red">*</span></label>
+          <div class="col-sm-8">
+            <input    v-model="keywords" class="form-control" type="text" name="country" id="country" required placeholder="поиск городов">
+            <ul v-if="country_results.length > 0" class="p-0">
+
+              <li v-if="country_results.length > 0" v-for="(result,index) in country_results"  style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white">
+                 <a @click="SelectedCountry(index,result)"> Страна: {{ result.country }} Город: {{ result.city }}</a>
+              </li>
+              <li v-else style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white">
+                  нет найденных городов
+              </li>
+<!--              <li v-for="country_results in result" :key="result.id" v-text="result.city"></li>-->
+            </ul>
+
+
+
+          </div>
+<!--          v-model="user.working_country"-->
         </div>
 
       </div>
@@ -231,6 +253,7 @@ export default {
       img:'',
       success: '',
       password:'',
+      working_city:'',
       birthday:'',
       cardValidatre:{
           error:false,
@@ -245,26 +268,32 @@ export default {
           phone:'',
         },
       ],
+      keywords: null,
+      country_results: [],
 
 
     };
   },
-  mounted() {
-
+  watch: {
+    keywords(after, before) {
+      this.fetch();
+    }
   },
   created() {
     this.fetchData();
     this.user = JSON.parse(this.auth_role)
-
     this.format_date(this.user.birthday)
 
   },
   methods: {
 
+    SelectedCountry(index,arr){
+      this.keywords = 'Страна '+arr.country+' Город '+ arr.city
+      this.working_city = arr.id
+
+
+    },
     format_date(value){
-
-      console.log(value,'iks');
-
       if (value) {
           return  this.birthday = moment(String(value)).format('YYYY-MM-DD')
       }
@@ -287,12 +316,9 @@ export default {
       }
       let data = new FormData();
       data.append('file', this.file);
+
       axios.post('/profile/upload/edit/profile', data, config)
-
           .then(function (res) {
-
-
-
             // existingObj.success = res.data.success;
             existingObj.img = '/users_img/'+res.data.file_name;
             existingObj.$message.success('Успешно Удалено');
@@ -372,6 +398,8 @@ export default {
           query:this.user,
           password:this.password,
           birthday:this.birthday,
+          working_city:this.working_city,
+          working_country:this.keywords,
         }).then(response => {
           if (response.data.success){
             this.$message.success('Успешно Сохранено')
@@ -398,6 +426,8 @@ export default {
           this.admins = response.data.admins;
           this.users = response.data.users;
           this.user = response.data.user;
+          this.keywords = response.data.user.working_country;
+          this.working_city = response.data.user.working_city;
 
           if (response.data.user_payment != null && response.data.user_payment != undefined){
               if (response.data.user_payment.length > 0){
@@ -440,6 +470,38 @@ export default {
           alert(error,'6565');
         });
     },
+    fetch() {
+
+
+      if (this.keywords != null && this.keywords != undefined){
+
+
+        if (this.keywords.length === 0){
+          this.keywords = ''
+          this.country_results = []
+        }else{
+          axios.post('/profile/country/city/', {
+            keyword: this.keywords
+          }).then(response => {
+            console.log(response,'077')
+            this.country_results = response.data
+          })
+        }
+
+
+
+      }
+
+
+
+
+
+      // axios.get('/profile/country/city/', { params: { keywords: this.keywords } })
+      //     .then(response => this.results = response.data)
+      //     .catch(error => {});
+
+    }
+
   },
 
 };

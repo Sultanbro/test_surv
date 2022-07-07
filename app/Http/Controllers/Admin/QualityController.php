@@ -65,7 +65,7 @@ class QualityController extends Controller
 
     public function getRecords(Request $request) {
 
-//        return $request;
+
 
 //        if ($request->individual_type == 1){
 //            $request->group_id = 26;
@@ -76,7 +76,12 @@ class QualityController extends Controller
 
         $currentUser = User::bitrixUser();
 
-        $group = ProfileGroup::find($request->group_id);
+
+        if ($request->individual_type != 3 || $request->individual_type != 1){
+            $group = ProfileGroup::find($request->group_id);
+        }else{
+            $group = ProfileGroup::find(42);
+        }
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
@@ -88,6 +93,8 @@ class QualityController extends Controller
                 'error' => 'access',
             ];
         }
+
+
         
       // dd('test');
 
@@ -299,15 +306,10 @@ class QualityController extends Controller
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
 
 
-        return response()->json([
-            'check_users' => $check_users['check_users']
-        ]);
+//        return response()->json([
+//            'check_users' => $check_users['check_users']
+//        ]);
 //        $check_users =CheckReports::where('item_id',$request['group_id'])->get();
-
-
-
-
-
 
 
 

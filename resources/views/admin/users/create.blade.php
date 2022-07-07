@@ -1490,7 +1490,6 @@
     document.getElementById('selectedCityInput').onkeyup = function() {
         let _token   = $('meta[name="csrf-token"]').attr('content');
         var value = document.getElementById('selectedCityInput').value;
-
         if (value.length){
             $.ajax({
                 url: "/selected-country/search/",

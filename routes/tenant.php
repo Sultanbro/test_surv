@@ -201,6 +201,7 @@ Route::middleware([
     Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
     Route::any('/profile/edit/user/cart/', [UserController::class, 'editUserProfile']); ///profile save name,last_name,date ///profile save name,last_name,date
     Route::post('/profile/remove/card/', [UserController::class, 'removeCardProfile']); ///удаление карты индивидуально
+    Route::post('/profile/country/city/', [UserController::class, 'searchCountry']); /// поиск городов через Профиль
 
     // Книги
     Route::get('/admin/upbooks', [UpbookController::class, 'index']);
