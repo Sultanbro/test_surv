@@ -1533,6 +1533,8 @@ class UserController extends Controller
 
 
 
+
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1589,12 +1591,36 @@ class UserController extends Controller
 
         /*==============================================================*/
         /********** Редактирование user  */
-        /*==============================================================*/     
+        /*==============================================================*/
 
-        if (isset($request['selectedCityInput']) && empty($request['selectedCityInput'])){
+
+
+
+
+
+
+
+
+        if (isset($request['selectedCityInput']) && !empty($request['selectedCityInput']) ){
+
+            if (auth()->user()->working_city === $request['working_city']){
+                $country = $request['selectedCityInput'];
+                $explodeCountry = explode(' ',$country);
+                foreach ($explodeCountry as $country){
+                    $searchCountry = DB::table('coordinates')->where('city',$country)->get()->toArray();
+                }
+                if (isset($searchCountry[0]->id) && !empty($searchCountry)){
+                    $request['working_city'] = $searchCountry[0]->id;
+                }else{
+                    $request['working_city'] = null;
+                    $request['selectedCityInput'] = null;
+                }
+            }
+        }else{
             $request['working_city'] = null;
             $request['selectedCityInput'] = null;
         }
+
         $user->email = strtolower($request['email']);
         $user->name = $request['name'];
         $user->last_name = $request['last_name'];
