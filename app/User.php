@@ -67,8 +67,10 @@ class User extends Authenticatable implements Authorizable
         'groups_all',
         'applied_at', // дата принятия
         'weekdays', // 0000000
-        'img_url'/// найменование аватарки
+        'img_url',/// найменование аватарки
+        'headphones_sum'/// сумма наушника
     ];
+
 
 
     //public $remember_token = true;
@@ -668,10 +670,10 @@ class User extends Authenticatable implements Authorizable
         return $this->hasOne('App\Photo');
     }
 
-    // public function groups()
-    // {
-    //     return $this->hasMany('App\Group');
-    // }
+    public function groups()
+    {
+        return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id');
+    }
 
     public function fines()
     {

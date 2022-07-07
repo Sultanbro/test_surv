@@ -54,6 +54,17 @@
     align-items: center;
     cursor: pointer;
 
+    i.fa-lock {
+        display: none;
+    }
+    
+    &.disabled {
+
+        background: grey !important;
+        i.fa-lock {
+            display: inline;
+        }
+    }
 
     &.active {
         background: #69a3d6;

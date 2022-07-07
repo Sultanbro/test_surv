@@ -22,6 +22,11 @@ class ProfileGroup extends Model
         'checktime_users' => 'array',
         'time_exceptions' => 'array'
     ];
+    
+    public function users()
+    {
+        return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id');
+    }
 
     protected $fillable = [
         'name', // Название группы

@@ -123,6 +123,7 @@
         @back="back" 
         @toggleMode="toggleMode" 
         :mode="mode"
+        :enable_url_manipulation="true"
         :auth_user_id="auth_user_id" />
     </div>
 

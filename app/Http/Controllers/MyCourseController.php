@@ -11,6 +11,7 @@ use App\Models\CourseProgress;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\Models\Videos\Video;
+use App\Models\CourseItemModel;
 use App\KnowBase;
 use App\User;
 use DB;
@@ -44,14 +45,28 @@ class MyCourseController extends Controller
             ->with('course')
             ->first();
         
-        $course = Course::with('items')->find($active_course->course_id);
+        $course = Course::with('items_models')->find($active_course->course_id);
 
+    
         $items = [];
         if($course) {
-            $no_active = true;
-            foreach ($course->items as $key => $course_item) {
-                $item = $this->getCourseItem($course_item , $no_active);
-                if($item) array_push($items, $item);
+
+            $items = $course->setCheckpoint($course->items);
+            foreach ($items as $key => $item) {
+                $item->last_item = null;
+                if($item->status == CourseResult::ACTIVE) {
+                    $cim = CourseItemModel::where('user_id', auth()->id())
+                        ->where('course_item_id', $item->id)
+                        ->orderBy('id', 'desc')
+                        ->first();
+
+                    if($cim) {
+                        $item->last_item = $item->getNextElement($cim->item_id);
+                    }
+                }
+               
+                
+                
                 
             }
         } 
@@ -79,7 +94,6 @@ class MyCourseController extends Controller
 
         if($course_item->item_model == 'App\KnowBase') {
 
-             
             // TODO
             $kb = KnowBase::with('children','questions')->where('id', $course_item->item_id)->first();
 
@@ -88,22 +102,11 @@ class MyCourseController extends Controller
             $title = $kb->title;
             KnowBase::getArray($steps, $kb);
             
-            foreach ($steps as $key => $step) {
-        
-                $fp = $progresses->where('item_id', $step['id'])->first();
-                $steps[$key]['status'] = $fp ? $fp->status: 0;
-                $steps[$key]['type'] = 'kb';
-               
-                if(!$fp) $statusOfCourse = CourseResult::ACTIVE;
-            }
-            
         }
 
         if($course_item->item_model == 'App\Models\Videos\Video') {
             $pl = VideoPlaylist::with('videos')->find($course_item->item_id);
             if(!$pl) return null;
-
-            
 
             $title = $pl->title;
             
@@ -131,7 +134,6 @@ class MyCourseController extends Controller
             $title = $book->title;
 
             $pages = $book->questions->groupBy('page');
-
 
             $steps[] = [
                 'id' => $course_item->item_id,

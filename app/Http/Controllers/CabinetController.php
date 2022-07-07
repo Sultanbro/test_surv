@@ -16,13 +16,8 @@ class CabinetController extends Controller
         View::share('menu', 'cabinet');
         View::share('link', 'cabinet');
 
-        $authRole = auth()->user()->toArray();
 
-
-
-
-
-        return view('cabinet',compact('authRole'));
+        return view('cabinet');
     }
 
     public function get()

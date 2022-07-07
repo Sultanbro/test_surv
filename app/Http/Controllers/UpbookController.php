@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\View;
 use App\Models\Books\Book;
 use App\Models\Books\BookGroup;
 use App\Models\TestQuestion;
+use App\Models\Course;
+use App\Models\CourseItemModel;
 
 class UpbookController extends Controller
 {

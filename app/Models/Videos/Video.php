@@ -29,6 +29,11 @@ class Video extends Model
         return $this->morphMany('App\Models\TestQuestion', 'testable');
     }
     
+    public function item_models()
+    {
+        return $this->hasMany('App\Models\CourseItemModel', 'item_id');
+    }
+
     
     public function comments()
     {
