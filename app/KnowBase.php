@@ -40,6 +40,11 @@ class KnowBase extends Model
         return $this->hasMany(self::class, 'parent_id')->orderBy('order')->with('children','questions');
     }
 
+    public function item_models()
+    {
+        return $this->hasMany('App\Models\CourseItemModel', 'item_id');
+    }
+
     public function parent()
     {
         return $this->belongsTo(self::class, 'parent_id');

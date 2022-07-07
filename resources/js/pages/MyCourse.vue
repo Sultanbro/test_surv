@@ -78,6 +78,8 @@
                       :book_id="activeCourseItem.item_id"
                       mode="read"
                       ref="upbook"
+                      :course_page="true"
+                      :course_item_id="activeCourseItem.id"
                       :enable_url_manipulation="false"  
                     />
                   </div>
@@ -86,6 +88,7 @@
                       <page-playlist-edit 
                           ref="playlist"
                           :id="activeCourseItem.item_id"
+                          :course_item_id="activeCourseItem.id"
                           :is_course="true"
                           :myvideo="activeCourseItem.last_item"
                           :enable_url_manipulation="false"
@@ -98,6 +101,7 @@
                         ref="knowbase"
                         :trees="trees" 
                         :parent_name="activeCourseItem.title" 
+                        :course_item_id="activeCourseItem.id"
                         :parent_id="activeCourseItem.item_id"
                         :show_page_id="0" 
                         mode="read"
@@ -154,6 +158,7 @@ export default {
         this.activeCourseItem.status = 1;
         this.activeCourseItem = this.items[index + 1];  
       } else {
+        this.activeCourseItem.status = 1;
         this.$message.success('Поздравляем с завершением курса!');
       } 
       

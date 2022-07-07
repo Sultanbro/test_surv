@@ -16,6 +16,7 @@ use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
 use App\Models\QuartalBonus;
 use App\KnowBase;
+use App\Models\TestQuestion;
 use App\Models\Books\Book;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -24,23 +25,37 @@ class TestController extends Controller {
  
 	public function test() {
 	
-		$disk = \Storage::build([
-			'driver' => 's3',
-			'key' => 'O4493_admin',
-			'secret' => 'nzxk4iNukQWx',
-			'region' => 'us-east-1',
-			'bucket' => 'tenantbp',
-			'endpoint' => 'https://storage.oblako.kz:443',
-			'use_path_style_endpoint' => true,
-			'throw' => false,
-			'visibility' => 'public'
-		]);
-		$url = $disk->temporaryUrl(
-			'/videos/pravilnyi_podbor_personala_a512f3a80ea23cbf272f5a8557220a87.mp4', now()->addMinutes(5)
-		);
-		dd($url);
+		// $user = \App\Kpi::userKpi(10230, '2022-06-01', 1);
+		
 
-		//dd($disk->response('videos/videoplayback_f5bd9da50549a093e0f04a769dd7f59e.mp4'));
+
+		// $tests = TestQuestion::where([
+		// 	'testable_type' => 'App\\Models\\Books\\Book',
+		// 	'testable_id' => 73 
+		// ])->get();
+
+		// foreach ($tests as $key => $test) {
+
+		// 	$items = [12, 115,123];
+			
+		// 	foreach ($items as $key => $item) {
+		// 		TestQuestion::create([
+		// 			'testable_id' => $item,
+		// 			'testable_type' => $test->testable_type,
+		// 			'type' => $test->type,
+		// 			'text' => $test->text,
+		// 			'variants' => $test->variants,
+		// 			'page' => $test->page,
+		// 			'order' => $test->order,
+		// 			'points' => $test->points,
+		// 		]);
+		// 	}
+			
+
+		
+		dump(73);
+		dd($items);
+
 	}  
 
 	public function hhRefresher() {

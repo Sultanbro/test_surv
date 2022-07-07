@@ -106,6 +106,13 @@
         @passed="activeTest.pass = true"
       />
     </div>
+    
+    <button class="next-btn btn btn-primary" 
+      v-if="course_page"
+      @click="nextElement()">
+      Продолжить курс
+      <i class="fa fa-angle-double-right ml-2"></i>
+    </button>
 
   </div>
 </template>
@@ -117,7 +124,7 @@ export default {
   components: {
     VuePdfEmbed
   },
-  props: ["book_id", "mode", 'showBackBtn'],
+  props: ["book_id", "mode", 'showBackBtn', 'course_page'],
   data() {
     return {
       page: 1,
@@ -151,6 +158,7 @@ export default {
 
       if(index != -1 && this.tests.length - 1 > index) {
         this.activeTest = this.tests[index + 1];
+        this.page = this.activeTest.page;
       } else {
         this.$parent.after_click_next_element();
       }

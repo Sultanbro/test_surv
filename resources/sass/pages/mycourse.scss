@@ -93,7 +93,11 @@
         overflow: auto;
 
         &.knowbase {
-            overflow: visible;
+
+            .content {
+                overflow: visible;
+            }
+            
         }
     }
 

@@ -79,6 +79,14 @@
                         <span>Смотреть видео</span>
                     </a>
                 </li>
+                @if(auth()->id() == 5)
+                <li>
+                    <a href="/my-courses" class="link">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Мои курсы</span>
+                    </a>
+                </li>
+                @endif
                 @if(auth()->user()->is_admin)
                 <li>
                     <a href="/courses" class="link">

@@ -87,7 +87,7 @@
                 
                 <button class="next-btn btn btn-primary" v-if="activeVideo.questions.length == 0 || activeVideo.item_models.length > 0"
                   @click="nextElement()">
-                  Перейти к следующему 
+                  Продолжить курс
                   <i class="fa fa-angle-double-right ml-2"></i>
                 </button>
                     
@@ -214,6 +214,9 @@ export default {
     is_course: {
       default: false
     },
+    course_item_id: {
+      default: 0
+    }
   },
   
   data() {
@@ -355,7 +358,7 @@ export default {
         .post("/my-courses/pass", {
           id: this.activeVideo.id,
           type: 2,
-          course_item_id: this.id,
+          course_item_id: this.course_item_id,
         })
         .then((response) => {
          // this.activeVideo.item_models.push(response.data.item_model);

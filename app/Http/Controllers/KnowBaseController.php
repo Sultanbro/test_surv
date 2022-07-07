@@ -228,6 +228,9 @@ class KnowBaseController extends Controller
         if($can_read) {
             $trees = KnowBase::where('parent_id', $request->id)
                 ->with('children')
+                ->with('item_models', function ($query){
+                    $query->where('type', 3);
+                })
                 ->orderBy('order')
                 ->get();
 
@@ -255,7 +258,9 @@ class KnowBaseController extends Controller
 
     public function getPage(Request $request)
     {
-        $page = KnowBase::withTrashed()->find($request->id);
+        $page = KnowBase::withTrashed()->with('item_models', function ($query){
+            $query->where('type', 3);
+        })->find($request->id);
 
         $author = User::withTrashed()->find($page->user_id);
         $editor = User::withTrashed()->find($page->editor_id);
@@ -273,7 +278,12 @@ class KnowBaseController extends Controller
 
         if ($request->refresh) {
             if ($top_parent) {
-                $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')->orderBy('order')->get();
+                $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')
+                ->with('item_models', function ($query){
+                    $query->where('type', 3);
+                })
+                ->orderBy('order')->get();
+
                 foreach ($trees as $tree) {
                     $tree->parent_id = null;
                 }
@@ -417,7 +427,18 @@ class KnowBaseController extends Controller
             if(!$TOP_parent) return;
 
 
-            $users = $TOP_parent->getUsersWithAccess();
+            if($TOP_parent->access == 1 || $TOP_parent->access == 2) {
+                $users = User::with('user_description')
+                    ->whereHas('user_description', function ($query) {
+                        $query->where('is_trainee', 0);
+                    })
+                    ->get('id')
+                    ->pluck('id')
+                    ->toArray();
+            } else {
+                $users = $TOP_parent->getUsersWithAccess();
+            }
+            
             
             $message = 'База знаний: <b>' . $TOP_parent->title . '</b><br><b>'. $text . ':</b> ';
             $message .= '<a href="/kb?s=' . $TOP_parent->id .'&b=' . $page->id . '" target="_blank">' . $page->title . '</a>';

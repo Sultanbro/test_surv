@@ -333,6 +333,16 @@
       </div>
 
     </div>
+
+
+    <button class="next-btn btn btn-primary" 
+      v-if="course_page"
+      @click="nextElement()">
+      Продолжить курс 
+      <i class="fa fa-angle-double-right ml-2"></i>
+    </button>
+
+
     <!-- .content -->
 
     <!-- Right Panel -->
@@ -621,7 +631,8 @@ export default {
     'can_edit',
     'mode',
     'course_page',
-    'enable_url_manipulation'
+    'enable_url_manipulation',
+    'course_item_id'
   ],
   components: { 
     nestedDraggable,
@@ -657,14 +668,19 @@ export default {
       editors: "",
       imagegroup: [],
       attachment: null,
-      breadcrumbs: []                                                                            
+      breadcrumbs: [],
+      ids: []                                                                           
     }
   },
 
   created() {
 
     this.getTree();
-
+    if(this.course_page) {
+      let i = this.tree.findIndex(el )
+       this.activesbook = this.nextElement();
+    }
+ 
     this.parent_title = this.parent_name;
 
  
@@ -678,18 +694,42 @@ export default {
 
   methods: {
     
-    nextElement() {
-      
-      // let index = this.playlist.videos.findIndex(el => el.id == this.activeVideo.id);
+    returnArray(items, indexes = []) { 
+      items.forEach((item, i_index) => {
+          let arr = [...indexes, i_index];
+          this.ids.push({
+            id: item.id,
+            i: arr
+          })
+          
+          if(item.children !== undefined) this.returnArray(item.children, arr);
+      });
+    },
 
-      // if(index != -1 && this.playlist.videos.length - 1 > index) {
-      //   console.log(this.playlist.videos[index]);
-      //   console.log(this.playlist.videos[index + 1]);
-      //   this.activeVideo = this.playlist.videos[index + 1];
-      // } else {
-         
-      // }
-      this.$parent.after_click_next_element();
+    nextElement() {
+   
+
+      // find next element 
+      let index = this.ids.findIndex(el => el.id == this.activesbook.id); 
+      if(index != -1 && this.ids.length - 1 > index) {
+        
+        let el = this.findItem(this.ids[index + 1]);
+        this.activesbook = el;
+        el.item_models.push({status: 1});  
+
+      } else {
+        // move to next course item
+        this.$parent.after_click_next_element();
+      }
+    },
+
+    findItem(el) {
+      if(el.i.length == 1) return this.tree[el.i[0]];
+      if(el.i.length == 2) return this.tree[el.i[0]].children[el.i[1]];
+      if(el.i.length == 3) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]];
+      if(el.i.length == 4) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]];
+      if(el.i.length == 5) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]];
+      if(el.i.length == 6) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].children[el.i[5]];
     },
 
     getTree() {
@@ -707,17 +747,49 @@ export default {
           this.breadcrumbs = [{id:this.id, title: this.parent_title}];
           console.log('book_id '  + book_id)
           
-          
-          let result = null
-          this.tree.every(obj => {
-            result = this.deepSearchId(obj, book_id)
-            if (result != null) { 
-              console.log(result);
-              this.showPage(book_id, false, true);
-              return false;
+          if(this.course_page) {
+              
+            // create array of books ids
+            this.ids = [];
+            this.returnArray(this.tree);
+
+            book_id = this.show_page_id
+
+            console.log('bliiin');
+            console.log(this.ids);
+
+            if(this.show_page_id == 0) {
+              this.activesbook = this.tree[0];
+            } else {
+              // find element 
+              let index = this.ids.findIndex(el => el.id == this.show_page_id); 
+              
+              if(index != -1) {
+                let el = this.findItem(this.ids[index]);
+                this.activesbook = el;
+              }
             }
-            return true;
-          });
+           
+
+          } else {
+
+
+              let result = null
+              this.tree.every(obj => {
+                result = this.deepSearchId(obj, book_id)
+
+
+                if (result != null) { 
+                  console.log(result);
+                  this.showPage(book_id, false, true);
+                  return false;
+                }
+                return true;
+              });
+
+          }
+          
+        
 
         })
         .catch((error) => {
@@ -1231,6 +1303,7 @@ export default {
         if(this.enable_url_manipulation) {
           window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
         }
+        
         
       });
       
