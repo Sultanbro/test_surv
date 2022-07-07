@@ -148,10 +148,121 @@ class GetWorkedHours extends Command
                     'type' => 152 // звонки от 10 секунд
                 ], $closed_cards);
 
+
+                 //запишем посещения для Казахтелекома
+                 // $minutes = Euras2::getWorkedMinutes($user->email, $this->date);
+
+                // if($minutes == 0) continue; // Не записывать ноль
+                // if($minutes > 0) {
+
+                    
+                // }
+
+                $startedDay = Callibro::startedDay($user->email, $this->date);
+                    
+                if($startedDay) {
+                    if($this->group && !in_array($user->id, $this->group->time_exceptions)) { // not in exception
+                        $timetracking = Timetracking::where('user_id', $user->id)
+                            ->whereDate('enter', $this->date)
+                            ->orderBy('enter', 'asc')
+                            ->first();
+    
+                        if($timetracking) {
+                            if($timetracking->updated != 1) {
+                                $timetracking->enter = $startedDay;
+                            
+                                $timetracking->updated = 2;
+                                $timetracking->save();
+                            } 
+                        } else {
+                            Timetracking::create([
+                                'enter' => $startedDay,
+                                'exit' => Carbon::parse($this->date),
+                                'total_hours' => 0,
+                                'updated' => 2,
+                                'user_id' => $user->id
+                            ]);
+                        }
+                    }
+                }   
+            }
+
+            if($group_id == 79) { // Euras 2
+
+                $minutes = Euras2::getWorkedMinutes($user->email, $this->date);
+
+                if($minutes == 0) continue; // Не записывать ноль
+                if($minutes > 0 && $user->program_id == 1) {
+                    $hours = Callibro::getWorkedHours($user->email, $this->date);
+                    $this->updateHours($user->id, $minutes, $hours);
+                }
+                $aggrees = Euras2::getAggrees($user->email, $this->date);
+             
+                $correct_minutes = Euras2::getCallCounts($user->email, $this->date);
+
+                //$closed_cards = Euras2::getConversionAvg(Carbon::parse($this->date));
+
+                $this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 147 // минуты
+                ], $minutes);
+    
+                $this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 146 // согласия
+                ], $aggrees);
+
+                $this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 148 // звонки от 10 секунд
+                ], $correct_minutes);
+
+                 /*$this->saveASI([
+                    'date' => $this->startOfMonth,
+                    'employee_id' => $user->id,
+                    'group_id' => $group_id,
+                    'type' => 145 // конверсии
+                ], $closed_cards);*/
+
+                //запишем посещения для Euras2
+                $startedDay = Callibro::startedDay($user->email, $this->date);
+                    
+                if($startedDay) {
+                    if($this->group && !in_array($user->id, $this->group->time_exceptions)) { // not in exception
+                        $timetracking = Timetracking::where('user_id', $user->id)
+                            ->whereDate('enter', $this->date)
+                            ->orderBy('enter', 'asc')
+                            ->first();
+    
+                        if($timetracking) {
+                            if($timetracking->updated != 1) {
+                                $timetracking->enter = $startedDay;
+                            
+                                $timetracking->updated = 2;
+                                $timetracking->save();
+                            } 
+                        } else {
+                            Timetracking::create([
+                                'enter' => $startedDay,
+                                'exit' => Carbon::parse($this->date),
+                                'total_hours' => 0,
+                                'updated' => 2,
+                                'user_id' => $user->id
+                            ]);
+                        }
+                    }
+                } 
+
             }
 
 
-            if($group_id == 79) {
+            /*if($group_id == 79) {
 
                // $minutes = Euras2::getWorkedMinutes($user->email, $this->date);
 
@@ -190,7 +301,7 @@ class GetWorkedHours extends Command
                 }   
                
 
-            }
+            }*/
         }
 
     }

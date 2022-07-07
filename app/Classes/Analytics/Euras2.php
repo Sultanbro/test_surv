@@ -126,7 +126,7 @@ class Euras2
 
 
         ///
-        $user_ids = json_decode(ProfileGroup::find(70)->users);
+        $user_ids = json_decode(ProfileGroup::find(79)->users);
         $user_ids_1 = User::withTrashed()->whereIn('id', $user_ids)->get()->pluck('id')->toArray();
         //$user_ids_1 = User::withTrashed()->whereIn('id', $user_ids)->where('position_id',32)->where('program_id', 1)->get()->pluck('id')->toArray();
 
@@ -303,7 +303,7 @@ class Euras2
         $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
         
         $full_time = 0; // общее отработанное время
-        $dialer_id = 443;
+        $dialer_id = 444;
         
         if($account) {
             $call_account_id = $account->id;
@@ -358,8 +358,8 @@ class Euras2
         $account = DB::connection('callibro')->table('call_account')->where('email', $user_email)->first();
         
         $aggrees = 0; // общее отработанное время
-        $dialer_id = 443;
-        $script_status_ids = [13471]; // Cтатус в скрипте: Оформлена заявка
+        $dialer_id = 444;
+        $script_status_ids = [13559]; // Cтатус в скрипте: Оформлена заявка
 
         if($account) {
         
@@ -416,20 +416,25 @@ class Euras2
     public static function getClosedCards($day, $user_email = '') {
 
         $cards = 0; // общее отработанное время
-        $dialer_id = 443;
+        $dialer_id = 444;
         
         /**
          *  Cтатус в скрипте
          */
         $script_status_ids = [
-            13470, // Заявка
-            13471, // оформлена заявка
-            13474, // Низкий доход
-            13513, // Отказ
-            13514, // Дорого
-            13515, // Негативный клиент
-            13517, // Услуги подключены
-            13520, // Категорический отказ
+            13559, // Заявка
+            13557, // согласие
+            13797, // клиент несовершеннолетний
+            13798, // клиента арест
+            13800, //Не интересует
+            13801, //Негатив к Банку
+            13802, //Не устраивают условия
+            13803, //Подумает
+            13804, //Интересует другой продукт
+            13806, //Уточненный номер
+            13810, //Неверный номер
+            13812, //Клиент умер
+            13813, //Не гражданин РК
         ]; 
 
         $cards = DB::connection('callibro')->table('calls')
@@ -454,7 +459,7 @@ class Euras2
     public static function getCallCounts($user_email, $day){
                 $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
         $full_time = 0; // общее отработанное время
-        $dialer_id = 443;
+        $dialer_id = 444;
         $mycount = 0;
         if($account) {
             $call_account_id = $account->id;
