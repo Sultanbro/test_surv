@@ -570,9 +570,10 @@ class AnalyticStat extends Model
 
             if($text == '') $text = '0';
             $math_string ="return (".$text.");";
-            //$text);
-            
-          
+            if(str_contains($math_string,'{')){
+                $math_string = str_replace("{","",$math_string);
+                $math_string = str_replace("}","",$math_string);
+            }
             $res = eval($math_string);
 
           

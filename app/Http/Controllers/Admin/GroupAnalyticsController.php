@@ -957,6 +957,7 @@ class GroupAnalyticsController extends Controller
 
         $notification_receivers = NotificationTemplate::getReceivers(6, $group->id);
         
+
         if($has_remote_to_send_notification) {
             foreach($notification_receivers as $user_id) {
                 UserNotification::create([

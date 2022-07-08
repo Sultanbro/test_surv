@@ -13,6 +13,7 @@ use App\AnalyticsSettings;
 use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Eurasian;
 use App\Classes\Analytics\Kaztel;
+use App\Classes\Analytics\Euras2;
 use App\Classes\Analytics\HomeCredit;
 use App\Models\Analytics\UserStat;
 
@@ -69,7 +70,7 @@ class Conversion extends Command
         $this->day = $date->day;
         $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
 
-        $groups = [53, 70];
+        $groups = [53, 70, 79];
         foreach($groups as $group_id) {
             $this->fetch($group_id);
             $this->line('Fetch completed for group_id: ' . $group_id);
@@ -95,7 +96,10 @@ class Conversion extends Command
                 if($aggrees == 0) {
                     $conversion = 0; 
                 } else {
-                    $conversion = $aggrees / $closed * 100;
+                    if($closed == 0)
+                        $conversion = 0;
+                    else
+                        $conversion = $aggrees / $closed * 100;
                     $conversion = number_format($conversion, 1);
                 }
 
@@ -144,12 +148,12 @@ class Conversion extends Command
                 $this->line(' '); 
             }
 
-            if($group_id == 57) { // Home credit
+            if($group_id == 79) { // Euras2
            
-                $closed = HomeCredit::getClosedCards($this->date,$user->email);
+                $closed = Euras2::getClosedCards($this->date,$user->email);
                 if($closed == -1) continue; // Не записывать так как нет аккаунта
 
-                $aggrees = HomeCredit::getAggrees($user->email, $this->date);
+                $aggrees = Euras2::getAggrees($user->email, $this->date);
                 
                 $this->line($user->id . ' '.  $user->last_name . ' ' . $user->name);
                     
@@ -168,7 +172,7 @@ class Conversion extends Command
                     'date' => $this->startOfMonth,
                     'employee_id' => $user->id,
                     'group_id' => $group_id,
-                    'type' => 66 // Конверсия согласий
+                    'type' => 145 // Конверсия согласий
                 ], $conversion);
 
                 $this->line('Сохранено');
