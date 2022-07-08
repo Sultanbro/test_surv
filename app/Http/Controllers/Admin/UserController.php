@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\KnowBase;
 use App\Models\QuartalBonus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -1029,17 +1030,22 @@ class UserController extends Controller
     {
         $positions = Position::all();
         $groups = ProfileGroup::where('active', 1)->get();
-        $corpbooks = '[]';
+        $corpbooks = [];
 
         $knowbase_models = DB::table('knowbase_model')->where('model_id',auth()->user()->getAuthIdentifier())->get()->toArray();
 
         if (!empty($knowbase_models)){
-            foreach ($knowbase_models as $knowbase_model){
-                $corpbooks = DB::table('kb')->where('id',$knowbase_model->book_id)->get()->toArray();
+
+            foreach ($knowbase_models as $k => $knowbase_model){
+                $knowbase_query[] = KnowBase::where('id',$knowbase_model->book_id)->get()->toArray();
             }
+
+            foreach ($knowbase_query as $corpbook){
+                $corpbooks[] = array_shift($corpbook);
+
+            }
+
         }
-
-
 
 
 

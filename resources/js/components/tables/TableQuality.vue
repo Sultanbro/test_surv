@@ -104,7 +104,7 @@
                 </table>
               </div>
             </a-tab-pane>
-            <a-tab-pane tab="Месяц" :key="2">
+            <a-tab-pane tab="Месяц " :key="2">
               <div class="table-responsive my-table">
                 <table class="table b-table table-sm table-bordered">
                   <tr>
@@ -530,11 +530,10 @@
           <div class="col-md-12 p-0">
             <div class="col-md-6 p-0">
               <div>
-                 <button @click="viewStaticCheck('w')" type="button" class="btn btn-light p-2 pl-4 pr-4" style="background-color: white;color: rgb(24 144 255);border: 1px solid #e8e8e8">Неделя</button>
-                 <button @click="viewStaticCheck('m')" type="button" class="btn btn-light p-2 pl-4 pr-4" style="color: #999999;border: 1px solid #e8e8e8">Месяц</button>
+                 <button @click="viewStaticCheck('w')" class="btn btn-light p-2 pl-4 pr-4 check_list_mon" v-bind:class="{ isActiveCheck: viewStaticButton.weekCheck }"  type="button" >Неделя</button>
+                 <button @click="viewStaticCheck('m')" class="btn btn-light p-2 pl-4 pr-4 check_list_mon" v-bind:class="{ isActiveCheck: viewStaticButton.montheCheck }" type="button"  >Месяц  </button>
               </div>
             </div>
-
             <div v-if="viewStaticButton.weekCheck" class="table-responsive my-table">
               <table class="table b-table table-bordered table-sm">
                 <tr>
@@ -564,17 +563,34 @@
                            {{check_r.total_day}}
                          </div>
 
+
                          <template v-for="(checked_day,index) in check_r.day">
-
-
-
                            <template v-if="index == field.name">
                              {{checked_day}}
                            </template>
-
-
-
                          </template>
+
+                         <template  v-if="field.name === 'Ср. 1'">
+                           {{check_r.average[1]}}
+                         </template>
+
+                         <template  v-if="field.name === 'Ср. 2'">
+                           {{check_r.average[2]}}
+                         </template>
+
+                         <template  v-if="field.name === 'Ср. 3'">
+                           {{check_r.average[3]}}
+                         </template>
+
+                         <template  v-if="field.name === 'Ср. 4'">
+                           {{check_r.average[4]}}
+                         </template>
+
+                         <template  v-if="field.name === 'Ср. 5'">
+                           {{check_r.average[5]}}
+                         </template>
+
+
                        </template>
                      </td>
                    </template>
@@ -582,7 +598,6 @@
                </template>
               </table>
             </div>
-
             <div v-if="viewStaticButton.montheCheck" class="table-responsive my-table mt-5">
               <table class="table b-table table-sm table-bordered">
                 <tr>
@@ -840,8 +855,7 @@ export default {
       },
       active:1,
       selected_active:1,
-      flagGroup:'index'
-
+      flagGroup:'index',
     };
   },
 
@@ -862,30 +876,22 @@ export default {
   },
   methods: {
 
-
-
     viewStaticCheck(type){
-        // console.log(this.fields,'day');
-        // console.log(this.monthFields,'mont');
-        // console.log(this.currentGroup,'щзешщт')
-        console.log(this.fields,'fields')
-        console.log(this.check_result,'result');
-        // console.log(this.items,'items')
         if (type == 'w'){
             this.viewStaticButton.weekCheck = true
             this.viewStaticButton.montheCheck = false
+
         }else if(type == 'm'){
             this.viewStaticButton.weekCheck = false
             this.viewStaticButton.montheCheck = true
         }
-
       }  ,
 
     watchChanges(values, oldValues) {
       const index = values.findIndex(function (v, i) {
         return v !== oldValues[i];
       });
-      console.log(this.records.data[index]);
+      // console.log(this.records.data[index]);
       this.records.data[index].changed = true;
     },
 
@@ -907,8 +913,6 @@ export default {
 
     normalizeItems() {
 
-      console.log(this.items)
-      console.log(this.items.length)
 
       if (this.items.length > 0) {
         this.newRecord.employee_id = this.items[0].id;
@@ -959,7 +963,7 @@ export default {
 
         })
         .then((response) => {
-          console.log(response);
+
           this.$message.success("Сохранено!!");
           this.showSettings = false;
           this.fetchData();
@@ -975,32 +979,14 @@ export default {
       let loader = this.$loading.show();
 
 
-      console.log(this.currentGroup,'199')
 
 
-      // selected_active
-      // console.log(this.active,'ssssssssssss')
-
-
-
-      console.log(this.flagGroup,'123')
-
-
-      if (this.flagGroup == 'index'){
-
-
-
-
-        this.currentGroup = this.individual_type_id
-
-        console.log(this.individual_type_id,'this.individual_type_id')
-        console.log(this.currentGroup,'this.currentGroup')
-
+      if (this.individual_type_id != null){
+        if (this.flagGroup == 'index'){
+          this.currentGroup = this.individual_type_id
+          // this.currentGroup = this.individual_type_id
+        }
       }
-
-      // if (this.active == 3 && this.individual_type == 2){
-      //
-      // }
 
       axios
         .post($url, {
@@ -1014,17 +1000,18 @@ export default {
         })
         .then((response) => {
 
+
+
+
           this.currentGroup = response.data['individual_current']
 
           if (response.data.error && response.data.error == "access") {
-            // console.log(response,'responseError');
             this.hasPermission = false;
             loader.hide();
             return;
           }
 
 
-          console.log(response,'response');
 
 
 
@@ -1054,6 +1041,10 @@ export default {
           this.setRecordsTable();
           this.calcTotalWeekField();
 
+
+
+
+
           loader.hide();
         });
     },
@@ -1076,11 +1067,9 @@ export default {
     setWeeksTable() {
       this.setWeeksTableFields();
     },
-
     setMonthsTable() {
       this.setMonthsTableFields();
     },
-
     statusChanged(record) {
       record.changed = true;
     },
@@ -1173,7 +1162,7 @@ export default {
       axios
         .post("/timetracking/quality-control/save", obj)
         .then((response) => {
-          console.log(response);
+
           if (response.data.method == "save") {
             record.id = response.data.id;
             record.total = response.data.total;
@@ -1439,8 +1428,7 @@ export default {
     },
 
     updateWeekValue(item, key) {
-      console.log(key);
-      console.log(item);
+
 
       let loader = this.$loading.show();
 
@@ -1454,7 +1442,7 @@ export default {
           group_id: this.currentGroup,
         })
         .then((response) => {
-          console.log(response);
+
           this.$message.success("Сохранено");
           loader.hide();
         })
@@ -1582,8 +1570,21 @@ export default {
     },
 
     changeTab() {
-      console.log("tab changed");
+      // console.log("tab changed");
     },
   },
 };
 </script>
+
+<style>
+
+.check_list_mon{
+  color: #999999;
+  border: 1px solid #e8e8e8
+}
+.isActiveCheck{
+  background-color: white;
+  color: rgb(24 144 255);
+  border: 1px solid #e8e8e8
+}
+</style>

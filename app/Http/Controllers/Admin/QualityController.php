@@ -67,6 +67,8 @@ class QualityController extends Controller
 
 
 
+
+
 //        if ($request->individual_type == 1){
 //            $request->group_id = 26;
 //        }
@@ -291,9 +293,7 @@ class QualityController extends Controller
             'data' => [],
             'total' => 0,
         ];
-        
-        $months = [];
-        $weeks = [];
+
 
         $q_params = QualityParam::where('group_id', $group->id)->where('active', 1)->get();
 
@@ -304,12 +304,6 @@ class QualityController extends Controller
 
         $group = ProfileGroup::find($request->group_id);
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
-
-
-//        return response()->json([
-//            'check_users' => $check_users['check_users']
-//        ]);
-//        $check_users =CheckReports::where('item_id',$request['group_id'])->get();
 
 
 

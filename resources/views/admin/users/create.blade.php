@@ -624,7 +624,7 @@
                                                     <select class="form-control form-control-sm" >
                                                         @if(!empty($corpbooks))
                                                             @foreach($corpbooks as $corpbook)
-                                                                <option>{{$corpbook->title}}</option>
+                                                                <option>{{$corpbook['title']}}</option>
                                                             @endforeach
                                                         @else
                                                             <option>Нет добавленных книг</option>
@@ -632,7 +632,7 @@
                                                     </select>
 
 
-
+                                                    <page-kb :auth_user_id="{{ auth()->user()->id }}" :can_edit="{{ auth()->user()->can('kb_edit') ? 'true' : 'false'}}"/>
 
 {{--                                                <profile-books :books="{{json_encode($corpbooks) }}" :user_id="{{ $user->id }}"--}}
 {{--                                                    @if(isset($user->in_books))--}}
