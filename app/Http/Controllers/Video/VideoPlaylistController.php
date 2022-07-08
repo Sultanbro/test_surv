@@ -169,7 +169,7 @@ class VideoPlaylistController extends Controller {
 
 	public function save_video(Request $request) {
 
-		$video = Video::find($request->video['id']);
+		$video = Video::with('questions')->find($request->video['id']);
 
 		if($video) {
 			$video->playlist_id = $request->id;

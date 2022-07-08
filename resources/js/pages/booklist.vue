@@ -12,7 +12,7 @@
 
       <div class="kb-wrap noscrollbar">
 
-        <div class="chapter opened mb-3">
+        <div class="chapter opened mb-3" v-if="!course_page">
           <div class="d-flex">
             <span class="font-16 font-bold">{{ parent_title }}</span>
             <div class="chapter-btns">
@@ -21,10 +21,18 @@
           </div>
         </div>
 
+        <nested-course
+          v-if="course_page"
+          :tasks="tree"
+          :active="activesbook != null ? activesbook.id : 0"
+          @showPage="showPage"
+        />
+
         <nested-draggable
+          v-else
           :tasks="tree"
           :mode="mode"
-          :auth_user_id="auth_user_id"
+          :auth_user_id="auth_user_id" 
           :opened="true"
           @showPage="showPage"
           @addPage="addPage"
@@ -39,8 +47,8 @@
     <!-- Right Panel -->
 
     <div class="rp" style="flex: 1;padding-bottom: 0px;flex: 1 1 0%;height: 100vh;overflow-y: auto;">
-      <div class="hat"  v-if="!course_page">
-        <div class="d-flex jsutify-content-between hat-top">
+      <div class="hat"  >
+        <div class="d-flex jsutify-content-between hat-top" v-if="!course_page">
           <div class="bc">
             <a href="#" @click="$emit('back')">База знаний</a>
             <template v-for="(bc, bc_index) in breadcrumbs">
@@ -577,7 +585,6 @@
       </div>
     </div>
 
-
     <b-modal
       v-model="showSearch"
       title="Поиск"
@@ -620,6 +627,8 @@
 
 <script>
 import nestedDraggable from "../components/nested";
+import nestedCourse from "../components/nested_course";
+
 export default { 
   name: "booklist",
   props: [
@@ -636,6 +645,7 @@ export default {
   ],
   components: { 
     nestedDraggable,
+    nestedCourse
   }, 
   data() {
     return {

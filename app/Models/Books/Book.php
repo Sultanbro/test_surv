@@ -19,6 +19,7 @@ class Book extends Model
         'description',
         'link',
         'img',
+        'domain'
     ];
 
     /**

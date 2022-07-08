@@ -19,9 +19,8 @@
                                 @if(auth()->user()->can('groups_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 3) active @endif" id="nav-profile-tab"  href="/timetracking/settings?tab=3#nav-profile"  aria-controls="nav-profile" aria-selected="false">Группы</a>@endif
                                 @if(auth()->user()->can('fines_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 4) active @endif" id="nav-fines-tab"  href="/timetracking/settings?tab=4#nav-fines"  aria-controls="nav-fines" aria-selected="false">Штрафы</a>@endif
                                 @if(auth()->user()->can('notifications_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 5) active @endif" id="nav-notifications-tab"  href="/timetracking/settings?tab=5#nav-notifications" aria-controls="nav-notifications" aria-selected="false">Уведомления</a>@endif
-                                @if(auth()->user()->can('settings_learning_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 6) active @endif" id="nav-bookgroups-tab"  href="/timetracking/settings?tab=6#nav-bookgroups" aria-controls="nav-bookgroups" aria-selected="false">Обучение</a>@endif
-                                @if(auth()->user()->is_admin == 1)<a class="nav-item nav-link @if($active_tab == 7) active @endif" id="nav-permissions-tab"  href="/timetracking/settings?tab=7#nav-permissions" aria-controls="nav-permissions" aria-selected="false">Доступы</a>@endif
-                                @if(auth()->user()->can('checklists_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 8) active @endif" id="nav-checkList-tab"  href="/timetracking/settings?tab=8#nav-checkList" aria-controls="nav-checkList" aria-selected="false">Чек-листы</a>@endif
+                                @if(auth()->user()->can('permissions_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 6) active @endif" id="nav-permissions-tab"  href="/timetracking/settings?tab=6#nav-permissions" aria-controls="nav-permissions" aria-selected="false">Доступы</a>@endif
+                                @if(auth()->user()->can('checklists_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 7) active @endif" id="nav-checkList-tab"  href="/timetracking/settings?tab=8#nav-checkList" aria-controls="nav-checkList" aria-selected="false">Чек-листы</a>@endif
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
@@ -59,18 +58,14 @@
                                 />
                             </div>
                             @endif
-                            @if($active_tab == 6 && (auth()->user()->can('settings_learning_view') || auth()->user()->can('settings_view')))
+                            @if($active_tab == 6 && (auth()->user()->can('permissions_view') || auth()->user()->can('settings_view')))
                             <div class="tab-pane fade show active   p-3" id="nav-bookgroups" role="tabpanel" aria-labelledby="nav-bookgroups-tab">
-                                <bookgroups></bookgroups>
+                            <permissions />
                             </div>
                             @endif
-                            @if($active_tab == 7 && auth()->user()->is_admin == 1)
-                            <div class="tab-pane fade show active" id="nav-permisssions" role="tabpanel" aria-labelledby="nav-permisssions-tab">
-                                <permissions />
-                            </div>
-                            @endif
+                        
 
-                            @if($active_tab == 8 && (auth()->user()->can('checklists_view') || auth()->user()->can('settings_view')))
+                            @if($active_tab == 7 && (auth()->user()->can('checklists_view') || auth()->user()->can('settings_view')))
                                     <div class="tab-pane fade show active   p-3" id="checkList" role="tabpanel" aria-labelledby="nav-checkList-tab">
                                         <check-list/>
                                     </div>

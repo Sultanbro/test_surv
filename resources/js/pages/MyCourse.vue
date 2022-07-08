@@ -157,6 +157,7 @@ export default {
       if(index != -1 && this.items.length - 1 != index) {
         this.activeCourseItem.status = 1;
         this.activeCourseItem = this.items[index + 1];  
+        this.activeCourseItem.status = 2;
       } else {
         this.activeCourseItem.status = 1;
         this.$message.success('Поздравляем с завершением курса!');

@@ -39,7 +39,7 @@
             placeholder="Описание плейлиста"
             v-model="playlist.text"
           ></textarea>
-          <p v-else class="p-desc">{{ playlist.title }}</p>
+          <p v-else class="p-desc">{{ playlist.text }}</p>
         </div>
       </div>  
        
@@ -85,7 +85,7 @@
                     :mode="mode"
                     />
                 
-                <button class="next-btn btn btn-primary" v-if="activeVideo.questions.length == 0 || activeVideo.item_models.length > 0"
+                <button class="next-btn btn btn-primary" v-if="is_course && (activeVideo.questions.length == 0 || activeVideo.item_models.length > 0)"
                   @click="nextElement()">
                   Продолжить курс
                   <i class="fa fa-angle-double-right ml-2"></i>
@@ -147,6 +147,7 @@
         <upload-files
           :token="token"
           type="video"
+          :id="playlist.id"
           :file_types="['mp4', 'flv']"
           @onupload="onupload"
         />

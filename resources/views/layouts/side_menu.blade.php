@@ -61,7 +61,7 @@
         </li>
 
         <li class="menu-item">
-            <a href="/admin/upbooks" class="side-btn @if($menu == 'learning') active @endif">
+            <a href="#" class="side-btn @if($menu == 'learning') active @endif">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span>Обучение</span>
             </a>
@@ -214,7 +214,7 @@
         auth()->user()->can('groups_view') ||
         auth()->user()->can('fines_view') ||
         auth()->user()->can('notifications_view') ||
-        auth()->user()->can('settings_learning_view') ||
+        auth()->user()->can('permissions_view') ||
         auth()->user()->can('checklists_view') 
     )
     <ul class="after-main-menu">
