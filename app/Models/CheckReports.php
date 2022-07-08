@@ -198,7 +198,6 @@ class CheckReports extends Model
 
             foreach ($users as $keys => $check_user){
 
-                $this->get_average_value($request->month,$request->year,$check_user->id,$request->individual_type_id);
 
 
                 $allUserReports = CheckReports::on()->where('check_users_id',$check_user->id)

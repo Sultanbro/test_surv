@@ -337,6 +337,7 @@
           }
         },
         created(){
+
             this.checkSelectedAll();
             this.viewCheckList()
             this.addCheckList()
@@ -492,10 +493,6 @@
                   }).then(response => {
                     loader.hide();
 
-
-
-                    console.log(response,'imashevss')
-
                     if (response.data.success === false){
                       this.errors.msg = null;
                       this.errors.show = true;
@@ -558,7 +555,6 @@
                     type:type,
                 }).then(response => {
 
-                    console.log(response,'click')
 
                     this.values = []
                     this.placeholderSelect = false
@@ -585,8 +581,8 @@
                     });
 
 
-                    console.log(this.values,'xzxzx')
-                    console.log(this.filtered_options,'077777')
+                    // console.log(this.values,'xzxzx')
+                    // console.log(this.filtered_options,'077777')
 
                     // this.selectedRoles(type)
 
@@ -995,7 +991,6 @@
 
               this.placeholderSelect = false
 
-              console.log(this.filtered_options,'ffff')
             }
 
 
