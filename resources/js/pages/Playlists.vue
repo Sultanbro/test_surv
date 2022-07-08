@@ -63,6 +63,13 @@
 
                 <i class="btn btn-success fa fa-plus ml-2 d-flex px-2 aic"  @click="showAddPlaylist = true" v-if="mode == 'edit' && activePlaylist == null" />
 
+
+                <!-- buttons for playlist like Save Group -->
+                <template v-if="activePlaylist && mode == 'edit'">
+                  <i class="btn btn-success fa fa fa-grip-horizontal ml-2 d-flex px-2 aic" @click="addGroup"/>
+                  <i class="btn btn-success fa fa-save ml-2 d-flex px-2 aic"  @click="savePlaylistEdit" />
+                </template>
+
               </div>
             </div>
             <div><!----></div> 
@@ -101,12 +108,7 @@
                             <div class="title">  {{ playlist.title }}</div>
                              <div class="d-flex btns mb-2"  v-if="mode == 'edit'"> 
                                 <i
-                                  class="fa fa-cogs"
-                                  v-if="playlist.id != 0"
-                                  @click.stop="editAccess(p_index)"
-                                ></i>
-                                <i
-                                  class="fa fa-arrow-right ml-2"
+                                  class="fa fa-edit ml-2"
                                   v-if="playlist.id != 0"
                                   title="Переместить"
                                   @click.stop="movePl(p_index)"
@@ -196,7 +198,7 @@
 
     <b-modal
       v-model="showEditPlaylist"
-      title="Переместить плейлист"
+      title="Редактировать плейлист"
       size="md"
       class="modalle"
       hide-footer
@@ -281,6 +283,15 @@ export default {
   },
 
   methods: {
+
+    addGroup() {
+      this.$refs.playlist.addGroup()
+    },
+
+    savePlaylistEdit() {
+      this.$refs.playlist.savePlaylist()
+    },
+
     clearUrl(){
       var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16);
       history.pushState(null, null, newUrl);
@@ -317,9 +328,6 @@ export default {
           console.warn('History API не поддерживает ваш браузер');
       }
 
-    },
-    editAccess(i) {
-      this.$message.info('Настройка доступов не работает');
     },
 
     editCat(i) {

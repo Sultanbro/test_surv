@@ -8,6 +8,7 @@
   
 <div class="btn-rm" id="toggle_panel">
     <i class="fa fa-bell"></i>
+    <div class="blink-notification" style="border-color: rgb(0, 242, 246); position: absolute; inset: 0px; border-radius: 50%;z-index: -1;"></div>
     @if($unread > 0)
     <div class="nn-number" style="display:none">
 
@@ -38,7 +39,7 @@
     <div id="dance" style="display:none">
     @for($i = 1;$i<=30;$i++)
     
-        <div class="btn-rm" style="filter:hue-rotate({{ $i * 157 }}deg);overflow:hidden" >
+        <div class="btn-rm" style="filter:hue-rotate({{ $i * 157 }}deg);overflow:hidden;" >
             <img src="/users_img/{{ auth()->user()->img_url }}" alt="avatar" style="animation: 1.5s {{ $i / 5  }}s bell ease infinite;position:absolute;width:80px;height:140px;left:0" >
         </div>
     
@@ -50,7 +51,7 @@
         $a = \App\User::where('img_url', '!=', '')->inRandomOrder()->select('img_url', 'name', 'last_name')->where('id', '!=', 4444)->limit(15)->get();
     @endphp
     @foreach($a as $b)
-    <div class="btn-rm">
+    <div class="btn-rm" style="height:auto">
         <img src="/users_img/{{ $b->img_url }}" title="{{ $b->name . ' ' . $b->last_name}}" alt="avatar">
     </div>
     @endforeach

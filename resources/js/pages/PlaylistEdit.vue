@@ -16,12 +16,6 @@
         </div>
          
       </div>
-
-      <div class="d-flex align-items-start">
-        <button class="btn btn-success px-2" @click="savePlaylist" v-if="mode == 'edit'">
-          <i class="fa fa-save"></i>
-        </button>
-      </div>
     </div>
 
    
@@ -77,7 +71,7 @@
 
             <div class="vid mt-3">
                 <questions 
-                    v-if="activeVideo.questions.length > 0"
+                    v-if="activeVideo.questions.length > 0 || mode == 'edit'"
                     :questions="activeVideo.questions"
                     :id="activeVideo.id"
                     type="video"

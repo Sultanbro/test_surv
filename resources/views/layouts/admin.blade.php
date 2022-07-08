@@ -53,8 +53,8 @@
         </div>
     </div>
     <notifications group="foo" />
-
-
+        
+    
 </div>
 
 

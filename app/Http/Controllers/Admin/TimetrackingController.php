@@ -879,17 +879,20 @@ class TimetrackingController extends Controller
          */
 
         if($request->user_types == 0) { // Действующие
-     
-                
-            $_user_ids = DB::table('users')
+            $_user_ids = [];    
+            $my_ids = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $users_ids)
                 ->where('ud.is_trainee', 0) 
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-               
+                ->get(['users.id','ud.applied']);
+            $end_month = Carbon::parse($year . '-' . $request->month . '-01')->endOfMonth();
+            foreach($my_ids as $ids){
+                $hire_date = Carbon::parse($ids->applied);
+                if($hire_date->lt($end_month) || !isset($ids->applied)){
+                    $_user_ids[] = $ids->id;
+                }
+            }
         }
         
         if($request->user_types == 1) { // Уволенныне
@@ -1444,7 +1447,23 @@ class TimetrackingController extends Controller
             $user_ids = json_decode($group->users);
             if($group->users == null) $user_ids = [];
             
-            $user_ids = array_unique($user_ids);
+            $users_ids = json_decode($group->users);
+            //проверка на принятие на работу
+            $user_ids = [];    
+            $my_ids = DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', $users_ids)
+                ->where('ud.is_trainee', 0) 
+                ->get(['users.id','ud.applied']);
+            $end_month = Carbon::parse($request->year . '-' . $request->month . '-01')->endOfMonth();
+            foreach($my_ids as $ids){
+                $hire_date = Carbon::parse($ids->applied);
+                if($hire_date->lt($end_month) || !isset($ids->applied)){
+                    //dump($hire_date->toDateString());
+                    $user_ids[] = $ids->id;
+                }
+            } 
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
             // Доступ к группе
