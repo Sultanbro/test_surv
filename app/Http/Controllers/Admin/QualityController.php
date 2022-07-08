@@ -67,6 +67,8 @@ class QualityController extends Controller
 
 
 
+
+
 //        if ($request->individual_type == 1){
 //            $request->group_id = 26;
 //        }
