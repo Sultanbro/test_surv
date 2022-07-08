@@ -722,7 +722,7 @@ class Salary extends Model
             $user->edited_salary = null;
             $editedSalary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();
             if($editedSalary) {
-                $ku = User::withTrashed()->find($editedSalary->user_id);
+                $ku = User::withTrashed()->find($editedSalary->author_id);
                 $editedSalary->user = $ku ? $ku->last_name . ' ' . $ku->name : $editedSalary->user_id;
                 $user->edited_salary = $editedSalary;
             }
@@ -741,7 +741,7 @@ class Salary extends Model
             if($editedKpi) {
                 $user->kpi = $editedKpi->amount;
 
-                $ku = User::withTrashed()->find($editedKpi->user_id);
+                $ku = User::withTrashed()->find($editedKpi->author_id);
                 $editedKpi->user = $ku ? $ku->last_name . ' ' . $ku->name : $editedKpi->user_id;
 
                 $user->edited_kpi = $editedKpi;
