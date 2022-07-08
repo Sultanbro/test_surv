@@ -143,7 +143,28 @@
 <script>
 export default {
   name: "Questions",
-  props: ["questions", "type", "id", "mode", 'pass'],
+  props: {
+    questions: Array,
+    type: {
+      type: String,
+    },
+    id: {
+      type: Number,
+      default: 0
+    },
+    mode: {
+      type: String,
+      default: 'read'
+    },
+    pass: {
+      type: Boolean,
+      default: false
+    },
+    count_points: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       can_save: true,
@@ -167,6 +188,10 @@ export default {
         this.page = this.page;
       }
       
+    }
+
+    if(this.count_points) {
+      this.checkAnswers();
     }
   },
   mounted() {},

@@ -103,7 +103,7 @@
                         :parent_name="activeCourseItem.title" 
                         :course_item_id="activeCourseItem.id"
                         :parent_id="activeCourseItem.item_id"
-                        :show_page_id="0" 
+                        :show_page_id="activeCourseItem.item_id" 
                         mode="read"
                         :course_page="true"
                         :enable_url_manipulation="false"

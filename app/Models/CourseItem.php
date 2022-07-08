@@ -48,7 +48,7 @@ class CourseItem extends Model
 
         if($this->isBook()) {
             $book = Book::with('questions')->find($this->item_id);
-            return $book ? count(array_values($book->questions->groupBy('page'))) : 0;
+            return $book ? $book->questions->groupBy('page')->count() : 0;
         }
 
         if($this->isKnowbase()) {

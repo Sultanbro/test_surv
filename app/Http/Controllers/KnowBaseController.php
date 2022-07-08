@@ -228,6 +228,7 @@ class KnowBaseController extends Controller
         if($can_read) {
             $trees = KnowBase::where('parent_id', $request->id)
                 ->with('children')
+                ->with('questions')
                 ->with('item_models', function ($query){
                     $query->where('type', 3);
                 })
@@ -258,9 +259,12 @@ class KnowBaseController extends Controller
 
     public function getPage(Request $request)
     {
-        $page = KnowBase::withTrashed()->with('item_models', function ($query){
-            $query->where('type', 3);
-        })->find($request->id);
+        $page = KnowBase::withTrashed()
+            ->with('questions')
+            ->with('item_models', function ($query){
+                $query->where('type', 3);
+            })
+            ->find($request->id);
 
         $author = User::withTrashed()->find($page->user_id);
         $editor = User::withTrashed()->find($page->editor_id);

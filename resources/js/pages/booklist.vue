@@ -334,6 +334,9 @@
                   :id="activesbook.id"
                   type="kb"
                   :mode="mode"
+                  :count_points="true"
+                  @passed="passed"
+                  :key="questions_key"
                 />
               <div class="pb-5"></div> 
           </div>
@@ -344,7 +347,7 @@
 
 
     <button class="next-btn btn btn-primary" 
-      v-if="course_page"
+      v-if="course_page && (passedTest )"
       @click="nextElement()">
       Продолжить курс 
       <i class="fa fa-angle-double-right ml-2"></i>
@@ -679,17 +682,15 @@ export default {
       imagegroup: [],
       attachment: null,
       breadcrumbs: [],
-      ids: []                                                                           
+      ids: [],
+      passedTest: false,
+      questions_key: 1                                                                
     }
   },
 
   created() {
 
     this.getTree();
-    if(this.course_page) {
-      let i = this.tree.findIndex(el )
-       this.activesbook = this.nextElement();
-    }
  
     this.parent_title = this.parent_name;
 
@@ -703,7 +704,26 @@ export default {
   },
 
   methods: {
-    
+    passed() {
+      this.passedTest = true;
+      console.log('passed test')
+    },
+
+    setArticlePassed() {
+      axios
+        .post("/my-courses/pass", {
+          id: this.activesbook.id,
+          type: 3,
+          course_item_id: this.course_item_id,
+        })
+        .then((response) => {
+         // this.activeVideo.item_models.push(response.data.item_model);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
     returnArray(items, indexes = []) { 
       items.forEach((item, i_index) => {
           let arr = [...indexes, i_index];
@@ -718,13 +738,25 @@ export default {
 
     nextElement() {
    
-
+      this.setArticlePassed();
       // find next element 
       let index = this.ids.findIndex(el => el.id == this.activesbook.id); 
       if(index != -1 && this.ids.length - 1 > index) {
         
         let el = this.findItem(this.ids[index + 1]);
+        
+        this.passedTest = false;
         this.activesbook = el;
+        this.questions_key++;
+
+        if(this.activesbook != null) {
+          console.log(this.activesbook)
+          if(this.activesbook.questions.length == 0) {
+            this.passedTest = true;
+          }
+        }
+          
+
         el.item_models.push({status: 1});  
 
       } else {
@@ -755,7 +787,7 @@ export default {
           const urlParams = new URLSearchParams(window.location.search);
           let book_id = urlParams.get('b');
           this.breadcrumbs = [{id:this.id, title: this.parent_title}];
-          console.log('book_id '  + book_id)
+         
           
           if(this.course_page) {
               
@@ -765,8 +797,6 @@ export default {
 
             book_id = this.show_page_id
 
-            console.log('bliiin');
-            console.log(this.ids);
 
             if(this.show_page_id == 0) {
               this.activesbook = this.tree[0];
@@ -777,9 +807,14 @@ export default {
               if(index != -1) {
                 let el = this.findItem(this.ids[index]);
                 this.activesbook = el;
+                if(this.activesbook != null && this.activesbook.questions.length == 0) {
+                  this.passedTest = true;
+                }
               }
             }
-           
+            
+
+          
 
           } else {
 
@@ -807,7 +842,7 @@ export default {
         });
     },
 
-     searchInput() {
+    searchInput() {
       if(this.search.input.length <= 2) return null;
       
       axios
@@ -825,7 +860,6 @@ export default {
         });
     },
 
-   
     emphasizeTexts() { 
       this.search.items.forEach(item => {
          item.text = item.text.replace(new RegExp(this.search.input,"gi"), "<b>" + this.search.input +  "</b>");
@@ -840,11 +874,13 @@ export default {
           parent: this.selectone,
         }) 
         .then((response) => {}); 
-    }, 
+    },
+    
     moveto(tre) {
       $("#perenos").modal("show");
       this.active(tre);
     },
+
     renamebooks(book) {
       axios
         .post("/pages/rename/", {
@@ -853,6 +889,7 @@ export default {
         })
         .then((response) => {});
     },
+
     rename(tre) {
       console.log("tre=>", tre);
       axios
@@ -862,6 +899,7 @@ export default {
         })
         .then((response) => {});
     },
+
     onEndSortcat(tree) {
       tree.forEach((xx, index) => {
         xx.queue_number = index;
@@ -887,6 +925,7 @@ export default {
 
       this.loader = false;
     },
+
     select(sel) {
       if (sel == "koren") {
         this.selectone = null;
@@ -894,6 +933,7 @@ export default {
         this.selectone = sel;
       }
     },
+
     passte() {
       this.checkedNames.forEach((xx) => {
         this.books.find((x) => x.id == xx).text = this.activesbook.text;
@@ -906,6 +946,7 @@ export default {
         })
         .then((response) => {});
     },
+
     searchitem() {
       this.seatchbooks = this.books.filter(
         (x) => x.title.toLowerCase() == this.activesbook.title.toLowerCase()
@@ -914,12 +955,14 @@ export default {
         xx.namecat = this.tree.find((x) => x.id == xx.category_id).name;
       });
     },
+
     bookshow() {
       this.showaddbook = !this.showaddbook;
       setTimeout(() => {
         this.$refs.adddglabook.select();
       }, 500);
     },
+
     copyes() {
       // if (this.delo == 0) {
       //   if (this.selectone != null) {
@@ -954,6 +997,7 @@ export default {
       //   }
       // }
     },
+
     onEndSort(books, id) {
       let arr;
       arr = books.filter((book) => book.category_id == id);
@@ -987,6 +1031,7 @@ export default {
         '<audio controls src="' + url + '"></audio>'
       );
     },
+
     addimage(url) {
       tinymce.activeEditor.insertContent(
         '<img alt="картинка" src="'+ url + '"/>'
@@ -1032,6 +1077,7 @@ export default {
         })
         .catch((error) => console.log(error));
     },
+
     copyLink(book) {
       var Url = this.$refs["mylink" + book.id];
       Url.value = "http://bp.jobtron.org/corp_book/" + book.hash;

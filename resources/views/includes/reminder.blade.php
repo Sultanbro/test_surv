@@ -15,7 +15,7 @@ $(document).ready(function() {
 
     $('#goToNoti').click(function () {
         $('#reminder').hide();
-        $('.kolokolchik .tooglenotifi ').trigger('click');
+        $('#toggle_panel').trigger('click');
         window.scrollTo(0,0)
     });
 });

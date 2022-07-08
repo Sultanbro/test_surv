@@ -83,6 +83,7 @@ class MyCourseController extends Controller
         if($course) {
 
             $items = $course->setCheckpoint($course->items);
+            
             foreach ($items as $key => $item) {
                 $item->last_item = null;
                 if($item->status == CourseResult::ACTIVE) {
