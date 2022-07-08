@@ -6,6 +6,7 @@ use App\ProfileGroup;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class CheckReports extends Model
 {
@@ -27,6 +28,75 @@ class CheckReports extends Model
         'item_type',
         'item_id',
     ];
+
+
+    public function get_average_value($month,$year,$check_user_id,$type,$type_id){
+
+
+//        $month = date('n'); ;
+//        $year = 2022;
+
+        $getDay =  cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+        $start = new \DateTime('01.7.2022');
+        $end = new \DateTime("$getDay.7.2022 23:59");
+        $interval = new \DateInterval('P1D');
+        $dateRange = new \DatePeriod($start, $interval, $end);
+
+        $weekNumber = 1;
+        $weeks = array();
+
+
+        $average_value = [];
+
+        foreach ($dateRange as $date) {
+            $weeks[$weekNumber]['date'][] = $date->format('j-n-Y');
+            if ($date->format('w') == 0) {
+                $weeks[$weekNumber]['count'] = count($weeks[$weekNumber]['date']);
+                $weekNumber++;
+            }
+        }
+
+
+
+
+        foreach ($weeks as $md => $week){
+
+            for ($i = 0;$i < $week['count'];$i++){
+                $countWeek = $week['count'] - 1;
+
+                if ($i == 0){
+                    $week_middl[$md]['start'] = explode('-',$week['date'][$i]);
+                    $week_middl[$md]['end'] = explode('-',$week['date'][$countWeek]);
+                }
+
+
+
+                $week_middl[$md]['count_check'] = CheckReports::on()->where('check_users_id',$check_user_id)
+                    ->where('year',$week_middl[$md]['start'][2])->where('month',$week_middl[$md]['start'][1])
+                    ->where('day','>=',$week_middl[$md]['start'][0])
+                    ->where('day','<=',$week_middl[$md]['end'][0])
+                    ->where('item_id',$type_id)
+                    ->where('item_type',$type)->sum('count_check');
+
+                $week_middl[$md]['count_check_auth'] = CheckReports::on()->where('check_users_id',$check_user_id)
+                    ->where('year',$week_middl[$md]['start'][2])->where('month',$week_middl[$md]['start'][1])
+                    ->where('day','>=',$week_middl[$md]['start'][0])
+                    ->where('day','<=',$week_middl[$md]['end'][0])
+                    ->where('item_id',$type_id)
+                    ->where('item_type',$type)->sum('count_check_auth');
+
+
+                $average_value[$md] = $week_middl[$md]['count_check'] -  $week_middl[$md]['count_check_auth'];
+
+            }
+        }
+
+
+
+        return $average_value;
+
+    }
 
     public function filterCheckList($request)
     {
@@ -68,10 +138,12 @@ class CheckReports extends Model
                     $check_users[$keys]['gr_id'] = $allUserReport['item_id'];
                     $check_users[$keys]['total_day'] = $dayCountCheckAuth .'/' .$dayCountCheck;
                     $check_users[$keys]['total_month'] = $monthCountCheckAuth.'/' .$monthCountCheck;
+
+                    $check_users[$keys]['average'] = $this->get_average_value($request->month,$request->year,$check_user,$request->individual_type,$request->group_id);
                 }
 
             }
-            return ['check_users'=>$check_users,'individual_type'=>2,'individual_current'=>$request->group_id];
+            return ['check_users'=>$check_users,'individual_type'=>2,'individual_current'=>$request->group_id,$request->individual_type];
         }
         elseif ($request->individual_type == 1) {
 
@@ -119,9 +191,14 @@ class CheckReports extends Model
 
             $users = User::where('position_id',$request->individual_type_id)->select('id','last_name','name')->get();
 
+
+
+
+
+
             foreach ($users as $keys => $check_user){
 
-
+                $this->get_average_value($request->month,$request->year,$check_user->id,$request->individual_type_id);
 
 
                 $allUserReports = CheckReports::on()->where('check_users_id',$check_user->id)
@@ -133,6 +210,7 @@ class CheckReports extends Model
                     ->where('year',$request->year)->where('month',$request->month)
                     ->where('item_id',$request->individual_type_id)
                     ->sum('count_check');
+
                 $dayCountCheckAuth = CheckReports::on()->where('check_users_id',$check_user->id)
                     ->where('year',$request->year)->where('month',$request->month)
                     ->where('item_id',$request->individual_type_id)
@@ -144,6 +222,8 @@ class CheckReports extends Model
                 $monthCountCheckAuth = CheckReports::on()->where('check_users_id',$check_user->id)
                     ->where('year',$request->year)->where('item_id',$request->individual_type_id)->sum('count_check_auth');
 
+
+
                 foreach ($allUserReports as $allUserReport){
                     $check_users[$keys]['name'] = $check_user->name;
                     $check_users[$keys]['last_name'] = $check_user->last_name;
@@ -152,10 +232,13 @@ class CheckReports extends Model
                     $check_users[$keys]['gr_id'] = $allUserReport['item_id'];
                     $check_users[$keys]['total_day'] = $dayCountCheckAuth .'/' .$dayCountCheck;
                     $check_users[$keys]['total_month'] = $monthCountCheckAuth.'/' .$monthCountCheck;
+                    $check_users[$keys]['week_start'] = $monthCountCheck;
+                    $check_users[$keys]['week_end'] = $monthCountCheckAuth;
+                    $check_users[$keys]['average'] = $this->get_average_value($request->month,$request->year,$check_user->id,$request->individual_type,$request->individual_type_id);
                 }
 
             }
-            return ['check_users'=>$check_users,'individual_type'=>3,'individual_current'=>$request->individual_type_id];
+            return ['check_users'=>$check_users,'individual_type'=>3,'individual_current'=>$request->individual_type_id,$request->individual_type];
         }
 
 
