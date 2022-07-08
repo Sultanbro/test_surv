@@ -87,9 +87,8 @@ class TimetrackingController extends Controller
             if($active_tab == 3 && !auth()->user()->can('groups_view')) return redirect('/');
             if($active_tab == 4 && !auth()->user()->can('fines_view')) return redirect('/');
             if($active_tab == 5 && !auth()->user()->can('notifications_view')) return redirect('/');
-            if($active_tab == 6 && !auth()->user()->can('settings_learning_view')) return redirect('/');
-            if($active_tab == 7 && !auth()->user()->is_admin == 1) return redirect('/');
-            if($active_tab == 8 && !auth()->user()->can('checklists_view')) return redirect('/');
+            if($active_tab == 6 && !auth()->user()->can('permissions_view')) return redirect('/');
+            if($active_tab == 7 && !auth()->user()->can('checklists_view')) return redirect('/');
         } else {
             if(!(auth()->user()->can('settings_view') ||  
                 auth()->user()->can('users_view') ||
@@ -97,7 +96,7 @@ class TimetrackingController extends Controller
                 auth()->user()->can('groups_view') ||
                 auth()->user()->can('fines_view') ||
                 auth()->user()->can('notifications_view') ||
-                auth()->user()->can('settings_learning_view') ||
+                auth()->user()->can('permissions_view') ||
                 auth()->user()->can('checklists_view') 
             )) {
                 return redirect('/');
@@ -108,8 +107,8 @@ class TimetrackingController extends Controller
             else if(auth()->user()->can('groups_view')) {$active_tab = 3;}
             else if(auth()->user()->can('fines_view')) {$active_tab = 4;}
             else if(auth()->user()->can('notifications_view')) {$active_tab = 5;}
-            else if(auth()->user()->can('settings_learning_view')) {$active_tab = 6;}
-            else if(auth()->user()->can('checklists_view')) {$active_tab = 8;}
+            else if(auth()->user()->can('permissions_view')) {$active_tab = 6;}
+            else if(auth()->user()->can('checklists_view')) {$active_tab = 7;}
         }
         
      
@@ -852,15 +851,15 @@ class TimetrackingController extends Controller
         if ($request['group_id']) {
             $group = ProfileGroup::find($request['group_id']);
             if (!empty($group) && $group->users != null) {
-                $check_users = json_decode($group->users);
+                // $check_users = json_decode($group->users);
                 
-                foreach($check_users as $check_user){
-                   $ud = UserDescription::where('user_id',$check_user)->whereDate('applied', '>=', Carbon::parse($year . '-' . $request->month . '-01')->startOfMonth())->value('user_id');
-                   if((isset($ud)){
-                       $users_ids[] = $ud;
-                   }
-                }
-                //$users_ids = json_decode($group->users);
+                // foreach($check_users as $check_user){
+                //    $ud = UserDescription::where('user_id',$check_user)->whereDate('applied', '>=', Carbon::parse($year . '-' . $request->month . '-01')->startOfMonth())->value('user_id');
+                //    if(isset($ud)){
+                //        $users_ids[] = $ud;
+                //    }
+                // }
+                $users_ids = json_decode($group->users);
                 $head_ids = json_decode($group->head_id);
             }
         }
@@ -880,17 +879,20 @@ class TimetrackingController extends Controller
          */
 
         if($request->user_types == 0) { // Действующие
-     
-                
-            $_user_ids = DB::table('users')
+            $_user_ids = [];    
+            $my_ids = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $users_ids)
                 ->where('ud.is_trainee', 0) 
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-               
+                ->get(['users.id','ud.applied']);
+            $end_month = Carbon::parse($year . '-' . $request->month . '-01')->endOfMonth();
+            foreach($my_ids as $ids){
+                $hire_date = Carbon::parse($ids->applied);
+                if($hire_date->lt($end_month) || !isset($ids->applied)){
+                    $_user_ids[] = $ids->id;
+                }
+            }
         }
         
         if($request->user_types == 1) { // Уволенныне
@@ -1445,7 +1447,23 @@ class TimetrackingController extends Controller
             $user_ids = json_decode($group->users);
             if($group->users == null) $user_ids = [];
             
-            $user_ids = array_unique($user_ids);
+            $users_ids = json_decode($group->users);
+            //проверка на принятие на работу
+            $user_ids = [];    
+            $my_ids = DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', $users_ids)
+                ->where('ud.is_trainee', 0) 
+                ->get(['users.id','ud.applied']);
+            $end_month = Carbon::parse($request->year . '-' . $request->month . '-01')->endOfMonth();
+            foreach($my_ids as $ids){
+                $hire_date = Carbon::parse($ids->applied);
+                if($hire_date->lt($end_month) || !isset($ids->applied)){
+                    //dump($hire_date->toDateString());
+                    $user_ids[] = $ids->id;
+                }
+            } 
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
             // Доступ к группе
