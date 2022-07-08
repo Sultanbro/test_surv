@@ -185,7 +185,7 @@ class GetWorkedHours extends Command
                         }
                     }
                 }   
-            }
+          }
 
             if($group_id == 79) { // Euras 2
 

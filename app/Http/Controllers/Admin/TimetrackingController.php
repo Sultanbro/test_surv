@@ -851,7 +851,15 @@ class TimetrackingController extends Controller
         if ($request['group_id']) {
             $group = ProfileGroup::find($request['group_id']);
             if (!empty($group) && $group->users != null) {
-                $users_ids = json_decode($group->users);
+                $check_users = json_decode($group->users);
+                
+                foreach($check_users as $check_user){
+                   $ud = UserDescription::where('user_id',$check_user)->whereDate('applied', '>=', Carbon::parse($year . '-' . $request->month . '-01')->startOfMonth())->value('user_id');
+                   if(isset($ud)){
+                       $users_ids[] = $ud;
+                   }
+                }
+                //$users_ids = json_decode($group->users);
                 $head_ids = json_decode($group->head_id);
             }
         }

@@ -76,11 +76,6 @@ class UserController extends Controller
     }
 
 
-
-
-
-
-
     public function surv(Request $request)
     {
         View::share('menu', 'timetrackinguser');
@@ -90,7 +85,6 @@ class UserController extends Controller
     function quarter(\DateTime $dateTime){
         return (int) ceil($dateTime->format('n') / 3);
     }
-
 
     public function profile(Request $request)
     {
@@ -1013,6 +1007,7 @@ class UserController extends Controller
     {
 
 
+
         if(!Auth::user()) return redirect('/');
         View::share('title', 'Редактировать сотрудника');
         View::share('menu', 'timetrackingusercreate');
@@ -1024,7 +1019,7 @@ class UserController extends Controller
 
 
         return view('admin.users.create',
-            $this->preparePersonInputs($request->id)
+                 $this->preparePersonInputs($request->id)
 
         );
         
@@ -1035,7 +1030,20 @@ class UserController extends Controller
         $positions = Position::all();
         $groups = ProfileGroup::where('active', 1)->get();
         $corpbooks = '[]';
-        
+
+        $knowbase_models = DB::table('knowbase_model')->where('model_id',auth()->user()->getAuthIdentifier())->get()->toArray();
+
+        if (!empty($knowbase_models)){
+            foreach ($knowbase_models as $knowbase_model){
+                $corpbooks = DB::table('kb')->where('id',$knowbase_model->book_id)->get()->toArray();
+            }
+        }
+
+
+
+
+
+
         $programs = Program::orderBy('id', 'desc')->get();
         $workingDays = WorkingDay::all();
         $workingTimes = WorkingTime::all();
@@ -1171,9 +1179,11 @@ class UserController extends Controller
             $user->adaptation_talks = AdaptationTalk::getTalks($user->id);
 
             $arr['user'] = $user;
-        } 
-        
-        
+        }
+
+
+
+
 
         return $arr;
     }
@@ -1521,6 +1531,10 @@ class UserController extends Controller
     public function updatePerson(Request $request) {
 
 
+
+
+
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1574,14 +1588,39 @@ class UserController extends Controller
         }
 
 
+
         /*==============================================================*/
         /********** Редактирование user  */
-        /*==============================================================*/     
+        /*==============================================================*/
 
-        if (isset($request['selectedCityInput']) && empty($request['selectedCityInput'])){
+
+
+
+
+
+
+
+
+        if (isset($request['selectedCityInput']) && !empty($request['selectedCityInput']) ){
+
+            if (auth()->user()->working_city === $request['working_city']){
+                $country = $request['selectedCityInput'];
+                $explodeCountry = explode(' ',$country);
+                foreach ($explodeCountry as $country){
+                    $searchCountry = DB::table('coordinates')->where('city',$country)->get()->toArray();
+                }
+                if (isset($searchCountry[0]->id) && !empty($searchCountry)){
+                    $request['working_city'] = $searchCountry[0]->id;
+                }else{
+                    $request['working_city'] = null;
+                    $request['selectedCityInput'] = null;
+                }
+            }
+        }else{
             $request['working_city'] = null;
             $request['selectedCityInput'] = null;
         }
+
         $user->email = strtolower($request['email']);
         $user->name = $request['name'];
         $user->last_name = $request['last_name'];
@@ -1605,7 +1644,7 @@ class UserController extends Controller
         $user->weekdays = $request['weekdays'];
         $user->working_country = $request['selectedCityInput'];
         $user->working_city = $request['working_city'];
-        $user->headphones_sum = $request['headphones_sum'];
+        $user->headphones_sum = $request['headphones_amount'];
 
 
         if($request->new_pwd != '') {
@@ -2264,7 +2303,8 @@ class UserController extends Controller
             $user['password'] = Hash::make($request->password);
         }
         $user['last_name'] = $request['query']['last_name'];
-
+        $user['working_country'] = $request['working_country'];
+        $user['working_city'] = $request['working_city'];
         if ($user->save()){
             return response(['success'=>'1']);
         }
@@ -2273,7 +2313,6 @@ class UserController extends Controller
 
 
     }
-
 
     /////загрузка аватарки через профиль в компоненте ( vue.js )
     public function uploadPhotoProfile(Request $request)
@@ -2391,6 +2430,15 @@ class UserController extends Controller
 
 
         Card::find($request['card_id'])->delete();
+
+    }
+
+    //// поиск городов  через профиль
+    public function searchCountry(Request $request)
+    {
+
+        $data = DB::table('coordinates')->where('city', 'LIKE','%'.$request->keyword.'%')->get();
+        return response()->json($data); ;
 
     }
 }

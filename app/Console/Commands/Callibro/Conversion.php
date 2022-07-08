@@ -79,7 +79,7 @@ class Conversion extends Command
 
     public function fetch($group_id) {
 
-	    $users_ids = json_decode(ProfileGroup::find($group_id)->users);
+        $users_ids = json_decode(ProfileGroup::find($group_id)->users);
         $users = User::whereIn('id', $users_ids)->get();
 
         foreach($users as $user) {

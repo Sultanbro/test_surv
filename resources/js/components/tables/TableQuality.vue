@@ -3,8 +3,8 @@
     <div class="row">
 
       <div class="col-3" v-if="individual_request">
-        <select class="form-control" v-model="currentGroup" @change="fetchData">
-          <option v-for="group in groups" :value="group.id" :key="group.id">
+        <select class="form-control" v-model="currentGroup" @change="fetchData('selected_group')">
+          <option v-for="group in groups" :value="group.id" :key="group.id" >
             {{ group.name }}
           </option>
         </select>
@@ -736,8 +736,10 @@
 </template>
 
 <script>
+import Template from "../../../../public/static/partner/templates/template.html";
 export default {
   name: "TableQuality",
+  components: {Template},
   props: {
     activeuserid: String,
     groups: Array,
@@ -838,6 +840,7 @@ export default {
       },
       active:1,
       selected_active:1,
+      flagGroup:'index'
 
     };
   },
@@ -890,20 +893,22 @@ export default {
       this.fetchItems("/timetracking/quality-control/records?page=" + page);
     },
 
-    fetchData() {
+    fetchData(flag = null) {
+
+      if (flag == 'selected_group'){
+        this.flagGroup = 'selected_group'
+      }
+
       let loader = this.$loading.show();
-
       this.setDates();
-
       this.fetchItems();
-
       loader.hide();
     },
 
     normalizeItems() {
 
-      // console.log(this.items)
-      // console.log(this.items.length)
+      console.log(this.items)
+      console.log(this.items.length)
 
       if (this.items.length > 0) {
         this.newRecord.employee_id = this.items[0].id;
@@ -969,12 +974,33 @@ export default {
     fetchItems($url = "/timetracking/quality-control/records") {
       let loader = this.$loading.show();
 
+
+      console.log(this.currentGroup,'199')
+
+
       // selected_active
       // console.log(this.active,'ssssssssssss')
 
-      if (this.active == 3 && this.individual_type == 2){
-          this.currentGroup = this.individual_type_id
+
+
+      console.log(this.flagGroup,'123')
+
+
+      if (this.flagGroup == 'index'){
+
+
+
+
+        this.currentGroup = this.individual_type_id
+
+        console.log(this.individual_type_id,'this.individual_type_id')
+        console.log(this.currentGroup,'this.currentGroup')
+
       }
+
+      // if (this.active == 3 && this.individual_type == 2){
+      //
+      // }
 
       axios
         .post($url, {
@@ -988,19 +1014,7 @@ export default {
         })
         .then((response) => {
 
-          // console.log(response,'response');
-          // console.log(response.data['individual_type'],'ind');
-          // console.log(this.fields,'fields');
-
-          // if (response.data['individual_type'] == 2 || response.data['individual_type'] == 3){
-          //   this.individual_request = false
-          // }else {
-          //   this.individual_request = true
-          // }
-
-
           this.currentGroup = response.data['individual_current']
-
 
           if (response.data.error && response.data.error == "access") {
             // console.log(response,'responseError');
@@ -1009,6 +1023,8 @@ export default {
             return;
           }
 
+
+          console.log(response,'response');
 
 
 
