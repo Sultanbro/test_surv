@@ -150,7 +150,7 @@ class Conversion extends Command
 
             if($group_id == 79) { // Euras2
            
-                $closed = Euras2::getClosedCards($this->date,$user->email);
+                $closed = Euras2::getCallCounts($user->email, $this->date);//Euras2::getClosedCards($this->date,$user->email);
                 if($closed == -1) continue; // Не записывать так как нет аккаунта
 
                 $aggrees = Euras2::getAggrees($user->email, $this->date);
@@ -160,7 +160,7 @@ class Conversion extends Command
                 if($aggrees == 0) {
                     $conversion = 0; 
                 } else {
-                    $conversion = ($aggrees / $closed) * 100;
+                    $conversion = ($aggrees * 100) / $closed;
                     $conversion = number_format($conversion, 1);
                 }
 
