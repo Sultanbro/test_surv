@@ -1295,6 +1295,7 @@ class SalaryController extends Controller
             } 
 
             $edited->user_id = $user_id;
+            $edited->author_id = auth()->id();
             $edited->amount = $amount;
             $edited->comment = $comment;
             $edited->date = $date;

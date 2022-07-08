@@ -756,7 +756,7 @@ class Salary extends Model
 
             $user->edited_bonus = null;
             if($editedBonus) {
-                $ku = User::withTrashed()->find($editedBonus->user_id);
+                $ku = User::withTrashed()->find($editedBonus->author_id);
                 $editedBonus->user = $ku ? $ku->last_name . ' ' . $ku->name : $editedBonus->user_id;
 
                 $user->edited_bonus = $editedBonus;
