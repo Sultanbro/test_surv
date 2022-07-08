@@ -90,6 +90,27 @@ class UpbookController extends Controller
             array_multisort($_pages, SORT_ASC, $arr); 
         }
 
+
+        // get link storage
+
+        if($book->domain == 'storage.oblako.kz') {
+            $disk = \Storage::build([
+                'driver' => 's3',
+                'key' => 'O4493_admin',
+                'secret' => 'nzxk4iNukQWx',
+                'region' => 'us-east-1',
+                'bucket' => 'tenantbp',
+                'endpoint' => 'https://storage.oblako.kz:443',
+                'use_path_style_endpoint' => true,
+                'throw' => false,
+                'visibility' => 'public'
+            ]);
+    
+            $book->link = $disk->temporaryUrl(
+                $book->link, now()->addMinutes(360)
+            );
+        }
+
         return [
             'tests' => $arr,
             'activeBook' => $book,
@@ -98,16 +119,49 @@ class UpbookController extends Controller
     
     public function save(Request $request)
     {
-        $b = Book::find($request->book['id']);
+        $b = Book::find($request->id);
+        $blink = "";
+
         if($b) {
-            $b->title = $request->book['title'];
-            $b->author = $request->book['author'];
-            $b->description = $request->book['description'];
-            $b->group_id = $request->book['group_id'];
+
+            if($request->file('file')) {
+                $disk = \Storage::build([
+                    'driver' => 's3',
+                    'key' => 'O4493_admin',
+                    'secret' => 'nzxk4iNukQWx',
+                    'region' => 'us-east-1',
+                    'bucket' => 'tenantbp',
+                    'endpoint' => 'https://storage.oblako.kz:443',
+                    'use_path_style_endpoint' => true,
+                    'throw' => false,
+                    'visibility' => 'public'
+                ]);
+
+                $file = $request->file('file');
+                $extension = $file->getClientOriginalExtension();
+                $originalFileName = $file->getClientOriginalName();
+                $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
+
+                $path = $disk->putFileAs('/bookcovers', $file, $fileName);
+
+                $b->img = '/bookcovers/' . $fileName;
+                
+            }
+
+            $b->title = $request->title;
+            $b->author = $request->author;
+            $b->description = $request->description;
+           
+            $b->group_id = $request->group_id;
             $b->save();
 
+            $blink = $disk->temporaryUrl(
+                $b->img, now()->addMinutes(360)
+            );
         
         }
+
+        return $blink;
     }
 
     public function delete(Request $request) {

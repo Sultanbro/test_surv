@@ -1,5 +1,23 @@
 .mycourse {
     
+
+    .next-btn {
+        position: fixed;
+        bottom: 15px;
+        right: 70px;
+        padding: 6px 15px;
+        z-index: 99;
+        font-size: 16px;
+        user-select: none;
+        border-radius: 50px;
+        box-shadow: 1px 0 11px #5678a7;
+        transition: 0.35s ease all;
+
+        &:hover {
+            transform: scale(1.02);
+        }
+    }
+
     .course-item {
         .title {
             font-size: 14px;
@@ -75,7 +93,11 @@
         overflow: auto;
 
         &.knowbase {
-            overflow: visible;
+
+            .content {
+                overflow: visible;
+            }
+            
         }
     }
 

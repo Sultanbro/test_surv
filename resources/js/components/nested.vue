@@ -2,7 +2,7 @@
   <draggable 
     class="dragArea" 
     tag="ul"
-    :handle="handle"
+    :handle="'.fa-bars'"
     :list="tasks"
     :group="{ name: 'g1' }"
     :id="parent_id"
@@ -64,9 +64,9 @@ export default {
     }
   },
   created() {
-    if(this.mode == 'edit') {
-      this.handle = '.fa-bars';
-    }
+    // if(this.mode == 'edit') {
+    //   this.handle = '.fa-bars';
+    // }
   },
   methods: {
     toggleOpen(el) {

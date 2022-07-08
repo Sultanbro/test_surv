@@ -49,11 +49,7 @@ class ExamController extends Controller
         $group = ProfileGroup::find($request['group_id']);
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
-        if (!in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
-            return [
-                'error' => 'access',
-            ];
-        }
+   
 
         if (!empty($group) && $group->users != null) {
             $users_ids = json_decode($group->users);
@@ -63,11 +59,6 @@ class ExamController extends Controller
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
 
-        if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
-            return [
-                'error' => 'access',
-            ];
-        }
 
         $users = User::whereIn('users.id', array_unique($users_ids))
             ->get(['users.id', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name")]);

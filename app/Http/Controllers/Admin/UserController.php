@@ -2272,6 +2272,7 @@ class UserController extends Controller
     {
         $user = User::find(auth()->id());
         $user->read_corp_book_at = now();
+        $user->has_noti = 0;
         $user->save();
 
         return ['code' => 200];

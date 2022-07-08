@@ -12,6 +12,7 @@ class EditedKpi extends Model
 
     protected $fillable = [
         'user_id',
+        'author_id',
         'date',
         'amount',
         'comment', // why was edited

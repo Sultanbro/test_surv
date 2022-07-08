@@ -12,7 +12,7 @@
 
       <div class="kb-wrap noscrollbar">
 
-        <div class="chapter opened mb-3">
+        <div class="chapter opened mb-3" v-if="!course_page">
           <div class="d-flex">
             <span class="font-16 font-bold">{{ parent_title }}</span>
             <div class="chapter-btns">
@@ -21,10 +21,18 @@
           </div>
         </div>
 
+        <nested-course
+          v-if="course_page"
+          :tasks="tree"
+          :active="activesbook != null ? activesbook.id : 0"
+          @showPage="showPage"
+        />
+
         <nested-draggable
+          v-else
           :tasks="tree"
           :mode="mode"
-          :auth_user_id="auth_user_id"
+          :auth_user_id="auth_user_id" 
           :opened="true"
           @showPage="showPage"
           @addPage="addPage"
@@ -39,8 +47,8 @@
     <!-- Right Panel -->
 
     <div class="rp" style="flex: 1;padding-bottom: 0px;flex: 1 1 0%;height: 100vh;overflow-y: auto;">
-      <div class="hat"  v-if="!course_page">
-        <div class="d-flex jsutify-content-between hat-top">
+      <div class="hat"  >
+        <div class="d-flex jsutify-content-between hat-top" v-if="!course_page">
           <div class="bc">
             <a href="#" @click="$emit('back')">База знаний</a>
             <template v-for="(bc, bc_index) in breadcrumbs">
@@ -326,6 +334,9 @@
                   :id="activesbook.id"
                   type="kb"
                   :mode="mode"
+                  :count_points="true"
+                  @passed="passed"
+                  :key="questions_key"
                 />
               <div class="pb-5"></div> 
           </div>
@@ -333,6 +344,16 @@
       </div>
 
     </div>
+
+
+    <button class="next-btn btn btn-primary" 
+      v-if="course_page && (passedTest )"
+      @click="nextElement()">
+      Продолжить курс 
+      <i class="fa fa-angle-double-right ml-2"></i>
+    </button>
+
+
     <!-- .content -->
 
     <!-- Right Panel -->
@@ -567,7 +588,6 @@
       </div>
     </div>
 
-
     <b-modal
       v-model="showSearch"
       title="Поиск"
@@ -610,6 +630,8 @@
 
 <script>
 import nestedDraggable from "../components/nested";
+import nestedCourse from "../components/nested_course";
+
 export default { 
   name: "booklist",
   props: [
@@ -621,10 +643,12 @@ export default {
     'can_edit',
     'mode',
     'course_page',
-    'enable_url_manipulation'
+    'enable_url_manipulation',
+    'course_item_id'
   ],
   components: { 
     nestedDraggable,
+    nestedCourse
   }, 
   data() {
     return {
@@ -657,58 +681,97 @@ export default {
       editors: "",
       imagegroup: [],
       attachment: null,
-      breadcrumbs: []                                                                            
+      breadcrumbs: [],
+      ids: [],
+      passedTest: false,
+      questions_key: 1                                                                
     }
   },
 
   created() {
 
     this.getTree();
-    // this.tree = this.trees;
+ 
     this.parent_title = this.parent_name;
+
+ 
     this.id = this.parent_id;
     
   },
 
   mounted() {
     
-    this.books = [];
-
-
-    const urlParams = new URLSearchParams(window.location.search);
-    let book_id = urlParams.get('b');
-    this.breadcrumbs = [{id:this.id, title: this.parent_title}];
-    console.log('book_id '  + book_id)
-    
-    
-    let result = null
-    this.tree.every(obj => {
-      result = this.deepSearchId(obj, book_id)
-      if (result != null) {
-        console.log(result);
-        this.showPage(book_id, false, true);
-        return false;
-      }
-      return true;
-    });
-   
-
-
   },
-  methods: {
-    
-    nextElement() {
-      
-      // let index = this.playlist.videos.findIndex(el => el.id == this.activeVideo.id);
 
-      // if(index != -1 && this.playlist.videos.length - 1 > index) {
-      //   console.log(this.playlist.videos[index]);
-      //   console.log(this.playlist.videos[index + 1]);
-      //   this.activeVideo = this.playlist.videos[index + 1];
-      // } else {
-         
-      // }
-      this.$parent.after_click_next_element();
+  methods: {
+    passed() {
+      this.passedTest = true;
+      console.log('passed test')
+    },
+
+    setArticlePassed() {
+      axios
+        .post("/my-courses/pass", {
+          id: this.activesbook.id,
+          type: 3,
+          course_item_id: this.course_item_id,
+        })
+        .then((response) => {
+         // this.activeVideo.item_models.push(response.data.item_model);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
+    returnArray(items, indexes = []) { 
+      items.forEach((item, i_index) => {
+          let arr = [...indexes, i_index];
+          this.ids.push({
+            id: item.id,
+            i: arr
+          })
+          
+          if(item.children !== undefined) this.returnArray(item.children, arr);
+      });
+    },
+
+    nextElement() {
+   
+      this.setArticlePassed();
+      // find next element 
+      let index = this.ids.findIndex(el => el.id == this.activesbook.id); 
+      if(index != -1 && this.ids.length - 1 > index) {
+        
+        let el = this.findItem(this.ids[index + 1]);
+        
+        this.passedTest = false;
+        this.activesbook = el;
+        this.questions_key++;
+
+        if(this.activesbook != null) {
+          console.log(this.activesbook)
+          if(this.activesbook.questions.length == 0) {
+            this.passedTest = true;
+          }
+        }
+          
+
+        el.item_models.push({status: 1});  
+
+      } else {
+        // move to next course item
+        this.$parent.after_click_next_element();
+      }
+    },
+
+    findItem(el) {
+      if(el.i.length == 1) return this.tree[el.i[0]];
+      if(el.i.length == 2) return this.tree[el.i[0]].children[el.i[1]];
+      if(el.i.length == 3) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]];
+      if(el.i.length == 4) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]];
+      if(el.i.length == 5) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]];
+      if(el.i.length == 6) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].children[el.i[5]];
     },
 
     getTree() {
@@ -718,13 +781,68 @@ export default {
         })
         .then((response) => {
           this.tree = response.data.trees;
+
+          this.books = [];
+
+          const urlParams = new URLSearchParams(window.location.search);
+          let book_id = urlParams.get('b');
+          this.breadcrumbs = [{id:this.id, title: this.parent_title}];
+         
+          
+          if(this.course_page) {
+              
+            // create array of books ids
+            this.ids = [];
+            this.returnArray(this.tree);
+
+            book_id = this.show_page_id
+
+
+            if(this.show_page_id == 0) {
+              this.activesbook = this.tree[0];
+            } else {
+              // find element 
+              let index = this.ids.findIndex(el => el.id == this.show_page_id); 
+              
+              if(index != -1) {
+                let el = this.findItem(this.ids[index]);
+                this.activesbook = el;
+                if(this.activesbook != null && this.activesbook.questions.length == 0) {
+                  this.passedTest = true;
+                }
+              }
+            }
+            
+
+          
+
+          } else {
+
+
+              let result = null
+              this.tree.every(obj => {
+                result = this.deepSearchId(obj, book_id)
+
+
+                if (result != null) { 
+                  console.log(result);
+                  this.showPage(book_id, false, true);
+                  return false;
+                }
+                return true;
+              });
+
+          }
+          
+        
+
         })
         .catch((error) => {
           alert(error);
         });
     },
 
-     searchInput() {
+    searchInput() {
       if(this.search.input.length <= 2) return null;
       
       axios
@@ -742,7 +860,6 @@ export default {
         });
     },
 
-   
     emphasizeTexts() { 
       this.search.items.forEach(item => {
          item.text = item.text.replace(new RegExp(this.search.input,"gi"), "<b>" + this.search.input +  "</b>");
@@ -757,11 +874,13 @@ export default {
           parent: this.selectone,
         }) 
         .then((response) => {}); 
-    }, 
+    },
+    
     moveto(tre) {
       $("#perenos").modal("show");
       this.active(tre);
     },
+
     renamebooks(book) {
       axios
         .post("/pages/rename/", {
@@ -770,6 +889,7 @@ export default {
         })
         .then((response) => {});
     },
+
     rename(tre) {
       console.log("tre=>", tre);
       axios
@@ -779,6 +899,7 @@ export default {
         })
         .then((response) => {});
     },
+
     onEndSortcat(tree) {
       tree.forEach((xx, index) => {
         xx.queue_number = index;
@@ -804,6 +925,7 @@ export default {
 
       this.loader = false;
     },
+
     select(sel) {
       if (sel == "koren") {
         this.selectone = null;
@@ -811,6 +933,7 @@ export default {
         this.selectone = sel;
       }
     },
+
     passte() {
       this.checkedNames.forEach((xx) => {
         this.books.find((x) => x.id == xx).text = this.activesbook.text;
@@ -823,6 +946,7 @@ export default {
         })
         .then((response) => {});
     },
+
     searchitem() {
       this.seatchbooks = this.books.filter(
         (x) => x.title.toLowerCase() == this.activesbook.title.toLowerCase()
@@ -831,12 +955,14 @@ export default {
         xx.namecat = this.tree.find((x) => x.id == xx.category_id).name;
       });
     },
+
     bookshow() {
       this.showaddbook = !this.showaddbook;
       setTimeout(() => {
         this.$refs.adddglabook.select();
       }, 500);
     },
+
     copyes() {
       // if (this.delo == 0) {
       //   if (this.selectone != null) {
@@ -871,6 +997,7 @@ export default {
       //   }
       // }
     },
+
     onEndSort(books, id) {
       let arr;
       arr = books.filter((book) => book.category_id == id);
@@ -904,6 +1031,7 @@ export default {
         '<audio controls src="' + url + '"></audio>'
       );
     },
+
     addimage(url) {
       tinymce.activeEditor.insertContent(
         '<img alt="картинка" src="'+ url + '"/>'
@@ -949,6 +1077,7 @@ export default {
         })
         .catch((error) => console.log(error));
     },
+
     copyLink(book) {
       var Url = this.$refs["mylink" + book.id];
       Url.value = "http://bp.jobtron.org/corp_book/" + book.hash;
@@ -1230,6 +1359,7 @@ export default {
         if(this.enable_url_manipulation) {
           window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
         }
+        
         
       });
       

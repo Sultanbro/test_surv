@@ -22,8 +22,10 @@ class FileUploadController extends Controller {
     }
 
     public function uploadLargeFiles(Request $request) {
+       
         $receiver = new FileReceiver('file', $request, HandlerFactory::classFromRequest($request));
 
+     
         if (!$receiver->isUploaded()) {
             // file not uploaded
         }
@@ -32,6 +34,7 @@ class FileUploadController extends Controller {
         if ($fileReceived->isFinished()) { // file uploading is complete / all chunks are uploaded
             $file = $fileReceived->getFile(); // get file
             $extension = $file->getClientOriginalExtension();
+            $originalFileName = $file->getClientOriginalName();
             $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
 
             // dd($disk->put(
@@ -53,22 +56,27 @@ class FileUploadController extends Controller {
                 'visibility' => 'public'
             ]);
 
-            $path = $disk->putFileAs('videos', $file, $fileName);
+            $file_path = 'files';
+            if($request->type == 'video') $file_path = 'videos/' . $request->id;
+            if($request->type == 'book') $file_path = 'books';
+
+            $path = $disk->putFileAs($file_path, $file, $fileName);
             $path = $disk->url($path);
 
-            if($extension == 'mp4') {
-                $file_path = 'videos';
-            } else {
-                $file_path = 'books';
-            }
+          
 
-            $model = $this->saveModel($extension, $file_path, $fileName);
+            $model = $this->saveModel($request->type, $request->id, $file_path, $fileName);
                 
             // delete chunked file
             unlink($file->getPathname());
+
+         
+
             return [
-                'path' => $file_path . '/' . $fileName,
-                'filename' => $fileName,
+                'path' => $disk->temporaryUrl(
+                    $file_path . '/' . $fileName, now()->addMinutes(360)
+                ),
+                'filename' => $originalFileName,
                 'model' => $model,
             ];
         }
@@ -82,25 +90,26 @@ class FileUploadController extends Controller {
     }
 
 
-    private function saveModel($extension, $path, $filename)
+    private function saveModel($type, $id, $path, $filename)
     {
        
         
-        if($extension == 'mp4') { // Загружена video
+        if($type == 'video') { // Загружена video
 
             $model = Video::create([
                 'title' => $filename,
-                'links' =>  '/' . $path . '/' . $filename,
+                'links' =>  '/' . $path .  '/'. $filename,
                 'domain' => 'storage.oblako.kz',
                 'duration' => 0,
                 'views' => 0,
-                'playlist_id' => 0,
+                'playlist_id' => $id,
                 'group_id' => 0,
                 'order' => 0
             ]);
            
-        } else {
-           
+        }
+
+        if($type == 'book') {
             // // get first page of book
             // $pdf = new \Spatie\PdfToImage\Pdf(storage_path(). '/app/public/uploads/' .$filename);
             // $pdf->saveImage(public_path().'/images/bookcovers/' . $newFilename);
@@ -111,6 +120,8 @@ class FileUploadController extends Controller {
                 'link' =>  '/' . $path . '/' . $filename,
                 'author' => 'Неизвестный',
                 'img' => '',
+                'description' => '',
+                'domain' => 'storage.oblako.kz',
                 'group_id' => 0,
             ]);
 

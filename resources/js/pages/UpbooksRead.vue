@@ -59,7 +59,7 @@
         </div>
 
         <div class="item" v-for="test in tests" :class="{'pass': test.pass}">
-          <p class="mb-0">Стр. {{ test.page }} : {{ test.questions.length }} вопрос (-ов)</p>
+          <p class="mb-0" @click="moveTo(test.page)">Стр. {{ test.page }} : {{ test.questions.length }} вопрос (-ов)</p>
         </div>
       </div>
 
@@ -100,12 +100,23 @@
         :questions="activeTest.questions"
         :pass="activeTest.pass"
         :id="0"
+        :key=""
         type="book"
         :mode="mode" 
         @continueRead="nextPage"
         @passed="activeTest.pass = true"
       />
     </div>
+
+    <template v-if="activeTest && course_page">
+      <button class="next-btn btn btn-primary" 
+        v-if="activeTest.pass"
+        @click="nextElement()">
+        Продолжить курс
+        <i class="fa fa-angle-double-right ml-2"></i>
+      </button>
+    </template>
+   
 
   </div>
 </template>
@@ -117,7 +128,7 @@ export default {
   components: {
     VuePdfEmbed
   },
-  props: ["book_id", "mode", 'showBackBtn'],
+  props: ["book_id", "mode", 'showBackBtn', 'course_page'],
   data() {
     return {
       page: 1,
@@ -144,6 +155,10 @@ export default {
   },
 
   methods: {
+    moveTo(page) {
+      this.page = page
+      this.setCurrentTest()
+    },
 
     nextElement() {
 
@@ -151,6 +166,7 @@ export default {
 
       if(index != -1 && this.tests.length - 1 > index) {
         this.activeTest = this.tests[index + 1];
+        this.page = this.activeTest.page;
       } else {
         this.$parent.after_click_next_element();
       }

@@ -32,11 +32,27 @@
 
 </div>
 <div class="chat noscrollbar">
-    @for($i = 1;$i<=10;$i++)
-    <div class="btn-rm">
+    @if(auth()->user()->id == 13865) 
 
-        <img src="/static/images/avatars/{{ rand(1,10) }}.png" alt="avatar">
-    </div>
+    
+    <div id="dance" style="display:none">
+    @for($i = 1;$i<=30;$i++)
+    
+        <div class="btn-rm" style="filter:hue-rotate({{ $i * 157 }}deg);overflow:hidden" >
+            <img src="/users_img/{{ auth()->user()->img_url }}" alt="avatar" style="animation: 1.5s {{ $i / 5  }}s bell ease infinite;position:absolute;width:80px;height:140px;left:0" >
+        </div>
+    
     @endfor
+    </div>
+    @endif
+
+    @php
+        $a = \App\User::where('img_url', '!=', '')->inRandomOrder()->select('img_url', 'name', 'last_name')->where('id', '!=', 4444)->limit(15)->get();
+    @endphp
+    @foreach($a as $b)
+    <div class="btn-rm">
+        <img src="/users_img/{{ $b->img_url }}" title="{{ $b->name . ' ' . $b->last_name}}" alt="avatar">
+    </div>
+    @endforeach
 </div>
 </aside>

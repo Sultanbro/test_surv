@@ -19,6 +19,7 @@ class Book extends Model
         'description',
         'link',
         'img',
+        'domain'
     ];
 
     /**
@@ -27,6 +28,11 @@ class Book extends Model
     public function questions()
     {
         return $this->morphMany('App\Models\TestQuestion', 'testable');
+    }
+    
+    public function item_models()
+    {
+        return $this->hasMany('App\Models\CourseItemModel', 'item_id');
     }
     
     /**

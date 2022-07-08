@@ -185,7 +185,7 @@ class GetWorkedHours extends Command
                         }
                     }
                 }   
-            }
+          }
 
             if($group_id == 79) { // Euras 2
 
@@ -261,51 +261,7 @@ class GetWorkedHours extends Command
 
             }
 
-            if($group_id == 79) { // Euras 2
 
-                $minutes = Euras2::getWorkedMinutes($user->email, $this->date);
-
-                if($minutes == 0) continue; // Не записывать ноль
-                
-                if($minutes > 0 && $user->program_id == 1) {
-                    $hours = Callibro::getWorkedHours($user->email, $this->date);
-                    $this->updateHours($user->id, $minutes, $hours);
-                }
-                $aggrees = Euras2::getAggrees($user->email, $this->date);
-             
-                $correct_minutes = Euras2::getCallCounts($user->email, $this->date);
-
-                $closed_cards = Euras2::getClosedCards($this->date, $user->email);
-
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 141 // минуты
-                ], $minutes);
-    
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 137 // согласия
-                ], $aggrees);
-
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 134 // звонки от 10 секунд
-                ], $correct_minutes);
-
-                 /*$this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 152 // закрытые карты
-                ], $closed_cards);*/
-
-            }
             /*if($group_id == 79) {
 
                // $minutes = Euras2::getWorkedMinutes($user->email, $this->date);
