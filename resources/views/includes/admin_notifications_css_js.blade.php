@@ -396,15 +396,15 @@ $('#setRead').click(function() {
 <style>
  .pulse {
   position: absolute;
-  top: -20px;
-  right: -19px;
+  top: -10px;
+  right: -9px;
   height: 20px;
   width: 20px;    
   z-index: 10;  
-  border: 20px solid #00a3ff;
+  border: 5px solid #00a3ff;
   border-radius: 70px;
   animation: pulse 1s ease-out infinite;
-} 
+}
 
 .kolokolchik {
   right: 534px;
@@ -420,12 +420,8 @@ $('#setRead').click(function() {
   background: #00a3ff;
 }
 
-.belly {
-  position: absolute;
-  display: block !important;
-}
-.right-menu .btn-rm i.belly {
-  animation: bell 2s ease-out infinite;
+.right-menu .btn-rm i.fa-bell {
+  animation: bell 1s ease-out infinite;
 }
 
 @keyframes pulse {
@@ -458,38 +454,28 @@ $('#setRead').click(function() {
 
 @keyframes bell {
   0% {
-      -webkit-transform: scale(1.2);
-      opacity: 1;
+      -webkit-transform: scale(1);
+      opacity: 0.8;
   }
 
-  15% {
-      -webkit-transform: scale(1) rotate(1deg);
-      opacity: 0.9;
-  }
-
-  20% {
-      -webkit-transform: scale(1.2);
-      opacity: 1;
-  }
-
-  30% {
-      -webkit-transform: scale(1) rotate(1deg);
+  25% {
+      -webkit-transform: scale(0.9) rotate(10deg);
       opacity: 0.9;
   }
 
   50% {
-      -webkit-transform: scale(1.3) rotate(-1deg);
-      opacity: 0.5;
+      -webkit-transform: scale(1.1) rotate(-10deg);
+      opacity: 1;
   }
 
   75% {
-      -webkit-transform: scale(1.8) rotate(1deg);
-      opacity: 0.3;
+      -webkit-transform: scale(1) rotate(10deg);
+      opacity: 0.9;
     }
 
   100% {
-      -webkit-transform: scale(2);
-      opacity: 0;
+      -webkit-transform: scale(1);
+      opacity: 1;
   }
 } 
 
