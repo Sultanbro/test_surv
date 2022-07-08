@@ -172,42 +172,68 @@
       </div>
     </b-modal>
 
-    <b-modal
-      v-model="modals.edit_book.show"
-      title="Редактировать книгу"
-      size="xl"
-      class="modalle"
-      hide-footer
-    >
-      <div v-if="modals.edit_book.item != null" class="p-3">
-        <input
-          type="text"
-          v-model="modals.edit_book.item.title"
-          placeholder="Название книги..."
-          class="form-control mb-2"
-        />
-        <input
-          type="text"
-          v-model="modals.edit_book.item.author"
-          placeholder="Название автора..."
-          class="form-control mb-2"
-        />
+
+    <!-- Edit book -->
+     <sidebar
+        title="Редактировать книгу"
+        :open="modals.edit_book.show"
+        @close="modals.edit_book.show = false"
+        width="70%"
+      >
+
+       <div v-if="modals.edit_book.item != null" class="p-3">
+
+
+        <div class="d-flex">
+          <div class="left f-70">
+            <p class="mb-2 font-bold">Название книги</p>
+             <input
+              type="text"
+              v-model="modals.edit_book.item.title"
+              placeholder="Название книги..."
+              class="form-control mt-2 mb-2"
+            /> 
+            <p class="mb-2 font-bold">Название автора</p>
+            <input
+              type="text"
+              v-model="modals.edit_book.item.author"
+              placeholder="Название автора..."
+              class="form-control mt-2 mb-2"
+            />
+            <p class="mb-2 font-bold">Описание книги</p>
+             <textarea 
+              class="form-control mt-2 mb-2"
+              placeholder="Описание..."
+              v-model="modals.edit_book.item.description"
+            />
+            <p class="mb-2 font-bold">Категория</p>
+              <select
+              class="form-control mb-2"
+              v-model="modals.edit_book.item.group_id"
+            >
+              <option v-for="cat in categories" :value="cat.id" :key="cat.id">
+                {{ cat.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="right f-30 pl-4">
+            <img class="book-img mb-5"
+              v-if="modals.edit_book.item.img != ''"
+              :src="modals.edit_book.item.img"
+              />
+            <b-form-file
+              ref="edit_img"
+              v-model="file_img"
+              :state="Boolean(file_img)"
+              placeholder="Выберите или перетащите файл сюда..." 
+              drop-placeholder="Перетащите файл сюда..."
+              class="mt-3"
+              ></b-form-file> 
+          </div>
+        </div>
+
         
-        <textarea 
-          class="form-control mt-2 mb-2"
-          placeholder="Описание..."
-          v-model="modals.edit_book.item.description"
-        />
-
-          <select
-          class="form-control mb-2"
-          v-model="modals.edit_book.item.group_id"
-        >
-          <option v-for="cat in categories" :value="cat.id" :key="cat.id">
-            {{ cat.name }}
-          </option>
-        </select>
-
         <div class="tests mb-2" v-if="modals.edit_book.tests.length > 0">
           <div class="row">
             <div class="col-3">
@@ -255,7 +281,11 @@
           </button>
         </div>
       </div>
-    </b-modal>
+
+
+      </sidebar>
+
+    
   </div>
 </template>
 
@@ -304,6 +334,10 @@ export default {
   methods: {
     selectCategory(index) {
       this.activeCategory = this.categories[index];
+    },
+
+    chooseImage(ref) {
+      this.$refs[ref][0].click();
     },
 
     fetchData() {
@@ -483,11 +517,16 @@ export default {
     saveTests() {
       let loader = this.$loading.show();
 
-      axios
-        .post("/admin/upbooks/update", {
-          book: this.modals.edit_book.item,
-          tests: this.modals.edit_book.tests,
-          cat_id: this.activeCategory.id,
+      let formData = new FormData();
+          formData.append('file', this.file_img);
+          formData.append('book', JSON.stringify(this.modals.edit_book.item));
+          formData.append('tests', JSON.stringify(this.modals.edit_book.tests));
+          formData.append('cat_id', this.activeCategory.id);
+
+      axios.post( '/admin/upbooks/update', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
         })
         .then((response) => {
           let b = this.activeCategory.books.findIndex(i => i.id == this.modals.edit_book.item.id);
@@ -495,9 +534,10 @@ export default {
           let nc = this.categories.findIndex(i => i.id == this.modals.edit_book.item.group_id);
           if(b != -1 && c != -1 && nc != -1) {
             this.categories[c].books.splice(b, 1);
+            this.modals.edit_book.item.img = response.data
             this.categories[nc].books.push(this.modals.edit_book.item);
           }
-
+          
 
           this.modals.edit_book.show = false;
           this.modals.edit_book.item = null;
@@ -505,26 +545,6 @@ export default {
 
 
           this.$message.success("Сохранено");
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
-
-    updateBook() {
-      let loader = this.$loading.show();
-
-      axios
-        .post("/admin/upbooks/update", {
-          book: modals.edit_book.item,
-          cat_id: this.activeCategory.id,
-        })
-        .then((response) => {
-          this.modals.edit_book.show = false;
-          this.modals.edit_book.item = null;
-
           loader.hide();
         })
         .catch((error) => {

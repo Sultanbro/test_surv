@@ -39,7 +39,43 @@ class UpbookController extends Controller
 
             $cats->push($cat);
         }
-       
+        
+        // get links
+
+        $disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+        
+
+        foreach ($cats as $xkey => $cat) {
+            foreach ($cat->books as $key => $book) {
+                if($book->domain == 'storage.oblako.kz') {
+                    $book->link = $disk->temporaryUrl(
+                        $book->link, now()->addMinutes(360)
+                    );
+                }
+                if($book->img != null && $book->img != '') {
+                    $book->img = $disk->temporaryUrl(
+                        $book->img, now()->addMinutes(360)
+                    );
+                }
+                
+                // dd($book);
+                // $cats[$xkey]['books'][$key] = $book;
+            }
+
+
+        }
+        
+
         return [
             'categories' => $cats->toArray()
         ];
@@ -64,6 +100,18 @@ class UpbookController extends Controller
 
     
 
+    /**
+     * Get book and it's tests
+     * 
+     * @param Request $request
+     * 
+     * @return array 
+     * 
+     * return [
+     *    'tests' => array,
+     *    'activeBook' => Book::class,
+     * ]; 
+     */
     public function getTests(Request $request)
     {
         $book = Book::find($request->id);
@@ -93,23 +141,37 @@ class UpbookController extends Controller
 
         // get link storage
 
+        $disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+        
         if($book->domain == 'storage.oblako.kz') {
-            $disk = \Storage::build([
-                'driver' => 's3',
-                'key' => 'O4493_admin',
-                'secret' => 'nzxk4iNukQWx',
-                'region' => 'us-east-1',
-                'bucket' => 'tenantbp',
-                'endpoint' => 'https://storage.oblako.kz:443',
-                'use_path_style_endpoint' => true,
-                'throw' => false,
-                'visibility' => 'public'
-            ]);
-    
-            $book->link = $disk->temporaryUrl(
-                $book->link, now()->addMinutes(360)
-            );
+          
+            
+            if($book->link != '' && $book->link != null) {
+                $book->link = $disk->temporaryUrl(
+                    $book->link, now()->addMinutes(360)
+                );
+            }   
+            
+
+            
         }
+
+        if($book->link != '' && $book->link != null) {
+            $book->img = $disk->temporaryUrl(
+                $book->img, now()->addMinutes(360)
+            ); 
+        }
+       
 
         return [
             'tests' => $arr,
@@ -125,27 +187,9 @@ class UpbookController extends Controller
         if($b) {
 
             if($request->file('file')) {
-                $disk = \Storage::build([
-                    'driver' => 's3',
-                    'key' => 'O4493_admin',
-                    'secret' => 'nzxk4iNukQWx',
-                    'region' => 'us-east-1',
-                    'bucket' => 'tenantbp',
-                    'endpoint' => 'https://storage.oblako.kz:443',
-                    'use_path_style_endpoint' => true,
-                    'throw' => false,
-                    'visibility' => 'public'
-                ]);
-
-                $file = $request->file('file');
-                $extension = $file->getClientOriginalExtension();
-                $originalFileName = $file->getClientOriginalName();
-                $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
-
-                $path = $disk->putFileAs('/bookcovers', $file, $fileName);
-
-                $b->img = '/bookcovers/' . $fileName;
-                
+                $links = $this->uploadFile('/bookcovers', $request->file('file')); 
+                $blink = $links['temp'];
+                $b->img = $links['relative'];
             }
 
             $b->title = $request->title;
@@ -154,16 +198,59 @@ class UpbookController extends Controller
            
             $b->group_id = $request->group_id;
             $b->save();
-
-            $blink = $disk->temporaryUrl(
-                $b->img, now()->addMinutes(360)
-            );
         
         }
 
         return $blink;
     }
+    
+    /**
+     * Upload file to S3 and return relative link
+     * @param String $path
+     * @param mixed $file
+     * 
+     * @return array 
+     * 
+     * 'relative' => String
+     * 'temp' => String
+     */
+    private function uploadFile(String $path, $file)
+    {
+        $disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
 
+        $extension = $file->getClientOriginalExtension();
+        $originalFileName = $file->getClientOriginalName();
+        $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
+
+        $disk->putFileAs($path, $file, $fileName);
+
+        $xpath = $path . '/' . $fileName;
+        
+        return [
+            'relative' => $xpath,
+            'temp' => $disk->temporaryUrl(
+                $xpath, now()->addMinutes(360)
+            )
+        ];
+    }
+    
+    /**
+     * Delete book
+     * 
+     * @param Request $request
+     * 
+     * @return [type]
+     */
     public function delete(Request $request) {
         $book = Book::find($request->id);
 
@@ -187,19 +274,39 @@ class UpbookController extends Controller
         }
     }   
 
+    
+    /**
+     * Update book and save tests
+     * 
+     * @param Request $request
+     * 
+     * @return String
+     */
     public function update(Request $request)
     {
-        $b = Book::find($request->book['id']);
+        $book = json_decode($request->book, true);
+        $tests = json_decode($request->tests, true);
+
+        $img_link = '';
+
+        $b = Book::find($book['id']);
         if($b) {
-            $b->title = $request->book['title'];
-            $b->author = $request->book['author'];
-            $b->description = $request->book['description'];
-            $b->group_id = $request->book['group_id'];
+
+            if($request->file('file')) {
+                $links = $this->uploadFile('/bookcovers', $request->file('file')); 
+                $img_link = $links['temp'];
+                $b->img = $links['relative'];
+            }
+
+            $b->title = $book['title'];
+            $b->author = $book['author'];
+            $b->description = $book['description'];
+            $b->group_id = $book['group_id'];
             $b->save();
 
 
 
-            foreach ($request->tests as $key => $test) {
+            foreach ($tests as $key => $test) {
 
                 foreach ($test['questions'] as $q) {
                     
@@ -225,6 +332,8 @@ class UpbookController extends Controller
                 
             }
         }
+
+        return $img_link;
 
         
     }

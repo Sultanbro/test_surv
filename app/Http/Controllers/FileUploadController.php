@@ -65,7 +65,7 @@ class FileUploadController extends Controller {
 
           
 
-            $model = $this->saveModel($request->type, $request->id, $file_path, $fileName);
+            $model = $this->saveModel($request->type, $request->id, $file_path, $fileName, $originalFileName);
                 
             // delete chunked file
             unlink($file->getPathname());
@@ -90,14 +90,14 @@ class FileUploadController extends Controller {
     }
 
 
-    private function saveModel($type, $id, $path, $filename)
+    private function saveModel($type, $id, $path, $filename, $originalFileName)
     {
        
         
         if($type == 'video') { // Загружена video
 
             $model = Video::create([
-                'title' => $filename,
+                'title' => basename($originalFileName),
                 'links' =>  '/' . $path .  '/'. $filename,
                 'domain' => 'storage.oblako.kz',
                 'duration' => 0,
@@ -116,7 +116,7 @@ class FileUploadController extends Controller {
             //  '/images/bookcovers/' . $newFilename
 
             $model = Book::create([
-                'title' => $filename,
+                'title' => basename($originalFileName),
                 'link' =>  '/' . $path . '/' . $filename,
                 'author' => 'Неизвестный',
                 'img' => '',

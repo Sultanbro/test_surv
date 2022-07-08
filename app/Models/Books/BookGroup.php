@@ -15,7 +15,6 @@ class BookGroup extends Model
 
     protected $fillable = [
         'name',
-        'books',
     ];
 
     const NAME_EXISTS = 'Выберите другое название, так как оно уже существует!';

@@ -68,7 +68,7 @@
               </div>
             </div>
 
-
+ 
             <div class="vid mt-3">
                 <questions 
                     v-if="activeVideo.questions.length > 0 || mode == 'edit'"

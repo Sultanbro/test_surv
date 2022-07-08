@@ -105,11 +105,33 @@
   }
 
 
-  .book-img {
-    width: 125px;
-    margin-left: 5px;
-    margin-bottom: 5px;
-    max-height: 200px;
-  }
+  
 
+  
+
+}
+
+
+.f-70 {
+  flex: 0 0 70%;
+}
+
+.f-30 {
+  flex: 0 0 30%;
+}
+
+.book-img {
+  width: 100%;
+  margin-left: 5px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.book-text {
+  min-height: 138px;
+    font-size: 12px;
+}
+
+.right .hide {
+  display: none;
 }

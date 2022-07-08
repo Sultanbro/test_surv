@@ -85,6 +85,11 @@ class QualityController extends Controller
             $group = ProfileGroup::find(42);
         }
 
+        if(!$group)  return [
+            'error' => 'access',
+        ];
+
+
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
         //if(auth()->user()->id == 84) dd(auth()->user()->can('quality_view'));

@@ -48,29 +48,28 @@ export default {
     }
 }
 .ui-sidebar {
-  display: none;
   background: rgba(0, 0, 0, 0.45);
   width: 100%;
   height: 100vh;
-  left: 0;
+  left: 150%;
   top: 0;
   position: fixed;
   z-index: 11;
 
   &__body {
     position: absolute;
-    right: -350px;
+    right: -100%;
     top: 0;
     height: 100vh;
     background: #fff;
     z-index: 9999;
     box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.64);
-    transition: 0.3s 0.3s ease all;
+    transition: 0.3s ease-in-out all;
     overflow: auto;
   }
 
   &.is-open {
-    display: block;
+    left:0;
 
     .ui-sidebar__body {
       right: 50px;
