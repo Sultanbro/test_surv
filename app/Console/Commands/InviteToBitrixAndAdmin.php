@@ -65,7 +65,7 @@ class InviteToBitrixAndAdmin extends Command
         }
 
         
-        $users = User::where('UF_ADMIN', 1)->whereIn('id', $user_ids)->get();
+        $users = User::whereIn('id', $user_ids)->get();
 
         $x = 0; // просто посчитать 
 
