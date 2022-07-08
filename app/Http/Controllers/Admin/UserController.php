@@ -1029,7 +1029,7 @@ class UserController extends Controller
     {
         $positions = Position::all();
         $groups = ProfileGroup::where('active', 1)->get();
-        $corpbooks = '[]';
+        $corpbooks = [];
 
         $knowbase_models = DB::table('knowbase_model')->where('model_id',auth()->user()->getAuthIdentifier())->get()->toArray();
 

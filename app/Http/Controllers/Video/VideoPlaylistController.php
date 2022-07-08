@@ -224,6 +224,19 @@ class VideoPlaylistController extends Controller {
 		$playlist->save();
 	}
 
+	public function saveFast(Request $request)
+	{
+		$item = $request->playlist;
+		
+		$playlist = Playlist::find($item['id']);
+
+		$playlist->title = $item['title'];
+		$playlist->category_id = $item['category_id'];
+		$playlist->text = $item['text'];
+		$playlist->save();
+
+	}
+
 	public function create() {
 		$categories = Category::all();
 		return view('videolearning.playlists.create', compact('categories')); 

@@ -14,6 +14,7 @@
             class="section d-flex aic jcsb my-2"
             v-for="(cat, index) in categories" 
             :key="cat.id"
+            :class="{'active': activeCat != null && activeCat.id == cat.id}"
             @click="selectCat(index)"
           >
             <p class="mb-0">{{ cat.title }}</p>
@@ -40,14 +41,14 @@
         </div>
 
         
-        <div class="rp" style="flex: 1 1 0%;">
+        <div class="rp" style="flex: 1 1 0%;overflow:auto;">
           <div class="hat">
             <div class="d-flex jsutify-content-between hat-top">
               <div class="bc">
                 <a href="#" @click="back">Видеоплейлисты</a>
                 <template v-if="activeCat">
                   <i class="fa fa-chevron-right"></i> 
-                  <a href="#"  @click="back">{{ activeCat.title }}</a>
+                  <a href="#"  @click="back">{{ activeCat.title + ' (' + activeCat.playlists.length + ')' }}</a>
                 </template>
                 <template v-if="activePlaylist">
                   <i class="fa fa-chevron-right"></i>
@@ -55,14 +56,19 @@
                 </template>
                 <!---->
               </div>
-              <div class="control-btns" >
+              <div class="control-btns d-flex" >
                 <div class="mode_changer" v-if="can_edit">
                   <i class="fa fa-edit"  @click="toggleMode" :class="{'active': mode == 'edit'}" />
                 </div>
+
+                <i class="btn btn-success fa fa-plus ml-2 d-flex px-2 aic"  @click="showAddPlaylist = true" v-if="mode == 'edit' && activePlaylist == null" />
+
               </div>
             </div>
             <div><!----></div> 
           </div>
+
+
           <div class="content mt-3">
             
             <div v-if="activeCat != null" class="p-3 ">
@@ -83,53 +89,42 @@
 
               <div v-else>
 
-                  <div class="d-flex align-items-start mb-3">
-                    <div>
-                      <h4>{{ activeCat.title }}</h4>
-                      <p class="mb-0">Кол-во плейлистов: {{ activeCat.playlists.length }}</p>
-                    </div>
+                  <!-- playlists -->
+                  <div class="els">
 
-                    
-                    <button class="btn-add mt-0 ml-2 mb-3" @click="showAddPlaylist = true"  v-if="mode == 'edit'">
-                      Добавить плейлист
-                    </button>
-                  </div>
-                    
+                      <div class="playlist mb-3" v-for="(playlist, p_index) in activeCat.playlists" :key="playlist.id" @click="selectPl(p_index)">
 
-                  <table class="table">
-                  
-                      <tr 
-                        v-for="(playlist, p_index) in activeCat.playlists"
-                        :key="playlist.id"
-                        class="playlist"
-                        @click="selectPl(p_index)"
-                      >
-                          <td class="poster_count">
-                            <div>
-                                <img :src="playlist.img == '' || playlist.img == null ? '/video_learning/noimage.png' : playlist.img"
-                                  class="img-fluid"/>
-                              <span></span>
-                            </div>
-                          </td>
-                          <td>
+                        <div class="left" :style="'background-image: url(' + (playlist.img == '' || playlist.img == null ? '/images/author.jpg' : playlist.img ) + ')'">
+                        </div>
+
+                        <div class="right">
                             <div class="title">  {{ playlist.title }}</div>
-                            <div class="text">  {{ playlist.text }}</div>
-                               <div class="d-flex"  v-if="mode == 'edit'"> 
+                             <div class="d-flex btns mb-2"  v-if="mode == 'edit'"> 
                                 <i
                                   class="fa fa-cogs"
                                   v-if="playlist.id != 0"
                                   @click.stop="editAccess(p_index)"
                                 ></i>
-                              <i
-                                class="fa fa-trash ml-2"
-                                v-if="playlist.id != 0"
-                                @click.stop="deletePl(p_index)"
-                              ></i>
+                                <i
+                                  class="fa fa-arrow-right ml-2"
+                                  v-if="playlist.id != 0"
+                                  title="Переместить"
+                                  @click.stop="movePl(p_index)"
+                                ></i>
+                                <i
+                                  class="fa fa-trash ml-2"
+                                  v-if="playlist.id != 0"
+                                  @click.stop="deletePl(p_index)"
+                                ></i>
                             </div>
-                          </td>
-                      </tr>
-                 
-                  </table>
+                            <div class="text">  {{ playlist.text }}</div>
+                              
+                        </div>
+
+                      </div>
+                      
+                     
+                  </div>
 
                  
 
@@ -199,7 +194,46 @@
       </button>
     </b-modal>
 
-    
+    <b-modal
+      v-model="showEditPlaylist"
+      title="Переместить плейлист"
+      size="md"
+      class="modalle"
+      hide-footer
+    >
+      <div class="d-flex mb-2">
+        <p class="mb-0 mr-2">Название</p>
+        <input
+          type="text"
+          v-model="editingPlaylist.title"
+          placeholder="Название плейлиста..."
+          class="form-control mb-2"
+        />
+      </div>
+
+      <div class="d-flex mb-2">
+        <p class="mb-0 mr-2">Описание</p>
+        <textarea
+          v-model="editingPlaylist.text"
+          placeholder="Описание плейлиста..."
+          class="form-control"
+        />
+      </div>
+
+      <div class="d-flex mb-2">
+        <p class="mb-0 mr-2">Категория</p>
+         <select
+          class="form-control"
+          v-model="editingPlaylist.category_id">
+          <option v-for="cat in categories" :value="cat.id" :key="cat.id">{{ cat.title }}</option>
+        </select>
+      </div>
+
+
+      <button class="btn btn-primary rounded m-auto" @click="savePlaylist">
+        <span>Сохранить</span>
+      </button>
+    </b-modal>
 
   </div>
 </template>
@@ -221,6 +255,12 @@ export default {
     return {
       categories: [],
       showEditCat: false,
+      editingPlaylist: {
+        title: '',
+        text: '',
+        category_id: ''
+      },
+      showEditPlaylist: false,
       user_id: 0,
       mode: 'read',
       activeCat: null,
@@ -288,6 +328,11 @@ export default {
       this.activeCat = this.categories[i];
     },
 
+    movePl(i) {
+      this.editingPlaylist = this.activeCat.playlists[i];
+      this.showEditPlaylist = true;
+    },
+
      deletePl(i) {
        if (confirm("Вы уверены что хотите удалить плейлист?")) {
           axios
@@ -331,6 +376,31 @@ export default {
             });
         }
       },
+
+    savePlaylist() {
+      axios
+        .post("/playlists/save-fast", {
+          playlist: this.editingPlaylist,
+        })
+        .then((response) => {
+
+          if(this.editingPlaylist.category_id != this.activeCat.id) {
+            this.deleteItemFrom(this.editingPlaylist.id, this.activeCat.playlists);
+            let i = this.categories.findIndex(el => el.id == this.editingPlaylist.category_id);
+            if(i != -1) this.categories[i].playlists.push(this.editingPlaylist);
+            this.showEditPlaylist = false;
+            this.editingPlaylist = {};
+          }
+
+          this.$message.success("Сохранено");
+        });
+    },
+
+    deleteItemFrom(id, from) {
+      let i = from.findIndex(el => el.id == id);
+      if(i != -1) from.splice(i, 1);
+    },
+    
      back() {
         this.activePlaylist = null;
         window.history.replaceState({ id: "100" }, "Плейлисты", "/video_playlists");
