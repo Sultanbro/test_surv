@@ -87,9 +87,8 @@ class TimetrackingController extends Controller
             if($active_tab == 3 && !auth()->user()->can('groups_view')) return redirect('/');
             if($active_tab == 4 && !auth()->user()->can('fines_view')) return redirect('/');
             if($active_tab == 5 && !auth()->user()->can('notifications_view')) return redirect('/');
-            if($active_tab == 6 && !auth()->user()->can('settings_learning_view')) return redirect('/');
-            if($active_tab == 7 && !auth()->user()->is_admin == 1) return redirect('/');
-            if($active_tab == 8 && !auth()->user()->can('checklists_view')) return redirect('/');
+            if($active_tab == 6 && !auth()->user()->can('permissions_view')) return redirect('/');
+            if($active_tab == 7 && !auth()->user()->can('checklists_view')) return redirect('/');
         } else {
             if(!(auth()->user()->can('settings_view') ||  
                 auth()->user()->can('users_view') ||
@@ -97,7 +96,7 @@ class TimetrackingController extends Controller
                 auth()->user()->can('groups_view') ||
                 auth()->user()->can('fines_view') ||
                 auth()->user()->can('notifications_view') ||
-                auth()->user()->can('settings_learning_view') ||
+                auth()->user()->can('permissions_view') ||
                 auth()->user()->can('checklists_view') 
             )) {
                 return redirect('/');
@@ -108,8 +107,8 @@ class TimetrackingController extends Controller
             else if(auth()->user()->can('groups_view')) {$active_tab = 3;}
             else if(auth()->user()->can('fines_view')) {$active_tab = 4;}
             else if(auth()->user()->can('notifications_view')) {$active_tab = 5;}
-            else if(auth()->user()->can('settings_learning_view')) {$active_tab = 6;}
-            else if(auth()->user()->can('checklists_view')) {$active_tab = 8;}
+            else if(auth()->user()->can('permissions_view')) {$active_tab = 6;}
+            else if(auth()->user()->can('checklists_view')) {$active_tab = 7;}
         }
         
      
