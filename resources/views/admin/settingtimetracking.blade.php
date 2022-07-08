@@ -20,7 +20,7 @@
                                 @if(auth()->user()->can('fines_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 4) active @endif" id="nav-fines-tab"  href="/timetracking/settings?tab=4#nav-fines"  aria-controls="nav-fines" aria-selected="false">Штрафы</a>@endif
                                 @if(auth()->user()->can('notifications_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 5) active @endif" id="nav-notifications-tab"  href="/timetracking/settings?tab=5#nav-notifications" aria-controls="nav-notifications" aria-selected="false">Уведомления</a>@endif
                                 @if(auth()->user()->can('permissions_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 6) active @endif" id="nav-permissions-tab"  href="/timetracking/settings?tab=6#nav-permissions" aria-controls="nav-permissions" aria-selected="false">Доступы</a>@endif
-                                @if(auth()->user()->can('checklists_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 7) active @endif" id="nav-checkList-tab"  href="/timetracking/settings?tab=8#nav-checkList" aria-controls="nav-checkList" aria-selected="false">Чек-листы</a>@endif
+                                @if(auth()->user()->can('checklists_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 7) active @endif" id="nav-checkList-tab"  href="/timetracking/settings?tab=7#nav-checkList" aria-controls="nav-checkList" aria-selected="false">Чек-листы</a>@endif
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">

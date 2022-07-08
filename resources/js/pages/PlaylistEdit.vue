@@ -269,8 +269,30 @@ export default {
 
           if(this.playlist.groups[this.activeVideo.group_id] != null){
             this.playlist.groups[this.activeVideo.group_id].opened = true;
+          }else{
+            this.playlist.groups.forEach((group, index) => {
+              if(group.videos.length != 0){
+                group.videos.forEach((video, index1) => {
+                  if(video.id == this.myvideo){
+                    this.playlist.groups[index].opened = true;
+                  }
+                });
+              }else{
+                group.children.forEach((child, index1) => {
+                  if(child.videos.length != 0){
+                    child.videos.forEach((video, index2) => {
+                      if(video.id == this.myvideo){
+                        this.playlist.groups[index].opened = true;
+                        this.playlist.groups[index].children[index1].opened = true;
+                      }
+                    });
+                  }
+                });
+              }
+            })
+            
           }
-
+          
           this.sidebars.edit_video.show = true;
           
         })

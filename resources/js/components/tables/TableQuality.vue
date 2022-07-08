@@ -980,9 +980,14 @@ export default {
 
 
 
-      if (this.flagGroup == 'index'){
-        this.currentGroup = this.individual_type_id
+
+      if (this.individual_type_id != null){
+        if (this.flagGroup == 'index'){
+          this.currentGroup = this.individual_type_id
+          // this.currentGroup = this.individual_type_id
+        }
       }
+
       axios
         .post($url, {
           day: this.currentDay,
@@ -994,6 +999,7 @@ export default {
           individual_type_id:this.individual_type_id,
         })
         .then((response) => {
+
 
 
 
@@ -1036,9 +1042,7 @@ export default {
           this.calcTotalWeekField();
 
 
-          console.log(response,'imashev')
-          console.log(this.fields,'fields')
-          console.log(this.monthFields,'monthFields')
+
 
 
           loader.hide();
