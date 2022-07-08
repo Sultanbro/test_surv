@@ -74,6 +74,7 @@
                   @back="back" 
                   :token="token"
                   :id="activePlaylist.id"
+                  :is_course="false"
                   :auth_user_id="user_id"
                   :mode="mode"
                   :myvideo="myvideo" />

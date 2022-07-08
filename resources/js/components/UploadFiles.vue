@@ -37,6 +37,7 @@ export default {
         'token',
         'type',
         'file_types',
+        'id'
     ],
     methods: {
         // finds the file in the local files array
@@ -54,7 +55,11 @@ export default {
         // init resumablejs on mount
 		this.r = new Resumable({
 			target:'/file/upload',
-			query:{_token:this.token},
+			query:{
+                _token:this.token,
+                id: this.id,
+                type: this.type
+            },
             maxChunkRetries: 1,
             maxFiles: 1,
             fileType: this.file_types,

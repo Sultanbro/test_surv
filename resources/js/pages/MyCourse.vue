@@ -78,17 +78,20 @@
                       :book_id="activeCourseItem.item_id"
                       mode="read"
                       ref="upbook"
+                      :course_page="true"
+                      :course_item_id="activeCourseItem.id"
                       :enable_url_manipulation="false"  
                     />
                   </div>
  
                   <div class="px-3 pt-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\Video'">
                       <page-playlist-edit 
-                        ref="playlist"
+                          ref="playlist"
                           :id="activeCourseItem.item_id"
+                          :course_item_id="activeCourseItem.id"
                           :is_course="true"
                           :myvideo="activeCourseItem.last_item"
-                           :enable_url_manipulation="false"
+                          :enable_url_manipulation="false"
                           mode="read" />
                   </div>
 
@@ -98,8 +101,9 @@
                         ref="knowbase"
                         :trees="trees" 
                         :parent_name="activeCourseItem.title" 
+                        :course_item_id="activeCourseItem.id"
                         :parent_id="activeCourseItem.item_id"
-                        :show_page_id="0" 
+                        :show_page_id="activeCourseItem.item_id" 
                         mode="read"
                         :course_page="true"
                         :enable_url_manipulation="false"
@@ -153,7 +157,9 @@ export default {
       if(index != -1 && this.items.length - 1 != index) {
         this.activeCourseItem.status = 1;
         this.activeCourseItem = this.items[index + 1];  
+        this.activeCourseItem.status = 2;
       } else {
+        this.activeCourseItem.status = 1;
         this.$message.success('Поздравляем с завершением курса!');
       } 
       

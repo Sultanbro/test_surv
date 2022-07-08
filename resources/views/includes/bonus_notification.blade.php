@@ -22,7 +22,7 @@ $(document).ready(function() {
 
     $('#goToNoti2').click(function () {
         $('#bonus_notification').hide();
-        $('.kolokolchik .tooglenotifi ').trigger('click');
+        $('#toggle_panel').trigger('click');
         window.scrollTo(0,0)
     });
 

@@ -59,15 +59,16 @@ class Euras2
             ['rownumber' => 2,'headers' => 0, 'pr' => 0,'plan' => 0],
             ['rownumber' => 3,'headers' => 'Impl', 'pr' => 0,'plan' => 0],
             ['rownumber' => 4,'headers' => 'Pr, cstll', 'pr' => 0,'plan' => 0],
-            ['rownumber' => 5,'headers' => 'Средняя конверсия', 'pr' => 0,'avg' => 0],
+            ['rownumber' => 5,'headers' => 'Факт согласий', 'pr' => 0,'avg' => 0],
             ['rownumber' => 6,'headers' => 'Plan согласий', 'pr' => 0],
-            ['rownumber' => 7,'headers' => 'Факт согласий', 'avg' => 0],
-            ['rownumber' => 8,'headers' => 'Минуты операторов', 'pr' => 0,'avg' => 0],
-            ['rownumber' => 9,'headers' => 'План операторов', 'pr' => 0],
-            ['rownumber' => 10,'headers' => 'Кол-во операторов', 'pr' => 0],
-            ['rownumber' => 11,'headers' => 'Кол-во некоррект диалогов', 'pr' => 0],
-            ['rownumber' => 12,'headers' => 'Потерянные звонки', 'pr' => 0],
-            ['rownumber' => 13,'headers' => 'Закрыто карт', 'pr' => 0,'avg' => 0],
+            ['rownumber' => 7,'headers' => 'Средняя конверсия', 'avg' => 0],
+            ['rownumber' => 8,'headers' => 'Минуты штатных', 'pr' => 0,'avg' => 0],
+            ['rownumber' => 9,'headers' => 'Поступление лидов', 'pr' => 0,],
+            ['rownumber' => 10,'headers' => 'План операторов', 'pr' => 0],
+            ['rownumber' => 11,'headers' => 'Кол-во операторов', 'pr' => 0],
+            ['rownumber' => 12,'headers' => 'Кол-во некоррект диалогов', 'pr' => 0],
+            ['rownumber' => 13,'headers' => 'Потерянные звонки', 'pr' => 0],
+            ['rownumber' => 14,'headers' => 'Закрыто карт', 'pr' => 0,'avg' => 0],
         ];
     }
 
@@ -263,6 +264,7 @@ class Euras2
                     ->where('cause', '!=', 'SYSTEM_SHUTDOWN')
                     ->first();
                     
+        
             $call_sec = $calls->billsec_sum;
 
             // $reports = DB::connection('callibro')->table('call_account_actions')
@@ -288,6 +290,7 @@ class Euras2
             
         } 
 
+
         return $full_time;
         
     }
@@ -300,7 +303,7 @@ class Euras2
         $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
         
         $full_time = 0; // общее отработанное время
-        $dialer_id = 443;
+        $dialer_id = 444;
         
         if($account) {
             $call_account_id = $account->id;
@@ -420,6 +423,18 @@ class Euras2
          */
         $script_status_ids = [
             13559, // Заявка
+            13557, // согласие
+          //  13797, // клиент несовершеннолетний
+          //  13798, // клиента арест
+           // 13800, //Не интересует
+           // 13801, //Негатив к Банку
+           // 13802, //Не устраивают условия
+           // 13803, //Подумает
+          //  13804, //Интересует другой продукт
+           // 13806, //Уточненный номер
+           // 13810, //Неверный номер
+           // 13812, //Клиент умер
+           // 13813, //Не гражданин РК
         ]; 
 
         $cards = DB::connection('callibro')->table('calls')

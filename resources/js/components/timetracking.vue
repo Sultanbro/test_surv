@@ -140,7 +140,7 @@
       </sidebar>
     </transition>
 
-    <b-modal v-model="showCorpBookPage"  title="Н" size="xl" class="modalle" hide-footer hide-header>
+    <b-modal v-model="showCorpBookPage"  title="Н" size="xl" class="modalle" hide-footer hide-header no-close-on-backdrop>
         <div class="corpbook" >
           <div class="inner">
               <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей корпоративной книги</h5>

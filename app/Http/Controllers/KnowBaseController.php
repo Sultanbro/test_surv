@@ -228,6 +228,10 @@ class KnowBaseController extends Controller
         if($can_read) {
             $trees = KnowBase::where('parent_id', $request->id)
                 ->with('children')
+                ->with('questions')
+                ->with('item_models', function ($query){
+                    $query->where('type', 3);
+                })
                 ->orderBy('order')
                 ->get();
 
@@ -255,7 +259,12 @@ class KnowBaseController extends Controller
 
     public function getPage(Request $request)
     {
-        $page = KnowBase::withTrashed()->find($request->id);
+        $page = KnowBase::withTrashed()
+            ->with('questions')
+            ->with('item_models', function ($query){
+                $query->where('type', 3);
+            })
+            ->find($request->id);
 
         $author = User::withTrashed()->find($page->user_id);
         $editor = User::withTrashed()->find($page->editor_id);
@@ -273,7 +282,12 @@ class KnowBaseController extends Controller
 
         if ($request->refresh) {
             if ($top_parent) {
-                $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')->orderBy('order')->get();
+                $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')
+                ->with('item_models', function ($query){
+                    $query->where('type', 3);
+                })
+                ->orderBy('order')->get();
+
                 foreach ($trees as $tree) {
                     $tree->parent_id = null;
                 }
@@ -401,36 +415,50 @@ class KnowBaseController extends Controller
             $page->editor_id = Auth::user()->id;
             $page->save();
 
-            $setting = Setting::where('name', 'send_notification_after_edit')
-                ->first();
-
-            if($setting && $setting->value == 1) {
-
-                $TOP_parent = $this->getTopParent($page->id);
-
-                if(!$TOP_parent) return;
-
-
-                $users = $TOP_parent->getUsersWithAccess();
-           
-                foreach ($users as $key => $user_id) {
-                    \App\UserNotification::create([
-                        'user_id' => $user_id,
-                        'about_id' => 0,
-                        'title' => 'Изменения в базе знаний',
-                        'group' => now(),
-                        'message' => 'Раздел: <b>' . $TOP_parent->title . '</b><br>' . $page->title
-                    ]);
-                } 
-                
-            }
+            $this->notifyAboutChanges('Страница: ', $page);
         }
-
-        
-
-
     }
 
+    
+    private function notifyAboutChanges($text, KnowBase $page) {
+        $setting = Setting::where('name', 'send_notification_after_edit')
+                ->first();
+
+        if($setting && $setting->value == 1) {
+
+            $TOP_parent = $this->getTopParent($page->id);
+
+            if(!$TOP_parent) return;
+
+
+            if($TOP_parent->access == 1 || $TOP_parent->access == 2) {
+                $users = User::with('user_description')
+                    ->whereHas('user_description', function ($query) {
+                        $query->where('is_trainee', 0);
+                    })
+                    ->get('id')
+                    ->pluck('id')
+                    ->toArray();
+            } else {
+                $users = $TOP_parent->getUsersWithAccess();
+            }
+            
+            
+            $message = 'База знаний: <b>' . $TOP_parent->title . '</b><br><b>'. $text . ':</b> ';
+            $message .= '<a href="/kb?s=' . $TOP_parent->id .'&b=' . $page->id . '" target="_blank">' . $page->title . '</a>';
+
+            foreach ($users as $key => $user_id) {
+                \App\UserNotification::create([
+                    'user_id' => $user_id,
+                    'about_id' => 0,
+                    'title' => 'Изменения в базе знаний',
+                    'group' => now(),
+                    'message' => $message
+                ]);
+            } 
+        }
+    }
+    
     public function saveOrder(Request $request, $id = null)
     {
 
@@ -477,6 +505,7 @@ class KnowBaseController extends Controller
 
         $kb->children = [];
         $kb->parent_id = null;
+
         return $kb;
 
     }

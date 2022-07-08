@@ -102,6 +102,7 @@
       </button>
     </b-modal>
 
+    <!-- Загрузить книгу -->
     <b-modal
       v-model="modals.upload_book.show"
       title="Загрузить книгу"
@@ -112,37 +113,59 @@
     >
       <upload-files
         :token="token"
-        type="file"
+        type="book"
+        :id="0"
         :file_types="['pdf']"
         @onupload="onupload"
       />
 
+      <!-- after upload -->
       <div v-if="modals.upload_book.file">
-        <input
-          type="text"
-          v-model="modals.upload_book.file.model.title"
-          placeholder="Название книги..."
-          class="form-control mt-2"
-        />
-        <input
-          type="text"
-          v-model="modals.upload_book.file.model.author"
-          placeholder="Название автора..."
-          class="form-control mt-2 mb-2"
-        />
+        <div class="d-flex">
+          <div class="left">
+             <input
+              type="text"
+              v-model="modals.upload_book.file.model.title"
+              placeholder="Название книги..."
+              class="form-control mt-2"
+            /> 
+            <input
+              type="text"
+              v-model="modals.upload_book.file.model.author"
+              placeholder="Название автора..."
+              class="form-control mt-2 mb-2"
+            />
+              <select
+              class="form-control mb-2"
+              v-model="modals.upload_book.file.model.group_id"
+            >
+              <option v-for="cat in categories" :value="cat.id" :key="cat.id">
+                {{ cat.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="right">
+            <img class="book-img"
+              v-if="modals.upload_book.file.model.img != ''"
+              :src="modals.upload_book.file.model.img"/>
+            <b-form-file
+              v-else
+              v-model="file_img"
+              :state="Boolean(file_img)"
+              placeholder="Выберите или перетащите файл сюда..." 
+              drop-placeholder="Перетащите файл сюда..."
+              class="mt-3"
+              ></b-form-file> 
+          </div>
+        </div>
+       
         <textarea 
           class="form-control mt-2 mb-2"
           placeholder="Описание..."
           v-model="modals.upload_book.file.model.description"
         />
-        <select
-          class="form-control mb-2"
-          v-model="modals.upload_book.file.model.group_id"
-        >
-          <option v-for="cat in categories" :value="cat.id" :key="cat.id">
-            {{ cat.name }}
-          </option>
-        </select>
+     
         <button class="btn btn-primary rounded m-auto" @click="saveBook">
           <span>Сохранить</span>
         </button>
@@ -256,6 +279,7 @@ export default {
       activeCategory: null,
       categories: [],
       mode: 'read',
+      file_img: null,
       modals: {
         add_category: {
           show: false,
@@ -420,9 +444,19 @@ export default {
     saveBook() {
       let loader = this.$loading.show();
 
-      axios
-        .post("/admin/upbooks/save", {
-          book: this.modals.upload_book.file.model,
+      let data = this.modals.upload_book.file.model;
+      let formData = new FormData();
+          formData.append('id', data.id);
+          formData.append('author', data.author);
+          formData.append('title',  data.title);
+          formData.append('description',  data.description);
+          formData.append('group_id',  data.group_id);
+          formData.append('file', this.file_img);
+
+      axios.post( '/admin/upbooks/save', formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
         })
         .then((response) => {
           this.activeCategory.books.push(this.modals.upload_book.file.model);

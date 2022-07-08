@@ -45,7 +45,7 @@ class Course extends Model
         $disabled = false;
         foreach ($items as $key => $item) {
             if(!$disabled) {
-                $item->status = $item->countItems() == $item->elements->count() ? CourseResult::COMPLETED : CourseResult::ACTIVE;
+                $item->status = $item->countItems() <= $item->elements->count() ? CourseResult::COMPLETED : CourseResult::ACTIVE;
                 if($item->status == CourseResult::ACTIVE) $disabled = true;
             } else {
                 $item->status = CourseResult::INITIAL;

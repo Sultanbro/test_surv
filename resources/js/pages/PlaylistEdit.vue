@@ -1,5 +1,7 @@
 <template>
   <div class="video-playlist">
+
+    <!-- Header -->
     <div class="d-flex jcsb mb-1" v-if="!is_course">
       <div class="s w-full">
         <div class="d-flex">
@@ -25,6 +27,7 @@
    
     <div class="row">
 
+      <!-- playlist description -->
       <div class="col-lg-12" v-if="!is_course">
         <div class="form-group">
           <textarea
@@ -36,10 +39,11 @@
             placeholder="Описание плейлиста"
             v-model="playlist.text"
           ></textarea>
-          <p v-else class="p-desc">{{ playlist.title }}</p>
+          <p v-else class="p-desc">{{ playlist.text }}</p>
         </div>
       </div>  
        
+      <!-- Player and test questions -->
       <div class="col-lg-6 pr-0">
         <div class="block  br" v-if="activeVideo != null">
             <v-player :src="activeVideoLink" :key="video_changed" />
@@ -72,17 +76,26 @@
 
 
             <div class="vid mt-3">
-                <questions
+                <questions 
+                    v-if="activeVideo.questions.length > 0"
                     :questions="activeVideo.questions"
                     :id="activeVideo.id"
                     type="video"
+                    @passed="passedTest()"
                     :mode="mode"
                     />
+                
+                <button class="next-btn btn btn-primary" v-if="is_course && (activeVideo.questions.length == 0 || activeVideo.item_models.length > 0)"
+                  @click="nextElement()">
+                  Продолжить курс
+                  <i class="fa fa-angle-double-right ml-2"></i>
+                </button>
                     
             </div>
         </div>
       </div>
 
+      <!-- nav accordion -->
       <div class="col-lg-6">
         <div v-if="mode == 'edit'" class="mb-3">
           <button class="btn btn-primary" v-if="!group_edit" @click="group_edit = true">
@@ -110,32 +123,8 @@
       </div>
     </div>
 
-    <b-modal
-      v-model="modals.addVideo.show"
-      hide-footer
-      title="Добавить видео из существующих"
-      size="lg"
-    >
-      <div class="video-search">
-        <input
-          type="text"
-          class="search-input form-control"
-          @keyup="search($event)"
-        />
-        <div class="items">
-          <div
-            v-for="video in modals.addVideo.searchVideos"
-            class="item d-flex"
-            @click="addVideo(video.id)"
-            :key="video.id"
-          >
-            <img src="/video_learning/noimage.png" alt="image" />
-            <p class="title">{{ video.title }}</p>
-          </div>
-        </div>
-      </div>
-    </b-modal>
 
+    <!-- Upload Video -->
     <b-modal
       v-model="modals.upload.show"
       hide-footer
@@ -158,6 +147,7 @@
         <upload-files
           :token="token"
           type="video"
+          :id="playlist.id"
           :file_types="['mp4', 'flv']"
           @onupload="onupload"
         />
@@ -224,12 +214,14 @@ export default {
     },
     is_course: {
       default: false
+    },
+    course_item_id: {
+      default: 0
     }
   },
   
   data() {
     return {
-      all_videos: [],
       video_changed: 1,
       activeVideo: null,
       activeVideoLink: '',
@@ -242,11 +234,6 @@ export default {
         videos: [],
       },
       modals: {
-        addVideo: {
-          show: false,
-          searchVideos: [],
-          selected: null,
-        },
         upload: {
           show: false,
           step: 1,
@@ -269,6 +256,7 @@ export default {
         
     };
   },
+
   watch: {
   
   },
@@ -277,32 +265,24 @@ export default {
     console.log(this.myvideo);
     if(this.myvideo > 0){
 
-     // this.activeVideo = video;
-      console.log(this.id);
-      
       axios
         .get("/playlists/get/" + this.id)
         .then((response) => {
-          this.all_videos = response.data.all_videos;
-          this.modals.addVideo.searchVideos = this.all_videos;
-
+   
           this.playlist = response.data.playlist;
-          
           this.activeVideo = this.playlist.videos.filter(video => video.id === this.myvideo)[0];
-          
           this.activeVideoLink = this.activeVideo.links;
 
           if(this.playlist.groups[this.activeVideo.group_id] != null){
             this.playlist.groups[this.activeVideo.group_id].opened = true;
           }
+
           this.sidebars.edit_video.show = true;
           
         })
         .catch((error) => {
           alert(error);
         });
-
-        
 
     } else {
 
@@ -318,14 +298,75 @@ export default {
 
   methods: { 
 
-    nextElement() {
-      let index = this.playlist.videos.findIndex(el => el.id == this.activeVideo.id);
-
-      if(index != -1 && this.playlist.videos.length - 1 > index) {
-        this.activeVideo = this.playlist.videos[index + 1];
-      } else {
-         this.$parent.after_click_next_element();
+    passedTest() {
+      if(this.is_course) {
+        this.activeVideo.item_models.push({status: 1});
+        // axios passed
       }
+    },
+
+    nextElement() {
+      this.setVideoPassed()
+
+      // create array of video ids
+      let arr = [];
+      this.playlist.groups.forEach((group, g_index) => {
+          group.videos.forEach((el, v_index) => {
+            arr.push({
+              id: el.id,
+              g: g_index,
+              c: -1,
+              v: v_index,
+            })
+          })
+          
+          if(group.children !== undefined) group.children.forEach((c, c_index) => c.videos.forEach((el, v_index) => {
+            arr.push({
+              id: el.id,
+              g: g_index,
+              c: c_index,
+              v: v_index
+            })
+          }))
+      });
+
+
+      let index = arr.findIndex(el => el.id == this.activeVideo.id); 
+ 
+      // find next element 
+      if(index != -1 && arr.length - 1 > index) {
+
+        let el;
+        let i = arr[index + 1];
+        if(i.c == -1) {
+          el = this.playlist.groups[i.g].videos[i.v];
+        } else {
+          el = this.playlist.groups[i.g].children[i.c].videos[i.v];
+        }
+
+        this.activeVideo = el;
+        this.activeVideoLink = this.activeVideo.links 
+        el.item_models.push({status: 1});  
+
+      } else {
+        // move to next course item
+        this.$parent.after_click_next_element();
+      }
+    },
+
+    setVideoPassed() {
+      axios
+        .post("/my-courses/pass", {
+          id: this.activeVideo.id,
+          type: 2,
+          course_item_id: this.course_item_id,
+        })
+        .then((response) => {
+         // this.activeVideo.item_models.push(response.data.item_model);
+        })
+        .catch((error) => {
+          alert(error);
+        });
     },
 
     showQuestions(v_index) {
@@ -379,8 +420,6 @@ export default {
     },
     
     saveVideo() {
-      console.log("saveVideo");
-  
       axios
         .post("/playlists/save-video", {
           id: this.playlist.id,
@@ -393,7 +432,6 @@ export default {
 
           this.addVideoToPlaylist(response.data.video)
           
-
           this.$message.success("Добавлен");
           this.modals.upload.file = null;
         })
@@ -483,32 +521,6 @@ export default {
       });
     },
 
-    addVideo(id) {
-      this.modals.addVideo.selected = id;
-
-      axios
-        .post("/playlists/add-video", {
-          id: this.playlist.id,
-          video_id: id,
-        })
-        .then((response) => {
-          if (response.data.video !== null) {
-            if (response.data.was_in_playlist) {
-              this.$message.info("Видео уже есть в плейлисте");
-            } else {
-              this.playlist.videos.push(response.data.video);
-              this.$message.success("Добавлен");
-            }
-
-            this.modals.addVideo.show = false;
-          } else {
-            this.$message.error("Не добавлен");
-          }
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
     moveToStep(i) {
       if (i == 2 && this.modals.upload.file === null) {
         return "";
@@ -570,9 +582,6 @@ export default {
       axios
         .get("/playlists/get/" + this.id)
         .then((response) => {
-          this.all_videos = response.data.all_videos;
-          this.modals.addVideo.searchVideos = this.all_videos;
-
           this.playlist = response.data.playlist;
           
           this.setActiveVideo();

@@ -153,6 +153,7 @@ Route::middleware([
     Route::get('/my-courses', [MyCourseController::class, 'index']);
     Route::get('/my-courses/get', [MyCourseController::class, 'getCourses']);
     Route::get('/my-courses/get/{id}', [MyCourseController::class, 'getMyCourse']);
+    Route::post('/my-courses/pass', [MyCourseController::class, 'pass']);
 
     Route::post('/course-results/get', [CourseResultController::class, 'get']);
     
@@ -297,9 +298,9 @@ Route::middleware([
     Route::get('/timetracking/fine', [FineController::class, 'index']);
     Route::put('/timetracking/fine', [FineController::class, 'update']);
 
-    // Route::get('/timetracking/exam', [ExamController::class, 'index']);
-    // Route::post('/timetracking/exam', [ExamController::class, 'getexams']);
-    // Route::post('/timetracking/exam/update', [ExamController::class, 'update']);
+    Route::get('/timetracking/exam', [ExamController::class, 'index']);
+    Route::post('/timetracking/exam', [ExamController::class, 'getexams']);
+    Route::post('/timetracking/exam/update', [ExamController::class, 'update']);
 
     Route::post('/timetracking/kpi_save', [KpiController::class, 'saveKPI']);
     Route::post('/timetracking/kpi_get', [KpiController::class, 'getKPI']);

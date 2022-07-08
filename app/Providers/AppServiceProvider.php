@@ -101,7 +101,7 @@ class AppServiceProvider extends ServiceProvider
                         $xuser->save();
                     } else {
 
-                        if(\Carbon\Carbon::now()->hour >= 6 && $unread > 0 && $user->has_noti == 0) {
+                        if(\Carbon\Carbon::now()->hour >= 4 && $unread > 0 && $user->has_noti == 0) {
                             $reminder = true;
 
                             $xuser = User::find($user->id);
