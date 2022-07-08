@@ -8,10 +8,9 @@
         <a href="/profile" class="img_url_sm">
 
             @if(isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url))
-                <img id="img_url_sm"
-                     src="/users_img/{{auth()->user()->img_url}}" alt="avatar" >
+                <img id="img_url_sm" src="/users_img/{{auth()->user()->img_url}}" alt="avatar"  style="height: 70px;">
             @else
-                <img id="img_url_sm" src="https://cp.callibro.org/files/img/8.png" alt="img">
+                <img id="img_url_sm" src="https://cp.callibro.org/files/img/8.png" alt="img" style="height: 70px">
             @endif
 
 
