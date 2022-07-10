@@ -178,8 +178,8 @@ class UserController extends Controller
             }
 
             /*** Текущая книга для прочтения */
-            $book = app('App\Http\Controllers\Admin\ExamController')->currentBook($user->id, date('m'), date('Y'));
-            
+            //$book = app('App\Http\Controllers\Admin\ExamController')->currentBook($user->id, date('m'), date('Y'));
+            $book = null;
 
             /* recruiter */
 

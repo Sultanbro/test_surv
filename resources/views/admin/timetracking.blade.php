@@ -316,23 +316,7 @@
                     <!-- План чтения книг и важная информация -->
                     <div class="col-xl-5 pl-md-0">
                         <div class="wrappy">
-                            <div class="contact-information ublockx mb-3">
-                                <h5 class="mb-1">План чтения книг</h5>
-                                <p style="font-size: 14px;
-                                    line-height: 1em;
-                                    margin-bottom: 8px;
-                                    
-                                    color: #000;">Книга на экзамене в этом месяце: </p>
-                                <table class="text-left ">
-                                    <tr>
-                                        <td><a href="{{ $book['link_book'] }}" target="_blank" style="color: #05adef;">{{ $book['name'] }}</a>
-                                            @if(isset($book['success']) && $book['success'] == 1) <span class="badge badge-success">Экзамен сдан</span>
-                                            @else <span class="badge badge-primary">Экзамен не сдан</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+                           
 
                             @if(isset($course) && $course->course)
 

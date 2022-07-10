@@ -21,7 +21,7 @@ class BookResult extends Model
         'book_id',
     ];
 
-    
+
     public static function getUnreadBook($user_id)
     {   
         $read_book_ids = [];
