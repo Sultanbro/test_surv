@@ -308,12 +308,14 @@ export default {
     formSubmit() {
 
       // e.preventDefault();
+      let loader = this.$loading.show();
       let existingObj = this;
       const config = {
         headers: {
           'content-type': 'multipart/form-data'
         }
       }
+
       let data = new FormData();
       data.append('file', this.file);
 
@@ -322,10 +324,8 @@ export default {
             // existingObj.success = res.data.success;
             existingObj.img = '/users_img/'+res.data.file_name;
             existingObj.$message.success('Успешно Удалено');
-
-
             $("#img_url_sm").attr('src',existingObj.img)
-
+            loader.hide();
           })
           .catch(function (err) {
             existingObj.output = err;
@@ -336,9 +336,9 @@ export default {
     },
     change({ coordinates, canvas }) {
 
-      this.canvas = canvas,
+      this.canvas = canvas
 
-      console.log(coordinates, canvas);
+
     },
     addPayment(){
 
@@ -383,7 +383,10 @@ export default {
 
       this.payments.forEach(el => {
         this.cardValidatre.type = false;
+        this.cardValidatre.type = true;
+
         if (el['bank'] != null && el['cardholder'] != null && el['country'] != null && el['number'] != null && el['phone'] != null){
+
           if (el['bank'].length > 2 && el['cardholder'].length > 2 && el['country'].length > 2 && el['number'].length > 2 && el['phone'].length > 2){
             this.cardValidatre.type = true;
           }
@@ -483,7 +486,7 @@ export default {
           axios.post('/profile/country/city/', {
             keyword: this.keywords
           }).then(response => {
-            console.log(response,'077')
+
             this.country_results = response.data
           })
         }
