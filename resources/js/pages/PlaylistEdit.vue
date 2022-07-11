@@ -71,9 +71,10 @@
  
             <div class="vid mt-3">
                 <questions 
-                    v-if="activeVideo.questions.length > 0 || mode == 'edit'"
+                    v-if="activeVideo.questions.length > 0 && mode != 'edit'"
                     :questions="activeVideo.questions"
                     :id="activeVideo.id"
+                    :key="refreshTest"
                     type="video"
                     @passed="passedTest()"
                     :mode="mode"
@@ -91,104 +92,43 @@
 
       <!-- nav accordion -->
       <div class="col-lg-6">
-        <div v-if="mode == 'edit'" class="mb-3">
-          <button class="btn btn-primary" v-if="!group_edit" @click="group_edit = true">
-            <i class="fa fa-edit mr-2"></i>
-            Редактировать группы  
-          </button>
-          <button class="btn btn-primary" v-else  @click="saveGroups()">
-            <i class="fa fa-save mr-2"></i>
-            Сохранить группы  
-          </button>
-          <button class="btn btn-default" v-if="group_edit" @click="addGroup">
-            <i class="fa fa-plus mr-2"></i>
-            Добавить группу  
-          </button>
-        </div>
         <video-accordion 
+          ref="accordion"
           :groups="playlist.groups"
+          :playlist_id="playlist.id"
           :mode="mode"
-          :group_edit="group_edit"
+          :token="token"
           :active="activeVideo ? activeVideo.id : -1"
-          @showVideo="showVideo"
-          @uploadVideo="uploadVideo"
           :is_course="is_course"
+          @showVideo="showVideo"
+          @showTests="showTests"
           />
+          
       </div>
     </div>
 
 
-    <!-- Upload Video -->
-    <b-modal
-      v-model="modals.upload.show"
-      hide-footer
-      title="Загрузить видео"
-      size="lg"
+    <!-- edit tests -->
+    <sidebar
+      title="Редактировать вопросы к видео"
+      :open="show_tests && activeVideo != null"
+      @close="show_tests = false"
+      width="70%"
     >
-      <div class="steps">
-        <p
-          :class="{ active: modals.upload.step == 1 }"
-          @click="moveToStep(1)"
-          class="mr-2"
-        >
-          <b>1. Загрузить видео ></b>
-        </p>
-        <p :class="{ active: modals.upload.step == 2 }" @click="moveToStep(2)">
-          <b>2. Редактировать видео</b>
-        </p>
+      <p class="mt-2 mb-3"><b>{{ activeVideo.title }}</b></p>
+      <div class="d-flex aic pass__ball">
+        <p class="mr-3" style="width:200px">Проходной балл:</p>
+        <input class="form-control mb-3" type="number" :min="0" :max="100" />
       </div>
-      <div v-if="modals.upload.step == 1">
-        <upload-files
-          :token="token"
-          type="video"
-          :id="playlist.id"
-          :file_types="['mp4', 'flv']"
-          @onupload="onupload"
+      <questions 
+        :questions="activeVideo.questions"
+        :id="activeVideo.id"
+        type="video"
+        :mode="'edit'"
         />
+    </sidebar>
 
-        <div class="uploaded_files" v-if="modals.upload.file !== null">
-          <p>
-            <b
-              >Загружено
-              {{
-                Number(modals.upload.file.size / 1024 / 1024).toFixed(3)
-              }}mb</b
-            >
-          </p>
-          <p>{{ modals.upload.file.name }}</p>
-        </div>
-      </div>
-      <div v-if="modals.upload.step == 2">
-        <div class="row mb-2" v-if="modals.upload.file !== null">
-          <div class="col-md-4">
-            Название
-          </div>
-          <div class="col-md-8">
-            <input
-              type="text"
-              class="form-control"
-              v-model="modals.upload.file.model.title"
-            />
-          </div>
-          <div class="col-md-12">
-            <p>
-              <b
-                >Загружено
-                {{
-                  Number(modals.upload.file.size / 1024 / 1024).toFixed(3)
-                }}mb</b
-              >
-            </p>
-            <p>{{ modals.upload.file.name }}</p>
-          </div>
-        </div>
-        <div class="d-flex mt-3">
-          <button class="btn mr-1" @click="saveVideo">Сохранить</button>
-          <button class="btn" @click="deleteVideo">Удалить</button>
-        </div>
-      </div>
-    </b-modal>
-
+   
   </div>
 </template>
 
@@ -219,33 +159,19 @@ export default {
       video_changed: 1,
       activeVideo: null,
       activeVideoLink: '',
-      group_edit: false,
+      refreshTest: 1, //key
       playlist: {
         id: 1,
         category_id: 1,
-        title: "Плейлист",
-        text: "<b>Плейлист</b>",
+        title: "",
+        text: "",
         videos: [],
       },
-      modals: {
-        upload: {
-          show: false,
-          step: 1,
-          video: {
-            title: "",
-            links: "",
-            text: "",
-          },
-          group_index: -1,
-          children_index: -1,
-          file: null,
-        },
+      activeGroup: {
+        id: 0, // group id
+        i: [] // indexes
       },
-      sidebars: {
-        edit_video: {
-          show: false,
-        },
-      },
+      show_tests: false, // sidebar
       mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16)
         
     };
@@ -293,7 +219,6 @@ export default {
             
           }
           
-          this.sidebars.edit_video.show = true;
           
         })
         .catch((error) => {
@@ -415,46 +340,13 @@ export default {
         });
     },
 
-    deleteVideo() {
-      axios
-        .post("/playlists/delete-video", {
-          id: this.modals.upload.file.model.id,
-        })
-        .then((response) => {
-          this.$message.success("Файл удален");
-          this.modals.upload.file = null;
-          this.modals.upload.step = 1;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
 
     openControlsMenu(video) {
       console.log("openControlsMenu");
       video.show_controls = true;
     },
     
-    saveVideo() {
-      axios
-        .post("/playlists/save-video", {
-          id: this.playlist.id,
-          video: this.modals.upload.file.model,
-          group_id: this.selectedGroup().id
-        })
-        .then((response) => {
-          this.modals.upload.step = 1;
-          this.modals.upload.show = false;
-
-          this.addVideoToPlaylist(response.data.video)
-          
-          this.$message.success("Добавлен");
-          this.modals.upload.file = null;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+  
     
     selectedGroup() {
       return this.modals.upload.children_index == -1 
@@ -462,22 +354,34 @@ export default {
         : this.playlist.groups[this.modals.upload.group_index].children[this.modals.upload.children_index] 
     },
 
-    addVideoToPlaylist(video) {
-      this.playlist.videos.push(video);
-      this.selectedGroup().videos.push(video);
+    findLocation(id) {
+      let o = {
+        id: id,
+        i: []
+      };
+
+      this.activeGroup = o; // TODO
+      return o;
     },
 
-    uploadVideo(g, c = -1) {
+    uploadVideo() {
+      this.$refs.accordion.uploadVideo(0);
+    },
 
-      this.modals.upload.show = true;
-      this.modals.upload.group_index = g;
-      this.modals.upload.children_index = c;
+    addGroup() {
+      this.$refs.accordion.addGroup(-1)
+    },
+        
+        
+    deleteGroup(id) {
 
-      if(c == -1) {
-        console.log('selected group', this.playlist.groups[g]);
-      } else {
-        console.log('selected group', this.playlist.groups[g].children[c]);
-      }
+      let loc = this.findLocation(id);
+
+        if(c == -1) {
+            this.groups.splice(g, 1);
+        } else {
+            this.groups[g].children.splice(c, 1);
+        }
     },
 
    updateVideo() {
@@ -487,7 +391,6 @@ export default {
           video: this.activeVideo,
         })
         .then((response) => {
-          this.sidebars.edit_video.show = false;
           this.$message.success("Сохранено!");
         })
         .catch((error) => {
@@ -522,12 +425,6 @@ export default {
         });
     },
 
-    onupload(item) {
-      console.log("onupload");
-      console.log(item);
-      this.modals.upload.file = item;
-      this.modals.upload.step = 2;
-    },
     search(event) {
       this.modals.addVideo.searchVideos = this.all_videos.filter((el) => {
         console.log(el.title.toLowerCase());
@@ -537,14 +434,8 @@ export default {
       });
     },
 
-    moveToStep(i) {
-      if (i == 2 && this.modals.upload.file === null) {
-        return "";
-      }
-      this.modals.upload.step = i;
-    },
 
-    showVideo(video, key) {
+    showVideo(video, key, autoplay = true) {
     
       this.activeVideo = video;
       
@@ -553,15 +444,15 @@ export default {
           id: video.id,
         })
         .then((response) => {
-          this.activeVideoLink = response.data.links;
-          this.video_changed++;
+          if(autoplay) {
+            this.activeVideoLink = response.data.links;
+            this.video_changed++;
+            this.refreshTest++
+          }
         })
         .catch((error) => {
           alert(error);
         });
-
-
-      this.sidebars.edit_video.show = true;
 
       if(this.enable_url_manipulation)
       {
@@ -576,22 +467,10 @@ export default {
 
     },
 
-    closeSidebar() {
-      this.sidebars.edit_video.show = false;
-
-      if(this.enable_url_manipulation)
-      {
-        if (history.pushState) {
-            var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist);
-            history.pushState(null, null, newUrl);
-        } else {
-            console.warn('History API не поддерживает ваш браузер');
-        }
-      }
-      
-      this.activeVideo = null;
-      console.log(this.$children[3].$children[0]);
-      //syuda
+    showTests(video, key) {
+      const NO_AUTOPLAY = false;
+      this.showVideo(video, key, NO_AUTOPLAY);
+      this.show_tests = true;
     },
 
     fetchData() {
@@ -646,18 +525,7 @@ export default {
         });
     },
 
-    addGroup() {
-      this.playlist.groups.push({
-        id: 0,
-        title: 'Тестовая группа',
-        videos:[],
-        children: []
-      });
-    },
-
-
     saveGroups() {
-      this.group_edit = false
 
       axios
         .post("/playlists/groups/save", {

@@ -54,6 +54,10 @@
     align-items: center;
     cursor: pointer;
 
+    &:first-child {
+        border-top:1px solid #efefef;
+    }
+
     i.fa-lock {
         display: none;
     }
@@ -291,4 +295,11 @@
     display: flex;
     height: 300px;
     min-height: 50vh;
+}
+
+.pass__ball {
+    input {
+        width: 55px;
+        text-align: center;
+    }
 }

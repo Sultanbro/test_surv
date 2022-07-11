@@ -197,8 +197,22 @@ class VideoPlaylistController extends Controller {
 
 			$video->playlist_id = 0;
 
-			\Storage::delete('public/' . $video->links);
+			$disk = \Storage::build([
+				'driver' => 's3',
+				'key' => 'O4493_admin',
+				'secret' => 'nzxk4iNukQWx',
+				'region' => 'us-east-1',
+				'bucket' => 'tenantbp',
+				'endpoint' => 'https://storage.oblako.kz:443',
+				'use_path_style_endpoint' => true,
+				'throw' => false,
+				'visibility' => 'public'
+			]);
 
+			if($disk->exists($video->links)){
+				$disk->delete($video->links);
+			}
+			
 			$video->delete();
 		}
 	}

@@ -42,6 +42,7 @@
 
         
         <div class="rp" style="flex: 1 1 0%;overflow:auto;">
+
           <div class="hat">
             <div class="d-flex jsutify-content-between hat-top">
               <div class="bc">
@@ -66,8 +67,9 @@
 
                 <!-- buttons for playlist like Save Group -->
                 <template v-if="activePlaylist && mode == 'edit'">
-                  <i class="btn btn-success fa fa fa-grip-horizontal ml-2 d-flex px-2 aic" @click="addGroup"/>
-                  <i class="btn btn-success fa fa-save ml-2 d-flex px-2 aic"  @click="savePlaylistEdit" />
+                  <i class="btn btn-info fa-upload fa ml-2 d-flex px-2 aic" @click="uploadVideo" title="Добавить видео"/>
+                  <i class="btn btn-info fa fa-folder-plus ml-2 d-flex px-2 aic" @click="addGroup" title="Добавить группу"/>
+                  <i class="btn btn-success fa fa-save ml-2 d-flex px-2 aic"  @click="savePlaylistEdit" title="Сохранить плейлист" />
                 </template>
 
               </div>
@@ -286,6 +288,10 @@ export default {
 
     addGroup() {
       this.$refs.playlist.addGroup()
+    },
+
+    uploadVideo() {
+      this.$refs.playlist.uploadVideo()
     },
 
     savePlaylistEdit() {

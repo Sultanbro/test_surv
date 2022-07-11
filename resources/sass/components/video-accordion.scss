@@ -18,12 +18,14 @@
             align-items: center;
             justify-content: space-between;
 
+            
             &:hover{
                 background: #464c55;
             }
 
             .group-input {
                 background: transparent;
+                outline: 0 !important;
                 border: 0;
                 width: 100%;
             }
@@ -41,57 +43,67 @@
             }
         }
 
-        .child-group .g-title {
-            padding: 5px 10px 5px 30px;
-            background: #444d59;
-
-            &:hover{
-                background: #464c55;
-            }
-        }
-
         .chevron,
         .chevron2 {
             transition: 0.5s ease all;
         }
 
+        .items {
+            height: 30px;
+        }
+
         &.opened {
+            height: auto;
+
             .g-title  {
                 background: #274166;
             }
 
-            .chevron {
+            & > .g-title .chevron {
                 transform: rotate(180deg);
             }
             
         }
 
-        .child-group .g-title {
-            background: #050910;
-        }
-
-        .child-group.opened {
-
-            border-bottom: 1px solid #494949;
-
+        .group {
             .g-title {
-                background: #4c18d5;
+                padding: 5px 10px 5px 30px;
+                background: #050910;
+    
+                
+                &:hover{
+                    background: #464c55;
+                }
             }
+
+            .group .g-title {
+                padding: 5px 10px 5px 60px;
+            }
+
+            .group .group .g-title {
+                padding: 5px 10px 5px 90px;
+            }
+
+            .group .group  .group .g-title {
+                padding: 5px 10px 5px 120px;
+            }
+
+            &.opened {
+                border-bottom: 1px solid #494949;
+
+                .g-title {
+                    background: #4c18d5;
+                }
+    
+                .chevron2 {
+                    transform: rotate(180deg);
+                }
+            }   
         }
         
        
-        .child-group.opened {
-            .chevron2 {
-                transform: rotate(180deg);
-            }
-        }
 
-        &.opened {
-            height: auto;
-        }
+       
 
-        .items {
-            height: 30px;
-        }
     }
 }

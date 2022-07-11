@@ -136,8 +136,8 @@ Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); 
 Vue.component('permission-item', require('./components/PermissionItem.vue').default); // 
 
 Vue.component('video-accordion', require('./components/VideoAccordion.vue').default); //
-
 Vue.component('video-list', require('./components/VideoList.vue').default); //
+Vue.component('video-uploader', require('./components/VideoUploader.vue').default); //
 
 Vue.component('superselect', require('./components/SuperSelect.vue').default); // 
 

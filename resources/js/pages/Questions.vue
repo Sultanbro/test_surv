@@ -1,10 +1,10 @@
 <template>
-  <div class="questions" :class="{'hide': mode == 'read' && (questions === undefined || questions.length == 0)}">
+  <div class="questions" :class="{'hide': mode == 'read' && (questions === undefined || questions.length == 0)}" @click="hideAll($event)">
     <div class="title" v-if="mode == 'read' && type == 'book' || ['kb', 'video'].includes(type)">Проверочные вопросы</div>
     <div class="question mb-2" v-for="(q, q_index) in questions" :key="q_index" :class="{'show': q.editable}">
       <div
         class="title d-flex jcsb"
-        @click="editQuestion(q_index)"
+        @click.stop="editQuestion(q_index)"
         v-if="mode == 'edit'"
       >
         <textarea
@@ -112,12 +112,12 @@
 
     <template v-if="mode == 'read'">
       <div class="d-flex">
-        <button class="btn btn-success mr-2" @click="checkAnswers">
+        <button class="btn btn-success mr-2" @click.stop="checkAnswers">
           Проверить
         </button>
         <button
           class="btn btn-primary"
-          @click="$emit('continueRead')"
+          @click.stop="$emit('continueRead')"
           v-if="points != -1 && total == points && type == 'book'"
         >
           Читать дальше
@@ -126,16 +126,17 @@
 
       <p v-if="points != -1" class="mt-3">Вы набрали: {{ points }} баллов из {{ total }}</p>
     </template>
+
     <template v-if="mode == 'edit'">
       <button
         v-if="['kb','video'].includes(type) && changed"
         class="btn btn-success mr-2" 
-        @click="saveTest"
+        @click.stop="saveTest"
         :disabled="!can_save"
         >
           Сохранить
       </button>
-      <button class="btn" @click="addQuestion" >Добавить вопрос</button>
+      <button class="btn" @click.stop="addQuestion" >Добавить вопрос</button>
     </template>
   </div>
 </template>
@@ -205,6 +206,16 @@ export default {
           });
         }
       });
+    },
+
+    hideAll(event) {
+
+      const IS_QUESTIONS_DIV = event.target.classList.length > 0 && event.target.classList[0] == 'questions';
+
+      if(IS_QUESTIONS_DIV) {
+        this.questions.forEach((q) => (q.editable = false));
+      }
+      
     },
 
     checkAnswers() {
