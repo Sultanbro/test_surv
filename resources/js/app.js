@@ -154,7 +154,6 @@ Vue.component('page-upbooks-read', require('./pages/UpbooksRead.vue').default); 
 Vue.component('page-upbooks', require('./pages/Upbooks.vue').default); // книги редактирование
 
 Vue.component('page-playlist-edit', require('./pages/PlaylistEdit.vue').default); // редактирование плейлиста
-Vue.component('page-playlist-read', require('./pages/PlaylistRead.vue').default); // чтение плейлиста
 Vue.component('page-playlists', require('./pages/Playlists.vue').default); // редактирование плейлиста
 
 Vue.component('booklist', require('./pages/booklist.vue').default); // база знаний раздел

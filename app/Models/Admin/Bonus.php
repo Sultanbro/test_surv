@@ -160,7 +160,7 @@ class Bonus extends Model
                     
                     if($group_id == 48) {
                         $val = self::fetch_value_from_activity_for_recruting($bonus->activity_id, $user_id, $date);
-                    } else if(in_array($group_id, [53,57]) && in_array($bonus->activity_id, [16,37,18,38])) { // Минуты и согласия
+                    } else if(in_array($group_id, [53,57,79]) && in_array($bonus->activity_id, [16,37,18,38,146,147])) { // Минуты и согласия
                         $val = self::fetch_value_from_callibro($bonus, $group_id, $date, $user_id);
                        // dump($val);
                     } else {
@@ -240,8 +240,15 @@ class Bonus extends Model
             ]; 
         }
 
+        if($group_id == 79) {
+            $vars['dialer_id'] = 444;
+            $vars['script_status_ids'] = [
+                13559
+            ]; 
+        }
+
         $vars['type'] = 'calls';
-        if(in_array($bonus->activity_id, [18,38])) {
+        if(in_array($bonus->activity_id, [18,38,146])) {
             $vars['type'] = 'aggrees';
         }
 

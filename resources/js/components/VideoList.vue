@@ -12,7 +12,7 @@
                 :key="video.id"
                 :class="{
                     'active': (active == video.id),
-                    'disabled': is_course && video.item_models.length == 0
+                    'disabled': active != video.id && mode == 'read' && video.item_model == null
                 }"
                 @click="showVideo(video, v_index)"
             >
@@ -63,7 +63,7 @@ export default {
         let i = this.videos.findIndex(el => el.id == this.active);
    
         if(i != -1) {
-            this.videos[i].item_models.push({status:0})
+            this.videos[i].item_model == null
         }
     },
 
@@ -73,7 +73,7 @@ export default {
         },
 
         showVideo(video, i) {
-            if(this.is_course && video.item_models.length == 0) return;
+            if(this.mode == 'read') return;
             this.$emit('showVideo', video, i);
         },
 

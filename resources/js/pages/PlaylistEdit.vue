@@ -76,11 +76,12 @@
                     :id="activeVideo.id"
                     :key="refreshTest"
                     type="video"
+                    :pass_grade="activeVideo.pass_grade"
                     @passed="passedTest()"
                     :mode="mode"
                     />
                 
-                <button class="next-btn btn btn-primary" v-if="is_course && (activeVideo.questions.length == 0 || activeVideo.item_models.length > 0)"
+                <button class="next-btn btn btn-primary" v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null)"
                   @click="nextElement()">
                   Продолжить курс
                   <i class="fa fa-angle-double-right ml-2"></i>
@@ -115,17 +116,21 @@
       @close="show_tests = false"
       width="70%"
     >
-      <p class="mt-2 mb-3"><b>{{ activeVideo.title }}</b></p>
-      <div class="d-flex aic pass__ball">
-        <p class="mr-3" style="width:200px">Проходной балл:</p>
-        <input class="form-control mb-3" type="number" :min="0" :max="100" />
+      <div class="p-3" v-if="activeVideo != null">
+        <p class="mt-2 mb-3"><b>{{ activeVideo.title }}</b></p>
+        <div class="d-flex aic pass__ball">
+          <p class="mr-3" style="width:200px">Проходной балл в процентах (0 - 100):</p>
+          <input class="form-control mb-3" v-model="activeVideo.pass_grade" type="number" :min="0" :max="100" @change="checkPassGrade" />
+        </div>
+        <questions 
+          :questions="activeVideo.questions"
+          :id="activeVideo.id"
+          :pass_grade="activeVideo.pass_grade"
+          type="video"
+          @changePassGrade="checkPassGrade"
+          :mode="'edit'"
+          />
       </div>
-      <questions 
-        :questions="activeVideo.questions"
-        :id="activeVideo.id"
-        type="video"
-        :mode="'edit'"
-        />
     </sidebar>
 
    
@@ -241,14 +246,17 @@ export default {
 
     passedTest() {
       if(this.is_course) {
-        this.activeVideo.item_models.push({status: 1});
+        this.activeVideo.item_model.status = 1
         // axios passed
       }
     },
 
     nextElement() {
-      this.setVideoPassed()
 
+      if(this.activeVideo.item_model != null) {
+        this.setVideoPassed()
+      }
+      
       // create array of video ids
       let arr = [];
       this.playlist.groups.forEach((group, g_index) => {
@@ -287,7 +295,7 @@ export default {
 
         this.activeVideo = el;
         this.activeVideoLink = this.activeVideo.links 
-        el.item_models.push({status: 1});  
+        el.item_model.status = 1
 
       } else {
         // move to next course item
@@ -296,6 +304,7 @@ export default {
     },
 
     setVideoPassed() {
+      let loader = this.$loading.show();
       axios
         .post("/my-courses/pass", {
           id: this.activeVideo.id,
@@ -303,9 +312,11 @@ export default {
           course_item_id: this.course_item_id,
         })
         .then((response) => {
-         // this.activeVideo.item_models.push(response.data.item_model);
+          setTimeout(loader.hide(), 500);
+          // this.activeVideo.item_model.push(response.data.item_model);
         })
         .catch((error) => {
+           loader.hide();
           alert(error);
         });
     },
@@ -488,12 +499,21 @@ export default {
         });
     },  
     
+    checkPassGrade() {
+      console.log('pass grade')
+      let len = this.activeVideo.questions.length;
+      let min = len != 0 ? Number((100 / len).toFixed()) : 100;
+
+      if(this.activeVideo.pass_grade > 100) this.activeVideo.pass_grade = 100;
+      if(this.activeVideo.pass_grade < min) this.activeVideo.pass_grade = Number(min);
+    },
+
     setActiveVideo() {
 
       // check playlist has videos
-      if(this.playlist.videos.length > 0) {
+      if(this.playlist.groups[0].videos.length > 0) {
           // set active video
-          this.activeVideo = this.playlist.videos[0];
+          this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
           this.setActiveGroup();
           

@@ -86,7 +86,7 @@ class Conversion extends Command
            // if($user->position_id != 32) continue; // Не оператор
             
             if($group_id == 70) { // Kaztel
-                $closed = Kaztel::getCallCounts($this->date,$user->email);
+                $closed = Kaztel::getClosedCards($this->date,$user->email);
                 if($closed == -1) continue; // Не записывать так как нет аккаунта
 
                 $aggrees = Kaztel::getAggrees($user->email, $this->date);

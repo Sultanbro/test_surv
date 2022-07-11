@@ -39,14 +39,6 @@
 
       <div class="title d-flex jcsb aic" v-if="mode == 'read'">
         <p class="mb-0">{{ q.text }}</p>
-        <i
-          class="fa fa-times-circle wrong"
-          v-if="points != -1 && q.result == false"
-        ></i>
-        <i
-          class="fa fa-check-circle right"
-          v-if="points != -1 && q.result == true"
-        ></i>
       </div>
 
       <div v-if="q.editable || mode == 'read'">
@@ -81,7 +73,7 @@
                 :ref="`variant${q_index}_${v_index}`"
               />
             </label>
-
+            
             <label class="d-flex w-full" v-if="mode == 'read'">
               <input 
                   type="checkbox"
@@ -95,6 +87,11 @@
           
          
           </div>
+
+          <button class="btn btn-default btn-sm mt-2 mb-2" @click.stop="addVariant(q_index, -1)" v-if="mode == 'edit'">
+            + вариант
+          </button>
+
         </div>
         <div v-else>
           <input type="text" v-model="q.result" />
@@ -124,7 +121,10 @@
         </button>
       </div>
 
-      <p v-if="points != -1" class="mt-3">Вы набрали: {{ points }} баллов из {{ total }}</p>
+      <p v-if="points != -1" class="mt-3">
+        <span v-if="scores">Вы набрали: {{ points }} баллов из {{ total }}</span>
+        <span v-else>Вы не набрали проходной балл...</span>
+     </p>
     </template>
 
     <template v-if="mode == 'edit'">
@@ -164,6 +164,10 @@ export default {
     count_points: {
       type: Boolean,
       default: false
+    },
+    pass_grade: {
+      type: Number,
+      default: 50
     }
   },
   data() {
@@ -173,6 +177,11 @@ export default {
       total: 0,
       points: -1,
     };
+  },
+  computed: {
+    scores() {
+      return Number(this.points - (this.total * this.pass_grade / 100)) >= 0
+    }
   },
   created() {
     this.prepareVariants();
@@ -265,6 +274,12 @@ export default {
       if (v_index != -1) {
         this.$nextTick(() => {
           let input = this.$refs["variant" + q_index + "_" + (v_index + 1)][0];
+
+          input.focus();
+        });
+      } else {
+        this.$nextTick(() => {
+          let input = this.$refs["variant" + q_index + "_" + (this.questions[q_index].variants.length - 1)][0];
 
           input.focus();
         });
@@ -364,6 +379,7 @@ export default {
 
     saveTest() {
       let passed = true;
+
       this.questions.every((q, index) => {
         if(!this.saveQuestion(index)) {
           passed = false;
@@ -373,6 +389,9 @@ export default {
       });
 
       if(!passed) return false;
+
+      this.$emit('changePassGrade');
+
       let loader = this.$loading.show();
 
       let url = this.type == 'kb' ? "/kb/page/save-test" : "/playlists/save-test";
@@ -382,6 +401,7 @@ export default {
       axios
         .post(url, {
           id: this.id,
+          pass_grade: this.pass_grade,
           questions: this.questions,
         })
         .then((response) => { 

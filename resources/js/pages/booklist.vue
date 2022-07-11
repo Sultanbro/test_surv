@@ -757,7 +757,7 @@ export default {
         }
           
 
-        el.item_models.push({status: 1});  
+        el.item_model.status = 1;  
 
       } else {
         // move to next course item

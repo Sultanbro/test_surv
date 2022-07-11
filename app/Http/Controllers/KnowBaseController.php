@@ -45,69 +45,6 @@ class KnowBaseController extends Controller
         ];
     }
 
-    public function getSettings(Request $request)
-    {    
-        $setting = Setting::where('name', 'send_notification_after_edit')
-            ->first();
-        
-        $send_notification_after_edit = false;
-        if($setting) {
-            $send_notification_after_edit = $setting->value == 1 ? true : false;
-        } else {
-            Setting::create([
-                'name' => 'send_notification_after_edit',
-                'value' => false,
-                'description' => 'Отправлять уведомления сотрудникам об изменениях в базе знаний'
-            ]);
-        }
-
-        // 2 правило
-        $setting = Setting::where('name', 'show_page_from_kb_everyday')
-            ->first();
-        
-        $show_page_from_kb_everyday = false;
-        if($setting) {
-            $show_page_from_kb_everyday = $setting->value == 1 ? true : false;
-        } else {
-            Setting::create([
-                'name' => 'show_page_from_kb_everyday',
-                'value' => false,
-                'description' => 'Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"'
-            ]);
-        }
-
-        
-        return [
-            'settings' => [
-                'send_notification_after_edit' => $send_notification_after_edit,
-                'show_page_from_kb_everyday' => $show_page_from_kb_everyday,
-            ]
-        ];
-    }
-
-    public function saveSettings(Request $request)
-    {   
-        $setting = Setting::where('name', 'send_notification_after_edit')
-            ->first();
-
-        if($setting) {
-            $setting->value = $request->send_notification_after_edit;
-            $setting->save();
-        }
-
-        // 2
-        $setting = Setting::where('name', 'show_page_from_kb_everyday')
-            ->first();
-
-        if($setting) {
-            $setting->value = $request->show_page_from_kb_everyday;
-            $setting->save();
-        }
-
-        
-        
-    }
-
     private function getBooks($access = 0) {
         
         $books = [];
@@ -229,7 +166,7 @@ class KnowBaseController extends Controller
             $trees = KnowBase::where('parent_id', $request->id)
                 ->with('children')
                 ->with('questions')
-                ->with('item_models', function ($query){
+                ->with('item_model', function ($query){
                     $query->where('type', 3);
                 })
                 ->orderBy('order')
@@ -261,7 +198,7 @@ class KnowBaseController extends Controller
     {
         $page = KnowBase::withTrashed()
             ->with('questions')
-            ->with('item_models', function ($query){
+            ->with('item_model', function ($query){
                 $query->where('type', 3);
             })
             ->find($request->id);
@@ -283,7 +220,7 @@ class KnowBaseController extends Controller
         if ($request->refresh) {
             if ($top_parent) {
                 $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')
-                ->with('item_models', function ($query){
+                ->with('item_model', function ($query){
                     $query->where('type', 3);
                 })
                 ->orderBy('order')->get();
