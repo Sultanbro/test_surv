@@ -240,6 +240,13 @@ class Bonus extends Model
             ]; 
         }
 
+        if($group_id == 79) {
+            $vars['dialer_id'] = 444;
+            $vars['script_status_ids'] = [
+                13559
+            ]; 
+        }
+
         $vars['type'] = 'calls';
         if(in_array($bonus->activity_id, [18,38])) {
             $vars['type'] = 'aggrees';
