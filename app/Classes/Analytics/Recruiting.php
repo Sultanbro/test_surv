@@ -1512,7 +1512,17 @@ public function planRequired($arr) {
             $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);
 
-            $item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', $leads->pluck('user_id')->toArray())->where('type',5)->get()->count();//$item['sent'];
+            
+            $_users_ids = DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', json_decode($group->users))
+                ->where('ud.is_trainee', 1) 
+                ->pluck('users.id')
+                ->toArray();
+            $item['active'] = Timetracking::whereIn('user_id',$_users_ids)->get()->count();
+
+            //$item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', $leads->pluck('user_id')->toArray())->where('type',5)->get()->count();//$item['sent'];
             $get_required = self::getPrognozGroups($date);
             foreach($get_required as $req){
                 if($req['id'] == $group->id){
