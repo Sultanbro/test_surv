@@ -1520,7 +1520,7 @@ public function planRequired($arr) {
                 ->where('ud.is_trainee', 1) 
                 ->pluck('users.id')
                 ->toArray();
-            $item['active'] = Timetracking::whereIn('user_id',$_users_ids)->get()->count();
+            $item['active'] = $item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', json_decode($group->users))->where('type',5)->get()->count();
 
             //$item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', $leads->pluck('user_id')->toArray())->where('type',5)->get()->count();//$item['sent'];
             $get_required = self::getPrognozGroups($date);
