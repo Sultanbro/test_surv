@@ -32,8 +32,7 @@ class BookGroup extends Model
             ->with('item_model', function ($query) use ($user_id) {
                 $query->where('type', 1)
                     ->where('user_id', $user_id);
-            })
-            ->orderBy('order', 'asc');
+            });
     }
     
     public static function getBooks($group_id)
