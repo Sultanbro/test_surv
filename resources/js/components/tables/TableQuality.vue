@@ -902,7 +902,6 @@ export default {
     fetchData(flag = null) {
 
 
-      console.log(flag,'flag')
 
       if (flag == 'selected_group'){
         this.flagGroup = 'selected_group'
@@ -918,8 +917,7 @@ export default {
 
     normalizeItems() {
 
-      console.log(this.items.length,'this.items.length')
-      console.log(this.items,'this.items[0].id')
+
 
       if (this.items.length > 0) {
         this.newRecord.employee_id = this.items[0].id;
@@ -985,11 +983,6 @@ export default {
     fetchItems($url = "/timetracking/quality-control/records") {
       let loader = this.$loading.show();
 
-
-      console.log(this.individual_type_id,'this.individual_type_id')
-      console.log(this.individual_type,'this.individual_type_id')
-
-
       if (this.individual_type_id != null){
         if (this.flagGroup == 'index'){
           if (this.individual_type == 2 || this.individual_type == 3){
@@ -999,6 +992,9 @@ export default {
           // this.currentGroup = this.individual_type_id
         }
       }
+
+
+
 
       axios
         .post($url, {

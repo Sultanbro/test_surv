@@ -74,16 +74,14 @@ class QualityController extends Controller
 //        }
 
 
-
-
         $currentUser = User::bitrixUser();
 
 
-        if ($request->individual_type != 3 || $request->individual_type != 1){
+//        if ($request->individual_type != 3 || $request->individual_type != 1){
             $group = ProfileGroup::find($request->group_id);
-        }else{
-            $group = ProfileGroup::find(42);
-        }
+//        }else{
+//            $group = ProfileGroup::find(26);
+//        }
 
         if(!$group)  return [
             'error' => 'access',

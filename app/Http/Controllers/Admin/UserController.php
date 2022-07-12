@@ -2329,7 +2329,9 @@ class UserController extends Controller
             'file' => 'required|mimes:jpg,jpeg,png,csv,txt,xlx,xls,pdf'
         ]);
 
+
         $upload_path = public_path('users_img/');
+
         $file_name = $request->file->getClientOriginalName();
         $generated_new_name = time() . '.' . $request->file->getClientOriginalExtension();
         $request->file->move($upload_path, $generated_new_name);
@@ -2446,6 +2448,23 @@ class UserController extends Controller
 
         $data = DB::table('coordinates')->where('city', 'LIKE','%'.$request->keyword.'%')->get();
         return response()->json($data); ;
+
+    }
+
+
+    public function uploadImageProfile(Request $request){
+
+        $upload_path = public_path('users_img/');
+
+        $file_name = $request->file->getClientOriginalName();
+
+
+
+        $generated_new_name = time() . '.' . $request->file->getClientOriginalExtension();
+        $request->file->move($upload_path, $generated_new_name);
+
+
+
 
     }
 }

@@ -38,8 +38,10 @@ class CheckReports extends Model
 
         $getDay =  cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
-        $start = new \DateTime('01.7.2022');
-        $end = new \DateTime("$getDay.7.2022 23:59");
+        $start = new \DateTime("01.$month.$year");
+        $end = new \DateTime("$getDay.$month.$year 23:59");
+
+
         $interval = new \DateInterval('P1D');
         $dateRange = new \DatePeriod($start, $interval, $end);
 
@@ -49,13 +51,16 @@ class CheckReports extends Model
 
         $average_value = [];
 
+
+
+
         foreach ($dateRange as $date) {
             $weeks[$weekNumber]['date'][] = $date->format('j-n-Y');
             if ($date->format('w') == 0) {
                 $weeks[$weekNumber]['count'] = count($weeks[$weekNumber]['date']);
                 $weekNumber++;
             }
-        }
+        };
 
 
 
@@ -90,7 +95,9 @@ class CheckReports extends Model
                 $average_value[$md] = $week_middl[$md]['count_check'] -  $week_middl[$md]['count_check_auth'];
 
             }
+
         }
+
 
 
 
@@ -100,11 +107,17 @@ class CheckReports extends Model
 
     public function filterCheckList($request)
     {
+        $check_users = null;
         $check_users = [];
+
+
+//        return  ['check_users'=>$check_users,'individual_type'=>2,'individual_current'=>$request->group_id,$request->individual_type];;
+//
 
         if ($request->individual_type == 2 || $request->individual_type == null){
             $group = ProfileGroup::find($request->group_id);
             $user_ids = $group->users == null ? [] : json_decode($group->users);
+
             foreach ($user_ids as $keys => $check_user){
 
 
@@ -179,7 +192,7 @@ class CheckReports extends Model
                 $check_users[0]['gr_id'] = $allUserReport['item_id'];
                 $check_users[0]['total_day'] = $dayCountCheckAuth .'/' .$dayCountCheck;
                 $check_users[0]['total_month'] = $monthCountCheckAuth.'/' .$monthCountCheck;
-                $check_users[0]['average'] = $this->get_average_value($request->month,$request->year,$request->individual_type_id,$request->individual_type,$request->group_id);
+                $check_users[0]['average'] = $this->get_average_value($request->month,$request->year,$request->individual_type_id,$request->individual_type,$request->individual_type_id);
 
 
 
@@ -229,7 +242,7 @@ class CheckReports extends Model
                 }
 
             }
-            return ['check_users'=>$check_users,'individual_type'=>3,'individual_current'=>$request->individual_type_id,$request->individual_type];
+            return ['check_users'=>$check_users,'individual_type'=>3,'individual_current'=>$request->individual_type_id];
         }
 
 

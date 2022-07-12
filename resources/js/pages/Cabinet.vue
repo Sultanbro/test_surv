@@ -83,6 +83,33 @@
         </div>
         <div class="control-btns"></div>
       </div>
+
+    <div style="width:250px;height: 100px">
+
+      <div class="button-wrapper">
+        <button class="button btn btn-primary" @click.prevent="uploadImage"> Crop image </button>
+      </div>
+
+
+
+      <cropper
+          :src="image"
+          ref="cropper"
+          @change="change"
+
+      />
+
+      <div class="button-wrapper">
+        <button class="button btn btn-primary" @click.prevent="uploadImage"> Crop image </button>
+      </div>
+
+
+    </div>
+
+
+
+
+
      <div class="content mt-3 py-3" >
       <div class="contacts-info col-md-6 none-block mt-10" id="profile_d" >
         <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
@@ -95,6 +122,7 @@
             </form>
           </div>
         </label>
+      </div>
         <div class="form-group row">
           <label for="firstName"
                  class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
@@ -113,7 +141,6 @@
             >
           </div>
         </div>
-
         <div class="form-group row">
           <label for="email"
                  class="col-sm-4 col-form-label font-weight-bold">Email <span class="red">*</span></label>
@@ -123,8 +150,6 @@
             >
           </div>
         </div>
-
-
         <div class="form-group row">
           <label for="email" class="col-sm-4 col-form-label font-weight-bold">Новый пароль </label>
           <div class="col-sm-8">
@@ -133,7 +158,6 @@
                    >
           </div>
         </div>
-
         <div class="form-group row">
           <label for="lastName"
                  class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
@@ -141,7 +165,6 @@
             <input   v-model="birthday" class="form-control" type="date" name="birthday" id="birthday" required>
           </div>
         </div>
-
         <div class="form-group row">
           <label for="lastName"
                  class="col-sm-4 col-form-label font-weight-bold">Город<span class="red">*</span></label>
@@ -163,8 +186,6 @@
           </div>
 <!--          v-model="user.working_country"-->
         </div>
-
-      </div>
     </div>
      <div class="content mt-3 py-3">
       <div class="col-12 row payment-profile" v-for="(payment,index) in payments">
@@ -225,13 +246,10 @@
 </div>
 
 
-
-
-
 </template>
 <script>
-// import { Cropper } from 'vue-advanced-cropper'
-// import 'vue-advanced-cropper/dist/style.css';
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 
 
 export default {
@@ -270,7 +288,8 @@ export default {
       ],
       keywords: null,
       country_results: [],
-
+      image: 'https://images.unsplash.com/photo-1591273531346-ba9262aa2da6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=751&q=80',
+      image_1: {},
 
     };
   },
@@ -316,8 +335,12 @@ export default {
         }
       }
 
+
+
       let data = new FormData();
       data.append('file', this.file);
+
+      console.log(data,'datasss')
 
       axios.post('/profile/upload/edit/profile', data, config)
           .then(function (res) {
@@ -335,11 +358,9 @@ export default {
 
     },
     change({ coordinates, canvas }) {
-
-      this.canvas = canvas
-
-
+      // console.log(coordinates, canvas);
     },
+
     addPayment(){
 
 
@@ -503,15 +524,202 @@ export default {
       //     .then(response => this.results = response.data)
       //     .catch(error => {});
 
-    }
+    },
+
+    reset() {
+      this.image = null;
+    },
+    uploadImage(event) {
+
+      // console.log(canvas,'canvas');
+      // console.log(this.$refs,'this.$refs');
+      let existingObj = this;
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      }
+
+      const { canvas } = this.$refs.cropper.getResult();
+
+      console.log(canvas,'canvas');
+
+      if (canvas) {
+
+        let data = new FormData();
+        const form = new FormData();
+
+        canvas.toBlob((blob) => {
+
+          data.append('file',  blob);
+          form.append('file', blob);
+
+          console.log( data,' data');
+          console.log( form,' form');
+
+
+
+
+          // axios.post('/profile/upload/image/profile/', data, config)
+          //     .then(function (res) {
+          //
+          //       console.log(res,'resss')
+          //
+          //     })
+          //     .catch(function (err) {
+          //
+          //     });
+
+
+
+          // axios.post('/profile/upload/image/profile/', {
+          //   blob:this.image_1
+          // }).then(response => {
+          //
+          //   console.log(response,'response');
+          //
+          //
+          // })
+
+
+
+          //
+          // form.append('file', blob);
+          // fetch('/profile/upload/image/profile/', {
+          //   method: 'POST',
+          //   body: form,
+          // });
+
+
+        }, 'image/jpeg');
+      }
+    },
 
   },
+
 
 };
 
 </script>
 
-<style>
+
+<style lang="scss">
+
+.upload-to-server-example {
+  .upload-example-cropper {
+    border: solid 1px #eee;
+    min-height: 300px;
+    max-height: 500px;
+    width: 100%;
+  }
+  .cropper-wrapper {
+    position: relative;
+  }
+  .reset-button {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    width: 42px;
+    background: rgba(#3fb37f, 0.7);
+    transition: background 0.5s;
+    &:hover {
+      background: #3fb37f;
+    }
+  }
+  .button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 17px;
+  }
+  .button {
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    background: #3fb37f;
+    cursor: pointer;
+    transition: background 0.5s;
+    width: 100%;
+    text-align: center;
+  }
+  .button:hover {
+    background: #38d890;
+  }
+  .button input {
+    display: none;
+  }
+}
+
+///////////////sss
+.upload-example {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  user-select: none;
+  &__cropper {
+    border: solid 1px #eee;
+    min-height: 300px;
+    max-height: 500px;
+    width: 100%;
+  }
+  &__cropper-wrapper {
+    position: relative;
+  }
+  &__reset-button {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    width: 42px;
+    background: rgba(#3fb37f, 0.7);
+    transition: background 0.5s;
+    &:hover {
+      background: #3fb37f;
+    }
+  }
+  &__buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 17px;
+  }
+  &__button {
+    border: none;
+    outline: solid transparent;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    background: #3fb37f;
+    cursor: pointer;
+    transition: background 0.5s;
+    margin: 0 16px;
+    &:hover,
+    &:focus {
+      background: #38d890;
+    }
+    input {
+      display: none;
+    }
+  }
+  &__file-type {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #0d0d0d;
+    border-radius: 5px;
+    padding: 0px 10px;
+    padding-bottom: 2px;
+    font-size: 12px;
+    color: white;
+  }
+}
+
 .contacts-info{
   margin-top:30px;
 }

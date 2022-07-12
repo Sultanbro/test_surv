@@ -395,6 +395,7 @@ class CheckListController extends Controller
 
 
 
+
         if (!empty($request['auth_check'])){
             foreach ($request['auth_check'] as $requestCheck){
 
@@ -414,7 +415,9 @@ class CheckListController extends Controller
                 }
 
 
+
                 if (!empty($reports) && $reports != '[]'){
+
                     foreach ($reports as $report){
                         $editCountCheck_auth = CheckReports::on()->find($report['id']);
                         $editCountCheck_auth['count_check_auth'] = count($countChecked);
