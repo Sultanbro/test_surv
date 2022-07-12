@@ -58,6 +58,8 @@ use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
+use App\Imports\AnalyticsImport;
+use App\Exports\AnalyticsExport;
 
 class AnalyticsController extends Controller
 {
@@ -783,32 +785,7 @@ class AnalyticsController extends Controller
         if($date->daysInMonth == 30) $last_cell = 'AJ3';
         if($date->daysInMonth == 31) $last_cell = 'AK3';
 
-        Excel::create($title, function ($excel) use ($sheets, $last_cell) {
-            $excel->setTitle('Отчет');
-            $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
-            $excel->setDescription('экспорт данных в Excel файл');
-            
-            foreach($sheets as $page) {
-                $excel->sheet($page['title'], function ($sheet) use ($page, $last_cell) {
-                
-                    $sheet->fromArray($page['sheet'], null, 'A4', false, false);
-                    $sheet->prependRow(3, $page['headings']);
-                    
-                    $sheet->cell('A1', function($cell) use ($page){
-                        $cell->setValue($page['title']);
-                        $cell->setFontWeight('bold'); 
-                        $cell->setFontSize(14); 
-                    });
-
-                    $sheet->cell('A3:'. $last_cell, function($cell) {
-                        $cell->setBackground('#8ccf5b');  
-                        $cell->setFontWeight('bold');
-                    });
-                });
-            }
-            
-            $excel->setActiveSheetIndex(0);
-        })->export('xlsx');
+        return Excel::download(new AnalyticsImport($sheets,$group), $title .' "'.$group->name . '".xls');
         
     }
     
