@@ -68,48 +68,15 @@ class MyCourseController extends Controller
     }   
 
     public function getMyCourse(Request $request) {
-        $user_id = auth()->user()->id;
-       
-        $active_course = CourseResult::where('user_id', $user_id)
-            ->whereIn('status', [0,2])
-            ->orderBy('status', 'desc')
-            ->with('course')
-            ->first();
-        
-        $course = Course::with('items_models')->find($active_course->course_id);
-
+        $course = CourseResult::activeCourse();
     
-        $items = [];
-        if($course) {
-
-            $items = $course->setCheckpoint($course->items);
-            
-            foreach ($items as $key => $item) {
-                $item->last_item = null;
-                if($item->status == CourseResult::ACTIVE) {
-                    $cim = CourseItemModel::where('user_id', auth()->id())
-                        ->where('course_item_id', $item->id)
-                        ->orderBy('id', 'desc')
-                        ->first();
-
-                    if($cim) {
-                        $item->last_item = $item->getNextElement($cim->item_id);
-                    }
-                }
-               
-                
-                
-                
-            }
-        } 
-
         return [
-            'course' => $active_course,
-            'items' => $items,
+            'course' => $course,
+            'items' => $course ? $course->setCheckpoint($course->items) : []
         ];
     }   
 
-
+    
     private function getCourseItem(CourseItem $course_item, &$no_active)
     {
         $user_id = auth()->user()->id;

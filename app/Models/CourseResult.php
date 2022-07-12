@@ -231,4 +231,22 @@ class CourseResult extends Model
         
         return $arr;
     }
+
+
+    /**
+     * Get active course of user
+     * 
+     * @return Course
+     */
+    public function activeCourse()
+    {
+        $active_course = self::where('user_id', auth()->id())
+            ->whereIn('status', [0,2])
+            ->orderBy('status', 'desc')
+            ->with('course')
+            ->first();
+        
+        
+        return Course::with('items')->find($active_course->course_id);
+    }
 }

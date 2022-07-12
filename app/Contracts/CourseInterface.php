@@ -3,7 +3,7 @@
 
 namespace App\Contracts;
 
-interface HasOrderArray
+interface CourseInterface
 {
     /**
      * Get array with id of elements order
@@ -18,4 +18,14 @@ interface HasOrderArray
      */
     public function getOrder();
 
+        
+    /**
+     * Get next element to chosen id
+     * 
+     * @param mixed $id
+     * 
+     * @return int $id
+     * @return null
+     */
+    public function nextElement($id);
 } 
