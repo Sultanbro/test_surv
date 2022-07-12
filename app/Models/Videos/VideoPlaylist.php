@@ -64,8 +64,9 @@ class VideoPlaylist extends Model implements CourseInterface
         $arr = [];
 
         foreach ($items as $key => $item) {
-            $arr = array_merge($arr, $item->videos->pluck('id')->toArray());
-            $arr = array_merge($arr, $this->pluckVideos($item->children));
+            if($item->videos) $arr = array_merge($arr, $item->videos->pluck('id')->toArray());
+           
+            if($item->children) $arr = array_merge($arr, $this->pluckVideos($item->children));
         }
 
         return $arr;
@@ -82,6 +83,7 @@ class VideoPlaylist extends Model implements CourseInterface
         $arr = Video::where('group_id', 0)
             ->where('playlist_id', $pl->id)
             ->get()
+            ->pluck('id')
             ->toArray();
         
         return array_merge($arr, $this->pluckVideos($pl->videos));

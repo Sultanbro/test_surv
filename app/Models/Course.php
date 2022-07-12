@@ -48,12 +48,13 @@ class Course extends Model
                 $model = $item->model();
                 $completed_stages = 0;
 
+                // get completed stages
                 if($model) {
                     $model_ids = $model->getOrder();
 
                     $cim = CourseItemModel::where('user_id', auth()->id())
                         ->where('type', CourseItemModel::getType($item->item_model))
-                        ->whereIn('item_id', count($model_ids))
+                        ->whereIn('item_id', $model_ids)
                         ->select('item_id')
                         ->get();
 
@@ -62,15 +63,21 @@ class Course extends Model
                 
                 // can replace $item->countItems() with count($item->model()->getOrder())
                 $item->status = $item->countItems() <= $completed_stages ? CourseResult::COMPLETED : CourseResult::ACTIVE;
-
+                
+                // found active
                 if($item->status == CourseResult::ACTIVE) {
                     $found_active = true;
+
+                    // set checkpoint
+                    if($completed_stages > 0) {
+                        // get id
+                        $diff = array_diff($cim->pluck('item_id')->toArray(), $model_ids);
+                        $diff = array_values($diff);
+                
+                        //if(count($diff) > 0) $item->last_item = $item->getNextElement($diff[0]);
+                        if(count($diff) > 0) $item->last_item = $diff[0];
+                    }
                     
-                    // get id
-                    $diff = array_diff($assigned, $model_ids);
-                    $diff = array_values($diff);
-            
-                    if(count($diff) > 0) $item->last_item = $item->getNextElement($diff[0]);
                     
                 }
 
