@@ -25,6 +25,7 @@ class KnowBase extends Model
         'text', 
         'is_deleted', 
         'order', 
+        'pass_grade',
         'hash', // уникальная ссылка чтобы поделиться
         'access' // доступ   0 - никто, 1 - к просмотру,  2 - к редактированию
     ];

@@ -99,6 +99,8 @@ Route::middleware([
     
 
     Route::any('/', [UserController::class, 'profile']);
+    Route::view('/doc', 'docs.index');
+    
     Route::any('/profile', [UserController::class, 'profile']); 
 
     Route::post('logout', [LoginController::class, 'logout']);//->name('logout');

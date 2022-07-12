@@ -293,11 +293,20 @@
           >
             <div class="row">
               <div class="col-3">
+                <p class="mb-0">Страница</p>
                 <input
                   type="number"
                   min="1"
                   max="9999"
                   v-model="test.page"
+                  placeholder="Страница"
+                  class="form-control mb-2"
+                />
+                <p class="mb-0">Проходной балл</p>
+                 <input
+                  type="number"
+                  min="1"
+                  max="100"
                   placeholder="Страница"
                   class="form-control mb-2"
                 />
