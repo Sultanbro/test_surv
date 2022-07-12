@@ -1512,7 +1512,7 @@ public function planRequired($arr) {
             $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);
 
-            $item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', $leads->pluck('user_id')->toArray())->where('type',5)->get()->count();//$item['sent'];
+            $item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', json_decode($group->users))->where('type',5)->get()->count();//$item['sent'];
             $get_required = self::getPrognozGroups($date);
             foreach($get_required as $req){
                 if($req['id'] == $group->id){
