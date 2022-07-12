@@ -43,10 +43,10 @@ class MyCourseController extends Controller
      * @return [type]
      */
     public function pass(Request $request) {
-        $model = CourseItemModel::where('user_id', auth()->id())
+        $user_id = auth()->id();
+        $model = CourseItemModel::where('user_id', $user_id)
             ->where('type', $request->type)
             ->where('item_id', $request->id)
-            ->where('course_item_id', $request->course_item_id)
             ->first();
 
         if($model) {
@@ -57,6 +57,7 @@ class MyCourseController extends Controller
                 'type' =>  $request->type,
                 'item_id' =>  $request->id,
                 'course_item_id' =>  $request->course_item_id,
+                'user_id' => $user_id,
                 'status' =>  1,
             ]);
         }

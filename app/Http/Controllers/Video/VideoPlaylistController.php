@@ -112,7 +112,8 @@ class VideoPlaylistController extends Controller {
 				'title' => 'Без группы',
 				'id' => 0,
 				'videos' => $no_group_videos,
-				'opened' => false
+				'opened' => false,
+				'children' => []
 			]);
 		}
 

@@ -243,7 +243,6 @@ class CourseResult extends Model
         $active_course = self::where('user_id', auth()->id())
             ->whereIn('status', [0,2])
             ->orderBy('status', 'desc')
-            ->with('course')
             ->first();
         
         

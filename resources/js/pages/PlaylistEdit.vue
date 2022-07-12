@@ -98,7 +98,7 @@
                     :mode="mode"
                     />
                 
-                <button class="next-btn btn btn-primary" v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null)"
+                <button class="next-btn btn btn-primary" 
                   @click="nextElement()">
                   Продолжить курс
                   <i class="fa fa-angle-double-right ml-2"></i>
@@ -178,6 +178,7 @@ export default {
   
   data() {
     return {
+      ids: [],
       video_changed: 1,
       activeVideo: null,
       activeVideoLink: '',
@@ -205,56 +206,7 @@ export default {
   },
 
   created() {
-    console.log(this.myvideo);
-    if(this.myvideo > 0){
-
-      axios
-        .get("/playlists/get/" + this.id)
-        .then((response) => {
-   
-          this.playlist = response.data.playlist;
-          this.activeVideo = this.playlist.videos.filter(video => video.id === this.myvideo)[0];
-          this.activeVideoLink = this.activeVideo.links;
-
-          if(this.playlist.groups[this.activeVideo.group_id] != null){
-            this.playlist.groups[this.activeVideo.group_id].opened = true;
-          }else{
-            this.playlist.groups.forEach((group, index) => {
-              if(group.videos.length != 0){
-                group.videos.forEach((video, index1) => {
-                  if(video.id == this.myvideo){
-                    this.playlist.groups[index].opened = true;
-                  }
-                });
-              }else{
-                group.children.forEach((child, index1) => {
-                  if(child.videos.length != 0){
-                    child.videos.forEach((video, index2) => {
-                      if(video.id == this.myvideo){
-                        this.playlist.groups[index].opened = true;
-                        this.playlist.groups[index].children[index1].opened = true;
-                      }
-                    });
-                  }
-                });
-              }
-            })
-            
-          }
-          
-          
-        })
-        .catch((error) => {
-          alert(error);
-        });
-
-    } else {
-
-      this.fetchData();
-    }
-    
-
-    
+   this.fetchData();
   },
 
   mounted() {},
@@ -264,17 +216,18 @@ export default {
 
     passedTest() {
       if(this.is_course) {
-        this.activeVideo.item_model.status = 1
-        // axios passed
+        this.activeVideo.item_model = {status: 1}
       }
     },
 
     nextElement() {
-
-      if(this.activeVideo.item_model != null) {
+      console.log(this.activeVideo)
+      if(this.activeVideo.item_model == null) {
         this.setVideoPassed()
       }
-      
+
+        console.log(this.activeVideo)
+
       // create array of video ids
       let arr = [];
       this.playlist.groups.forEach((group, g_index) => {
@@ -297,23 +250,23 @@ export default {
           }))
       });
 
-
+      this.activeVideo.item_model = {status: 1}
+      
       let index = arr.findIndex(el => el.id == this.activeVideo.id); 
  
       // find next element 
       if(index != -1 && arr.length - 1 > index) {
 
-        let el;
+        
+
         let i = arr[index + 1];
         if(i.c == -1) {
-          el = this.playlist.groups[i.g].videos[i.v];
+          this.activeVideo = this.playlist.groups[i.g].videos[i.v];
         } else {
-          el = this.playlist.groups[i.g].children[i.c].videos[i.v];
+          this.activeVideo = this.playlist.groups[i.g].children[i.c].videos[i.v];
         }
 
-        this.activeVideo = el;
         this.activeVideoLink = this.activeVideo.links 
-        el.item_model.status = 1
 
       } else {
         // move to next course item
@@ -463,7 +416,6 @@ export default {
       });
     },
 
-
     showVideo(video, key, autoplay = true) {
     
       this.activeVideo = video;
@@ -508,8 +460,8 @@ export default {
         .then((response) => {
           this.playlist = response.data.playlist;
           
+          this.formMap();
           this.setActiveVideo();
-          
           
         })
         .catch((error) => {
@@ -526,18 +478,56 @@ export default {
       if(this.activeVideo.pass_grade < min) this.activeVideo.pass_grade = Number(min);
     },
 
+    returnArray(items, indexes = []) { 
+      items.forEach((item, i_index) => {
+
+        let arr = [...indexes, i_index];
+
+        item.videos.forEach((video, v) => {
+          this.ids.push({
+            id: video.id,
+            i: [...arr, v]
+          })
+        });
+
+        if(item.children !== undefined) this.returnArray(item.children, arr);
+      });
+    },
+
+    formMap() {
+      this.ids = [];
+      this.returnArray(this.playlist.groups);
+    },
+
     setActiveVideo() {
 
-      // check playlist has videos
-      if(this.playlist.groups[0].videos.length > 0) {
+      if(this.myvideo > 0) {
+
+        // find element 
+        let index = this.ids.findIndex(el => el.id == this.myvideo);
+        if(index != -1) this.activeVideo = this.findItem(this.ids[index]);
+
+      } else if(this.playlist.groups[0].videos.length > 0) { // check playlist has videos
           // set active video
           this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
           this.setActiveGroup();
           
       } 
+      
+    
     },
 
+    findItem(el) {
+      console.log(el)
+      if(el.i.length == 2) return this.playlist.groups[el.i[0]].videos[el.i[1]];
+      if(el.i.length == 3) return this.playlist.groups[el.i[0]].children[el.i[1]].videos[el.i[2]];
+      if(el.i.length == 4) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].videos[el.i[3]];
+      if(el.i.length == 5) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].videos[el.i[4]];
+      if(el.i.length == 6) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].videos[el.i[5]];
+      if(el.i.length == 7) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].children[el.i[5]].videos[el.i[6]];
+    },
+    
     setActiveGroup() {
       // check playlist has videos in groups  
       console.log('text')

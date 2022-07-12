@@ -26,9 +26,9 @@
           </div>
 
           <div>
-            <p class="course-name">{{ activeCourse.course.name }}</p>
+            <p class="course-name">{{ activeCourse.name }}</p>
             <img class="course-img w-full"
-            :src="activeCourse.course.img"
+            :src="activeCourse.img"
             onerror="this.src = '/images/img-8old.png';"
             />
 
@@ -39,7 +39,7 @@
             <progress value="0" max="100"></progress>
           </div>
 
-          <!-- <div class="mt-3 description" v-html="activeCourse.course.text"></div> -->
+          <!-- <div class="mt-3 description" v-html="activeCourse.text"></div> -->
 
 
           <div class="course-item" v-for="(item, c_index) in items"

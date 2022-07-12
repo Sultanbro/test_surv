@@ -68,12 +68,13 @@ class Course extends Model
                 if($item->status == CourseResult::ACTIVE) {
                     $found_active = true;
 
+                  
                     // set checkpoint
                     if($completed_stages > 0) {
                         // get id
-                        $diff = array_diff($cim->pluck('item_id')->toArray(), $model_ids);
+                        $diff = array_diff($model_ids, $cim->pluck('item_id')->toArray());
                         $diff = array_values($diff);
-                
+                       
                         //if(count($diff) > 0) $item->last_item = $item->getNextElement($diff[0]);
                         if(count($diff) > 0) $item->last_item = $diff[0];
                     }

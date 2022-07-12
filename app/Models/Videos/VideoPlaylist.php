@@ -30,10 +30,13 @@ class VideoPlaylist extends Model implements CourseInterface
 
     public function videos()
     {
+        $user_id = auth()->id();
+
         return $this->hasMany('App\Models\Videos\Video', 'playlist_id', 'id')
             ->with('questions')
-            ->with('item_model', function ($query){
-                $query->where('type', 2);
+            ->with('item_model', function ($query) use ($user_id){
+                $query->where('type', 2)
+                    ->where('user_id', $user_id);
             })
             ->orderBy('order', 'asc');
     }
