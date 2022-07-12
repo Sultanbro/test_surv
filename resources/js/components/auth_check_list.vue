@@ -99,10 +99,12 @@
 
               if (this.sendChecklist){
 
+                console.log(this.auth_check,'this.auth_check')
                 axios.post('/timetracking/settings/auth/check/user/send', {
                   auth_check:this.auth_check
                 }).then(response => {
 
+                  console.log(response,'response')
                   this.showAuthUserCheck= false
                   this.$message.success('Успешно выполнено');
 

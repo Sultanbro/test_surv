@@ -87,7 +87,9 @@ class Activity extends Model
         
         foreach ($records as $record) {
             $row = [];
-
+            if(!array_key_exists("lastname",$record)){
+                $record['lastname'] = ' ';
+            }
             $row['Имя сотрудника'] = $record['lastname'] . ' ' . $record['name'];
             $row['Группа'] = $record['group'];
             
