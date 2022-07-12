@@ -42,6 +42,7 @@
 
         
         <div class="rp" style="flex: 1 1 0%;overflow:auto;">
+
           <div class="hat">
             <div class="d-flex jsutify-content-between hat-top">
               <div class="bc">
@@ -61,14 +62,22 @@
                   <i class="fa fa-edit"  @click="toggleMode" :class="{'active': mode == 'edit'}" />
                 </div>
 
+                 <div class="mode_changer ml-2" v-if="activePlaylist == null &&  mode == 'edit'">
+                  <i class="fa fa-cogs" @click="get_settings()" />
+                </div>
+
                 <i class="btn btn-success fa fa-plus ml-2 d-flex px-2 aic"  @click="showAddPlaylist = true" v-if="mode == 'edit' && activePlaylist == null" />
 
 
+               
+
                 <!-- buttons for playlist like Save Group -->
                 <template v-if="activePlaylist && mode == 'edit'">
-                  <i class="btn btn-success fa fa fa-grip-horizontal ml-2 d-flex px-2 aic" @click="addGroup"/>
-                  <i class="btn btn-success fa fa-save ml-2 d-flex px-2 aic"  @click="savePlaylistEdit" />
+                  <i class="btn btn-info fa-upload fa ml-2 d-flex px-2 aic" @click="uploadVideo" title="Добавить видео"/>
+                  <i class="btn btn-info fa fa-folder-plus ml-2 d-flex px-2 aic" @click="addGroup" title="Добавить группу"/>
+                  <i class="btn btn-success fa fa-save ml-2 d-flex px-2 aic"  @click="savePlaylistEdit" title="Сохранить плейлист" />
                 </template>
+
 
               </div>
             </div>
@@ -108,7 +117,7 @@
                             <div class="title">  {{ playlist.title }}</div>
                              <div class="d-flex btns mb-2"  v-if="mode == 'edit'"> 
                                 <i
-                                  class="fa fa-edit ml-2"
+                                  class="fa fa-edit"
                                   v-if="playlist.id != 0"
                                   title="Переместить"
                                   @click.stop="movePl(p_index)"
@@ -124,18 +133,12 @@
                         </div>
 
                       </div>
-                      
-                     
+                  
                   </div>
-
-                 
-
-                    
               </div>
 
             </div>
-
-
+            
           </div>
         </div>
       </div>
@@ -237,6 +240,29 @@
       </button>
     </b-modal>
 
+    <!-- Настройки раздела -->
+    <sidebar
+      title="Настройки видеокурсов"
+      :open="showSettings"
+      @close="showSettings = false"
+      width="30%"
+    >
+      <label class="d-flex">
+        <input
+          type="checkbox"
+          v-model="allow_save_video_without_test"
+          class="form- mb-2 mr-2"
+        />
+        <p>Разрешить сохранять видео без тестовых вопросов</p>
+      </label>
+
+      <button class="btn btn-primary rounded m-auto" @click="save_settings()">
+        <span>Сохранить</span>
+      </button>
+
+    </sidebar>
+
+
   </div>
 </template>
 
@@ -271,6 +297,8 @@ export default {
       activePlaylist: null,
       showAddPlaylist: false,
       showAddCategory: false,
+      showSettings: false,
+      allow_save_video_without_test: false,
       mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16),
       data_category: this.category,
       data_playlist: this.playlist,
@@ -286,6 +314,10 @@ export default {
 
     addGroup() {
       this.$refs.playlist.addGroup()
+    },
+
+    uploadVideo() {
+      this.$refs.playlist.uploadVideo()
     },
 
     savePlaylistEdit() {
@@ -511,7 +543,35 @@ export default {
 
     toggleMode() {
       this.mode = (this.mode == 'read') ? 'edit' : 'read';
-    }
+    },
+
+    get_settings() {
+      axios
+        .post("/settings/get", {
+          type: 'video'
+        })
+        .then((response) => {
+          this.allow_save_video_without_test = response.data.settings.allow_save_video_without_test;
+          this.showSettings = true;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
+    save_settings() {
+       axios
+        .post("/settings/save", {
+          type: 'video',
+          allow_save_video_without_test: this.allow_save_video_without_test,
+        })
+        .then((response) => {
+          this.showSettings = false;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
     
   },
 };

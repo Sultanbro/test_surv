@@ -31,7 +31,7 @@ class VideoPlaylist extends Model
     {
         return $this->hasMany('App\Models\Videos\Video', 'playlist_id', 'id')
             ->with('questions')
-            ->with('item_models', function ($query){
+            ->with('item_model', function ($query){
                 $query->where('type', 2);
             })
             ->orderBy('order', 'asc');

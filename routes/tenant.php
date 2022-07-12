@@ -99,6 +99,8 @@ Route::middleware([
     
 
     Route::any('/', [UserController::class, 'profile']);
+    Route::view('/doc', 'docs.index');
+    
     Route::any('/profile', [UserController::class, 'profile']); 
 
     Route::post('logout', [LoginController::class, 'logout']);//->name('logout');
@@ -181,7 +183,9 @@ Route::middleware([
     Route::get('/video_playlists/{category}/{playlist}', [VideoPlaylistController::class, 'saveIndex']);
     Route::get('/video_playlists/{category}/{playlist}/{video}', [VideoPlaylistController::class, 'saveIndexVideo']);
 
+    Route::post('/playlists/groups/create', [VideoGroupController::class, 'create']);
     Route::post('/playlists/groups/save', [VideoGroupController::class, 'save']);
+    Route::post('/playlists/groups/delete', [VideoGroupController::class, 'delete']);
 
     Route::post('/playlists/delete-cat', [VideoCategoryController::class, 'delete']);
     Route::post('/playlists/add-cat', [VideoCategoryController::class, 'add']);
@@ -236,8 +240,10 @@ Route::middleware([
     // База знаний
     Route::get('/kb', [KnowBaseController::class, 'index']);
     Route::get('/kb/get', [KnowBaseController::class, 'get']);
-    Route::get('/kb/get-settings', [KnowBaseController::class, 'getSettings']);
-    Route::post('/kb/save-settings', [KnowBaseController::class, 'saveSettings']);
+    
+    Route::post('/settings/get/', [SettingController::class, 'getSettings']);
+    Route::post('/settings/save', [SettingController::class, 'saveSettings']);
+
     Route::post('/kb/get', [KnowBaseController::class, 'getPage']);
     Route::post('/kb/search', [KnowBaseController::class, 'search']);
     Route::get('/kb/get-archived', [KnowBaseController::class, 'getArchived']);
@@ -252,6 +258,9 @@ Route::middleware([
     Route::post('/kb/page/delete', [KnowBaseController::class, 'deletePage']);
     Route::post('/kb/page/update-section', [KnowBaseController::class, 'updateSection']);
     Route::post('/kb/page/get-access', [KnowBaseController::class, 'getAccess']);
+
+    Route::get('/kb/get-settings', [KnowBaseController::class, 'getSettings']);
+    Route::post('/kb/save-settings', [KnowBaseController::class, 'saveSettings']);
 
 
     Route::get('/permissions', [PermissionController::class, 'index']);

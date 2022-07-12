@@ -2,6 +2,8 @@
   <div>
     <!-- PAGE -->
     <div class="kb-sections d-flex" v-if="activeBook === null">
+
+      <!-- Левая часть -->
       <aside id="left-panel" class="lp">
         <div class="btn btn-search mb-3" @click="showSearch = true">
           <i class="fa fa-search"></i>
@@ -17,7 +19,7 @@
           <span>Выйти из архива</span>
         </div>
         
-        
+        <!-- Существующие разделы -->
         <div class="sections-wrap noscrollbar" v-if="!showArchive" :class="{ 'expand' : mode == 'read'}"> 
 
 
@@ -53,6 +55,7 @@
           
         </div>
         
+        <!-- Архивные разделы -->
         <div class="sections-wrap noscrollbar" v-else>
           <template v-for="(book, b_index) in archived_books">
             <div
@@ -69,6 +72,7 @@
           </template>
         </div>
 
+        <!-- Кнопки внизу сайдбара -->
         <div  v-if="mode == 'edit'">
           <div class="d-flex jscb" v-if="!showArchive">
             
@@ -82,6 +86,8 @@
           </div>
         </div>
       </aside>
+
+      <!-- Правая часть -->
       <div class="rp" style="flex: 1 1 0%; padding-bottom: 50px;">
         <div class="hat">
           <div class="d-flex jsutify-content-between hat-top">
@@ -89,6 +95,8 @@
               <a href="#">База знаний</a>
               <!---->
             </div>
+
+            <!-- Кнопки на правом верхнем углу -->
             <div class="control-btns d-flex">
               <div class="mode_changer mr-2" v-if="can_edit">
                   <i class="fa fa-edit"
@@ -104,7 +112,7 @@
           <div></div>
         </div>
 
-        <!-- content -->
+        <!-- Глоссарий -->
         <div class="content mt-3">
             <glossary v-if="show_glossary" :mode="mode"></glossary>
         </div>
@@ -130,7 +138,7 @@
 
 
 
-
+    <!-- Новый раздел -->
     <b-modal
       v-model="showCreate"
       title="Новый раздел"
@@ -149,35 +157,46 @@
       </button>
     </b-modal>
 
-     <b-modal
-      v-model="showBookSettings"
-      title="Настройки раздела"
-      size="md"
-      class="modalle"
-      hide-footer
+
+    <!-- Настройки раздела -->
+    <sidebar
+      title="Настройки базы знаний"
+      :open="showBookSettings"
+      @close="showBookSettings = false"
+      width="30%"
     >
-    <div class="d-flex">
-      <input
-        type="checkbox"
-        v-model="send_notification_after_edit"
-        class="form- mb-2 mr-2"
-      />
-      <p>Отправлять уведомления сотрудникам об изменениях в базе знаний</p>
-    </div>
-    <div class="d-flex">
-      <input
-        type="checkbox"
-        v-model="show_page_from_kb_everyday"
-        class="form- mb-2 mr-2"
-      />
-      <p>Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"</p>
-    </div>
+      <label class="d-flex">
+        <input
+          type="checkbox"
+          v-model="send_notification_after_edit"
+          class="form- mb-2 mr-2"
+        />
+        <p>Отправлять уведомления сотрудникам об изменениях в базе знаний</p>
+      </label>
+      <label class="d-flex">
+        <input
+          type="checkbox"
+          v-model="show_page_from_kb_everyday"
+          class="form- mb-2 mr-2"
+        />
+        <p>Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"</p>
+      </label>
+      <label class="d-flex">
+        <input
+          type="checkbox"
+          v-model="allow_save_kb_without_test"
+          class="form- mb-2 mr-2"
+        />
+        <p>Разрешить вносить изменения без тестовых вопросов в разделах базы знаний</p>
+      </label>
+
       <button class="btn btn-primary rounded m-auto" @click="save_settings()">
         <span>Сохранить</span>
       </button>
-    </b-modal>
 
+    </sidebar>
 
+    <!-- Редактирование раздела  -->
     <b-modal
       v-model="showEdit"
       title="Редактирование раздела"
@@ -215,6 +234,7 @@
       
     </b-modal>
 
+    <!-- Поиск -->
     <b-modal
       v-model="showSearch"
       title="Поиск"
@@ -250,6 +270,7 @@
       </div>
         
     </b-modal>
+
   </div>
 </template>
 
@@ -279,6 +300,7 @@ export default {
       show_glossary: false,
       send_notification_after_edit: false,
       show_page_from_kb_everyday: false,
+      allow_save_kb_without_test: false,
       showBookSettings: false,
       showArchive: false,
       showSearch: false,
@@ -325,10 +347,13 @@ export default {
     get_settings() {
 
       axios
-        .get("/kb/get-settings", {})
+        .post("/settings/get", {
+          type: 'kb'
+        })
         .then((response) => {
           this.send_notification_after_edit = response.data.settings.send_notification_after_edit;
           this.show_page_from_kb_everyday = response.data.settings.show_page_from_kb_everyday;
+          this.allow_save_kb_without_test = response.data.settings.allow_save_kb_without_test;
           this.showBookSettings = true;
         })
         .catch((error) => {
@@ -338,9 +363,11 @@ export default {
 
     save_settings() {
        axios
-        .post("/kb/save-settings", {
+        .post("/settings/save", {
+          type: 'kb',
           send_notification_after_edit: this.send_notification_after_edit,
           show_page_from_kb_everyday: this.show_page_from_kb_everyday,
+          allow_save_kb_without_test: this.allow_save_kb_without_test,
         })
         .then((response) => {
           this.showBookSettings = false;

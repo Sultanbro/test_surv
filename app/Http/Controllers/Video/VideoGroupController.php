@@ -24,108 +24,70 @@ class VideoGroupController extends Controller {
     }
 
 	public function save(Request $request) {
+		$group = Group::where('id', $request->id)->update([
+			'title' => $request->title,
+		]);
+	}
 
-		$playlist_id = $request->playlist['id'];
-		$groups = $request->playlist['groups'];
+	public function create(Request $request) {
+
+		$group = Group::create([
+			'category_id' => $request->playlist_id,
+			'parent_id' => $request->parent_id,
+			'title' => 'Новая группа'
+		]);
 
 		return [
-			'groups' => $this->saveGroups($playlist_id, $groups)
+			'id' => $group->id,
+			'title' => $group->title,
 		];
 	}
-
+	
 
 	/**
-	 * @param int $playlist_id
-	 * @param array $groups
+	 * @param Request $request
 	 * 
-	 * @return array
+	 * @return [type]
 	 */
-	private function saveGroups($playlist_id, $groups)
-	{
-		$ids = []; 
-
-		// Save groups
-		foreach ($groups as $key => $group) {
-			
-			// Main groups
-
-			$g_input = [
-				'title' => $group['title'],
-				'parent_id' => 0,
-				'category_id' => $playlist_id
-			];
-
-			if($group['id'] == 0) {
-				$g = Group::create($g_input);
-				$groups[$key]['id'] = $g->id;
-				$ids[] = $g->id;
-			} else {
-				Group::where('id', $group['id'])->update($g_input);
-				$ids[] = $group['id'];
-			}
-			
-			// Children groups
-
-			foreach ($group['children'] as $c_key => $child) {
-				
-			
-				$c_input = [
-					'title' => $child['title'],
-					'parent_id' => $groups[$key]['id'],
-					'category_id' => $playlist_id
-				];
-	
-				if($child['id'] == 0) {
-					$g = Group::create($c_input);
-					$groups[$key]['children'][$c_key]['id'] = $g->id;
-					$ids[] = $g->id;
-				} else {
-					Group::where('id', $child['id'])->update($c_input);
-					$ids[] = $group['id'];
-				}
-
-			}
-
-		}
-
-		// delete groups not in Ids array
-		$this->deleteGroups($playlist_id, $ids);
-	
-		// return array of groups with Ids
-		return $groups;
-	}
-
-	/**
-	 * delete groups not in Ids array
-	 * 
-	 * @param int $playlist_id
-	 * @param array $ids
-	 * 
-	 * @return void
-	 */
-	private function deleteGroups($playlist_id, $ids)
+	public function delete(Request $request)
 	{
 		// fetch group_ids should delete 
-		$vgroups = Group::where('category_id', $playlist_id)->where('parent_id', 0)->get()->pluck('id')->toArray();
-		$vgroups = array_values(array_diff($vgroups, $ids));
-		$vgroups = Group::whereIn('id', $vgroups)->with('children')->get();
-	
-		$group_ids = $vgroups->pluck('id')->toArray();
-		
-		foreach ($vgroups as $key => $group) {
 
-			// check children
-			$group_ids = array_merge($group_ids, $group->children->pluck('id')->toArray());
-
-			// delete group
-			$group->delete();
+		$vgroup = Group::where('id', $request->id)->with('children')->first();
+		$ids = [];
+		if($vgroup) {
+			$ids = $this->fetchGroupIds($vgroup->children);
+			$ids[] = $vgroup->id;
 		}
-
+		
 		// move videos out of group
-		$videos = Video::whereIn('group_id', $group_ids)
+		$videos = Video::whereIn('group_id', $ids)
 			->update([
 				'group_id' => 0
 			]);
+
+		// delete groups
+		$group = Group::whereIn('id', $ids)->delete();
+	}
+
+	/**
+	 * Fetch all ids from chidren of group
+	 * including group id
+	 * 
+	 * @param mixed $id
+	 * 
+	 * @return array
+	 */
+	private function fetchGroupIds($items)
+	{
+		$arr = [];
+		$arr = array_merge($arr, $items->pluck('id')->toArray());
+
+		foreach ($items as $key => $group) {
+			$arr = array_merge($arr, $this->fetchGroupIds($group->children));
+		}
+
+		return $arr;
 	}
 
 }

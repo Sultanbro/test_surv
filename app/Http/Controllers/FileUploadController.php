@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Contracts\Foundation\Application;
@@ -118,7 +117,7 @@ class FileUploadController extends Controller {
             $model = Book::create([
                 'title' => basename($originalFileName),
                 'link' =>  '/' . $path . '/' . $filename,
-                'author' => 'Неизвестный',
+                'author' => 'Название автора',
                 'img' => '',
                 'description' => '',
                 'domain' => 'storage.oblako.kz',

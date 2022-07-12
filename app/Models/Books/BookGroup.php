@@ -26,7 +26,13 @@ class BookGroup extends Model
 
     public function books()
     {
-        return $this->hasMany('App\Models\Books\Book', 'group_id', 'id');
+        $user_id = auth()->id();
+        return $this->hasMany('App\Models\Books\Book', 'group_id', 'id')
+            ->with('questions')
+            ->with('item_model', function ($query) use ($user_id) {
+                $query->where('type', 1)
+                    ->where('user_id', $user_id);
+            });
     }
     
     public static function getBooks($group_id)

@@ -166,7 +166,7 @@ class UpbookController extends Controller
             
         }
 
-        if($book->link != '' && $book->link != null) {
+        if($book->img != '' && $book->img != null) {
             $book->img = $disk->temporaryUrl(
                 $book->img, now()->addMinutes(360)
             ); 
@@ -256,21 +256,27 @@ class UpbookController extends Controller
 
        
         if($book) {
-            if($book->link && $book->link != '') {
-                $str = $book->link;
-                $replaceWith = '';
-                $findStr = '\/storage';
-                $link = preg_replace('/' . $findStr . '/', $replaceWith, $str, 1);
+            $disk = \Storage::build([
+                'driver' => 's3',
+                'key' => 'O4493_admin',
+                'secret' => 'nzxk4iNukQWx',
+                'region' => 'us-east-1',
+                'bucket' => 'tenantbp',
+                'endpoint' => 'https://storage.oblako.kz:443',
+                'use_path_style_endpoint' => true,
+                'throw' => false,
+                'visibility' => 'public'
+            ]);
 
-                if(\Storage::exists('public/' . $link)){
-                    \Storage::delete('public/' . $link);
-                }
+            if($book->link && $book->link != '' && $disk->exists($book->link)) {
+                $disk->delete($book->link);
+            }
 
+            if($book->img && $book->img != '' && $disk->exists($book->img)) {
+                $disk->delete($book->img);
             }
            
-           $book->delete();
-
-        
+            $book->delete();
         }
     }   
 
@@ -293,6 +299,25 @@ class UpbookController extends Controller
         if($b) {
 
             if($request->file('file')) {
+
+                if($b->img != '' && $b->img != null) {
+                    $disk = \Storage::build([
+                        'driver' => 's3',
+                        'key' => 'O4493_admin',
+                        'secret' => 'nzxk4iNukQWx',
+                        'region' => 'us-east-1',
+                        'bucket' => 'tenantbp',
+                        'endpoint' => 'https://storage.oblako.kz:443',
+                        'use_path_style_endpoint' => true,
+                        'throw' => false,
+                        'visibility' => 'public'
+                    ]);
+                    
+                    if($disk->exists($b->img)) {
+                        $disk->delete($b->img);
+                    }
+                }
+
                 $links = $this->uploadFile('/bookcovers', $request->file('file')); 
                 $img_link = $links['temp'];
                 $b->img = $links['relative'];

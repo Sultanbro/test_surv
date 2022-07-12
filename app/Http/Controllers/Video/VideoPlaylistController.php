@@ -72,29 +72,31 @@ class VideoPlaylistController extends Controller {
 
 		$pl =  Playlist::with('groups')->find($request->id);
 
+		$user_id = auth()->id();
 	
 		$no_group_videos = Video::where('group_id', 0)
 			->where('playlist_id', $pl->id)
 			->with('questions')
-			->with('item_models', function ($query){
-				$query->where('type', 2);
+			->with('item_model', function ($query) use ($user_id){
+				$query->where('type', 2)
+					->where('user_id', $user_id);
 			})->get();
 
 		if($no_group_videos->count() > 0) {
-			$pl->groups->prepend(['title' => 'Без группы', 'id' => 0, 'videos' => $no_group_videos, 'opened' => false]);
+			$pl->groups->prepend([
+				'title' => 'Без группы',
+				'id' => 0,
+				'videos' => $no_group_videos,
+				'opened' => false
+			]);
 		}
-		
-		// if($pl->groups->count() > 0) {
-		// 	$pl->groups[0]['opened'] = true;
-		// }
 
 		foreach($pl->videos as $video) {
 			$video->questions = TestQuestion::where('testable_type', 'App\Models\Videos\Video')
 				->where('testable_id', $video->id)
 				->get();
-
-			
 		}
+
 		return [
 			'playlist' => $pl,
 			'categories' => [],//Category::all(),
@@ -197,8 +199,22 @@ class VideoPlaylistController extends Controller {
 
 			$video->playlist_id = 0;
 
-			\Storage::delete('public/' . $video->links);
+			$disk = \Storage::build([
+				'driver' => 's3',
+				'key' => 'O4493_admin',
+				'secret' => 'nzxk4iNukQWx',
+				'region' => 'us-east-1',
+				'bucket' => 'tenantbp',
+				'endpoint' => 'https://storage.oblako.kz:443',
+				'use_path_style_endpoint' => true,
+				'throw' => false,
+				'visibility' => 'public'
+			]);
 
+			if($disk->exists($video->links)){
+				$disk->delete($video->links);
+			}
+			
 			$video->delete();
 		}
 	}
@@ -303,6 +319,13 @@ class VideoPlaylistController extends Controller {
             }
         }
 
+		// count pass grade
+		$pass_grade = $request->pass_grade;
+		$min = count($request->questions) != 0 ? 100 / count($request->questions) : 100;
+		if($pass_grade < $min) $pass_grade = floor($min);
+
+		Video::where('id', $request->id)->update(['pass_grade' => $pass_grade]);
+		
 		return $ids; 
     }
 	

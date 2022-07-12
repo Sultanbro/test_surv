@@ -1,73 +1,77 @@
 <template>
 <div class="video-accordion">
     
-    <div v-for="(group, g_index) in groups" class="group" :class="{'opened': group.opened}">
+    <div v-for="(group, g_index) in groups" class="group" :class="{'opened': group.opened || group.title == 'Без группы' }">
 
-            <div class="g-title" @click="toggleGroup(g_index)">
-                <input type="text" class="group-input" v-model="group.title" :disabled="group.title == 'Без группы' || mode == 'read'" />
-                <div class="btns">
-                    <i class="fa fa-chevron-down chevron"></i>
-                    <i class="fa fa-plus" @click.stop="addGroup(g_index)" title="Добавить группу" v-if="group.title != 'Без группы' && group_edit && mode == 'edit'"></i>
-                    <i class="fa fa-upload" @click.stop="$emit('uploadVideo', g_index)" title="Загрузить видео"  v-if="!group_edit && mode == 'edit'"></i>
-                    <i class="fa fa-trash"  @click.stop="deleteGroup(g_index)"  title="Удалить группу" v-if="group.title != 'Без группы' && group_edit && mode == 'edit'"></i>
-                </div>
-            </div> 
-
-            <template v-for="(child, c_index) in group.children">
-                <div class="child-group group" :class="{'opened': child.opened}">
-                    <div class="g-title" @click="toggleChild(c_index, g_index)">
-                    <input type="text" class="group-input" v-model="child.title" :disabled="mode == 'read'"  />
-                        <div class="btns">
-                            <i class="fa fa-chevron-down chevron2"></i>
-                            <i class="fa fa-upload" @click.stop="$emit('uploadVideo', g_index, c_index)" title="Загрузить видео" v-if="!group_edit && mode == 'edit'"></i>
-                            <i class="fa fa-trash"  @click.stop="deleteGroup(g_index, c_index)"  title="Удалить группу" v-if="group_edit && mode == 'edit'"></i>
-                        </div>
-                    </div>
-   
-                    <video-list 
-                        :videos="child.videos"
-                        :mode="mode"
-                        :active="active"
-                        :g_index="g_index"
-                        :c_index="c_index"
-                        :group_edit="group_edit"
-                        @showVideo="showVideo"
-                        @deleteVideo="deleteVideo"
-                        :is_course="is_course"
-                        
-                    />
-                </div>
-            </template>
-
-            <video-list 
-                :videos="group.videos"
-                :mode="mode"
-                :active="active"
-                :g_index="g_index"
-                :c_index="-1"
-                :group_edit="group_edit"
-                @showVideo="showVideo"
-                @deleteVideo="deleteVideo"
-                :is_course="is_course"
-            />
-             
-    </div>
+        <div class="g-title"  v-if="group.title != 'Без группы'" @click="toggleGroup(g_index)" >
+            <input type="text" class="group-input" v-model="group.title" :disabled="mode == 'read'" @change="saveGroup(g_index)" />
+            <div class="btns" > 
+                <i class="fa fa-folder-plus" @click.stop="addGroup(g_index)" title="Добавить группу" v-if="mode == 'edit'"></i>
+                <i class="fa fa-upload" @click.stop="uploadVideo(g_index)"  title="Загрузить видео" v-if="mode == 'edit'"></i>
+                <i class="fa fa-trash"  @click.stop="deleteGroup(g_index)"  title="Удалить группу" v-if="mode == 'edit'"></i>
+                <i class="fa fa-chevron-down chevron" v-if="group.children.length > 0 || group.videos.length > 0"></i>
+            </div>
+        </div> 
         
+        <video-accordion 
+            :token="token"
+            :playlist_id="playlist_id"
+            :groups="group.children"
+            :mode="mode"
+            :active="active"
+            :is_course="is_course"
+            @showVideo="showVideo"
+        />
 
-      
+        <video-list 
+            :videos="group.videos"
+            :mode="mode"
+            :active="active"
+            :g_index="g_index"
+            :c_index="-1"
+            @showVideo="showVideo"
+            @showTests="showTests"
+            @deleteVideo="deleteVideo"
+            :is_course="is_course"
+        />
+
+    </div>
+
+    <b-modal
+      v-model="uploader"
+      hide-footer
+      title="Загрузить видео"
+      size="lg"
+    >
+        <video-uploader 
+            :token="token"
+            :playlist_id="playlist_id"
+            :group_id="group_id"
+            @close="uploader = false"
+            @addVideoToPlaylist="addVideoToPlaylist"
+        ></video-uploader>
+    </b-modal>
 </div>
 </template>
 
 <script>
 export default {
     name: 'VideoAccordion',
-    props: ['mode','groups','group_edit', 'active', 'is_course'],
+    props: ['mode','groups', 'active', 'is_course', 'playlist_id', 'token'],
     data(){
         return {
-            edit: false,
+            uploader: false,
+            group_id: 0
         }
     },
     methods: {
+
+        addVideoToPlaylist(video) {
+            let i = this.groups.findIndex(el => el.id == this.group_id)
+            if(i == -1) return this.$message.error('Ошибка при добавлении в группу в браузере');
+            this.groups[i].videos.push(video);
+        },
+
         toggleGroup(i, open = false) {
             console.log('togglegroup ' + i)
             let status = this.groups[i].opened;
@@ -77,20 +81,13 @@ export default {
             this.groups[i].opened = open ? true : !status;
         }, 
 
-        toggleChild(i, g) {
 
-            console.log('togglegroup ' + i + ' ' + g)
-
-
-            let status = this.groups[g].children[i].opened;
-            this.groups[g].children.forEach(el => {
-                el.opened = false;
-            });
-            this.groups[g].children[i].opened = !status;
+        showVideo(video, i) {
+            this.$emit('showVideo', video, i);
         },
 
-        showVideo(video, v_index) {
-            this.$emit('showVideo', video, v_index);
+        showTests(video, i) {
+            this.$emit('showTests', video, i);
         },
 
         deleteVideo(o) {
@@ -114,22 +111,83 @@ export default {
            
         },
 
-        addGroup(g) {
-            this.groups[g].children.push({
-                id: 0,
-                title: 'Тестовая группа',
-                videos:[]
-            });
+        addGroup(i) {
+            console.log('add group accrodion')
+            axios
+                .post('/playlists/groups/create', {
+                    parent_id: i == -1 ? 0 : this.groups[i].id,
+                    playlist_id: this.playlist_id
+                })
+                .then((response) => {
 
-            this.toggleGroup(g, true)
+                    if(i == -1) {// from playlist_edit
+                        this.groups.push({
+                            id: response.data.id,
+                            title: response.data.title,
+                            opened: true,
+                            children: [],
+                            videos:[]
+                        });
+                    } else {
+                        this.groups[i].children.push({
+                            id: response.data.id,
+                            title: response.data.title,
+                            videos:[],
+                            children: [],
+                            opened: true,
+                        });
+                    }
+
+                    this.$message.success("Сохранено!");
+                })
+                .catch((error) => {
+                    alert(error);
+                });
+            
+           
+
+            this.toggleGroup(i, true)
+        },
+
+        saveGroup(i) {    
+            
+            console.log(this.groups[i])
+            axios
+                .post('/playlists/groups/save', {
+                    id: this.groups[i].id,
+                    title: this.groups[i].title,
+                })
+                .then((response) => {
+                    this.$message.success("Сохранено!");
+                })
+                .catch((error) => {
+                    alert(error);
+                });
+
+            this.toggleGroup(i, true)
+        },
+
+        
+        uploadVideo(i) {
+            console.log('upload video accordion', i)
+                console.log('upload video accordion', this.groups[i].id)
+            this.group_id = this.groups[i].id
+            
+            this.uploader = true
         },
         
-        deleteGroup(g, c = -1) {
-            if(c == -1) {
-                this.groups.splice(g, 1);
-            } else {
-                this.groups[g].children.splice(c, 1);
-            }
+        deleteGroup(i) {
+            axios
+                .post('/playlists/groups/delete', {
+                    id: this.groups[i].id,
+                })
+                .then((response) => {
+                    this.groups.splice(i, 1);
+                    this.$message.success("Удалено!");
+                })
+                .catch((error) => {
+                    alert(error);
+                });
         }
     }
 }

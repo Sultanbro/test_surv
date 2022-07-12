@@ -21,7 +21,8 @@ class Video extends Model
         'playlist_id',
         'group_id',
         'order',
-        'domain'
+        'domain',
+        'pass_grade'
     ];
 
     public function questions()
@@ -29,9 +30,9 @@ class Video extends Model
         return $this->morphMany('App\Models\TestQuestion', 'testable');
     }
     
-    public function item_models()
+    public function item_model()
     {
-        return $this->hasMany('App\Models\CourseItemModel', 'item_id');
+        return $this->hasOne('App\Models\CourseItemModel', 'item_id');
     }
 
     

@@ -40,11 +40,18 @@
               >
                 Добавить книгу
               </button>
+
+
               <div class="mode_changer ml-2" v-if="can_edit">
                   <i class="fa fa-edit"
                     @click="toggleMode"
                     :class="{'active': mode == 'edit'}" />
               </div>
+
+              <div class="mode_changer ml-2" v-if="can_edit">
+                <i class="fa fa-cogs" @click="get_settings()" />
+              </div>
+
             </div>
           </div>
           <div><!----></div>
@@ -54,22 +61,29 @@
           <div
             class="box"
             v-for="(book, b_index) in activeCategory.books"
-           
             :key="book.id"
             @click="go(book)"
           >
-           <img :src="book.img != '' ? book.img  : '/images/book_cover.jpg'"  class="img-fluid"/>
-            <div class="cover">
+            <div class="left" :style="'background-image: url(' + (book.img != '' ? book.img  : '/images/book_cover.jpg' ) +')'">
+            </div>
+
+            <div class="right">
               <p class="title">{{ book.title }}</p>
               <p class="author">{{ book.author }}</p>
-              <div class="buttons" v-if="mode == 'edit'">
+              <div class="buttons" >
                 <i
+                  v-if="mode == 'edit'"
                   class="fa fa-trash mr-1"
                   @click.stop="deleteBook(b_index)"
                 ></i>
-                <i class="fa fa-edit" @click.stop="editBook(book)"></i>
+                <i class="fa fa-edit mr-1" @click.stop="editBook(book)" v-if="mode == 'edit'"></i>
+                <i class="fa fa-info" @click.stop="showDetails(book)"></i>
+              </div>
+              <div class="text">
+                {{ book.description }}
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -103,13 +117,11 @@
     </b-modal>
 
     <!-- Загрузить книгу -->
-    <b-modal
-      v-model="modals.upload_book.show"
+    <sidebar
       title="Загрузить книгу"
-      size="md"
-      class="modalle"
-      hide-footer
-      hide-header
+      :open="modals.upload_book.show"
+      @close="modals.upload_book.show = false"
+      width="70%"
     >
       <upload-files
         :token="token"
@@ -122,19 +134,22 @@
       <!-- after upload -->
       <div v-if="modals.upload_book.file">
         <div class="d-flex">
-          <div class="left">
+          <div class="left f-70">
+             <p class="mb-2 font-bold">Название книги</p>
              <input
               type="text"
               v-model="modals.upload_book.file.model.title"
               placeholder="Название книги..."
-              class="form-control mt-2"
+              class="form-control mt-2 mb-2"
             /> 
+             <p class="mb-2 font-bold">Название автора</p>
             <input
               type="text"
               v-model="modals.upload_book.file.model.author"
               placeholder="Название автора..."
               class="form-control mt-2 mb-2"
             />
+            <p class="mb-2 font-bold">Категория</p>
               <select
               class="form-control mb-2"
               v-model="modals.upload_book.file.model.group_id"
@@ -143,9 +158,16 @@
                 {{ cat.name }}
               </option>
             </select>
+
+            <p class="mb-2 font-bold">Описание книги</p>
+             <textarea 
+              class="form-control mt-2 mb-2"
+              placeholder="Описание..."
+              v-model="modals.upload_book.file.model.description"
+            />
           </div>
 
-          <div class="right">
+          <div class="right pl-3">
             <img class="book-img"
               v-if="modals.upload_book.file.model.img != ''"
               :src="modals.upload_book.file.model.img"/>
@@ -160,17 +182,37 @@
           </div>
         </div>
        
-        <textarea 
-          class="form-control mt-2 mb-2"
-          placeholder="Описание..."
-          v-model="modals.upload_book.file.model.description"
-        />
-     
+   
         <button class="btn btn-primary rounded m-auto" @click="saveBook">
           <span>Сохранить</span>
         </button>
       </div>
-    </b-modal>
+    </sidebar>
+
+     <!-- Details -->
+     <sidebar
+        title="О книге"
+        :open="details != null"
+        @close="details = null"
+        width="40%"
+      > 
+
+      <div class="d-flex" v-if="details != null">
+        <div class="left f-70">
+          <p class="mb-2 font-bold">{{ details.title }}</p>
+          <div class="text">
+            {{ details.description }}
+          </div>
+        </div>
+        <div class="right f-30 pl-4">
+            <img class="book-img mb-5"
+              v-if="details.img != ''"
+              :src="details.img"
+              />
+        </div>
+      </div>
+
+    </sidebar>
 
 
     <!-- Edit book -->
@@ -251,11 +293,20 @@
           >
             <div class="row">
               <div class="col-3">
+                <p class="mb-0">Страница</p>
                 <input
                   type="number"
                   min="1"
                   max="9999"
                   v-model="test.page"
+                  placeholder="Страница"
+                  class="form-control mb-2"
+                />
+                <p class="mb-0">Проходной балл</p>
+                 <input
+                  type="number"
+                  min="1"
+                  max="100"
                   placeholder="Страница"
                   class="form-control mb-2"
                 />
@@ -285,6 +336,27 @@
 
       </sidebar>
 
+     <!-- Настройки раздела -->
+    <sidebar
+      title="Настройки книг"
+      :open="showSettings"
+      @close="showSettings = false"
+      width="30%"
+    >
+      <label class="d-flex">
+        <input
+          type="checkbox"
+          v-model="allow_save_book_without_test"
+          class="form- mb-2 mr-2"
+        />
+        <p>Разрешить сохранять книги без тестовых вопросов</p>
+      </label>
+
+      <button class="btn btn-primary rounded m-auto" @click="save_settings()">
+        <span>Сохранить</span>
+      </button>
+
+    </sidebar>
     
   </div>
 </template>
@@ -307,6 +379,9 @@ export default {
     return {
       activeBook: null,
       activeCategory: null,
+      details: null,
+      showSettings: false,
+      allow_save_book_without_test: false,
       categories: [],
       mode: 'read',
       file_img: null,
@@ -338,6 +413,10 @@ export default {
 
     chooseImage(ref) {
       this.$refs[ref][0].click();
+    },
+
+    showDetails(book) {
+      this.details = book;
     },
 
     fetchData() {
@@ -487,16 +566,29 @@ export default {
           formData.append('group_id',  data.group_id);
           formData.append('file', this.file_img);
 
-      axios.post( '/admin/upbooks/save', formData, {
-            headers: {
-                "Content-Type": "multipart/form-data"
-            }
-        })
+      axios.post( '/admin/upbooks/save', formData)
         .then((response) => {
-          this.activeCategory.books.push(this.modals.upload_book.file.model);
 
           this.modals.upload_book.show = false;
           this.modals.upload_book.file = null;
+          data.img  = response.data;
+          
+
+          if(data.group_id != this.activeCategory.id) {
+            let i = this.activeCategory.books.findIndex(el => el.id == data.id);
+            let j = this.categories.findIndex(el => el.id == data.group_id);
+            
+            if(i != -1) {
+              this.activeCategory.books.splice(i, 1)
+            } 
+
+            if(j != -1) {
+              this.categories[j].books.push(data);
+            }
+
+          } else {
+            this.activeCategory.books.push(data);
+          }
 
           loader.hide();
         })
@@ -555,7 +647,35 @@ export default {
 
     toggleMode() {
       this.mode = (this.mode == 'read') ? 'edit' : 'read';
-    }
+    },
+
+    get_settings() {
+      axios
+        .post("/settings/get", {
+          type: 'book'
+        })
+        .then((response) => {
+          this.allow_save_book_without_test = response.data.settings.allow_save_book_without_test;
+          this.showSettings = true;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
+    save_settings() {
+       axios
+        .post("/settings/save", {
+          type: 'book',
+          allow_save_book_without_test: this.allow_save_book_without_test,
+        })
+        .then((response) => {
+          this.showSettings = false;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
 
   },
 };

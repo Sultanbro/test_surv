@@ -12,7 +12,7 @@
                 :key="video.id"
                 :class="{
                     'active': (active == video.id),
-                    'disabled': is_course && video.item_models.length == 0
+                    'disabled': active != video.id && mode == 'read' && video.item_model == null
                 }"
                 @click="showVideo(video, v_index)"
             >
@@ -32,7 +32,9 @@
             <div class="controls d-flex" 
                 v-if="mode == 'edit' && !group_edit"
             >
-                <i  class="fa far fa-trash mr-3" 
+                <i class="far fa-arrow-alt-circle-right mr-2" title="Переместить из группы" @click.stop="moveTo(v_index)"></i>
+                <i class="far fa-question-circle mr-2" title="Вопросы к видео" @click.stop="showTests(video, v_index)"></i>
+                <i  class="far fa-trash-alt" 
                     title="Убрать из плейлиста" 
                     @click.stop="$emit('deleteVideo', {
                         video: video, 
@@ -41,7 +43,6 @@
                         c_index: c_index
                     })"
                 ></i>
-                <i class="fa fa-arrow-alt-circle-right" title="Переместить из группы"></i>
             </div>
         </div>
     </draggable>
@@ -62,7 +63,7 @@ export default {
         let i = this.videos.findIndex(el => el.id == this.active);
    
         if(i != -1) {
-            this.videos[i].item_models.push({status:0})
+            this.videos[i].item_model == null
         }
     },
 
@@ -71,10 +72,18 @@ export default {
 
         },
 
-        showVideo(video, v_index) {
-            if(this.is_course && video.item_models.length == 0) return;
-            this.$emit('showVideo', video, v_index);
-        }
+        showVideo(video, i) {
+            if(this.mode == 'read') return;
+            this.$emit('showVideo', video, i);
+        },
+
+        showTests(video, i) {
+            this.$emit('showTests', video, i);
+        },
+
+        moveTo(i) {
+            // move to another group
+        },
     }
 }
 </script>

@@ -25,6 +25,7 @@ class KnowBase extends Model
         'text', 
         'is_deleted', 
         'order', 
+        'pass_grade',
         'hash', // уникальная ссылка чтобы поделиться
         'access' // доступ   0 - никто, 1 - к просмотру,  2 - к редактированию
     ];
@@ -37,17 +38,19 @@ class KnowBase extends Model
     
     public function children()
     {
+        $user_id = auth()->id();
         return $this->hasMany(self::class, 'parent_id')
             ->orderBy('order')
             ->with('children','questions')
-            ->with('item_models', function ($query){
-                $query->where('type', 3);
+            ->with('item_model', function ($query) use ($user_id){
+                $query->where('type', 3)
+                    ->where('user_id', $user_id);
             });
     }
 
-    public function item_models()
+    public function item_model()
     {
-        return $this->hasMany('App\Models\CourseItemModel', 'item_id');
+        return $this->hasOne('App\Models\CourseItemModel', 'item_id');
     }
 
     public function parent()
