@@ -54,7 +54,7 @@ class Course extends Model
                     $cim = CourseItemModel::where('user_id', auth()->id())
                         ->where('type', CourseItemModel::getType($item->item_model))
                         ->whereIn('item_id', count($model_ids))
-                        ->select('item_id');
+                        ->select('item_id')
                         ->get();
 
                     $completed_stages = $cim->count();
