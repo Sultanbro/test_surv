@@ -136,13 +136,8 @@ Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); 
 Vue.component('permission-item', require('./components/PermissionItem.vue').default); // 
 
 Vue.component('video-accordion', require('./components/VideoAccordion.vue').default); //
-<<<<<<< HEAD
-
-Vue.component('video-list', require('./components/VideoList.vue').default); //
-=======
 Vue.component('video-list', require('./components/VideoList.vue').default); //
 Vue.component('video-uploader', require('./components/VideoUploader.vue').default); //
->>>>>>> 854a77e0f8568fe5eca23461624d0df9d734b7b7
 
 Vue.component('superselect', require('./components/SuperSelect.vue').default); // 
 
@@ -159,10 +154,6 @@ Vue.component('page-upbooks-read', require('./pages/UpbooksRead.vue').default); 
 Vue.component('page-upbooks', require('./pages/Upbooks.vue').default); // книги редактирование
 
 Vue.component('page-playlist-edit', require('./pages/PlaylistEdit.vue').default); // редактирование плейлиста
-<<<<<<< HEAD
-Vue.component('page-playlist-read', require('./pages/PlaylistRead.vue').default); // чтение плейлиста
-=======
->>>>>>> 854a77e0f8568fe5eca23461624d0df9d734b7b7
 Vue.component('page-playlists', require('./pages/Playlists.vue').default); // редактирование плейлиста
 
 Vue.component('booklist', require('./pages/booklist.vue').default); // база знаний раздел
