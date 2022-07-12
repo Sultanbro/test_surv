@@ -179,7 +179,7 @@ class CheckReports extends Model
                 $check_users[0]['gr_id'] = $allUserReport['item_id'];
                 $check_users[0]['total_day'] = $dayCountCheckAuth .'/' .$dayCountCheck;
                 $check_users[0]['total_month'] = $monthCountCheckAuth.'/' .$monthCountCheck;
-
+                $check_users[0]['average'] = $this->get_average_value($request->month,$request->year,$request->individual_type_id,$request->individual_type,$request->group_id);
 
 
 
@@ -191,15 +191,7 @@ class CheckReports extends Model
 
             $users = User::where('position_id',$request->individual_type_id)->select('id','last_name','name')->get();
 
-
-
-
-
-
             foreach ($users as $keys => $check_user){
-
-
-
                 $allUserReports = CheckReports::on()->where('check_users_id',$check_user->id)
                     ->where('year',$request->year)->where('month',$request->month)
                     ->where('item_id',$request->individual_type_id)
