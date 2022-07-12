@@ -102,8 +102,8 @@ class FillQualityGrades extends Command
                     $count++;
                 }
 
-                if($count > 0) {
-                    $avg = (int)round($total / $count);
+                if($count > 0 && $count != 1) {
+                    $avg = (int)round($total / ($count-1));
                     if($avg != 0) {
                         $this->saveQualityRecord($user->id, $avg, $group['group_id']);
                     }
