@@ -144,7 +144,7 @@
       </div>
 
 
-
+    <!-- Новый плейлист -->
     <b-modal
       v-model="showAddPlaylist"
       title="Новый плейлист"
@@ -163,6 +163,7 @@
       </button>
     </b-modal>
 
+    <!-- Новый категория -->
     <b-modal
       v-model="showAddCategory"
       title="Новая категория"
@@ -181,7 +182,8 @@
       </button>
     </b-modal>
 
-     <b-modal
+    <!-- Переименовать категорию -->
+    <b-modal
       v-model="showEditCat"
       title="Переименовать категорию"
       size="md"
@@ -197,48 +199,73 @@
       <button class="btn btn-primary rounded m-auto" @click="saveCat">
         <span>Сохранить</span>
       </button>
-    </b-modal>
+    </b-modal>  
 
-    <b-modal
-      v-model="showEditPlaylist"
-      title="Редактировать плейлист"
-      size="md"
-      class="modalle"
-      hide-footer
-    >
-      <div class="d-flex mb-2">
-        <p class="mb-0 mr-2">Название</p>
-        <input
-          type="text"
-          v-model="editingPlaylist.title"
-          placeholder="Название плейлиста..."
-          class="form-control mb-2"
-        />
+     <!-- Редактировать плейлист -->
+     <sidebar
+        title="Редактировать плейлист"
+        :open="showEditPlaylist"
+        @close="showEditPlaylist = false"
+        width="50%"
+      >
+
+       <div v-if="editingPlaylist != null" class="p-3">
+
+        <div class="d-flex">
+          <div class="left f-70">
+            <div class="d-flex mb-2">
+              <p class="mb-2 font-bold">Название</p>
+              <input
+                type="text"
+                v-model="editingPlaylist.title"
+                placeholder="Название плейлиста..."
+                class="form-control mb-2"
+              />
+            </div>
+
+            <div class="d-flex mb-2">
+              <p class="mb-0 mr-2">Описание</p>
+              <textarea
+                v-model="editingPlaylist.text"
+                placeholder="Описание плейлиста..."
+                class="form-control"
+              />
+            </div>
+
+            <div class="d-flex mb-2">
+              <p class="mb-0 mr-2">Категория</p>
+              <select
+                class="form-control"
+                v-model="editingPlaylist.category_id">
+                <option v-for="cat in categories" :value="cat.id" :key="cat.id">{{ cat.title }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="right f-30 pl-4">
+            <img class="book-img mb-5"
+              v-if="editingPlaylist.img != ''"
+              :src="editingPlaylist.img"
+              />
+            <b-form-file
+              ref="edit_img"
+              v-model="file_img"
+              :state="Boolean(file_img)"
+              placeholder="Выберите или перетащите файл сюда..." 
+              drop-placeholder="Перетащите файл сюда..."
+              class="mt-3"
+              ></b-form-file> 
+          </div>
+        </div>
+
+        <div class="d-flex">
+          <button class="btn btn-success mr-2 rounded" @click="savePlaylist">
+            <span>Сохранить</span>
+          </button>
+        </div>
       </div>
+    </sidebar>
 
-      <div class="d-flex mb-2">
-        <p class="mb-0 mr-2">Описание</p>
-        <textarea
-          v-model="editingPlaylist.text"
-          placeholder="Описание плейлиста..."
-          class="form-control"
-        />
-      </div>
-
-      <div class="d-flex mb-2">
-        <p class="mb-0 mr-2">Категория</p>
-         <select
-          class="form-control"
-          v-model="editingPlaylist.category_id">
-          <option v-for="cat in categories" :value="cat.id" :key="cat.id">{{ cat.title }}</option>
-        </select>
-      </div>
-
-
-      <button class="btn btn-primary rounded m-auto" @click="savePlaylist">
-        <span>Сохранить</span>
-      </button>
-    </b-modal>
 
     <!-- Настройки раздела -->
     <sidebar
@@ -283,6 +310,7 @@ export default {
     return {
       categories: [],
       showEditCat: false,
+      file_img: null,
       editingPlaylist: {
         title: '',
         text: '',
@@ -418,22 +446,36 @@ export default {
       },
 
     savePlaylist() {
-      axios
-        .post("/playlists/save-fast", {
-          playlist: this.editingPlaylist,
-        })
+      let loader = this.$loading.show();
+
+      let formData = new FormData();
+          formData.append('file', this.file_img);
+          formData.append('playlist', JSON.stringify(this.editingPlaylist));
+
+      axios.post( '/playlists/save-fast', formData)
         .then((response) => {
+          if(response.data !== '') this.editingPlaylist.img = response.data;
 
           if(this.editingPlaylist.category_id != this.activeCat.id) {
             this.deleteItemFrom(this.editingPlaylist.id, this.activeCat.playlists);
             let i = this.categories.findIndex(el => el.id == this.editingPlaylist.category_id);
-            if(i != -1) this.categories[i].playlists.push(this.editingPlaylist);
+            
+            if(i != -1) {
+              if(response.data !== '') this.editingPlaylist.img = response.data;
+              this.categories[i].playlists.push(this.editingPlaylist);
+            }
+
             this.showEditPlaylist = false;
             this.editingPlaylist = {};
           }
 
+          loader.hide();
           this.$message.success("Сохранено");
-        });
+        })
+        .catch((error) => {
+          console.log(error);
+          loader.hide();
+        })
     },
 
     deleteItemFrom(id, from) {

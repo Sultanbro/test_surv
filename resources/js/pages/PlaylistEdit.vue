@@ -2,41 +2,58 @@
   <div class="video-playlist">
 
     <!-- Header -->
-    <div class="d-flex jcsb mb-1" v-if="!is_course">
-      <div class="s w-full">
-        <div class="d-flex">
-         <input
-            v-if="mode == 'edit'"
-            type="text"
-            class="form-control form-control-sm w-full p-itle mb-0 mr-2"
-            v-model="playlist.title"
-            name="title"
-          />
-          <p v-else class="p-title mb-0"> {{ playlist.title }} </p>
+   
+    <div class="d-flex mb-3"  v-if="!is_course">
+      <div class="d-flex jcsb mb-1 left f-70">
+        <div class="s w-full">
+          <div class="d-flex">
+            <input
+              v-if="mode == 'edit'"
+              type="text"
+              class="form-control form-control-sm w-full p-itle mb-0 mr-2"
+              v-model="playlist.title"
+              name="title"
+            />
+            <p v-else class="p-title mb-0"> {{ playlist.title }} </p>
+          </div>
+
+          <!-- playlist description -->
+          <div class="form-group mt-2">
+            <textarea
+              v-if="mode == 'edit'"
+              name="text"
+              class="form-control textarea h-70"
+              required
+              title="Описание плейлиста"
+              placeholder="Описание плейлиста"
+              v-model="playlist.text"
+            ></textarea>
+            <p v-else class="p-desc">{{ playlist.text }}</p>
+          </div>
+
         </div>
-         
       </div>
+      <div class="right f-30 pl-4">
+            <img class="book-img mb-2"
+              v-if="playlist.img != ''"
+              :src="playlist.img"
+              />
+            <b-form-file
+              v-if="mode == 'edit'"
+              ref="edit_img"
+              v-model="file_img"
+              :state="Boolean(file_img)"
+              placeholder="Выберите или перетащите файл сюда..." 
+              drop-placeholder="Перетащите файл сюда..."
+              class="mt-3"
+              ></b-form-file> 
+        </div>
     </div>
 
    
+
     <div class="row">
 
-      <!-- playlist description -->
-      <div class="col-lg-12" v-if="!is_course">
-        <div class="form-group">
-          <textarea
-            v-if="mode == 'edit'"
-            name="text"
-            class="form-control textarea h-70"
-            required
-            title="Описание плейлиста"
-            placeholder="Описание плейлиста"
-            v-model="playlist.text"
-          ></textarea>
-          <p v-else class="p-desc">{{ playlist.text }}</p>
-        </div>
-      </div>  
-       
       <!-- Player and test questions -->
       <div class="col-lg-6 pr-0">
         <div class="block  br" v-if="activeVideo != null">
@@ -165,6 +182,7 @@ export default {
       activeVideo: null,
       activeVideoLink: '',
       refreshTest: 1, //key
+      file_img: null,
       playlist: {
         id: 1,
         category_id: 1,
@@ -533,14 +551,21 @@ export default {
     },
 
     savePlaylist() {
-      axios
-        .post("/playlists/save", {
-          playlist: this.playlist,
-        })
+
+      let loader = this.$loading.show();
+
+      let formData = new FormData();
+          formData.append('file', this.file_img);
+          formData.append('playlist', JSON.stringify(this.playlist));
+
+      axios.post( '/playlists/save', formData)
         .then((response) => {
           this.$message.success('Сохранено');
+          if(response.data !== '') this.playlist.img = response.data;
+          loader.hide();
         })
         .catch((error) => {
+          loader.hide();
           alert(error);
         });
     },
