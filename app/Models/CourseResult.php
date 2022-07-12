@@ -238,7 +238,7 @@ class CourseResult extends Model
      * 
      * @return Course
      */
-    public function activeCourse()
+    public static function activeCourse()
     {
         $active_course = self::where('user_id', auth()->id())
             ->whereIn('status', [0,2])
