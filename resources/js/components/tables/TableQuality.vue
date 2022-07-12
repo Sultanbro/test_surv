@@ -901,6 +901,8 @@ export default {
 
     fetchData(flag = null) {
 
+      console.log(flag,'flag')
+
       if (flag == 'selected_group'){
         this.flagGroup = 'selected_group'
       }
@@ -909,9 +911,7 @@ export default {
       this.setDates();
       this.fetchItems();
       loader.hide();
-    },
 
-    normalizeItems() {
 
 
       if (this.items.length > 0) {
@@ -978,8 +978,8 @@ export default {
     fetchItems($url = "/timetracking/quality-control/records") {
       let loader = this.$loading.show();
 
-
-
+      console.log(this.individual_type_id,'individual_type_id')
+      console.log(this.individual_type_id,'this.flagGroup')
 
       if (this.individual_type_id != null){
         if (this.flagGroup == 'index'){
