@@ -5,9 +5,10 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\KnowBase;
+use App\Contracts\HasOrderArray;
 use App\Models\KnowBaseModel;
 
-class KnowBase extends Model
+class KnowBase extends Model implements HasOrderArray
 {   
     use SoftDeletes;
     
@@ -169,6 +170,11 @@ class KnowBase extends Model
    
             
         return $books;
+    }
+
+    public function getOrder()
+    {
+        return [];
     }
     
 }

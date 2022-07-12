@@ -5,8 +5,9 @@ namespace App\Models\Books;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Books\BookGroup;
+use App\Contracts\HasOrderArray;
 
-class Book extends Model
+class Book extends Model implements HasOrderArray
 {
     protected $table = 'books';
 
@@ -150,6 +151,11 @@ class Book extends Model
             $link = 'Нет ссылки';
         }
         return $link;
+    }
+
+    public function getOrder()
+    {
+        return [];
     }
 
 

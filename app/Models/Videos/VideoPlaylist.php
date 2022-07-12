@@ -5,8 +5,9 @@ namespace App\Models\Videos;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Videos\Video;
+use App\Contracts\HasOrderArray;
 
-class VideoPlaylist extends Model
+class VideoPlaylist extends Model implements HasOrderArray
 {   
     use SoftDeletes;
 
@@ -51,5 +52,10 @@ class VideoPlaylist extends Model
     {
         $video = Video::where('playlist_id', $this->id)->first();
         return $video ? $video->poster : '';
+    }
+
+    public function getOrder()
+    {
+        return [];
     }
 }
