@@ -11,7 +11,7 @@
       <div class="d-flex mt-3 first-block">
 
         <!-- left -->
-        <div>
+        <div v-if="activeBook != null">
           <img :src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img" 
             class="w-full pr-3" />
           <div v-if="isLoading">
