@@ -2470,68 +2470,20 @@ class UserController extends Controller
 
         if ($user->img_url){
             $filename = "users_img/".$user->img_url;
-
             if (file_exists($filename)) {
                 unlink(public_path('users_img/'.$user->img_url));
             }
-
-            $upload_path = public_path('users_img/');
-            $generated_new_name = time() . '.' .'png';
-            $request->file->move($upload_path, $generated_new_name);
-
-
-            $user->img_url = $generated_new_name;
-            $user->save();
-
-
-            $img = '<img src="'.url('/users_img').'/'.$generated_new_name.'" alt="avatar" />';
-
-            return response(['img'=>$img,'filename'=>$generated_new_name]);
-
-
         }
 
 
+        $upload_path = public_path('users_img/');
+        $generated_new_name = time() . '.' .'png';
+        $request->file->move($upload_path, $generated_new_name);
+        $user->img_url = $generated_new_name;
+        $user->save();
 
-
-
-
-//        $upload_path = public_path('users_img/');
-//
-//        $file_name = $contents->getClientOriginalName();
-//        $generated_new_name = time() . '.' . $contents->getClientOriginalExtension();
-//        $contents->move($upload_path, $generated_new_name);
-//
-
-
-
-//        $user = \Auth::user();
-//        $blob = $request->croppedImage;
-//        $destinationPath = 'users_img/';
-//        $fileName = $user->id . '_' . time() . '.jpg';
-//        $file = file_put_contents($destinationPath.$fileName, $blob);
-//
-//        $file = file_put_contents($destinationPath.$fileName, $blob);
-
-//        $upload_path = public_path('users_img/');
-//        $file_name = $request->file->getClientOriginalName();
-//        $generated_new_name = time() . '.' . $request->file->getClientOriginalExtension();
-//        $request->file->move($upload_path, $generated_new_name);
-
-
-
-
-
-
-
-
-//        return response()->json([
-//            'success' => 'You have successfully uploaded "' . $file_name . '"',
-//            'file_name'=>$generated_new_name,
-//        ]);
-
-
-
+        $img = '<img src="'.url('/users_img').'/'.$generated_new_name.'" alt="avatar" />';
+        return response(['img'=>$img,'filename'=>$generated_new_name]);
 
     }
 }
