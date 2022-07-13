@@ -28,7 +28,8 @@ class MyCourseController extends Controller
         $courses = CourseResult::where('user_id', $user_id)
             ->whereIn('status', [0,2])
             ->orderBy('status', 'desc')
-            ->whereHas('course')
+            ->with('course')
+            ->has('course')
             ->get();
         
         return [
