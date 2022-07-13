@@ -97,14 +97,14 @@
         Курс проходят:
 
         <superselect 
-            :values="course.users"
+            :values="course.targets"
             class="w-full mb-4" 
             :key="1"
             :select_all_btn="true" />
 
      
         </multiselect>
-        <div v-for="user in course.users">{{ user }}</div>
+        <div v-for="element in course.targets">{{ element }}</div>
         
       </div>
     </div>

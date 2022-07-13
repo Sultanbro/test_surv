@@ -348,8 +348,10 @@ class KnowBaseController extends Controller
         $page = KnowBase::find($request->id);
         if ($page) {
             $page->text = $request->text ?? '';
+          
             $page->title = $request->title ?? 'Без названия';
             $page->editor_id = Auth::user()->id;
+
             $page->save();
 
             $this->notifyAboutChanges('Страница: ', $page);
@@ -492,7 +494,8 @@ class KnowBaseController extends Controller
     }
 
     public function saveTest(Request $request)
-    {
+    {   
+        $ids = [];
         foreach ($request->questions as $key => $q) {
             $params = [
                 'order' => 0,
@@ -510,11 +513,23 @@ class KnowBaseController extends Controller
                 if ($testq) {
                     $testq->update($params);
                 }
-
+                
             } else {
-                TestQuestion::create($params);
+                $q = TestQuestion::create($params);
+                $ids[] = $q->id; 
             }
         }
+
+        // count pass grade
+        $pass_grade = $request->pass_grade;
+        $min = count($request->questions) != 0 ? 100 / count($request->questions) : 100;
+        if($pass_grade < $min) $pass_grade = floor($min);
+
+        $book = KnowBase::withTrashed()->find($request->id);
+        $book->pass_grade = $pass_grade;
+        $book->save();
+        
+        return $ids;
     }
 
 

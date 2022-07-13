@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CourseItem;
+use App\Models\CourseModel;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\Models\Videos\Video;
@@ -24,7 +25,14 @@ class Course extends Model
     public function items()
     {
         return $this->hasMany(CourseItem::class, 'course_id')->orderBy('order');
+    }   
+
+    public function models()
+    {
+        return $this->hasMany(CourseModel::class, 'course_id');
     }
+
+    
 
     /**
      * Найти точку, где остановились при прохождении курса
@@ -51,7 +59,7 @@ class Course extends Model
                 // get completed stages
                 if($model) {
                     $model_ids = $model->getOrder();
-
+                
                     $cim = CourseItemModel::where('user_id', auth()->id())
                         ->where('type', CourseItemModel::getType($item->item_model))
                         ->whereIn('item_id', $model_ids)
@@ -62,21 +70,30 @@ class Course extends Model
                 }
                 
                 // can replace $item->countItems() with count($item->model()->getOrder())
-                $item->status = $item->countItems() <= $completed_stages ? CourseResult::COMPLETED : CourseResult::ACTIVE;
+               
+                // if(CourseItemModel::getType($item->item_model) == 1) { 
+                //     dump($model->getOrder());
+                //         dump((int)$item->countItems() <= (int)$completed_stages);
+                //     dump($item->countItems());
+                //     dump((int)$completed_stages);
+                // }
                 
+                $item->status = (int)$item->countItems() <= (int)$completed_stages ? CourseResult::COMPLETED : CourseResult::ACTIVE;
+               
                 // found active
                 if($item->status == CourseResult::ACTIVE) {
                     $found_active = true;
 
-                  
+                    $diff = array_diff($model_ids, $cim->pluck('item_id')->toArray());
+                    $diff = array_values($diff);
+ 
                     // set checkpoint
-                    if($completed_stages > 0) {
+                    if(count($diff) > 0) {
                         // get id
-                        $diff = array_diff($model_ids, $cim->pluck('item_id')->toArray());
-                        $diff = array_values($diff);
+                       
                        
                         //if(count($diff) > 0) $item->last_item = $item->getNextElement($diff[0]);
-                        if(count($diff) > 0) $item->last_item = $diff[0];
+                      $item->last_item = $diff[0];
                     }
                     
                     

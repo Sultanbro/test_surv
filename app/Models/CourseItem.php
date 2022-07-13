@@ -47,7 +47,7 @@ class CourseItem extends Model
     public function countItems()
     {   
         $item = $this->model();
-        return $item ? $item->getOrder() : 0;
+        return $item ? count($item->getOrder()) : 0;
     }
 
     /**

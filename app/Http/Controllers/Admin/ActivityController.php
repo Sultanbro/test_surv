@@ -247,7 +247,7 @@ class ActivityController extends Controller
                 'date' => $date,
                 'user_id' => $item['id'],
                 'activity_id' => $activity_id,
-                'value' => (int)$value,
+                'value' => round($value,2),
             ]);
         }
     }

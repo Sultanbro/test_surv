@@ -3,9 +3,13 @@
     <li 
         v-for="el in tasks"
           class="chapter opened"
+          :class="{
+            'pass' : el.item_model !== null,
+            'active': active == el.id
+          }"
           :id="el.id"
           :key="el.id">
-        <div class="d-flex">
+        <div class="d-flex titles">
           <div class="handles d-flex aic" >
             <div>
               <i class="fa fa-arrow-right pointer" v-if="active == el.id"></i>
