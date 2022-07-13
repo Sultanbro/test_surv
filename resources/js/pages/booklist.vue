@@ -329,6 +329,14 @@
             
             </div>
 
+
+            <div v-if="mode == 'edit'">
+              <p class="mt-2 mb-3"><b>{{ activesbook.title }}</b></p>
+              <div class="d-flex aic pass__ball">
+                <p class="mr-3" style="width:200px">Проходной балл в процентах (0 - 100):</p>
+                <input class="form-control mb-3" v-model="activesbook.pass_grade" type="number" :min="0" :max="100" @change="checkPassGrade" />
+              </div>
+            </div>
             <questions
                   :questions="activesbook.questions"
                   :id="activesbook.id"
@@ -337,6 +345,8 @@
                   :count_points="true"
                   @passed="passed"
                   :key="questions_key"
+                  :pass_grade="activesbook.pass_grade"
+                  @changePassGrade="checkPassGrade"
                 />
               <div class="pb-5"></div> 
           </div>
@@ -1137,6 +1147,7 @@ export default {
         .post("/kb/page/update", {
           text: this.activesbook.text,
           title: this.activesbook.title,
+          pass_grade: this.activesbook.pass_grade,
           id: this.activesbook.id,
         })
         .then((response) => { 
@@ -1402,6 +1413,15 @@ export default {
     },
 
     editorSave() {},
+
+    checkPassGrade() {
+      console.log('pass grade')
+      let len = this.activesbook.questions.length;
+      let min = len != 0 ? Number((100 / len).toFixed()) : 100;
+
+      if(this.activesbook.pass_grade > 100) this.activesbook.pass_grade = 100;
+      if(this.activesbook.pass_grade < min) this.activesbook.pass_grade = Number(min);
+    },
   },
 };
 /**

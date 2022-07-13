@@ -90,6 +90,9 @@ class Activity extends Model
             if(!array_key_exists("lastname",$record)){
                 $record['lastname'] = ' ';
             }
+            if(!array_key_exists("group",$record)){
+                $record['group'] = ' ';
+            }
             $row['Имя сотрудника'] = $record['lastname'] . ' ' . $record['name'];
             $row['Группа'] = $record['group'];
             
