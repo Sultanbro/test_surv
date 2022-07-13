@@ -717,6 +717,8 @@ export default {
           course_item_id: this.course_item_id,
         })
         .then((response) => {
+        
+
          // this.activeVideo.item_models.push(response.data.item_model);
         })
         .catch((error) => {
@@ -737,14 +739,18 @@ export default {
     },
 
     nextElement() {
+      if(this.activesbook.item_model == null) {
+        this.setArticlePassed();
+        this.activesbook.item_model = {status: 1}; 
+      }
    
-      this.setArticlePassed();
       // find next element 
       let index = this.ids.findIndex(el => el.id == this.activesbook.id); 
       if(index != -1 && this.ids.length - 1 > index) {
         
         let el = this.findItem(this.ids[index + 1]);
-        
+
+       
         this.passedTest = false;
         this.activesbook = el;
         this.questions_key++;
@@ -756,9 +762,6 @@ export default {
           }
         }
           
-
-        el.item_model.status = 1;  
-
       } else {
         // move to next course item
         this.$parent.after_click_next_element();
@@ -798,14 +801,17 @@ export default {
             book_id = this.show_page_id
 
 
-            if(this.show_page_id == 0) {
+            if(this.show_page_id == 0 || this.show_page_id == null) {
               this.activesbook = this.tree[0];
             } else {
               // find element 
+                   console.log(this.ids)
               let index = this.ids.findIndex(el => el.id == this.show_page_id); 
               
+              console.log(index)
               if(index != -1) {
                 let el = this.findItem(this.ids[index]);
+                  console.log(el)
                 this.activesbook = el;
                 if(this.activesbook != null && this.activesbook.questions.length == 0) {
                   this.passedTest = true;

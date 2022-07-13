@@ -86,9 +86,15 @@
       cursor: pointer;
       margin: 3px 0;
 
-      &.pass p {
-        color: #3a6ac1;
+      &.active {
+        background: #3a6ac1;
+        padding: 0 0 0 5px;
       } 
+
+      &.pass {
+        background: #64c77a;
+          padding: 0 0 0 5px;
+      }
       
     }
 

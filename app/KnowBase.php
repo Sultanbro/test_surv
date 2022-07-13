@@ -179,12 +179,12 @@ class KnowBase extends Model implements CourseInterface
      * 
      * @return [type]
      */
-    public function pluckArticles($id, $items) {
+    public function pluckArticles($items) {
         $arr = [];
-        $arr = [$id];
 
         foreach ($items as $key => $item) {
-            $arr = array_merge($arr, $this->pluckArticles($item->id, $item->children));
+            $arr[] = $item->id;
+            $arr = array_merge($arr, $this->pluckArticles($item->children));
         }
 
         return $arr;
@@ -198,7 +198,7 @@ class KnowBase extends Model implements CourseInterface
     {
         $kb = self::with('children')->find($this->id);
         
-        return $this->pluckArticles($this->id, $kb->children);
+        return $this->pluckArticles($kb->children);
     }
 
     /**

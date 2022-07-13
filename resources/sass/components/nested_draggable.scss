@@ -133,6 +133,25 @@ ul {
   &.opened { 
     display: block;
   }
+
+  &.pass {
+    & > .titles {
+      background: #64c77a;
+      padding: 0 0 0 5px;
+    } 
+    
+  }
+
+  &.active {
+    & > .titles {
+      background: #649fc7;
+      padding: 0 0 0 5px;
+    } 
+    
+  }
+
+  
+
   .chapter-btns i {
     width: 27px;
     margin-left: 5px;
@@ -203,6 +222,7 @@ li.chapter:hover>div p {
   .shower {
     display: flex;
   }
+
 }
 
 .chapter .handles:hover {

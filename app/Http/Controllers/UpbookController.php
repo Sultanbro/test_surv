@@ -113,8 +113,15 @@ class UpbookController extends Controller
      * ]; 
      */
     public function getTests(Request $request)
-    {
-        $book = Book::find($request->id);
+    {   
+        $user_id = auth()->id();
+        $book = Book::where('id',$request->id)
+            ->with('item_model', function ($query) use ($user_id){
+                $query->where('type', 1)
+                    ->where('user_id', $user_id);
+            })
+            ->first();
+
         $qs = TestQuestion::where('testable_type', 'App\Models\Books\Book')->where('testable_id', $request->id)->get()->groupBy('page');
 
         $arr = [];
@@ -131,7 +138,11 @@ class UpbookController extends Controller
                 'page' => $id,
                 'pages' => $id,
                 'pass' => false,
-                'questions' => $_test 
+                'questions' => $_test,
+                'item_model' => CourseItemModel::where('user_id', $user_id)
+                    ->where('type', 1)
+                    ->where('item_id', $id)
+                    ->first(),
             ]);
 
             $_pages = array_column($arr, 'page');

@@ -98,7 +98,7 @@
                     :mode="mode"
                     />
                 
-                <button class="next-btn btn btn-primary" 
+                <button class="next-btn btn btn-primary"  v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null)"
                   @click="nextElement()">
                   Продолжить курс
                   <i class="fa fa-angle-double-right ml-2"></i>
@@ -221,12 +221,10 @@ export default {
     },
 
     nextElement() {
-      console.log(this.activeVideo)
+
       if(this.activeVideo.item_model == null) {
         this.setVideoPassed()
       }
-
-        console.log(this.activeVideo)
 
       // create array of video ids
       let arr = [];
@@ -324,7 +322,6 @@ export default {
 
 
     openControlsMenu(video) {
-      console.log("openControlsMenu");
       video.show_controls = true;
     },
     
@@ -530,10 +527,7 @@ export default {
     
     setActiveGroup() {
       // check playlist has videos in groups  
-      console.log('text')
-      console.log(this.playlist.groups.length)
-      console.log(this.playlist.groups[0].videos.length > 0)
-      console.log('end')
+
       if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
         // set group opened
         this.playlist.groups[0].opened = true;

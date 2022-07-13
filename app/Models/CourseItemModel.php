@@ -44,7 +44,7 @@ class CourseItemModel extends Model
     {
         if($model == 'App\Models\Books\Book') return 1;
         if($model == 'App\Models\Videos\Video') return 2;
-        if($model == 'App\Knowbase') return 3;
+        if($model == 'App\KnowBase') return 3;
     }
     
 }

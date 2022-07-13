@@ -80,7 +80,8 @@
                       ref="upbook"
                       :course_page="true"
                       :course_item_id="activeCourseItem.id"
-                      :enable_url_manipulation="false"  
+                      :enable_url_manipulation="false"
+                      :active_page="activeCourseItem.last_item"
                     />
                   </div>
  
@@ -103,7 +104,7 @@
                         :parent_name="activeCourseItem.title" 
                         :course_item_id="activeCourseItem.id"
                         :parent_id="activeCourseItem.item_id"
-                        :show_page_id="activeCourseItem.item_id" 
+                        :show_page_id="activeCourseItem.last_item" 
                         mode="read"
                         :course_page="true"
                         :enable_url_manipulation="false"
@@ -112,6 +113,12 @@
                   </div>
 
               </div>
+
+              <div class="p-4"  v-if="congrats">
+                  <h1>Поздравляем с завершением курса! 😁 😁 😆 </h1>
+                  <p>Спасибо, что прошли курс несмотря ни на что!</p>
+              </div>
+
             </div>
 
       </div>
@@ -134,7 +141,8 @@ export default {
       activeCourseItem: null,
       activeCourse: null,
       activeStep: null,
-      trees: []
+      trees: [],
+      congrats: false
     };
   },
   created() {
@@ -160,6 +168,8 @@ export default {
         this.activeCourseItem.status = 2;
       } else {
         this.activeCourseItem.status = 1;
+        this.activeCourseItem = null;
+        this.congrats = true;
         this.$message.success('Поздравляем с завершением курса!');
       } 
       
@@ -190,6 +200,8 @@ export default {
         if(index != -1) {
           this.activeCourseItem = this.items[index];
           //this.activeStep = this.items[0].steps[0];
+        } else {
+          this.congrats = true;
         }
      
       }
@@ -218,6 +230,7 @@ export default {
     selectCourseItem(i) {
       
       if(this.canSelect(this.items[i].status)) {
+        this.congrats = false;
         this.activeCourseItem = this.items[i];
         if(this.activeCourseItem.model_type == 'App\\KnowBase') {
           this.selectKnowbaseSection();
