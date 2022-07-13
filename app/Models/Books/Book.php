@@ -32,6 +32,14 @@ class Book extends Model implements CourseInterface
         return $this->morphMany('App\Models\TestQuestion', 'testable');
     }
     
+    /**
+     * @return 
+     */
+    public function segments()
+    {
+        return $this->hasMany('App\Models\Books\BookSegment', 'book_id');
+    }
+
     public function item_model()
     {
         return $this->hasOne('App\Models\CourseItemModel', 'item_id');

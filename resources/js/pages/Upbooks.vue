@@ -307,7 +307,8 @@
                   type="number"
                   min="1"
                   max="100"
-                  placeholder="Страница"
+                  v-model="test.pass_grade"
+                  placeholder="Проходной балл"
                   class="form-control mb-2"
                 />
               </div>
@@ -315,6 +316,8 @@
                 <questions
                   :questions="test.questions"
                   :id="modals.edit_book.item.id"
+                  :pass_grade="test.pass_grade"
+                  @changePassGrade="checkPassGrade(test)"
                   type="book"
                   mode="edit"
                 />
@@ -409,6 +412,15 @@ export default {
   methods: {
     selectCategory(index) {
       this.activeCategory = this.categories[index];
+    },
+
+    checkPassGrade(test) {
+      console.log('pass grade')
+      let len = test.questions.length;
+      let min = len != 0 ? Number((100 / len).toFixed()) : 100;
+
+      if(test.pass_grade > 100) test.pass_grade = 100;
+      if(test.pass_grade < min) test.pass_grade = Number(min);
     },
 
     chooseImage(ref) {

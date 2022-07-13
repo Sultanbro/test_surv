@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\Models\Books\Book;
 use App\Models\Books\BookGroup;
+use App\Models\Books\BookSegment;
 use App\Models\TestQuestion;
 use App\Models\Course;
 use App\Models\CourseItemModel;
@@ -120,6 +121,7 @@ class UpbookController extends Controller
                 $query->where('type', 1)
                     ->where('user_id', $user_id);
             })
+            ->with('segments')
             ->first();
 
         $qs = TestQuestion::where('testable_type', 'App\Models\Books\Book')->where('testable_id', $request->id)->get()->groupBy('page');
@@ -134,10 +136,13 @@ class UpbookController extends Controller
                 $_test[] = $q;
             }
 
+            $bs = $book->segments->where('page_start', $id)->first();
+
             array_push($arr, [
                 'page' => $id,
                 'pages' => $id,
                 'pass' => false,
+                'pass_grade' => $bs ? $bs->pass_grade : 100,
                 'questions' => $_test,
                 'item_model' => CourseItemModel::where('user_id', $user_id)
                     ->where('type', 1)
@@ -366,7 +371,28 @@ class UpbookController extends Controller
     
                 }
                 
+                // test segments
+
+                $bs = BookSegment::where('page_start', $test['page'])
+                    ->where('book_id', $b->id)
+                    ->first();
+
+                if($bs) {
+                    $bs->pass_grade = $test['pass_grade'];
+                    $bs->save();
+                } else {
+                    BookSegment::create([
+                        'title' => 'test',
+                        'book_id' => $b->id,
+                        'page_start' => $test['page'],
+                        'page_end' => $test['page'],
+                        'pass_grade' => $test['pass_grade'],
+                    ]);
+                }
+
             }
+
+ 
         }
 
         return $img_link;

@@ -113,7 +113,6 @@ class AnalyticsController extends Controller
      */
     public function get(Request $request)
     {
-       
         $group_id = $request->group_id;
         $month = $request->month;
         $year = $request->year;
@@ -121,7 +120,6 @@ class AnalyticsController extends Controller
         
         $group = ProfileGroup::find($group_id);
         $currentUser = User::bitrixUser();
-
 
         $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
 
@@ -708,8 +706,10 @@ class AnalyticsController extends Controller
         $currentUser = User::bitrixUser();
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
-        // Доступ к группе
-        if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
+        // Доступ к группе 
+
+ 
+        if (!auth()->user()->can('analytics_view') && !in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
             ];
@@ -760,6 +760,8 @@ class AnalyticsController extends Controller
                 ]
             ];
         } else {
+
+           
             $sheets = [
                 [
                     'title' => 'Минуты разговора',
