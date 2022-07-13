@@ -26,9 +26,9 @@
           </div>
 
           <div>
-            <p class="course-name">{{ activeCourse.course.name }}</p>
+            <p class="course-name">{{ activeCourse.name }}</p>
             <img class="course-img w-full"
-            :src="activeCourse.course.img"
+            :src="activeCourse.img"
             onerror="this.src = '/images/img-8old.png';"
             />
 
@@ -39,7 +39,7 @@
             <progress value="0" max="100"></progress>
           </div>
 
-          <!-- <div class="mt-3 description" v-html="activeCourse.course.text"></div> -->
+          <!-- <div class="mt-3 description" v-html="activeCourse.text"></div> -->
 
 
           <div class="course-item" v-for="(item, c_index) in items"
@@ -80,7 +80,8 @@
                       ref="upbook"
                       :course_page="true"
                       :course_item_id="activeCourseItem.id"
-                      :enable_url_manipulation="false"  
+                      :enable_url_manipulation="false"
+                      :active_page="activeCourseItem.last_item"
                     />
                   </div>
  
@@ -103,7 +104,7 @@
                         :parent_name="activeCourseItem.title" 
                         :course_item_id="activeCourseItem.id"
                         :parent_id="activeCourseItem.item_id"
-                        :show_page_id="activeCourseItem.item_id" 
+                        :show_page_id="activeCourseItem.last_item" 
                         mode="read"
                         :course_page="true"
                         :enable_url_manipulation="false"
@@ -112,6 +113,12 @@
                   </div>
 
               </div>
+
+              <div class="p-4"  v-if="congrats">
+                  <h1>Поздравляем с завершением курса! 😁 😁 😆 </h1>
+                  <p>Спасибо, что прошли курс несмотря ни на что!</p>
+              </div>
+
             </div>
 
       </div>
@@ -134,7 +141,8 @@ export default {
       activeCourseItem: null,
       activeCourse: null,
       activeStep: null,
-      trees: []
+      trees: [],
+      congrats: false
     };
   },
   created() {
@@ -160,6 +168,8 @@ export default {
         this.activeCourseItem.status = 2;
       } else {
         this.activeCourseItem.status = 1;
+        this.activeCourseItem = null;
+        this.congrats = true;
         this.$message.success('Поздравляем с завершением курса!');
       } 
       
@@ -190,6 +200,8 @@ export default {
         if(index != -1) {
           this.activeCourseItem = this.items[index];
           //this.activeStep = this.items[0].steps[0];
+        } else {
+          this.congrats = true;
         }
      
       }
@@ -218,6 +230,7 @@ export default {
     selectCourseItem(i) {
       
       if(this.canSelect(this.items[i].status)) {
+        this.congrats = false;
         this.activeCourseItem = this.items[i];
         if(this.activeCourseItem.model_type == 'App\\KnowBase') {
           this.selectKnowbaseSection();

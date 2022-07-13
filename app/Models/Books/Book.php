@@ -5,8 +5,10 @@ namespace App\Models\Books;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Books\BookGroup;
+use App\Contracts\CourseInterface;
+use App\Models\TestQuestion;
 
-class Book extends Model
+class Book extends Model implements CourseInterface
 {
     protected $table = 'books';
 
@@ -152,5 +154,36 @@ class Book extends Model
         return $link;
     }
 
+    /**
+     * CourseInterface
+     * @return [type]
+     */
+    public function getOrder()
+    {
+        $pages = TestQuestion::where([
+                'testable_type' => 'App\\Models\\Books\\Book',
+                'testable_id' => $this->id 
+            ])
+            ->distinct('page')
+            ->orderBy('page')
+            ->get('page')
+            ->pluck('page')
+            ->toArray();
 
+        return $pages;
+    }
+
+    /**
+     * CourseInterface
+     * @param mixed $id
+     * 
+     * @return [type]
+     */
+    public function nextElement($id)
+    {
+        $arr = $this->getOrder();
+        $key = array_search($id, $arr);
+        return $key && $key + 1 <= count($arr) - 1 ? $arr[$key + 1] : null;
+    }
+    
 }

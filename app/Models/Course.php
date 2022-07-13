@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CourseItem;
+use App\Models\CourseModel;
+use App\Models\Videos\VideoPlaylist;
+use App\Models\Books\Book;
+use App\Models\Videos\Video;
 
 class Course extends Model
 {
@@ -21,14 +25,11 @@ class Course extends Model
     public function items()
     {
         return $this->hasMany(CourseItem::class, 'course_id')->orderBy('order');
-    }
+    }   
 
-    public function items_models()
+    public function models()
     {
-        $user_id = auth()->user()->id;
-        return $this->hasMany(CourseItem::class, 'course_id')->orderBy('order')->with('elements', function ($query) use ($user_id){
-            $query->where('user_id', $user_id);
-        });
+        return $this->hasMany(CourseModel::class, 'course_id');
     }
 
     
@@ -42,14 +43,68 @@ class Course extends Model
      */
     public function setCheckpoint($items)
     {
-        $disabled = false;
+        $found_active = false;
         foreach ($items as $key => $item) {
-            if(!$disabled) {
-                $item->status = $item->countItems() <= $item->elements->count() ? CourseResult::COMPLETED : CourseResult::ACTIVE;
-                if($item->status == CourseResult::ACTIVE) $disabled = true;
+
+            $item->last_item = null;
+
+            if(!$found_active) {
+
+                $arr = [];
+                $model_ids = [];
+
+                $model = $item->model();
+                $completed_stages = 0;
+
+                // get completed stages
+                if($model) {
+                    $model_ids = $model->getOrder();
+                
+                    $cim = CourseItemModel::where('user_id', auth()->id())
+                        ->where('type', CourseItemModel::getType($item->item_model))
+                        ->whereIn('item_id', $model_ids)
+                        ->select('item_id')
+                        ->get();
+
+                    $completed_stages = $cim->count();
+                }
+                
+                // can replace $item->countItems() with count($item->model()->getOrder())
+               
+                // if(CourseItemModel::getType($item->item_model) == 1) { 
+                //     dump($model->getOrder());
+                //         dump((int)$item->countItems() <= (int)$completed_stages);
+                //     dump($item->countItems());
+                //     dump((int)$completed_stages);
+                // }
+                
+                $item->status = (int)$item->countItems() <= (int)$completed_stages ? CourseResult::COMPLETED : CourseResult::ACTIVE;
+               
+                // found active
+                if($item->status == CourseResult::ACTIVE) {
+                    $found_active = true;
+
+                    $diff = array_diff($model_ids, $cim->pluck('item_id')->toArray());
+                    $diff = array_values($diff);
+ 
+                    // set checkpoint
+                    if(count($diff) > 0) {
+                        // get id
+                       
+                       
+                        //if(count($diff) > 0) $item->last_item = $item->getNextElement($diff[0]);
+                      $item->last_item = $diff[0];
+                    }
+                    
+                    
+                }
+
             } else {
+
                 $item->status = CourseResult::INITIAL;
+
             }
+
         }
 
         return $items;

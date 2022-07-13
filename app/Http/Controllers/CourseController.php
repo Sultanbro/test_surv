@@ -8,9 +8,12 @@ use App\Models\Course;
 use App\Models\CourseItem;
 use App\Models\CourseResult;
 use App\Models\CourseProgress;
+use App\Models\CourseModel;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\KnowBase;
+use App\ProfileGroup;
+use App\Position;
 use App\User;
 use Carbon\Carbon;
 use DB;
@@ -51,8 +54,10 @@ class CourseController extends Controller
             return redirect('/');
         }
 
+        $course = Course::with('items', 'models')->get();
+
         return [
-            'courses' => Course::with('items')->get()
+            'courses' => $course
         ];
     }
 
@@ -97,15 +102,21 @@ class CourseController extends Controller
             }
         }
 
-        foreach($request->course['users'] as $index => $user) {
-            $cr = CourseResult::where('user_id', $user['id'])->where('course_id', $request->course['id'])->first();
-            if(!$cr) CourseResult::create([
-                'user_id' => $user['id'],
-                'course_id' => $request->course['id'],
-                'status' => CourseResult::INITIAL,
-                'points' => 0
+        CourseModel::where('course_id', $course->id)->delete();
+
+        foreach($request->course['targets'] as $index => $target) {
+      
+            if($target['type'] == 1) $model = 'App\\User';
+            if($target['type'] == 2) $model = 'App\\ProfileGroup';
+            if($target['type'] == 3) $model = 'App\\Position';
+
+            CourseModel::create([
+                'course_id' => $course->id,
+                'item_id' => $target['id'],
+                'item_model' => $model,
             ]);
         }
+
     }
 
 
@@ -142,15 +153,54 @@ class CourseController extends Controller
             ]);
         }
 
-        $course = Course::with('items')->find($request->id);
+        $course = Course::with('items', 'models')->find($request->id);
+        
+        $targets = [];
+        foreach ($course->models as $key => $target) {
+            if($target->item_model == 'App\\ProfileGroup') {
+                $model = ProfileGroup::find($target->item_id);
 
+                if($model) {
+                    $targets[] = [
+                        "name" => $model->name,
+                        "id" => $model->id,
+                        "type" => 2,
+                    ];
+                }
+            }
+
+            if($target->item_model == 'App\\User') {
+                $model = User::withTrashed()->find($target->item_id);
+
+                if($model) {
+                    $targets[] = [
+                        "name" => $model->last_name . ' ' . $model->name,
+                        "id" => $model->id,
+                        "type" => 1,
+                    ];
+                }
+            }
+
+            if($target->item_model == 'App\\Position') {
+                $model = Position::find($target->item_id);
+
+                if($model) {
+                    $targets[] = [
+                        "name" => $model->position,
+                        "id" => $model->id,
+                        "type" => 3,
+                    ];
+                }
+                
+            }
+        }
+
+        $course->targets = $targets;
+        
         $author = User::withTrashed()->find($course->user_id);
         $course->author =  $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';
        
         $course->created =  Carbon::parse($course->created_at)->format('d.m.Y');
-        
-        $course_users = CourseResult::where('course_id', $request->id)->get(['user_id'])->pluck('user_id')->toArray();
-        $course->users = User::withTrashed()->whereIn('id', $course_users)->get(['id', DB::raw("CONCAT(name,' ',last_name) as name")]);
 
         return [
             'course' => $course,

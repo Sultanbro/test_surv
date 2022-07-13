@@ -57,9 +57,34 @@ class VideoPlaylistController extends Controller {
 	}
 
 	public function get() {
+
+		$categories = Category::with('playlists')->get();
+
+		$disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+
+		foreach ($categories as $key => $cat) {
+			foreach ($cat->playlists as  $playlist) {
+				if($playlist->img != '' && $playlist->img != null) {
+					$playlist->img = $disk->temporaryUrl(
+						$playlist->img, now()->addMinutes(360)
+					);
+				}   
+			}
+		}
+
 		return [
 			'user_id' => auth()->user()->id,
-			'categories' => Category::with('playlists')->get()
+			'categories' => $categories
 		];
 	}
 
@@ -87,7 +112,8 @@ class VideoPlaylistController extends Controller {
 				'title' => 'Без группы',
 				'id' => 0,
 				'videos' => $no_group_videos,
-				'opened' => false
+				'opened' => false,
+				'children' => []
 			]);
 		}
 
@@ -96,6 +122,25 @@ class VideoPlaylistController extends Controller {
 				->where('testable_id', $video->id)
 				->get();
 		}
+
+		//
+		$disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+
+		if($pl->img != '' && $pl->img != null) {
+			$pl->img = $disk->temporaryUrl(
+				$pl->img, now()->addMinutes(360)
+			);
+		}   
 
 		return [
 			'playlist' => $pl,
@@ -221,8 +266,8 @@ class VideoPlaylistController extends Controller {
 	
 
 	public function save(Request $request) {
-		$item = $request->playlist;
-		$videos = $request->playlist['videos'];
+		$item = json_decode($request->playlist, true);
+		$videos = $item['videos'];
 
 		foreach ($videos as $index => $video) {
 			$vid = Video::find($video['id']);
@@ -232,26 +277,126 @@ class VideoPlaylistController extends Controller {
 			}
 		}
 
+		
+		
 		$playlist = Playlist::find($item['id']);
+
+		// img of playlist
+		$link = '';
+
+		$disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+
+		if($request->file('file')) {
+
+			if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
+                $disk->delete($playlist->img);
+            }
+			
+			$links = $this->uploadFile('/pl', $request->file('file')); 
+			$link = $links['temp'];
+			$playlist->img = $links['relative'];
+		}
 
 		$playlist->title = $item['title'];
 		$playlist->category_id = $item['category_id'];
 		$playlist->text = $item['text'];
 		$playlist->save();
+
+		return $link;
 	}
 
 	public function saveFast(Request $request)
 	{
-		$item = $request->playlist;
+		$item = json_decode($request->playlist, true);
 		
 		$playlist = Playlist::find($item['id']);
+
+		$link = '';
+
+		$disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+
+		if($request->file('file')) {
+
+			if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
+                $disk->delete($playlist->img);
+            }
+			
+			$links = $this->uploadFile('/pl', $request->file('file')); 
+			$link = $links['temp'];
+			$playlist->img = $links['relative'];
+		}
+
 
 		$playlist->title = $item['title'];
 		$playlist->category_id = $item['category_id'];
 		$playlist->text = $item['text'];
 		$playlist->save();
 
+
+		return $link;
+		
 	}
+
+	 
+    /**
+     * Upload file to S3 and return relative link
+     * @param String $path
+     * @param mixed $file
+     * 
+     * @return array 
+     * 
+     * 'relative' => String
+     * 'temp' => String
+     */
+    private function uploadFile(String $path, $file)
+    {
+        $disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+
+        $extension = $file->getClientOriginalExtension();
+        $originalFileName = $file->getClientOriginalName();
+        $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
+
+        $disk->putFileAs($path, $file, $fileName);
+
+        $xpath = $path . '/' . $fileName;
+        
+        return [
+            'relative' => $xpath,
+            'temp' => $disk->temporaryUrl(
+                $xpath, now()->addMinutes(360)
+            )
+        ];
+    }
 
 	public function create() {
 		$categories = Category::all();

@@ -5,9 +5,10 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\KnowBase;
+use App\Contracts\CourseInterface;
 use App\Models\KnowBaseModel;
 
-class KnowBase extends Model
+class KnowBase extends Model implements CourseInterface
 {   
     use SoftDeletes;
     
@@ -170,5 +171,49 @@ class KnowBase extends Model
             
         return $books;
     }
+
+    /**
+     * CourseInterface
+     * @param mixed $id
+     * @param mixed $items
+     * 
+     * @return [type]
+     */
+    public function pluckArticles($items) {
+        $arr = [];
+
+        foreach ($items as $key => $item) {
+            $arr[] = $item->id;
+            $arr = array_merge($arr, $this->pluckArticles($item->children));
+        }
+
+        return $arr;
+    }
+
+    /**
+     * CourseInterface
+     * @return [type]
+     */
+    public function getOrder()
+    {
+        $kb = self::with('children')->find($this->id);
+        
+        return $this->pluckArticles($kb->children);
+    }
+
+    /**
+     * CourseInterface
+     * 
+     * @param mixed $id
+     * 
+     * @return [type]
+     */
+    public function nextElement($id)
+    {
+        $arr = $this->getOrder();
+        $key = array_search($id, $arr);
+        return $key && $key + 1 <= count($arr) - 1 ? $arr[$key + 1] : null;
+    }
+    
     
 }

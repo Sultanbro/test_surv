@@ -58,8 +58,18 @@
           <p class="mb-0">Вопросы на странице:</p>
         </div>
 
-        <div class="item" v-for="test in tests" :class="{'pass': test.pass}">
-          <p class="mb-0" @click="moveTo(test.page)">Стр. {{ test.page }} : {{ test.questions.length }} вопрос (-ов)</p>
+        <div class="item d-flex" v-for="test in tests" :class="{
+            'pass': test.pass || test.item_model !== null,
+            'active': page == test.page
+          }">
+          <div class="mr-2">
+            <i class="fa fa-arrow-right pointer" v-if="page == test.page || active_page == test.page"></i>
+            <i class="fa fa-check pointer" v-else-if="test.item_model !== null"></i>
+            <i class="fa fa-lock pointer" v-else></i>
+          </div>
+          <p class="mb-0" @click="moveTo(test.page)">
+            Стр. {{ test.page }} : {{ test.questions.length }} вопрос (-ов)
+          </p>
         </div>
       </div>
 
@@ -100,7 +110,7 @@
         :questions="activeTest.questions"
         :pass="activeTest.pass"
         :id="0"
-        :key=""
+        :key="test_key"
         type="book"
         :mode="mode" 
         @continueRead="nextPage"
@@ -128,7 +138,7 @@ export default {
   components: {
     VuePdfEmbed
   },
-  props: ["book_id", "mode", 'showBackBtn', 'course_page'],
+  props: ["book_id", "mode", 'showBackBtn', 'course_page', 'active_page', 'course_item_id'],
   data() {
     return {
       page: 1,
@@ -139,6 +149,7 @@ export default {
       zoom: 800,
       isLoading:true,
       tests: [],
+      test_key: 1,
       checkpoint: 1, // last page
       pass: false // pass test
     };
@@ -161,16 +172,36 @@ export default {
     },
 
     nextElement() {
+      
+      if(this.activeTest.item_model == null) {
+        this.setSegmentPassed();
+        this.activeTest.item_model = {status: 1}; 
+      }
 
       let index = this.tests.findIndex(el => el.page >= this.page);
 
       if(index != -1 && this.tests.length - 1 > index) {
-        this.activeTest = this.tests[index + 1];
-        this.page = this.activeTest.page;
+        this.activeTest = null;
+        this.page++;
       } else {
         this.$parent.after_click_next_element();
       }
       
+    },
+
+    setSegmentPassed() {
+      axios
+        .post("/my-courses/pass", {
+          id: this.page,
+          type: 1,
+          course_item_id: this.course_item_id,
+        })
+        .then((response) => {
+         // this.activeVideo.item_models.push(response.data.item_model);
+        })
+        .catch((error) => {
+          alert(error);
+        });
     },
 
     getTests() {
@@ -212,7 +243,7 @@ export default {
       // already passed
       if(i != -1) {
         this.activeTest = this.tests[i]
-          
+        this.test_key++;
         if(action == 'prev')  {
 
           if(last_test) {
