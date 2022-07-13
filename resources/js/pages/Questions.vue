@@ -39,6 +39,15 @@
 
       <div class="title d-flex jcsb aic" v-if="mode == 'read'">
         <p class="mb-0">{{ q.text }}</p>
+        <i
+          class="fa fa-times-circle wrong"
+          v-if="scores && q.result == false"
+        ></i>
+        <i
+          class="fa fa-check-circle right"
+          v-if="scores && q.result == true"
+        ></i>
+
       </div>
 
       <div v-if="q.editable || mode == 'read'">
@@ -259,7 +268,7 @@ export default {
         }
       });
 
-      if(this.points == this.total) {
+      if(this.scores) {
         this.$emit('passed');
       }
     },
