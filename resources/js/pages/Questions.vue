@@ -199,7 +199,7 @@ export default {
 
       this.questions.forEach((q) => {
         q.editable = true;
-        this.total += q.points;
+        this.total += Number(q.points);
       });
 
       if(this.pass) {
@@ -263,7 +263,7 @@ export default {
             q.result = false;
           }
         } else {
-          this.points += q.points;
+          this.points += Number(q.points);
           q.result = true;
         }
       });
