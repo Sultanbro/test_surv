@@ -53,6 +53,10 @@ class ActivityController extends Controller
            
                 
                 // date
+                $date_index = 'ДАТА';
+                if($group_id == 71){
+                    $date_index = 'Дата';
+                }
                 $excel_date = count($sheet) > 0 && array_key_exists('ДАТА', $sheet[0]) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($sheet[0]['ДАТА']) : Carbon::now();
                 $date = $excel_date ? $excel_date->format('Y-m-d') : date('Y-m-d');
 
@@ -97,6 +101,32 @@ class ActivityController extends Controller
                         
                         
                     } 
+
+                    if($group_id == 71) {
+
+                        if($table_type == 'minutes') {
+                            $item['name'] = $row['Логин'];
+                            if($item['name'] == null) continue;
+                            $excel_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['Дата']);
+                            $item['date'] = $excel_date ? Carbon::parse($excel_date)->format('Y-m-d') : ''; 
+                            $item['data'] = $excel_date ? Carbon::parse($excel_date)->format('d.m.Y') : '';
+                            if($item['activity_id'] == 149){
+                                $item['hours'] = $this->countHours($row['Время обработки']); 
+                            }
+                            else{
+                                $item['hours'] = $this->countHours($row['Эффективное время']); 
+                            }
+                            $item['id'] = $this->getPossibleUser($gusers, $item['name']);
+                        }   
+                        
+                        if($table_type == 'avg_time') { 
+                            $item['name'] = $row['Логин'];
+                            $item['avg_time'] = Carbon::parse($row['Среднее время разговора, сек'])->format('i:s');
+                            $item['id'] = $item['name'] ? $this->getPossibleUser($gusers, $item['name']) : 0;
+                            if($row['menedzher'] == '') continue;
+                        }                     
+                        
+                    }  
                     
                     array_push($items, $item);
                 }
@@ -189,10 +219,15 @@ class ActivityController extends Controller
            
         }
         
+        if($item['group_id'] == 71) {
+            if($item['activity_id'] == 149){
+                $save_value = (int)number_format($item['hours'] * 60, 0);
+            }else{
+                $save_value = round($item['hours'], 1);
+            }
+            $this->updateActivity($item, $item['activity_id'], $save_value);          
+        }
 
-
-        
-            
     }
 
     private function updateActivity($item, $activity_id, $value) {
