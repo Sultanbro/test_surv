@@ -86,8 +86,8 @@ Vue.component('progress-bar', require('./components/ProgressBar.vue').default) /
 Vue.component('rating', require('./components/ui/Rating.vue').default); // звездочки
 Vue.component('profile-kpi-button', require('./components/ProfileKpiButton.vue').default); // кнопка Индивид KPI в настройках User
 Vue.component('profile-groups', require('./components/profile/ProfileGroups.vue').default); // настройки user
+Vue.component('base-knowledge', require('./components/profile/ProfileBaseKnowledge.vue').default); // настройки user База знание
 Vue.component('profile-books', require('./components/profile/ProfileBooks.vue').default); // настройки user
-
 Vue.component('profile-quarter-button', require('./components/ProfileQuarterButton.vue').default); // кнопка Индивид Quarter в настройках User
 Vue.component('auth-check-list', require('./components/auth_check_list.vue').default); // кнопка у кого есть Чек Лист список Чек Листов (Fixed)
 Vue.component('selected-modal-checkList', require('./components/selectedModalCheckList.vue').default); // чек лист selected modal
@@ -136,8 +136,12 @@ Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); 
 Vue.component('permission-item', require('./components/PermissionItem.vue').default); // 
 
 Vue.component('video-accordion', require('./components/VideoAccordion.vue').default); //
+
+
 Vue.component('video-list', require('./components/VideoList.vue').default); //
+
 Vue.component('video-uploader', require('./components/VideoUploader.vue').default); //
+
 
 Vue.component('superselect', require('./components/SuperSelect.vue').default); // 
 
@@ -154,6 +158,9 @@ Vue.component('page-upbooks-read', require('./pages/UpbooksRead.vue').default); 
 Vue.component('page-upbooks', require('./pages/Upbooks.vue').default); // книги редактирование
 
 Vue.component('page-playlist-edit', require('./pages/PlaylistEdit.vue').default); // редактирование плейлиста
+
+// Vue.component('page-playlist-read', require('./pages/PlaylistRead.vue').default); // чтение плейлиста
+
 Vue.component('page-playlists', require('./pages/Playlists.vue').default); // редактирование плейлиста
 
 Vue.component('booklist', require('./pages/booklist.vue').default); // база знаний раздел
