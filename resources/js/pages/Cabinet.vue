@@ -24,9 +24,8 @@
       <div class="d-flex jsutify-content-between hat-top">
         <div class="bc">
           <a href="#">Настройка кабинета</a>
-
         </div>
-        <div class="control-btns"></div>
+
       </div>
     </div>
     <div class="content mt-3 py-3">
@@ -81,48 +80,32 @@
         <div class="bc">
           <a  href="#">Настройка профиля</a>
         </div>
-        <div class="control-btns"></div>
+        <div class="control-btn"></div>
       </div>
 
-    <div style="width:250px;height: 100px">
-
-      <div class="button-wrapper">
-        <button class="button btn btn-primary" @click.prevent="uploadImage"> Crop image </button>
-      </div>
-
-
-
-      <cropper
-          :src="image"
-          ref="cropper"
-          @change="change"
-
-      />
-
-      <div class="button-wrapper">
-        <button class="button btn btn-primary" @click.prevent="uploadImage"> Crop image </button>
-      </div>
-
-
-    </div>
-
-
-
-
-
-     <div class="content mt-3 py-3" >
-      <div class="contacts-info col-md-6 none-block mt-10" id="profile_d" >
-        <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
-          <div style="border: 2px solid #ced4da;padding: 5px">
-            <img style="width: 200px;height: 200px"
-                 class="image-card__image"
-                 :src="img" :alt="img">
-            <form enctype="multipart/form-data">
-              <input id="upload_image" hidden type="file" class="form-control" v-on:change.prevent="onChange">
-            </form>
-          </div>
-        </label>
-      </div>
+     <div class="col-12 p-5 py-3" >
+        <div  id="profile_d"  class="mb-3">
+            <vue-avatar
+                :width=200
+                :height=200
+                :image="image"
+                ref="vueavatar"
+                @vue-avatar-editor:image-ready="onImageReady"
+            >
+            </vue-avatar>
+            <vue-avatar-scale
+                ref="vueavatarscale"
+                @vue-avatar-editor-scale:change-scale="onChangeScale"
+                :width=250
+                :min=1
+                :max=3
+                :step=0.02
+            >
+            </vue-avatar-scale>
+            <br>
+            <button  style="width: 250px" class="btn btn-success" v-on:click="saveClicked">Обрезать Сохранить</button>
+           <br>
+        </div>
         <div class="form-group row">
           <label for="firstName"
                  class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
@@ -186,61 +169,59 @@
           </div>
 <!--          v-model="user.working_country"-->
         </div>
-    </div>
-     <div class="content mt-3 py-3">
-      <div class="col-12 row payment-profile" v-for="(payment,index) in payments">
+        <div class="col-12 p-0 row payment-profile" v-for="(payment,index) in payments">
 
-        <div class="col-2">
-          <input v-model="payment.bank" class="form-control" placeholder="Банк">
-        </div>
+          <div class="col-2">
+            <input v-model="payment.bank" class="form-control" placeholder="Банк">
+          </div>
 
-        <div class="col-2">
-          <input v-model="payment.country" class="form-control" placeholder="Страна">
-        </div>
+          <div class="col-2">
+            <input v-model="payment.country" class="form-control" placeholder="Страна">
+          </div>
 
-        <div class="col-2">
-          <input v-model="payment.cardholder" class="form-control" placeholder="Имя на карте">
-        </div>
+          <div class="col-2">
+            <input v-model="payment.cardholder" class="form-control" placeholder="Имя на карте">
+          </div>
 
-        <div class="col-2">
-          <input type="number" v-model="payment.phone" class="form-control" placeholder="Телефон">
-        </div>
+          <div class="col-2">
+            <input type="number" v-model="payment.phone" class="form-control" placeholder="Телефон">
+          </div>
 
-        <div class="col-2">
-          <input type="number"  v-model="payment.number" class="form-control card-number" placeholder="Номер карты">
-        </div>
+          <div class="col-2">
+            <input type="number"  v-model="payment.number" class="form-control card-number" placeholder="Номер карты">
+          </div>
 
 
-        <div class="col-2 position-relative">
+          <div class="col-2 position-relative">
 
-          <button v-if="payment.id"  style="position: absolute;left: 0px" class=" btn btn-danger btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,payment.id)">
-            <span class="fa fa-trash"></span>
-          </button>
-
-          <button v-else style="position: absolute;left: 0px" class=" btn btn-primary btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,'dev')" >
-            <span class="fa fa-trash"></span>
-          </button>
-
-        </div>
-
-      </div>
-      <div class="col-12" v-if="cardValidatre.error">
-        <div class="alert alert-danger">
-          <span>Заполните все поля</span>
-        </div>
-      </div>
-      <div class="col-8 row mt-3">
-
-        <div class="col-3">
-            <button   @click="addPayment()" style="color: white" class="btn btn-phone btn-primary  btn-block">
-              Добавить карту
+            <button v-if="payment.id"  style="position: absolute;left: 0px" class=" btn btn-danger btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,payment.id)">
+              <span class="fa fa-trash"></span>
             </button>
-        </div>
 
-        <div class="col-3" >
-            <button @click.prevent="editProfileUser()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
+            <button v-else style="position: absolute;left: 0px" class=" btn btn-primary btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,'dev')" >
+              <span class="fa fa-trash"></span>
+            </button>
+
+          </div>
+
         </div>
-      </div>
+        <div class="col-12 p-0 " v-if="cardValidatre.error">
+          <div class="alert alert-danger">
+            <span>Заполните все поля</span>
+          </div>
+        </div>
+        <div class="col-8  p-0  row mt-3">
+
+          <div class="col-3">
+              <button   @click="addPayment()" style="color: white" class="btn btn-phone btn-primary  btn-block">
+                Добавить карту
+              </button>
+          </div>
+
+          <div class="col-3" >
+              <button @click.prevent="editProfileUser()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
+          </div>
+        </div>
     </div>
   </div>
 </div>
@@ -248,9 +229,8 @@
 
 </template>
 <script>
-import { Cropper } from 'vue-advanced-cropper';
-import 'vue-advanced-cropper/dist/style.css';
-
+import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
+import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale'
 
 export default {
   name: "Cabinet",
@@ -288,8 +268,7 @@ export default {
       ],
       keywords: null,
       country_results: [],
-      image: 'https://images.unsplash.com/photo-1591273531346-ba9262aa2da6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=751&q=80',
-      image_1: {},
+      image:'public/users_img/noavatar.png'
 
     };
   },
@@ -303,9 +282,50 @@ export default {
     this.user = JSON.parse(this.auth_role)
     this.format_date(this.user.birthday)
 
+    if(this.user.img_url != null){
+      this.image = 'public/users_img/'+this.user.img_url;
+    }
+  },
+  components: {
+    VueAvatar,
+    VueAvatarScale
   },
   methods: {
+    onChangeScale (scale) {
+      this.$refs.vueavatar.changeScale(scale)
+    },
 
+    saveClicked(){
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      }
+      var img = this.$refs.vueavatar.getImage()
+
+      if (img) {
+        let loader = this.$loading.show();
+
+        const form = new FormData();
+        img.toBlob((blob) => {
+          form.append('file', blob);
+          axios.post('/profile/upload/image/profile/', form, config)
+              .then(function (res) {
+                console.log(res,'res')
+
+                $(".img_url_sm").html(res.data.img)
+                loader.hide();
+              })
+              .catch(function (err) {
+                console.log(err,'error')
+              });
+        }, 'image/jpeg');
+      }
+
+    },
+    onImageReady(scale){
+      this.$refs.vueavatarscale.setScale(scale)
+    },
     SelectedCountry(index,arr){
       this.keywords = 'Страна '+arr.country+' Город '+ arr.city
       this.working_city = arr.id
@@ -319,48 +339,6 @@ export default {
 
 
     },
-    onChange(e) {
-      this.file = e.target.files[0];
-
-      this.formSubmit()
-    },
-    formSubmit() {
-
-      // e.preventDefault();
-      let loader = this.$loading.show();
-      let existingObj = this;
-      const config = {
-        headers: {
-          'content-type': 'multipart/form-data'
-        }
-      }
-
-
-
-      let data = new FormData();
-      data.append('file', this.file);
-
-      console.log(data,'datasss')
-
-      axios.post('/profile/upload/edit/profile', data, config)
-          .then(function (res) {
-            // existingObj.success = res.data.success;
-            existingObj.img = '/users_img/'+res.data.file_name;
-            existingObj.$message.success('Успешно Удалено');
-            $("#img_url_sm").attr('src',existingObj.img)
-            loader.hide();
-          })
-          .catch(function (err) {
-            existingObj.output = err;
-          });
-
-
-
-    },
-    change({ coordinates, canvas }) {
-      // console.log(coordinates, canvas);
-    },
-
     addPayment(){
 
 
@@ -524,75 +502,6 @@ export default {
       //     .then(response => this.results = response.data)
       //     .catch(error => {});
 
-    },
-
-    reset() {
-      this.image = null;
-    },
-    uploadImage(event) {
-
-      // console.log(canvas,'canvas');
-      // console.log(this.$refs,'this.$refs');
-      let existingObj = this;
-      const config = {
-        headers: {
-          'content-type': 'multipart/form-data'
-        }
-      }
-
-      const { canvas } = this.$refs.cropper.getResult();
-
-      console.log(canvas,'canvas');
-
-      if (canvas) {
-
-        let data = new FormData();
-        const form = new FormData();
-
-        canvas.toBlob((blob) => {
-
-          data.append('file',  blob);
-          form.append('file', blob);
-
-          console.log( data,' data');
-          console.log( form,' form');
-
-
-
-
-          // axios.post('/profile/upload/image/profile/', data, config)
-          //     .then(function (res) {
-          //
-          //       console.log(res,'resss')
-          //
-          //     })
-          //     .catch(function (err) {
-          //
-          //     });
-
-
-
-          // axios.post('/profile/upload/image/profile/', {
-          //   blob:this.image_1
-          // }).then(response => {
-          //
-          //   console.log(response,'response');
-          //
-          //
-          // })
-
-
-
-          //
-          // form.append('file', blob);
-          // fetch('/profile/upload/image/profile/', {
-          //   method: 'POST',
-          //   body: form,
-          // });
-
-
-        }, 'image/jpeg');
-      }
     },
 
   },
