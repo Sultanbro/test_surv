@@ -78,8 +78,10 @@ class CourseController extends Controller
             }
         }
         
+        // elements of course
         CourseItem::whereNotIn('id', $ids)->where('course_id', $request->course['id'])->delete();
 
+        
         foreach($request->course['items'] as $index => $item) {
             if($item == null) continue;
             $ci = CourseItem::where('item_model', $item['item_model'])
@@ -102,20 +104,33 @@ class CourseController extends Controller
             }
         }
 
+        // who starts the course
         CourseModel::where('course_id', $course->id)->delete();
 
-        foreach($request->course['targets'] as $index => $target) {
-      
-            if($target['type'] == 1) $model = 'App\\User';
-            if($target['type'] == 2) $model = 'App\\ProfileGroup';
-            if($target['type'] == 3) $model = 'App\\Position';
-
+        // if there one badge with 'ALL' name
+        if(count($request->course['targets']) == 1 && $request->course['targets'][0]['type'] == 0) {
             CourseModel::create([
                 'course_id' => $course->id,
-                'item_id' => $target['id'],
-                'item_model' => $model,
+                'item_id' => 0,
+                'item_model' => 0,
             ]);
-        }
+        } else {
+            // no badge
+            foreach($request->course['targets'] as $index => $target) {
+      
+                if($target['type'] == 1) $model = 'App\\User';
+                if($target['type'] == 2) $model = 'App\\ProfileGroup';
+                if($target['type'] == 3) $model = 'App\\Position';
+    
+                CourseModel::create([
+                    'course_id' => $course->id,
+                    'item_id' => $target['id'],
+                    'item_model' => $model,
+                ]);
+            }
+        }   
+
+        
 
     }
 

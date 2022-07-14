@@ -61,6 +61,13 @@
                 {{ ai.title }}
               </option>
             </select>
+            
+            <superselect-alt
+              :values="course.items"
+              class="w-full mb-4" 
+              :key="1"
+              :hide_selected="true"
+              />
 
             <button class="btn btn-primary" @click="addItem">Добавить</button>
           </div>
@@ -101,10 +108,6 @@
             class="w-full mb-4" 
             :key="1"
             :select_all_btn="true" />
-
-     
-        </multiselect>
-        <div v-for="element in course.targets">{{ element }}</div>
         
       </div>
     </div>
