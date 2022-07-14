@@ -632,7 +632,8 @@
                                                     </select>
 
 
-                                               
+
+
 
                                                     <base-knowledge :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />
 

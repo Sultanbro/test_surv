@@ -2,7 +2,6 @@
 <div class="d-flex">
   <div class="lp">
     <h1 class="page-title">Настройка кабинета</h1>
-
     <div class="settingCabinet">
       <ul class="p-0">
 
@@ -15,10 +14,9 @@
 
       </ul>
     </div>
-
-
-
   </div>
+
+
   <div  v-if="userRoles" class="rp" style="flex: 1 1 0%;"   >
     <div class="hat">
       <div class="d-flex jsutify-content-between hat-top">
@@ -29,8 +27,6 @@
       </div>
     </div>
     <div class="content mt-3 py-3">
-
-
         <div class="p-3">
           <div class="form-group">
             Субдомен
@@ -76,152 +72,158 @@
   </div>
 
   <div  v-if="userProfile" class="col-12 p-0">
+    <div class="hat">
      <div class="d-flex jsutify-content-between hat-top">
         <div class="bc">
           <a  href="#">Настройка профиля</a>
         </div>
-        <div class="control-btn"></div>
       </div>
+    </div>
 
-     <div class="col-12 p-5 py-3" >
-        <div  id="profile_d"  class="mb-3">
-            <vue-avatar
-                :width=200
-                :height=200
-                :image="image"
-                ref="vueavatar"
-                @vue-avatar-editor:image-ready="onImageReady"
-            >
-            </vue-avatar>
-            <vue-avatar-scale
-                ref="vueavatarscale"
-                @vue-avatar-editor-scale:change-scale="onChangeScale"
-                :width=250
-                :min=1
-                :max=3
-                :step=0.02
-            >
-            </vue-avatar-scale>
-            <br>
-            <button  style="width: 250px" class="btn btn-success" v-on:click="saveClicked">Обрезать Сохранить</button>
-           <br>
-        </div>
-        <div class="form-group row">
-          <label for="firstName"
-                 class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
-          <div class="col-sm-8">
-            <input class="form-control" type="text" name="name" id="firstName" required
-                   placeholder="Имя сотрудника" v-model="user.name"
-            >
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="lastName"
-                 class="col-sm-4 col-form-label font-weight-bold">Фамилия <span class="red">*</span></label>
-          <div class="col-sm-8">
-            <input class="form-control" type="text" name="last_name" id="lastName" required
-                   placeholder="Фамилия сотрудника" v-model="user.last_name"
-            >
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="email"
-                 class="col-sm-4 col-form-label font-weight-bold">Email <span class="red">*</span></label>
-          <div class="col-sm-8">
-            <input class="form-control" type="text" name="email" id="email" required
-                   placeholder="email" v-model="user.email"
-            >
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="email" class="col-sm-4 col-form-label font-weight-bold">Новый пароль </label>
-          <div class="col-sm-8">
-            <input v-model="password" minlength="5" class="form-control" type="password" name="new_pwd" id="new_pwd"
-                   placeholder="********"
-                   >
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="lastName"
-                 class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
-          <div class="col-sm-8">
-            <input   v-model="birthday" class="form-control" type="date" name="birthday" id="birthday" required>
-          </div>
-        </div>
-        <div class="form-group row">
-          <label for="lastName"
-                 class="col-sm-4 col-form-label font-weight-bold">Город<span class="red">*</span></label>
-          <div class="col-sm-8">
-            <input    v-model="keywords" class="form-control" type="text" name="country" id="country" required placeholder="поиск городов">
-            <ul v-if="country_results.length > 0" class="p-0">
+     <div class="content " >
+       <div class="col-12 p-5 py-3">
+         <div class="form-group row mb-0">
+           <vue-avatar
+               :width=200
+               :height=200
+               :image="image"
+               ref="vueavatar"
+               @vue-avatar-editor:image-ready="onImageReady"
+           >
+           </vue-avatar>
+         </div>
+         <div class="form-group row mb-0">
+           <vue-avatar-scale
+               ref="vueavatarscale"
+               @vue-avatar-editor-scale:change-scale="onChangeScale"
+               :width=250
+               :min=1
+               :max=3
+               :step=0.02
+           >
+           </vue-avatar-scale>
+         </div>
+         <div class="form-group row mb-2">
+           <button  style="width: 250px" class="btn btn-success" v-on:click="saveClicked">Обрезать Сохранить</button>
+         </div>
+         <div class="form-group row">
+           <label
+                class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
+           <div class="col-sm-8 p-0">
+             <input class="form-control" type="text" name="name" id="firstName" required
+                    placeholder="Имя сотрудника" v-model="user.name"
+             >
+           </div>
+         </div>
+         <div class="form-group row">
+           <label
+                class="col-sm-4 col-form-label font-weight-bold">Фамилия <span class="red">*</span></label>
+           <div class="col-sm-8  p-0">
+             <input class="form-control" type="text" name="last_name" id="lastName" required
+                    placeholder="Фамилия сотрудника" v-model="user.last_name"
+             >
+           </div>
+         </div>
+         <div class="form-group row">
+           <label
+                class="col-sm-4 col-form-label font-weight-bold">Email <span class="red">*</span></label>
+           <div class="col-sm-8  p-0">
+             <input class="form-control" type="text" name="email" id="email" required
+                    placeholder="email" v-model="user.email"
+             >
+           </div>
+         </div>
+         <div class="form-group row">
+           <label
+                class="col-sm-4 col-form-label font-weight-bold">Новый пароль </label>
+           <div class="col-sm-8  p-0">
+             <input v-model="password" minlength="5" class="form-control" type="password" name="new_pwd" id="new_pwd"
+                    placeholder="********"
+             >
+           </div>
+         </div>
+         <div class="form-group row">
+           <label
+                class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
+           <div class="col-sm-8  p-0">
+             <input   v-model="birthday" class="form-control" type="date" name="birthday" id="birthday" required>
+           </div>
+         </div>
+         <div class="form-group row">
+           <label
+                class="col-sm-4 col-form-label font-weight-bold">Город<span class="red">*</span></label>
+           <div class="col-sm-8  p-0">
+             <input    v-model="keywords" class="form-control" type="text" name="country" id="country" required placeholder="поиск городов">
+             <ul v-if="country_results.length > 0" class="p-0">
 
-              <li v-if="country_results.length > 0" v-for="(result,index) in country_results"  style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white">
+               <li v-if="country_results.length > 0" v-for="(result,index) in country_results"  style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white">
                  <a @click="SelectedCountry(index,result)"> Страна: {{ result.country }} Город: {{ result.city }}</a>
-              </li>
-              <li v-else style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white">
-                  нет найденных городов
-              </li>
-<!--              <li v-for="country_results in result" :key="result.id" v-text="result.city"></li>-->
-            </ul>
+               </li>
+               <li v-else style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white">
+                 нет найденных городов
+               </li>
+               <!--              <li v-for="country_results in result" :key="result.id" v-text="result.city"></li>-->
+             </ul>
 
 
 
-          </div>
-<!--          v-model="user.working_country"-->
-        </div>
-        <div class="col-12 p-0 row payment-profile" v-for="(payment,index) in payments">
+           </div>
+           <!--          v-model="user.working_country"-->
+         </div>
+         <div class="col-12 p-0 row payment-profile" v-for="(payment,index) in payments">
 
-          <div class="col-2">
-            <input v-model="payment.bank" class="form-control" placeholder="Банк">
-          </div>
+           <div class="col-2">
+             <input v-model="payment.bank" class="form-control" placeholder="Банк">
+           </div>
 
-          <div class="col-2">
-            <input v-model="payment.country" class="form-control" placeholder="Страна">
-          </div>
+           <div class="col-2">
+             <input v-model="payment.country" class="form-control" placeholder="Страна">
+           </div>
 
-          <div class="col-2">
-            <input v-model="payment.cardholder" class="form-control" placeholder="Имя на карте">
-          </div>
+           <div class="col-2">
+             <input v-model="payment.cardholder" class="form-control" placeholder="Имя на карте">
+           </div>
 
-          <div class="col-2">
-            <input type="number" v-model="payment.phone" class="form-control" placeholder="Телефон">
-          </div>
+           <div class="col-2">
+             <input type="number" v-model="payment.phone" class="form-control" placeholder="Телефон">
+           </div>
 
-          <div class="col-2">
-            <input type="number"  v-model="payment.number" class="form-control card-number" placeholder="Номер карты">
-          </div>
+           <div class="col-2">
+             <input type="number"  v-model="payment.number" class="form-control card-number" placeholder="Номер карты">
+           </div>
 
 
-          <div class="col-2 position-relative">
+           <div class="col-2 position-relative">
 
-            <button v-if="payment.id"  style="position: absolute;left: 0px" class=" btn btn-danger btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,payment.id)">
-              <span class="fa fa-trash"></span>
-            </button>
+             <button v-if="payment.id"  style="position: absolute;left: 0px" class=" btn btn-danger btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,payment.id)">
+               <span class="fa fa-trash"></span>
+             </button>
 
-            <button v-else style="position: absolute;left: 0px" class=" btn btn-primary btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,'dev')" >
-              <span class="fa fa-trash"></span>
-            </button>
+             <button v-else style="position: absolute;left: 0px" class=" btn btn-primary btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,'dev')" >
+               <span class="fa fa-trash"></span>
+             </button>
 
-          </div>
+           </div>
 
-        </div>
-        <div class="col-12 p-0 " v-if="cardValidatre.error">
-          <div class="alert alert-danger">
-            <span>Заполните все поля</span>
-          </div>
-        </div>
-        <div class="col-8  p-0  row mt-3">
+         </div>
+         <div class="col-12 p-0 " v-if="cardValidatre.error">
+           <div class="alert alert-danger">
+             <span>Заполните все поля</span>
+           </div>
+         </div>
+         <div class="col-8  p-0  row mt-3">
 
-          <div class="col-3">
-              <button   @click="addPayment()" style="color: white" class="btn btn-phone btn-primary  btn-block">
-                Добавить карту
-              </button>
-          </div>
+           <div class="col-3">
+             <button   @click="addPayment()" style="color: white" class="btn btn-phone btn-primary  btn-block">
+               Добавить карту
+             </button>
+           </div>
 
-          <div class="col-3" >
-              <button @click.prevent="editProfileUser()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
-          </div>
-        </div>
+           <div class="col-3" >
+             <button @click.prevent="editProfileUser()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
+           </div>
+         </div>
+       </div>
     </div>
   </div>
 </div>

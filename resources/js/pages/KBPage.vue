@@ -338,6 +338,8 @@ export default {
         .get("/kb/get", {})
         .then((response) => {
           this.books = response.data.books;
+
+          console.log(this.books,'this books_imah')
         })
         .catch((error) => {
           alert(error);

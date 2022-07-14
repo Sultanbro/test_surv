@@ -28,11 +28,13 @@ class KnowBaseController extends Controller
         View::share('menu', 'kb');
         View::share('link', 'kb');
 
+
         return view('admin.books');
     }
 
     public function get(Request $request)
-    {   
+    {
+
         $books = KnowBase::whereNull('parent_id')
                 ->orderBy('order');
         

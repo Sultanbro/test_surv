@@ -23,7 +23,7 @@ const HEAD = 2;
 
 import 'ant-design-vue/dist/antd.css'
 export default {
-  name: "ProfileGroups",
+  name: "ProfileBaseKnowledge",
   props: {
     user_id: {
       default: null
@@ -52,6 +52,7 @@ export default {
     if(this.user_role === HEAD) {
       this.url = '/timetracking/edit-person/head_in_groups';
     }
+
   },
   mounted() {},
   methods: {
