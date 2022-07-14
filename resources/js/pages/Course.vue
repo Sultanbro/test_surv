@@ -117,7 +117,7 @@ export default {
       users: [],
       course: {
         id: 0,
-        items: [],
+        elements: [],
       },
     };
   },
@@ -149,7 +149,7 @@ export default {
     saveOrder(e) {},
 
     deleteItem(i) {
-      this.course.items.splice(i, 1);
+      this.course.elements.splice(i, 1);
     },
     
     
