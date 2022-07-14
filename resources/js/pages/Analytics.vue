@@ -91,7 +91,7 @@
                                             <th class="text-center t-name table-title">Кол-во <br>переданных <br> стажеров</th>
                                             <th class="text-center t-name table-title">Кол-во <br>приступивших <br>к работе</th>
                                             <th class="text-center t-name table-title">Процент <br>прохождения<br> стажировки</th>
-                                            <th class="text-center t-name table-title">Кол-во<br> стажирующихся активных<br> <date-picker value="test"  :placeholder="trainee_date" v-model="trainee_date" @change="getTraineesByDate()" :disabled="true"></date-picker> </th>
+                                            <th class="text-center t-name table-title">Кол-во<br> стажирующихся активных<br></th>
                                         </thead>
                                         <tbody v-for="ocenka in recruiting.ocenka_svod">
                                             <tr>

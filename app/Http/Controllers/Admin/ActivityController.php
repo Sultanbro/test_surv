@@ -107,7 +107,6 @@ class ActivityController extends Controller
                         if($table_type == 'minutes') {
                             $item['name'] = $row['Логин'];
                             if($item['name'] == null) continue;
-                            $excel_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['Дата']);
                             $item['date'] = $excel_date ? Carbon::parse($excel_date)->format('Y-m-d') : ''; 
                             $item['data'] = $excel_date ? Carbon::parse($excel_date)->format('d.m.Y') : '';
                             if($item['activity_id'] == 149){
