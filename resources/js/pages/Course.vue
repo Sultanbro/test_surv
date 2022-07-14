@@ -49,12 +49,12 @@
 
     <div class="items">
       <div class="d-flex">
-        <p class="title mr-3">Курс состоит из ({{ course.items.length }}):</p>
+        <p class="title mr-3">Курс состоит из ({{ course.elements.length }}):</p>
         <div class="btns">
           <div class="d-flex mb-2">
            
             <superselect-alt
-              :values="course.items"
+              :values="course.elements"
               class="w-full mb-4" 
               :key="1"
               :hide_selected="true"
@@ -68,11 +68,11 @@
         class="dragArea ml-0"
         tag="ul"
         handle=".fa-bars"
-        :list="course.items"
+        :list="course.elements"
         :group="{ name: 'g1' }"
         @end="saveOrder"
       >
-        <template v-for="(el, e_index) in course.items">
+        <template v-for="(el, e_index) in course.elements">
           <li class="chapter opened" :id="el.id">
             <div class="d-flex aic mb-2">
               <div class="handles">

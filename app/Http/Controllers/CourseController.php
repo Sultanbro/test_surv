@@ -82,7 +82,7 @@ class CourseController extends Controller
         CourseItem::whereNotIn('id', $ids)->where('course_id', $request->course['id'])->delete();
 
         
-        foreach($request->course['items'] as $index => $item) {
+        foreach($request->course['elements'] as $index => $item) {
             if($item == null) continue;
             $ci = CourseItem::where('item_model', $item['item_model'])
                 ->where('course_id', $request->course['id'])
@@ -189,7 +189,7 @@ class CourseController extends Controller
 
         $items = [];
         foreach ($course->items as $key => $target) {
-            if($target->item_model == 'App\\Book') {
+            if($target->item_model == 'App\\Models\\Books\\Book') {
                 $model = Book::find($target->item_id);
 
                 if($model) {
@@ -201,7 +201,7 @@ class CourseController extends Controller
                 }
             }
 
-            if($target->item_model == 'App\\VideoPlaylist') {
+            if($target->item_model == 'App\\Models\\Videos\\VideoPlaylist') {
                 $model = VideoPlaylist::withTrashed()->find($target->item_id);
 
                 if($model) {
@@ -227,7 +227,7 @@ class CourseController extends Controller
             }
         }
         
-        $course->items = $items;
+        $course->elements = $items;
         
         $author = User::withTrashed()->find($course->user_id);
         $course->author =  $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';
