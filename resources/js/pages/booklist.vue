@@ -332,10 +332,6 @@
 
             <div v-if="mode == 'edit'">
               <p class="mt-2 mb-3"><b>{{ activesbook.title }}</b></p>
-              <div class="d-flex aic pass__ball">
-                <p class="mr-3" style="width:200px">Проходной балл в процентах (0 - 100):</p>
-                <input class="form-control mb-3" v-model="activesbook.pass_grade" type="number" :min="0" :max="100" @change="checkPassGrade" />
-              </div>
             </div>
             <questions
                   :questions="activesbook.questions"

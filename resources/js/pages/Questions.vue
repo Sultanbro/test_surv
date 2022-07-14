@@ -108,10 +108,20 @@
         
 
 
-        <div class="points" v-if="mode == 'edit'">
-          <p>Баллы</p>
-          <input type="number" v-model="q.points" min="0" max="999" />
+        <div class="d-flex jcsb">
+          <div class="points mr-3" v-if="mode == 'edit'">
+            <p>Баллы</p>
+            <input type="number" v-model="q.points" min="0" max="999" />
+          </div>
+          <div class="d-flex aic pass__ball">
+            <p class="mr-3" style="width:200px">Проходной балл в % (0 - 100):</p>
+            <input class="form-control mb-3" v-model="pass_grade" type="number" :min="0" :max="100" @change="$emit('changePassGrade')" />
+            <span>%</span>
+          </div>
         </div>
+          
+          
+     
 
       </div>
     </div>
