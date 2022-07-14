@@ -12,6 +12,7 @@ use App\Models\CourseResult;
 use App\Models\TestResult;
 use App\Models\UserCourse;
 use App\Models\CourseItem;
+use App\Models\CourseModel;
 use App\Models\TestQuestion;
 
 class CourseResult extends Model
@@ -240,12 +241,76 @@ class CourseResult extends Model
      */
     public static function activeCourse()
     {
-        $active_course = self::where('user_id', auth()->id())
+        // prepare
+        $user = auth()->user();
+        $user_id = $user->id;
+        $position_id = $user->position_id;
+
+        $groups = $user->inGroups();
+        $group_ids = [];
+        foreach ($groups as $key => $group) {
+            $group_ids[] = $group->id;
+        }
+
+        // find course
+        $courses = CourseModel::where(function($query) use ($user_id) {
+                $query->where('item_model', 'App\\User')
+                    ->where('item_id', $user_id);
+            })
+            ->orWhere(function($query) use ($group_ids) {
+                $query->where('item_model', 'App\\ProfileGroup')
+                    ->whereIn('item_id', $group_ids);
+            })
+            ->orWhere(function($query) use ($position_id) {
+                $query->where('item_model', 'App\\Position')
+                    ->where('item_id', $position_id);
+            })
+            ->get()
+            ->pluck('course_id')
+            ->toArray();
+
+        $courses = array_unique($courses);
+
+        $results = self::where('user_id', $user_id)
             ->whereIn('status', [0,2])
-            ->orderBy('status', 'desc')
-            ->first();
+            ->get()
+            ->pluck('course_id')
+            ->toArray();
         
+        $results = array_unique($results);
+
+        $diff = array_values(array_diff($courses, $results));
         
-        return Course::with('items')->find($active_course->course_id);
+        $active_course = null;
+
+        // if exists active course
+        if(count($diff) > 0) {
+
+            $course_id = $diff[0];
+
+            $active_course = self::where('user_id', $user_id)
+                //->whereIn('status', [0,2])
+                ->where('course_id', $course_id)
+                ->orderBy('status', 'desc')
+                ->first();
+            
+            if($active_course) {
+                if($active_course->status == self::COMPLETED) {
+                    $active_course = null;
+                }
+            } else {
+                $active_course = self::create([
+                    'user_id' => $user_id,
+                    'course_id' => $course_id,
+                    'status' => self::ACTIVE,
+                    'progress' => 0, // 0 - 100
+                    'points'=> 0, 
+                    'started_at' => now(), 
+                    'ended_at' => null, 
+                ]);
+            }
+        }
+
+        return $active_course ? Course::with('items')->find($active_course->course_id) : null;
     }
 }

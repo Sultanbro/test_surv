@@ -772,7 +772,10 @@ class User extends Authenticatable implements Authorizable
         return $sum; 
     }
 
-   
+    public function getActiveCourse()
+    {
+        return CourseResult::activeCourse();
+    }
 
     public function getCurrentKpi()
     {
