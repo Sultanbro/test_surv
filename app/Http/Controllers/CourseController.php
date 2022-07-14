@@ -137,36 +137,6 @@ class CourseController extends Controller
 
     public function getItem(Request $request)
     {   
-        $all_items = [];
-
-
-        $books = Book::get();
-        $videos = VideoPlaylist::get();
-        $kbs = KnowBase::whereNull('parent_id')->get();
-        
-        foreach($books as $book) {
-            array_push($all_items, [
-                'item_id' => $book->id,
-                'title' => 'Книга: ' .$book->title,
-                'item_model'=> 'App\Models\Books\Book'
-            ]);
-        }
-
-        foreach($videos as $video) {
-            array_push($all_items, [
-                'item_id' => $video->id,
-                'title' => 'Видео: ' .$video->title,
-                'item_model'=> 'App\Models\Videos\Video'
-            ]);
-        }
-
-        foreach($kbs as $kb) {
-            array_push($all_items, [
-                'item_id' => $kb->id,
-                'title' => 'БЗ: ' . $kb->title,
-                'item_model'=> 'App\KnowBase'
-            ]);
-        }
 
         $course = Course::with('items', 'models')->find($request->id);
         
@@ -219,7 +189,6 @@ class CourseController extends Controller
 
         return [
             'course' => $course,
-            'all_items' => $all_items,
         ];
     }
 

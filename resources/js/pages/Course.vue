@@ -52,16 +52,7 @@
         <p class="title mr-3">Курс состоит из ({{ course.items.length }}):</p>
         <div class="btns">
           <div class="d-flex mb-2">
-            <select
-              class="form-control form-control-sm mr-3"
-              v-model="newItem"
-              placeholder="Выберите из списка"
-            >
-              <option v-for="(ai, ai_index) in all_items" :value="ai_index">
-                {{ ai.title }}
-              </option>
-            </select>
-            
+           
             <superselect-alt
               :values="course.items"
               class="w-full mb-4" 
@@ -69,7 +60,6 @@
               :hide_selected="true"
               />
 
-            <button class="btn btn-primary" @click="addItem">Добавить</button>
           </div>
         </div>
       </div>
@@ -124,7 +114,6 @@ export default {
       hover: false,
       file: null,
       newItem: null,
-      all_items: [],
       users: [],
       course: {
         id: 0,
@@ -149,7 +138,6 @@ export default {
         })
         .then((response) => {
           this.course = response.data.course;
-          this.all_items = response.data.all_items;
         })
         .catch((error) => {
           alert(error);
@@ -163,12 +151,8 @@ export default {
     deleteItem(i) {
       this.course.items.splice(i, 1);
     },
-    addItem() {
-      if (this.newItem !== null) {
-        this.course.items.push(this.all_items[this.newItem]);
-        this.newItem = null;
-      } 
-    },
+    
+    
 
     addTag(newTag) {
       console.log(newTag)
