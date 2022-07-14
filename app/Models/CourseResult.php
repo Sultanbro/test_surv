@@ -317,6 +317,33 @@ class CourseResult extends Model
             }
         }
 
-        return $active_course ? Course::with('items')->find($active_course->course_id) : null;
+        $course = null;
+
+        // img poster
+        if($active_course) {
+            $course = Course::with('items')->find($active_course->course_id);
+
+            if($course && $course->img != '' && $course->img != null) {
+                $disk = \Storage::build([
+                    'driver' => 's3',
+                    'key' => 'O4493_admin',
+                    'secret' => 'nzxk4iNukQWx',
+                    'region' => 'us-east-1',
+                    'bucket' => 'tenantbp',
+                    'endpoint' => 'https://storage.oblako.kz:443',
+                    'use_path_style_endpoint' => true,
+                    'throw' => false,
+                    'visibility' => 'public'
+                ]);
+
+                if($disk->exists($course->img)) {
+                    $course->img = $disk->temporaryUrl(
+                        $course->img, now()->addMinutes(360)
+                    );
+                }
+            }
+        }
+
+        return $course;
     }
 }
