@@ -195,7 +195,7 @@
 
         <script>
 
-            $(document).ready(()=>{
+document.addEventListener('DOMContentLoaded', function(){
                 document.getElementById("front").onchange = function(e) {
                     if (document.getElementById("front").value != "") {
                         document.getElementById("front2").style.display = "block"
