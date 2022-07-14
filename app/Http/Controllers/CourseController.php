@@ -31,22 +31,78 @@ class CourseController extends Controller
     public function uploadImage(Request $request) {
         $course = Course::find($request->course_id);
         if($course) {
-            $folder = 'courses';
-            $filename = auth()->user()->id . '_'.time().'_'. $request->file('file')->getClientOriginalName();
-            $path = \Storage::putFileAs(
-                'public/' . $folder, $request->file('file'), $filename
-            );
 
-            $end_path = '/storage/'. $folder . '/'. $filename;;
-            $course->img = $end_path;
+            $disk = \Storage::build([
+                'driver' => 's3',
+                'key' => 'O4493_admin',
+                'secret' => 'nzxk4iNukQWx',
+                'region' => 'us-east-1',
+                'bucket' => 'tenantbp',
+                'endpoint' => 'https://storage.oblako.kz:443',
+                'use_path_style_endpoint' => true,
+                'throw' => false,
+                'visibility' => 'public'
+            ]);
+
+            if($course->img != '' && $course->img != null) {
+                if($disk->exists($course->img)) {
+                    $disk->delete($course->img);
+                }
+            }
+            
+            $links = $this->uploadFile('/courses', $request->file('file')); 
+            $img_link = $links['temp'];
+            $course->img = $links['relative'];
+
             $course->save();
+            
             return [
-                'img' => $end_path
+                'img' => $img_link
             ];
         }
-        
     }
+    
+        /**
+     * Upload file to S3 and return relative link
+     * @param String $path
+     * @param mixed $file
+     * 
+     * @return array 
+     * 
+     * 'relative' => String
+     * 'temp' => String
+     */
+    private function uploadFile(String $path, $file)
+    {
+        $disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
 
+        $extension = $file->getClientOriginalExtension();
+        $originalFileName = $file->getClientOriginalName();
+        $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
+
+        $disk->putFileAs($path, $file, $fileName);
+
+        $xpath = $path . '/' . $fileName;
+        
+        return [
+            'relative' => $xpath,
+            'temp' => $disk->temporaryUrl(
+                $xpath, now()->addMinutes(360)
+            )
+        ];
+    }
+        
+    
     public function get(Request $request)
     {   
 
@@ -54,10 +110,34 @@ class CourseController extends Controller
             return redirect('/');
         }
 
-        $course = Course::with('items', 'models')->get();
+        $courses = Course::with('items', 'models')->get();
+
+
+        $disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+
+        foreach ($courses as $key => $course) {
+            if($course->img != '' && $course->img != null) {
+                if($disk->exists($course->img)) {
+                    $course->img = $disk->temporaryUrl(
+                        $course->img, now()->addMinutes(360)
+                    );
+                }
+            }
+        }
+        
 
         return [
-            'courses' => $course
+            'courses' => $courses
         ];
     }
 
@@ -248,6 +328,7 @@ class CourseController extends Controller
     {
         return Course::create([
             'name' => $request->name,
+            'user_id' => auth()->id()
         ]);
     }
 
