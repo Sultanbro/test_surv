@@ -129,6 +129,10 @@ class Activity extends Model
             for($i=1;$i<=$date->daysInMonth;$i++) {
                 $row[$i] = array_key_exists($i, $record) ? $record[$i] . ' ' : '';
             }   
+            $row['План'] = array_key_exists('plan',$record) ? $record['plan'] : '';
+            if($row['План'] != '' && intval($row['Вып']) != 0 &&  intval($row['План']) != 0){
+                $row['%'] = round((intval($row['Вып'] * 100)) / intval($row['План']),0) . '%';
+            }
             array_push($sheet, $row);
         }
         return $sheet;
