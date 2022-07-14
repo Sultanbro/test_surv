@@ -212,7 +212,7 @@ class ActivityController extends Controller
                 $save_value = (int)$arr[0] + ((int)$arr[1] / 60);
                 $save_value = round($save_value, 2);
             }
-            if($item['activity_id'] == 1)  $save_value = (int)number_format($item['hours'] * 60, 0);
+            if($item['activity_id'] == 1)  $save_value = (int)number_format($item['hours'], 0);
 
             $this->updateActivity($item, $item['activity_id'], $save_value);
            
