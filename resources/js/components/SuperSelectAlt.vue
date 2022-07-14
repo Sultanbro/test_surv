@@ -1,15 +1,17 @@
 <template>
-<div class="super-select" ref="select" :class="posClass" v-click-outside="close">
+<div class="super-select" ref="select-alt" :class="posClass" v-click-outside="close">
 
-    <div class="selected-items flex-wrap noscrollbar" @click="toggleShow" v-if="!hide_selected">
-        <div 
-            v-for="(value, i) in values"
-            :key="i"
-            class="selected-item"
-            :class="'value' + value.type">
-            {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i)"></i>
-        </div>
+    <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
+        <template v-if="!hide_selected">
+            <div 
+                v-for="(value, i) in values"
+                :key="i"
+                class="selected-item"
+                :class="'value' + value.type">
+                {{ value.name }}
+                <i class="fa fa-times" @click.stop="removeValue(i)"></i>
+            </div>
+        </template>
     </div>
     
     <div class="show" v-if="show">
@@ -74,7 +76,6 @@ export default {
     props: {
         values: {
             type: Array,
-            default: []
         },
         single: {
             type: Boolean,
