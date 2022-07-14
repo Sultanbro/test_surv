@@ -740,41 +740,12 @@ class AnalyticsController extends Controller
         $minute_headings = Activity::getHeadings($date, Activity::UNIT_MINUTES);
         $percent_headings = Activity::getHeadings($date, Activity::UNIT_PERCENTS);
       
-        if($request->group_id == DM::GROUP_ID) {
-     
-            $sheets = [
-                [
-                    'title' => 'Часы работы',
+        foreach($data as $sheet_content){
+            $sheets[] = [
+                    'title' => $sheet_content['name'],
                     'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Количество действий',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Учет времени',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[2]['records'], $date, Activity::UNIT_MINUTES)
-                ]
+                    'sheet' => Activity::getSheet($sheet_content['records'], $date, Activity::UNIT_MINUTES)
             ];
-        } else {
-
-           
-            $sheets = [
-                [
-                    'title' => 'Минуты разговора',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Количество сбора',
-                    'headings' => Activity::getHeadings($date, Activity::UNIT_MINUTES, true),
-                    'sheet' => array_key_exists(1, $data) ? Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES, true) : []
-                ]
-            ];
-
         }
        
 

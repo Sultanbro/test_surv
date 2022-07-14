@@ -84,7 +84,6 @@ class Activity extends Model
      */
     public static function getSheet($records, Carbon $date, int $unit = 1, $is_kaspi_sum = false) {
         $sheet = [];
-        
         foreach ($records as $record) {
             $row = [];
             if(!array_key_exists("lastname",$record)){
@@ -111,32 +110,27 @@ class Activity extends Model
                 $total += array_key_exists($i, $record) ? $record[$i] : 0;
                 $count += array_key_exists($i, $record) && $record[$i] ? 1 : 0;
             }
-            
-
             if($is_kaspi_sum) {
                 $row['К выдаче'] = $count > 0 && $total > 0 ? $total * 50 : '';
             } else {
                 $row['План'] = array_key_exists('month', $record) ? $record['month'] : '';
             }
-            
-            //if($total == 37 && $record['name'] == 'Али') dd($record);
             if($unit == self::UNIT_PERCENTS) {
                 $row['Сред'] = $count > 0 ? number_format($total / $count, 2) : '';
             } else {
                 $row['Вып'] = $count > 0 && $total > 0 ? $total : '';
                 $row['Сред'] = $count > 0 && $total > 0 ? number_format($total / $count, 2) : '';
-                $row['%']   = $count > 0 && $total > 0 && array_key_exists('month', $record) && $record['month'] > 0 ? number_format((float)$total / (float)$record['month'] * 100, 2) . '%' : '';
+                if(intval($row['План']) == 0 || intval($row['Вып']) == 0){
+                    $row['%'] = 0;
+                }else{
+                    $row['%'] = intval($row['План']) / intval($row['Вып']) * 100;
+                }
             }    
-            
-            
-
             for($i=1;$i<=$date->daysInMonth;$i++) {
                 $row[$i] = array_key_exists($i, $record) ? $record[$i] . ' ' : '';
-            }
-            
+            }   
             array_push($sheet, $row);
         }
-
         return $sheet;
     }
 
