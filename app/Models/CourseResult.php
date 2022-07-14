@@ -272,7 +272,7 @@ class CourseResult extends Model
         $courses = array_unique($courses);
 
         $results = self::where('user_id', $user_id)
-            ->whereIn('status', [0,2])
+            ->whereIn('status', [1])
             ->get()
             ->pluck('course_id')
             ->toArray();
@@ -287,7 +287,7 @@ class CourseResult extends Model
         if(count($diff) > 0) {
 
             $course_id = $diff[0];
-
+          
             $active_course = self::where('user_id', $user_id)
                 //->whereIn('status', [0,2])
                 ->where('course_id', $course_id)
@@ -295,10 +295,12 @@ class CourseResult extends Model
                 ->first();
             
             if($active_course) {
+              
                 if($active_course->status == self::COMPLETED) {
                     $active_course = null;
                 }
             } else {
+        
                 $active_course = self::create([
                     'user_id' => $user_id,
                     'course_id' => $course_id,
