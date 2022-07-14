@@ -113,11 +113,6 @@
             <p>Баллы</p>
             <input type="number" v-model="q.points" min="0" max="999" />
           </div>
-          <div class="d-flex aic pass__ball">
-            <p class="mr-3" style="width:200px">Проходной балл в % (0 - 100):</p>
-            <input class="form-control mb-3" v-model="pass_grade" type="number" :min="0" :max="100" @change="$emit('changePassGrade')" />
-            <span>%</span>
-          </div>
         </div>
           
           
@@ -147,6 +142,9 @@
     </template>
 
     <template v-if="mode == 'edit'">
+
+
+    <div class="d-flex jcsb">
       <button
         v-if="['kb','video'].includes(type) && changed"
         class="btn btn-success mr-2" 
@@ -155,7 +153,16 @@
         >
           Сохранить
       </button>
+      
       <button class="btn" @click.stop="addQuestion" >Добавить вопрос</button>
+
+          <div class="d-flex aic pass__ball">
+            <p class="mr-3" style="width:200px">Проходной балл в % (0 - 100):</p>
+            <input class="form-control mb-3" v-model="pass_grade" type="number" :min="0" :max="100" @change="$emit('changePassGrade')" />
+            <span>%</span>
+          </div>
+
+      </div>
     </template>
   </div>
 </template>
