@@ -78,9 +78,11 @@ class CourseController extends Controller
             }
         }
         
+        // elements of course
         CourseItem::whereNotIn('id', $ids)->where('course_id', $request->course['id'])->delete();
 
-        foreach($request->course['items'] as $index => $item) {
+        
+        foreach($request->course['elements'] as $index => $item) {
             if($item == null) continue;
             $ci = CourseItem::where('item_model', $item['item_model'])
                 ->where('course_id', $request->course['id'])
@@ -102,59 +104,43 @@ class CourseController extends Controller
             }
         }
 
+        // who starts the course
         CourseModel::where('course_id', $course->id)->delete();
 
-        foreach($request->course['targets'] as $index => $target) {
-      
-            if($target['type'] == 1) $model = 'App\\User';
-            if($target['type'] == 2) $model = 'App\\ProfileGroup';
-            if($target['type'] == 3) $model = 'App\\Position';
-
+        // if there one badge with 'ALL' name
+        if(count($request->course['targets']) == 1 && $request->course['targets'][0]['type'] == 0) {
             CourseModel::create([
                 'course_id' => $course->id,
-                'item_id' => $target['id'],
-                'item_model' => $model,
+                'item_id' => 0,
+                'item_model' => 0,
             ]);
-        }
+        } else {
+            // no badge
+            foreach($request->course['targets'] as $index => $target) {
+      
+                if($target['type'] == 1) $model = 'App\\User';
+                if($target['type'] == 2) $model = 'App\\ProfileGroup';
+                if($target['type'] == 3) $model = 'App\\Position';
+    
+                CourseModel::create([
+                    'course_id' => $course->id,
+                    'item_id' => $target['id'],
+                    'item_model' => $model,
+                ]);
+            }
+        }   
+
+        
 
     }
 
 
     public function getItem(Request $request)
     {   
-        $all_items = [];
-
-
-        $books = Book::get();
-        $videos = VideoPlaylist::get();
-        $kbs = KnowBase::whereNull('parent_id')->get();
-        
-        foreach($books as $book) {
-            array_push($all_items, [
-                'item_id' => $book->id,
-                'title' => 'Книга: ' .$book->title,
-                'item_model'=> 'App\Models\Books\Book'
-            ]);
-        }
-
-        foreach($videos as $video) {
-            array_push($all_items, [
-                'item_id' => $video->id,
-                'title' => 'Видео: ' .$video->title,
-                'item_model'=> 'App\Models\Videos\Video'
-            ]);
-        }
-
-        foreach($kbs as $kb) {
-            array_push($all_items, [
-                'item_id' => $kb->id,
-                'title' => 'БЗ: ' . $kb->title,
-                'item_model'=> 'App\KnowBase'
-            ]);
-        }
 
         $course = Course::with('items', 'models')->find($request->id);
         
+        // targets
         $targets = [];
         foreach ($course->models as $key => $target) {
             if($target->item_model == 'App\\ProfileGroup') {
@@ -195,7 +181,53 @@ class CourseController extends Controller
             }
         }
 
+        
+
         $course->targets = $targets;
+        
+        // get course items
+
+        $items = [];
+        foreach ($course->items as $key => $target) {
+            if($target->item_model == 'App\\Models\\Books\\Book') {
+                $model = Book::find($target->item_id);
+
+                if($model) {
+                    $items[] = [
+                        "name" => $model->title,
+                        "id" => $model->id,
+                        "type" => 1,
+                    ];
+                }
+            }
+
+            if($target->item_model == 'App\\Models\\Videos\\VideoPlaylist') {
+                $model = VideoPlaylist::withTrashed()->find($target->item_id);
+
+                if($model) {
+                    $items[] = [
+                        "name" => $model->title,
+                        "id" => $model->id,
+                        "type" => 2,
+                    ];
+                }
+            }
+
+            if($target->item_model == 'App\\KnowBase') {
+                $model = KnowBase::whereNull('parent_id')->find($target->item_id);
+
+                if($model) {
+                    $items[] = [
+                        "name" => $model->title,
+                        "id" => $model->id,
+                        "type" => 3,
+                    ];
+                }
+                
+            }
+        }
+        
+        $course->elements = $items;
         
         $author = User::withTrashed()->find($course->user_id);
         $course->author =  $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';
@@ -204,7 +236,6 @@ class CourseController extends Controller
 
         return [
             'course' => $course,
-            'all_items' => $all_items,
         ];
     }
 

@@ -265,6 +265,10 @@ class CourseResult extends Model
                 $query->where('item_model', 'App\\Position')
                     ->where('item_id', $position_id);
             })
+            ->orWhere(function($query) {
+                $query->where('item_model', 0)
+                    ->where('item_id', 0);
+            })
             ->get()
             ->pluck('course_id')
             ->toArray();

@@ -48,41 +48,38 @@
     </div>
 
     <div class="items">
-      <div class="d-flex">
-        <p class="title mr-3">Курс состоит из ({{ course.items.length }}):</p>
-        <div class="btns">
+      <div class="d-flex ">
+        <p class="title mr-3">Курс состоит из ({{ course.elements.length }}):</p>
+        <div class="btns w-full pr-5">
           <div class="d-flex mb-2">
-            <select
-              class="form-control form-control-sm mr-3"
-              v-model="newItem"
-              placeholder="Выберите из списка"
-            >
-              <option v-for="(ai, ai_index) in all_items" :value="ai_index">
-                {{ ai.title }}
-              </option>
-            </select>
+           
+            <superselect-alt
+              :values="course.elements"
+              class="w-full mb-4" 
+              :key="1"
+              :hide_selected="true"
+              />
 
-            <button class="btn btn-primary" @click="addItem">Добавить</button>
           </div>
         </div>
       </div>
 
       <draggable
-        class="dragArea ml-0"
+        class="dragArea ml-0 pr-5"
         tag="ul"
         handle=".fa-bars"
-        :list="course.items"
+        :list="course.elements"
         :group="{ name: 'g1' }"
         @end="saveOrder"
       >
-        <template v-for="(el, e_index) in course.items">
+        <template v-for="(el, e_index) in course.elements">
           <li class="chapter opened" :id="el.id">
             <div class="d-flex aic mb-2">
               <div class="handles">
                 <i class="fa fa-bars mover"></i>
                 <i class="fa fa-caret-right pointer shower"></i>
               </div>
-              <p @click="toggleOpen(el)" class="mb-0">{{ el.title }}</p>
+              <p @click="toggleOpen(el)" class="mb-0">{{ el.name }}</p>
               <i
                 class="fa fa-trash pointer ml-2"
                 @click.stop="deleteItem(e_index)"
@@ -93,7 +90,7 @@
       </draggable>
 
 
-      <div class="mt-3">
+      <div class="mt-3 pr-5">
         Курс проходят:
 
         <superselect 
@@ -101,10 +98,6 @@
             class="w-full mb-4" 
             :key="1"
             :select_all_btn="true" />
-
-     
-        </multiselect>
-        <div v-for="element in course.targets">{{ element }}</div>
         
       </div>
     </div>
@@ -121,11 +114,10 @@ export default {
       hover: false,
       file: null,
       newItem: null,
-      all_items: [],
       users: [],
       course: {
         id: 0,
-        items: [],
+        elements: [],
       },
     };
   },
@@ -146,7 +138,6 @@ export default {
         })
         .then((response) => {
           this.course = response.data.course;
-          this.all_items = response.data.all_items;
         })
         .catch((error) => {
           alert(error);
@@ -158,14 +149,10 @@ export default {
     saveOrder(e) {},
 
     deleteItem(i) {
-      this.course.items.splice(i, 1);
+      this.course.elements.splice(i, 1);
     },
-    addItem() {
-      if (this.newItem !== null) {
-        this.course.items.push(this.all_items[this.newItem]);
-        this.newItem = null;
-      } 
-    },
+    
+    
 
     addTag(newTag) {
       console.log(newTag)
