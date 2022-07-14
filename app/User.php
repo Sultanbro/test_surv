@@ -774,7 +774,7 @@ class User extends Authenticatable implements Authorizable
 
     public function getActiveCourse()
     {
-        return CourseResult::activeCourse();
+        return \App\Models\CourseResult::activeCourse();
     }
 
     public function getCurrentKpi()
