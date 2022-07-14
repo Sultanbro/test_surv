@@ -614,31 +614,31 @@
 
 
 
-                                            <div class="mb-4 none-block" id="profile_books" >
-                                                @if(isset($user))
-                                                <h5 class="mb-4 mt-4">База знание</h5>
+{{--                                            <div class="mb-4 none-block" id="profile_books" >--}}
+{{--                                                @if(isset($user))--}}
+{{--                                                <h5 class="mb-4 mt-4">База знание</h5>--}}
 
 
 
 
-                                                    <select class="form-control form-control-sm" >
-                                                        @if(!empty($corpbooks))
-                                                            @foreach($corpbooks as $corpbook)
-                                                                <option>{{$corpbook['title']}}</option>
-                                                            @endforeach
-                                                        @else
-                                                            <option>Нет добавленных книг</option>
-                                                        @endif
-                                                    </select>
+{{--                                                    <select class="form-control form-control-sm" >--}}
+{{--                                                        @if(!empty($corpbooks))--}}
+{{--                                                            @foreach($corpbooks as $corpbook)--}}
+{{--                                                                <option>{{$corpbook['title']}}</option>--}}
+{{--                                                            @endforeach--}}
+{{--                                                        @else--}}
+{{--                                                            <option>Нет добавленных книг</option>--}}
+{{--                                                        @endif--}}
+{{--                                                    </select>--}}
 
 
 
 
 
-                                                    <base-knowledge :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />
+{{--                                                    <base-knowledge :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />--}}
 
 
-                                                    <page-kb :auth_user_id="{{ auth()->user()->id }}" :can_edit="{{ auth()->user()->can('kb_edit') ? 'true' : 'false'}}"/>
+{{--                                                    <page-kb :auth_user_id="{{ auth()->user()->id }}" :can_edit="{{ auth()->user()->can('kb_edit') ? 'true' : 'false'}}"/>--}}
 
 {{--                                                <profile-books :books="{{json_encode($corpbooks) }}" :user_id="{{ $user->id }}"--}}
 {{--                                                    @if(isset($user->in_books))--}}
@@ -648,8 +648,8 @@
 {{--                                                    @endif--}}
 {{--                                                    />--}}
 
-                                                @endif
-                                            </div>
+{{--                                                @endif--}}
+{{--                                            </div>--}}
 
                                             <!-- end of groups and books tab -->
 

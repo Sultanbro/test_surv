@@ -270,7 +270,7 @@ export default {
       ],
       keywords: null,
       country_results: [],
-      image:'public/users_img/noavatar.png'
+      image:'/users_img/noavatar.png'
 
     };
   },
@@ -285,8 +285,11 @@ export default {
     this.format_date(this.user.birthday)
 
     if(this.user.img_url != null){
-      this.image = 'public/users_img/'+this.user.img_url;
+      this.image = '/users_img/'+this.user.img_url;
     }
+
+
+
   },
   components: {
     VueAvatar,
@@ -313,8 +316,7 @@ export default {
           form.append('file', blob);
           axios.post('/profile/upload/image/profile/', form, config)
               .then(function (res) {
-                console.log(res,'res')
-
+                // console.log(res,'res')
                 $(".img_url_sm").html(res.data.img)
                 loader.hide();
               })
