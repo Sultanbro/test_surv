@@ -140,6 +140,7 @@ class CourseController extends Controller
 
         $course = Course::with('items', 'models')->find($request->id);
         
+        // targets
         $targets = [];
         foreach ($course->models as $key => $target) {
             if($target->item_model == 'App\\ProfileGroup') {
@@ -180,7 +181,53 @@ class CourseController extends Controller
             }
         }
 
+        
+
         $course->targets = $targets;
+        
+        // get course items
+
+        $items = [];
+        foreach ($course->items as $key => $target) {
+            if($target->item_model == 'App\\Book') {
+                $model = Book::find($target->item_id);
+
+                if($model) {
+                    $items[] = [
+                        "name" => $model->title,
+                        "id" => $model->id,
+                        "type" => 1,
+                    ];
+                }
+            }
+
+            if($target->item_model == 'App\\VideoPlaylist') {
+                $model = VideoPlaylist::withTrashed()->find($target->item_id);
+
+                if($model) {
+                    $items[] = [
+                        "name" => $model->title,
+                        "id" => $model->id,
+                        "type" => 2,
+                    ];
+                }
+            }
+
+            if($target->item_model == 'App\\KnowBase') {
+                $model = KnowBase::whereNull('parent_id')->find($target->item_id);
+
+                if($model) {
+                    $items[] = [
+                        "name" => $model->title,
+                        "id" => $model->id,
+                        "type" => 3,
+                    ];
+                }
+                
+            }
+        }
+        
+        $course->items = $items;
         
         $author = User::withTrashed()->find($course->user_id);
         $course->author =  $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';

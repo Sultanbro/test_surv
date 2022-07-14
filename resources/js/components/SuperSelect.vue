@@ -70,6 +70,7 @@
 
 <script>
 export default {
+    name: 'Superselect',
     props: {
         values: {
             type: Array,

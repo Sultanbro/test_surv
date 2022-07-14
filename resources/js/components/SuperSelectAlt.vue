@@ -70,6 +70,7 @@
 
 <script>
 export default {
+    name: 'SuperselectAlt',
     props: {
         values: {
             type: Array,
