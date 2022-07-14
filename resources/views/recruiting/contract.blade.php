@@ -107,7 +107,7 @@
                 <!-- asdasda -->
                 
 
-                <form action="/bp/job/agreement" enctype="multipart/form-data" method="post" id="form">
+                <form action="/bp/job/agreement" enctype="multipart/form-data" method="post" name="form">
 
                     <div class="row">
                         <div class="col-md-6">
@@ -170,8 +170,8 @@
         <div id="loader">
             <div class="icon">
             <div class="loader loader--style8" title="7">
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                    width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                <svg x="0px" y="0px"
+                     viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
                     <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
                     <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite" />
                     <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     document.getElementById("submit").setAttribute("disabled", "disabled");
                     document.getElementById("submit").innerHTML = 'Загружаются...'
                     document.getElementById("loader").classList.add('show');
-                    document.getElementById("form").submit();
+                    document.form.submit();
 
                     
                 }
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 z-index: 99;
                 top: 0;
                 left:0;
-                background: rgba(0,0,0,.5);
+                background: rgba(0,0,0,.3);
             }
             #loader.show {
                 display: flex;
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 align-items:center;
             }
             #loader svg {
-                width: 100px;
+                width: 50px;
             }
         </style>
     </body>
