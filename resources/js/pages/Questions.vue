@@ -144,17 +144,20 @@
     <template v-if="mode == 'edit'">
 
 
-    <div class="d-flex jcsb">
-      <button
-        v-if="['kb','video'].includes(type) && changed"
-        class="btn btn-success mr-2" 
-        @click.stop="saveTest"
-        :disabled="!can_save"
-        >
-          Сохранить
-      </button>
+    <div class="d-flex jcsb aifs">
+      <div>
+        <button
+          v-if="['kb','video'].includes(type) && changed"
+          class="btn btn-success mr-2" 
+          @click.stop="saveTest"
+          :disabled="!can_save"
+          >
+            Сохранить
+        </button>
+        
+        <button class="btn" @click.stop="addQuestion" >Добавить вопрос</button>
+      </div>
       
-      <button class="btn" @click.stop="addQuestion" >Добавить вопрос</button>
 
           <div class="d-flex aic pass__ball">
             <p class="mr-3" style="width:200px">Проходной балл в % (0 - 100):</p>
