@@ -112,30 +112,6 @@ class CourseController extends Controller
 
         $courses = Course::with('items', 'models')->get();
 
-
-        $disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
-
-        foreach ($courses as $key => $course) {
-            if($course->img != '' && $course->img != null) {
-                if($disk->exists($course->img)) {
-                    $course->img = $disk->temporaryUrl(
-                        $course->img, now()->addMinutes(360)
-                    );
-                }
-            }
-        }
-        
-
         return [
             'courses' => $courses
         ];
@@ -225,6 +201,27 @@ class CourseController extends Controller
 
         $course = Course::with('items', 'models')->find($request->id);
         
+        // img poster
+        $disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+
+        if($course->img != '' && $course->img != null) {
+            if($disk->exists($course->img)) {
+                $course->img = $disk->temporaryUrl(
+                    $course->img, now()->addMinutes(360)
+                );
+            }
+        }
+
         // targets
         $targets = [];
         foreach ($course->models as $key => $target) {
