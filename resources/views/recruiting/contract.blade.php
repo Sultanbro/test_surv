@@ -160,7 +160,7 @@
 
                     <p class="agger mt">Нажимая "Подписать и продолжить" вы соглашаетесь с условиями данного договора и подтверждаете подлинность приложенных документов</p>
                     {{ csrf_field() }}
-                    <button class="btm btn-success" id="submit" style="margin-bottom: 30px;">
+                    <button class="btm btn-success" id="submitBtn" style="margin-bottom: 30px;">
                         Подписать и продолжить
                     </button>
                 </form>
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     document.getElementById("name").value = val
                 }
 
-                document.getElementById("submit").onclick = function(e) {
+                document.getElementById("submitBtn").onclick = function(e) {
                     if (document.getElementById("front").value == "") {
                         e.preventDefault();
                         alert("Пожалуйста, прикрепите лицевую сторону удостоверения!");
@@ -241,9 +241,9 @@ document.addEventListener('DOMContentLoaded', function(){
                         return null;
                     }
 
-                    document.getElementById("submit").setAttribute("disabled", "disabled");
-                    document.getElementById("submit").innerHTML = 'Загружаются...'
-                    document.getElementById("loader").classList.add('show');
+                    document.getElementById("submitBtn").setAttribute("disabled", "disabled");
+                    document.getElementById("submitBtn").innerHTML = 'Загружаются...'
+                    document.getElementById("loader").classList.add('shows');
                     document.form.submit();
 
                     
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 left:0;
                 background: rgba(0,0,0,.3);
             }
-            #loader.show {
+            #loader.shows {
                 display: flex;
                 justify-content: center;
                 align-items:center;
