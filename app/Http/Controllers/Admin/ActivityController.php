@@ -46,11 +46,10 @@ class ActivityController extends Controller
             //$this->checkMissingFields();
 
                 $table_type = 'minutes'; // минуты
-
+       
                 if(in_array('Менеджер', $headings)) $table_type = 'gatherings';   // сборы  
                 if(in_array('среднее время разговора', $headings)) $table_type = 'avg_time';   // ср время разговора      
               
-           
                 
                 // date
                 $date_index = 'ДАТА';
@@ -71,10 +70,10 @@ class ActivityController extends Controller
                     $item['group_id'] = $request->group_id;
                     $item['activity_id'] = $request->activity_id;
 
-                
+
                     if($group_id == 42) {
 
-                       
+
                         if($table_type == 'minutes') {
                             $item['name'] = $row['ФИО сотрудника'];
                             if($item['name'] == null) continue;
@@ -100,20 +99,21 @@ class ActivityController extends Controller
                         }
                         
                         
-                    } 
+                    }
 
                     if($group_id == 71) {
 
                         if($table_type == 'minutes') {
                             $item['name'] = $row['Имя оператора'];
                             if($item['name'] == null) continue;
+                            $excel_date = array_key_exists('ДАТА', $row) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['Дата']) : Carbon::now();
                             $item['date'] = $excel_date ? Carbon::parse($excel_date)->format('Y-m-d') : ''; 
                             $item['data'] = $excel_date ? Carbon::parse($excel_date)->format('d.m.Y') : '';
                             if($item['activity_id'] == 149){
-                                $item['hours'] = round($this->countHours($row['Суммарное время в логине']) * 60,4);
+                                $item['hours'] = round($this->countHours($row['Суммарное время в режиме разговора']) * 60 ,1); 
                             }
                             else{
-                                $item['hours'] = $this->countHours($row['Суммарное время в режиме разговора']); 
+                                $item['hours'] = $this->countHours($row['Суммарное время в логине']); 
                             }
                             $item['id'] = $this->getPossibleUser($gusers, $item['name']);
                         }   
@@ -123,8 +123,7 @@ class ActivityController extends Controller
                             $item['avg_time'] = Carbon::parse($row['Среднее время разговора, сек'])->format('i:s');
                             $item['id'] = $item['name'] ? $this->getPossibleUser($gusers, $item['name']) : 0;
                             if($row['menedzher'] == '') continue;
-                        }                     
-                        
+                        }   
                     }  
                     
                     array_push($items, $item);
@@ -180,39 +179,36 @@ class ActivityController extends Controller
 
         $date = $request->date;
         foreach($request->items as $item) {
-            
-            $date = array_key_exists('date', $item) ? $item['date'] : $date;
+            if($item['group_id'] == 71){
+                $item['date'] = $date;
+            }else{
+                $date = array_key_exists('date', $item) ? $item['date'] : $date;
+            }
             $group_id = $item['group_id'];
             
             if($item['id'] != 0) {
-
 
                 if(!array_key_exists('date', $item)) $item['date'] = $date;
                 $this->updateASIs($item);
                 
 
-            }
-
-            
-            
+            }       
         }
-
     }
 
     
 
     private function updateASIs(array $item) {
 
-
         if($item['group_id'] == 42) {
             $save_value = 0;
             if($item['activity_id'] == 13)  (int)$save_value = $item['gatherings'];
             if($item['activity_id'] == 94) {
-                $arr = explode(':', $item['avg_time']);
+                $arr = explode(':', array_key_exists('avg_time', $item) ? $item['avg_time'] : '00:00:00');
                 $save_value = (int)$arr[0] + ((int)$arr[1] / 60);
                 $save_value = round($save_value, 2);
             }
-            if($item['activity_id'] == 1)  $save_value = (int)number_format($item['hours'], 0);
+            if($item['activity_id'] == 1)  $save_value = (int)number_format($item['hours'] * 60, 0);
 
             $this->updateActivity($item, $item['activity_id'], $save_value);
            
@@ -220,13 +216,13 @@ class ActivityController extends Controller
         
         if($item['group_id'] == 71) {
             if($item['activity_id'] == 149){
-                $save_value = (int)number_format($item['hours'] * 60, 0);
+                $save_value = (int)number_format($item['hours'], 0);
             }else{
                 $save_value = round($item['hours'], 1);
             }
             $this->updateActivity($item, $item['activity_id'], $save_value);          
         }
-
+    
     }
 
     private function updateActivity($item, $activity_id, $value) {
@@ -246,7 +242,7 @@ class ActivityController extends Controller
                 'date' => $date,
                 'user_id' => $item['id'],
                 'activity_id' => $activity_id,
-                'value' => round($value,2),
+                'value' => (int)$value,
             ]);
         }
     }
@@ -310,9 +306,9 @@ class ActivityController extends Controller
         return $missingFields;
     }
 
- private function countHours($time) {
+    private function countHours($time) {
         if(!str_contains($time,':')){
-            $result = round($time * 24,4); 
+            $result = round($time * 24,1); 
         }
         else{
             $time = explode(':', $time);

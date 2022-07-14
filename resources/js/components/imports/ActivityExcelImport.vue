@@ -75,7 +75,7 @@
             <div class="col-md-4">
 
                 <div class="" v-if="(group_id == 42 && activity_id == 1) || (group_id == 71)">
-                    <div>
+                    <div  v-if="group_id == 42 && activity_id == 1">
                         <b>Дата:</b> {{ item.data }}
                     </div>
                     <div>
@@ -97,6 +97,14 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-sm-3 mt-2" v-if="group_id == 71">
+                <b-form-datepicker id="example-datepicker" 
+                    v-model="date" 
+                    v-bind="datepickerLabels"
+                    class="form-control form-control-sm" 
+                    locale="ru"  
+                    :start-weekday="1"></b-form-datepicker>
+            </div>
             <div class="col-sm-3 mt-2" v-if="activity_id == 94">
                 <b-form-datepicker id="example-datepicker" 
                     v-model="date" 
