@@ -310,17 +310,22 @@ class ActivityController extends Controller
         return $missingFields;
     }
 
-    private function countHours($time) {
-        $time = explode(':', $time);
-        if(count($time) == 3) {
-            $hours = (int)$time[0];
-            $minutes = (int)$time[1];
-            $seconds = (int)$time[2];
+ private function countHours($time) {
+        if(!str_contains($time,':')){
+            $result = round($time * 24,4); 
+        }
+        else{
+            $time = explode(':', $time);
+            if(count($time) == 3) {
+                $hours = (int)$time[0];
+                $minutes = (int)$time[1];
+                $seconds = (int)$time[2];
 
-            $result = $hours + $minutes / 60 + $seconds / 3600;
-            $result = number_format($result, 4);
-        } else {
-            $result = 0;
+                $result = $hours + $minutes / 60 + $seconds / 3600;
+                $result = number_format($result, 4);
+            } else {
+                $result = 0;
+            }
         }
 
         return $result;
