@@ -48,9 +48,9 @@
     </div>
 
     <div class="items">
-      <div class="d-flex w-full pr-5">
+      <div class="d-flex ">
         <p class="title mr-3">Курс состоит из ({{ course.elements.length }}):</p>
-        <div class="btns">
+        <div class="btns w-full pr-5">
           <div class="d-flex mb-2">
            
             <superselect-alt
