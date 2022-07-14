@@ -107,7 +107,7 @@
                 <!-- asdasda -->
                 
 
-                <form action="/bp/job/agreement" enctype="multipart/form-data" method="post">
+                <form action="/bp/job/agreement" enctype="multipart/form-data" method="post" id="form">
 
                     <div class="row">
                         <div class="col-md-6">
@@ -242,8 +242,11 @@ document.addEventListener('DOMContentLoaded', function(){
                     }
 
                     document.getElementById("submit").setAttribute("disabled", "disabled");
-                    document.getElementById("submit").innerHTML == 'Загружаются...'
+                    document.getElementById("submit").innerHTML = 'Загружаются...'
                     document.getElementById("loader").classList.add('show');
+                    document.getElementById("form").submit();
+
+                    
                 }
             });
            
@@ -256,15 +259,17 @@ document.addEventListener('DOMContentLoaded', function(){
                 width: 100%;
                 height: 100%;
                 z-index: 99;
+                top: 0;
+                left:0;
                 background: rgba(0,0,0,.5);
             }
-            #loaders.show {
+            #loader.show {
                 display: flex;
                 justify-content: center;
                 align-items:center;
             }
             #loader svg {
-                width: 70px;
+                width: 100px;
             }
         </style>
     </body>
