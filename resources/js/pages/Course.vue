@@ -48,7 +48,7 @@
     </div>
 
     <div class="items">
-      <div class="d-flex">
+      <div class="d-flex w-full pr-5">
         <p class="title mr-3">Курс состоит из ({{ course.elements.length }}):</p>
         <div class="btns">
           <div class="d-flex mb-2">
@@ -65,7 +65,7 @@
       </div>
 
       <draggable
-        class="dragArea ml-0"
+        class="dragArea ml-0 pr-5"
         tag="ul"
         handle=".fa-bars"
         :list="course.elements"
@@ -79,7 +79,7 @@
                 <i class="fa fa-bars mover"></i>
                 <i class="fa fa-caret-right pointer shower"></i>
               </div>
-              <p @click="toggleOpen(el)" class="mb-0">{{ el.title }}</p>
+              <p @click="toggleOpen(el)" class="mb-0">{{ el.name }}</p>
               <i
                 class="fa fa-trash pointer ml-2"
                 @click.stop="deleteItem(e_index)"
@@ -90,7 +90,7 @@
       </draggable>
 
 
-      <div class="mt-3">
+      <div class="mt-3 pr-5">
         Курс проходят:
 
         <superselect 
