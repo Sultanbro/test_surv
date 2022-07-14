@@ -84,17 +84,22 @@ class CourseController extends Controller
         
         foreach($request->course['elements'] as $index => $item) {
             if($item == null) continue;
-            $ci = CourseItem::where('item_model', $item['item_model'])
+
+            if($item['type'] == 1) $model = 'App\\Models\\Books\\Book';
+            if($item['type'] == 2) $model = 'App\\Models\\Videos\\VideoPlaylist';
+            if($item['type'] == 3) $model = 'App\\KnowBase';
+
+            $ci = CourseItem::where('item_model', $model)
                 ->where('course_id', $request->course['id'])
-                ->where('item_id', $item['item_id'])
+                ->where('item_id', $item['id'])
                 ->first();
 
             $arr = [
                 'course_id' => $request->course['id'],
-                'item_id' => $item['item_id'],
-                'item_model' => $item['item_model'],
+                'item_id' => $item['id'],
+                'item_model' => $model,
                 'order' => $index++,
-                'title' => $item['title'],
+                'title' => $item['name'],
             ];
 
             if($ci) {

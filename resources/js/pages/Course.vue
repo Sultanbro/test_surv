@@ -50,7 +50,7 @@
     <div class="items">
       <div class="d-flex ">
         <p class="title mr-3">Курс состоит из ({{ course.elements.length }}):</p>
-        <div class="btns w-full pr-5">
+        <div class="btns w-50 pr-5">
           <div class="d-flex mb-2">
            
             <superselect-alt
@@ -65,7 +65,7 @@
       </div>
 
       <draggable
-        class="dragArea ml-0 pr-5"
+        class="dragArea ml-0 mr-5"
         tag="ul"
         handle=".fa-bars"
         :list="course.elements"
@@ -95,7 +95,7 @@
 
         <superselect 
             :values="course.targets"
-            class="w-full mb-4" 
+            class="w-50 mb-4" 
             :key="1"
             :select_all_btn="true" />
         
