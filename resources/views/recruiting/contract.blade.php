@@ -195,55 +195,58 @@
 
         <script>
 
-            document.getElementById("front").onchange = function(e) {
-                if (document.getElementById("front").value != "") {
-                    document.getElementById("front2").style.display = "block"
+            $(document).ready(()=>{
+                document.getElementById("front").onchange = function(e) {
+                    if (document.getElementById("front").value != "") {
+                        document.getElementById("front2").style.display = "block"
+                    }
                 }
-            }
 
-            // document.getElementById("back").onchange = function(e) {
-            //     if (document.getElementById("back").value != "") {
-            //         document.getElementById("back2").style.display = "block"
-            //     }
-            // }
-
-
-            document.getElementById("name_1").onchange = function(e) {
-                let val = document.getElementById("name_1").value;
-                document.getElementById("name_2").value = val
-                document.getElementById("name").value = val
-            }
-
-            document.getElementById("name_2").onchange = function(e) {
-                let val = document.getElementById("name_2").value;
-                console.log(val)
-                document.getElementById("name_1").value = val
-                document.getElementById("name").value = val
-            }
-
-            document.getElementById("submit").onclick = function(e) {
-                if (document.getElementById("front").value == "") {
-                    e.preventDefault();
-                    alert("Пожалуйста, прикрепите лицевую сторону удостоверения!");
-                    return null;
-                }
-                // console.log(document.getElementById("front").value )
-                // if (document.getElementById("back").value == "") {
-                //     e.preventDefault();
-                //     alert("Пожалуйста, прикрепите обратную сторону удостоверения!");
-                //     return null;
+                // document.getElementById("back").onchange = function(e) {
+                //     if (document.getElementById("back").value != "") {
+                //         document.getElementById("back2").style.display = "block"
+                //     }
                 // }
 
-                if (document.getElementById("name").value == "" || document.getElementById("name").value < 6) {
-                    e.preventDefault();
-                    alert("Пожалуйста, напишите ФИО!");
-                    return null;
+
+                document.getElementById("name_1").onchange = function(e) {
+                    let val = document.getElementById("name_1").value;
+                    document.getElementById("name_2").value = val
+                    document.getElementById("name").value = val
                 }
 
-                document.getElementById("submit").setAttribute("disabled", "disabled");
-                document.getElementById("submit").innerText == 'Загружаются...'
-                document.getElementById("loader").classList.addClass('show');
-            }
+                document.getElementById("name_2").onchange = function(e) {
+                    let val = document.getElementById("name_2").value;
+                    console.log(val)
+                    document.getElementById("name_1").value = val
+                    document.getElementById("name").value = val
+                }
+
+                document.getElementById("submit").onclick = function(e) {
+                    if (document.getElementById("front").value == "") {
+                        e.preventDefault();
+                        alert("Пожалуйста, прикрепите лицевую сторону удостоверения!");
+                        return null;
+                    }
+                    // console.log(document.getElementById("front").value )
+                    // if (document.getElementById("back").value == "") {
+                    //     e.preventDefault();
+                    //     alert("Пожалуйста, прикрепите обратную сторону удостоверения!");
+                    //     return null;
+                    // }
+
+                    if (document.getElementById("name").value == "" || document.getElementById("name").value < 6) {
+                        e.preventDefault();
+                        alert("Пожалуйста, напишите ФИО!");
+                        return null;
+                    }
+
+                    document.getElementById("submit").setAttribute("disabled", "disabled");
+                    document.getElementById("submit").innerHTML == 'Загружаются...'
+                    document.getElementById("loader").classList.add('show');
+                }
+            });
+           
         </script>
 
         <style>
