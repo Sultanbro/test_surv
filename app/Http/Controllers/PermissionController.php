@@ -10,7 +10,7 @@ use App\User;
 use App\ProfileGroup;
 use App\Position;
 use App\Models\Books\Book;
-use App\Models\Video\VideoPlaylist;
+use App\Models\Videos\VideoPlaylist;
 use App\KnowBase;
 use App\Models\PermissionItem;
 
