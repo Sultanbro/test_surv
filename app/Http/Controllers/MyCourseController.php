@@ -29,6 +29,7 @@ class MyCourseController extends Controller
             ->whereIn('status', [0,2])
             ->orderBy('status', 'desc')
             ->with('course')
+            ->has('course')
             ->get();
         
         return [

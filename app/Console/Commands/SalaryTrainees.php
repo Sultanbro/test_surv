@@ -51,6 +51,7 @@ class SalaryTrainees extends Command
 
 		$users = [];
 		foreach($groups as $group) {
+            if($group->paid_internship == 0) continue;
 			$users  = array_merge($users, json_decode($group->users));
 			$users = array_unique($users);
 		}
@@ -86,11 +87,11 @@ class SalaryTrainees extends Command
                     'zarplata' => $default_zarplata,
                     'user_id' => $user_id,
                 ]);
-                $daily_salary = round($default_zarplata / 26 / 2); 
+                $daily_salary = round($default_zarplata); 
                 $this->line('daily_salary ' . $user_id . '  ' . $daily_salary);
             } else {
                 $oklad = $zarplata->zarplata == 0 ? $default_zarplata : $zarplata->zarplata;
-                $daily_salary = round($oklad/ 26 / 2); 
+                $daily_salary = round($oklad); 
                 $this->line('daily_salary ' . $user_id . '  ' . $daily_salary);
             }
              

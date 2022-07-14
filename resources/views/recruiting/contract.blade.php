@@ -107,7 +107,7 @@
                 <!-- asdasda -->
                 
 
-                <form action="/bp/job/agreement" enctype="multipart/form-data" method="post">
+                <form action="/bp/job/agreement" enctype="multipart/form-data" method="post" name="form">
 
                     <div class="row">
                         <div class="col-md-6">
@@ -160,61 +160,117 @@
 
                     <p class="agger mt">Нажимая "Подписать и продолжить" вы соглашаетесь с условиями данного договора и подтверждаете подлинность приложенных документов</p>
                     {{ csrf_field() }}
-                    <button class="btm btn-success" id="submit" style="margin-bottom: 30px;">
+                    <button class="btm btn-success" id="submitBtn" style="margin-bottom: 30px;">
                         Подписать и продолжить
                     </button>
                 </form>
             </div>
-            
+
+
+        <div id="loader">
+            <div class="icon">
+            <div class="loader loader--style8" title="7">
+                <svg x="0px" y="0px"
+                     viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                    <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="8" y="10" width="4" height="10" fill="#333"  opacity="0.2">
+                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite" />
+                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" />
+                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="16" y="10" width="4" height="10" fill="#333"  opacity="0.2">
+                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite" />
+                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" />
+                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                </svg>
+                </div>
+            </div>
+        </div>
         
 
         <script>
 
-            document.getElementById("front").onchange = function(e) {
-                if (document.getElementById("front").value != "") {
-                    document.getElementById("front2").style.display = "block"
+document.addEventListener('DOMContentLoaded', function(){
+                document.getElementById("front").onchange = function(e) {
+                    if (document.getElementById("front").value != "") {
+                        document.getElementById("front2").style.display = "block"
+                    }
                 }
-            }
 
-            // document.getElementById("back").onchange = function(e) {
-            //     if (document.getElementById("back").value != "") {
-            //         document.getElementById("back2").style.display = "block"
-            //     }
-            // }
-
-
-            document.getElementById("name_1").onchange = function(e) {
-                let val = document.getElementById("name_1").value;
-                document.getElementById("name_2").value = val
-                document.getElementById("name").value = val
-            }
-
-            document.getElementById("name_2").onchange = function(e) {
-                let val = document.getElementById("name_2").value;
-                console.log(val)
-                document.getElementById("name_1").value = val
-                document.getElementById("name").value = val
-            }
-
-            document.getElementById("submit").onclick = function(e) {
-                if (document.getElementById("front").value == "") {
-                    e.preventDefault();
-                    alert("Пожалуйста, прикрепите лицевую сторону удостоверения!");
-                    return null;
-                }
-                // console.log(document.getElementById("front").value )
-                // if (document.getElementById("back").value == "") {
-                //     e.preventDefault();
-                //     alert("Пожалуйста, прикрепите обратную сторону удостоверения!");
-                //     return null;
+                // document.getElementById("back").onchange = function(e) {
+                //     if (document.getElementById("back").value != "") {
+                //         document.getElementById("back2").style.display = "block"
+                //     }
                 // }
 
-                if (document.getElementById("name").value == "" || document.getElementById("name").value < 6) {
-                    e.preventDefault();
-                    alert("Пожалуйста, напишите ФИО!");
-                    return null;
+
+                document.getElementById("name_1").onchange = function(e) {
+                    let val = document.getElementById("name_1").value;
+                    document.getElementById("name_2").value = val
+                    document.getElementById("name").value = val
                 }
-            }
+
+                document.getElementById("name_2").onchange = function(e) {
+                    let val = document.getElementById("name_2").value;
+                    console.log(val)
+                    document.getElementById("name_1").value = val
+                    document.getElementById("name").value = val
+                }
+
+                document.getElementById("submitBtn").onclick = function(e) {
+                    if (document.getElementById("front").value == "") {
+                        e.preventDefault();
+                        alert("Пожалуйста, прикрепите лицевую сторону удостоверения!");
+                        return null;
+                    }
+                    // console.log(document.getElementById("front").value )
+                    // if (document.getElementById("back").value == "") {
+                    //     e.preventDefault();
+                    //     alert("Пожалуйста, прикрепите обратную сторону удостоверения!");
+                    //     return null;
+                    // }
+
+                    if (document.getElementById("name").value == "" || document.getElementById("name").value < 6) {
+                        e.preventDefault();
+                        alert("Пожалуйста, напишите ФИО!");
+                        return null;
+                    }
+
+                    document.getElementById("submitBtn").setAttribute("disabled", "disabled");
+                    document.getElementById("submitBtn").innerHTML = 'Загружаются...'
+                    document.getElementById("loader").classList.add('shows');
+                    document.form.submit();
+
+                    
+                }
+            });
+           
         </script>
+
+        <style>
+            #loader {
+                display: none;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                z-index: 99;
+                top: 0;
+                left:0;
+                background: rgba(0,0,0,.3);
+            }
+            #loader.shows {
+                display: flex;
+                justify-content: center;
+                align-items:center;
+            }
+            #loader svg {
+                width: 50px;
+            }
+        </style>
     </body>
 </html>

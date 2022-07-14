@@ -31,22 +31,78 @@ class CourseController extends Controller
     public function uploadImage(Request $request) {
         $course = Course::find($request->course_id);
         if($course) {
-            $folder = 'courses';
-            $filename = auth()->user()->id . '_'.time().'_'. $request->file('file')->getClientOriginalName();
-            $path = \Storage::putFileAs(
-                'public/' . $folder, $request->file('file'), $filename
-            );
 
-            $end_path = '/storage/'. $folder . '/'. $filename;;
-            $course->img = $end_path;
+            $disk = \Storage::build([
+                'driver' => 's3',
+                'key' => 'O4493_admin',
+                'secret' => 'nzxk4iNukQWx',
+                'region' => 'us-east-1',
+                'bucket' => 'tenantbp',
+                'endpoint' => 'https://storage.oblako.kz:443',
+                'use_path_style_endpoint' => true,
+                'throw' => false,
+                'visibility' => 'public'
+            ]);
+
+            if($course->img != '' && $course->img != null) {
+                if($disk->exists($course->img)) {
+                    $disk->delete($course->img);
+                }
+            }
+            
+            $links = $this->uploadFile('/courses', $request->file('file')); 
+            $img_link = $links['temp'];
+            $course->img = $links['relative'];
+
             $course->save();
+            
             return [
-                'img' => $end_path
+                'img' => $img_link
             ];
         }
-        
     }
+    
+        /**
+     * Upload file to S3 and return relative link
+     * @param String $path
+     * @param mixed $file
+     * 
+     * @return array 
+     * 
+     * 'relative' => String
+     * 'temp' => String
+     */
+    private function uploadFile(String $path, $file)
+    {
+        $disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
 
+        $extension = $file->getClientOriginalExtension();
+        $originalFileName = $file->getClientOriginalName();
+        $fileName = uniqid() . '_' . md5(time()) . '.' . $extension; // a unique file name
+
+        $disk->putFileAs($path, $file, $fileName);
+
+        $xpath = $path . '/' . $fileName;
+        
+        return [
+            'relative' => $xpath,
+            'temp' => $disk->temporaryUrl(
+                $xpath, now()->addMinutes(360)
+            )
+        ];
+    }
+        
+    
     public function get(Request $request)
     {   
 
@@ -54,10 +110,10 @@ class CourseController extends Controller
             return redirect('/');
         }
 
-        $course = Course::with('items', 'models')->get();
+        $courses = Course::with('items', 'models')->get();
 
         return [
-            'courses' => $course
+            'courses' => $courses
         ];
     }
 
@@ -78,21 +134,28 @@ class CourseController extends Controller
             }
         }
         
+        // elements of course
         CourseItem::whereNotIn('id', $ids)->where('course_id', $request->course['id'])->delete();
 
-        foreach($request->course['items'] as $index => $item) {
+        
+        foreach($request->course['elements'] as $index => $item) {
             if($item == null) continue;
-            $ci = CourseItem::where('item_model', $item['item_model'])
+
+            if($item['type'] == 1) $model = 'App\\Models\\Books\\Book';
+            if($item['type'] == 2) $model = 'App\\Models\\Videos\\VideoPlaylist';
+            if($item['type'] == 3) $model = 'App\\KnowBase';
+
+            $ci = CourseItem::where('item_model', $model)
                 ->where('course_id', $request->course['id'])
-                ->where('item_id', $item['item_id'])
+                ->where('item_id', $item['id'])
                 ->first();
 
             $arr = [
                 'course_id' => $request->course['id'],
-                'item_id' => $item['item_id'],
-                'item_model' => $item['item_model'],
+                'item_id' => $item['id'],
+                'item_model' => $model,
                 'order' => $index++,
-                'title' => $item['title'],
+                'title' => $item['name'],
             ];
 
             if($ci) {
@@ -102,59 +165,64 @@ class CourseController extends Controller
             }
         }
 
+        // who starts the course
         CourseModel::where('course_id', $course->id)->delete();
 
-        foreach($request->course['targets'] as $index => $target) {
-      
-            if($target['type'] == 1) $model = 'App\\User';
-            if($target['type'] == 2) $model = 'App\\ProfileGroup';
-            if($target['type'] == 3) $model = 'App\\Position';
-
+        // if there one badge with 'ALL' name
+        if(count($request->course['targets']) == 1 && $request->course['targets'][0]['type'] == 0) {
             CourseModel::create([
                 'course_id' => $course->id,
-                'item_id' => $target['id'],
-                'item_model' => $model,
+                'item_id' => 0,
+                'item_model' => 0,
             ]);
-        }
+        } else {
+            // no badge
+            foreach($request->course['targets'] as $index => $target) {
+      
+                if($target['type'] == 1) $model = 'App\\User';
+                if($target['type'] == 2) $model = 'App\\ProfileGroup';
+                if($target['type'] == 3) $model = 'App\\Position';
+    
+                CourseModel::create([
+                    'course_id' => $course->id,
+                    'item_id' => $target['id'],
+                    'item_model' => $model,
+                ]);
+            }
+        }   
+
+        
 
     }
 
 
     public function getItem(Request $request)
     {   
-        $all_items = [];
-
-
-        $books = Book::get();
-        $videos = VideoPlaylist::get();
-        $kbs = KnowBase::whereNull('parent_id')->get();
-        
-        foreach($books as $book) {
-            array_push($all_items, [
-                'item_id' => $book->id,
-                'title' => 'Книга: ' .$book->title,
-                'item_model'=> 'App\Models\Books\Book'
-            ]);
-        }
-
-        foreach($videos as $video) {
-            array_push($all_items, [
-                'item_id' => $video->id,
-                'title' => 'Видео: ' .$video->title,
-                'item_model'=> 'App\Models\Videos\Video'
-            ]);
-        }
-
-        foreach($kbs as $kb) {
-            array_push($all_items, [
-                'item_id' => $kb->id,
-                'title' => 'БЗ: ' . $kb->title,
-                'item_model'=> 'App\KnowBase'
-            ]);
-        }
 
         $course = Course::with('items', 'models')->find($request->id);
         
+        // img poster
+        $disk = \Storage::build([
+            'driver' => 's3',
+            'key' => 'O4493_admin',
+            'secret' => 'nzxk4iNukQWx',
+            'region' => 'us-east-1',
+            'bucket' => 'tenantbp',
+            'endpoint' => 'https://storage.oblako.kz:443',
+            'use_path_style_endpoint' => true,
+            'throw' => false,
+            'visibility' => 'public'
+        ]);
+
+        if($course->img != '' && $course->img != null) {
+            if($disk->exists($course->img)) {
+                $course->img = $disk->temporaryUrl(
+                    $course->img, now()->addMinutes(360)
+                );
+            }
+        }
+
+        // targets
         $targets = [];
         foreach ($course->models as $key => $target) {
             if($target->item_model == 'App\\ProfileGroup') {
@@ -195,7 +263,53 @@ class CourseController extends Controller
             }
         }
 
+        
+
         $course->targets = $targets;
+        
+        // get course items
+
+        $items = [];
+        foreach ($course->items as $key => $target) {
+            if($target->item_model == 'App\\Models\\Books\\Book') {
+                $model = Book::find($target->item_id);
+
+                if($model) {
+                    $items[] = [
+                        "name" => $model->title,
+                        "id" => $model->id,
+                        "type" => 1,
+                    ];
+                }
+            }
+
+            if($target->item_model == 'App\\Models\\Videos\\VideoPlaylist') {
+                $model = VideoPlaylist::withTrashed()->find($target->item_id);
+
+                if($model) {
+                    $items[] = [
+                        "name" => $model->title,
+                        "id" => $model->id,
+                        "type" => 2,
+                    ];
+                }
+            }
+
+            if($target->item_model == 'App\\KnowBase') {
+                $model = KnowBase::whereNull('parent_id')->find($target->item_id);
+
+                if($model) {
+                    $items[] = [
+                        "name" => $model->title,
+                        "id" => $model->id,
+                        "type" => 3,
+                    ];
+                }
+                
+            }
+        }
+        
+        $course->elements = $items;
         
         $author = User::withTrashed()->find($course->user_id);
         $course->author =  $author ? $author->last_name . ' ' . $author->name : 'Неизвестный';
@@ -204,7 +318,6 @@ class CourseController extends Controller
 
         return [
             'course' => $course,
-            'all_items' => $all_items,
         ];
     }
 
@@ -212,6 +325,7 @@ class CourseController extends Controller
     {
         return Course::create([
             'name' => $request->name,
+            'user_id' => auth()->id()
         ]);
     }
 

@@ -488,6 +488,7 @@ Route::middleware([
 
 
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);
+    Route::get('/superselect/get-alt', [PermissionController::class, 'superselectAlt']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
 
 

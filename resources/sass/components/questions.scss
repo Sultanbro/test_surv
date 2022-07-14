@@ -10,6 +10,14 @@
     margin: 0;
   }
 
+  .jcsb {
+    justify-content: space-between;
+  }
+
+  .aifs {
+    align-items: flex-start;
+  }
+  
   &.hide {
     display: none;
   }

@@ -143,7 +143,8 @@ Vue.component('video-list', require('./components/VideoList.vue').default); //
 Vue.component('video-uploader', require('./components/VideoUploader.vue').default); //
 
 
-Vue.component('superselect', require('./components/SuperSelect.vue').default); // 
+Vue.component('superselect', require('./components/SuperSelect.vue').default); // with User ProfileGroup and Position
+Vue.component('superselect-alt', require('./components/SuperSelectAlt.vue').default); // with Book Video and Knowbase
 
 Vue.component('glossary', require('./components/Glossary.vue').default); // 
 

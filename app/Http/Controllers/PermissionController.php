@@ -9,6 +9,9 @@ use Spatie\Permission\Models\Permission;
 use App\User;
 use App\ProfileGroup;
 use App\Position;
+use App\Models\Books\Book;
+use App\Models\Videos\VideoPlaylist;
+use App\KnowBase;
 use App\Models\PermissionItem;
 
 class PermissionController extends Controller
@@ -443,4 +446,46 @@ class PermissionController extends Controller
             'options' => $options,
         ];
     }
+
+    /**
+     * Не относится к этому контроллеру а к курсам
+     */
+    public function superselectAlt(Request $request)
+    {
+        $options = [];
+
+        $books = Book::get();
+        $videos = VideoPlaylist::get();
+        $kbs = KnowBase::whereNull('parent_id')->get();
+        
+        foreach($books as $book) {
+            array_push($options, [
+                'id' => $book->id,
+                'name' => $book->title,
+                'type'=> 1
+            ]);
+        }
+
+        foreach($videos as $video) {
+            array_push($options, [
+                'id' => $video->id,
+                'name' => $video->title,
+                'type'=> 2
+            ]);
+        }
+
+        foreach($kbs as $kb) {
+            array_push($options, [
+                'id' => $kb->id,
+                'name' => $kb->title,
+                'type'=> 3
+            ]);
+        }
+
+        return [
+            'options' => $options,
+        ];
+    }
+
+    
 }

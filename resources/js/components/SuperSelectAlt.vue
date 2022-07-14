@@ -1,15 +1,17 @@
 <template>
-<div class="super-select" ref="select" :class="posClass" v-click-outside="close">
+<div class="super-select" ref="select-alt" :class="posClass" v-click-outside="close">
 
     <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
-        <div 
-            v-for="(value, i) in values"
-            :key="i"
-            class="selected-item"
-            :class="'value' + value.type">
-            {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i)"></i>
-        </div>
+        <template v-if="!hide_selected">
+            <div 
+                v-for="(value, i) in values"
+                :key="i"
+                class="selected-item"
+                :class="'value' + value.type">
+                {{ value.name }}
+                <i class="fa fa-times" @click.stop="removeValue(i)"></i>
+            </div>
+        </template>
     </div>
     
     <div class="show" v-if="show">
@@ -25,16 +27,16 @@
         <div class="options-window">
             <div class="types"> 
                 <div class="type" :class="{'active': type == 1}" @click="changeType(1)">
-                    <div class="text">Сотрудники</div>
-                    <i class="fa fa-user"></i>
+                    <div class="text">Книги</div>
+                    <i class="fa fa-book"></i>
                 </div>
                 <div class="type" :class="{'active': type == 2}" @click="changeType(2)">
-                    <div class="text" >Отделы</div>
-                    <i class="fa fa-users"></i>
+                    <div class="text" >Видеокурсы</div>
+                    <i class="fa fa-play"></i>
                 </div>
                 <div class="type" :class="{'active': type == 3}" @click="changeType(3)">
-                    <div class="text">Должности</div>
-                    <i class="fa fa-briefcase"></i>
+                    <div class="text">Базы знаний</div>
+                    <i class="fa fa-database"></i>
                 </div>
 
                 <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
@@ -53,9 +55,9 @@
                     @click="addValue(index)"
                     :class="{'selected': option.selected}" 
                 >
-                    <i class="fa fa-user" v-if="option.type == 1"></i> 
-                    <i class="fa fa-users" v-if="option.type == 2"></i> 
-                    <i class="fa fa-briefcase" v-if="option.type == 3"></i> 
+                    <i class="fa fa-book" v-if="option.type == 1"></i> 
+                    <i class="fa fa-play" v-if="option.type == 2"></i> 
+                    <i class="fa fa-database" v-if="option.type == 3"></i> 
                     {{ option.name }}
                     <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i> 
                 </div>
@@ -70,11 +72,10 @@
 
 <script>
 export default {
-    name: 'Superselect',
+    name: 'SuperselectAlt',
     props: {
         values: {
             type: Array,
-            default: []
         },
         single: {
             type: Boolean,
@@ -84,6 +85,10 @@ export default {
             type: Boolean,
             default: false
         },
+        hide_selected: {
+            type: Boolean,
+            default: false
+        }
     },
     data() {
         return {
@@ -211,7 +216,7 @@ export default {
 
         fetch() {
             axios
-                .get("/superselect/get", {})
+                .get("/superselect/get-alt", {})
                 .then((response) => {
 
                     this.options = response.data.options;

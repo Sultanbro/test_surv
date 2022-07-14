@@ -138,7 +138,10 @@ class UserStat extends Model
                 //$applied_from = $localUser->workdays_from_applied($date, $group_1->workdays);
                 $applied_from = $localUser->workdays_from_applied($date, 6);
                 
-               
+                $work_days = 26;
+                if($applied_from > 0){
+                    $work_days = $applied_from;
+                }
                 $item = [
                     'name' => $localUser->name,
                     'lastname' => $localUser->last_name,
@@ -150,6 +153,7 @@ class UserStat extends Model
                     'is_trainee' => $ud && $ud->is_trainee == 1,
                     'applied_from' => $applied_from,
                     'group' => '',
+                    'plan' => $activity->daily_plan * $work_days,
                 ];
 
 

@@ -19,6 +19,7 @@ use App\TimetrackingHistory;
 use App\Http\Controllers\IntellectController as IC;
 use App\Classes\Helpers\Phone;
 use App\ProfileGroupUser as PGU;
+use App\Models\CourseResult;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 
@@ -772,7 +773,11 @@ class User extends Authenticatable implements Authorizable
         return $sum; 
     }
 
-   
+    public function getActiveCourse()
+    {
+        $c = CourseResult::activeCourse();
+        return $c ? CourseResult::with('course')->find($c->id) : null;;
+    }
 
     public function getCurrentKpi()
     {

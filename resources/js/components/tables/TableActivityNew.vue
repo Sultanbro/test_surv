@@ -39,7 +39,7 @@
         
         <div >
            
-            <a @click='showExcelImport = !showExcelImport'  v-if="group_id == 42"
+            <a @click='showExcelImport = !showExcelImport'  v-if="group_id == 42 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
                 class="btn btn-success btn-sm rounded mr-2 text-white">
                 <i class="fa fa-upload"></i>
                 Импорт</a>

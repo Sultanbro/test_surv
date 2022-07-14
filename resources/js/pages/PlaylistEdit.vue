@@ -98,12 +98,12 @@
                     :mode="mode"
                     />
                 
-                <button class="next-btn btn btn-primary"  v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null)"
+                <button class="next-btn btn btn-primary" 
                   @click="nextElement()">
                   Продолжить курс
                   <i class="fa fa-angle-double-right ml-2"></i>
                 </button>
-                    
+                     
             </div>
         </div>
       </div>

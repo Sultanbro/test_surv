@@ -422,17 +422,6 @@ class UserController extends Controller
             View::share('menu', 'profile');
 
 
-//            dd('asd1');
-
-
-           $mycourse = \App\Models\CourseResult::whereIn('status', [0,2])
-               ->where('user_id', $user->id)
-               ->orderBy('status', 'desc')
-               ->with('course')
-               ->first();
-
-
-
          
             return view('admin.timetracking', compact('user', 'oklad','positions', 'user_position', 'photo', 
                 'downloads', 'groups', 'book', 'is_recruiter', 'indicators', 'month', 
@@ -446,7 +435,7 @@ class UserController extends Controller
                     'activities' => $activities,
                     'quality' => $quality,
                     'trainee_report' => $trainee_report,
-                    'course' => $mycourse,
+                    'course' => $user->getActiveCourse(),
                 ]);
         }
         

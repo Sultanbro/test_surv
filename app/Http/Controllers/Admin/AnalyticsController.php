@@ -113,7 +113,6 @@ class AnalyticsController extends Controller
      */
     public function get(Request $request)
     {
-       
         $group_id = $request->group_id;
         $month = $request->month;
         $year = $request->year;
@@ -121,7 +120,6 @@ class AnalyticsController extends Controller
         
         $group = ProfileGroup::find($group_id);
         $currentUser = User::bitrixUser();
-
 
         $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
 
@@ -708,8 +706,10 @@ class AnalyticsController extends Controller
         $currentUser = User::bitrixUser();
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
-        // Доступ к группе
-        if ($currentUser->id != 18 && !in_array($currentUser->id, $group_editors)) {
+        // Доступ к группе 
+
+ 
+        if (!auth()->user()->can('analytics_view') && !in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
             ];
@@ -740,39 +740,12 @@ class AnalyticsController extends Controller
         $minute_headings = Activity::getHeadings($date, Activity::UNIT_MINUTES);
         $percent_headings = Activity::getHeadings($date, Activity::UNIT_PERCENTS);
       
-        if($request->group_id == DM::GROUP_ID) {
-     
-            $sheets = [
-                [
-                    'title' => 'Часы работы',
+        foreach($data as $sheet_content){
+            $sheets[] = [
+                    'title' => $sheet_content['name'],
                     'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Количество действий',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Учет времени',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[2]['records'], $date, Activity::UNIT_MINUTES)
-                ]
+                    'sheet' => Activity::getSheet($sheet_content['records'], $date, Activity::UNIT_MINUTES)
             ];
-        } else {
-            $sheets = [
-                [
-                    'title' => 'Минуты разговора',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Количество сбора',
-                    'headings' => Activity::getHeadings($date, Activity::UNIT_MINUTES, true),
-                    'sheet' => array_key_exists(1, $data) ? Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES, true) : []
-                ]
-            ];
-
         }
        
 
