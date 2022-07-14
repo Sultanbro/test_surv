@@ -2,11 +2,6 @@
 <div class="mt-2 px-3 analytics-page">
     <div class="row mb-3 ">
         <div class="col-3">
-            <select class="form-control" v-model="currentGroup" @change="fetchData">
-                <option v-for="group in groups" :value="group.id" :key="group.id">{{group.name}}</option>
-            </select>
-        </div>
-        <div class="col-3">
             <select class="form-control" v-model="monthInfo.currentMonth" @change="fetchData">
                 <option v-for="month in $moment.months()" :value="month" :key="month">{{month}}</option>
             </select>
@@ -338,7 +333,7 @@ export default {
                 year: new Date().getFullYear()
             },
             dataLoaded: false,
-            currentGroup: null,
+            currentGroup: 48,
             minutes: {},
             loader: null,
             date: null,
@@ -372,7 +367,7 @@ export default {
         const urlParams = new URLSearchParams(window.location.search);
         let group = urlParams.get('group');
         let active = urlParams.get('active');
-        let load = urlParams.get('load');
+        
         this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
         this.active = (active == null) ? '1' : active
 
@@ -380,10 +375,8 @@ export default {
         this.setYear()
         this.setMonthsObject()
 
-        if(load != null) {
-            this.fetchData()
-        }
-
+    
+        this.fetchData()
     },
     methods: {
 
