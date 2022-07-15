@@ -329,10 +329,6 @@
             
             </div>
 
-
-            <div v-if="mode == 'edit'">
-              <p class="mt-2 mb-3"><b>{{ activesbook.title }}</b></p>
-            </div>
             <questions
                   :questions="activesbook.questions"
                   :id="activesbook.id"
