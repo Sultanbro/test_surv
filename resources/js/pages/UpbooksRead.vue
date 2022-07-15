@@ -257,18 +257,25 @@ export default {
       let last_test = this.activeTest;
       // find current test
 
+      console.log('last_test', last_test)
       if(last_test == null) {
-         let i = this.tests.findIndex(el => el.page == this.page);
+
+           console.log('no_test')
+
+         let i = this.tests.findIndex(el => el.page == this.page - 1);
 
         // already passed
         if(i != -1) {
+            console.log('already passed')
           this.activeTest = this.tests[i]
           this.test_key++;
         } else {
+               console.log('no passed')
           this.activeTest = null; 
           return true;
         }
       } else {
+          console.log('has_Test')
         this.activeTest = null; 
         return true;
       }
