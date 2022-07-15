@@ -272,6 +272,7 @@ export default {
           return true;
         }
       } else {
+        this.activeTest = null; 
         return true;
       }
      
