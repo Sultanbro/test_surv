@@ -164,7 +164,7 @@ class KnowBaseController extends Controller
             $can_read = true;  
         } 
 
-        if($can_read || $request->has('can_read')) {
+        if($can_read || ($request->has('can_read') && $request->can_read)) {
             $trees = KnowBase::where('parent_id', $request->id)
                 ->with('children')
                 ->with('questions')

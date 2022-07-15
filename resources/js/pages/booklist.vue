@@ -787,6 +787,7 @@ export default {
        axios
         .post("/kb/tree", {
           id: this.parent_id,
+          can_read: this.course_page
         })
         .then((response) => {
           this.tree = response.data.trees;

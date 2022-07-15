@@ -235,10 +235,6 @@ export default {
         console.log('can select');
         this.congrats = false;
         this.activeCourseItem = this.items[i];
-        console.log(this.activeCourseItem);
-        if(this.activeCourseItem.item_model == 'App\\KnowBase') {
-          this.selectKnowbaseSection();
-        }
       }
         
     },
@@ -249,23 +245,6 @@ export default {
       const INITIAL = 0;
 
       return [INITIAL, STARTED, COMPLETED].includes(status);
-    },
-
-    selectKnowbaseSection(book, page_id = 0) {
-      axios
-        .post("kb/tree", {
-          id: this.activeCourseItem.item_id,
-          can_read: true
-        })
-        .then((response) => {
-          if(response.data.error) {
-            this.$message.info('Раздел не найден');
-          }
-          this.trees = response.data.trees;
-        })
-        .catch((error) => {
-          alert(error);
-        });
     },
 
     setStepStatus() {
