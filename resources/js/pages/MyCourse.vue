@@ -242,8 +242,9 @@ export default {
     canSelect(status) {
       const COMPLETED = 1;
       const STARTED = 2;
+      const INITIAL = 0;
 
-      return [STARTED, COMPLETED].includes(status);
+      return [INITIAL, STARTED, COMPLETED].includes(status);
     },
 
     selectKnowbaseSection(book, page_id = 0) {
