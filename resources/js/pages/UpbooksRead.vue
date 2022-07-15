@@ -118,7 +118,7 @@
       />
     </div>
 
-    <template v-if="activeTest && course_page">
+    <template v-if="(activeTest && course_page) || (activeTest == null && pageCount == page)">
       <button class="next-btn btn btn-primary" 
         v-if="activeTest.pass"
         @click="nextElement()">
@@ -168,7 +168,7 @@ export default {
   methods: {
     moveTo(page) {
       this.page = page
-      this.setCurrentTest()
+      this.setCurrentTestNext()
     },
 
     nextElement() {
@@ -233,9 +233,27 @@ export default {
       }
     },
 
-    setCurrentTest(action = 'nothing') {
+    setCurrentTestNext(action = 'nothing') {
       
+      // find current test
+      let i = this.tests.findIndex(el => el.page == this.page);
 
+      // already passed
+      if(i != -1) {
+        this.activeTest = this.tests[i]
+        this.test_key++;
+      } else {
+        this.activeTest = null; 
+        return true;
+      }
+
+      
+      if(this.activeTest && this.activeTest.pass) return true;   
+
+      return false;
+    },
+
+    setCurrentTestPrev(action = 'nothing') {
       let last_test = this.activeTest;
       // find current test
       let i = this.tests.findIndex(el => el.page == this.page);
@@ -244,34 +262,17 @@ export default {
       if(i != -1) {
         this.activeTest = this.tests[i]
         this.test_key++;
-        if(action == 'prev')  {
 
-          if(last_test) {
-            this.activeTest = null;
-          } else {
-
-            if(this.activeTest) {
-              return false;
-            } else {
-              return true;
-            }
-            
-          }
-          
+        if(last_test) {
+          this.activeTest = null;
+        } else {
+          return this.activeTest ? false : true;
         }
-      } else {
 
-        // if(action == 'prev') {
-        //   let x = this.tests.findIndex(el => el.page == this.page - 1);
-        //   if(x != -1) {
-        //     return false;
-        //   }
-        // }
+      } else {
         this.activeTest = null; 
         return true;
       }
-
-      if(action == 'next' && this.activeTest && this.activeTest.pass)return true;  
 
       return false;
     },
@@ -279,7 +280,7 @@ export default {
     nextPage() {
       if (this.page == this.pageCount) return 0;
       console.log(this.page)
-      let move = this.setCurrentTest('next')
+      let move = this.setCurrentTestNext()
 
       // prevent click 
       if(this.activeTest && !this.activeTest.pass) {
@@ -299,7 +300,7 @@ export default {
     prevPage() { 
       if (this.page == 1) return 0;
       console.log(this.page)
-      let move = this.setCurrentTest('prev')
+      let move = this.setCurrentTestPrev()
 
       
       // move to prev page
