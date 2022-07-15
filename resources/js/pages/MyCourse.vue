@@ -255,6 +255,7 @@ export default {
       axios
         .post("kb/tree", {
           id: this.activeCourseItem.item_id,
+          can_read: true
         })
         .then((response) => {
           if(response.data.error) {
