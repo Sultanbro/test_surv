@@ -365,7 +365,7 @@ class KnowBaseController extends Controller
         }
     }
 
-    private function canSaveWithoutTest($text, KnowBase $page) {
+    private function canSaveWithoutTest() {
         $setting = Setting::where('name', 'allow_save_kb_without_test')
                 ->first();
 
