@@ -283,7 +283,7 @@ export default {
       let move = this.setCurrentTestNext()
 
       // prevent click 
-      if(this.activeTest && !this.activeTest.pass) {
+      if(this.activeTest != null && !this.activeTest.pass) {
         this.$message.info('Ответьте на вопросы, чтобы пройти дальше');
         return;
       }
