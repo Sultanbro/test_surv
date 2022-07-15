@@ -81,7 +81,7 @@ class BonusUpdate extends Command
 
 
 
-            $this->notify(date('Y-m-d'));
+            //$this->notify(date('Y-m-d'));
         }
 
 

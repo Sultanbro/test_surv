@@ -303,15 +303,18 @@
             }"
           ></editor>
 
-      
 
-          <div v-if="loader" class="col-md-12 bg">
-            <div class="loader" id="loader-2">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
+            <questions
+                  :questions="activesbook.questions"
+                  :id="activesbook.id"
+                  type="kb"
+                  :mode="mode"
+                  :count_points="true"
+                  @passed="passed"
+                  :key="questions_key"
+                  :pass_grade="activesbook.pass_grade"
+                  @changePassGrade="checkPassGrade"
+                />
 
         
         </template>
@@ -660,6 +663,7 @@ export default {
       parent_title: '',
       showActionModal: false,
       showSearch: false,
+      can_save: false,
       search: {
         input: '',
         items: []
@@ -787,6 +791,8 @@ export default {
         })
         .then((response) => {
           this.tree = response.data.trees;
+
+          this.can_save = response.data.can_save; // without test
 
           this.books = [];
 
@@ -916,7 +922,7 @@ export default {
 
       this.$message.info("Подождите пока сохранится ...");
 
-      this.loader = true;
+      let loader = this.$loading.show();
 
       axios
         .post("/books/order/", {
@@ -924,11 +930,11 @@ export default {
           id: this.id,
         })
         .then((response) => {
-          this.loader = false;
+          loader.hide()
           this.$message.success("Порядок сохранен!");
         })
         .catch((error) => {
-          this.loader = false;
+            loader.hide()
           this.$message.error("Ошибка сохранения порядка");
         });
 
@@ -1135,7 +1141,12 @@ export default {
         .then((response) => {});
     },
     saveServer() {
-       this.loader = true;
+      if(this.activesbook.questions.length == 0 && !this.can_save) {
+        this.$message.info('Нельзя вносить изменения без тестов');
+        return;
+      }
+
+      let loader = this.$loading.show();
       axios
         .post("/kb/page/update", {
           text: this.activesbook.text,
@@ -1148,9 +1159,10 @@ export default {
           this.edit_actives_book = false;
           this.$message.info("Сохранено");
           this.renameNode(this.tree, this.activesbook.id, this.activesbook.title);
-          this.loader = false;
+          loader.hide()
 
-        });
+        })
+        .catch((error) => {loader.hide()})
     },
 
   
