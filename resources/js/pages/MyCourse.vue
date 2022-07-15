@@ -85,7 +85,7 @@
                     />
                   </div>
  
-                  <div class="px-3 pt-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\Video'">
+                  <div class="px-3 pt-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist'">
                       <page-playlist-edit 
                           ref="playlist"
                           :id="activeCourseItem.item_id"
@@ -236,7 +236,7 @@ export default {
         this.congrats = false;
         this.activeCourseItem = this.items[i];
         console.log(this.activeCourseItem);
-        if(this.activeCourseItem.model_type == 'App\\KnowBase') {
+        if(this.activeCourseItem.item_model == 'App\\KnowBase') {
           this.selectKnowbaseSection();
         }
       }
@@ -254,7 +254,7 @@ export default {
     selectKnowbaseSection(book, page_id = 0) {
       axios
         .post("kb/tree", {
-          id: id,
+          id: this.activeCourseItem.item_id,
         })
         .then((response) => {
           if(response.data.error) {
