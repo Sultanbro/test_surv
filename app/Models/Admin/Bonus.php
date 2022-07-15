@@ -185,9 +185,9 @@ class Bonus extends Model
             if($bonus->unit == self::FOR_FIRST && $group_id == 79) {
                 $euras_best_user = 0;
                 if($bonus->daypart == 1) {
-                    $euras_best_user = getEurasBestUser($date . ' 09:00:00', $date . ' 13:00:00');
+                    $euras_best_user = self::getEurasBestUser($date . ' 09:00:00', $date . ' 13:00:00');
                 }else if($bonus->daypart == 2){
-                    $euras_best_user = getEurasBestUser($date . ' 14:00:00', $date . ' 19:00:00');
+                    $euras_best_user = self::getEurasBestUser($date . ' 14:00:00', $date . ' 19:00:00');
                 }
                 if($euras_best_user != 0){
                     ObtainedBonus::createOrUpdate([
@@ -511,7 +511,8 @@ class Bonus extends Model
         $awards = [];
         foreach($group_users as $user){
             $account = DB::connection('callibro')->table('call_account')->where('email',$user->email)->first();
-            $call = DB::connection('callibro')->table('calls')
+            if($account){
+                $call = DB::connection('callibro')->table('calls')
                      ->where('call_dialer_id', 444)
                      ->where('call_account_id', $account->id)
                      ->where('script_status_id', 13559)
@@ -519,6 +520,8 @@ class Bonus extends Model
                      ->orderBy('id', 'desc')
                      ->take(15)
                      ->get();
+            }
+            
             if(sizeof($call) == 15){
                 if(sizeof($awards) == 0){
                     $awards[] = [$user->id, sizeof($call), $call[0]->created_at];
