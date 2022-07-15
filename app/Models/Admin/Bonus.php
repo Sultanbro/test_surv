@@ -75,7 +75,7 @@ class Bonus extends Model
             if($bonus->sum == 0) continue;
             if($bonus->activity_id == 0) continue;
             
-            if($bonus->unit == self::FOR_FIRST) {
+            if($bonus->unit == self::FOR_FIRST && $group_id != 79) {
         
                 $best_user = 0;
                 $best_value = 0;
@@ -182,12 +182,12 @@ class Bonus extends Model
                 }
             }
 
-            if($bonus->unit == self::FOR_ONE && $group_id == 79) {
+            if($bonus->unit == self::FOR_FIRST && $group_id == 79) {
                 $euras_best_user = 0;
                 if($bonus->daypart == 1) {
-                    $euras_best_user = getEurasBestUser($date . ' 09:00:00', $date . ' 13:00:00');
+                    $euras_best_user = self::getEurasBestUser($date . ' 09:00:00', $date . ' 13:00:00');
                 }else if($bonus->daypart == 2){
-                    $euras_best_user = getEurasBestUser($date . ' 14:00:00', $date . ' 19:00:00');
+                    $euras_best_user = self::getEurasBestUser($date . ' 14:00:00', $date . ' 19:00:00');
                 }
                 if($euras_best_user != 0){
                     ObtainedBonus::createOrUpdate([
@@ -336,45 +336,45 @@ class Bonus extends Model
      */
     public static function getLeader($calls, $quantity) {
 
-		$accounts = [];
-		$last_calls = [];
+        $accounts = [];
+        $last_calls = [];
 
-		foreach ($calls as $call) {
-			if(!array_key_exists($call->account_id, $accounts)) $accounts[$call->account_id] = 0;
-			$accounts[$call->account_id]++;
-			if($accounts[$call->account_id] <= $quantity) {
-				$last_calls[$call->account_id] = $call->start_time;
-			}
-		}
+        foreach ($calls as $call) {
+            if(!array_key_exists($call->account_id, $accounts)) $accounts[$call->account_id] = 0;
+            $accounts[$call->account_id]++;
+            if($accounts[$call->account_id] <= $quantity) {
+                $last_calls[$call->account_id] = $call->start_time;
+            }
+        }
 
-		$filteredAccounts = array_filter($accounts, function($value) use ($quantity){
-			return ($value >= $quantity);
-		}); 
-		
-		$keys = array_keys($filteredAccounts);
-		
-		$filteredLastCalls = [];
-		foreach($last_calls as $account_id => $last_call) {
-			if(in_array($account_id, $keys)) {
-				$filteredLastCalls[$account_id] = $last_call; 
-			}  
-		} 
+        $filteredAccounts = array_filter($accounts, function($value) use ($quantity){
+            return ($value >= $quantity);
+        }); 
+        
+        $keys = array_keys($filteredAccounts);
+        
+        $filteredLastCalls = [];
+        foreach($last_calls as $account_id => $last_call) {
+            if(in_array($account_id, $keys)) {
+                $filteredLastCalls[$account_id] = $last_call; 
+            }  
+        } 
 
-		$first = 0; 
-		$first_time = 0; 
+        $first = 0; 
+        $first_time = 0; 
 
-		if(count($filteredAccounts) > 0) {
-			foreach($filteredLastCalls as $account_id => $time) {
-				$time = Carbon::parse($time)->timestamp;
-				if($first_time == 0 || $time < $first_time) {
-					$first_time = $time;
-					$first = $account_id;
-				}
-			}
-		}
+        if(count($filteredAccounts) > 0) {
+            foreach($filteredLastCalls as $account_id => $time) {
+                $time = Carbon::parse($time)->timestamp;
+                if($first_time == 0 || $time < $first_time) {
+                    $first_time = $time;
+                    $first = $account_id;
+                }
+            }
+        }
 
         return $first;
-	}  
+    }  
 
     /**
      * Fetch value from AnalyticsSettingsIndividually
@@ -504,14 +504,15 @@ class Bonus extends Model
         
     }
 
-    public function getEurasBestUser($from, $to){
+    public static function getEurasBestUser($from, $to){
         $group = ProfileGroup::find(79);
         $users = json_decode($group->users);
         $group_users = User::whereIn('id',$users)->get();
         $awards = [];
         foreach($group_users as $user){
             $account = DB::connection('callibro')->table('call_account')->where('email',$user->email)->first();
-            $call = DB::connection('callibro')->table('calls')
+            if($account){
+                $call = DB::connection('callibro')->table('calls')
                      ->where('call_dialer_id', 444)
                      ->where('call_account_id', $account->id)
                      ->where('script_status_id', 13559)
@@ -519,6 +520,8 @@ class Bonus extends Model
                      ->orderBy('id', 'desc')
                      ->take(15)
                      ->get();
+            }
+            
             if(sizeof($call) == 15){
                 if(sizeof($awards) == 0){
                     $awards[] = [$user->id, sizeof($call), $call[0]->created_at];
