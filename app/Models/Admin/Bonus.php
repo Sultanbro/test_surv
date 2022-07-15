@@ -75,7 +75,7 @@ class Bonus extends Model
             if($bonus->sum == 0) continue;
             if($bonus->activity_id == 0) continue;
             
-            if($bonus->unit == self::FOR_FIRST) {
+            if($bonus->unit == self::FOR_FIRST && $group_id != 79) {
         
                 $best_user = 0;
                 $best_value = 0;
@@ -182,7 +182,7 @@ class Bonus extends Model
                 }
             }
 
-            if($bonus->unit == self::FOR_ONE && $group_id == 79) {
+            if($bonus->unit == self::FOR_FIRST && $group_id == 79) {
                 $euras_best_user = 0;
                 if($bonus->daypart == 1) {
                     $euras_best_user = getEurasBestUser($date . ' 09:00:00', $date . ' 13:00:00');
@@ -504,7 +504,7 @@ class Bonus extends Model
         
     }
 
-    public function getEurasBestUser($from, $to){
+    public static function getEurasBestUser($from, $to){
         $group = ProfileGroup::find(79);
         $users = json_decode($group->users);
         $group_users = User::whereIn('id',$users)->get();
