@@ -257,16 +257,13 @@ export default {
       let last_test = this.activeTest;
       // find current test
 
-      if(this.last_test == null) {
+      if(last_test == null) {
          let i = this.tests.findIndex(el => el.page == this.page);
 
         // already passed
         if(i != -1) {
           this.activeTest = this.tests[i]
           this.test_key++;
-
-        
-
         } else {
           this.activeTest = null; 
           return true;
