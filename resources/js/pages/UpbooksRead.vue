@@ -256,23 +256,25 @@ export default {
     setCurrentTestPrev(action = 'nothing') {
       let last_test = this.activeTest;
       // find current test
-      let i = this.tests.findIndex(el => el.page == this.page);
 
-      // already passed
-      if(i != -1) {
-        this.activeTest = this.tests[i]
-        this.test_key++;
+      if(this.last_test == null) {
+         let i = this.tests.findIndex(el => el.page == this.page);
 
-        if(last_test) {
-          this.activeTest = null;
+        // already passed
+        if(i != -1) {
+          this.activeTest = this.tests[i]
+          this.test_key++;
+
+        
+
         } else {
-          return this.activeTest ? false : true;
+          this.activeTest = null; 
+          return true;
         }
-
       } else {
-        this.activeTest = null; 
         return true;
       }
+     
 
       return false;
     },
