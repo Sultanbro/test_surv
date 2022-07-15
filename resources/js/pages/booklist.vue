@@ -663,6 +663,7 @@ export default {
       parent_title: '',
       showActionModal: false,
       showSearch: false,
+      can_save: false,
       search: {
         input: '',
         items: []
@@ -790,6 +791,8 @@ export default {
         })
         .then((response) => {
           this.tree = response.data.trees;
+
+          this.can_save = response.data.can_save; // without test
 
           this.books = [];
 
@@ -1138,6 +1141,11 @@ export default {
         .then((response) => {});
     },
     saveServer() {
+      if(this.activesbook.questions.length == 0 && !this.can_save) {
+        this.$message.info('Нельзя вносить изменения без тестов');
+        return;
+      }
+
       let loader = this.$loading.show();
       axios
         .post("/kb/page/update", {
