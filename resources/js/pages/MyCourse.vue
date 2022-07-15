@@ -229,9 +229,13 @@ export default {
 
     selectCourseItem(i) {
       
+      console.log('test');
+
       if(this.canSelect(this.items[i].status)) {
+        console.log('can select');
         this.congrats = false;
         this.activeCourseItem = this.items[i];
+        console.log(this.activeCourseItem);
         if(this.activeCourseItem.model_type == 'App\\KnowBase') {
           this.selectKnowbaseSection();
         }
