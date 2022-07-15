@@ -63,7 +63,7 @@ export default {
         let i = this.videos.findIndex(el => el.id == this.active);
    
         if(i != -1) {
-            this.videos[i].item_model == null
+            this.videos[i].item_model = null
         }
     },
 
