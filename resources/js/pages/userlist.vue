@@ -108,6 +108,11 @@
             Part
         </div>
       </template>
+      <template slot="cell(fire_cause)" slot-scope="row">
+        <div v-if="tableFilter != 'active'">
+          {{row.value}}
+        </div>
+      </template>
     </b-table>
   </div>
 
