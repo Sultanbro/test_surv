@@ -517,7 +517,7 @@ class Bonus extends Model
                      ->where('call_account_id', $account->id)
                      ->where('script_status_id', 13559)
                      ->whereBetween('start_time',[$from,$to])
-                     ->orderBy('id', 'desc')
+                     ->orderBy('id', 'asc')
                      ->take(15)
                      ->get();
             }
