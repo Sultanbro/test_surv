@@ -47,13 +47,5 @@
     </div>
     @endif
 
-    @php
-        $a = \App\User::where('img_url', '!=', '')->inRandomOrder()->select('img_url', 'name', 'last_name')->where('id', '!=', 4444)->limit(15)->get();
-    @endphp
-    @foreach($a as $b)
-    <div class="btn-rm" style="height:auto">
-        <img src="/users_img/{{ $b->img_url }}" title="{{ $b->name . ' ' . $b->last_name}}" alt="avatar">
-    </div>
-    @endforeach
 </div>
 </aside>
