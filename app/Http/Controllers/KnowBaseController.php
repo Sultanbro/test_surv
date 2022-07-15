@@ -356,7 +356,7 @@ class KnowBaseController extends Controller
 
             $page->save();
 
-            $this->notifyAboutChanges('Страница: ', $page);
+           // $this->notifyAboutChanges('Страница: ', $page);
         }
     }
 
