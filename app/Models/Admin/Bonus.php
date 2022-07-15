@@ -336,45 +336,45 @@ class Bonus extends Model
      */
     public static function getLeader($calls, $quantity) {
 
-		$accounts = [];
-		$last_calls = [];
+        $accounts = [];
+        $last_calls = [];
 
-		foreach ($calls as $call) {
-			if(!array_key_exists($call->account_id, $accounts)) $accounts[$call->account_id] = 0;
-			$accounts[$call->account_id]++;
-			if($accounts[$call->account_id] <= $quantity) {
-				$last_calls[$call->account_id] = $call->start_time;
-			}
-		}
+        foreach ($calls as $call) {
+            if(!array_key_exists($call->account_id, $accounts)) $accounts[$call->account_id] = 0;
+            $accounts[$call->account_id]++;
+            if($accounts[$call->account_id] <= $quantity) {
+                $last_calls[$call->account_id] = $call->start_time;
+            }
+        }
 
-		$filteredAccounts = array_filter($accounts, function($value) use ($quantity){
-			return ($value >= $quantity);
-		}); 
-		
-		$keys = array_keys($filteredAccounts);
-		
-		$filteredLastCalls = [];
-		foreach($last_calls as $account_id => $last_call) {
-			if(in_array($account_id, $keys)) {
-				$filteredLastCalls[$account_id] = $last_call; 
-			}  
-		} 
+        $filteredAccounts = array_filter($accounts, function($value) use ($quantity){
+            return ($value >= $quantity);
+        }); 
+        
+        $keys = array_keys($filteredAccounts);
+        
+        $filteredLastCalls = [];
+        foreach($last_calls as $account_id => $last_call) {
+            if(in_array($account_id, $keys)) {
+                $filteredLastCalls[$account_id] = $last_call; 
+            }  
+        } 
 
-		$first = 0; 
-		$first_time = 0; 
+        $first = 0; 
+        $first_time = 0; 
 
-		if(count($filteredAccounts) > 0) {
-			foreach($filteredLastCalls as $account_id => $time) {
-				$time = Carbon::parse($time)->timestamp;
-				if($first_time == 0 || $time < $first_time) {
-					$first_time = $time;
-					$first = $account_id;
-				}
-			}
-		}
+        if(count($filteredAccounts) > 0) {
+            foreach($filteredLastCalls as $account_id => $time) {
+                $time = Carbon::parse($time)->timestamp;
+                if($first_time == 0 || $time < $first_time) {
+                    $first_time = $time;
+                    $first = $account_id;
+                }
+            }
+        }
 
         return $first;
-	}  
+    }  
 
     /**
      * Fetch value from AnalyticsSettingsIndividually
