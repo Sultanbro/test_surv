@@ -164,6 +164,8 @@ class KnowBaseController extends Controller
             $can_read = true;  
         } 
 
+        
+
         if($can_read || ($request->has('can_read') && $request->can_read)) {
             $trees = KnowBase::where('parent_id', $request->id)
                 ->with('children')
@@ -189,10 +191,13 @@ class KnowBaseController extends Controller
            if($book) $book->access = in_array($book->id, $this->getBooks(2)) ? 2 : 1;
             
         }
+        
+       
 
         return [
             'trees' => $trees,
             'book' => $book,
+            'can_save' => $this->canSaveWithoutTest()
         ];
     }
 
@@ -360,7 +365,13 @@ class KnowBaseController extends Controller
         }
     }
 
-    
+    private function canSaveWithoutTest($text, KnowBase $page) {
+        $setting = Setting::where('name', 'allow_save_kb_without_test')
+                ->first();
+
+        return $setting && $setting->value == 1;
+    }
+
     private function notifyAboutChanges($text, KnowBase $page) {
         $setting = Setting::where('name', 'send_notification_after_edit')
                 ->first();
