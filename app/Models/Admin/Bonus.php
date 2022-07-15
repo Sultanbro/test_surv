@@ -155,7 +155,7 @@ class Bonus extends Model
                 
             }
             
-            if($bonus->unit == self::FOR_ONE) {
+            if($bonus->unit == self::FOR_ONE  && $group_id != 79) {
                 foreach ($users as $user_id) {
                     
                     if($group_id == 48) {
@@ -179,6 +179,24 @@ class Bonus extends Model
                    // }
                     
                     
+                }
+            }
+
+            if($bonus->unit == self::FOR_ONE && $group_id == 79) {
+                $euras_best_user = 0;
+                if($bonus->daypart == 1) {
+                    $euras_best_user = getEurasBestUser($date . ' 09:00:00', $date . ' 13:00:00');
+                }else if($bonus->daypart == 2){
+                    $euras_best_user = getEurasBestUser($date . ' 14:00:00', $date . ' 19:00:00');
+                }
+                if($euras_best_user != 0){
+                    ObtainedBonus::createOrUpdate([
+                        'user_id' => $euras_best_user,
+                        'date' => $date,
+                        'bonus_id' => $bonus->id,
+                        'amount' => $bonus->sum,
+                        'comment' => $bonus->title . ' : ' . $bonus->sum . ';'
+                    ]);
                 }
             }
         }
@@ -484,5 +502,34 @@ class Bonus extends Model
 
         return $html;
         
+    }
+
+    public function getEurasBestUser($from, $to){
+        $group = ProfileGroup::find(79);
+        $users = json_decode($group->users);
+        $group_users = User::whereIn('id',$users)->get();
+        $awards = [];
+        foreach($group_users as $user){
+            $account = DB::connection('callibro')->table('call_account')->where('email',$user->email)->first();
+            $call = DB::connection('callibro')->table('calls')
+                     ->where('call_dialer_id', 444)
+                     ->where('call_account_id', $account->id)
+                     ->where('script_status_id', 13559)
+                     ->whereBetween('created_at',[$from,$to])
+                     ->orderBy('id', 'desc')
+                     ->take(15)
+                     ->get();
+            if(sizeof($call) == 15){
+                if(sizeof($awards) == 0){
+                    $awards[] = [$user->id, sizeof($call), $call[0]->created_at];
+                }else{
+                    if(Carbon::parse($awards[0][2])->gt(Carbon::parse($call[0]->created_at))){
+                        $awards[0] = [$user->id, sizeof($call), $call[0]->created_at];
+                    }
+                }
+            }
+        }
+        //'2022-07-13 09:00:00' to '2022-07-13 13:00:00' - bonus 14628 Билостоцкая Наталья
+        return $awards ? $awards[0][0] : 0;
     }
 }
