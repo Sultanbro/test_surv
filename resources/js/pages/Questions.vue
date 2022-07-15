@@ -150,7 +150,7 @@
           v-if="['kb','video'].includes(type) && changed"
           class="btn btn-success mr-2" 
           @click.stop="saveTest"
-          :disabled="!can_save"
+          
           >
             Сохранить
         </button>
@@ -211,6 +211,11 @@ export default {
     scores() {
       return Number(this.points - (this.total * this.pass_grade / 100)) >= 0
     }
+  },
+  watch: {
+      pass_grade(newData) {
+        this.changed = true;
+      },
   },
   created() {
     this.prepareVariants();

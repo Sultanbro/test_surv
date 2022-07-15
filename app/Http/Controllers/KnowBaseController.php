@@ -515,6 +515,7 @@ class KnowBaseController extends Controller
                 if ($testq) {
                     $testq->update($params);
                 }
+                $ids[] = $q['id']; 
                 
             } else {
                 $q = TestQuestion::create($params);
