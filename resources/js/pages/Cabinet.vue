@@ -1,435 +1,524 @@
 <template>
-<div class="d-flex">
-  <div class="lp">
-    <h1 class="page-title">Настройка кабинета</h1>
-    <div class="settingCabinet">
-      <ul class="p-0">
+  <div class="d-flex">
+    <!-- left sidebar -->
+    <div class="lp">
+      <h1 class="page-title">Настройка кабинета</h1>
+      <div class="settingCabinet">
+        <ul class="p-0">
+          <li v-if="user.is_admin === 1">
+            <a
+              class="lp-link"
+              @click="page = 'admin'"
+              :class="{ active: page == 'admin' }"
+            >
+              Административные настройки
+            </a>
+          </li>
 
-
-        <li><a  v-if="user.is_admin === 1" style="color: black" @click="userRoles = true , userProfile = false "  v-bind:class="{ profile_active: userRoles }" >Административные настройки</a></li>
-        <li class="position-relative">
-          <a style="color: black"  @click="userProfile = true , userRoles = false"  v-bind:class="{ profile_active: userProfile }" >Настройка собственного профиля</a>
-        </li>
-
-
-      </ul>
-    </div>
-  </div>
-
-
-  <div  v-if="userRoles" class="rp" style="flex: 1 1 0%;"   >
-    <div class="hat">
-      <div class="d-flex jsutify-content-between hat-top">
-        <div class="bc">
-          <a href="#">Настройка кабинета</a>
-        </div>
-
+          <li class="position-relative">
+            <a
+              class="lp-link"
+              @click="page = 'profile'"
+              :class="{ active: page == 'profile' }"
+            >
+              Настройка собственного профиля
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
-    <div class="content mt-3 py-3">
+
+    <!-- Cabinet page -->
+    <div v-if="page == 'admin'" class="rp" style="flex: 1 1 0%">
+      <div class="hat">
+        <div class="d-flex jsutify-content-between hat-top">
+          <div class="bc">
+            <a href="#">Настройка кабинета</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="content mt-3 py-3">
         <div class="p-3">
           <div class="form-group">
             Субдомен
-            <input class="form-control mt-1" id="view_own_orders" type="text"/>
+            <input class="form-control mt-1" id="view_own_orders" type="text" />
           </div>
 
           <div class="form-group">
             Часовой пояс
-            <input class="form-control mt-1" id="view_own_orders" type="text"/>
+            <input class="form-control mt-1" id="view_own_orders" type="text" />
           </div>
-
 
           <div class="form-group">
             Администраторы
 
             <multiselect
-                v-model="admins"
-                :options="users"
-                :multiple="true"
-                :close-on-select="false"
-                :clear-on-select="true"
-                :preserve-search="true"
-                placeholder="Выберите"
-                label="email"
-                track-by="email"
-                :taggable="true"
-                @tag="addTag"
-              >
-              </multiselect>
+              v-model="admins"
+              :options="users"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="true"
+              :preserve-search="true"
+              placeholder="Выберите"
+              label="email"
+              track-by="email"
+              :taggable="true"
+              @tag="addTag"
+            >
+            </multiselect>
           </div>
-
 
           <div class="mt-3">
             <button class="btn btn-success" @click="save">Сохранить</button>
           </div>
-
-
-
-
-
-      </div>
-    </div>
-  </div>
-
-  <div  v-if="userProfile" class="col-12 p-0">
-    <div class="hat">
-     <div class="d-flex jsutify-content-between hat-top">
-        <div class="bc">
-          <a  href="#">Настройка профиля</a>
         </div>
       </div>
     </div>
 
-     <div class="content " >
-       <div class="col-12 p-5 py-3">
-         <div class="form-group row mb-0">
-           <!-- <vue-avatar
-               :width=200
-               :height=200
-               :image="image"
-               ref="vueavatar"
-               @vue-avatar-editor:image-ready="onImageReady"
-           >
-           </vue-avatar> -->
+    <!-- Profile page -->
+    <div v-if="page == 'profile'" class="rp">
+      <div class="hat">
+        <div class="d-flex jsutify-content-between hat-top">
+          <div class="bc">
+            <a href="#">Настройка профиля</a>
+          </div>
+        </div>
+      </div>
 
-           <croppa v-model="myCroppa"
-              :width="400"
-              :height="400"
-              :canvas-color="'default'"
-              :placeholder="'Choose an image'"
-              :placeholder-font-size="0"
-              :placeholder-color="'default'"
-              :accept="'image/*'"
-              :file-size-limit="0"
-              :quality="2"
-              :zoom-speed="3"></croppa>
+      <div class="content">
+        <div class="row m-0 mt-2"> 
+          <!-- profile data -->
+          <div class="col-8">
+            <div class="form-group row mt-3">
+              <label class="col-sm-4 col-form-label font-weight-bold">
+                Имя <span class="red">*</span>
+              </label>
 
+              <div class="col-sm-8 p-0">
+                <input
+                  class="form-control"
+                  type="text"
+                  name="name"
+                  id="firstName"
+                  required
+                  placeholder="Имя сотрудника"
+                  v-model="user.name"
+                />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-4 col-form-label font-weight-bold"
+                >Фамилия <span class="red">*</span></label
+              >
+              <div class="col-sm-8 p-0">
+                <input
+                  class="form-control"
+                  type="text"
+                  name="last_name"
+                  id="lastName"
+                  required
+                  placeholder="Фамилия сотрудника"
+                  v-model="user.last_name"
+                />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-4 col-form-label font-weight-bold"
+                >Email <span class="red">*</span></label
+              >
+              <div class="col-sm-8 p-0">
+                <input
+                  class="form-control"
+                  type="text"
+                  name="email"
+                  id="email"
+                  required
+                  placeholder="email"
+                  v-model="user.email"
+                />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-4 col-form-label font-weight-bold"
+                >Новый пароль
+              </label>
+              <div class="col-sm-8 p-0">
+                <input
+                  v-model="password"
+                  minlength="5"
+                  class="form-control"
+                  type="password"
+                  name="new_pwd"
+                  id="new_pwd"
+                  placeholder="********"
+                />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-4 col-form-label font-weight-bold"
+                >День рождения <span class="red">*</span></label
+              >
+              <div class="col-sm-8 p-0">
+                <input
+                  v-model="birthday"
+                  class="form-control"
+                  type="date"
+                  name="birthday"
+                  id="birthday"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-4 col-form-label font-weight-bold"
+                >Город<span class="red">*</span></label
+              >
+              <div class="col-sm-8 p-0">
+                <input
+                  v-model="keywords"
+                  class="form-control"
+                  type="text"
+                  name="country"
+                  id="country"
+                  required
+                  placeholder="поиск городов"
+                />
+                <ul v-if="country_results.length > 0" class="p-0 countries">
+                  <li v-for="(result, index) in country_results">
+                    <a @click="selectedCountry(index, result)">
+                      Страна: {{ result.country }} Город: {{ result.city }}</a
+                    >
+                  </li>
+                </ul>
+                <ul v-else class="countries">
+                  <li>нет найденных городов</li>
+                </ul>
+              </div>
+            </div>
+          </div>
 
-         </div>
-         <div class="form-group row mb-0">
-           <!-- <vue-avatar-scale
-               ref="vueavatarscale"
-               @vue-avatar-editor-scale:change-scale="onChangeScale"
-               :width=250
-               :min=1
-               :max=3
-               :step=0.02
-           >
-           </vue-avatar-scale> -->
-         </div>
-         <div class="form-group row mb-2">
-           <button  style="width: 250px" class="btn btn-success" v-on:click="saveClicked">Обрезать Сохранить</button>
-         </div>
-         <div class="form-group row">
-           <label
-                class="col-sm-4 col-form-label font-weight-bold">Имя <span class="red">*</span></label>
-           <div class="col-sm-8 p-0">
-             <input class="form-control" type="text" name="name" id="firstName" required
-                    placeholder="Имя сотрудника" v-model="user.name"
-             >
-           </div>
-         </div>
-         <div class="form-group row">
-           <label
-                class="col-sm-4 col-form-label font-weight-bold">Фамилия <span class="red">*</span></label>
-           <div class="col-sm-8  p-0">
-             <input class="form-control" type="text" name="last_name" id="lastName" required
-                    placeholder="Фамилия сотрудника" v-model="user.last_name"
-             >
-           </div>
-         </div>
-         <div class="form-group row">
-           <label
-                class="col-sm-4 col-form-label font-weight-bold">Email <span class="red">*</span></label>
-           <div class="col-sm-8  p-0">
-             <input class="form-control" type="text" name="email" id="email" required
-                    placeholder="email" v-model="user.email"
-             >
-           </div>
-         </div>
-         <div class="form-group row">
-           <label
-                class="col-sm-4 col-form-label font-weight-bold">Новый пароль </label>
-           <div class="col-sm-8  p-0">
-             <input v-model="password" minlength="5" class="form-control" type="password" name="new_pwd" id="new_pwd"
-                    placeholder="********"
-             >
-           </div>
-         </div>
-         <div class="form-group row">
-           <label
-                class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
-           <div class="col-sm-8  p-0">
-             <input   v-model="birthday" class="form-control" type="date" name="birthday" id="birthday" required>
-           </div>
-         </div>
-         <div class="form-group row">
-           <label
-                class="col-sm-4 col-form-label font-weight-bold">Город<span class="red">*</span></label>
-           <div class="col-sm-8  p-0">
-             <input    v-model="keywords" class="form-control" type="text" name="country" id="country" required placeholder="поиск городов">
-             <ul v-if="country_results.length > 0" class="p-0">
+          <!-- profile image -->
+          <div class="col-4"> 
+            <div class="form-group mb-0"> 
+              <croppa
+                v-model="myCroppa"
+                :width="250"
+                :height="250"
+                :canvas-color="'default'"
+                :placeholder="'Выберите изображение'"
+                :placeholder-font-size="0"
+                :placeholder-color="'default'"
+                :accept="'image/*'"
+                :file-size-limit="0"
+                :quality="2"
+                :zoom-speed="20"
+                :initial-image="image"
+              ></croppa>
 
-               <li v-if="country_results.length > 0" v-for="(result,index) in country_results"  style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white">
-                 <a @click="SelectedCountry(index,result)"> Страна: {{ result.country }} Город: {{ result.city }}</a>
-               </li>
-               <li v-else style="cursor: pointer; background-color: #f5f5f5;padding: 10px;border-bottom: 1px solid white">
-                 нет найденных городов
-               </li>
-               <!--              <li v-for="country_results in result" :key="result.id" v-text="result.city"></li>-->
-             </ul>
+              <button
+                style="width: 250px; display: block"
+                class="btn btn-success"
+                @click="saveCropped"
+              >
+                Обрезать и сохранить
+              </button>
+            </div>
+          </div>
 
+          <div class="col-12 mt-3">
+            <!-- Cards -->
+            <div
+              class="col-12 p-0 row payment-profile"
+              v-for="(payment, index) in payments"
+            >
+              <div class="col-2">
+                <input
+                  v-model="payment.bank"
+                  class="form-control"
+                  placeholder="Банк"
+                />
+              </div>
 
+              <div class="col-2">
+                <input
+                  v-model="payment.country"
+                  class="form-control"
+                  placeholder="Страна"
+                />
+              </div>
 
-           </div>
-           <!--          v-model="user.working_country"-->
-         </div>
-         <div class="col-12 p-0 row payment-profile" v-for="(payment,index) in payments">
+              <div class="col-2">
+                <input
+                  v-model="payment.cardholder"
+                  class="form-control"
+                  placeholder="Имя на карте"
+                />
+              </div>
 
-           <div class="col-2">
-             <input v-model="payment.bank" class="form-control" placeholder="Банк">
-           </div>
+              <div class="col-2">
+                <input
+                  type="number"
+                  v-model="payment.phone"
+                  class="form-control"
+                  placeholder="Телефон"
+                />
+              </div>
 
-           <div class="col-2">
-             <input v-model="payment.country" class="form-control" placeholder="Страна">
-           </div>
+              <div class="col-2">
+                <input
+                  type="number"
+                  v-model="payment.number"
+                  class="form-control card-number"
+                  placeholder="Номер карты"
+                />
+              </div>
 
-           <div class="col-2">
-             <input v-model="payment.cardholder" class="form-control" placeholder="Имя на карте">
-           </div>
+              <div class="col-2 position-relative">
+                <button
+                  v-if="payment.id"
+                  style="position: absolute; left: 0px"
+                  class="btn btn-danger btn-sm card-delete rounded mt-1"
+                  @click="removePaymentCart(index, payment.id)"
+                >
+                  <span class="fa fa-trash"></span>
+                </button>
 
-           <div class="col-2">
-             <input type="number" v-model="payment.phone" class="form-control" placeholder="Телефон">
-           </div>
+                <button
+                  v-else
+                  style="position: absolute; left: 0px"
+                  class="btn btn-primary btn-sm card-delete rounded mt-1"
+                  @click="removePaymentCart(index, 'dev')"
+                >
+                  <span class="fa fa-trash"></span>
+                </button>
+              </div>
+            </div>
 
-           <div class="col-2">
-             <input type="number"  v-model="payment.number" class="form-control card-number" placeholder="Номер карты">
-           </div>
+            <div class="mt-2 p-0" v-if="cardValidatre.error">
+              <div class="alert alert-danger">
+                <span>Заполните все поля</span>
+              </div>
+            </div>
 
+            <div class="p-0 row mt-3">
+              <div class="col-3">
+                <button
+                  @click="addPayment()"
+                  style="color: white"
+                  class="btn btn-phone btn-primary btn-block"
+                >
+                  Добавить карту
+                </button>
+              </div>
 
-           <div class="col-2 position-relative">
-
-             <button v-if="payment.id"  style="position: absolute;left: 0px" class=" btn btn-danger btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,payment.id)">
-               <span class="fa fa-trash"></span>
-             </button>
-
-             <button v-else style="position: absolute;left: 0px" class=" btn btn-primary btn-sm card-delete rounded mt-1" @click="removePaymentCart(index,'dev')" >
-               <span class="fa fa-trash"></span>
-             </button>
-
-           </div>
-
-         </div>
-         <div class="col-12 p-0 " v-if="cardValidatre.error">
-           <div class="alert alert-danger">
-             <span>Заполните все поля</span>
-           </div>
-         </div>
-         <div class="col-8  p-0  row mt-3">
-
-           <div class="col-3">
-             <button   @click="addPayment()" style="color: white" class="btn btn-phone btn-primary  btn-block">
-               Добавить карту
-             </button>
-           </div>
-
-           <div class="col-3" >
-             <button @click.prevent="editProfileUser()" style="color: white"  class="btn btn-success  btn-block btn-block" type="button">Сохранить</button>
-           </div>
-         </div>
-       </div>
+              <div class="col-3">
+                <button
+                  @click.prevent="editProfileUser()"
+                  style="color: white"
+                  class="btn btn-success btn-block btn-block"
+                  type="button"
+                >
+                  Сохранить
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
-
 </template>
 <script>
-import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
-import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale'
+import VueAvatar from "../components/vue-avatar-editor/src/components/VueAvatar.vue";
+import VueAvatarScale from "../components/vue-avatar-editor/src/components/VueAvatarScale";
 
 export default {
   name: "Cabinet",
   props: {
-    auth_role:{},
+    auth_role: {},
+  },
+  computed: {
+    uploadedImage() {
+      return Object.keys(this.myCroppa).length !== 0;
+    },
   },
   data() {
     return {
-      test: 'dsa',
+      test: "dsa",
       items: [],
       myCroppa: {},
       users: [],
-      user:[],
-      user_card:[],
+      user: [],
+      user_card: [],
       admins: [],
       activeCourse: null,
-      userRoles:false,
-      userProfile:false,
-      img:'',
-      success: '',
-      password:'',
-      working_city:'',
-      birthday:'',
-      cardValidatre:{
-          error:false,
-          type:false,
+      page: "profile",
+      img: "",
+      success: "",
+      password: "",
+      working_city: "",
+      birthday: "",
+      cardValidatre: {
+        error: false,
+        type: false,
       },
-      payments:[
+      payments: [
         {
-          bank:'',
-          cardholder:'',
-          country:'',
-          number:'',
-          phone:'',
+          bank: "",
+          cardholder: "",
+          country: "",
+          number: "",
+          phone: "",
         },
       ],
       keywords: null,
       country_results: [],
-      image:'/users_img/noavatar.png'
-
+      image: "/users_img/noavatar.png",
     };
   },
   watch: {
     keywords(after, before) {
       this.fetch();
-    }
+    },
   },
   created() {
     this.fetchData();
-    this.user = JSON.parse(this.auth_role)
-    this.format_date(this.user.birthday)
+    this.user = JSON.parse(this.auth_role);
+    this.format_date(this.user.birthday);
 
-    if(this.user.img_url != null){
-      this.image = '/users_img/'+this.user.img_url;
+    if (this.user.img_url != null) {
+      this.image = "/users_img/" + this.user.img_url;
     }
-
-
-
-  },
-  components: {
-    VueAvatar,
-    VueAvatarScale
   },
   methods: {
-    onChangeScale (scale) {
-      this.$refs.vueavatar.changeScale(scale)
+    saveCropped() {
+      let loader = this.$loading.show();
+      const formData = new FormData();
+
+      this.myCroppa.generateBlob(
+        (blob) => {
+          formData.append("file", blob);
+          axios
+            .post("/profile/upload/image/profile/", formData)
+            .then(function (res) {
+              $(".img_url_sm").html(res.data.img);
+              loader.hide();
+            })
+            .catch(function (err) {
+              console.log(err, "error");
+            });
+        },
+        "image/jpeg",
+        0.8
+      ); // 80% compressed jpeg file
+
+      // let loader = this.$loading.show();
+
+      // const form = new FormData();
+      // img.toBlob((blob) => {
+      //   form.append('file', blob);
+      //   axios.post('/profile/upload/image/profile/', form, config)
+      //       .then(function (res) {
+      //         // console.log(res,'res')
+      //         $(".img_url_sm").html(res.data.img)
+      //         loader.hide();
+      //       })
+      //       .catch(function (err) {
+      //         console.log(err,'error')
+      //       });
+      // }, 'image/jpeg');
     },
 
-    saveClicked(){
-      const config = {
-        headers: {
-          'content-type': 'multipart/form-data'
-        }
-      }
-      var img = this.$refs.vueavatar.getImage()
-
-      if (img) {
-        let loader = this.$loading.show();
-
-        const form = new FormData();
-        img.toBlob((blob) => {
-          form.append('file', blob);
-          axios.post('/profile/upload/image/profile/', form, config)
-              .then(function (res) {
-                // console.log(res,'res')
-                $(".img_url_sm").html(res.data.img)
-                loader.hide();
-              })
-              .catch(function (err) {
-                console.log(err,'error')
-              });
-        }, 'image/jpeg');
-      }
-
+    selectedCountry(index, arr) {
+      this.keywords = "Страна " + arr.country + " Город " + arr.city;
+      this.working_city = arr.id;
     },
-    onImageReady(scale){
-      this.$refs.vueavatarscale.setScale(scale)
-    },
-    SelectedCountry(index,arr){
-      this.keywords = 'Страна '+arr.country+' Город '+ arr.city
-      this.working_city = arr.id
 
-
-    },
-    format_date(value){
+    format_date(value) {
       if (value) {
-          return  this.birthday = moment(String(value)).format('YYYY-MM-DD')
+        return (this.birthday = moment(String(value)).format("YYYY-MM-DD"));
       }
-
-
     },
-    addPayment(){
 
-
-
+    addPayment() {
       this.payments.push({
-        bank:'',
-        cardholder:'',
-        country:'',
-        number:'',
-        phone:'',
+        bank: "",
+        cardholder: "",
+        country: "",
+        number: "",
+        phone: "",
       });
-
-
     },
-    removePaymentCart(index,type_id){
 
+    removePaymentCart(index, type_id) {
+      let confirmDelte = confirm(
+        "Вы действительно хотите безвозвратно удалить ?"
+      );
+      if (confirmDelte) {
+        this.payments.splice(index, 1);
+        this.$message.success("Успешно Удалено");
 
-
-      let confirmDelte = confirm("Вы действительно хотите безвозвратно удалить ?");
-      if (confirmDelte){
-
-        this.payments.splice(index, 1)
-        this.$message.success('Успешно Удалено')
-
-        if (type_id != 'dev'){
-          axios.post("/profile/remove/card/",{
-            card_id:type_id,
-          }).then((response) => {
-           }).catch((error) => {
-             alert(error);
-           });
-
+        if (type_id != "dev") {
+          axios
+            .post("/profile/remove/card/", {
+              card_id: type_id,
+            })
+            .then((response) => {})
+            .catch((error) => {
+              alert(error);
+            });
         }
-
       }
     },
-    editProfileUser(){
+
+    editProfileUser() {
       this.cardValidatre.type = false;
       this.cardValidatre.error = false;
 
-
-      this.payments.forEach(el => {
+      this.payments.forEach((el) => {
         this.cardValidatre.type = false;
         this.cardValidatre.type = true;
 
-        if (el['bank'] != null && el['cardholder'] != null && el['country'] != null && el['number'] != null && el['phone'] != null){
-
-          if (el['bank'].length > 2 && el['cardholder'].length > 2 && el['country'].length > 2 && el['number'].length > 2 && el['phone'].length > 2){
+        if (
+          el["bank"] != null &&
+          el["cardholder"] != null &&
+          el["country"] != null &&
+          el["number"] != null &&
+          el["phone"] != null
+        ) {
+          if (
+            el["bank"].length > 2 &&
+            el["cardholder"].length > 2 &&
+            el["country"].length > 2 &&
+            el["number"].length > 2 &&
+            el["phone"].length > 2
+          ) {
             this.cardValidatre.type = true;
           }
-
         }
-
       });
 
-      if (this.cardValidatre.type){
-        axios.post('/profile/edit/user/cart/', {
-          cards:this.payments,
-          query:this.user,
-          password:this.password,
-          birthday:this.birthday,
-          working_city:this.working_city,
-          working_country:this.keywords,
-        }).then(response => {
-          if (response.data.success){
-            this.$message.success('Успешно Сохранено')
-          }
-        })
-      }else{
+      if (this.cardValidatre.type) {
+        axios
+          .post("/profile/edit/user/cart/", {
+            cards: this.payments,
+            query: this.user,
+            password: this.password,
+            birthday: this.birthday,
+            working_city: this.working_city,
+            working_country: this.keywords,
+          })
+          .then((response) => {
+            if (response.data.success) {
+              this.$message.success("Успешно Сохранено");
+            }
+          });
+      } else {
         this.cardValidatre.error = true;
       }
     },
+
     addTag(newTag) {
       const tag = {
         email: newTag,
@@ -437,102 +526,77 @@ export default {
       };
       this.users.push(tag);
     },
+
     fetchData() {
-
-
       axios
         .get("/cabinet/get")
         .then((response) => {
-
           this.admins = response.data.admins;
           this.users = response.data.users;
           this.user = response.data.user;
           this.keywords = response.data.user.working_country;
           this.working_city = response.data.user.working_city;
 
-          if (response.data.user_payment != null && response.data.user_payment != undefined){
-              if (response.data.user_payment.length > 0){
-                this.payments = response.data.user_payment;
-              }else{
-                this.payments = []
-
-              }
+          if (
+            response.data.user_payment != null &&
+            response.data.user_payment != undefined
+          ) {
+            if (response.data.user_payment.length > 0) {
+              this.payments = response.data.user_payment;
+            } else {
+              this.payments = [];
+            }
           }
 
-          if (this.user.img_url != null && this.user.img_url != undefined){
-            this.img = '/users_img/'+response.data.user.img_url;
-          }else{
-            this.img = '/users_img/noavatar.png';
+          if (this.user.img_url != null && this.user.img_url != undefined) {
+            this.img = "/users_img/" + response.data.user.img_url;
+          } else {
+            this.img = "/users_img/noavatar.png";
           }
-
-
-
-
-
-
         })
         .catch((error) => {
-
           alert(error);
-
-
         });
-
     },
+
     save() {
       axios
         .post("/cabinet/save", {
           admins: this.admins,
         })
         .then((response) => {
-          this.$message.success('Сохранено')
+          this.$message.success("Сохранено");
         })
         .catch((error) => {
-          alert(error,'6565');
+          alert(error, "6565");
         });
     },
+
     fetch() {
-
-
-      if (this.keywords != null && this.keywords != undefined){
-
-
-        if (this.keywords.length === 0){
-          this.keywords = ''
-          this.country_results = []
-        }else{
-          axios.post('/profile/country/city/', {
-            keyword: this.keywords
-          }).then(response => {
-
-            this.country_results = response.data
-          })
+      if (this.keywords != null && this.keywords != undefined) {
+        if (this.keywords.length === 0) {
+          this.keywords = "";
+          this.country_results = [];
+        } else {
+          axios
+            .post("/profile/country/city/", {
+              keyword: this.keywords,
+            })
+            .then((response) => {
+              this.country_results = response.data;
+            });
         }
-
-
-
       }
-
-
-
-
 
       // axios.get('/profile/country/city/', { params: { keywords: this.keywords } })
       //     .then(response => this.results = response.data)
       //     .catch(error => {});
-
     },
-
   },
-
-
 };
-
 </script>
 
-
 <style lang="scss">
-
 .upload-to-server-example {
   .upload-example-cropper {
     border: solid 1px #eee;
@@ -648,20 +712,35 @@ export default {
   }
 }
 
-.contacts-info{
-  margin-top:30px;
+.contacts-info {
+  margin-top: 30px;
 }
-.profile_active{
+a.lp-link {
+  display: block;
+  margin: 5px 0;
   font-weight: bold;
+
+  &.active {
+    color: #2459a4 !important;
+  }
 }
 
-.payment-profile{
+.payment-profile {
   margin-top: 30px;
   margin-bottom: 10px;
 }
 
-.addPayment{
+.addPayment {
   padding: 15px;
-  margin-top:-15px;
+  margin-top: -15px;
+}
+
+.countries {
+  li {
+    cursor: pointer;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-bottom: 1px solid white;
+  }
 }
 </style>
