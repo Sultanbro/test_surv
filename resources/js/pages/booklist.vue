@@ -190,7 +190,7 @@
              images_upload_handler: submit_tinymce,
               //paste_data_images: false,
               resize: true, 
-              autosave_ask_before_unload: false,
+              autosave_ask_before_unload: true,
               powerpaste_allow_local_images: true,
               browser_spellcheck: true, 
               contextmenu: true,
@@ -690,7 +690,9 @@ export default {
       breadcrumbs: [],
       ids: [],
       passedTest: false,
-      questions_key: 1                                                                
+      questions_key: 1,
+      text_was: '',                                                        
+      title_was: '',                                                        
     }
   },
 
@@ -706,10 +708,17 @@ export default {
   },
 
   mounted() {
+
+    window.addEventListener('beforeunload', e => this.beforeunloadFn(e))
     
   },
 
   methods: {
+    beforeunloadFn(e) {
+      if(this.text_was != this.activesbook.text || this.title_was != this.activesbook.title) {
+        e.returnValue = 'Are you sure you want to leave?';
+      }
+    },
     passed() {
       this.passedTest = true;
       console.log('passed test')
@@ -1142,7 +1151,7 @@ export default {
     },
     saveServer() {
       if(this.activesbook.questions.length == 0 && !this.can_save) {
-        this.$message.info('Нельзя вносить изменения без тестов');
+        this.$message.error('Нельзя вносить изменения без тестов');
         return;
       }
 
@@ -1355,16 +1364,28 @@ export default {
     },
 
     showPage(id, refreshTree = false, expand = false) {
+      console.log(this.activesbook)
+      if(this.activesbook != null && (this.text_was != this.activesbook.text || this.title_was != this.activesbook.title)) {
+        if(!confirm('У вас на странице остались несохранненные изменения. Точно хотите выйти?'))  {
+          return;
+        }
+      }
+
       if(this.activesbook && this.activesbook.id == id) return '';
       
+      let loader = this.$loading.show();
       axios.post("/kb/get", {
         id: id,
         refresh: refreshTree
       }).then((response) => {
+        loader.hide()
         this.activesbook = response.data.book;
+        this.text_was = this.activesbook.text;
+        this.title_was = this.activesbook.title;
         this.breadcrumbs = response.data.breadcrumbs;
         this.edit_actives_book = false;
         
+    
         if(refreshTree) {
           this.id = response.data.top_parent.id;
           this.parent_title = response.data.top_parent.title
@@ -1383,7 +1404,8 @@ export default {
         }
         
         
-      });
+      })
+      .catch((e) => {loader.hide()})
       
     },
     
@@ -1433,6 +1455,11 @@ export default {
  * <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
  */
 </script>
-
+<style>
+.content {
+    max-height: unset;
+    overflow: unset;
+}
+</style>
 
 

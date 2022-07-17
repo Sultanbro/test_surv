@@ -92,6 +92,7 @@ export default {
 
         deleteVideo(o) {
 
+            if(!confirm('Вы уверены?')) return;
             axios
             .post("/playlists/delete-video", {
                 id: o.video.id,
@@ -177,6 +178,16 @@ export default {
         },
         
         deleteGroup(i) {
+            var arrStr = [
+                'Вы точно хотите удалить группу?', ' Думаю, вы случайно нажали удалить группу. Удалить группу?', 'Удалить группу не смотря ни на что?'
+            ]
+            var randElement = arrStr[Math.floor(Math.random() * arrStr.length)];
+            console.log(randElement);
+
+            if(!confirm(randElement)) {
+                return;
+            }
+
             axios
                 .post('/playlists/groups/delete', {
                     id: this.groups[i].id,

@@ -1,31 +1,43 @@
 <template>
-<div class="d-flex">
+<div class="d-flex courses">
 
   <div class="lp">
     <h1 class="page-title">Курсы</h1>
 
-    <div
-      class="section d-flex aic jcsb my-2"
-      v-for="(course, c_index) in courses"
-      :key="course.id"
-      @click="selectCourse(c_index)"
-    >
-      <p class="mb-0">{{ course.name }}</p>
 
-      <div class="d-flex">
-        <i
-        class="fa fa-cogs"
-        v-if="course.id != 0"
-        @click.stop="editAccess(c_index)"
-      ></i>
-      <i
-        class="fa fa-trash ml-2"
-        v-if="course.id != 0"
-        @click.stop="deleteCourse(c_index)"
-      ></i>
+    <draggable 
+      class="sss" 
+      tag="div"
+      :handle="'.fa-bars'"
+      :list="courses"
+      :group="{ name: 'g1' }"
+      @end="saveOrder"
+      :id="0"
+    >
+      <div
+        class="section d-flex  my-2"
+        :class="{'active':activeCourse != null && activeCourse.id == course.id}"
+        v-for="(course, c_index) in courses"
+        :key="course.id"
+        :id="course.id"
+        @click="selectCourse(c_index)"
+      >
+        <i class="fa fa-bars mr-2 mt-1 pointer"></i>
+
+        <div class="d-flex aic jcsb w-full">
+           <p class="mb-0">{{ course.name }}</p>
+            <div class="d-flex">
+             
+            <i
+              class="fa fa-trash ml-2"
+              v-if="course.id != 0"
+              @click.stop="deleteCourse(c_index)"
+            ></i>
+           </div>
+        </div>
+       
       </div>
-      
-    </div>
+    </draggable>
 
     <button class="btn-add" @click="modals.add_course.show = true">
       Добавить курс
@@ -97,6 +109,16 @@ export default {
   },
   mounted() {},
   methods: {
+    saveOrder(event) {
+
+      axios.post('/courses/save-order', {
+        id: event.item.id,
+        order: event.newIndex, // oldIndex
+      })
+      .then(response => {
+          this.$message.success('Очередь сохранена');
+      })
+    },
     selectCourse(i) {
       this.activeCourse = this.courses[i];
     },
@@ -127,6 +149,9 @@ export default {
             items: [],
           });
 
+          this.activeCourse = this.courses[this.courses.length - 1]
+
+
           this.$message.success("Курс успешно создан!");
           loader.hide();
         })
@@ -148,6 +173,7 @@ export default {
           .then((response) => {
             this.$message.success("Курс успешно удален!");
             this.courses.splice(i,1)
+            this.activeCourse = null;
             loader.hide();
           })
           .catch((error) => {
@@ -174,5 +200,7 @@ export default {
         });
     },
   },
+
+  
 };
 </script>

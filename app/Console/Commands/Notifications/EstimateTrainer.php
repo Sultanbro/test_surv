@@ -41,7 +41,7 @@ class EstimateTrainer extends Command
      */
     public function handle()
     {   
-        if($this->notRightDay()) return null;
+        if(false) return null;
  
         $user_ids = $this->getUserIds();
 
@@ -49,11 +49,11 @@ class EstimateTrainer extends Command
 
             $msg_fragment = 'Пожалуйста, оцените их по 10-бальной шкале<br>';
             $msg_fragment .=  '<a href="/estimate_your_trainer" class="btn btn-primary btn-sm rounded mt-1"  target="_blank">Оценить</a>';
-
+            $months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
             UserNotification::create([
                 'user_id' => $user_id,
                 'about_id' => 0,
-                'title' => 'Оцените работу Вашего руководителя и старшего специалиста за "месяц, за который просим оценить"',
+                'title' => 'Оцените работу Вашего руководителя и старшего специалиста за '.$months[Carbon::now()->month],
                 'group' => now(),
                 'message' => $msg_fragment
             ]);

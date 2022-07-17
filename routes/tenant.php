@@ -145,6 +145,7 @@ Route::middleware([
     Route::get('/learning/videos', [LearningController::class, 'videos']);
 
     Route::get('/courses', [CourseController::class, 'index']);
+    Route::post('/courses/save-order', [CourseController::class, 'saveOrder']);
     Route::get('/admin/courses/get', [CourseController::class, 'get']);
     Route::post('/admin/courses/delete', [CourseController::class, 'delete']);
     Route::post('/admin/courses/save', [CourseController::class, 'save']);

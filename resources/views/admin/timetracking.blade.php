@@ -322,25 +322,22 @@
 
                             <div class="my-course">
                                 <div class="mr-3">
-                                    <div class="pre">Текущий курс:</div>
+                                    <div class="pre mb-2" style="font-size:20px;font-weight:600">ИНФОРМАЦИЯ О КУРСЕ</div>
+                                    <img src="{{ $course->course->img }}" onerror="this.src = '/images/img-8old.png';" style="max-width: 100%;" class="mb-3"> 
                                     <a href="/my-courses?id={{$course->course_id}}" class="title">{{ $course->course->name }}</a>
                                     <a href="/my-courses?id={{$course->course_id}}" class="btn-go btn-success btn mt-1 mb-3"><i class="fa fa-play mr-2"></i> Продолжить изучение</a>
+                                    <div>
+                                        <div>Пройдено: {{ $course->progress }}%</div>
+                                        <progress value="{{ $course->progress }}" max="100" id="progressBar"></progress>
+                                    </div>
+                                    
+                                    <div>{{ $course->course->text }}</div>
+                                   
                                 </div>
-                                <div>
-                                    <div>Пройдено: {{ $course->progress }}%</div>
-                                    <progress value="{{ $course->progress }}" max="100" id="progressBar"></progress>
-                                </div>
+                              
                             </div>
                             @endif
 
-                            <div class="contact-information ublocx mb-3">
-                                <h5 class="mb-1">Важная информация</h5>
-                                <p style="font-size: 14px;line-height: 1em;color: #ad0000;">Пожалуйста, ознакомьтесь со следующими пунктами. Возможно среди них уже есть вопрос, который вас интересует.</p>
-                                <a data-toggle="modal" data-target="#oplataModal" style="color: #05adef;">Правила выдачи оплаты</a><br>
-                                <a href="/timetracking/info#card1" target="_blank" style="color: #05adef;">Частые вопросы</a><br>
-                                <a href="/timetracking/fines" target="_blank" style="color: #05adef;">Депримирование</a><br>
-                                <a data-toggle="modal" data-target="#cantStartModal" style="color: #05adef;">Нет кнопки "Начать день"</a><br>
-                            </div>
                         </div>
                     </div>
                 </div>

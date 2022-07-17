@@ -516,18 +516,18 @@ class Bonus extends Model
                      ->where('call_dialer_id', 444)
                      ->where('call_account_id', $account->id)
                      ->where('script_status_id', 13559)
-                     ->whereBetween('created_at',[$from,$to])
-                     ->orderBy('id', 'desc')
+                     ->whereBetween('start_time',[$from,$to])
+                     ->orderBy('id', 'asc')
                      ->take(15)
                      ->get();
             }
             
             if(sizeof($call) == 15){
                 if(sizeof($awards) == 0){
-                    $awards[] = [$user->id, sizeof($call), $call[0]->created_at];
+                    $awards[] = [$user->id, sizeof($call), $call[0]->start_time];
                 }else{
-                    if(Carbon::parse($awards[0][2])->gt(Carbon::parse($call[0]->created_at))){
-                        $awards[0] = [$user->id, sizeof($call), $call[0]->created_at];
+                    if(Carbon::parse($awards[0][2])->gt(Carbon::parse($call[0]->start_time))){
+                        $awards[0] = [$user->id, sizeof($call), $call[0]->start_time];
                     }
                 }
             }

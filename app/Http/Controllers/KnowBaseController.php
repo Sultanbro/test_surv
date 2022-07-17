@@ -456,6 +456,7 @@ class KnowBaseController extends Controller
         ]);
 
         $kb->children = [];
+        $kb->questions = [];
         $kb->parent_id = null;
 
         return $kb;

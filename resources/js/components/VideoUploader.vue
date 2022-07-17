@@ -116,14 +116,15 @@ export default {
         },
 
         saveVideo() {
+            let loader = this.$loading.show();
             axios
                 .post("/playlists/save-video", {
                     id: this.playlist_id,
                     video: this.file.model,
                     group_id: this.group_id
                 })
-                .then((response) => {
-
+                .then((response) => {   
+                    loader.hide()
                     this.step = 1;
                     this.$emit('addVideoToPlaylist', response.data.video) 
                     this.$message.success("Добавлен");
@@ -132,6 +133,7 @@ export default {
                     this.$emit('close');
                 })
                 .catch((error) => {
+                    loader.hide()
                     alert(error);
                 });
         },

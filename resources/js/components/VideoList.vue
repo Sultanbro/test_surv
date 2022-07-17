@@ -73,7 +73,7 @@ export default {
         },
 
         showVideo(video, i) {
-            if(video.item_model == null) return;
+            if(video.item_model == null && this.mode == 'read') return;
             this.$emit('showVideo', video, i);
         },
 

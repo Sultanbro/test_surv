@@ -1,9 +1,13 @@
 .course {
+
+   
     input {
         border:none;
         width: 100%;
         padding: 3px 0;
     }
+
+   
 
     .name {
         font-size: 20px;
@@ -84,4 +88,19 @@
 
 .section:hover p {
     cursor: pointer;
+}
+
+.courses {
+    .section {
+        p {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        &.active  {
+            p, i {
+                color: #1b71f9;
+            }
+        } 
+    }   
+    
 }

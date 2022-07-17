@@ -135,7 +135,7 @@
         </button>
       </div>
 
-      <p v-if="points != -1" class="mt-3">
+      <p v-if="points != -1 && mode == 'read'" class="mt-3">
         <span v-if="scores">Вы набрали: {{ points }} баллов из {{ total }}</span>
         <span v-else>Вы не набрали проходной балл...</span>
      </p>
@@ -216,6 +216,15 @@ export default {
       pass_grade(newData) {
         this.changed = true;
       },
+      mode: {
+        handler (val, oldVal) {
+          if(val == 'edit') {
+            this.questions.forEach((q) => {
+              q.editable = false;
+            });
+          }
+        }
+    },
   },
   created() {
     this.prepareVariants();
@@ -232,6 +241,10 @@ export default {
         this.page = this.page;
       }
       
+    } else {
+      this.questions.forEach((q) => {
+        q.editable = false;
+      });
     }
 
     if(this.count_points) {

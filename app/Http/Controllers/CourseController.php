@@ -62,6 +62,31 @@ class CourseController extends Controller
         }
     }
     
+    public function saveOrder(Request $request, $id = null)
+    {
+
+        $course = Course::find($request->id);
+        if ($course) {
+            $course->order = $request->order;
+            $course->save();
+        }
+
+        $courses = Course::where('id', '!=', $request->id)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        $order = 0;
+        foreach ($courses as $course) {
+            if($order == $request->order) {
+                $order++;
+            } 
+            $course->order = $order;
+            $course->save();
+            $order++;
+        }
+
+    }
+    
         /**
      * Upload file to S3 and return relative link
      * @param String $path
@@ -110,7 +135,7 @@ class CourseController extends Controller
             return redirect('/');
         }
 
-        $courses = Course::with('items', 'models')->get();
+        $courses = Course::with('items', 'models')->orderBy('order', 'asc')->get();
 
         return [
             'courses' => $courses

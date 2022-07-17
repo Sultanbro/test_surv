@@ -20,6 +20,7 @@ class Course extends Model
         'user_id',
         'img',
         'text',
+        'order'
     ];
 
     public function items()

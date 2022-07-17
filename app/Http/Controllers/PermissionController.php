@@ -455,7 +455,7 @@ class PermissionController extends Controller
         $options = [];
 
         $books = Book::get();
-        $videos = VideoPlaylist::get();
+        $videos = VideoPlaylist::where('category_id', '!=', 0)->get();
         $kbs = KnowBase::whereNull('parent_id')->get();
         
         foreach($books as $book) {

@@ -33,17 +33,14 @@
           placeholder="Описание курса"
         ></textarea>
       </div>
-      <div class="img ml-3">
+      <div class="img ml-3"  @click="$refs.file.click()">
         <input
           type="file"
           ref="file"
           style="display: none"
           @change="onFileChange($event)"
         />
-        <img class="course-img" :src="course.img" />
-        <button @click="$refs.file.click()" class="btn">
-          <i class="fa fa-edit"></i>
-        </button>
+        <img class="course-img" :src="course.img"   />
       </div>
     </div>
 
@@ -132,14 +129,17 @@ export default {
   mounted() {},
   methods: {
     get() {
+      let loader = this.loading.show()
       axios
         .post("/admin/courses/get-item", {
           id: this.id,
         })
         .then((response) => {
+          loader.hide()
           this.course = response.data.course;
         })
         .catch((error) => {
+          loader.hide()
           alert(error);
         });
     },
