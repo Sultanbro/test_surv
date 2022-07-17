@@ -129,7 +129,7 @@ export default {
   mounted() {},
   methods: {
     get() {
-      let loader = this.loading.show()
+      let loader = this.$loading.show()
       axios
         .post("/admin/courses/get-item", {
           id: this.id,
