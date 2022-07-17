@@ -83,17 +83,31 @@
      <div class="content " >
        <div class="col-12 p-5 py-3">
          <div class="form-group row mb-0">
-           <vue-avatar
+           <!-- <vue-avatar
                :width=200
                :height=200
                :image="image"
                ref="vueavatar"
                @vue-avatar-editor:image-ready="onImageReady"
            >
-           </vue-avatar>
+           </vue-avatar> -->
+
+           <croppa v-model="myCroppa"
+              :width="400"
+              :height="400"
+              :canvas-color="'default'"
+              :placeholder="'Choose an image'"
+              :placeholder-font-size="0"
+              :placeholder-color="'default'"
+              :accept="'image/*'"
+              :file-size-limit="0"
+              :quality="2"
+              :zoom-speed="3"></croppa>
+
+
          </div>
          <div class="form-group row mb-0">
-           <vue-avatar-scale
+           <!-- <vue-avatar-scale
                ref="vueavatarscale"
                @vue-avatar-editor-scale:change-scale="onChangeScale"
                :width=250
@@ -101,7 +115,7 @@
                :max=3
                :step=0.02
            >
-           </vue-avatar-scale>
+           </vue-avatar-scale> -->
          </div>
          <div class="form-group row mb-2">
            <button  style="width: 250px" class="btn btn-success" v-on:click="saveClicked">Обрезать Сохранить</button>
@@ -243,6 +257,7 @@ export default {
     return {
       test: 'dsa',
       items: [],
+      myCroppa: {},
       users: [],
       user:[],
       user_card:[],

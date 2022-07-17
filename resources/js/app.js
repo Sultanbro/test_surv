@@ -22,6 +22,11 @@ import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
 import VueCircle from 'vue2-circle-progress'
 
+import Croppa from 'vue-croppa';
+import 'vue-croppa/dist/vue-croppa.css';
+
+Vue.use(Croppa);
+
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 //import VueCoreVideoPlayer from 'vue-core-video-player';
