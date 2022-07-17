@@ -53,7 +53,7 @@ class EstimateTrainer extends Command
             UserNotification::create([
                 'user_id' => $user_id,
                 'about_id' => 0,
-                'title' => 'Оцените работу Вашего руководителя и старшего специалиста за '.$months[Carbon::now()->month],
+                'title' => 'Оцените работу Вашего руководителя и старшего специалиста за '.$months[Carbon::now()->month-1],
                 'group' => now(),
                 'message' => $msg_fragment
             ]);
@@ -66,10 +66,10 @@ class EstimateTrainer extends Command
     }
 
     /**
-	 * Есть руководы
-	 * @return int  
-	 */
-	public function hasSuperiors($group)
+     * Есть руководы
+     * @return int  
+     */
+    public function hasSuperiors($group)
     {
         $user_ids = ProfileGroup::employees($group->id);
         $users = \DB::table('users')
@@ -81,8 +81,8 @@ class EstimateTrainer extends Command
             ->get(['users.id'])
             ->count();
 
-		return $users > 0;
-	}
+        return $users > 0;
+    }
 
 
     public function getUserIds() {
