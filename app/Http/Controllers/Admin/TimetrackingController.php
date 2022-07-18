@@ -2375,12 +2375,17 @@ class TimetrackingController extends Controller
                     ->get(['users.id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
 
-            $time_exceptions =\DB::table('users')
+            if(!isset($group->time_exceptions)){
+                 $time_exceptions = [];
+            }
+            else{
+                $time_exceptions =\DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('ud.is_trainee', 0)
                 ->whereIn('users.id', $group->time_exceptions) 
                 ->get(['users.id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
+            }
         } 
         
         
