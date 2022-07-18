@@ -720,6 +720,7 @@ export default {
 
         //Добавление загруженных данных в таблицу
         loadItems() {
+            let hasMoney = 0;
             let items = [];
             let daySalariesSum = [];
 
@@ -815,6 +816,9 @@ export default {
                     // daySalariesSum["total"] = daySalariesSum.reduce(function (a, b) {
                     //     return a + b;
                     // }, 0);
+                    if(daySalariesSum[day] > 0){
+                        hasMoney = 1;
+                    }
                 });
 
                 let obj = {
@@ -838,8 +842,9 @@ export default {
 
                 if(this.show_user == 0) {
                     items.push(obj);
-                } else if(personalFinal > 0) { // show if has salary records
+                } else if(hasMoney > 0) { // show if has salary records
                     items.push(obj);
+                    hasMoney = 0
                 }
 
                
