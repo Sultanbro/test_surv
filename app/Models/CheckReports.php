@@ -141,7 +141,7 @@ class CheckReports extends Model
 
 
 
-        $allUserReports['all'][] = CheckReports::on()->where('check_users_id',$check_user)
+        $allUserReports['all'] = CheckReports::on()->where('check_users_id',$check_user)
             ->where('year',$year)
             ->where('item_id',$group_id)
             ->get()->toArray();
@@ -149,16 +149,31 @@ class CheckReports extends Model
 
 
 
-        for ($i = 0;$i < 13; $i++){
 
-            foreach ($allUserReports['all'][0] as $allUserReport){
+
+
+
+
+        for ($i = 1;$i < 13; $i++){
+
+
+
+            foreach ($allUserReports['all'] as $allUserReport){
+
+
                 if (isset($allUserReport['month']) && $i == $allUserReport['month']){
                     $getIntegers['count_check'][$i][] = $allUserReport['count_check'];
                     $getIntegers['count_check_auth'][$i][] = $allUserReport['count_check_auth'];
                 }
 
             }
+
+
         }
+
+
+
+
 
         $all_monthe['count_check'] = [];
         $all_monthe['count_check_auth'] = [];
@@ -166,37 +181,39 @@ class CheckReports extends Model
         $month=[];
 
 
-        foreach ($getIntegers['count_check'] as $key => $getInteger_c){
+        if (isset($getIntegers)){
 
-            if (isset($getInteger_c)){
-                $num = 0;
-                foreach ($getInteger_c as $getInteger){
-                    $num = $num + $getInteger;
-                    $all_monthe['count_check'][$key] = $num;
+            foreach ($getIntegers['count_check'] as $key => $getInteger_c){
+
+                if (isset($getInteger_c)){
+                    $num = 0;
+                    foreach ($getInteger_c as $getInteger){
+                        $num = $num + $getInteger;
+                        $all_monthe['count_check'][$key] = $num;
+                    }
                 }
             }
-        }
 
-        foreach ($getIntegers['count_check_auth'] as $key => $getInteger_a){
+            foreach ($getIntegers['count_check_auth'] as $key => $getInteger_a){
 
-            if (isset($getInteger_a)){
-                $num = 0;
-                foreach ($getInteger_a as $getInteger){
-                    $num = $num + $getInteger;
-                    $all_monthe['count_check_auth'][$key] = $num;
+                if (isset($getInteger_a)){
+                    $num = 0;
+                    foreach ($getInteger_a as $getInteger){
+                        $num = $num + $getInteger;
+                        $all_monthe['count_check_auth'][$key] = $num;
+                    }
                 }
             }
-        }
 
-
-
-        for ($i = 1; $i <= 12;$i++){
-            if (isset($all_monthe['count_check'][$i])){
-                $month[$i] = $all_monthe['count_check_auth'][$i] ."/". $all_monthe['count_check'][$i];
+            for ($i = 1; $i <= 12;$i++){
+                if (isset($all_monthe['count_check'][$i])){
+                    $month[$i] = $all_monthe['count_check_auth'][$i] ."/". $all_monthe['count_check'][$i];
+                }
             }
+
+
+
         }
-
-
 
         return $month;
     }

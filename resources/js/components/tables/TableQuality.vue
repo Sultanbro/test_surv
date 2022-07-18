@@ -1017,7 +1017,7 @@ export default {
 
 
 
-          // console.log(response,'responseee')
+          console.log(response,'responseee')
 
 
           this.currentGroup = response.data['individual_current']
@@ -1028,7 +1028,7 @@ export default {
             this.hasPermission = false;
             loader.hide();
 
-            // console.log(response,'responseee')
+
 
             return;
           }
