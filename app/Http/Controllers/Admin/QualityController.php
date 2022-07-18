@@ -66,8 +66,6 @@ class QualityController extends Controller
     public function getRecords(Request $request) {
 
 
-
-
         $currentUser = User::bitrixUser();
         $group = ProfileGroup::find($request->group_id);
 
@@ -290,11 +288,14 @@ class QualityController extends Controller
 
 
 
+
         $getReportsCheck = new CheckReports();
         $check_users = $getReportsCheck->filterCheckList($request);
 
         $group = ProfileGroup::find($request->group_id);
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
+
+
 
 
 

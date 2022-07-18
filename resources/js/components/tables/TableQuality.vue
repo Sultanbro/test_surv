@@ -985,10 +985,10 @@ export default {
     fetchItems($url = "/timetracking/quality-control/records") {
       let loader = this.$loading.show();
 
-      console.log(this.individual_type_id,'this.individual_type_id')
-      console.log(this.individual_type,'this.individual_type')
-      console.log(this.flagGroup,'this.flagGroup')
-      console.log(this.currentGroup,'this.currentGroup')
+      // console.log(this.individual_type_id,'this.individual_type_id')
+      // console.log(this.individual_type,'this.individual_type')
+      // console.log(this.flagGroup,'this.flagGroup')
+      // console.log(this.currentGroup,'this.currentGroup')
           
       if (this.individual_type_id != null){
         if (this.flagGroup == 'index'){
@@ -1017,12 +1017,19 @@ export default {
 
 
 
+          // console.log(response,'responseee')
+
 
           this.currentGroup = response.data['individual_current']
 
           if (response.data.error && response.data.error == "access") {
+
+
             this.hasPermission = false;
             loader.hide();
+
+            // console.log(response,'responseee')
+
             return;
           }
 

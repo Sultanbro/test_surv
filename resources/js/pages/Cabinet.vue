@@ -398,17 +398,9 @@ export default {
 
       this.myCroppa.generateBlob(
         (blob) => {
-
-
             let loader = this.$loading.show();
             const formData = new FormData();
-
-
              formData.append("file", blob);
-
-
-            console.log(blob)
-
             axios
                 .post("/profile/upload/image/profile/", formData)
                 .then(function (res) {
