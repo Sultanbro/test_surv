@@ -1002,6 +1002,8 @@ class UserController extends Controller
 
 
 
+
+
         if(!Auth::user()) return redirect('/');
         View::share('title', 'Редактировать сотрудника');
         View::share('menu', 'timetrackingusercreate');
@@ -1535,6 +1537,8 @@ class UserController extends Controller
 
 
 
+
+
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1625,10 +1629,10 @@ class UserController extends Controller
         $user->name = $request['name'];
         $user->last_name = $request['last_name'];
         $user->phone = $request['phone'];
-        $user->phone_1 = $request['phone_1'] ?? null;
-        $user->phone_2 = $request['phone_2'] ?? null;
-        $user->phone_3 = $request['phone_3'] ?? null;
-        $user->phone_4 = $request['phone_4'] ?? null;
+        $user->phone_1 = $request['phone_1'];
+        $user->phone_2 = $request['phone_2'];
+        $user->phone_3 = $request['phone_3'];
+        $user->phone_4 = $request['phone_4'];
         $user->birthday = $request['birthday'];
         $user->full_time = $request['full_time'];
         $user->description = $request['description'];
@@ -2397,10 +2401,8 @@ class UserController extends Controller
     //// поиск городов  через профиль
     public function searchCountry(Request $request)
     {
-
         $data = DB::table('coordinates')->where('city', 'LIKE','%'.$request->keyword.'%')->get();
         return response()->json($data); ;
-
     }
     /// загрузка аватарки через профиль в компоненте ( vue.js )
     public function uploadImageProfile(Request $request){

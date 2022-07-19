@@ -69,7 +69,11 @@ class User extends Authenticatable implements Authorizable
         'applied_at', // дата принятия
         'weekdays', // 0000000
         'img_url',/// найменование аватарки
-        'headphones_sum'/// сумма наушника
+        'headphones_sum',/// сумма наушника
+        'phone_1',
+        'phone_2',
+        'phone_3',
+        'phone_4',
     ];
 
 
