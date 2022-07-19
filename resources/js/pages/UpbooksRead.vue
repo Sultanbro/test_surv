@@ -8,7 +8,7 @@
         Назад
       </div>
 
-      <div class="d-flex mt-3 first-block">
+      <div class="d-flex first-block">
 
         <!-- left -->
         <div v-if="activeBook != null">
@@ -67,7 +67,7 @@
             <i class="fa fa-check pointer" v-else-if="test.item_model !== null"></i>
             <i class="fa fa-lock pointer" v-else></i>
           </div>
-          <p class="mb-0" @click="moveTo(test.page)">
+          <p class="mb-0" @click="moveTo(test.page, test.pass)">
             Стр. {{ test.page }} : {{ test.questions.length }} вопрос (-ов)
           </p>
         </div>
@@ -166,9 +166,19 @@ export default {
   },
 
   methods: {
-    moveTo(page) {
-      this.page = page
-      this.setCurrentTestNext()
+    moveTo(page, pass) {
+      if(pass) {
+        this.page = page;
+
+        let i = this.tests.findIndex(el => el.page == page);
+        if(i != -1) {
+          this.activeTest = this.tests[i]
+          this.test_key++;
+        } else {
+          this.activeTest = null; 
+        }
+
+      }
     },
 
     nextElement() {
@@ -235,22 +245,7 @@ export default {
 
     setCurrentTestNext(action = 'nothing') {
       
-      // find current test
-      let i = this.tests.findIndex(el => el.page == this.page);
-
-      // already passed
-      if(i != -1) {
-        this.activeTest = this.tests[i]
-        this.test_key++;
-      } else {
-        this.activeTest = null; 
-        return true;
-      }
-
       
-      if(this.activeTest && this.activeTest.pass) return true;   
-
-      return false;
     },
 
     setCurrentTestPrev(action = 'nothing') {
@@ -286,21 +281,21 @@ export default {
 
     nextPage() {
       if (this.page == this.pageCount) return 0;
-      console.log(this.page)
-      let move = this.setCurrentTestNext()
 
-      // prevent click 
-      if(this.activeTest != null && !this.activeTest.pass) {
+      if(this.activeTest && !this.activeTest.pass) {
         this.$message.info('Ответьте на вопросы, чтобы пройти дальше');
-        return;
-      }
-
-      if(this.activeTest && this.activeTest.pass) {
-        this.activeTest = null;
+        return 0;   
       }
       
-      // move to next page
-      if(move) this.page++;
+      // find current test
+      let i = this.tests.findIndex(el => el.page == this.page);
+      if(i != -1) {
+        this.activeTest = this.tests[i]
+        this.test_key++;
+      } else {
+        this.activeTest = null; 
+        this.page++;
+      }
       
     }, 
 

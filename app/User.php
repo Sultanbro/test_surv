@@ -780,7 +780,12 @@ class User extends Authenticatable implements Authorizable
     public function getActiveCourse()
     {
         $c = CourseResult::activeCourse();
-        return $c ? CourseResult::with('course')->find($c->id) : null;;
+        return $c ? CourseResult::with('course')->find($c->id) : null;
+    }
+
+    public function getActiveCourses()
+    {
+        return CourseResult::activeCourses();
     }
 
     public function getCurrentKpi()

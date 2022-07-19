@@ -2032,6 +2032,42 @@ class GroupAnalyticsController extends Controller
 
         return ['ocenka_svod' => $arr];
     }
+
+
+    public function getRefLinks(Request $request)
+    {
+        return  \App\Models\BPReflink::get();
+    }
+
+    public function saveRefLinks(Request $request)
+    {
+        $id = $request->id;
+        
+        if($request->method == 'save') {
+            if(strlen($request->name) == 0) return $id;
+            if($request->id == 0) {
+                $item = \App\Models\BPReflink::create([
+                    'name' =>  $request->name,
+                    'info' => $request->info
+                ]);
+
+                $id = $item->id;
+            } else {
+                \App\Models\BPReflink::where('id', $request->id)->update([
+                    'name' =>  $request->name,
+                    'info' => $request->info
+                ]);
+            }
+            
+        }   
+
+        if($request->method == 'delete') {
+            \App\Models\BPReflink::where('id', $request->id)->delete();
+        }
+
+        return $id;
+        
+    }
     
 }
 

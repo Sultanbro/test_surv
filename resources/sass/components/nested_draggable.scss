@@ -134,9 +134,18 @@ ul {
     display: block;
   }
 
+  // & > .titles {
+  //   p, i {
+  //     color: #ccc;
+  //   } 
+  // } 
+  
+
   &.pass {
     & > .titles {
-      background: #64c77a;
+      p, i {
+        color: #000;
+      } 
       padding: 0 0 0 5px;
     } 
     
@@ -144,7 +153,9 @@ ul {
 
   &.active {
     & > .titles {
-      background: #649fc7;
+      p, i {
+        color: #096dd9;
+      } 
       padding: 0 0 0 5px;
     } 
     
@@ -185,6 +196,7 @@ ul {
   word-break: break-all;
   white-space: nowrap;
   cursor: pointer;
+  background: #efefef;
  // position: relative;
 
   span.long {
@@ -196,13 +208,9 @@ ul {
     max-width: 100%;
     z-index: 14;
     font-size: 13px;
-    white-space: normal;
     padding: 0px 5px;
-    background: #efefef;
     border-radius: 5px;
-    box-shadow: 0 0 5px 2px #dfdfdf inset;
     pointer-events: none;
-    word-break: break-word;
   }
 
   &:hover span.long {

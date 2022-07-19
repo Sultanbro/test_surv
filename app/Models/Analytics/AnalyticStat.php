@@ -580,6 +580,8 @@ class AnalyticStat extends Model
         } catch(\DivisionByZeroError $e) {
           
             $res = 0;
+        } catch( \ParseError $p) {
+            dd($math_string);
         }
 
         return round($res, $round);

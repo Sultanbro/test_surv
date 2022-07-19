@@ -24,7 +24,9 @@ use Spatie\Permission\Models\Permission;
 class TestController extends Controller { 
  
 	public function test() {
-	
+		
+
+		dd(substr('/marina',1));
 		// $user = \App\Kpi::userKpi(10230, '2022-06-01', 1);
 		
 
