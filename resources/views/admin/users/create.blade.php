@@ -559,7 +559,7 @@
                                                                 <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
                                                             </div>
 
-                                                            <div class="col-3 div_2 p-0" style="flex-direction:unset">
+                                                            <div class="col-3 div_2 p-0 ml-4" style="flex-direction:unset">
 
                                                                 <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
 
@@ -569,7 +569,7 @@
                                                                        @endif>
                                                             </div>
 
-                                                            <div class="col-6 div_3 p-0 ml-4">
+                                                            <div class="col-6 div_3 p-0 ">
                                                                 <textarea name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>
                                                             </div>
 
@@ -607,13 +607,6 @@
 
                                                 <!--  -->
                                             </div>
-
-
-
-
-
-
-
 {{--                                            <div class="mb-4 none-block" id="profile_books" >--}}
 {{--                                                @if(isset($user))--}}
 {{--                                                <h5 class="mb-4 mt-4">База знание</h5>--}}
@@ -652,7 +645,6 @@
 {{--                                            </div>--}}
 
                                             <!-- end of groups and books tab -->
-
                                             <!-- documents tab -->
                                             <div class="xtab-pane xfade none-block" id="iphones4" style="display: none">
                                                 <!--  -->
