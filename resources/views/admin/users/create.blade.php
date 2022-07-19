@@ -550,7 +550,7 @@
                                                 </div>
 
 
-                                                <div id="adaptation_conversations" class="adaptation none-block" style="display: none">
+                                                <div id="adaptation_conversations" class="none-block" style="display: none">
                                                     <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
 
 
