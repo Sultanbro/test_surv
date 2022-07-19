@@ -140,49 +140,28 @@ class CheckReports extends Model
     public function getMonth($check_user,$year,$group_id){
 
 
+        $all_monthe['count_check'] = [];
+        $all_monthe['count_check_auth'] = [];
+        $month=[];
 
         $allUserReports['all'] = CheckReports::on()->where('check_users_id',$check_user)
             ->where('year',$year)
             ->where('item_id',$group_id)
             ->get()->toArray();
 
-
-
-
-
-
-
-
-
         for ($i = 1;$i < 13; $i++){
-
-
-
             foreach ($allUserReports['all'] as $allUserReport){
-
-
                 if (isset($allUserReport['month']) && $i == $allUserReport['month']){
                     $getIntegers['count_check'][$i][] = $allUserReport['count_check'];
                     $getIntegers['count_check_auth'][$i][] = $allUserReport['count_check_auth'];
                 }
 
             }
-
-
         }
 
-
-
-
-
-        $all_monthe['count_check'] = [];
-        $all_monthe['count_check_auth'] = [];
-
-        $month=[];
-
+    
 
         if (isset($getIntegers)){
-
             foreach ($getIntegers['count_check'] as $key => $getInteger_c){
 
                 if (isset($getInteger_c)){
@@ -193,7 +172,6 @@ class CheckReports extends Model
                     }
                 }
             }
-
             foreach ($getIntegers['count_check_auth'] as $key => $getInteger_a){
 
                 if (isset($getInteger_a)){
@@ -204,15 +182,11 @@ class CheckReports extends Model
                     }
                 }
             }
-
             for ($i = 1; $i <= 12;$i++){
                 if (isset($all_monthe['count_check'][$i])){
                     $month[$i] = $all_monthe['count_check_auth'][$i] ."/". $all_monthe['count_check'][$i];
                 }
             }
-
-
-
         }
 
         return $month;
