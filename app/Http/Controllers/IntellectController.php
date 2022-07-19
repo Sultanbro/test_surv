@@ -486,7 +486,7 @@ class IntellectController extends Controller {
             $res = $this->createLead([
                 "TITLE" => "Кандидат QR - " . $request->name, 
                 "NAME" => $request->name,  
-                "ASSIGNED_BY_ID" => 14478,
+                "ASSIGNED_BY_ID" => 23900,
                 'UF_CRM_1624530685082' => $this->time_link . $hash, // Ссылка для офисных кандидатов
                 'UF_CRM_1624530730434' => $this->contract_link . $hash, // Ссылка для удаленных кандидатов
                 "PHONE"=> [["VALUE" => $request->phone, "VALUE_TYPE" => "WORK"]]

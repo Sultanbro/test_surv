@@ -866,7 +866,9 @@ export default {
 
       this.active = 3;
 
-
+      if(this.individual_type === 1 || this.individual_type === 3){
+        this.individual_request = false
+      }
     }
 
 
@@ -983,6 +985,11 @@ export default {
     fetchItems($url = "/timetracking/quality-control/records") {
       let loader = this.$loading.show();
 
+      // console.log(this.individual_type_id,'this.individual_type_id')
+      // console.log(this.individual_type,'this.individual_type')
+      // console.log(this.flagGroup,'this.flagGroup')
+      // console.log(this.currentGroup,'this.currentGroup')
+          
       if (this.individual_type_id != null){
         if (this.flagGroup == 'index'){
           if (this.individual_type == 2 || this.individual_type == 3){
@@ -1010,12 +1017,19 @@ export default {
 
 
 
+          console.log(response,'responseee')
+
 
           this.currentGroup = response.data['individual_current']
 
           if (response.data.error && response.data.error == "access") {
+
+
             this.hasPermission = false;
             loader.hide();
+
+
+
             return;
           }
 
