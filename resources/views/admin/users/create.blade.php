@@ -447,9 +447,8 @@
                                             </div>
 
                                         </div>
-                                        <div class="col-md-12  add_info">
+                                        <div class="col-md-6 add_info">
                                             @if(isset($user))
-
                                                 <div id="add_info" class="none-block" >
                                                     <div class="table-responsive">
                                                         <table class="my-table table user-list">
@@ -548,66 +547,10 @@
                                                         </table>
                                                     </div>
                                                 </div>
-
-
-                                                <div id="adaptation_conversations" class="none-block" style="display: none">
-                                                    <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
-
-
-
-                                                    @foreach($user->adaptation_talks as $key => $talk)
-                                                        <div class="d-flex phone-row form-group mb-2 adaptation_talk">
-
-                                                            <div  class="col-sm-3 col-md-2 col-lg-2">{{ $talk['day'] }} й день
-                                                                <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
-                                                            </div>
-
-                                                            <div class="col-sm-3 col-md-2 col-lg-2">
-                                                                <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
-                                                            </div>
-
-                                                            <div class="col-sm-3 col-md-2 col-lg-2">
-                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"
-                                                                        @if($talk['date'] != null)
-                                                                        value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"
-                                                                        @endif>
-                                                            </div>
-
-
-                                                            <div class="col-sm-4 col-md-3 col-lg-3">
-                                                                <textarea class="btn btn-block"  name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>
-                                                            </div>
-
-                                                        </div>
-                                                    @endforeach
-
-
-{{--                                                    @foreach($user->adaptation_talks as $key => $talk)--}}
-{{--                                                        <div class="adaptation_talk col-12 mt-3">--}}
-
-{{--                                                            <div class="col-2 div_1 ml-0 p-0 adap_day">{{ $talk['day'] }} й день--}}
-{{--                                                                <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">--}}
-{{--                                                            </div>--}}
-
-{{--                                                            <div class="col-3 div_2 p-0 ml-4" style="flex-direction:unset">--}}
-
-{{--                                                                <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">--}}
-
-{{--                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"--}}
-{{--                                                                       @if($talk['date'] != null)--}}
-{{--                                                                           value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"--}}
-{{--                                                                       @endif>--}}
-{{--                                                            </div>--}}
-
-{{--                                                            <div class="col-6 div_3 p-0 ">--}}
-{{--                                                                <textarea class="btn btn-block" name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>--}}
-{{--                                                            </div>--}}
-
-{{--                                                        </div>--}}
-{{--                                                    @endforeach--}}
-                                                </div>
-
                                             @endif
+
+
+
 
 
                                             <!-- dannye -->
@@ -847,6 +790,65 @@
                                                 <!--  -->
                                             </div>
                                             <!-- end of documents -->
+                                        </div>
+                                        <div class="col-md-12">
+                                            @if(isset($user))
+                                                <div id="adaptation_conversations" class="none-block" style="display: none">
+                                                    <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
+
+
+                                                    @foreach($user->adaptation_talks as $key => $talk)
+                                                        <div class="d-flex phone-row form-group mb-2 adaptation_talk">
+
+                                                            <div  class="col-sm-3 col-md-2 col-lg-2">{{ $talk['day'] }} й день
+                                                                <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
+                                                            </div>
+
+                                                            <div class="col-sm-3 col-md-2 col-lg-2">
+                                                                <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
+                                                            </div>
+
+                                                            <div class="col-sm-3 col-md-2 col-lg-2">
+                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"
+                                                                        @if($talk['date'] != null)
+                                                                        value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"
+                                                                        @endif>
+                                                            </div>
+
+
+                                                            <div class="col-sm-4 col-md-3 col-lg-3">
+                                                                <textarea class="btn btn-block"  name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>
+                                                            </div>
+
+                                                        </div>
+                                                    @endforeach
+
+
+                                                    {{--                                                    @foreach($user->adaptation_talks as $key => $talk)--}}
+                                                    {{--                                                        <div class="adaptation_talk col-12 mt-3">--}}
+
+                                                    {{--                                                            <div class="col-2 div_1 ml-0 p-0 adap_day">{{ $talk['day'] }} й день--}}
+                                                    {{--                                                                <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">--}}
+                                                    {{--                                                            </div>--}}
+
+                                                    {{--                                                            <div class="col-3 div_2 p-0 ml-4" style="flex-direction:unset">--}}
+
+                                                    {{--                                                                <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">--}}
+
+                                                    {{--                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"--}}
+                                                    {{--                                                                       @if($talk['date'] != null)--}}
+                                                    {{--                                                                           value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"--}}
+                                                    {{--                                                                       @endif>--}}
+                                                    {{--                                                            </div>--}}
+
+                                                    {{--                                                            <div class="col-6 div_3 p-0 ">--}}
+                                                    {{--                                                                <textarea class="btn btn-block" name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>--}}
+                                                    {{--                                                            </div>--}}
+
+                                                    {{--                                                        </div>--}}
+                                                    {{--                                                    @endforeach--}}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

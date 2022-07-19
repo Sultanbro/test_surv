@@ -61,7 +61,7 @@
 
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
 
-@if(auth()->user() && !in_array(auth()->id(), [5,4444]))
+@if(auth()->user() && !in_array(auth()->id(), [5,4444,1]))
 <script src="/js/jquery.iMissYou.min.js"></script>
 <script>
 $(document).ready(function(){
@@ -75,8 +75,8 @@ $(document).ready(function(){
 });
 </script>
 @endif
-<!-- 
-<script src="js/jquery-1.11.2.min.js"></script> -->
+
+<script src="js/jquery-1.11.2.min.js"></script>
   
 
 <!-- <script src="/js/manifest.js"></script>
