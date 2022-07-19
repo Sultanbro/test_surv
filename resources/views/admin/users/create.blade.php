@@ -557,7 +557,8 @@
 
                                                     @foreach($user->adaptation_talks as $key => $talk)
                                                         <div class="d-flex phone-row form-group mb-2 adaptation_talk">
-                                                            <div  class="col-sm-2 col-md-1 col-lg-1">{{ $talk['day'] }} й день
+
+                                                            <div  class="col-sm-3 col-md-2 col-lg-2">{{ $talk['day'] }} й день
                                                                 <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
                                                             </div>
 
