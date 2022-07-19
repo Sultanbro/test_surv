@@ -59,8 +59,9 @@
             class="btn btn-orders"
             @click="ordersShow = !ordersShow"
             title="Заказы руководителей"
-            ><i class="fa fa-briefcase"></i
-          ></a>
+            >
+            <i class="fa fa-briefcase"></i>
+            </a>
         </div> 
       </div>-->
     </div>
