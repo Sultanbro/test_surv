@@ -3,7 +3,7 @@
 
   <!-- левый сайдбар -->
   <div class="lp">
-    <h1 class="page-title">Этапы</h1> 
+   
 
     <!-- список курсов -->
     <div v-if="activeCourse == null">
@@ -19,29 +19,24 @@
     <!-- выбранный курс -->
     <div v-else>
       <div class="py-3">
-
-          <div class="btn btn-grey mb-3" @click="back">
-            <i class="fa fa-arrow-left"></i>
-            <span>Вернуться к моим курсам</span> 
-          </div>
+        <h1 class="page-title">{{ activeCourse.name }}</h1> 
 
           <div>
-            <p class="course-name">{{ activeCourse.name }}</p>
             <img class="course-img w-full"
             :src="activeCourse.img"
-            onerror="this.src = '/images/img-8old.png';"
+            onerror="this.src = '/images/course.jpg';"
             />
 
           </div>
 
           <div class="mb-4 mt-3">
-            Пройдено: 0%
-            <progress value="0" max="100"></progress>
+            Пройдено: {{ progress }}%
+            <progress :value="progress" max="100"></progress>
           </div>
 
           <!-- <div class="mt-3 description" v-html="activeCourse.text"></div> -->
 
-
+          <p><b>Блоки курса</b></p>
           <div class="course-item" v-for="(item, c_index) in items"
             :key="item.id"
             :class="{
@@ -85,7 +80,7 @@
                     />
                   </div>
  
-                  <div class="px-3 pt-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist'">
+                  <div class="px-3 pt-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist' || activeCourseItem.item_model == 'App\\Models\\Videos\\Video'">
                       <page-playlist-edit 
                           ref="playlist"
                           :id="activeCourseItem.item_id"
@@ -142,7 +137,9 @@ export default {
       activeCourse: null,
       activeStep: null,
       trees: [],
-      congrats: false
+      congrats: false,
+      all_stages: 0,
+      completed_stages: 0,
     };
   },
   created() {
@@ -155,6 +152,13 @@ export default {
       this.getCourse(id);
     }
   },
+
+  computed: {
+    progress: function(){
+      return this.all_stages > 0 ? Number(Number((this.completed_stages / this.all_stages) * 100).toFixed(2)) : 0
+    },
+  },
+
   mounted() {},
   methods: {
 
@@ -244,7 +248,7 @@ export default {
       const STARTED = 2;
       const INITIAL = 0;
 
-      return [INITIAL, STARTED, COMPLETED].includes(status);
+      return [STARTED, COMPLETED].includes(status);
     },
 
     setStepStatus() {
@@ -295,6 +299,8 @@ export default {
         .then((response) => {
           this.items = response.data.items;
           this.activeCourse = response.data.course;
+          this.completed_stages = response.data.completed_stages;
+          this.all_stages = response.data.all_stages;
 
           // change URL
           const urlParams = new URLSearchParams(window.location.search);

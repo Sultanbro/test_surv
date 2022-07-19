@@ -79,7 +79,10 @@ class Course extends Model
                 //     dump((int)$completed_stages);
                 // }
                 
-                $item->status = (int)$item->countItems() <= (int)$completed_stages ? CourseResult::COMPLETED : CourseResult::ACTIVE;
+                $count = (int)$item->countItems();
+                $item->all_stages = $count;
+                $item->completed_stages = $completed_stages;
+                $item->status = $count <= (int)$completed_stages ? CourseResult::COMPLETED : CourseResult::ACTIVE;
                
                 // found active
                 if($item->status == CourseResult::ACTIVE) {
@@ -102,6 +105,25 @@ class Course extends Model
 
             } else {
 
+                $model = $item->model();
+                $completed_stages = 0;
+
+                // get completed stages
+                if($model) {
+                    $model_ids = $model->getOrder();
+                
+                    $cim = CourseItemModel::where('user_id', auth()->id())
+                        ->where('type', CourseItemModel::getType($item->item_model))
+                        ->whereIn('item_id', $model_ids)
+                        ->select('item_id')
+                        ->get();
+
+                    $completed_stages = $cim->count();
+                }
+                
+                $count = (int)$item->countItems();
+                $item->all_stages = $count;
+                $item->completed_stages = $completed_stages;
                 $item->status = CourseResult::INITIAL;
 
             }

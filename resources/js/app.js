@@ -97,6 +97,8 @@ Vue.component('profile-quarter-button', require('./components/ProfileQuarterButt
 Vue.component('auth-check-list', require('./components/auth_check_list.vue').default); // кнопка у кого есть Чек Лист список Чек Листов (Fixed)
 Vue.component('selected-modal-checkList', require('./components/selectedModalCheckList.vue').default); // чек лист selected modal
 
+Vue.component('ref-linker', require('./components/RefLinker.vue').default); // рефералки
+
 /** 
  * Components
  */

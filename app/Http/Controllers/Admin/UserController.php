@@ -2397,10 +2397,8 @@ class UserController extends Controller
     //// поиск городов  через профиль
     public function searchCountry(Request $request)
     {
-
         $data = DB::table('coordinates')->where('city', 'LIKE','%'.$request->keyword.'%')->get();
         return response()->json($data); ;
-
     }
     /// загрузка аватарки через профиль в компоненте ( vue.js )
     public function uploadImageProfile(Request $request){

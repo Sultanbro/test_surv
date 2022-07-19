@@ -171,9 +171,20 @@
                         <a-tab-pane tab="Воронка" key="7">
                             <a-tabs type="card" v-if="dataLoaded" defaultActiveKey="0">
                                 <a-tab-pane tab="Сводная" key="0">
-                                    <t-funnel class="mb-5" :id="0" :table="recruiting.funnels['all']['all']" title="Сводная таблица" segment="segments" type="month" :date="date" />
-                                    <t-funnel class="mb-5" :id="1" :table="recruiting.funnels['all']['hh']" title="hh" segment="hh" type="month" :date="date" />
-                                    <t-funnel class="mb-5" :id="2" :table="recruiting.funnels['all']['insta']" title="Инста" segment="insta" type="month" :date="date" />
+                                    <div class="row">
+
+                                        <div class="col-8">
+                                            <t-funnel class="mb-5" :id="0" :table="recruiting.funnels['all']['all']" title="Сводная таблица" segment="segments" type="month" :date="date" />
+                                            <t-funnel class="mb-5" :id="1" :table="recruiting.funnels['all']['hh']" title="hh" segment="hh" type="month" :date="date" />
+                                            <t-funnel class="mb-5" :id="2" :table="recruiting.funnels['all']['insta']" title="Инста" segment="insta" type="month" :date="date" />   
+                                        </div>
+                                        
+                                        <!-- partner link creator -->
+                                        <div class="col-4">
+                                            <ref-linker />
+                                        </div>
+                                    </div>
+                                    
                                 </a-tab-pane>
                                 <template v-for="(month, i) in months">
                                     <a-tab-pane :tab="month.month" :key="i">

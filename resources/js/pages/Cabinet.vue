@@ -230,6 +230,7 @@
             <!-- Cards -->
             <div
               class="col-12 p-0 row payment-profile"
+              v-if="payments_view"
               v-for="(payment, index) in payments"
             >
               <div class="col-2">
@@ -375,6 +376,7 @@ export default {
       keywords: null,
       country_results: [],
       image: "",
+      payments_view:false,
     };
   },
   watch: {
@@ -430,6 +432,9 @@ export default {
     },
 
     addPayment() {
+
+      this.payments_view = true;
+
       this.payments.push({
         bank: "",
         cardholder: "",
@@ -440,10 +445,14 @@ export default {
     },
 
     removePaymentCart(index, type_id) {
+
       let confirmDelte = confirm(
         "Вы действительно хотите безвозвратно удалить ?"
       );
+
       if (confirmDelte) {
+
+
         this.payments.splice(index, 1);
         this.$message.success("Успешно Удалено");
 
@@ -457,6 +466,8 @@ export default {
               alert(error);
             });
         }
+
+
       }
     },
 
@@ -464,28 +475,41 @@ export default {
       this.cardValidatre.type = false;
       this.cardValidatre.error = false;
 
-      this.payments.forEach((el) => {
-        this.cardValidatre.type = false;
-        this.cardValidatre.type = true;
 
-        if (
-          el["bank"] != null &&
-          el["cardholder"] != null &&
-          el["country"] != null &&
-          el["number"] != null &&
-          el["phone"] != null
-        ) {
+      console.log(this.payments,'this.payments')
+
+
+      if (this.payments.length > 0){
+
+        this.payments.forEach((el) => {
+
+          console.log(el,'emasdasd')
+
+          this.cardValidatre.type = false;
+          this.cardValidatre.type = true;
+
           if (
-            el["bank"].length > 2 &&
-            el["cardholder"].length > 2 &&
-            el["country"].length > 2 &&
-            el["number"].length > 2 &&
-            el["phone"].length > 2
+              el["bank"] != null &&
+              el["cardholder"] != null &&
+              el["country"] != null &&
+              el["number"] != null &&
+              el["phone"] != null
           ) {
-            this.cardValidatre.type = true;
+            if (
+                el["bank"].length > 2 &&
+                el["cardholder"].length > 2 &&
+                el["country"].length > 2 &&
+                el["number"].length > 2 &&
+                el["phone"].length > 2
+            ) {
+              this.cardValidatre.type = true;
+            }
           }
-        }
-      });
+        });
+      }else {
+        this.cardValidatre.type = true;
+      }
+
 
       if (this.cardValidatre.type) {
         axios
@@ -525,15 +549,16 @@ export default {
           this.keywords = response.data.user.working_country;
           this.working_city = response.data.user.working_city;
 
-          if (
-            response.data.user_payment != null &&
-            response.data.user_payment != undefined
-          ) {
+          if (response.data.user_payment != null && response.data.user_payment != undefined) {
+
             if (response.data.user_payment.length > 0) {
               this.payments = response.data.user_payment;
+              this.payments_view = true
             } else {
               this.payments = [];
+              this.payments_view = false
             }
+
           }
 
           if (this.user.img_url != null && this.user.img_url != undefined) {

@@ -709,7 +709,9 @@ export default {
 
   mounted() {
 
-    window.addEventListener('beforeunload', e => this.beforeunloadFn(e))
+    if(!this.course_page) {
+      window.addEventListener('beforeunload', e => this.beforeunloadFn(e))
+    }
     
   },
 
@@ -1366,8 +1368,10 @@ export default {
     showPage(id, refreshTree = false, expand = false) {
       console.log(this.activesbook)
       if(this.activesbook != null && (this.text_was != this.activesbook.text || this.title_was != this.activesbook.title)) {
-        if(!confirm('У вас на странице остались несохранненные изменения. Точно хотите выйти?'))  {
-          return;
+        if(!this.course_page) {
+           if(!confirm('У вас на странице остались несохранненные изменения. Точно хотите выйти?'))  {
+            return;
+          }
         }
       }
 

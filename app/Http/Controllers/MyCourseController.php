@@ -71,10 +71,24 @@ class MyCourseController extends Controller
 
     public function getMyCourse(Request $request) {
         $course = CourseResult::activeCourse();
-    
+        
+        $all_stages = 0;
+        $completed_stages = 0;
+        $items = [];
+        if($course) {
+            $items = $course->setCheckpoint($course->items);
+
+            foreach ($items as $key => $item) {
+                $all_stages += $item->all_stages;
+                $completed_stages += $item->completed_stages;
+            }
+        }
+
         return [
             'course' => $course,
-            'items' => $course ? $course->setCheckpoint($course->items) : []
+            'items' => $items,
+            'all_stages' => $all_stages,
+            'completed_stages' => $completed_stages
         ];
     }   
 
@@ -105,7 +119,7 @@ class MyCourseController extends Controller
             
         }
 
-        if($course_item->item_model == 'App\Models\Videos\Video') {
+        if($course_item->item_model == 'App\Models\Videos\VideoPlaylist') {
             $pl = VideoPlaylist::with('videos')->find($course_item->item_id);
             if(!$pl) return null;
 

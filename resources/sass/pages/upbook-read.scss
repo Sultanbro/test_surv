@@ -2,7 +2,7 @@
 .upbook-read-page {
 
   display: flex;
-  background: #272c33;
+  background: #f4f4f4;
 
   .pdf {
     height: 100vh;
@@ -11,6 +11,11 @@
     padding: 5px;
     display:none;
     margin: 0 auto;
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 0px;
+      background: #efefef;
+    }
 
     &.full {
       width: 100%;
@@ -73,9 +78,8 @@
   }
 
   .first-block {
-    background: #9badc0;
+    background: #eff2f4;
     padding: 10px;
-    border-radius: 5px;
   }
 
   .chapters {
@@ -84,16 +88,37 @@
 
       color: #d6d6d6;
       cursor: pointer;
-      margin: 3px 0;
+      margin: 4px 0;
+      background: #eff2f4;
+      border-radius: 4px;
+      padding: 0 0 0 5px;
+      &:first-child {
+        color: #000;
+
+        p {
+          color: #000;
+        }
+      }
+
+      p {
+        color: #d6d6d6;
+      }
 
       &.active {
-        background: #3a6ac1;
-        padding: 0 0 0 5px;
+        color: #096dd9;
+        
+        p {
+          color: #096dd9;
+        }
+
       } 
 
       &.pass {
-        background: #64c77a;
-          padding: 0 0 0 5px;
+        color: #000000;
+
+        p {
+          color: #000000;
+        }
       }
       
     }
