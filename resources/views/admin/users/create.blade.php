@@ -200,7 +200,7 @@
 
                             </div>
 
-                            <!-- ============================================================== -->
+
 
                             <div class="xtab-content card scrollspy-example bg-white p-30" id="xmyTabContent"  data-spy="scroll" data-target="#list-example">
                                 <!-- first tab -->
@@ -447,122 +447,111 @@
                                             </div>
 
                                         </div>
+
                                         <div class="col-md-6 add_info">
-                                            @if(isset($user))
-                                                <div id="add_info" class="none-block" >
-                                                    <div class="table-responsive">
-                                                        <table class="my-table table user-list">
-                                                            <thead>
-                                                            <tr>
-                                                                <th colspan="2"><span>Дополнительная информация</span></th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
+
+                                            <div id="add_info" class="none-block" >
+                                                <div class="table-responsive">
+                                                    <table class="my-table table user-list">
+                                                        <thead>
+                                                        <tr>
+                                                            <th colspan="2"><span>Дополнительная информация</span></th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <span>Дата регистрации</span>
+                                                            </td>
+                                                            <td>
+                                                                <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
+                                                            </td>
+                                                        </tr>
+                                                        @if($user->applied_at != null && $user->is_trainee == 0)
                                                             <tr>
                                                                 <td>
-                                                                    <span>Дата регистрации</span>
+                                                                    <span>Дата принятия на работу</span>
+                                                                </td>
+                                                                <td>
+                                                                    <span>{{ \Carbon\Carbon::parse($user->applied_at)->format('d.m.Y')}}</span>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
+                                                        @if($user->applied_at == null && $user->is_trainee == 0)
+                                                            <tr>
+                                                                <td>
+                                                                    <span>Дата принятия на работу</span>
                                                                 </td>
                                                                 <td>
                                                                     <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
                                                                 </td>
                                                             </tr>
-                                                            @if($user->applied_at != null && $user->is_trainee == 0)
-                                                                <tr>
-                                                                    <td>
-                                                                        <span>Дата принятия на работу</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <span>{{ \Carbon\Carbon::parse($user->applied_at)->format('d.m.Y')}}</span>
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
-                                                            @if($user->applied_at == null && $user->is_trainee == 0)
-                                                                <tr>
-                                                                    <td>
-                                                                        <span>Дата принятия на работу</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
+                                                        @endif
+                                                        <tr>
+                                                            <td>
+                                                                <span>Успел стать частью команды ~</span>
+                                                            </td>
+                                                            <td>
+                                                                <span>{{ $user->worked_with_us }}</span>
+                                                            </td>
+                                                        </tr>
+
+                                                        @if($user->delete_time != null)
                                                             <tr>
                                                                 <td>
-                                                                    <span>Успел стать частью команды ~</span>
+                                                                    <span>Дата отработки</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span>{{ $user->worked_with_us }}</span>
+                                                                    <span>{{ \Carbon\Carbon::parse($user->delete_time)->format('d.m.Y')}}</span>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
+
+
+                                                        @if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00')
+                                                            <tr>
+                                                                <td>
+                                                                    <span>Дата увольнения</span>
+                                                                </td>
+                                                                <td>
+                                                                    <span>{{ \Carbon\Carbon::parse($user->deleted_at)->format('d.m.Y')}}</span>
                                                                 </td>
                                                             </tr>
 
-                                                            @if($user->delete_time != null)
+                                                            @if (isset($user->downloads) && $user->downloads->resignation)
                                                                 <tr>
                                                                     <td>
-                                                                        <span>Дата отработки</span>
+                                                                        <span>Заявление об увольнении</span>
                                                                     </td>
                                                                     <td>
-                                                                        <span>{{ \Carbon\Carbon::parse($user->delete_time)->format('d.m.Y')}}</span>
+                                                                        <a  download=""
+                                                                            class="d-block"
+                                                                            href="/static/profiles/{{$user->id}}/resignation/{{$user->downloads->resignation}}">Скачать</a>
                                                                     </td>
                                                                 </tr>
                                                             @endif
 
-
-                                                            @if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00')
+                                                            @if($user->fire_cause != null)
                                                                 <tr>
                                                                     <td>
-                                                                        <span>Дата увольнения</span>
+                                                                        <span>Причина увольнения</span>
                                                                     </td>
                                                                     <td>
-                                                                        <span>{{ \Carbon\Carbon::parse($user->deleted_at)->format('d.m.Y')}}</span>
+                                                                        <span>{{ $user->fire_cause }}</span>
                                                                     </td>
                                                                 </tr>
-
-                                                                @if (isset($user->downloads) && $user->downloads->resignation)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <span>Заявление об увольнении</span>
-                                                                        </td>
-                                                                        <td>
-                                                                            <a  download=""
-                                                                                class="d-block"
-                                                                                href="/static/profiles/{{$user->id}}/resignation/{{$user->downloads->resignation}}">Скачать</a>
-                                                                        </td>
-                                                                    </tr>
-                                                                @endif
-
-                                                                @if($user->fire_cause != null)
-                                                                    <tr>
-                                                                        <td>
-                                                                            <span>Причина увольнения</span>
-                                                                        </td>
-                                                                        <td>
-                                                                            <span>{{ $user->fire_cause }}</span>
-                                                                        </td>
-                                                                    </tr>
-                                                                @endif
                                                             @endif
+                                                        @endif
 
 
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                                        </tbody>
+                                                    </table>
                                                 </div>
-                                            @endif
-
-
-
-
-
-                                            <!-- dannye -->
-
+                                            </div>
 
                                             <!-- groups tab -->
                                             <div class="mb-3 xfade none-block" id="iphones3" >
-                                                <!--  -->
-
                                                 <h5 class="mb-4">Группы</h5>
-
-
                                                 @if(isset($user))
                                                 <profile-groups :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />
                                                 @else
@@ -573,12 +562,6 @@
                                                     @endforeach
                                                 </select>
                                                 @endif
-
-
-
-
-
-                                                <!--  -->
                                             </div>
 {{--                                            <div class="mb-4 none-block" id="profile_books" >--}}
 {{--                                                @if(isset($user))--}}
@@ -791,10 +774,13 @@
                                             </div>
                                             <!-- end of documents -->
                                         </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-12 add_info">
                                             @if(isset($user))
+
+
                                                 <div id="adaptation_conversations" class="none-block" style="display: none">
                                                     <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
+
 
 
                                                     @foreach($user->adaptation_talks as $key => $talk)
@@ -848,6 +834,8 @@
                                                     {{--                                                        </div>--}}
                                                     {{--                                                    @endforeach--}}
                                                 </div>
+
+
                                             @endif
                                         </div>
                                     </div>

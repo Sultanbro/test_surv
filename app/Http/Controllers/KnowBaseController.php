@@ -201,7 +201,7 @@ class KnowBaseController extends Controller
         return [
             'trees' => $trees,
             'book' => $book,
-            'items' => $item_models,
+            'item_models' => $item_models,
             'can_save' => $this->canSaveWithoutTest()
         ];
     }

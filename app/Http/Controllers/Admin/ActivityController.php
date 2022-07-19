@@ -234,6 +234,7 @@ class ActivityController extends Controller
             ->where('activity_id', $activity_id)
             ->first();
 
+
         if($us) {
             $us->value = $value;
             $us->save();
@@ -244,6 +245,12 @@ class ActivityController extends Controller
                 'activity_id' => $activity_id,
                 'value' => $value,
             ]);
+        }
+
+        if($value > 0 && in_array($activity_id,[151, 19, 40]) ){
+            Timetracking::updateTimes($item['id'], $date, $value * 60);
+        }else if($value > 0){
+            Timetracking::updateTimes($item['id'], $date, $value);
         }
     }
 

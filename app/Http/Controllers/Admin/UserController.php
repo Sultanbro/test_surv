@@ -434,7 +434,7 @@ class UserController extends Controller
                     'activities' => $activities,
                     'quality' => $quality,
                     'trainee_report' => $trainee_report,
-                    'course' => $user->getActiveCourse(),
+                    'courses' => $user->getActiveCourses(),
                 ]);
         }
         
