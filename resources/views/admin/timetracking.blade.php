@@ -315,36 +315,41 @@
 
                     <!-- План чтения книг и важная информация -->
                     <div class="col-xl-5 pl-md-0">
-                        <div class="wrappy">
+                        <div class="wrappy" style="overlflow-y:hidden;overflow-x:auto;">
                            
+                        <div class="pre mb-2" style="font-size:20px;font-weight:600">ИНФОРМАЦИЯ О КУРСЕ</div>
 
-                            @if(isset($course) && $course->course)
-
-                            <div class="my-course">
-                                <div class="mr-3">
-                                    <div class="pre mb-2" style="font-size:20px;font-weight:600">ИНФОРМАЦИЯ О КУРСЕ</div>
-                                    <img src="{{ $course->course->img }}" onerror="this.src = '/images/img-8old.png';" style="max-width: 100%;" class="mb-3"> 
-                                    <a href="/my-courses?id={{$course->course_id}}" class="title">{{ $course->course->name }}</a>
-                                    <a href="/my-courses?id={{$course->course_id}}" class="btn-go btn-success btn mt-1 mb-3"><i class="fa fa-play mr-2"></i> Продолжить изучение</a>
-                                    <div>
-                                        <div>Пройдено: {{ $course->progress }}%</div>
-                                        <progress value="{{ $course->progress }}" max="100" id="progressBar"></progress>
-                                    </div>
+                        <div class=" d-flex">
+                            @foreach($courses as $course)
+                            
+                            <div class="my-course mr-2" style="width:220px">
+                                <div>
+                                    <a href="/my-courses?id={{$course['id']}}" class="title">
+                                        <img src="{{ $course['img'] }}" onerror="this.src = '/images/course.jpg';" style="max-width: 100%;" class="mb-3"> 
+                                    </a>
+                                    <a href="/my-courses?id={{$course['id']}}" class="title">{{ $course['name'] }}</a>
+                                    <!-- <div>
+                                        <div>Пройдено: {{ $course['id'] }}%</div>
+                                        <progress value="{{ $course['id'] }}" max="100" id="progressBar"></progress>
+                                    </div> -->
                                     
-                                    <div>{{ $course->course->text }}</div>
-                                   
+                                    <div>{{ $course['text'] }}</div>
                                 </div>
-                              
                             </div>
-                            @endif
+                            @endforeach
 
+                            @if(count($courses) == 0) 
+                            <p>Нет активных курсов</p>
+                            @endif
                         </div>
+                      
                     </div>
                 </div>
             </div>
             
         </div>
         
+        </div>
     </div>
 
 @if(count($head_in_groups) > 0)
@@ -434,6 +439,7 @@
 
 
     <!-- Модалка при ошибке -->
+
     @if($errors->any())
     <u-modal :items="[{{ json_encode($errors->first()) }}]" title="Не сохранено" />
     @endif
