@@ -100,6 +100,7 @@ Route::middleware([
 
     Route::any('/', [UserController::class, 'profile']);
     Route::view('/doc', 'docs.index');
+    Route::view('/html', 'design');
     
     Route::any('/profile', [UserController::class, 'profile']); 
 
@@ -418,6 +419,8 @@ Route::middleware([
     Route::any('/timetracking/update-settings-individually', [GroupAnalyticsController::class, 'updateIndividually']);
     Route::get('/timetracking/analytics/activity/export', [GroupAnalyticsController::class, 'exportActivityExcel']);
 
+    Route::get('/hr/ref-links', [GroupAnalyticsController::class, 'getRefLinks']);
+    Route::post('/hr/ref-links/save', [GroupAnalyticsController::class, 'saveRefLinks']);
 
     Route::any('/timetracking/an', [AnalyticsController::class, 'index']);
     Route::any('/timetracking/analytics-page/getanalytics', [AnalyticsController::class, 'get']);

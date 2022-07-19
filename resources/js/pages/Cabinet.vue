@@ -175,25 +175,26 @@
                 >Город<span class="red">*</span></label
               >
               <div class="col-sm-8 p-0">
-                <input
-                  v-model="keywords"
-                  class="form-control"
-                  type="text"
-                  name="country"
-                  id="country"
-                  required
-                  placeholder="поиск городов"
-                />
-                <ul v-if="country_results.length > 0" class="p-0 countries">
-                  <li v-for="(result, index) in country_results">
-                    <a @click="selectedCountry(index, result)">
-                      Страна: {{ result.country }} Город: {{ result.city }}</a
-                    >
-                  </li>
-                </ul>
-                <ul v-else class="countries">
-                  <li>нет найденных городов</li>
-                </ul>
+
+                  <input
+                      v-model="keywords"
+                      class="form-control"
+                      type="text"
+                      name="country"
+                      id="country"
+                      required
+                      placeholder="поиск городов"
+                  />
+                  <ul v-if="country_results.length > 0" class="p-0 countries">
+                    <li v-for="(result, index) in country_results">
+                      <a @click="selectedCountry(index, result)">
+                        Страна: {{ result.country }} Город: {{ result.city }}</a
+                      >
+                    </li>
+                  </ul>
+
+
+
               </div>
             </div>
           </div>
@@ -225,11 +226,11 @@
               </button>
             </div>
           </div>
-
           <div class="col-12 mt-3">
             <!-- Cards -->
             <div
               class="col-12 p-0 row payment-profile"
+              v-if="payments_view"
               v-for="(payment, index) in payments"
             >
               <div class="col-2">
@@ -374,7 +375,8 @@ export default {
       ],
       keywords: null,
       country_results: [],
-      image: "/users_img/noavatar.png",
+      image: "",
+      payments_view:false,
     };
   },
   watch: {
@@ -390,44 +392,32 @@ export default {
     if (this.user.img_url != null) {
       this.image = "/users_img/" + this.user.img_url;
     }
+
   },
   methods: {
     saveCropped() {
-      let loader = this.$loading.show();
-      const formData = new FormData();
+
 
       this.myCroppa.generateBlob(
         (blob) => {
-          formData.append("file", blob);
-          axios
-            .post("/profile/upload/image/profile/", formData)
-            .then(function (res) {
-              $(".img_url_sm").html(res.data.img);
-              loader.hide();
-            })
-            .catch(function (err) {
-              console.log(err, "error");
-            });
+            let loader = this.$loading.show();
+            const formData = new FormData();
+             formData.append("file", blob);
+            axios
+                .post("/profile/upload/image/profile/", formData)
+                .then(function (res) {
+                  $(".img_url_sm").html(res.data.img);
+                  loader.hide();
+                })
+                .catch(function (err) {
+                  console.log(err, "error");
+                });
+
+
         },
         "image/jpeg",
         0.8
       ); // 80% compressed jpeg file
-
-      // let loader = this.$loading.show();
-
-      // const form = new FormData();
-      // img.toBlob((blob) => {
-      //   form.append('file', blob);
-      //   axios.post('/profile/upload/image/profile/', form, config)
-      //       .then(function (res) {
-      //         // console.log(res,'res')
-      //         $(".img_url_sm").html(res.data.img)
-      //         loader.hide();
-      //       })
-      //       .catch(function (err) {
-      //         console.log(err,'error')
-      //       });
-      // }, 'image/jpeg');
     },
 
     selectedCountry(index, arr) {
@@ -442,6 +432,9 @@ export default {
     },
 
     addPayment() {
+
+      this.payments_view = true;
+
       this.payments.push({
         bank: "",
         cardholder: "",
@@ -452,10 +445,14 @@ export default {
     },
 
     removePaymentCart(index, type_id) {
+
       let confirmDelte = confirm(
         "Вы действительно хотите безвозвратно удалить ?"
       );
+
       if (confirmDelte) {
+
+
         this.payments.splice(index, 1);
         this.$message.success("Успешно Удалено");
 
@@ -469,6 +466,8 @@ export default {
               alert(error);
             });
         }
+
+
       }
     },
 
@@ -476,28 +475,41 @@ export default {
       this.cardValidatre.type = false;
       this.cardValidatre.error = false;
 
-      this.payments.forEach((el) => {
-        this.cardValidatre.type = false;
-        this.cardValidatre.type = true;
 
-        if (
-          el["bank"] != null &&
-          el["cardholder"] != null &&
-          el["country"] != null &&
-          el["number"] != null &&
-          el["phone"] != null
-        ) {
+      console.log(this.payments,'this.payments')
+
+
+      if (this.payments.length > 0){
+
+        this.payments.forEach((el) => {
+
+          console.log(el,'emasdasd')
+
+          this.cardValidatre.type = false;
+          this.cardValidatre.type = true;
+
           if (
-            el["bank"].length > 2 &&
-            el["cardholder"].length > 2 &&
-            el["country"].length > 2 &&
-            el["number"].length > 2 &&
-            el["phone"].length > 2
+              el["bank"] != null &&
+              el["cardholder"] != null &&
+              el["country"] != null &&
+              el["number"] != null &&
+              el["phone"] != null
           ) {
-            this.cardValidatre.type = true;
+            if (
+                el["bank"].length > 2 &&
+                el["cardholder"].length > 2 &&
+                el["country"].length > 2 &&
+                el["number"].length > 2 &&
+                el["phone"].length > 2
+            ) {
+              this.cardValidatre.type = true;
+            }
           }
-        }
-      });
+        });
+      }else {
+        this.cardValidatre.type = true;
+      }
+
 
       if (this.cardValidatre.type) {
         axios
@@ -537,15 +549,16 @@ export default {
           this.keywords = response.data.user.working_country;
           this.working_city = response.data.user.working_city;
 
-          if (
-            response.data.user_payment != null &&
-            response.data.user_payment != undefined
-          ) {
+          if (response.data.user_payment != null && response.data.user_payment != undefined) {
+
             if (response.data.user_payment.length > 0) {
               this.payments = response.data.user_payment;
+              this.payments_view = true
             } else {
               this.payments = [];
+              this.payments_view = false
             }
+
           }
 
           if (this.user.img_url != null && this.user.img_url != undefined) {

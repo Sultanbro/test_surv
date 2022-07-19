@@ -41,7 +41,7 @@ class EstimateTrainer extends Command
      */
     public function handle()
     {   
-        if(false) return null;
+        if($this->notRightDay()) return null;
  
         $user_ids = $this->getUserIds();
 

@@ -110,7 +110,13 @@
 
         <div class="d-flex jcsb">
           <div class="points mr-3" v-if="mode == 'edit'">
-            <p>Баллы</p>
+            <p>Бонусы 
+              <i class="fa fa-info-circle ml-2 mr-2" 
+                  v-b-popover.hover.right.html="'Количество бонусов на счет сотрудника при правильном ответе'" 
+                  title="Бонусы">
+              </i>
+
+            </p>
             <input type="number" v-model="q.points" min="0" max="999" />
           </div>
         </div>

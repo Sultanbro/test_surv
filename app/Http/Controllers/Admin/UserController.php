@@ -81,7 +81,6 @@ class UserController extends Controller
         $this->middleware('auth');
     }
 
-
     public function surv(Request $request)
     {
         View::share('menu', 'timetrackinguser');
@@ -2001,7 +2000,6 @@ class UserController extends Controller
 
     }
 
-    
     public function editPersonBook(Request $request) {
 
         $user_id = $request->user_id;
@@ -2316,47 +2314,6 @@ class UserController extends Controller
 
     }
 
-    /////загрузка аватарки через профиль в компоненте ( vue.js )
-    public function uploadPhotoProfile(Request $request)
-    {
-
-
-
-        $request->validate([
-            'file' => 'required|mimes:jpg,jpeg,png,csv,txt,xlx,xls,pdf'
-        ]);
-
-
-        $upload_path = public_path('users_img/');
-
-        $file_name = $request->file->getClientOriginalName();
-        $generated_new_name = time() . '.' . $request->file->getClientOriginalExtension();
-        $request->file->move($upload_path, $generated_new_name);
-
-        $insertUser = User::find(auth()->user()->getAuthIdentifier());
-        if (!empty($insertUser->img_url)){
-            $filename = "users_img/".$insertUser->img_url;
-            if (file_exists($filename)) {
-                unlink(public_path('users_img/'.$insertUser->img_url));
-            }
-            $insertUser['img_url'] = null;
-        }
-
-
-        $insertUser['img_url'] = $generated_new_name;
-        $insertUser->save();
-
-
-
-        return response()->json([
-            'success' => 'You have successfully uploaded "' . $file_name . '"',
-            'file_name'=>$generated_new_name,
-        ]);
-
-
-
-    }
-
     /////загрузка аватарки через настроки ( в шаблоне blade )
     public function uploadPhoto(Request $request)
     {
@@ -2433,8 +2390,6 @@ class UserController extends Controller
 
     ///Удаление карты через профиль индивидуально
     public function removeCardProfile(Request$request){
-
-
         Card::find($request['card_id'])->delete();
 
     }
@@ -2442,21 +2397,16 @@ class UserController extends Controller
     //// поиск городов  через профиль
     public function searchCountry(Request $request)
     {
-
         $data = DB::table('coordinates')->where('city', 'LIKE','%'.$request->keyword.'%')->get();
         return response()->json($data); ;
-
     }
-
+    /// загрузка аватарки через профиль в компоненте ( vue.js )
     public function uploadImageProfile(Request $request){
 
 
-        $request->validate([
-            'file' => 'required|mimes:jpg,jpeg,png,csv,txt,xlx,xls,pdf'
-        ]);
-
-
         $user = User::withTrashed()->find(auth()->user()->getAuthIdentifier());
+
+
 
         if ($user->img_url){
             $filename = "users_img/".$user->img_url;
@@ -2466,14 +2416,35 @@ class UserController extends Controller
         }
 
 
-        $upload_path = public_path('users_img/');
-        $generated_new_name = time() . '.' .'png';
-        $request->file->move($upload_path, $generated_new_name);
-        $user->img_url = $generated_new_name;
-        $user->save();
 
-        $img = '<img src="'.url('/users_img').'/'.$generated_new_name.'" alt="avatar" />';
-        return response(['img'=>$img,'filename'=>$generated_new_name]);
+
+        if ($request->file == "null" || $request->file == 'undefined'){
+            $user->img_url = null;
+            $user->save();
+
+            $img = '<img src="'.url('/users_img').'/'.'noavatar.png'.'" alt="avatar" />';
+
+            return response(['img'=>$img,'filename'=>'noavatar.png','type'=>0]);
+
+        }else{
+
+            $request->validate([
+                'file' => 'required|mimes:jpg,jpeg,png'
+            ]);
+
+
+
+            $upload_path = public_path('users_img/');
+            $generated_new_name = time() . '.' .'png';
+            $request->file->move($upload_path, $generated_new_name);
+            $user->img_url = $generated_new_name;
+            $user->save();
+
+            $img = '<img src="'.url('/users_img').'/'.$generated_new_name.'" alt="avatar" />';
+            return response(['img'=>$img,'filename'=>$generated_new_name,'type'=>1]);
+        }
+
+
 
     }
 }

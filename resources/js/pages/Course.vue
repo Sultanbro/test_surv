@@ -29,19 +29,41 @@
       <div class="w-full">
         <textarea
           v-model="course.text"
+          :style="'height:285px'"
           class="form-control"
-          placeholder="Описание курса"
+          placeholder="Описание курса" 
         ></textarea>
       </div>
-      <div class="img ml-3"  @click="$refs.file.click()">
-        <input
-          type="file"
-          ref="file"
-          style="display: none"
-          @change="onFileChange($event)"
-        />
-        <img class="course-img" :src="course.img"   />
+  
+      <!-- profile image -->
+      <div class="ml-3"> 
+
+          <croppa
+            v-model="myCroppa"
+            :width="250"
+            :height="250"
+            :canvas-color="'default'"
+            :placeholder="'Выберите изображение'"
+            :placeholder-font-size="0"
+            :placeholder-color="'default'"
+            :accept="'image/*'"
+            :file-size-limit="0"
+            :quality="2"
+            :zoom-speed="20"
+            :initial-image="image"
+            :key="croppa_key"
+          ></croppa>
+
+          <button
+            style="width: 250px; display: block"
+            class="btn btn-success"
+            @click="saveCropped"
+          >
+            Обрезать и сохранить
+          </button>
+      
       </div>
+
     </div>
 
     <div class="items">
@@ -110,12 +132,16 @@ export default {
       test: "dsa",
       hover: false,
       file: null,
+      myCroppa: {},
       newItem: null,
-      users: [],
+      users: [], 
       course: {
         id: 0,
         elements: [],
+        img: ''
       },
+      image: '/users_img/noavatar.png',
+      croppa_key: 1
     };
   },
   created() {
@@ -137,11 +163,40 @@ export default {
         .then((response) => {
           loader.hide()
           this.course = response.data.course;
+          this.image = this.course.img;
+          this.croppa_key++;
+          console.log(this.image)
         })
         .catch((error) => {
           loader.hide()
           alert(error);
         });
+    },
+
+    saveCropped() {
+      let loader = this.$loading.show();
+      const formData = new FormData();
+
+      let _this = this;
+      this.myCroppa.generateBlob(
+        (blob) => {
+          formData.append("file", blob);
+          formData.append("course_id", _this.course.id);
+          axios
+            .post("/admin/courses/upload-image", formData)
+            .then(function (res) {
+              _this.course.img = response.data.img;
+              _this.$message.success('Сохранено');
+              loader.hide();
+            })
+            .catch(function (err) {
+              console.log(err, "error");
+               loader.hide();
+            });
+        },
+        "image/jpeg",
+        0.8
+      ); // 80% compressed jpeg file
     },
 
     toggleOpen(el) {},
@@ -163,24 +218,6 @@ export default {
       this.users.push(tag);
     },
 
-    uploadFile() {
-      let formData = new FormData();
-      formData.append("file", this.file);
-      formData.append("course_id", this.course.id);
-
-      let _this = this;
-      axios
-        .post("/admin/courses/upload-image", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-        .then(function (response) {
-          _this.course.img = response.data.img;
-        })
-        .catch(function (e) {
-          alert(e);
-        });
-    },
-
     saveCourse() {
       let loader = this.$loading.show();
       axios
@@ -195,13 +232,6 @@ export default {
           loader.hide();
           alert(error);
         });
-    },
-
-    onFileChange(e) {
-      var files = e.target.files || e.dataTransfer.files;
-      if (!files.length) return;
-      this.file = files[0];
-      this.uploadFile();
     },
 
     limitText(count) {

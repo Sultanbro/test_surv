@@ -30,7 +30,7 @@ class CourseItem extends Model
 
 
     public function isVideo() {
-        return $this->item_model == 'App\Models\Videos\Video';
+        return $this->item_model == 'App\Models\Videos\VideoPlaylist';
     }
 
     public function isBook() {
