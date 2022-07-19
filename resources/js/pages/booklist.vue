@@ -691,10 +691,13 @@ export default {
 
     connectItemModels(tree) {
       tree.forEach((el, e) => {
+        console.log(this.item_models)
         let i = this.item_models.findIndex(im => im.item_id == el.id);
         if(i != -1) {
           el.item_model = this.item_models[i];
           this.item_models.splice(i,1);
+        } else {
+          el.item_model = null;
         }
         if(el.children !== undefined) {
           this.connectItemModels(el.children)
