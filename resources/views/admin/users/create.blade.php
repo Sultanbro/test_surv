@@ -550,19 +550,15 @@
                                                 </div>
 
 
-                                                <div id="adaptation_conversations" class="adaptation none-block" style="display: none">
+                                                <div id="adaptation_conversations" class="none-block" style="display: none">
                                                     <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
 
 
 
                                                     @foreach($user->adaptation_talks as $key => $talk)
                                                         <div class="d-flex phone-row form-group mb-2 adaptation_talk">
-<<<<<<< HEAD
 
                                                             <div  class="col-sm-3 col-md-2 col-lg-2">{{ $talk['day'] }} й день
-=======
-                                                            <div  class="col-sm-2 col-md-1 col-lg-1">{{ $talk['day'] }} й день
->>>>>>> ecbac99636d87984707596b618bda252f0c3b255
                                                                 <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
                                                             </div>
 
