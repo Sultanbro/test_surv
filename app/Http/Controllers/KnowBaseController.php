@@ -8,6 +8,7 @@ use App\Models\TestQuestion;
 use App\User;
 use App\ProfileGroup;
 use App\Position;
+use App\Models\CourseItemModel;
 use DB;
 use Auth;
 use App\Setting;
@@ -189,11 +190,18 @@ class KnowBaseController extends Controller
             
         }
         
-       
+        $kb_ids = $book->getOrder();
 
+        $item_models = CourseItemModel::whereIn('item_id', $kb_ids)
+            ->where('type', 3)
+            ->where('user_id', auth()->id())
+            ->where('course_item_id', 0)
+            ->get();
+        
         return [
             'trees' => $trees,
             'book' => $book,
+            'items' => $item_models,
             'can_save' => $this->canSaveWithoutTest()
         ];
     }
