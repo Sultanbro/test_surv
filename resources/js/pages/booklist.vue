@@ -97,13 +97,7 @@
               >
                 <i class="fas fa-volume-up"></i>
               </button>
-              <!-- <button
-                class="form-control btn-action btn-medium ml-2"
-                @click="showActionModal = true"
-              >
-                Действие
-              </button> -->
-
+        
               
               
               <button
@@ -419,180 +413,6 @@
        Пока не сделано
     </b-modal>
 
-    <b-modal v-model="showActionModal" title="Действие">
-      <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-        <li class="nav-item">
-          <a
-            class="nav-link active"
-            id="pills-home-tab"
-            data-toggle="pill"
-            href="#pills-home"
-            role="tab"
-            aria-controls="pills-home"
-            aria-selected="true"
-            >Копирование (перенос)</a
-          >
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            id="pills-profile-tab"
-            data-toggle="pill"
-            href="#pills-profile"
-            role="tab"
-            aria-controls="pills-profile"
-            aria-selected="false"
-            >Поиск схожих</a
-          >
-        </li>
-      </ul>
-      <div class="tab-content" id="pills-tabContent">
-        <div
-          class="tab-pane fade show active"
-          id="pills-home"
-          role="tabpanel"
-          aria-labelledby="pills-home-tab"
-        >
-          <div class="form-group">
-            <label for="element1">Выберите действие</label>
-            <select class="form-control" v-model="delo" id="element1">
-              <option value="0">Копировать</option>
-              <option value="1">Перенести</option>
-            </select>
-          </div>
-
-          <selectgroup
-            :tree="tree"
-            :selecttree="selecttree"
-            @select="select"
-          ></selectgroup>
-          <br />
-          <button
-            type="button"
-            @click="copyes"
-            class="btn btn-secondary"
-            data-dismiss="modal"
-          >
-            ОК
-          </button>
-        </div>
-        <div
-          class="tab-pane fade"
-          id="pills-profile"
-          role="tabpanel"
-          aria-labelledby="pills-profile-tab"
-        >
-          <li v-if="seatchbooks != null" v-for="book in seatchbooks">
-            <input
-              type="checkbox"
-              :id="book.id"
-              :value="book.id"
-              v-model="checkedNames"
-            />
-            <label :for="book.id">({{ book.namecat }}) {{ book.title }}</label>
-          </li>
-
-          <button type="button" @click="searchitem" class="btn btn-secondary">
-            Найти похожие книги
-          </button>
-          <br /><br />
-          <button
-            v-if="checkedNames != ''"
-            type="button"
-            @click="passte"
-            class="btn btn-secondary"
-            data-dismiss="modal"
-          >
-            Заменить в выделенных
-          </button>
-        </div>
-      </div>
-    </b-modal>
-
-    <div
-      class="modal fade"
-      id="smallmodal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="smallmodalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="smallmodalLabel">Доступ</h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <template v-if="actives != null && actives.parent_cat_id == null">
-              <input v-model="actives.login" />
-              <input v-model="actives.password" />
-            </template>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              @click="savepass"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              ОК
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="modal fade"
-      id="perenos"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="perenoslabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="perenoslabel">Перенести категорию</h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <selectgroup
-              :perenos="1"
-              :tree="tree"
-              :selecttree="selecttree"
-              @select="select"
-            ></selectgroup>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              @click="movecatt"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Перенести
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <b-modal
       v-model="showSearch"
       title="Поиск"
@@ -619,7 +439,7 @@
           <div class="sss" v-if="search.input.length >=3 && search.items.length == 0">
             <p>По запросу "{{ search.input }}" ничего не найдено.</p>
           </div>
-         <div class="item" v-for="item in search.items" @click="showPage(item.id, true)" >
+         <div class="item" v-for="(item, x) in search.items" @click="showPage(item.id, true)" :key="x">
            <p v-if="item.book != null" class="book">{{ item.book.title }}</p>
            <p>{{ item.title }}</p>
            <div class="text" v-html="item.text"></div>
@@ -661,7 +481,6 @@ export default {
       loader: false,
       delo: 0,
       parent_title: '',
-      showActionModal: false,
       showSearch: false,
       can_save: false,
       search: {
@@ -692,7 +511,8 @@ export default {
       passedTest: false,
       questions_key: 1,
       text_was: '',                                                        
-      title_was: '',                                                        
+      title_was: '',     
+      item_models: []                                                   
     }
   },
 
@@ -736,7 +556,7 @@ export default {
         .then((response) => {
         
 
-         // this.activeVideo.item_models.push(response.data.item_model);
+        
         })
         .catch((error) => {
           alert(error);
@@ -802,6 +622,7 @@ export default {
         })
         .then((response) => {
           this.tree = response.data.trees;
+          this.item_models = response.data.item_models;
 
           this.can_save = response.data.can_save; // without test
 
@@ -825,7 +646,7 @@ export default {
               this.activesbook = this.tree[0];
             } else {
               // find element 
-                   console.log(this.ids)
+             
               let index = this.ids.findIndex(el => el.id == this.show_page_id); 
               
               console.log(index)
@@ -859,15 +680,28 @@ export default {
               });
 
           }
-          
-        
 
+          this.connectItemModels(this.tree)
+          
         })
         .catch((error) => {
           alert(error);
         });
     },
 
+    connectItemModels(tree) {
+      tree.forEach((el, e) => {
+        let i = this.item_models.findIndex(im => im.item_id == el.id);
+        if(i != -1) {
+          el.item_model = this.item_models[i];
+          this.item_models.splice(i,1);
+        }
+        if(el.children !== undefined) {
+          this.connectItemModels(el.children)
+        }
+      });
+    },
+    
     searchInput() {
       if(this.search.input.length <= 2) return null;
       
@@ -900,11 +734,6 @@ export default {
           parent: this.selectone,
         }) 
         .then((response) => {}); 
-    },
-    
-    moveto(tre) {
-      $("#perenos").modal("show");
-      this.active(tre);
     },
 
     renamebooks(book) {
@@ -987,41 +816,6 @@ export default {
       setTimeout(() => {
         this.$refs.adddglabook.select();
       }, 500);
-    },
-
-    copyes() {
-      // if (this.delo == 0) {
-      //   if (this.selectone != null) {
-      //     let book = {
-      //       id: 0,
-      //       title: this.activesbook.title,
-      //       text: this.activesbook.text,
-      //       category_id: this.selectone,
-      //       order: 0,
-      //     };
-
-      //     axios
-      //       .post("/page/copy/", {
-      //         books: book,
-      //       })
-      //       .then((response) => {
-      //         book.id = response.data;
-      //         this.books.push(book);
-      //         this.activebook(book);
-      //       });
-      //   }
-      // } else {
-      //   if (this.selectone != null) {
-      //     this.activesbook.category_id = this.selectone;
-
-      //     axios
-      //       .post("/page/move/", {
-      //         id: this.activesbook.id,
-      //         catid: this.selectone,
-      //       })
-      //       .then((response) => {});
-      //   }
-      // }
     },
 
     onEndSort(books, id) {
@@ -1455,9 +1249,7 @@ export default {
     },
   },
 };
-/**
- * <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
- */
+
 </script>
 <style>
 .content {

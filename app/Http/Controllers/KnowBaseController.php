@@ -170,9 +170,6 @@ class KnowBaseController extends Controller
             $trees = KnowBase::where('parent_id', $request->id)
                 ->with('children')
                 ->with('questions')
-                ->with('item_model', function ($query){
-                    $query->where('type', 3);
-                })
                 ->orderBy('order')
                 ->get();
 
@@ -205,9 +202,6 @@ class KnowBaseController extends Controller
     {
         $page = KnowBase::withTrashed()
             ->with('questions')
-            ->with('item_model', function ($query){
-                $query->where('type', 3);
-            })
             ->find($request->id);
 
         $author = User::withTrashed()->find($page->user_id);
@@ -227,9 +221,6 @@ class KnowBaseController extends Controller
         if ($request->refresh) {
             if ($top_parent) {
                 $trees = KnowBase::where('parent_id', $top_parent->id)->with('children')
-                ->with('item_model', function ($query){
-                    $query->where('type', 3);
-                })
                 ->orderBy('order')->get();
 
                 foreach ($trees as $tree) {
