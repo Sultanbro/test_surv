@@ -88,12 +88,13 @@ class OperatorFact
     }
     
     public function getTotalsOfReports() {
+        $x_users = [];
         $group = ProfileGroup::find(42);
         if (!empty($group) && $group->users != null) {
             $x_users = json_decode($group->users);
         }
         
-        $users_ids = array_unique($x_users);
+        $users_ids = User::whereIn('id',$x_users)->where('position_id',32)->pluck('id')->toArray();
         
         $sum = Timetracking::getSumHoursPerMonthByUsersIds($users_ids, Carbon::parse($this->date)->month, Carbon::parse($this->date)->year);
         

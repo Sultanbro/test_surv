@@ -552,29 +552,58 @@
 
                                                 <div id="adaptation_conversations" class="none-block" style="display: none">
                                                     <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
-                                                    @foreach($user->adaptation_talks as $key => $talk)
-                                                        <div class="adaptation_talk col-12 mt-3">
 
-                                                            <div class="col-2 div_1 ml-0 p-0 adap_day">{{ $talk['day'] }} й день
+
+
+                                                    @foreach($user->adaptation_talks as $key => $talk)
+                                                        <div class="d-flex phone-row form-group mb-2 adaptation_talk">
+                                                            <div  class="col-sm-2">{{ $talk['day'] }} й день
                                                                 <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
                                                             </div>
 
-                                                            <div class="col-3 div_2 p-0 ml-4" style="flex-direction:unset">
-
+                                                            <div class="col-sm-2" >
                                                                 <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
-
-                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"
-                                                                       @if($talk['date'] != null)
-                                                                           value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"
-                                                                       @endif>
                                                             </div>
 
-                                                            <div class="col-6 div_3 p-0 ">
-                                                                <textarea name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>
+                                                            <div class="col-sm-2">
+                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"
+                                                                        @if($talk['date'] != null)
+                                                                        value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"
+                                                                        @endif>
+                                                            </div>
+
+
+                                                            <div class="col-sm-12">
+                                                                <textarea class="btn btn-block"  name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>
                                                             </div>
 
                                                         </div>
                                                     @endforeach
+
+
+{{--                                                    @foreach($user->adaptation_talks as $key => $talk)--}}
+{{--                                                        <div class="adaptation_talk col-12 mt-3">--}}
+
+{{--                                                            <div class="col-2 div_1 ml-0 p-0 adap_day">{{ $talk['day'] }} й день--}}
+{{--                                                                <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">--}}
+{{--                                                            </div>--}}
+
+{{--                                                            <div class="col-3 div_2 p-0 ml-4" style="flex-direction:unset">--}}
+
+{{--                                                                <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">--}}
+
+{{--                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"--}}
+{{--                                                                       @if($talk['date'] != null)--}}
+{{--                                                                           value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"--}}
+{{--                                                                       @endif>--}}
+{{--                                                            </div>--}}
+
+{{--                                                            <div class="col-6 div_3 p-0 ">--}}
+{{--                                                                <textarea class="btn btn-block" name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>--}}
+{{--                                                            </div>--}}
+
+{{--                                                        </div>--}}
+{{--                                                    @endforeach--}}
                                                 </div>
 
                                             @endif
@@ -823,6 +852,7 @@
 
 
 
+
                                 <!-- second tab -->
                                 <div class="xtab-pane xfade" id="phones" role="tabpanel" aria-labelledby="phones-tab">
                                     <!--  -->
@@ -841,6 +871,7 @@
                                              </div>
 
                                          </div>
+
 
                                         <div class="d-flex phone-row form-group mb-2">
                                             <label for="phone_1" class="col-sm-4 col-form-label font-weight-bold">Домашний <span class="red">*</span></label>

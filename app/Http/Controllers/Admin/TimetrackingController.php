@@ -2217,13 +2217,13 @@ class TimetrackingController extends Controller
 
     public function getTotalsOfReports(Request $request) {
         
-        
+        $x_users = [];
         $group = ProfileGroup::find($request->group_id);
         if (!empty($group) && $group->users != null) {
             $x_users = json_decode($group->users);
         }
         
-        $users_ids = array_unique($x_users);
+        $users_ids = User::whereIn('id',$x_users)->where('position_id',32)->pluck('id')->toArray();
         
         $sum = Timetracking::getSumHoursPerMonthByUsersIds($users_ids, $request->month, $request->year);
         
