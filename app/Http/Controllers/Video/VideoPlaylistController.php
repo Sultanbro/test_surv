@@ -102,10 +102,7 @@ class VideoPlaylistController extends Controller {
 		$no_group_videos = Video::where('group_id', 0)
 			->where('playlist_id', $pl->id)
 			->with('questions')
-			->with('item_model', function ($query) use ($user_id){
-				$query->where('type', 2)
-					->where('user_id', $user_id);
-			})->get();
+			->get();
 
 		if($no_group_videos->count() > 0) {
 			$pl->groups->prepend([
@@ -185,8 +182,6 @@ class VideoPlaylistController extends Controller {
 		];
 	}
 
-	
-
 	public function add_video(Request $request) {
 		$video = Video::find($request->video_id);
 
@@ -202,7 +197,6 @@ class VideoPlaylistController extends Controller {
 			'was_in_playlist' => $was_in_playlist
 		]; 
 	}	
-
 
 	public function add(Request $request) {
 		$pl = Playlist::create([

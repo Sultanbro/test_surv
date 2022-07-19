@@ -25,13 +25,8 @@ class VideoGroup extends Model
 
     public function videos()
     { 
-        $user_id = auth()->id();
         return $this->hasMany('App\Models\Videos\Video', 'group_id', 'id')
             ->with('questions')
-            ->with('item_model', function ($query) use ($user_id) {
-                $query->where('type', 2)
-                    ->where('user_id', $user_id);
-            })
             ->orderBy('order', 'asc');
     }
 

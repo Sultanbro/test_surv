@@ -18,8 +18,6 @@ class CourseItemModel extends Model
         // element id 
         // but in book it represents page number with test
         'item_id', 
-
-
         'type', // book video kb
         'status', 
         'user_id',

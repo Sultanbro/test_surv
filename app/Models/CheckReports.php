@@ -159,7 +159,8 @@ class CheckReports extends Model
             }
         }
 
-    
+
+
 
         if (isset($getIntegers)){
             foreach ($getIntegers['count_check'] as $key => $getInteger_c){

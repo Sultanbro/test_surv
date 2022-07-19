@@ -117,10 +117,6 @@ class UpbookController extends Controller
     {   
         $user_id = auth()->id();
         $book = Book::where('id',$request->id)
-            ->with('item_model', function ($query) use ($user_id){
-                $query->where('type', 1)
-                    ->where('user_id', $user_id);
-            })
             ->with('segments')
             ->first();
 

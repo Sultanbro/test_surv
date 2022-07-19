@@ -39,14 +39,9 @@ class KnowBase extends Model implements CourseInterface
     
     public function children()
     {
-        $user_id = auth()->id();
         return $this->hasMany(self::class, 'parent_id')
             ->orderBy('order')
-            ->with('children','questions')
-            ->with('item_model', function ($query) use ($user_id){
-                $query->where('type', 3)
-                    ->where('user_id', $user_id);
-            });
+            ->with('children','questions');
     }
 
     public function item_model()
