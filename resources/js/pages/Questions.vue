@@ -203,7 +203,7 @@ export default {
     pass_grade: {
       type: Number,
       default: 50
-    }
+    },
   },
   data() {
     return {
@@ -233,6 +233,8 @@ export default {
     },
   },
   created() {
+
+    this.setResults();
     this.prepareVariants();
 
     if (this.mode == "read") {
@@ -259,6 +261,15 @@ export default {
   },
   mounted() {},
   methods: {
+    
+    setResults() {
+      // set results if exists
+      if(this.questions.results != undefined && this.questions.results.length > 0) {
+        this.$message.info('has_results')
+        console.log(this.questions.results)
+      }
+    },
+
     prepareVariants() {
       if(this.questions === undefined) this.questions = [];
       this.questions.forEach((q) => {

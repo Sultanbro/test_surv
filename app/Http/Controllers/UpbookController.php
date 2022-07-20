@@ -120,6 +120,9 @@ class UpbookController extends Controller
             ->with('segments')
             ->first();
 
+        // @TODO
+        // get test results
+
         $qs = TestQuestion::where('testable_type', 'App\Models\Books\Book')->where('testable_id', $request->id)->get()->groupBy('page');
 
         $arr = [];
@@ -143,6 +146,7 @@ class UpbookController extends Controller
                 'item_model' => CourseItemModel::where('user_id', $user_id)
                     ->where('type', 1)
                     ->where('item_id', $id)
+                    ->where('course_item_id', $request->course_item_id ?? 0)
                     ->first(),
             ]);
 
@@ -152,7 +156,6 @@ class UpbookController extends Controller
 
 
         // get link storage
-
         $disk = \Storage::build([
             'driver' => 's3',
             'key' => 'O4493_admin',
@@ -184,6 +187,12 @@ class UpbookController extends Controller
             ); 
         }
        
+
+        $item_models = CourseItemModel::whereIn('item_id', $kb_ids)
+            ->where('type', 3)
+            ->where('user_id', auth()->id())
+            ->where('course_item_id', 0)
+            ->get();
 
         return [
             'tests' => $arr,

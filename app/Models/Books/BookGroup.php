@@ -28,11 +28,7 @@ class BookGroup extends Model
     {
         $user_id = auth()->id();
         return $this->hasMany('App\Models\Books\Book', 'group_id', 'id')
-            ->with('questions')
-            ->with('item_model', function ($query) use ($user_id) {
-                $query->where('type', 1)
-                    ->where('user_id', $user_id);
-            });
+            ->with('questions');
     }
     
     public static function getBooks($group_id)

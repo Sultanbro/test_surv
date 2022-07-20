@@ -19,6 +19,7 @@ class TestResult extends Model
         'question_id',
         'answer',
         'status',
+        'course_item_model_id'
     ];
 
     CONST PASSED = 1;

@@ -220,11 +220,11 @@ export default {
       axios
         .post("/admin/upbooks/tests/get", {
           id: this.book_id,
+          course_item_id: this.course_item_id
         })
         .then((response) => {
           this.tests = response.data.tests;
           this.activeBook = response.data.activeBook;
-
 
           loader.hide();
         })

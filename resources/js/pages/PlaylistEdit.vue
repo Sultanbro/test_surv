@@ -420,10 +420,13 @@ export default {
        axios
         .post("/playlists/video", {
           id: video.id,
+          item_model: video.item_model
         })
         .then((response) => {
+
           if(autoplay) {
-            this.activeVideoLink = response.data.links;
+            this.activeVideo = response.data.video;
+            this.activeVideoLink = this.activeVideo.links;
             this.video_changed++;
             this.refreshTest++
           }
@@ -453,11 +456,16 @@ export default {
 
     fetchData() {
       axios
-        .get("/playlists/get/" + this.id)
+        .post("/playlists/get/", {
+          id: this.id,
+          course_item_id: this.course_item_id
+        })
         .then((response) => {
           this.playlist = response.data.playlist;
+          this.item_models = response.data.item_models;
           
           this.formMap();
+          this.connectItemModels(this.playlist.groups);
           this.setActiveVideo();
           
         })
@@ -466,6 +474,25 @@ export default {
         });
     },  
     
+    connectItemModels(groups) {
+      groups.forEach((el, e) => {
+
+        groups.videos.forEach((vid, v) => {
+          let i = this.item_models.findIndex(im => im.item_id == vid.id);
+          if(i != -1) {
+            vid.item_model = this.item_models[i];
+            this.item_models.splice(i,1);
+          } else {
+            vid.item_model = null;
+          }
+        });
+
+        if(el.children !== undefined) {
+          this.connectItemModels(el.children)
+        }
+      });
+    },
+
     checkPassGrade() {
       console.log('pass grade')
       let len = this.activeVideo.questions.length;
