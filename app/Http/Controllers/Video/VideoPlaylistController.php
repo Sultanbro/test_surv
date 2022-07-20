@@ -155,7 +155,7 @@ class VideoPlaylistController extends Controller {
 
 	public function getVideo(Request $request) {
 
-		$im = $request->item_model ? $request->item_model['id'] : 0;
+		$im = 0; // course_id
 		$user_id = auth()->id();
 		
 		$video =  Video::with('questions')
