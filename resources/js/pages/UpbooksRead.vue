@@ -100,7 +100,6 @@
         ref="pdfRef"
         :page="page"
         class="plugin"
-        @rendered="handleDocumentRender"
         loading-failed="sad"
         @rendered="loaded"
       />
