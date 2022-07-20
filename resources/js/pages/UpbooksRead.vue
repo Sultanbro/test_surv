@@ -346,9 +346,6 @@ export default {
        
       } else {
         this.activeSegment = null;
-        // bug fix
-        this.page++
-        this.page--
       }
 
       
