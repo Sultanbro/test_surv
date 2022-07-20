@@ -337,8 +337,8 @@ class UpbookController extends Controller
             $bs = BookSegment::create([
                 'title' => 'test',
                 'book_id' => $request->book_id,
-                'page_start' => $request->item['page'],
-                'page_end' => $request->item['page'],
+                'page_start' => $request->item['page_start'],
+                'page_end' => $request->item['page_start'],
                 'pass_grade' => $request->item['pass_grade'],
             ]);
         }
@@ -347,7 +347,7 @@ class UpbookController extends Controller
         foreach ($request->item['questions'] as $q) {
             $params = [
                 'order' => 0,
-                'page'=> $request->item['page'],
+                'page'=> $request->item['page_start'],
                 'points'=> $q['points'],
                 'testable_id'=> $bs->id,
                 'testable_type'=> "App\Models\Books\BookSegment",
