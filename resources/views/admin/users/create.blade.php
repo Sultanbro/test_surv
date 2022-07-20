@@ -270,7 +270,7 @@
                                                     class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
                                                 <div class="col-sm-8">
                                                     <input class="form-control" type="date" name="birthday" id="birthday" required
-                                                        @if(isset($user))@if($user->birthday != null)value="{{ \Carbon\Carbon::parse($user->birthday)->format('Y-m-d')}}"@endif @else value="{{old('birthday')}}"@endif>
+                                                        @if(isset($user) && $user->birthday != null) value="{{ \Carbon\Carbon::parse($user->birthday)->format('Y-m-d')}}" @else value="{{old('birthday')}}"@endif>
                                                 </div>
                                             </div>
 
@@ -464,85 +464,86 @@
                                                                 <span>Дата регистрации</span>
                                                             </td>
                                                             <td>
-                                                                <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
+                                                                <span>@if(isset($user)) {{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}} @endif</span>
                                                             </td>
                                                         </tr>
-                                                        @if($user->applied_at != null && $user->is_trainee == 0)
-                                                            <tr>
-                                                                <td>
-                                                                    <span>Дата принятия на работу</span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->applied_at)->format('d.m.Y')}}</span>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                        @if($user->applied_at == null && $user->is_trainee == 0)
-                                                            <tr>
-                                                                <td>
-                                                                    <span>Дата принятия на работу</span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                        <tr>
-                                                            <td>
-                                                                <span>Успел стать частью команды ~</span>
-                                                            </td>
-                                                            <td>
-                                                                <span>{{ $user->worked_with_us }}</span>
-                                                            </td>
-                                                        </tr>
-
-                                                        @if($user->delete_time != null)
-                                                            <tr>
-                                                                <td>
-                                                                    <span>Дата отработки</span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->delete_time)->format('d.m.Y')}}</span>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-
-
-                                                        @if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00')
-                                                            <tr>
-                                                                <td>
-                                                                    <span>Дата увольнения</span>
-                                                                </td>
-                                                                <td>
-                                                                    <span>{{ \Carbon\Carbon::parse($user->deleted_at)->format('d.m.Y')}}</span>
-                                                                </td>
-                                                            </tr>
-
-                                                            @if (isset($user->downloads) && $user->downloads->resignation)
+                                                        @if(isset($user))
+                                                            @if($user->applied_at != null && $user->is_trainee == 0)
                                                                 <tr>
                                                                     <td>
-                                                                        <span>Заявление об увольнении</span>
+                                                                        <span>Дата принятия на работу</span>
                                                                     </td>
                                                                     <td>
-                                                                        <a  download=""
-                                                                            class="d-block"
-                                                                            href="/static/profiles/{{$user->id}}/resignation/{{$user->downloads->resignation}}">Скачать</a>
+                                                                        <span>{{ \Carbon\Carbon::parse($user->applied_at)->format('d.m.Y')}}</span>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
+                                                            @if($user->applied_at == null && $user->is_trainee == 0)
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>Дата принятия на работу</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
+                                                            <tr>
+                                                                <td>
+                                                                    <span>Успел стать частью команды ~</span>
+                                                                </td>
+                                                                <td>
+                                                                    <span>{{ $user->worked_with_us }}</span>
+                                                                </td>
+                                                            </tr>
+
+                                                            @if($user->delete_time != null)
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>Дата отработки</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        <span>{{ \Carbon\Carbon::parse($user->delete_time)->format('d.m.Y')}}</span>
                                                                     </td>
                                                                 </tr>
                                                             @endif
 
-                                                            @if($user->fire_cause != null)
+
+                                                            @if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00')
                                                                 <tr>
                                                                     <td>
-                                                                        <span>Причина увольнения</span>
+                                                                        <span>Дата увольнения</span>
                                                                     </td>
                                                                     <td>
-                                                                        <span>{{ $user->fire_cause }}</span>
+                                                                        <span>{{ \Carbon\Carbon::parse($user->deleted_at)->format('d.m.Y')}}</span>
                                                                     </td>
                                                                 </tr>
+
+                                                                @if (isset($user->downloads) && $user->downloads->resignation)
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>Заявление об увольнении</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            <a  download=""
+                                                                                class="d-block"
+                                                                                href="/static/profiles/{{$user->id}}/resignation/{{$user->downloads->resignation}}">Скачать</a>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
+
+                                                                @if($user->fire_cause != null)
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>Причина увольнения</span>
+                                                                        </td>
+                                                                        <td>
+                                                                            <span>{{ $user->fire_cause }}</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
                                                             @endif
                                                         @endif
-
 
                                                         </tbody>
                                                     </table>
