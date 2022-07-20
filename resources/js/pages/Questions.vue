@@ -269,6 +269,7 @@ export default {
         console.log(this.questions.results)
 
       this.questions.forEach((q) => {
+        if(q.result === null) return;
         if (q.type == 0) {
           q.variants.forEach((v, vi) => {
             q.checked = q.result.answer[vi] !== undefined;
