@@ -288,12 +288,12 @@
 
           <div
             class="test mb-3"
-            v-for="(segment, block) in modals.edit_book.segments"
-            :key="block"
+            v-for="(segment, s) in modals.edit_book.segments"
+            :key="s"
           >
             <div class="row">
               <div class="col-3">
-                <p class="mb-0">Страница</p>
+                <p class="mb-0">Страница <i class="fa fa-trash ml-1 pointer" @click="deleteSegment(s)"></i></p>
                 <input
                   type="number"
                   min="1"
@@ -688,6 +688,24 @@ export default {
           alert(error);
         });
     },
+
+    deleteSegment(i) {
+      if(!confirm('Вы уверены? Их потом не восстановить')) {
+        return false;
+      }
+
+      axios
+        .post("/admin/upbooks/segments/delete", {
+          id: this.modals.edit_book.segments[i].id,
+        })
+        .then((response) => {
+          this.$message.success('Удалено');
+          this.modals.edit_book.segments.splice(i,1);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    }
 
   },
 };

@@ -380,5 +380,10 @@ class UpbookController extends Controller
     }
     
     
+
+    public function deleteSegment(Request $request)
+    {
+        BookSegment::where('id', $request->id)->delete();
+    }
     
 }

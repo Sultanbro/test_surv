@@ -220,6 +220,7 @@ Route::middleware([
     Route::post('/admin/upbooks/save', [UpbookController::class, 'save']);
     Route::post('/admin/upbooks/update', [UpbookController::class, 'update']);
     Route::post('/admin/upbooks/delete', [UpbookController::class, 'delete']);
+    Route::post('/admin/upbooks/segments/delete', [UpbookController::class, 'deleteSegment']);
 
     Route::post('/playlists/delete-question',[VideoPlaylistController::class, 'deleteQuestion']);
 
