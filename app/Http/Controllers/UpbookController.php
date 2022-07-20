@@ -286,7 +286,6 @@ class UpbookController extends Controller
     public function update(Request $request)
     {
         $book = json_decode($request->book, true);
-        $tests = json_decode($request->segments, true);
 
         $img_link = '';
 
@@ -323,57 +322,6 @@ class UpbookController extends Controller
             $b->description = $book['description'];
             $b->group_id = $book['group_id'];
             $b->save();
-
-
-
-            foreach ($tests as $key => $test) {
-
-                foreach ($test['questions'] as $q) {
-                    
-                    $params = [
-                        'order' => 0,
-                        'page'=> $test['page'],
-                        'points'=> $q['points'],
-                        'testable_id'=> $b->id,
-                        'testable_type'=> "App\Models\Books\BookSegment",
-                        'text'=> $q['text'],
-                        'type'=> $q['type'],
-                        'variants'=> $q['variants'],
-                    ];
-
-                    if($q['id'] != 0) {
-                        $testq = TestQuestion::find($q['id']);
-                        if($testq) $testq->update($params);
-                    } else {
-                        TestQuestion::create($params);
-                    }
-    
-                }
-                
-                // test segments
-
-                
-
-                if($test['id'] != 0) {
-                    $bs = BookSegment::where('page_start', $test['page'])
-                        ->where('book_id', $b->id)
-                        ->first();
-
-                    $bs->pass_grade = $test['pass_grade'];
-                    $bs->save();
-                } else {
-                    BookSegment::create([
-                        'title' => 'test',
-                        'book_id' => $b->id,
-                        'page_start' => $test['page'],
-                        'page_end' => $test['page'],
-                        'pass_grade' => $test['pass_grade'],
-                    ]);
-                }
-
-            }
-
- 
         }
 
         return $img_link;
@@ -382,6 +330,43 @@ class UpbookController extends Controller
     }
     
     
+    public function saveSegment(Request $request)
+    {
+        $bs = BookSegment::where('id', $request->id)->first();   
+        if(!$bs) {
+            $bs = BookSegment::create([
+                'title' => 'test',
+                'book_id' => $b->id,
+                'page_start' => $test['page'],
+                'page_end' => $test['page'],
+                'pass_grade' => $test['pass_grade'],
+            ]);
+        }
+
+
+        foreach ($request['questions'] as $q) {
+            $params = [
+                'order' => 0,
+                'page'=> $test['page'],
+                'points'=> $q['points'],
+                'testable_id'=> $bs->id,
+                'testable_type'=> "App\Models\Books\BookSegment",
+                'text'=> $q['text'],
+                'type'=> $q['type'],
+                'variants'=> $q['variants'],
+            ];
+
+            if($q['id'] != 0) {
+                $testq = TestQuestion::find($q['id']);
+                if($testq) $testq->update($params);
+            } else {
+                TestQuestion::create($params);
+            }
+        }
+
+        return $bs->id;
+                
+    }
 
     public function deleteSegment(Request $request)
     {

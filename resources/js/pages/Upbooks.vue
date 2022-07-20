@@ -315,9 +315,9 @@
               <div class="col-9">
                 <questions
                   :questions="segment.questions"
-                  :id="modals.edit_book.item.id"
+                  :id="segment.id"
                   :pass_grade="segment.pass_grade"
-                  @changePassGrade="checkPassGrade(segment)"
+                  @changePassGrade="checkPassGrade(segment, s)"
                   type="book"
                   mode="edit"
                 />
@@ -414,13 +414,15 @@ export default {
       this.activeCategory = this.categories[index];
     },
 
-    checkPassGrade(test) {
+    checkPassGrade(test, i) {
       console.log('pass grade')
       let len = test.questions.length;
       let min = len != 0 ? Number((100 / len).toFixed()) : 100;
 
       if(test.pass_grade > 100) test.pass_grade = 100;
       if(test.pass_grade < min) test.pass_grade = Number(min);
+
+      this.saveSegment(i)
     },
 
     chooseImage(ref) {
@@ -701,6 +703,22 @@ export default {
         .then((response) => {
           this.$message.success('Удалено');
           this.modals.edit_book.segments.splice(i,1);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
+    saveSegment(i) {
+
+      axios
+        .post("/admin/upbooks/segments/save", {
+          id: this.modals.edit_book.segments[i].id,
+          questions: this.modals.edit_book.segments[i].questions
+        })
+        .then((response) => {
+          this.modals.edit_book.segments[i].id = response.data;
+          this.$message.success('Сохранено');
         })
         .catch((error) => {
           alert(error);
