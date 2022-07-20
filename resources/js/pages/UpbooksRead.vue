@@ -100,7 +100,8 @@
         ref="pdfRef"
         :page="page"
         class="plugin"
-        @rendered="handleDocumentRender"
+        loading-failed="sad"
+        @rendered="loaded"
       />
     </div>
 
@@ -151,7 +152,10 @@ export default {
       tests: [],
       test_key: 1,
       checkpoint: 1, // last page
-      pass: false // pass test
+      pass: false, // pass test
+      page_map: [],
+      map_index: 0,
+      pdf_loaded: false,
     };
   },
   created() {
@@ -181,6 +185,13 @@ export default {
       }
     },
 
+    loaded() {
+      this.isLoading = false
+      this.pageCount = this.$refs.pdfRef.pageCount
+      this.formPageMap()
+      this.pdf_loaded = true;
+    },
+
     nextElement() {
       
       if(this.activeTest.item_model == null) {
@@ -188,14 +199,7 @@ export default {
         this.activeTest.item_model = {status: 1}; 
       }
 
-      let index = this.tests.findIndex(el => el.page >= this.page);
-
-      if(index != -1 && this.tests.length - 1 > index) {
-        this.activeTest = null;
-        this.page++;
-      } else {
-        this.$parent.after_click_next_element();
-      }
+      this.nextPage()
       
     },
 
@@ -220,12 +224,13 @@ export default {
       axios
         .post("/admin/upbooks/tests/get", {
           id: this.book_id,
+          course_item_id: this.course_item_id
         })
         .then((response) => {
           this.tests = response.data.tests;
           this.activeBook = response.data.activeBook;
-
-
+          
+    
           loader.hide();
         })
         .catch((error) => {
@@ -243,72 +248,78 @@ export default {
       }
     },
 
-    setCurrentTestNext(action = 'nothing') {
-      
-      
-    },
+    formPageMap() {
+      let arr = [];
+      let page = 1;
 
-    setCurrentTestPrev(action = 'nothing') {
-      let last_test = this.activeTest;
-      // find current test
+     
+      while (page <= this.pageCount) {
 
-      console.log('last_test', last_test)
-      if(last_test == null) {
+        arr.push({
+          page: page,
+          has_test: false, 
+        });
 
-           console.log('no_test')
-
-         let i = this.tests.findIndex(el => el.page == this.page - 1);
-
-        // already passed
+        let i = this.tests.findIndex(el => el.page == page);
         if(i != -1) {
-            console.log('already passed')
-          this.activeTest = this.tests[i]
-          this.test_key++;
-        } else {
-               console.log('no passed')
-          this.activeTest = null; 
-          return true;
+          arr.push({
+            page: page,
+            has_test: true, 
+          });
         }
-      } else {
-          console.log('has_Test')
-        this.activeTest = null; 
-        return true;
+
+        page++;
       }
      
-
-      return false;
+      this.page_map = arr;
     },
 
     nextPage() {
-      if (this.page == this.pageCount) return 0;
+      if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
 
+      // check current test
       if(this.activeTest && !this.activeTest.pass) {
         this.$message.info('Ответьте на вопросы, чтобы пройти дальше');
         return 0;   
       }
-      
-      // find current test
-      let i = this.tests.findIndex(el => el.page == this.page);
-      if(i != -1) {
+
+      this.map_index++;
+
+      let next_page = this.page_map[this.map_index];
+
+      this.page = next_page.page;
+      // next page has test ?
+      if(next_page.has_test) {
+
+        let i = this.tests.findIndex(el => el.page == next_page.page);
         this.activeTest = this.tests[i]
         this.test_key++;
+
       } else {
-        this.activeTest = null; 
-        this.page++;
+        this.activeTest = null;
       }
+
       
     }, 
 
     prevPage() { 
-      if (this.page == 1) return 0;
-      console.log(this.page)
-      let move = this.setCurrentTestPrev()
+      if(this.map_index == 0  || !this.pdf_loaded) return 0;
+
+      this.map_index--;
+
+      let prev_page = this.page_map[this.map_index];
+      // prev_page has test ?
+      if(prev_page.has_test) {
+
+        let i = this.tests.findIndex(el => el.page == prev_page.page);
+        this.activeTest = this.tests[i]
+        this.test_key++;
+
+      } else {
+        this.activeTest = null;
+      }
 
       
-      // move to prev page
-      if(move) {
-        this.page--;
-      }
     },
 
     zoomIn() {
@@ -325,10 +336,6 @@ export default {
       }
     },
 
-    handleDocumentRender() {
-      this.isLoading = false
-      this.pageCount = this.$refs.pdfRef.pageCount
-    },
   },
 };
 </script>

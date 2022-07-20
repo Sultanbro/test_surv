@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Auth;
 use App\User;
 use App\Models\TestQuestion;
+use App\Models\CourseItemModel;
 use App\Models\Videos\Video;
 use App\Models\Videos\VideoCategory as Category;
 use App\Models\Videos\VideoComment as Comment;
@@ -114,13 +115,10 @@ class VideoPlaylistController extends Controller {
 			]);
 		}
 
-		foreach($pl->videos as $video) {
-			$video->questions = TestQuestion::where('testable_type', 'App\Models\Videos\Video')
-				->where('testable_id', $video->id)
-				->get();
-		}
+		// @TODO
+		// get test results
 
-		//
+		// cloud
 		$disk = \Storage::build([
             'driver' => 's3',
             'key' => 'O4493_admin',
@@ -139,46 +137,60 @@ class VideoPlaylistController extends Controller {
 			);
 		}   
 
+		$video_ids = $pl->getOrder();
+
+		$item_models = CourseItemModel::whereIn('item_id', $video_ids)
+            ->where('type', 2)
+            ->where('user_id', auth()->id())
+            ->where('course_item_id', $request->course_item_id)
+            ->get();
+
 		return [
 			'playlist' => $pl,
 			'categories' => [],//Category::all(),
-			'all_videos' => [] //Video::select('id', 'title', 'links')->where('playlist_id', 0)->get(),
+			'all_videos' => [], //Video::select('id', 'title', 'links')->where('playlist_id', 0)->get(),
+			'item_models' => $item_models
 		];
 	}
 
 	public function getVideo(Request $request) {
 
-		$video =  Video::find($request->id);
+		$im = $request->item_model ? $request->item_model['id'] : 0;
+		$user_id = auth()->id();
+		
+		$video =  Video::with('questions')
+			->with('questions.results', function ($query) use ($im, $user_id) {
+				$query->where('course_item_model_id', $im)
+					->where('user_id', $user_id);
+			})
+			->find($request->id);
 
 		$url = '';
 
-		if($video) {
+		if($video->domain != 'storage.oblako.kz') {
+			$url = $video->links;
+		} else {
+			$disk = \Storage::build([
+				'driver' => 's3',
+				'key' => 'O4493_admin',
+				'secret' => 'nzxk4iNukQWx',
+				'region' => 'us-east-1',
+				'bucket' => 'tenantbp',
+				'endpoint' => 'https://storage.oblako.kz:443',
+				'use_path_style_endpoint' => true,
+				'throw' => false,
+				'visibility' => 'public'
+			]);
 
-			if($video->domain != 'storage.oblako.kz') {
-				$url = $video->links;
-			} else {
-				$disk = \Storage::build([
-					'driver' => 's3',
-					'key' => 'O4493_admin',
-					'secret' => 'nzxk4iNukQWx',
-					'region' => 'us-east-1',
-					'bucket' => 'tenantbp',
-					'endpoint' => 'https://storage.oblako.kz:443',
-					'use_path_style_endpoint' => true,
-					'throw' => false,
-					'visibility' => 'public'
-				]);
-	
-				$url = $disk->temporaryUrl(
-					$video->links, now()->addMinutes(360)
-				);
-			}
-
+			$url = $disk->temporaryUrl(
+				$video->links, now()->addMinutes(360)
+			);
 		}
-	
+		
+		$video->links = $url;
 
 		return [
-			'links' => $url,
+			'video' => $video,
 		];
 	}
 
