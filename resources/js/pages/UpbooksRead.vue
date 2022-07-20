@@ -63,7 +63,7 @@
             'active': page == test.page
           }">
           <div class="mr-2">
-            <i class="fa fa-check pointer" v-else-if="test.item_model !== null || test.pass"></i>
+            <i class="fa fa-check pointer" v-if="test.item_model !== null || test.pass"></i>
             <i class="fa fa-lock pointer" v-else></i>
           </div>
           <p class="mb-0" @click="moveTo(test.page, test.pass)">
