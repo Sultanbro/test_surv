@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use App\Models\Course;
 use App\Models\CourseItem;
 use App\Models\CourseResult;
+use App\Models\TestResult;
 use App\Models\CourseProgress;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;

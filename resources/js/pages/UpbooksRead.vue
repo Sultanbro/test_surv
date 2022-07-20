@@ -191,7 +191,7 @@ export default {
       if(pass) {
         this.page = page;
         
-        let m = this.map_index.findIndex(el => el.page == page);
+        let m = this.page_map.findIndex(el => el.page == page);
         if(m != -1) {
           this.map_index = m;
         }
