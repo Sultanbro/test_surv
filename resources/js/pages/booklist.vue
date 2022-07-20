@@ -375,8 +375,8 @@
                       accept="image/*"
                     />
                     <label class="custom-file-label" for="customFile"
-                      >Выберите файл</label
-                    >
+                      >Выберите файл</label>
+                    <p>прогресс бар</p>
                   </div>
                 </div>
               </form>
@@ -406,6 +406,7 @@
                     <label class="custom-file-label" for="customFile"
                       >Выберите файл</label
                     >
+                    <p>прогресс бар</p>
                   </div>
                 </div>
               </form>
