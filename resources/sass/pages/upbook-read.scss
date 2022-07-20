@@ -29,19 +29,21 @@
       opacity: 1;
       height: 100vh;
       width: auto;
+
+      &.w600 {width: 621px;}
+      &.w700 {width: 721px;}
+      &.w800 {width: 821px;}
+      &.w900 {width: 921px;}
+      &.w1000 {width: 1021px;}
+      &.w1100 {width: 1121px;}
+      &.w1200 {width: 1221px;}
+      &.w1300 {width: 1321px;}
+      &.w1400 {width: 1421px;}
+      &.w1500 {width: 1521px;}
+      &.w1600 {width: 1621px;}
     }
 
-    &.w600 {width: 621px;}
-    &.w700 {width: 721px;}
-    &.w800 {width: 821px;}
-    &.w900 {width: 921px;}
-    &.w1000 {width: 1021px;}
-    &.w1100 {width: 1121px;}
-    &.w1200 {width: 1221px;}
-    &.w1300 {width: 1321px;}
-    &.w1400 {width: 1421px;}
-    &.w1500 {width: 1521px;}
-    &.w1600 {width: 1621px;}
+
 
     
   }
