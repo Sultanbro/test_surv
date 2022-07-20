@@ -251,6 +251,7 @@ export default {
       let arr = [];
       let page = 1;
 
+      console.log(this.pageCount)
       while (page <= this.pageCount) {
 
         arr.push({
