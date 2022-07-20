@@ -101,6 +101,8 @@
         :page="page"
         class="plugin"
         @rendered="handleDocumentRender"
+        loading-failed="sad"
+        @loaded="loaded"
       />
     </div>
 
@@ -153,7 +155,8 @@ export default {
       checkpoint: 1, // last page
       pass: false, // pass test
       page_map: [],
-      map_index: 0
+      map_index: 0,
+      pdf_loaded: false,
     };
   },
   created() {
@@ -181,6 +184,10 @@ export default {
         }
 
       }
+    },
+
+    loaded() {
+      this.pdf_loaded = true;
     },
 
     nextElement() {
@@ -265,7 +272,7 @@ export default {
     },
 
     nextPage() {
-      if (this.map_index == this.page_map.length - 1) return 0;
+      if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
 
       // check current test
       if(this.activeTest && !this.activeTest.pass) {
@@ -291,7 +298,7 @@ export default {
     }, 
 
     prevPage() { 
-      if(this.map_index == 0) return 0;
+      if(this.map_index == 0  || !this.pdf_loaded) return 0;
 
       this.map_index--;
 
