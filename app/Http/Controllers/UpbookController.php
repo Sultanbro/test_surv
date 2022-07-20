@@ -113,7 +113,7 @@ class UpbookController extends Controller
      *    'activeBook' => Book::class,
      * ]; 
      */
-    public function getTests(Request $request)
+    public function getSegments(Request $request)
     {   
         $user_id = auth()->id();
         $book = Book::where('id',$request->id)
@@ -123,37 +123,20 @@ class UpbookController extends Controller
         // @TODO
         // get test results
 
-        $qs = TestQuestion::where('testable_type', 'App\Models\Books\BookSegment')->where('testable_id', $request->id)->get()->groupBy('page');
+        foreach ($book->segments as $key => $segment) {
+            $segment->page = $segment->page_start;
+            $segment->pages = $segment->page_start;
 
-        $arr = [];
-        foreach($qs as $id => $test) {
+            $segment->questions = TestQuestion::where('testable_type', 'App\Models\Books\BookSegment')
+                ->where('testable_id', $segment->id)
+                ->get();
 
-            $_test = [];
-            foreach ($test as $key => $q) {
-                $q = $q->toArray();
-                $q['result'] = 0;
-                $_test[] = $q;
-            }
-
-            $bs = $book->segments->where('page_start', $id)->first();
-
-            array_push($arr, [
-                'page' => $id,
-                'pages' => $id,
-                'pass' => false,
-                'pass_grade' => $bs ? $bs->pass_grade : 100,
-                'questions' => $_test,
-                'item_model' => CourseItemModel::where('user_id', $user_id)
-                    ->where('type', 1)
-                    ->where('item_id', $id)
-                    ->where('course_item_id', $request->course_item_id ?? 0)
-                    ->first(),
-            ]);
-
-            $_pages = array_column($arr, 'page');
-            array_multisort($_pages, SORT_ASC, $arr); 
+            $segment->item_model = CourseItemModel::where('user_id', $user_id)
+                ->where('type', 1)
+                ->where('item_id', $segment->id)
+                ->where('course_item_id', $request->course_item_id ?? 0)
+                ->first();
         }
-
 
         // get link storage
         $disk = \Storage::build([
@@ -177,8 +160,6 @@ class UpbookController extends Controller
                 );
             }   
             
-
-            
         }
 
         if($book->img != '' && $book->img != null) {
@@ -187,15 +168,8 @@ class UpbookController extends Controller
             ); 
         }
        
-
-        $item_models = CourseItemModel::whereIn('item_id', array_keys($qs->toArray()))
-            ->where('type', 3)
-            ->where('user_id', auth()->id())
-            ->where('course_item_id', 0)
-            ->get();
-
         return [
-            'tests' => $arr,
+            'tests' => $book->segments,
             'activeBook' => $book,
         ];
     }

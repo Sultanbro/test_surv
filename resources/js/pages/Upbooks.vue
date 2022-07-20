@@ -276,8 +276,8 @@
         </div>
 
         
-        <div class="tests mb-2" v-if="modals.edit_book.tests.length > 0">
-          <div class="row">
+        <div class="segments mb-2" v-if="modals.edit_book.segments.length > 0">
+          <div class="row mb-3">
             <div class="col-3">
               <b>Страница книги</b>
             </div>
@@ -288,7 +288,7 @@
 
           <div
             class="test mb-3"
-            v-for="(test, block) in modals.edit_book.tests"
+            v-for="(segment, block) in modals.edit_book.segments"
             :key="block"
           >
             <div class="row">
@@ -298,7 +298,7 @@
                   type="number"
                   min="1"
                   max="9999"
-                  v-model="test.page"
+                  v-model="segment.page_start"
                   placeholder="Страница"
                   class="form-control mb-2"
                 />
@@ -307,17 +307,17 @@
                   type="number"
                   min="1"
                   max="100"
-                  v-model="test.pass_grade"
+                  v-model="segment.pass_grade"
                   placeholder="Проходной балл"
                   class="form-control mb-2"
                 />
               </div>
               <div class="col-9">
                 <questions
-                  :questions="test.questions"
+                  :questions="segment.questions"
                   :id="modals.edit_book.item.id"
-                  :pass_grade="test.pass_grade"
-                  @changePassGrade="checkPassGrade(test)"
+                  :pass_grade="segment.pass_grade"
+                  @changePassGrade="checkPassGrade(segment)"
                   type="book"
                   mode="edit"
                 />
@@ -327,10 +327,10 @@
         </div>
 
         <div class="d-flex">
-          <button class="btn btn-success mr-2 rounded" @click="saveTests">
+          <button class="btn btn-success mr-2 rounded" @click="saveSegments">
             <span>Сохранить</span>
           </button>
-          <button class="btn rounded" @click="addTest">
+          <button class="btn rounded" @click="addSegment">
             <span>Добавить тест</span>
           </button>
         </div>
@@ -400,7 +400,7 @@ export default {
         edit_book: {
           show: false,
           item: null,
-          tests: [],
+          segments: [],
         },
       },
     };
@@ -553,11 +553,11 @@ export default {
       this.modals.edit_book.item = book;
 
       axios
-        .post("/admin/upbooks/tests/get", {
+        .post("/admin/upbooks/segments/get", {
           id: book.id,
         })
         .then((response) => {
-          this.modals.edit_book.tests = response.data.tests;
+          this.modals.edit_book.segments = response.data.segments;
           loader.hide();
         })
         .catch((error) => {
@@ -610,21 +610,21 @@ export default {
         });
     },
 
-    addTest() {
-      this.modals.edit_book.tests.push({
-        page: 1,
+    addSegment() {
+      this.modals.edit_book.segments.push({
+        page_start: 1,
         pages: 1,
         questions: [],
       });
     },
 
-    saveTests() {
+    saveSegments() {
       let loader = this.$loading.show();
 
       let formData = new FormData();
           formData.append('file', this.file_img);
           formData.append('book', JSON.stringify(this.modals.edit_book.item));
-          formData.append('tests', JSON.stringify(this.modals.edit_book.tests));
+          formData.append('segments', JSON.stringify(this.modals.edit_book.segments));
           formData.append('cat_id', this.activeCategory.id);
 
       axios.post( '/admin/upbooks/update', formData, {
@@ -645,7 +645,7 @@ export default {
 
           this.modals.edit_book.show = false;
           this.modals.edit_book.item = null;
-          this.modals.edit_book.tests = [];
+          this.modals.edit_book.segments = [];
 
 
           this.$message.success("Сохранено");
