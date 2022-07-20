@@ -41,11 +41,11 @@
         <p class="mb-0">{{ q.text }}</p>
         <i
           class="fa fa-times-circle wrong"
-          v-if="scores && q.result == false"
+          v-if="scores && q.success == false"
         ></i>
         <i
           class="fa fa-check-circle right"
-          v-if="scores && q.result == true"
+          v-if="scores && q.success == true"
         ></i>
 
       </div>
@@ -103,7 +103,7 @@
 
         </div>
         <div v-else>
-          <input type="text" v-model="q.result" />
+          <input type="text" v-model="q.success" />
         </div>
         
 
@@ -332,13 +332,13 @@ export default {
 
           if (right_answers == checked_answers && wrong_answers == 0) {
             this.points += q.points;
-            q.result = true;
+            q.success = true;
           } else {
-            q.result = false;
+            q.success = false;
           }
         } else {
           this.points += Number(q.points);
-          q.result = true;
+          q.success = true;
         }
 
         q.result = {
