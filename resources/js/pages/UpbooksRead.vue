@@ -58,18 +58,18 @@
           <p class="mb-0">Вопросы на странице:</p>
         </div>
 
-        <div class="item d-flex" v-for="(test, t) in tests" 
+        <div class="item d-flex" v-for="(segment, t) in segments" 
           :key="t"
           :class="{
-            'pass': test.item_model !== null,
-            'active': page == test.page
+            'pass': segment.item_model !== null,
+            'active': page == segment.page
           }">
           <div class="mr-2">
-            <i class="fa fa-check pointer" v-if="test.item_model !== null"></i>
+            <i class="fa fa-check pointer" v-if="segment.item_model !== null"></i>
             <i class="fa fa-lock pointer" v-else></i>
           </div>
-          <p class="mb-0" @click="moveTo(test.page, test.item_model)">
-            Стр. {{ test.page }} : {{ test.questions.length }} вопрос (-ов)
+          <p class="mb-0" @click="moveTo(segment.page, segment.item_model)">
+            Стр. {{ segment.page }} : {{ segment.questions.length }} вопрос (-ов)
           </p>
         </div>
       </div>
@@ -79,7 +79,7 @@
     <!-- PDF viewer -->
     <div class="pdf"
       :class="{
-        'show': activeTest == null,
+        'show': activeSegment == null,
         w600: zoom == 600,
         w700: zoom == 700,
         w800: zoom == 800,
@@ -107,12 +107,12 @@
     </div>
 
     <!-- Test viewer -->
-    <div class="test" v-if="activeTest !== null">
+    <div class="test" v-if="activeSegment !== null">
       <questions
-        :questions="activeTest.questions"
-        :pass="activeTest.item_model !== null"
+        :questions="activeSegment.questions"
+        :pass="activeSegment.item_model !== null"
         :id="0"
-        :key="test_key"
+        :key="segment_key"
         type="book"
         :mode="mode" 
         @continueRead="nextPage"
@@ -120,9 +120,9 @@
       />
     </div>
 
-    <template v-if="(activeTest && course_page) || (activeTest == null && pageCount == page)">
+    <template v-if="(activeSegment && course_page) || (activeSegment == null && pageCount == page)">
       <button class="next-btn btn btn-primary" 
-        v-if="activeTest.item_model !== null"
+        v-if="activeSegment.item_model !== null"
         @click="nextElement()">
         Продолжить курс
         <i class="fa fa-angle-double-right ml-2"></i>
@@ -162,13 +162,13 @@ export default {
     return {
       page: 1,
       activeCategory: null,
-      activeTest: null,
+      activeSegment: null,
       activeBook: null,
       pageCount: 0,
       zoom: 800,
       isLoading:true,
-      tests: [],
-      test_key: 1,
+      segments: [],
+      segment_key: 1,
       checkpoint: 1, // last page
       page_map: [],
       map_index: 0,
@@ -178,7 +178,7 @@ export default {
   created() {
 
       this.checkpoint = this.pageCount
-      this.getTests()
+      this.getSegments()
 
   },
 
@@ -191,12 +191,12 @@ export default {
       if(pass) {
         this.page = page;
 
-        let i = this.tests.findIndex(el => el.page == page);
+        let i = this.segments.findIndex(el => el.page == page);
         if(i != -1) {
-          this.activeTest = this.tests[i]
-          this.test_key++;
+          this.activeSegment = this.segments[i]
+          this.segment_key++;
         } else {
-          this.activeTest = null; 
+          this.activeSegment = null; 
         }
 
       }
@@ -211,9 +211,9 @@ export default {
 
     nextElement() {
 
-      if(this.activeTest.item_model == null) {
+      if(this.activeSegment.item_model == null) {
         this.setSegmentPassed();
-        this.activeTest.item_model = {status: 1}; 
+        this.activeSegment.item_model = {status: 1}; 
       }
 
       this.nextPage()
@@ -235,7 +235,7 @@ export default {
         });
     },
 
-    getTests() {
+    getSegments() {
       let loader = this.$loading.show();
 
       axios
@@ -244,7 +244,7 @@ export default {
           course_item_id: this.course_item_id
         })
         .then((response) => {
-          this.tests = response.data.tests;
+          this.segments = response.data.segments;
           this.activeBook = response.data.activeBook;
           
     
@@ -277,7 +277,7 @@ export default {
           has_test: false, 
         });
 
-        let i = this.tests.findIndex(el => el.page == page);
+        let i = this.segments.findIndex(el => el.page == page);
         if(i != -1) {
           arr.push({
             page: page,
@@ -295,7 +295,7 @@ export default {
       if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
 
       // check current test
-      if(this.activeTest && this.activeTest.item_model == null) {
+      if(this.activeSegment && this.activeSegment.item_model == null) {
         this.$message.info('Ответьте на вопросы, чтобы пройти дальше');
         return 0;   
       }
@@ -308,12 +308,12 @@ export default {
       // next page has test ?
       if(next_page.has_test) {
 
-        let i = this.tests.findIndex(el => el.page == next_page.page);
-        this.activeTest = this.tests[i]
-        this.test_key++;
+        let i = this.segments.findIndex(el => el.page == next_page.page);
+        this.activeSegment = this.segments[i]
+        this.segment_key++;
 
       } else {
-        this.activeTest = null;
+        this.activeSegment = null;
       }
 
       
@@ -328,12 +328,12 @@ export default {
       // prev_page has test ?
       if(prev_page.has_test) {
 
-        let i = this.tests.findIndex(el => el.page == prev_page.page);
-        this.activeTest = this.tests[i]
-        this.test_key++;
+        let i = this.segments.findIndex(el => el.page == prev_page.page);
+        this.activeSegment = this.segments[i]
+        this.segment_key++;
 
       } else {
-        this.activeTest = null;
+        this.activeSegment = null;
       }
 
       
