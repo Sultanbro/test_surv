@@ -343,6 +343,8 @@ class UpbookController extends Controller
             ]);
         }
 
+        $bs->page_start = $request->item['page_start'];
+        $bs->save();
 
         foreach ($request->item['questions'] as $q) {
             $params = [
