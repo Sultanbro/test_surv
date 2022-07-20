@@ -264,10 +264,19 @@ export default {
     
     setResults() {
       // set results if exists
-      if(this.questions.results != undefined && this.questions.results.length > 0) {
+    
         this.$message.info('has_results')
         console.log(this.questions.results)
-      }
+
+      this.questions.forEach((q) => {
+        if (q.type == 0) {
+          q.variants.forEach((v, vi) => {
+            q.checked = q.result.answer[vi] !== undefined;
+          });
+        }
+      });
+        
+      
     },
 
     prepareVariants() {
