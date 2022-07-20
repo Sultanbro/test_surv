@@ -332,14 +332,14 @@ class UpbookController extends Controller
     
     public function saveSegment(Request $request)
     {
-        $bs = BookSegment::where('id', $request->id)->first();   
+        $bs = BookSegment::where('id', $request->item['id'])->first();   
         if(!$bs) {
             $bs = BookSegment::create([
                 'title' => 'test',
-                'book_id' => $b->id,
-                'page_start' => $test['page'],
-                'page_end' => $test['page'],
-                'pass_grade' => $test['pass_grade'],
+                'book_id' => $request->book_id,
+                'page_start' => $request->item['page'],
+                'page_end' => $request->item['page'],
+                'pass_grade' => $request->item['pass_grade'],
             ]);
         }
 
@@ -347,7 +347,7 @@ class UpbookController extends Controller
         foreach ($request['questions'] as $q) {
             $params = [
                 'order' => 0,
-                'page'=> $test['page'],
+                'page'=> $request->item['page'],
                 'points'=> $q['points'],
                 'testable_id'=> $bs->id,
                 'testable_type'=> "App\Models\Books\BookSegment",

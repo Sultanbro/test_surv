@@ -713,8 +713,8 @@ export default {
 
       axios
         .post("/admin/upbooks/segments/save", {
-          id: this.modals.edit_book.segments[i].id,
-          questions: this.modals.edit_book.segments[i].questions
+          item: this.modals.edit_book.segments[i],
+          book_id: this.modals.edit_book.item.id
         })
         .then((response) => {
           this.modals.edit_book.segments[i].id = response.data;
