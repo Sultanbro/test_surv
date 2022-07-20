@@ -69,7 +69,7 @@ class MyCourseController extends Controller
         foreach ($request->questions as $key => $q) {
             if(isset($q['result'])) {
 
-                $tr = TestResult::where('test_question_id', $q->id)
+                $tr = TestResult::where('test_question_id', $q['id'])
                     ->where('user_id', $user_id)
                     ->where('course_item_model_id',  $q['result']['course_item_model_id'])
                     ->first();
