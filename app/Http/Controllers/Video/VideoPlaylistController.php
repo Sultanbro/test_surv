@@ -159,7 +159,7 @@ class VideoPlaylistController extends Controller {
 		$user_id = auth()->id();
 		
 		$video =  Video::with('questions')
-			->with('questions.results', function ($query) use ($im, $user_id) {
+			->with('questions.result', function ($query) use ($im, $user_id) {
 				$query->where('course_item_model_id', $im)
 					->where('user_id', $user_id);
 			})
