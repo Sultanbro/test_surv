@@ -325,6 +325,8 @@ export default {
       this.map_index--;
 
       let prev_page = this.page_map[this.map_index];
+      this.page = prev_page.page;
+
       // prev_page has test ?
       if(prev_page.has_test) {
 
