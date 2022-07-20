@@ -90,6 +90,7 @@
                 <questions 
                     v-if="activeVideo.questions.length > 0 && mode != 'edit'"
                     :questions="activeVideo.questions"
+                    :course_item_id="course_item_id"
                     :id="activeVideo.id"
                     :key="refreshTest"
                     type="video"

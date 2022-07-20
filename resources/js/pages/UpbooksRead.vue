@@ -108,6 +108,7 @@
     <!-- Test viewer -->
     <div class="test" v-if="activeSegment !== null">
       <questions
+        :course_item_id="course_item_id"
         :questions="activeSegment.questions"
         :pass="activeSegment.item_model !== null"
         :id="0"

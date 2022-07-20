@@ -184,6 +184,10 @@ export default {
     type: {
       type: String,
     },
+    course_item_id: {
+      type: Number,
+      default: 0
+    },
     id: {
       type: Number,
       default: 0
@@ -338,7 +342,7 @@ export default {
           test_question_id: q.id,
           answer: answer,
           status: 1,
-          course_item_model_id: this.id
+          course_item_model_id: this.course_item_id
         };
 
       });
