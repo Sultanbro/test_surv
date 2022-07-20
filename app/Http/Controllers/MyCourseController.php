@@ -65,6 +65,28 @@ class MyCourseController extends Controller
         }
         
         
+        foreach ($request->questions as $key => $q) {
+            if(isset($q['result'])) {
+
+                $tr = TestResult::where('question_id', $q['result']['question_id'])
+                    ->where('course_item_model_id',  $q['result']['course_item_model_id'])
+                    ->first();
+
+                if($tr) {
+                    $tr->answer =  $q['result']['answer'];
+                    $tr->save();
+                } else {    
+                    TestResult::create([
+                        'question_id' => $q['result']['question_id'],
+                        'answer' => $q['result']['answer'],
+                        'status' => $q['result']['status'],
+                        'course_item_model_id' => $q['result']['course_item_model_id'],
+                    ]);
+                }
+
+            }
+        }
+
         return [
             'item_model' => $model,
         ];

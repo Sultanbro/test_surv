@@ -232,6 +232,7 @@ export default {
           id: this.activeSegment.id,
           type: 1,
           course_item_id: this.course_item_id,
+          questions: this.activeSegment.questions
         })
         .then((response) => {
          // this.activeVideo.item_models.push(response.data.item_model);
@@ -244,6 +245,7 @@ export default {
     getSegments() {
       let loader = this.$loading.show();
 
+      console.log('TEST');
       axios
         .post("/admin/upbooks/segments/get", {
           id: this.book_id,

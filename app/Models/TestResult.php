@@ -16,7 +16,7 @@ class TestResult extends Model
 
     protected $fillable = [
         'user_id',
-        'question_id',
+        'test_question_id',
         'answer',
         'status',
         'course_item_model_id'

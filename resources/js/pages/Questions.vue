@@ -332,7 +332,7 @@ export default {
           q.result = true;
         }
 
-        q.results = {
+        q.result = {
           question_id: q.id,
           answer: answer,
           status: 1,
@@ -342,8 +342,6 @@ export default {
       });
       
       if(this.scores) {
-
-        this.questions.results
 
         this.$emit('passed');
       }
