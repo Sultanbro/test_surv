@@ -333,19 +333,20 @@ export default {
       this.map_index--;
 
       let prev_page = this.page_map[this.map_index];
-      console.log(this.page)
-      this.page = prev_page.page;
-      console.log(this.page)
 
+      this.page = prev_page.page;
+
+          console.log(this.page)
       // prev_page has test ?
       if(prev_page.has_test) {
 
         let i = this.segments.findIndex(el => el.page == prev_page.page);
         this.activeSegment = this.segments[i]
         this.segment_key++;
-
+        console.log('has')
       } else {
         this.activeSegment = null;
+         console.log('not has')
       }
 
       
