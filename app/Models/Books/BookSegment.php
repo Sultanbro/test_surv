@@ -21,4 +21,11 @@ class BookSegment extends Model
         'pass_grade'
     ];
 
+    /**
+     * @return 
+     */
+    public function questions()
+    {
+        return $this->morphMany('App\Models\TestQuestion', 'testable');
+    }
 }

@@ -123,7 +123,7 @@ class UpbookController extends Controller
         // @TODO
         // get test results
 
-        $qs = TestQuestion::where('testable_type', 'App\Models\Books\Book')->where('testable_id', $request->id)->get()->groupBy('page');
+        $qs = TestQuestion::where('testable_type', 'App\Models\Books\BookSegment')->where('testable_id', $request->id)->get()->groupBy('page');
 
         $arr = [];
         foreach($qs as $id => $test) {
@@ -361,7 +361,7 @@ class UpbookController extends Controller
                         'page'=> $test['page'],
                         'points'=> $q['points'],
                         'testable_id'=> $b->id,
-                        'testable_type'=> "App\Models\Books\Book",
+                        'testable_type'=> "App\Models\Books\BookSegment",
                         'text'=> $q['text'],
                         'type'=> $q['type'],
                         'variants'=> $q['variants'],

@@ -63,8 +63,7 @@
             'active': page == test.page
           }">
           <div class="mr-2">
-            <i class="fa fa-arrow-right pointer" v-if="page == test.page || active_page == test.page"></i>
-            <i class="fa fa-check pointer" v-else-if="test.item_model !== null"></i>
+            <i class="fa fa-check pointer" v-else-if="test.item_model !== null || test.pass"></i>
             <i class="fa fa-lock pointer" v-else></i>
           </div>
           <p class="mb-0" @click="moveTo(test.page, test.pass)">
@@ -115,7 +114,7 @@
         type="book"
         :mode="mode" 
         @continueRead="nextPage"
-        @passed="activeTest.pass = true"
+        @passed="nextElement"
       />
     </div>
 
@@ -139,7 +138,24 @@ export default {
   components: {
     VuePdfEmbed
   },
-  props: ["book_id", "mode", 'showBackBtn', 'course_page', 'active_page', 'course_item_id'],
+  props: {
+    book_id: Number,
+    mode: {
+      default: 'read'
+    },
+    showBackBtn: {
+      default: false
+    },
+    course_page: {
+      default: false,
+    },
+    active_page: {
+      default: 0
+    },
+    course_item_id: {
+      default: 0
+    }
+  },
   data() {
     return {
       page: 1,
@@ -193,7 +209,7 @@ export default {
     },
 
     nextElement() {
-      
+      this.activeTest.pass = true
       if(this.activeTest.item_model == null) {
         this.setSegmentPassed();
         this.activeTest.item_model = {status: 1}; 
