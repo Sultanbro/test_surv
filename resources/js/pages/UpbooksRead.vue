@@ -190,6 +190,12 @@ export default {
     moveTo(page, pass) {
       if(pass) {
         this.page = page;
+        
+        let m = this.page_map.findIndex(el => el.page == page);
+        if(m != -1) {
+          this.map_index = m;
+        }
+       
 
         let i = this.segments.findIndex(el => el.page == page);
         if(i != -1) {
@@ -223,9 +229,10 @@ export default {
     setSegmentPassed() {
       axios
         .post("/my-courses/pass", {
-          id: this.page,
+          id: this.activeSegment.id,
           type: 1,
           course_item_id: this.course_item_id,
+          questions: this.activeSegment.questions
         })
         .then((response) => {
          // this.activeVideo.item_models.push(response.data.item_model);
@@ -238,6 +245,7 @@ export default {
     getSegments() {
       let loader = this.$loading.show();
 
+      console.log('TEST');
       axios
         .post("/admin/upbooks/segments/get", {
           id: this.book_id,
@@ -325,6 +333,10 @@ export default {
       this.map_index--;
 
       let prev_page = this.page_map[this.map_index];
+      console.log(this.page)
+      this.page = prev_page.page;
+      console.log(this.page)
+
       // prev_page has test ?
       if(prev_page.has_test) {
 

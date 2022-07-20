@@ -273,16 +273,7 @@ class VideoPlaylistController extends Controller {
 
 	public function save(Request $request) {
 		$item = json_decode($request->playlist, true);
-		$videos = $item['videos'];
-
-		foreach ($videos as $index => $video) {
-			$vid = Video::find($video['id']);
-			if($vid) {
-				$vid->order = $index;
-				$vid->save;
-			}
-		}
-
+	
 		
 		
 		$playlist = Playlist::find($item['id']);

@@ -14,7 +14,7 @@ import moment from 'moment'
 import Notifications from 'vue-notification'
 import Antd from 'ant-design-vue'
 import VueMask from 'v-mask' 
-import VGauge from 'vgauge';
+import VGauge from 'vgauge';   
 import draggable from 'vuedraggable' 
 import Multiselect from 'vue-multiselect'
 import Vue from 'vue'

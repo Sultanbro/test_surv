@@ -264,10 +264,22 @@ export default {
     
     setResults() {
       // set results if exists
-      if(this.questions.results != undefined && this.questions.results.length > 0) {
+    
         this.$message.info('has_results')
-        console.log(this.questions.results)
-      }
+      
+
+      this.questions.forEach((q) => {
+          console.log(q)
+        if(q.result === null) return;
+        if (q.type == 0) {
+          q.variants.forEach((v, vi) => {
+            console.log(q.result.answer[vi])
+            q.checked = q.result.answer[vi] !== undefined;
+          });
+        }
+      });
+        
+      
     },
 
     prepareVariants() {
@@ -294,12 +306,22 @@ export default {
     checkAnswers() {
       // read
       this.points = 0;
+
+   
       this.questions.forEach((q) => {
+        let answer = {}
+        let results = {};
+
         if (q.type == 0) {
           let right_answers = 0;
           let wrong_answers = 0;
           let checked_answers = 0;
-          q.variants.forEach((v) => {
+
+
+          q.variants.forEach((v, vi) => {
+
+            answer[vi] = v.checked;
+
             if (v.checked == 1 && v.checked == v.right) {
               checked_answers++;
             }
@@ -321,9 +343,18 @@ export default {
           this.points += Number(q.points);
           q.result = true;
         }
-      });
 
+        q.result = {
+          test_question_id: q.id,
+          answer: answer,
+          status: 1,
+          course_item_model_id: this.id
+        };
+
+      });
+      
       if(this.scores) {
+
         this.$emit('passed');
       }
     },

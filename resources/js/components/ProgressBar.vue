@@ -6,8 +6,8 @@
             <label class="percentage">{{percentage}}%   </label>
         </div>
     </div>
-    <transition appear @before-appear="beforeEnter" @after-appear="enter">
-        <div class="tracker-bar"></div>
+    <transition appear @before-appear="beforeEnter" @after-appear="enter" >
+        <div class="tracker-bar" id="mytrans"></div>
     </transition>
 </div>
 </template>
@@ -19,9 +19,19 @@ export default {
         percentage: Number,
         label: String,
     },
+    watch: {
+        // whenever question changes, this function will run
+        percentage: {
+            handler (val, oldVal) {
+                var trans = document.getElementById("mytrans");
+                trans.style.width = `${val}%`;
+                trans.style.transition = `width 0.3s linear`;
+            }
+        }
+      },
     methods: {
         beforeEnter (el) {
-            el.style.width = 0
+            el.style.width = 40;
         },
         enter (el) {
             el.style.width = `${this.percentage}%`

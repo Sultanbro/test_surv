@@ -184,6 +184,7 @@ export default {
       activeVideoLink: '',
       refreshTest: 1, //key
       file_img: null,
+      item_models: [],
       playlist: {
         id: 1,
         category_id: 1,
@@ -477,7 +478,7 @@ export default {
     connectItemModels(groups) {
       groups.forEach((el, e) => {
 
-        groups.videos.forEach((vid, v) => {
+        el.videos.forEach((vid, v) => {
           let i = this.item_models.findIndex(im => im.item_id == vid.id);
           if(i != -1) {
             vid.item_model = this.item_models[i];
