@@ -266,9 +266,10 @@ export default {
       // set results if exists
     
         this.$message.info('has_results')
-        console.log(this.questions.results)
+      
 
       this.questions.forEach((q) => {
+          console.log(q)
         if(q.result === null) return;
         if (q.type == 0) {
           q.variants.forEach((v, vi) => {
