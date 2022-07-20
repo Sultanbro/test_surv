@@ -212,11 +212,12 @@ class KnowBaseController extends Controller
         $user_id = auth()->id();
 
         $page = KnowBase::withTrashed()
+            ->where('id', $request->id)
             ->with('questions', 'questions.result', function ($query) use ($course_item_model_id, $user_id) {
 				$query->where('course_item_model_id', $course_item_model_id)
 					->where('user_id', $user_id);
 			})
-            ->find($request->id);
+            ->first();
 
         $page->item_model = CourseItemModel::where('user_id', $user_id)
             ->where('type', 3)
