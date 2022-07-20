@@ -216,7 +216,7 @@ Route::middleware([
     Route::get('/admin/upbooks/get', [UpbookController::class, 'admin_get']);
     Route::post('/admin/upbooks/category/create', [UpbookController::class, 'createCategory']);
     Route::post('/admin/upbooks/category/delete', [UpbookController::class, 'deleteCategory']);
-    Route::post('/admin/upbooks/tests/get', [UpbookController::class, 'getTests']);
+    Route::post('/admin/upbooks/segments/get', [UpbookController::class, 'getSegments']);
     Route::post('/admin/upbooks/save', [UpbookController::class, 'save']);
     Route::post('/admin/upbooks/update', [UpbookController::class, 'update']);
     Route::post('/admin/upbooks/delete', [UpbookController::class, 'delete']);

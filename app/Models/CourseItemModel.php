@@ -33,14 +33,14 @@ class CourseItemModel extends Model
 
     public function getModel()
     {
-        if($this->type == 1) return 'App\Models\Books\Book';
+        if($this->type == 1) return 'App\Models\Books\BookSegment';
         if($this->type == 2) return 'App\Models\Videos\Video';
         if($this->type == 3) return 'App\Knowbase';
     }
 
     public static function getType($model)
     {
-        if($model == 'App\Models\Books\Book') return 1;
+        if($model == 'App\Models\Books\BookSegment') return 1;
         if($model == 'App\Models\Videos\Video') return 2;
         if($model == 'App\KnowBase') return 3;
     }

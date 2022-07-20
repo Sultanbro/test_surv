@@ -58,16 +58,17 @@
           <p class="mb-0">Вопросы на странице:</p>
         </div>
 
-        <div class="item d-flex" v-for="test in tests" :class="{
-            'pass': test.pass || test.item_model !== null,
+        <div class="item d-flex" v-for="(test, t) in tests" 
+          :key="t"
+          :class="{
+            'pass': test.item_model !== null,
             'active': page == test.page
           }">
           <div class="mr-2">
-            <i class="fa fa-arrow-right pointer" v-if="page == test.page || active_page == test.page"></i>
-            <i class="fa fa-check pointer" v-else-if="test.item_model !== null"></i>
+            <i class="fa fa-check pointer" v-if="test.item_model !== null"></i>
             <i class="fa fa-lock pointer" v-else></i>
           </div>
-          <p class="mb-0" @click="moveTo(test.page, test.pass)">
+          <p class="mb-0" @click="moveTo(test.page, test.item_model)">
             Стр. {{ test.page }} : {{ test.questions.length }} вопрос (-ов)
           </p>
         </div>
@@ -109,19 +110,19 @@
     <div class="test" v-if="activeTest !== null">
       <questions
         :questions="activeTest.questions"
-        :pass="activeTest.pass"
+        :pass="activeTest.item_model !== null"
         :id="0"
         :key="test_key"
         type="book"
         :mode="mode" 
         @continueRead="nextPage"
-        @passed="activeTest.pass = true"
+        @passed="nextElement"
       />
     </div>
 
     <template v-if="(activeTest && course_page) || (activeTest == null && pageCount == page)">
       <button class="next-btn btn btn-primary" 
-        v-if="activeTest.pass"
+        v-if="activeTest.item_model !== null"
         @click="nextElement()">
         Продолжить курс
         <i class="fa fa-angle-double-right ml-2"></i>
@@ -139,7 +140,24 @@ export default {
   components: {
     VuePdfEmbed
   },
-  props: ["book_id", "mode", 'showBackBtn', 'course_page', 'active_page', 'course_item_id'],
+  props: {
+    book_id: Number,
+    mode: {
+      default: 'read'
+    },
+    showBackBtn: {
+      default: false
+    },
+    course_page: {
+      default: false,
+    },
+    active_page: {
+      default: 0
+    },
+    course_item_id: {
+      default: 0
+    }
+  },
   data() {
     return {
       page: 1,
@@ -152,7 +170,6 @@ export default {
       tests: [],
       test_key: 1,
       checkpoint: 1, // last page
-      pass: false, // pass test
       page_map: [],
       map_index: 0,
       pdf_loaded: false,
@@ -193,7 +210,7 @@ export default {
     },
 
     nextElement() {
-      
+
       if(this.activeTest.item_model == null) {
         this.setSegmentPassed();
         this.activeTest.item_model = {status: 1}; 
@@ -278,7 +295,7 @@ export default {
       if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
 
       // check current test
-      if(this.activeTest && !this.activeTest.pass) {
+      if(this.activeTest && this.activeTest.item_model == null) {
         this.$message.info('Ответьте на вопросы, чтобы пройти дальше');
         return 0;   
       }

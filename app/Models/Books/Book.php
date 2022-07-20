@@ -37,7 +37,7 @@ class Book extends Model implements CourseInterface
      */
     public function segments()
     {
-        return $this->hasMany('App\Models\Books\BookSegment', 'book_id');
+        return $this->hasMany('App\Models\Books\BookSegment', 'book_id')->orderBy('page_start', 'asc');
     }
 
     public function item_model()
