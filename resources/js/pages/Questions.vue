@@ -351,8 +351,11 @@ export default {
       });
       
       if(this.scores) {
-
-        this.$emit('passed');
+        if(this.count_points) {
+          this.count_points = false;
+        } else {
+          this.$emit('passed');
+        }
       }
     },
 
