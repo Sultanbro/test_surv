@@ -270,7 +270,7 @@
                                                     class="col-sm-4 col-form-label font-weight-bold">День рождения <span class="red">*</span></label>
                                                 <div class="col-sm-8">
                                                     <input class="form-control" type="date" name="birthday" id="birthday" required
-                                                        @if(isset($user))@if($user->birthday != null)value="{{ \Carbon\Carbon::parse($user->birthday)->format('Y-m-d')}}"@endif @else value="{{old('birthday')}}"@endif>
+                                                        @if(isset($user) && $user->birthday != null) value="{{ \Carbon\Carbon::parse($user->birthday)->format('Y-m-d')}}" @else value="{{old('birthday')}}"@endif>
                                                 </div>
                                             </div>
 
