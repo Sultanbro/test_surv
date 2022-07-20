@@ -223,7 +223,7 @@ export default {
     setSegmentPassed() {
       axios
         .post("/my-courses/pass", {
-          id: this.page,
+          id: this.activeSegment.id,
           type: 1,
           course_item_id: this.course_item_id,
         })
