@@ -556,7 +556,7 @@ export default {
       console.log('passed test')
     },
 
-     setSegmentPassed() {
+    setSegmentPassed() {
       axios
         .post("/my-courses/pass", {
           id: this.activesbook.id,
