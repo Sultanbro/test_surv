@@ -333,7 +333,7 @@ export default {
         }
 
         q.result = {
-          question_id: q.id,
+          test_question_id: q.id,
           answer: answer,
           status: 1,
           course_item_model_id: this.id
