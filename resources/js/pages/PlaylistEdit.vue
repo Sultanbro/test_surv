@@ -184,6 +184,7 @@ export default {
       activeVideoLink: '',
       refreshTest: 1, //key
       file_img: null,
+      item_models: [],
       playlist: {
         id: 1,
         category_id: 1,
