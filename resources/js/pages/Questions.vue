@@ -1,7 +1,7 @@
 <template>
   <div class="questions" :class="{'hide': mode == 'read' && (questions === undefined || questions.length == 0)}" @click="hideAll($event)">
     <div class="title" v-if="mode == 'read' && type == 'book' || ['kb', 'video'].includes(type)">Проверочные вопросы</div>
-    <div class="question mb-2" v-for="(q, q_index) in questions" :key="q_index" :class="{'show': q.editable}">
+    <div class="question mb-3" v-for="(q, q_index) in questions" :key="q_index" :class="{'show': q.editable}">
       <div
         class="title d-flex jcsb"
         @click.stop="editQuestion(q_index)"
@@ -129,19 +129,19 @@
 
     <template v-if="mode == 'read'">
       <div class="d-flex">
-        <button class="btn btn-success mr-2" @click.stop="checkAnswers">
+        <button class="btn btn-success mr-2" @click.stop="checkAnswers" v-if="points == -1 || !scores">
           Проверить
         </button>
         <button
           class="btn btn-primary"
           @click.stop="$emit('continueRead')"
-          v-if="points != -1 && total == points && type == 'book'"
+          v-if="points != -1 && scores && type == 'book'"
         >
           Читать дальше
         </button>
       </div>
 
-      <p v-if="points != -1 && mode == 'read'" class="mt-3">
+      <p v-if="points != -1 && mode == 'read'" class="mt-3 scores">
         <span v-if="scores">Вы набрали: {{ points }} баллов из {{ total }}</span>
         <span v-else>Вы не набрали проходной балл...</span>
      </p>

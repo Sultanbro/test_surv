@@ -302,7 +302,7 @@ export default {
       if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
 
       // check current test
-      if(this.activeSegment && this.activeSegment.item_model == null) {
+      if(this.activeSegment != null && this.activeSegment.item_model == null) {
         this.$message.info('Ответьте на вопросы, чтобы пройти дальше');
         return 0;   
       }

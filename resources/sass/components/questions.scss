@@ -58,11 +58,10 @@
     background: #ededed;
     padding: 3px 15px;
     border-radius: 5px;
-    box-shadow: 0 0 2px 0 #ededed;
     transition: .3s ease all;
 
     &.show {
-      padding: 15px;
+      padding: 0;
     }
 
     &:hover {
@@ -77,6 +76,16 @@
     }
   }
 
+  .scores {
+    max-width: 300px;
+    background: aliceblue;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-left: auto;
+    display: block;
+    font-weight: 600;
+  }
+  
   .question .title {
 
     p {
