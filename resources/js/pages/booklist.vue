@@ -549,7 +549,27 @@ export default {
     },
     passed() {
       this.passedTest = true;
+      if(this.activesbook.item_model == null) {
+        this.setSegmentPassed();
+        this.activesbook.item_model = {status: 1}; 
+      }
       console.log('passed test')
+    },
+
+     setSegmentPassed() {
+      axios
+        .post("/my-courses/pass", {
+          id: this.activesbook.id,
+          type: 3,
+          course_item_id: this.course_item_id,
+          questions: this.activesbook.questions
+        })
+        .then((response) => {
+         // this.activeVideo.item_models.push(response.data.item_model);
+        })
+        .catch((error) => {
+          alert(error);
+        });
     },
 
     setArticlePassed() {

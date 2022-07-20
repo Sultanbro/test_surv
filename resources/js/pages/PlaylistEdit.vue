@@ -216,9 +216,9 @@ export default {
   methods: { 
 
     passedTest() {
-      if(this.is_course) {
+      
         this.activeVideo.item_model = {status: 1}
-      }
+        this.nextElement()
     },
 
     nextElement() {
