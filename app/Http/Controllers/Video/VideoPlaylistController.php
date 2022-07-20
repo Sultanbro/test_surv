@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Auth;
 use App\User;
 use App\Models\TestQuestion;
+use App\Models\CourseItemModel;
 use App\Models\Videos\Video;
 use App\Models\Videos\VideoCategory as Category;
 use App\Models\Videos\VideoComment as Comment;
