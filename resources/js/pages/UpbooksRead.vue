@@ -187,6 +187,7 @@ export default {
     },
 
     loaded() {
+      this.formPageMap()
       this.pdf_loaded = true;
     },
 
@@ -227,7 +228,7 @@ export default {
         .then((response) => {
           this.tests = response.data.tests;
           this.activeBook = response.data.activeBook;
-          this.formPageMap()
+          
     
           loader.hide();
         })
