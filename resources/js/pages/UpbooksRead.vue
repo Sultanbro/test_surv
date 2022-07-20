@@ -343,10 +343,12 @@ export default {
         let i = this.segments.findIndex(el => el.page == prev_page.page);
         this.activeSegment = this.segments[i]
         this.segment_key++;
-        console.log('has')
+       
       } else {
         this.activeSegment = null;
-         console.log('not has')
+        // bug fix
+        this.page++
+        this.page--
       }
 
       
