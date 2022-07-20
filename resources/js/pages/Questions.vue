@@ -271,8 +271,7 @@ export default {
         this.count_points = true;
         if (q.type == 0) {
           q.variants.forEach((v, vi) => {
-            console.log(q.result.answer[vi])
-            v.checked = q.result.answer[vi] !== undefined;
+            if(q.result.answer[vi] !== undefined) v.checked = q.result.answer[vi];
           });
         }
       });
