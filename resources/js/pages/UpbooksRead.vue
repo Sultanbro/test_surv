@@ -287,7 +287,7 @@ export default {
 
       let next_page = this.page_map[this.map_index];
 
-      this.page = next_page;
+      this.page = next_page.page;
       // next page has test ?
       if(next_page.has_test) {
 
