@@ -572,23 +572,6 @@ export default {
         });
     },
 
-    setArticlePassed() {
-      axios
-        .post("/my-courses/pass", {
-          id: this.activesbook.id,
-          type: 3,
-          course_item_id: this.course_item_id,
-        })
-        .then((response) => {
-        
-
-        
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
     returnArray(items, indexes = []) { 
       items.forEach((item, i_index) => {
           let arr = [...indexes, i_index];
@@ -603,7 +586,7 @@ export default {
 
     nextElement() {
       if(this.activesbook.item_model == null) {
-        this.setArticlePassed();
+        this.setSegmentPassed();
         this.activesbook.item_model = {status: 1}; 
       }
    

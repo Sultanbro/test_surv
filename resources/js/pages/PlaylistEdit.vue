@@ -280,6 +280,7 @@ export default {
           id: this.activeVideo.id,
           type: 2,
           course_item_id: this.course_item_id,
+          questions: this.activeVideo.questions
         })
         .then((response) => {
           setTimeout(loader.hide(), 500);
