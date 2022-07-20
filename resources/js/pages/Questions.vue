@@ -196,10 +196,6 @@ export default {
       type: Boolean,
       default: false
     },
-    count_points: {
-      type: Boolean,
-      default: false
-    },
     pass_grade: {
       type: Number,
       default: 50
@@ -211,6 +207,7 @@ export default {
       changed: false,
       total: 0,
       points: -1,
+      count_points: false,
     };
   },
   computed: {
@@ -267,14 +264,15 @@ export default {
     
         this.$message.info('has_results')
       
-
+ 
       this.questions.forEach((q) => {
-          console.log(q)
+       
         if(q.result === null) return;
+        this.count_points = true;
         if (q.type == 0) {
           q.variants.forEach((v, vi) => {
             console.log(q.result.answer[vi])
-            q.checked = q.result.answer[vi] !== undefined;
+            v.checked = q.result.answer[vi] !== undefined;
           });
         }
       });
