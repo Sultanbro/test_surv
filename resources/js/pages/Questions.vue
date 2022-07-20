@@ -260,11 +260,6 @@ export default {
   methods: {
     
     setResults() {
-      // set results if exists
-    
-        this.$message.info('has_results')
-      
- 
       this.questions.forEach((q) => {
        
         if(q.result === null) return;
@@ -275,8 +270,6 @@ export default {
           });
         }
       });
-        
-      
     },
 
     prepareVariants() {
