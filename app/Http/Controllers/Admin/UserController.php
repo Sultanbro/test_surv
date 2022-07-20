@@ -1291,9 +1291,6 @@ class UserController extends Controller
             ]);    
         } else { // Не было никакого полльзователя с таким email
 
-
-
-
             $user = User::create([
                 'email' => strtolower($request['email']),
                 'name' => $request['name'],
@@ -1319,6 +1316,17 @@ class UserController extends Controller
                 'is_admin' => 0,
                 'img_url' => $request['file_name']
             ]);
+            
+            Account::create([
+                    'password' => $user_password,
+                    'owner_uid' => 5,
+                    'name' => $request['name'],
+                    'surname' => $request['last_name'],
+                    'email' => strtolower($request['email']),
+                    'status' => Account::ACTIVE_STATUS,
+                    'role' => [Account::OPERATOR],
+                    'activate_key' => '',
+                ]);
         }
 
 
