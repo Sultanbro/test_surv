@@ -190,6 +190,12 @@ export default {
     moveTo(page, pass) {
       if(pass) {
         this.page = page;
+        
+        let m = this.map_index.findIndex(el => el.page == page);
+        if(m != -1) {
+          this.map_index = m;
+        }
+       
 
         let i = this.segments.findIndex(el => el.page == page);
         if(i != -1) {
@@ -325,7 +331,9 @@ export default {
       this.map_index--;
 
       let prev_page = this.page_map[this.map_index];
+      console.log(this.page)
       this.page = prev_page.page;
+      console.log(this.page)
 
       // prev_page has test ?
       if(prev_page.has_test) {

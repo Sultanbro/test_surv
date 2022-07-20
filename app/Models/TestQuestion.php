@@ -46,8 +46,8 @@ class TestQuestion extends Model
         return false;
     }
 
-    public function results()
+    public function result()
     {
-        return $this->hasMany('App\Models\TestResult');
+        return $this->hasOne('App\Models\TestResult');
     }
 }

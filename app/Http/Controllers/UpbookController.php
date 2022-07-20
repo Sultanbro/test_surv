@@ -127,8 +127,13 @@ class UpbookController extends Controller
             $segment->page = $segment->page_start;
             $segment->pages = $segment->page_start;
 
+            $im = $segment->id;
             $segment->questions = TestQuestion::where('testable_type', 'App\Models\Books\BookSegment')
                 ->where('testable_id', $segment->id)
+                ->with('result', function ($query) use ($im, $user_id) {
+                    $query->where('course_item_model_id', $im)
+                        ->where('user_id', $user_id);
+                })
                 ->get();
 
             $segment->item_model = CourseItemModel::where('user_id', $user_id)
