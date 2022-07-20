@@ -344,7 +344,7 @@ class UpbookController extends Controller
         }
 
 
-        foreach ($request['questions'] as $q) {
+        foreach ($request->item['questions'] as $q) {
             $params = [
                 'order' => 0,
                 'page'=> $request->item['page'],

@@ -257,6 +257,10 @@
                 {{ cat.name }}
               </option>
             </select>
+
+            <button class="btn btn-success mr-2 rounded" @click="saveSegments">
+              <span>Сохранить книгу</span>
+            </button>
           </div>
 
           <div class="right f-30 pl-4">
@@ -293,7 +297,10 @@
           >
             <div class="row">
               <div class="col-3">
-                <p class="mb-0">Страница <i class="fa fa-trash ml-1 pointer" @click="deleteSegment(s)"></i></p>
+                <p class="mb-0">Страница
+                  <i class="fa fa-save ml-1 pointer" @click="saveSegment(s)"></i>
+                  <i class="fa fa-trash ml-1 pointer" @click="deleteSegment(s)"></i>
+                </p>
                 <input
                   type="number"
                   min="1"
@@ -317,7 +324,7 @@
                   :questions="segment.questions"
                   :id="segment.id"
                   :pass_grade="segment.pass_grade"
-                  @changePassGrade="checkPassGrade(segment, s)"
+                  @changePassGrade="checkPassGrade(segment)"
                   type="book"
                   mode="edit"
                 />
@@ -327,9 +334,7 @@
         </div>
 
         <div class="d-flex">
-          <button class="btn btn-success mr-2 rounded" @click="saveSegments">
-            <span>Сохранить</span>
-          </button>
+          
           <button class="btn rounded" @click="addSegment">
             <span>Добавить тест</span>
           </button>
@@ -414,15 +419,13 @@ export default {
       this.activeCategory = this.categories[index];
     },
 
-    checkPassGrade(test, i) {
+    checkPassGrade(test) {
       console.log('pass grade')
       let len = test.questions.length;
       let min = len != 0 ? Number((100 / len).toFixed()) : 100;
 
       if(test.pass_grade > 100) test.pass_grade = 100;
       if(test.pass_grade < min) test.pass_grade = Number(min);
-
-      this.saveSegment(i)
     },
 
     chooseImage(ref) {
