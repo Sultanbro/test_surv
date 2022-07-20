@@ -239,7 +239,7 @@ export default {
       let loader = this.$loading.show();
 
       axios
-        .post("/admin/upbooks/tests/get", {
+        .post("/admin/upbooks/segments/get", {
           id: this.book_id,
           course_item_id: this.course_item_id
         })
