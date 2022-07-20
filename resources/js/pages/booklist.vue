@@ -333,6 +333,7 @@
                   :mode="mode"
                   :count_points="true"
                   @passed="passed"
+                   :pass="activesbook.item_model !== null"
                   :key="questions_key"
                   :pass_grade="activesbook.pass_grade"
                   @changePassGrade="checkPassGrade"

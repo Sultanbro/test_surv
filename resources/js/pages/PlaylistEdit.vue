@@ -94,6 +94,7 @@
                     :key="refreshTest"
                     type="video"
                     :pass_grade="activeVideo.pass_grade"
+                     :pass="activeVideo.item_model !== null"
                     @passed="passedTest()"
                     :mode="mode"
                     />
