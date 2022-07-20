@@ -136,7 +136,9 @@ class VideoPlaylistController extends Controller {
 			);
 		}   
 
-		$item_models = CourseItemModel::whereIn('item_id', $kb_ids)
+		$video_ids = $pl->getOrder();
+
+		$item_models = CourseItemModel::whereIn('item_id', $video_ids)
             ->where('type', 2)
             ->where('user_id', auth()->id())
             ->where('course_item_id', $request->course_item_id)
