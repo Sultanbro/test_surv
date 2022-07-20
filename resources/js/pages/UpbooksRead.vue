@@ -102,7 +102,7 @@
         class="plugin"
         @rendered="handleDocumentRender"
         loading-failed="sad"
-        @loaded="loaded"
+        @rendered="loaded"
       />
     </div>
 
