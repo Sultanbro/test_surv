@@ -1291,6 +1291,9 @@ class UserController extends Controller
             ]);    
         } else { // Не было никакого полльзователя с таким email
 
+
+
+
             $user = User::create([
                 'email' => strtolower($request['email']),
                 'name' => $request['name'],

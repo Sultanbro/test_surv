@@ -18,52 +18,50 @@ use App\Models\QuartalBonus;
 use App\KnowBase;
 use App\Models\TestQuestion;
 use App\Models\Books\Book;
+use App\Models\Books\BookSegment;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class TestController extends Controller { 
  
 	public function test() {
-		
+	
+		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
+		$hh = new HeadHunter();
+		$hh->auth_code = 'MNEQGFCKFHI8GBVMSPDJRL6L6R0GO7LGT928IP8GBFADKBHGSIDQS5SVEBBPNP0H';
+		dd($hh->refreshAccessToken());	
+		// $books = Book::get();
+		// foreach($books as $book) {
+		// 	$tests = TestQuestion::where([
+		// 		'testable_type' => 'App\\Models\\Books\\BookSegment',
+		// 		'testable_id' => $book->id
+		// 	])->get();
 
-		dd(substr('/marina',1));
-		// $user = \App\Kpi::userKpi(10230, '2022-06-01', 1);
-		
+		// 	$groups = $tests->groupBy('page');
 
-
-		// $tests = TestQuestion::where([
-		// 	'testable_type' => 'App\\Models\\Books\\Book',
-		// 	'testable_id' => 73 
-		// ])->get();
-
-		// foreach ($tests as $key => $test) {
-
-		// 	$items = [12, 115,123];
-			
-		// 	foreach ($items as $key => $item) {
-		// 		TestQuestion::create([
-		// 			'testable_id' => $item,
-		// 			'testable_type' => $test->testable_type,
-		// 			'type' => $test->type,
-		// 			'text' => $test->text,
-		// 			'variants' => $test->variants,
-		// 			'page' => $test->page,
-		// 			'order' => $test->order,
-		// 			'points' => $test->points,
+		// 	foreach ($groups as $page => $els) {
+				
+		// 		$segment = BookSegment::create([
+		// 			'title' => 'test',
+		// 			'book_id' => $book->id,
+		// 			'page_start' => $page,
+		// 			'page_end' => $page,
+		// 			'pass_grade' => 100
 		// 		]);
-		// 	}
-			
 
-		
-		dump(73);
-		dd($items);
+		// 		foreach ($els as $key => $q) {
+		// 			$q->testable_id = $segment->id;
+		// 			$q->save();
+		// 		}
+		// 	}
+		// }
 
 	}  
 
 	public function hhRefresher() {
 		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
 		$hh = new HeadHunter();
-		$hh->auth_code = 'PFJT7Q17953OMBNR48N60J2F2M023LNBG8V3K7GSAJB6TF40QDGU82GKQ5LU07ND';
+		$hh->auth_code = 'U21A3DAHQTBPGFFPF05KQAM2VPS1D66ON99FIELH69F2GTUEU7DA70I5P4G54JII';
 		dd($hh->refreshAccessToken());
 
 	}

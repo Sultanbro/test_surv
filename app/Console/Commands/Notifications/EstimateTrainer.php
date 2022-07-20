@@ -53,7 +53,7 @@ class EstimateTrainer extends Command
             UserNotification::create([
                 'user_id' => $user_id,
                 'about_id' => 0,
-                'title' => 'Оцените работу Вашего руководителя и старшего специалиста за '.$months[Carbon::now()->month-1],
+                'title' => 'Оцените работу Вашего руководителя и старшего специалиста за '. $months[Carbon::now()->month-1],
                 'group' => now(),
                 'message' => $msg_fragment
             ]);
