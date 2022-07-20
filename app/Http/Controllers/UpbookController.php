@@ -286,7 +286,7 @@ class UpbookController extends Controller
     public function update(Request $request)
     {
         $book = json_decode($request->book, true);
-        $tests = json_decode($request->tests, true);
+        $tests = json_decode($request->segments, true);
 
         $img_link = '';
 
@@ -352,11 +352,13 @@ class UpbookController extends Controller
                 
                 // test segments
 
-                $bs = BookSegment::where('page_start', $test['page'])
-                    ->where('book_id', $b->id)
-                    ->first();
+                
 
-                if($bs) {
+                if($test['id'] != 0) {
+                    $bs = BookSegment::where('page_start', $test['page'])
+                        ->where('book_id', $b->id)
+                        ->first();
+
                     $bs->pass_grade = $test['pass_grade'];
                     $bs->save();
                 } else {
