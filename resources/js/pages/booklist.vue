@@ -380,6 +380,10 @@
                   </div>
                 </div>
               </form>
+              <progress-bar
+                :percentage="myprogress"
+                :label="Загрузка"
+              />
     </b-modal>
 
     <b-modal v-model="showAudioModal" title="Загрузить аудио">
@@ -477,6 +481,7 @@ export default {
   }, 
   data() {
     return {
+      myprogress: 0,
       id: 0,
       loader: false,
       delo: 0,
@@ -881,12 +886,18 @@ export default {
 
     submit() {
       this.loader = true;
-      const config = { "content-type": "multipart/form-data" };
+      const config = { 
+        onUploadProgress: progressEvent => {
+          let { progress } = this.myprogress;
+          progress = (progressEvent.loaded / progressEvent.total) * 100;
+          this.myprogress = progress;
+        }
+      };
       const formData = new FormData();
       formData.append("attachment", this.attachment);
       formData.append("id", this.activesbook.id);
       axios
-        .post("/upload/images/", formData)
+        .post("/upload/images/", formData, config)
         .then((response) => {
           console.log("Загруэенно =>", response.data.location);
 
@@ -895,8 +906,11 @@ export default {
         //     url: "https://bp.jobtron.org/" + response.data.location,
         //   });
 
-        this.showImageModal = false;
-          this.loader = false;
+          if(this.myprogress >= 100){
+            this.showImageModal = false;
+            this.loader = false;
+            this.myprogress = 0;
+          }
         })
         .catch((error) => console.log(error));
     },
