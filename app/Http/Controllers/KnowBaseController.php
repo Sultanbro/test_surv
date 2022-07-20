@@ -212,8 +212,7 @@ class KnowBaseController extends Controller
         $user_id = auth()->id();
 
         $page = KnowBase::withTrashed()
-            ->with('questions')
-			->with('questions.result', function ($query) use ($course_item_model_id, $user_id) {
+            ->with('questions', 'questions.result', function ($query) use ($course_item_model_id, $user_id) {
 				$query->where('course_item_model_id', $course_item_model_id)
 					->where('user_id', $user_id);
 			})
@@ -224,7 +223,7 @@ class KnowBaseController extends Controller
             ->where('item_id', $page->id)
             ->where('course_item_id', 0)
             ->first();
-            
+
         $author = User::withTrashed()->find($page->user_id);
         $editor = User::withTrashed()->find($page->editor_id);
 
