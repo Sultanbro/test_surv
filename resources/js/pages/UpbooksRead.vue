@@ -186,6 +186,8 @@ export default {
     },
 
     loaded() {
+      this.isLoading = false
+      this.pageCount = this.$refs.pdfRef.pageCount
       this.formPageMap()
       this.pdf_loaded = true;
     },
@@ -332,10 +334,6 @@ export default {
       }
     },
 
-    handleDocumentRender() {
-      this.isLoading = false
-      this.pageCount = this.$refs.pdfRef.pageCount
-    },
   },
 };
 </script>
