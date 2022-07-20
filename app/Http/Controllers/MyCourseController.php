@@ -48,7 +48,7 @@ class MyCourseController extends Controller
         $model = CourseItemModel::where('user_id', $user_id)
             ->where('type', $request->type)
             ->where('item_id', $request->id)
-            ->where('course_item_model', $request->course_item_model)
+            ->where('course_item_id', $request->course_item_id)
             ->first();
 
         if($model) {
