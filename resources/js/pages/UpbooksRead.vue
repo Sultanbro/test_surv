@@ -252,7 +252,7 @@ export default {
       let arr = [];
       let page = 1;
 
-      console.log(this.pageCount)
+     
       while (page <= this.pageCount) {
 
         arr.push({
@@ -286,6 +286,8 @@ export default {
       this.map_index++;
 
       let next_page = this.page_map[this.map_index];
+
+      this.page = next_page;
       // next page has test ?
       if(next_page.has_test) {
 
