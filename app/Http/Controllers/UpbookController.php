@@ -188,7 +188,7 @@ class UpbookController extends Controller
         }
        
 
-        $item_models = CourseItemModel::whereIn('item_id', array_keys($qs))
+        $item_models = CourseItemModel::whereIn('item_id', array_keys($qs->toArray()))
             ->where('type', 3)
             ->where('user_id', auth()->id())
             ->where('course_item_id', 0)
