@@ -1316,8 +1316,8 @@ class UserController extends Controller
                 'is_admin' => 0,
                 'img_url' => $request['file_name']
             ]);
-            
-            Account::create([
+            if($request['program_type'] == 2){
+                Account::create([
                     'password' => $user_password,
                     'owner_uid' => 5,
                     'name' => $request['name'],
@@ -1327,6 +1327,7 @@ class UserController extends Controller
                     'role' => [Account::OPERATOR],
                     'activate_key' => '',
                 ]);
+            }
         }
 
 
