@@ -77,9 +77,8 @@
     </div>
 
     <!-- PDF viewer -->
-    <div class="pdf"
+    <div class="pdf show"
       :class="{
-        'show': activeSegment == null,
         w600: zoom == 600,
         w700: zoom == 700,
         w800: zoom == 800,
