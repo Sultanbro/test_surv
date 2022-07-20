@@ -169,7 +169,7 @@ class UpbookController extends Controller
         }
        
         return [
-            'tests' => $book->segments,
+            'segments' => $book->segments,
             'activeBook' => $book,
         ];
     }
