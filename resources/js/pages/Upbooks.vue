@@ -617,6 +617,7 @@ export default {
 
     addSegment() {
       this.modals.edit_book.segments.push({
+        id: 0,
         page_start: 1,
         pages: 1,
         questions: [],
@@ -714,6 +715,11 @@ export default {
 
     saveSegment(i) {
 
+      if(this.modals.edit_book.segments[i].questions.length == 0) {
+        this.$message.error('Добавьте минимум 1 вопрос');
+        return;
+      }
+      
       axios
         .post("/admin/upbooks/segments/save", {
           item: this.modals.edit_book.segments[i],
