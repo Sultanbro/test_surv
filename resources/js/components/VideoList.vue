@@ -60,11 +60,7 @@ export default {
     },
 
     created() {
-        let i = this.videos.findIndex(el => el.id == this.active);
-   
-        if(i != -1) {
-            this.videos[i].item_model = null
-        }
+       
     },
 
     methods: {
