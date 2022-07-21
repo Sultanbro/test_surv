@@ -538,11 +538,15 @@ export default {
     },
     
     setActiveGroup() {
-     
+      
+      console.log('setActiveGroup')
+      this.playlist.groups.forEach(e=>e.opened = false)
+
       let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
 
       if(index != -1) {
         let l = this.playlist;
+
         for(let i=0;i<this.ids[index].i.length - 1;i++){
 
           if(i==0){
