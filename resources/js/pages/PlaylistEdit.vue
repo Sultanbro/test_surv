@@ -540,7 +540,17 @@ export default {
     setActiveGroup() {
       
       console.log('setActiveGroup')
-      this.playlist.groups.forEach(e=>e.opened = false)
+
+      // close all
+      this.playlist.groups.forEach(g=>{
+        g.opened = false;
+        g.children.forEach(c=>{
+          c.opened = false;
+          c.children.forEach(d=>{
+            d.opened = false;
+          });
+        });
+      })
 
       let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
 
