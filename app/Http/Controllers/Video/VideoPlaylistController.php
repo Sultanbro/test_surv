@@ -165,6 +165,7 @@ class VideoPlaylistController extends Controller {
 				$query->where('course_item_model_id', $im)
 					->where('user_id', $user_id);
 			})
+			->with(;)
 			->find($request->id);
 
 		$url = '';
@@ -190,6 +191,12 @@ class VideoPlaylistController extends Controller {
 		}
 		
 		$video->links = $url;
+
+		$video->item_model = CourseItemModel::where('item_id', $video->id)
+			->where('type', 2)
+			->where('user_id', auth()->id())
+			->where('course_item_id', 0)
+			->first();
 
 		return [
 			'video' => $video,
