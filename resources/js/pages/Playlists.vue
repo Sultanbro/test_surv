@@ -379,7 +379,7 @@ export default {
       this.activePlaylist = this.activeCat.playlists[i];
       this.data_playlist = i+1;
 
-      console.log(this.mylink.concat('/'+this.data_category, '/'+this.data_playlist));
+    
       if (history.pushState) {
           var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
           history.pushState(null, null, newUrl);
@@ -418,7 +418,7 @@ export default {
         this.activePlaylist = null;
         this.data_category = i+1;
         this.data_playlist = 0; 
-        console.log(this.mylink.concat('/'+this.data_category, '/'+this.data_playlist));
+     
 
         if (history.pushState) {
             var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);

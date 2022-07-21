@@ -468,13 +468,13 @@ export default {
           this.playlist = response.data.playlist;
           this.item_models = response.data.item_models;
           
-              console.log('before formMap')
+          
           this.formMap();
-                     console.log('before connectItemModels')
+                
           this.connectItemModels(this.playlist.groups);
-                     console.log('before setActiveVideo')
+                     
           this.setActiveVideo();
-           console.log('after setActiveVideo')
+
         })
         .catch((error) => {
           alert(error);
@@ -537,22 +537,19 @@ export default {
         // find element 
         let index = this.ids.findIndex(el => el.id == this.myvideo);
         if(index != -1) this.activeVideo = this.findItem(this.ids[index]);
-
-        console.log('has myvideo')
-        console.log(this.myvideo)
       } else if(this.playlist.groups[0].videos.length > 0) { // check playlist has videos
           // set active video
           this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
           this.setActiveGroup();
-                console.log('has not')
-      } 
+      } else if(this.ids.length > 0) {
+         this.activeVideo = this.findItem(this.ids[0]);
+      }
       
     
     },
 
     findItem(el) {
-      console.log(el)
       if(el.i.length == 2) return this.playlist.groups[el.i[0]].videos[el.i[1]];
       if(el.i.length == 3) return this.playlist.groups[el.i[0]].children[el.i[1]].videos[el.i[2]];
       if(el.i.length == 4) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].videos[el.i[3]];
