@@ -577,7 +577,7 @@ export default {
 
       if(index != -1) {
         let l = this.playlist;
-        for(i=0;i<this.ids.i.length - 2;i++){
+        for(let i=0;i<this.ids.i.length - 2;i++){
 
           if(i==0){
             l = l.groups[this.ids.i[0]];
