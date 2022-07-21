@@ -468,10 +468,13 @@ export default {
           this.playlist = response.data.playlist;
           this.item_models = response.data.item_models;
           
+              console.log('before formMap')
           this.formMap();
+                     console.log('before connectItemModels')
           this.connectItemModels(this.playlist.groups);
+                     console.log('before setActiveVideo')
           this.setActiveVideo();
-          
+           console.log('after setActiveVideo')
         })
         .catch((error) => {
           alert(error);
