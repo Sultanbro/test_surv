@@ -83,7 +83,7 @@ class VideoPlaylist extends Model implements CourseInterface
             ->pluck('id')
             ->toArray();
         
-        return array_merge($arr, $this->pluckVideos($pl->videos));
+        return array_merge($arr, $this->pluckVideos($pl->groups));
     }
 
     /**

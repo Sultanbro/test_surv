@@ -138,12 +138,14 @@ class VideoPlaylistController extends Controller {
 		}   
 
 		$video_ids = $pl->getOrder();
-
+	
 		$item_models = CourseItemModel::whereIn('item_id', $video_ids)
             ->where('type', 2)
             ->where('user_id', auth()->id())
             ->where('course_item_id', $request->course_item_id)
             ->get();
+
+	
 
 		return [
 			'playlist' => $pl,
@@ -155,11 +157,11 @@ class VideoPlaylistController extends Controller {
 
 	public function getVideo(Request $request) {
 
-		$im = $request->item_model ? $request->item_model['id'] : 0;
+		$im = 0; // course_id
 		$user_id = auth()->id();
 		
 		$video =  Video::with('questions')
-			->with('questions.results', function ($query) use ($im, $user_id) {
+			->with('questions.result', function ($query) use ($im, $user_id) {
 				$query->where('course_item_model_id', $im)
 					->where('user_id', $user_id);
 			})

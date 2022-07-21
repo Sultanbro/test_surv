@@ -857,7 +857,7 @@
                                              <label for="phone" class="col-sm-4 col-form-label font-weight-bold">Мобильный <span class="red">*</span></label>
 
                                              <div class="col-sm-12">
-                                                 <input  class="form-control mr-1 col-sm-8" type="text"
+                                                 <input  class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                  value="@if(isset($user)){{$user->phone}}@else{{old('phone')}}@endif"
                                                  name="phone" id="phone" placeholder="Телефон">
                                              </div>
@@ -865,10 +865,13 @@
                                          </div>
 
 
+
+
+
                                         <div class="d-flex phone-row form-group mb-2">
                                             <label for="phone_1" class="col-sm-4 col-form-label font-weight-bold">Домашний <span class="red">*</span></label>
                                             <div class="col-sm-12">
-                                                <input class="form-control mr-1 col-sm-8" type="text"
+                                                <input class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                 value="@if(isset($user)){{$user->phone_1}}@else{{old('phone_1')}}@endif"
                                                 name="phone_1" id="phone_1" placeholder="Телефон">
                                             </div>
@@ -878,7 +881,7 @@
                                         <div class="d-flex phone-row form-group mb-2">
                                             <label for="phone_2" class="col-sm-4 col-form-label font-weight-bold">Супруга/Муж <span class="red">*</span></label>
                                             <div class="col-sm-12">
-                                                <input class="form-control mr-1 col-sm-8" type="text"
+                                                <input class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                 value="@if(isset($user)){{$user->phone_2}}@else{{old('phone_2')}}@endif"
                                                 name="phone_2" id="phone_2" placeholder="Телефон">
                                             </div>
@@ -886,7 +889,7 @@
                                         <div class="d-flex phone-row form-group mb-2">
                                             <label for="phone_3" class="col-sm-4 col-form-label font-weight-bold">Друг/Брат/Сестра <span class="red">*</span></label>
                                             <div class="col-sm-12">
-                                                <input class="form-control mr-1 col-sm-8" type="text"
+                                                <input class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                 value="@if(isset($user)){{$user->phone_3}}@else{{old('phone_3')}}@endif"
                                                 name="phone_3" id="phone_3" placeholder="Телефон">
                                             </div>
@@ -894,7 +897,7 @@
                                         <div class="d-flex phone-row form-group mb-2">
                                             <label for="phone_4" class="col-sm-4 col-form-label font-weight-bold">Сын/Дочь</label>
                                             <div class="col-sm-12">
-                                                <input  class="form-control mr-1 col-sm-8" type="text"
+                                                <input  class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                 value="@if(isset($user)){{$user->phone_4}}@else{{old('phone_4')}}@endif"
                                                 name="phone_4" id="phone_4" placeholder="Телефон">
                                             </div>
@@ -1342,10 +1345,6 @@
 @endsection
 
 @section('scripts')
-
-
-
-
     <div id="uploadimageModal" class="modal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -1366,6 +1365,10 @@
         </div>
     </div>
 <script>
+
+ $(".phone_mask").mask("+7(999)999-99-99");
+
+
 
  var getFileKis;
 
@@ -1836,7 +1839,7 @@ function addPhone(e) {
         var index = phoneIndex++;
         $('.phones').append(`<div class="d-flex phone-row form-group m0">
             <input class="form-control mr-1 col-sm-4" type="text" value="Свой" name="contacts[phone][${index}][name]" placeholder="Название">
-            <input class="form-control mr-1 col-sm-8" type="text" name="contacts[phone][${index}][value]" placeholder="Телефон">
+            <input class="phone_mask form-control mr-1 col-sm-8" type="text" name="contacts[phone][${index}][value]" placeholder="Телефон">
             <button class="btn btn-danger btn-sm contact-delete rounded" type="button" onclick="deletePhone(event)"><i class="fa fa-trash"></i></button>
         </div>`);
     }

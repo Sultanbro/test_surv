@@ -61,6 +61,8 @@
 
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
 
+<script src="{{ url('/js/jquery.maskedinput.js') }}"></script>
+
 @if(auth()->user() && !in_array(auth()->id(), [5,4444,1]))
 <script src="/js/jquery.iMissYou.min.js"></script>
 <script>

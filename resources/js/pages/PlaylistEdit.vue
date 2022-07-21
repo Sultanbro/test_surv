@@ -90,10 +90,12 @@
                 <questions 
                     v-if="activeVideo.questions.length > 0 && mode != 'edit'"
                     :questions="activeVideo.questions"
+                    :course_item_id="course_item_id"
                     :id="activeVideo.id"
                     :key="refreshTest"
                     type="video"
                     :pass_grade="activeVideo.pass_grade"
+                     :pass="activeVideo.item_model !== null"
                     @passed="passedTest()"
                     :mode="mode"
                     />
@@ -216,56 +218,29 @@ export default {
   methods: { 
 
     passedTest() {
-      if(this.is_course) {
+      
         this.activeVideo.item_model = {status: 1}
-      }
+        this.nextElement()
     },
 
     nextElement() {
 
+      
       if(this.activeVideo.item_model == null) {
         this.setVideoPassed()
       }
 
-      // create array of video ids
-      let arr = [];
-      this.playlist.groups.forEach((group, g_index) => {
-          group.videos.forEach((el, v_index) => {
-            arr.push({
-              id: el.id,
-              g: g_index,
-              c: -1,
-              v: v_index,
-            })
-          })
-          
-          if(group.children !== undefined) group.children.forEach((c, c_index) => c.videos.forEach((el, v_index) => {
-            arr.push({
-              id: el.id,
-              g: g_index,
-              c: c_index,
-              v: v_index
-            })
-          }))
-      });
-
       this.activeVideo.item_model = {status: 1}
       
-      let index = arr.findIndex(el => el.id == this.activeVideo.id); 
+      let index = this.ids.findIndex(el => el.id == this.activeVideo.id); 
  
       // find next element 
-      if(index != -1 && arr.length - 1 > index) {
+      if(index != -1 && this.ids.length - 1 > index) {
 
-        
-
-        let i = arr[index + 1];
-        if(i.c == -1) {
-          this.activeVideo = this.playlist.groups[i.g].videos[i.v];
-        } else {
-          this.activeVideo = this.playlist.groups[i.g].children[i.c].videos[i.v];
-        }
-
-        this.activeVideoLink = this.activeVideo.links 
+        this.showVideo({
+          id: this.ids[index + 1].id,
+          item_model: null
+        });
 
       } else {
         // move to next course item
@@ -280,6 +255,7 @@ export default {
           id: this.activeVideo.id,
           type: 2,
           course_item_id: this.course_item_id,
+          questions: this.activeVideo.questions
         })
         .then((response) => {
           setTimeout(loader.hide(), 500);
@@ -416,7 +392,6 @@ export default {
 
     showVideo(video, key, autoplay = true) {
     
-      this.activeVideo = video;
       
        axios
         .post("/playlists/video", {
@@ -430,6 +405,8 @@ export default {
             this.activeVideoLink = this.activeVideo.links;
             this.video_changed++;
             this.refreshTest++
+
+            this.setActiveGroup();
           }
         })
         .catch((error) => {
@@ -465,10 +442,13 @@ export default {
           this.playlist = response.data.playlist;
           this.item_models = response.data.item_models;
           
-          this.formMap();
-          this.connectItemModels(this.playlist.groups);
-          this.setActiveVideo();
           
+          this.formMap();
+                
+          this.connectItemModels(this.playlist.groups);
+                     
+          this.setActiveVideo();
+
         })
         .catch((error) => {
           alert(error);
@@ -530,21 +510,25 @@ export default {
 
         // find element 
         let index = this.ids.findIndex(el => el.id == this.myvideo);
-        if(index != -1) this.activeVideo = this.findItem(this.ids[index]);
+        if(index != -1) {
+          this.activeVideo = this.findItem(this.ids[index]);
+        }
 
-      } else if(this.playlist.groups[0].videos.length > 0) { // check playlist has videos
+      } else if(this.playlist.groups[0].videos.length > 0) { 
           // set active video
           this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
-          this.setActiveGroup();
-          
-      } 
+         
+      } else if(this.ids.length > 0) {
+        this.activeVideo = this.findItem(this.ids[0]);
+      }
+      
+      this.showVideo(this.activeVideo);
       
     
     },
 
     findItem(el) {
-      console.log(el)
       if(el.i.length == 2) return this.playlist.groups[el.i[0]].videos[el.i[1]];
       if(el.i.length == 3) return this.playlist.groups[el.i[0]].children[el.i[1]].videos[el.i[2]];
       if(el.i.length == 4) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].videos[el.i[3]];
@@ -554,12 +538,40 @@ export default {
     },
     
     setActiveGroup() {
-      // check playlist has videos in groups  
+      
+      console.log('setActiveGroup')
 
-      if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
-        // set group opened
-        this.playlist.groups[0].opened = true;
-      } 
+      // close all
+      this.playlist.groups.forEach(g=>{
+        g.opened = false;
+        g.children.forEach(c=>{
+          c.opened = false;
+          c.children.forEach(d=>{
+            d.opened = false;
+          });
+        });
+      })
+
+      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+
+      if(index != -1) {
+        let l = this.playlist;
+
+        for(let i=0;i<this.ids[index].i.length - 1;i++){
+
+          if(i==0){
+            l = l.groups[this.ids[index].i[i]];
+          } else {
+            l = l.children[this.ids[index].i[i]];
+          }
+
+          l.opened = true;
+
+        }
+       
+      }
+
+
     },
 
     savePlaylist() {
