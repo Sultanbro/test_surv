@@ -165,7 +165,6 @@ class VideoPlaylistController extends Controller {
 				$query->where('course_item_model_id', $im)
 					->where('user_id', $user_id);
 			})
-			->with(;)
 			->find($request->id);
 
 		$url = '';
