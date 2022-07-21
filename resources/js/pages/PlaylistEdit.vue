@@ -239,7 +239,6 @@ export default {
 
         this.showVideo({
           id: this.ids[index + 1].id,
-          item_model: null
         });
 
       } else {
@@ -396,7 +395,6 @@ export default {
        axios
         .post("/playlists/video", {
           id: video.id,
-          item_model: video.item_model
         })
         .then((response) => {
 
@@ -462,7 +460,7 @@ export default {
           let i = this.item_models.findIndex(im => im.item_id == vid.id);
           if(i != -1) {
             vid.item_model = this.item_models[i];
-            this.item_models.splice(i,1);
+            //this.item_models.splice(i,1);
           } else {
             vid.item_model = null;
           }
@@ -472,6 +470,8 @@ export default {
           this.connectItemModels(el.children)
         }
       });
+
+      console.log(groups)
     },
 
     checkPassGrade() {
@@ -529,12 +529,18 @@ export default {
     },
 
     findItem(el) {
-      if(el.i.length == 2) return this.playlist.groups[el.i[0]].videos[el.i[1]];
-      if(el.i.length == 3) return this.playlist.groups[el.i[0]].children[el.i[1]].videos[el.i[2]];
-      if(el.i.length == 4) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].videos[el.i[3]];
-      if(el.i.length == 5) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].videos[el.i[4]];
-      if(el.i.length == 6) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].videos[el.i[5]];
-      if(el.i.length == 7) return this.playlist.groups[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].children[el.i[5]].videos[el.i[6]];
+
+      let x = this.playlist;
+
+      for (let i = 0; i < el.i.length; i++) {
+        if(i == 0) {
+          x = x.groups[el.i[i]]
+        } else if(el.i.length - 1 != i) {
+          x = x.children[el.i[i]]
+        } else {
+          x = x.videos[el.i[i]]
+        }
+      } 
     },
     
     setActiveGroup() {
