@@ -577,12 +577,12 @@ export default {
 
       if(index != -1) {
         let l = this.playlist;
-        for(let i=0;i<this.ids.i.length - 2;i++){
+        for(let i=0;i<this.ids[index].i.length - 2;i++){
 
           if(i==0){
-            l = l.groups[this.ids.i[0]];
+            l = l.groups[this.ids[index].i[0]];
           } else {
-            l = l.children[this.ids.i[0]];
+            l = l.children[this.ids[index].i[0]];
           }
 
           l.opened = true;
