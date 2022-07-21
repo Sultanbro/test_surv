@@ -509,6 +509,14 @@ export default {
 
     setActiveVideo() {
 
+      // Костыль. Есть баг: что первое теряет item_model и запирается
+      if(this.activeVideo != null && this.activeVideo.item_model == null) {
+        let i = this.item_models.findIndex(im => im.item_id == vid.id);
+        if(i != -1) {
+          this.activeVideo.item_model = this.item_models[i]
+        }
+      }
+
       if(this.myvideo > 0) {
 
         // find element 
