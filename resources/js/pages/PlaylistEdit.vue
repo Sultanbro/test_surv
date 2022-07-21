@@ -535,12 +535,14 @@ export default {
         let index = this.ids.findIndex(el => el.id == this.myvideo);
         if(index != -1) this.activeVideo = this.findItem(this.ids[index]);
 
+        console.log('has myvideo')
+        console.log(this.myvideo)
       } else if(this.playlist.groups[0].videos.length > 0) { // check playlist has videos
           // set active video
           this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
           this.setActiveGroup();
-          
+                console.log('has not')
       } 
       
     
