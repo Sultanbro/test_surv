@@ -376,7 +376,6 @@
                     />
                     <label class="custom-file-label" for="customFile"
                       >Выберите файл</label>
-                    <p>прогресс бар</p>
                   </div>
                 </div>
               </form>
@@ -406,7 +405,6 @@
                     <label class="custom-file-label" for="customFile"
                       >Выберите файл</label
                     >
-                    <p>прогресс бар</p>
                   </div>
                 </div>
               </form>
