@@ -566,13 +566,7 @@ export default {
     },
     
     setActiveGroup() {
-      if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
-        // set group opened
-        this.playlist.groups[0].opened = true;
-      }
-
-      
-
+     
       let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
 
       if(index != -1) {
