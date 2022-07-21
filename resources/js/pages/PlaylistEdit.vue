@@ -404,8 +404,6 @@ export default {
             this.video_changed++;
             this.refreshTest++
 
-             let i = this.item_models.findIndex(im => im.item_id == vid.id);
-             
             this.setActiveGroup();
           }
         })
@@ -462,6 +460,7 @@ export default {
           let i = this.item_models.findIndex(im => im.item_id == vid.id);
           if(i != -1) {
             vid.item_model = this.item_models[i];
+            //this.item_models.splice(i,1);
           } else {
             vid.item_model = null;
           }
@@ -473,6 +472,9 @@ export default {
         }
         
       });
+
+    
+    
     },
 
     checkPassGrade() {
