@@ -550,9 +550,9 @@ export default {
         for(let i=0;i<this.ids[index].i.length - 1;i++){
 
           if(i==0){
-            l = l.groups[this.ids[index].i[0]];
+            l = l.groups[this.ids[index].i[i]];
           } else {
-            l = l.children[this.ids[index].i[0]];
+            l = l.children[this.ids[index].i[i]];
           }
 
           l.opened = true;
