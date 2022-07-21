@@ -433,6 +433,8 @@ export default {
             this.activeVideoLink = this.activeVideo.links;
             this.video_changed++;
             this.refreshTest++
+
+            this.setActiveGroup();
           }
         })
         .catch((error) => {
@@ -550,7 +552,7 @@ export default {
       }
       
       this.showVideo(this.activeVideo);
-      this.setActiveGroup();
+      
     
     },
 
@@ -564,12 +566,32 @@ export default {
     },
     
     setActiveGroup() {
-      // check playlist has videos in groups  
-
       if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
         // set group opened
         this.playlist.groups[0].opened = true;
-      } 
+      }
+
+      
+
+      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+
+      if(index != -1) {
+        let l = this.playlist;
+        for(i=0;i<this.ids.i.length - 2;i++){
+
+          if(i==0){
+            l = l.groups[this.ids.i[0]];
+          } else {
+            l = l.children[this.ids.i[0]];
+          }
+
+          l.opened = true;
+
+        }
+       
+      }
+
+
     },
 
     savePlaylist() {
