@@ -457,13 +457,18 @@ export default {
       groups.forEach((el, e) => {
 
         el.videos.forEach((vid, v) => {
+          if(vid.id == 1121) console.log('start')
           let i = this.item_models.findIndex(im => im.item_id == vid.id);
           if(i != -1) {
             vid.item_model = this.item_models[i];
             //this.item_models.splice(i,1);
+            if(vid.id == 1121) console.log(' found')
+            if(vid.id == 1121) console.log(vid.item_model)
           } else {
             vid.item_model = null;
+            if(vid.id == 1121) console.log('not found')
           }
+           if(vid.id == 1121) console.log('end')
         });
 
         if(el.children !== undefined) {
@@ -471,7 +476,7 @@ export default {
         }
       });
 
-      console.log(groups)
+    
     },
 
     checkPassGrade() {
