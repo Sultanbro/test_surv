@@ -471,11 +471,14 @@ export default {
            if(vid.id == 1121) console.log('end')
         });
 
+        
         if(el.children !== undefined) {
           this.connectItemModels(el.children)
         }
+        
       });
 
+      console.log(groups)
     
     },
 
