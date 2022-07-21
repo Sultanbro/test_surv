@@ -225,49 +225,22 @@ export default {
 
     nextElement() {
 
+      
       if(this.activeVideo.item_model == null) {
         this.setVideoPassed()
       }
 
-      // create array of video ids
-      let arr = [];
-      this.playlist.groups.forEach((group, g_index) => {
-          group.videos.forEach((el, v_index) => {
-            arr.push({
-              id: el.id,
-              g: g_index,
-              c: -1,
-              v: v_index,
-            })
-          })
-          
-          if(group.children !== undefined) group.children.forEach((c, c_index) => c.videos.forEach((el, v_index) => {
-            arr.push({
-              id: el.id,
-              g: g_index,
-              c: c_index,
-              v: v_index
-            })
-          }))
-      });
-
       this.activeVideo.item_model = {status: 1}
       
-      let index = arr.findIndex(el => el.id == this.activeVideo.id); 
+      let index = this.ids.findIndex(el => el.id == this.activeVideo.id); 
  
       // find next element 
-      if(index != -1 && arr.length - 1 > index) {
+      if(index != -1 && this.ids.length - 1 > index) {
 
-        
-
-        let i = arr[index + 1];
-        if(i.c == -1) {
-          this.activeVideo = this.playlist.groups[i.g].videos[i.v];
-        } else {
-          this.activeVideo = this.playlist.groups[i.g].children[i.c].videos[i.v];
-        }
-
-        this.activeVideoLink = this.activeVideo.links 
+        this.showVideo({
+          id: this.ids[index + 1].id,
+          item_model: null
+        });
 
       } else {
         // move to next course item
@@ -419,7 +392,6 @@ export default {
 
     showVideo(video, key, autoplay = true) {
     
-      this.activeVideo = video;
       
        axios
         .post("/playlists/video", {
