@@ -138,14 +138,14 @@ class VideoPlaylistController extends Controller {
 		}   
 
 		$video_ids = $pl->getOrder();
-		dump($video_ids);
+	
 		$item_models = CourseItemModel::whereIn('item_id', $video_ids)
             ->where('type', 2)
             ->where('user_id', auth()->id())
             ->where('course_item_id', $request->course_item_id)
             ->get();
 
-			dd($item_models);
+	
 
 		return [
 			'playlist' => $pl,
