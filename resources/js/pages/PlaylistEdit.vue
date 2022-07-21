@@ -531,6 +531,7 @@ export default {
     findItem(el) {
 
       let x = this.playlist;
+      let found = false;
 
       for (let i = 0; i < el.i.length; i++) {
         if(i == 0) {
@@ -538,9 +539,12 @@ export default {
         } else if(el.i.length - 1 != i) {
           x = x.children[el.i[i]]
         } else {
+          found = true;
           x = x.videos[el.i[i]]
         }
       } 
+
+      return found ? x : null;
     },
     
     setActiveGroup() {
