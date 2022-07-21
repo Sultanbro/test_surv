@@ -536,16 +536,21 @@ export default {
 
         // find element 
         let index = this.ids.findIndex(el => el.id == this.myvideo);
-        if(index != -1) this.activeVideo = this.findItem(this.ids[index]);
-      } else if(this.playlist.groups[0].videos.length > 0) { // check playlist has videos
+        if(index != -1) {
+          this.activeVideo = this.findItem(this.ids[index]);
+        }
+
+      } else if(this.playlist.groups[0].videos.length > 0) { 
           // set active video
           this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
-          this.setActiveGroup();
+         
       } else if(this.ids.length > 0) {
-         this.activeVideo = this.findItem(this.ids[0]);
+        this.activeVideo = this.findItem(this.ids[0]);
       }
       
+      this.showVideo(this.activeVideo);
+      this.setActiveGroup();
     
     },
 
