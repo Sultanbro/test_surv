@@ -493,7 +493,7 @@
                                                                     <span>Успел стать частью команды ~</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span>{{ $user->worked_with_us }}</span>
+                                                                    <span>@if($user->worked_with_us < 0) {{ 0 }} @else {{ $user->worked_with_us }} @endif</span>
                                                                 </td>
                                                             </tr>
 
