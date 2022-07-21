@@ -29,55 +29,90 @@ class AnvizController extends Controller
 
     public function checkInOut($date = null)
     {   
+        $date_is_set = false;
         if(is_null($date)) {
             $this->date = date('Y-m-d');
         } else {
             $this->date = $date;
+            $date_is_set = true;
         }
 
-        $todays_records = $this->todaysRecords();
-
-       
-    //    dd($todays_records->where('Userid', 14476)->first());
-        $users_array = $this->getUsersArray($todays_records);
-        $todays_timetracking_records = $this->todaysTimetrackingRecords($users_array);
-
-        foreach($users_array as $user_id) {
-            
-            $current_user_timetracking_records = $todays_timetracking_records->where('user_id', $user_id);
-            
-            $last_anviz_date = $todays_records->where('Userid', $user_id)->sortByDesc('CheckTime')->first()->CheckTime;
-
-            if($current_user_timetracking_records->isNotEmpty()) {
-
-                $exit_is_null_records = $current_user_timetracking_records->where('exit', null);
-                if($exit_is_null_records->isNotEmpty()) {
-
-                    $last_timetracking_date = $exit_is_null_records->sortByDesc('enter')->first()->enter;
-                    
-                    $difference = strtotime($last_anviz_date) - strtotime($last_timetracking_date) - 900;
-                    if($difference > 0) {
-                        $exit_is_null_records->sortByDesc('enter')->first()->update(['exit' => $last_anviz_date]);
-                    }
-
-                } else {
-
-                    $last_timetracking_date = $current_user_timetracking_records->sortByDesc('exit')->first()->exit;
-                    
-                    $difference = strtotime($last_anviz_date) - strtotime($last_timetracking_date);
-                    if($difference != 0 && $difference > 0) {
+        if(date('w', strtotime($date)) == 1 && !$date_is_set && date("h:i") == '07:00'){
+            $dates = [date('Y-m-d'), date('Y-m-d', strtotime(' -1 day')), date('Y-m-d', strtotime(' -2 day'))];
+            foreach($dates as $my_date){
+                $this->date = $my_date;
+                $todays_records = $this->todaysRecords();
+                $users_array = $this->getUsersArray($todays_records);
+                $todays_timetracking_records = $this->todaysTimetrackingRecords($users_array);
+                foreach($users_array as $user_id) {
+                    $current_user_timetracking_records = $todays_timetracking_records->where('user_id', $user_id);
+                    $last_anviz_date = $todays_records->where('Userid', $user_id)->sortByDesc('CheckTime')->first()->CheckTime;
+                    if($current_user_timetracking_records->isNotEmpty()) {
+                        $exit_is_null_records = $current_user_timetracking_records->where('exit', null);
+                        if($exit_is_null_records->isNotEmpty()) {
+                            $last_timetracking_date = $exit_is_null_records->sortByDesc('enter')->first()->enter;
+                            $difference = strtotime($last_anviz_date) - strtotime($last_timetracking_date) - 900;
+                            if($difference > 0) {
+                                $exit_is_null_records->sortByDesc('enter')->first()->update(['exit' => $last_anviz_date]);
+                            }
+                        } else {
+                            $last_timetracking_date = $current_user_timetracking_records->sortByDesc('exit')->first()->exit;
+                            $difference = strtotime($last_anviz_date) - strtotime($last_timetracking_date);
+                            if($difference != 0 && $difference > 0) {
+                                Timetracking::create(['enter' => $last_anviz_date, 'user_id' => $user_id]);
+                            }
+                        }   
+                    } else { 
                         Timetracking::create(['enter' => $last_anviz_date, 'user_id' => $user_id]);
                     }
-                    
-                }   
-            } else { 
-                Timetracking::create(['enter' => $last_anviz_date, 'user_id' => $user_id]);
+                }
             }
         }
+        else{
+
+            $todays_records = $this->todaysRecords();
+
+           
+        //    dd($todays_records->where('Userid', 14476)->first());
+            $users_array = $this->getUsersArray($todays_records);
+            $todays_timetracking_records = $this->todaysTimetrackingRecords($users_array);
+
+            foreach($users_array as $user_id) {
+                
+                $current_user_timetracking_records = $todays_timetracking_records->where('user_id', $user_id);
+                
+                $last_anviz_date = $todays_records->where('Userid', $user_id)->sortByDesc('CheckTime')->first()->CheckTime;
+
+                if($current_user_timetracking_records->isNotEmpty()) {
+
+                    $exit_is_null_records = $current_user_timetracking_records->where('exit', null);
+                    if($exit_is_null_records->isNotEmpty()) {
+
+                        $last_timetracking_date = $exit_is_null_records->sortByDesc('enter')->first()->enter;
+                        
+                        $difference = strtotime($last_anviz_date) - strtotime($last_timetracking_date) - 900;
+                        if($difference > 0) {
+                            $exit_is_null_records->sortByDesc('enter')->first()->update(['exit' => $last_anviz_date]);
+                        }
+
+                    } else {
+
+                        $last_timetracking_date = $current_user_timetracking_records->sortByDesc('exit')->first()->exit;
+                        
+                        $difference = strtotime($last_anviz_date) - strtotime($last_timetracking_date);
+                        if($difference != 0 && $difference > 0) {
+                            Timetracking::create(['enter' => $last_anviz_date, 'user_id' => $user_id]);
+                        }
+                        
+                    }   
+                } else { 
+                    Timetracking::create(['enter' => $last_anviz_date, 'user_id' => $user_id]);
+                }
+            }
 
         //$times = Timetracking::where('user_id', $user_id)->whereDate('CheckTime', now())->get();
 
-
+        }
 
     }
 
