@@ -100,9 +100,9 @@
                     :mode="mode"
                     />
                 
-                <button class="next-btn btn btn-primary" 
+                <button class="next-btn btn btn-primary" v-if="activeVideo.questions.length == 0 || activeVideo.item_model != null"
                   @click="nextElement()">
-                  Продолжить курс
+                  Следующее видео
                   <i class="fa fa-angle-double-right ml-2"></i>
                 </button>
                      
