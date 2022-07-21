@@ -299,6 +299,7 @@
 
 
             <questions
+                  :course_item_id="course_item_id"
                   :questions="activesbook.questions"
                   :id="activesbook.id"
                   type="kb"
@@ -333,6 +334,7 @@
                   :mode="mode"
                   :count_points="true"
                   @passed="passed"
+                   :pass="activesbook.item_model !== null"
                   :key="questions_key"
                   :pass_grade="activesbook.pass_grade"
                   @changePassGrade="checkPassGrade"
@@ -547,20 +549,23 @@ export default {
     },
     passed() {
       this.passedTest = true;
+      if(this.activesbook.item_model == null) {
+        this.setSegmentPassed();
+        this.activesbook.item_model = {status: 1}; 
+      }
       console.log('passed test')
     },
 
-    setArticlePassed() {
+    setSegmentPassed() {
       axios
         .post("/my-courses/pass", {
           id: this.activesbook.id,
           type: 3,
           course_item_id: this.course_item_id,
+          questions: this.activesbook.questions
         })
         .then((response) => {
-        
-
-        
+         // this.activeVideo.item_models.push(response.data.item_model);
         })
         .catch((error) => {
           alert(error);
@@ -581,7 +586,7 @@ export default {
 
     nextElement() {
       if(this.activesbook.item_model == null) {
-        this.setArticlePassed();
+        this.setSegmentPassed();
         this.activesbook.item_model = {status: 1}; 
       }
    

@@ -77,9 +77,8 @@
     </div>
 
     <!-- PDF viewer -->
-    <div class="pdf"
+    <div class="pdf show"
       :class="{
-        'show': activeSegment == null,
         w600: zoom == 600,
         w700: zoom == 700,
         w800: zoom == 800,
@@ -109,6 +108,7 @@
     <!-- Test viewer -->
     <div class="test" v-if="activeSegment !== null">
       <questions
+        :course_item_id="course_item_id"
         :questions="activeSegment.questions"
         :pass="activeSegment.item_model !== null"
         :id="0"
@@ -303,7 +303,7 @@ export default {
       if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
 
       // check current test
-      if(this.activeSegment && this.activeSegment.item_model == null) {
+      if(this.activeSegment != null && this.activeSegment.item_model == null) {
         this.$message.info('Ответьте на вопросы, чтобы пройти дальше');
         return 0;   
       }
@@ -333,17 +333,17 @@ export default {
       this.map_index--;
 
       let prev_page = this.page_map[this.map_index];
-      console.log(this.page)
-      this.page = prev_page.page;
-      console.log(this.page)
 
+      this.page = prev_page.page;
+
+          console.log(this.page)
       // prev_page has test ?
       if(prev_page.has_test) {
 
         let i = this.segments.findIndex(el => el.page == prev_page.page);
         this.activeSegment = this.segments[i]
         this.segment_key++;
-
+       
       } else {
         this.activeSegment = null;
       }

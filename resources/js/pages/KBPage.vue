@@ -128,6 +128,7 @@
         :parent_name="activeBook.title" 
         :parent_id="activeBook.id"
         :show_page_id="show_page_id"
+        :course_item_id="0"
         @back="back" 
         @toggleMode="toggleMode" 
         :mode="mode"

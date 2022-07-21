@@ -1,7 +1,7 @@
 <template>
   <div class="questions" :class="{'hide': mode == 'read' && (questions === undefined || questions.length == 0)}" @click="hideAll($event)">
     <div class="title" v-if="mode == 'read' && type == 'book' || ['kb', 'video'].includes(type)">Проверочные вопросы</div>
-    <div class="question mb-2" v-for="(q, q_index) in questions" :key="q_index" :class="{'show': q.editable}">
+    <div class="question mb-3" v-for="(q, q_index) in questions" :key="q_index" :class="{'show': q.editable}">
       <div
         class="title d-flex jcsb"
         @click.stop="editQuestion(q_index)"
@@ -41,11 +41,11 @@
         <p class="mb-0">{{ q.text }}</p>
         <i
           class="fa fa-times-circle wrong"
-          v-if="scores && q.result == false"
+          v-if="scores && q.success == false"
         ></i>
         <i
           class="fa fa-check-circle right"
-          v-if="scores && q.result == true"
+          v-if="scores && q.success == true"
         ></i>
 
       </div>
@@ -103,7 +103,7 @@
 
         </div>
         <div v-else>
-          <input type="text" v-model="q.result" />
+          <input type="text" v-model="q.success" />
         </div>
         
 
@@ -129,19 +129,19 @@
 
     <template v-if="mode == 'read'">
       <div class="d-flex">
-        <button class="btn btn-success mr-2" @click.stop="checkAnswers">
+        <button class="btn btn-success mr-2" @click.stop="checkAnswers" v-if="points == -1 || !scores">
           Проверить
         </button>
         <button
           class="btn btn-primary"
           @click.stop="$emit('continueRead')"
-          v-if="points != -1 && total == points && type == 'book'"
+          v-if="points != -1 && scores && type == 'book'"
         >
           Читать дальше
         </button>
       </div>
 
-      <p v-if="points != -1 && mode == 'read'" class="mt-3">
+      <p v-if="points != -1 && mode == 'read'" class="mt-3 scores">
         <span v-if="scores">Вы набрали: {{ points }} баллов из {{ total }}</span>
         <span v-else>Вы не набрали проходной балл...</span>
      </p>
@@ -183,6 +183,10 @@ export default {
     questions: Array,
     type: {
       type: String,
+    },
+    course_item_id: {
+      type: Number,
+      default: 0
     },
     id: {
       type: Number,
@@ -260,24 +264,16 @@ export default {
   methods: {
     
     setResults() {
-      // set results if exists
-    
-        this.$message.info('has_results')
-      
- 
       this.questions.forEach((q) => {
        
         if(q.result === null) return;
         this.count_points = true;
         if (q.type == 0) {
           q.variants.forEach((v, vi) => {
-            console.log(q.result.answer[vi])
-            v.checked = q.result.answer[vi] !== undefined;
+            if(q.result.answer[vi] !== undefined) v.checked = q.result.answer[vi];
           });
         }
       });
-        
-      
     },
 
     prepareVariants() {
@@ -333,27 +329,30 @@ export default {
 
           if (right_answers == checked_answers && wrong_answers == 0) {
             this.points += q.points;
-            q.result = true;
+            q.success = true;
           } else {
-            q.result = false;
+            q.success = false;
           }
         } else {
           this.points += Number(q.points);
-          q.result = true;
+          q.success = true;
         }
 
         q.result = {
           test_question_id: q.id,
           answer: answer,
           status: 1,
-          course_item_model_id: this.id
+          course_item_model_id: this.course_item_id
         };
 
       });
       
       if(this.scores) {
-
-        this.$emit('passed');
+        if(this.count_points) {
+          this.count_points = false;
+        } else {
+          this.$emit('passed');
+        }
       }
     },
 
