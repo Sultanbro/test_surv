@@ -753,6 +753,7 @@ class User extends Authenticatable implements Authorizable
                 }
             
                 //$sum += $arr->awards[$i] ?? 0;
+                //$sum += $arr->test_bonuses[$i] ?? 0;
                 
             }   
 
@@ -823,6 +824,11 @@ class User extends Authenticatable implements Authorizable
     public function obtainedBonuses()
     {
         return $this->hasMany('App\Models\Admin\ObtainedBonus', 'user_id', 'id')->orderBy('id', 'DESC');
+    }
+
+    public function testBonuses()
+    {
+        return $this->hasMany('App\Models\TestBonus', 'user_id', 'id')->orderBy('id', 'DESC');
     }
 
     public static function set_timezone_of($user_id)

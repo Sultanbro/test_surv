@@ -17,6 +17,7 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedSalary;
+use App\Models\TestBonus;
 
 class Salary extends Model
 {
@@ -504,6 +505,9 @@ class Salary extends Model
             'obtainedBonuses' => function ($q) use ($date) {
                 $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $date->month)->whereYear('date', $date->year);
             },
+            'testBonuses' => function ($q) use ($date) {
+                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $date->month)->whereYear('date', $date->year);
+            },
             'timetracking' => function ($q) use ($date) {
                 $q->select(['user_id',
                         DB::raw('DAY(enter) as day'),
@@ -705,7 +709,20 @@ class Salary extends Model
                     $awards[$i] = null;
                 }
             }
-      
+            
+            $test_bonuses = [];
+            for ($i = 1; $i <= $date->daysInMonth; $i++) {
+                $d = '' . $i;
+                if(strlen ($i) == 1) $d = '0' . $i;
+               
+                $x = $user->testBonuses->where('day', $d)->sum('amount');
+                if($x > 0) {
+                    $test_bonuses[$i] = $x;
+                } else {
+                    $test_bonuses[$i] = null;
+                }
+            }
+
             $user->fine = $fines; 
             $user->trainings = $trainings; 
             $user->fines_total = $fines_total; 
@@ -718,6 +735,7 @@ class Salary extends Model
   
             $user->bonuses = $bonuses; 
             $user->awards = $awards; 
+            $user->test_bonuses = $test_bonuses; 
 
             $user->edited_salary = null;
             $editedSalary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();

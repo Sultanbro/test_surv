@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\CourseItem;
 use App\Models\CourseResult;
 use App\Models\TestResult;
+use App\Models\TestBonus;
 use App\Models\CourseProgress;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
@@ -66,6 +67,8 @@ class MyCourseController extends Controller
         }
         
         
+        $sum_bonus = 0;
+
         foreach ($request->questions as $key => $q) {
             if(isset($q['result'])) {
 
@@ -78,6 +81,8 @@ class MyCourseController extends Controller
                     $tr->answer =  $q['result']['answer'];
                     $tr->save();
                 } else {    
+                    $sum_bonus = $q->sum_test;
+
                     TestResult::create([
                         'test_question_id' => $q['result']['test_question_id'],
                         'answer' => $q['result']['answer'],
@@ -89,6 +94,14 @@ class MyCourseController extends Controller
 
             }
         }
+
+        if($sum_bonus > 0) {
+            TestBonus::create([
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id,
+                'amount' => $sum_bonus,
+            ]);
+        } 
 
         return [
             'item_model' => $model,

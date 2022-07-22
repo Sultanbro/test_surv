@@ -32,6 +32,7 @@ use Artisan;
 use App\UserNotification;
 use App\UserDescription;
 use App\Models\User\Card;
+use App\Models\TestBonus;
 use App\Classes\Helpers\Currency;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
@@ -998,7 +999,15 @@ class SalaryController extends Controller
                 $bonus = $editedBonus->amount;
             } else {
                 $ObtainedBonus = ObtainedBonus::onMonth($user->id, $date->format('Y-m-d'));
-                $bonus = round($month_salary->bonus + $ObtainedBonus);
+
+                $test_bonuses = TestBonus::selectRaw('sum(ROUND(amount,0)) as total')
+                    ->where('user_id', $user->id)
+                    ->whereYear('date', $date->year)
+                    ->whereMonth('date', $date->month)
+                    ->first('total')
+                    ->total;
+                    
+                $bonus = round($month_salary->bonus + $ObtainedBonus + $test_bonuses);
             }  
             
             if(!$edited_salary) $allTotal[11] += $bonus;
