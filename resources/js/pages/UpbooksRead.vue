@@ -111,6 +111,7 @@
         :course_item_id="course_item_id"
         :questions="activeSegment.questions"
         :pass="activeSegment.item_model !== null"
+        :pass_grade="activeSegment.pass_grade"
         :id="0"
         :key="segment_key"
         type="book"

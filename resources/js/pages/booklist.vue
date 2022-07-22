@@ -1181,7 +1181,7 @@ export default {
     },
 
     showPage(id, refreshTree = false, expand = false) {
-      console.log(this.activesbook)
+      this.questions_key++;
       if(this.activesbook != null && (this.text_was != this.activesbook.text || this.title_was != this.activesbook.title)) {
         if(!this.course_page) {
            if(!confirm('У вас на странице остались несохранненные изменения. Точно хотите выйти?'))  {
@@ -1263,7 +1263,7 @@ export default {
     checkPassGrade() {
       console.log('pass grade')
       let len = this.activesbook.questions.length;
-
+      
       if(this.activesbook.pass_grade > len) this.activesbook.pass_grade = len;
       if(this.activesbook.pass_grade < 1) this.activesbook.pass_grade = 1;
     },

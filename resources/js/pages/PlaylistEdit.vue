@@ -135,6 +135,7 @@
           :id="activeVideo.id"
           :pass_grade="activeVideo.pass_grade"
           type="video"
+          :key="refreshTest"
           @changePassGrade="checkPassGrade"
           :mode="'edit'"
           />
