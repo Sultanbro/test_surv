@@ -324,7 +324,6 @@ export default {
           q.variants.forEach((v, vi) => {
 
             answer[vi] = v.checked;
-            if(v.checked == 0) not_answered = false;
 
             if (v.checked == 1 && v.checked == v.right) {
               checked_answers++;
