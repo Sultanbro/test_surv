@@ -328,12 +328,15 @@ export default {
 
             if (v.checked == 1 && v.checked == v.right) {
               checked_answers++;
+              not_answered = false;
             }
             if (v.checked == 1 && v.right == 0) {
               wrong_answers++;
+              not_answered = false;
             }
             if (v.right == 1) {
               right_answers++;
+              not_answered = false;
             }
           });
 
