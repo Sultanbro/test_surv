@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            // $table->string('phone_1')->nullable();
-            // $table->string('phone_2')->nullable();
-            // $table->string('phone_3')->nullable();
-            // $table->string('phone_4')->nullable();
+        Schema::create('test_bonuses', function (Blueprint $table) {
+            $table->id();
+            $table->date('date');
+            $table->integer('user_id');
+            $table->integer('amount');
+            $table->timestamps();
         });
     }
 
@@ -28,8 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('test_bonuses');
     }
 };
