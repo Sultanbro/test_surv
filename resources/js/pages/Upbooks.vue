@@ -309,15 +309,6 @@
                   placeholder="Страница"
                   class="form-control mb-2"
                 />
-                <p class="mb-0">Проходной балл</p>
-                 <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  v-model="segment.pass_grade"
-                  placeholder="Проходной балл"
-                  class="form-control mb-2"
-                />
               </div>
               <div class="col-9">
                 <questions
@@ -422,10 +413,9 @@ export default {
     checkPassGrade(test) {
       console.log('pass grade')
       let len = test.questions.length;
-      let min = len != 0 ? Number((100 / len).toFixed()) : 100;
-
-      if(test.pass_grade > 100) test.pass_grade = 100;
-      if(test.pass_grade < min) test.pass_grade = Number(min);
+      
+      if(test.pass_grade > len) test.pass_grade = len;
+      if(test.pass_grade < 1) test.pass_grade = 1;
     },
 
     chooseImage(ref) {

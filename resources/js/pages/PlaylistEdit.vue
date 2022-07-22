@@ -137,10 +137,6 @@
     >
       <div class="p-3" v-if="activeVideo != null">
         <p class="mt-2 mb-3"><b>{{ activeVideo.title }}</b></p>
-        <div class="d-flex aic pass__ball">
-          <p class="mr-3" style="width:200px">Проходной балл в процентах (0 - 100):</p>
-          <input class="form-control mb-3" v-model="activeVideo.pass_grade" type="number" :min="0" :max="100" @change="checkPassGrade" />
-        </div>
         <questions 
           :questions="activeVideo.questions"
           :id="activeVideo.id"
@@ -480,10 +476,9 @@ export default {
     checkPassGrade() {
       console.log('pass grade')
       let len = this.activeVideo.questions.length;
-      let min = len != 0 ? Number((100 / len).toFixed()) : 100;
 
-      if(this.activeVideo.pass_grade > 100) this.activeVideo.pass_grade = 100;
-      if(this.activeVideo.pass_grade < min) this.activeVideo.pass_grade = Number(min);
+      if(this.activeVideo.pass_grade > len) this.activeVideo.pass_grade = len;
+      if(this.activeVideo.pass_grade < 1) this.activeVideo.pass_grade = 1;
     },
 
     returnArray(items, indexes = []) { 

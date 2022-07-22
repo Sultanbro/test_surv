@@ -471,8 +471,7 @@ class VideoPlaylistController extends Controller {
 
 		// count pass grade
 		$pass_grade = $request->pass_grade;
-		$min = count($request->questions) != 0 ? 100 / count($request->questions) : 100;
-		if($pass_grade < $min) $pass_grade = floor($min);
+        if($pass_grade > count($request->questions)) $pass_grade = count($request->questions);
 
 		Video::where('id', $request->id)->update(['pass_grade' => $pass_grade]);
 		

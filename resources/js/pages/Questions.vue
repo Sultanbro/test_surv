@@ -166,7 +166,12 @@
       
 
           <div class="d-flex aic pass__ball">
-            <p class="mr-3" style="width:200px">Проходной балл в % (0 - 100):</p>
+            <p class="mr-3" style="width:200px">Проходной балл:  
+              <i class="fa fa-info-circle" 
+                    v-b-popover.hover.right.html="'Правильных ответов для прохода'" 
+                    title="Проходной балл">
+                </i>
+            </p>
             <input class="form-control mb-3" v-model="pass_grade" type="number" :min="0" :max="100" @change="$emit('changePassGrade')" />
             <span>%</span>
           </div>
@@ -202,7 +207,7 @@ export default {
     },
     pass_grade: {
       type: Number,
-      default: 50
+      default: 1
     },
   },
   data() {
@@ -212,11 +217,13 @@ export default {
       total: 0,
       points: -1,
       count_points: false,
+      right_ans: 0 // правильно отвеченные
     };
   },
   computed: {
     scores() {
-      return Number(this.points - (this.total * this.pass_grade / 100)) >= 0
+      let pass_grade = this.pass_grade > this.questions.length ? this.questions.length : 1;
+      return Number(this.right_ans - pass_grade) >= 0
     }
   },
   watch: {
@@ -300,6 +307,7 @@ export default {
     checkAnswers() {
       // read
       this.points = 0;
+      this.right_ans = 0;
 
    
       this.questions.forEach((q) => {
@@ -329,6 +337,7 @@ export default {
 
           if (right_answers == checked_answers && wrong_answers == 0) {
             this.points += q.points;
+            this.right_ans++
             q.success = true;
           } else {
             q.success = false;

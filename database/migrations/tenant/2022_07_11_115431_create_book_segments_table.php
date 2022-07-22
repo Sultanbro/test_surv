@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('book_id');
             $table->integer('page_start')->default(0);
             $table->integer('page_end')->default(0);
-            $table->tinyInteger('pass_grade')->default(100);
+            $table->tinyInteger('pass_grade')->default(1);
             $table->timestamps();
 
             $table->index('book_id');

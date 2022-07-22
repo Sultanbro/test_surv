@@ -549,8 +549,7 @@ class KnowBaseController extends Controller
 
         // count pass grade
         $pass_grade = $request->pass_grade;
-        $min = count($request->questions) != 0 ? 100 / count($request->questions) : 100;
-        if($pass_grade < $min) $pass_grade = floor($min);
+        if($pass_grade > count($request->questions)) $pass_grade = count($request->questions);
 
         $book = KnowBase::withTrashed()->find($request->id);
         $book->pass_grade = $pass_grade;

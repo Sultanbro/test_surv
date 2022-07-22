@@ -1263,10 +1263,9 @@ export default {
     checkPassGrade() {
       console.log('pass grade')
       let len = this.activesbook.questions.length;
-      let min = len != 0 ? Number((100 / len).toFixed()) : 100;
 
-      if(this.activesbook.pass_grade > 100) this.activesbook.pass_grade = 100;
-      if(this.activesbook.pass_grade < min) this.activesbook.pass_grade = Number(min);
+      if(this.activesbook.pass_grade > len) this.activesbook.pass_grade = len;
+      if(this.activesbook.pass_grade < 1) this.activesbook.pass_grade = 1;
     },
   },
 };
