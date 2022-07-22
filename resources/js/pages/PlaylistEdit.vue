@@ -349,6 +349,14 @@ export default {
           title: this.activeVideo.title,
         })
         .then((response) => {
+
+          let i = this.ids.findIndex(el => el.id == this.activeVideo.id);
+          if(i != -1) {
+            let video = this.findItem(this.ids[i]);
+            video.title = this.activeVideo.title;
+          }
+        
+
           this.$message.success("Сохранено");
         })
         .catch((error) => {
