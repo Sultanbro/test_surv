@@ -309,6 +309,7 @@ export default {
       this.points = 0;
       this.right_ans = 0;
 
+      let not_answered_question = false;
    
       this.questions.forEach((q) => {
         let answer = {}
@@ -318,11 +319,12 @@ export default {
           let right_answers = 0;
           let wrong_answers = 0;
           let checked_answers = 0;
-
+          let not_answered = true;
 
           q.variants.forEach((v, vi) => {
 
             answer[vi] = v.checked;
+            if(v.checked == 0) not_answered = false;
 
             if (v.checked == 1 && v.checked == v.right) {
               checked_answers++;
@@ -334,6 +336,8 @@ export default {
               right_answers++;
             }
           });
+
+          if(not_answered) not_answered_question = true;
 
           if (right_answers == checked_answers && wrong_answers == 0) {
             this.points += q.points;
@@ -355,10 +359,12 @@ export default {
         };
 
       });
-      console.log('Console.log')
-      console.log(this.pass_grade)
-      console.log(this.right_ans)
-         console.log(this.scores)
+      
+      if(not_answered_question) {
+        this.$message.error('Ответьте на все вопросы!');
+        return;
+      }
+
       if(this.scores) {
         if(this.count_points) {
           this.count_points = false;
