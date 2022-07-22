@@ -222,7 +222,7 @@ export default {
   },
   computed: {
     scores() {
-      let pass_grade = this.pass_grade > this.questions.length ? this.questions.length : 1;
+      let pass_grade = this.pass_grade > this.questions.length ? this.questions.length : this.pass_grade;
       return Number(this.right_ans - pass_grade) >= 0
     }
   },
