@@ -81,7 +81,9 @@ class MyCourseController extends Controller
                     $tr->answer =  $q['result']['answer'];
                     $tr->save();
                 } else {    
-                    $sum_bonus = $q->sum_test;
+
+                   // $tq = TestQuestion::find($q['id']);
+                    $sum_bonus = $q['points'];
 
                     TestResult::create([
                         'test_question_id' => $q['result']['test_question_id'],
