@@ -223,7 +223,7 @@ export default {
   computed: {
     scores() {
       let pass_grade = this.pass_grade > this.questions.length ? this.questions.length : this.pass_grade;
-      return Number(this.right_ans - pass_grade) >= 0
+      return Number(this.right_ans) - Number(pass_grade) >= 0
     }
   },
   watch: {
@@ -355,7 +355,10 @@ export default {
         };
 
       });
-      
+      console.log('Console.log')
+      console.log(this.pass_grade)
+      console.log(this.right_ans)
+         console.log(this.scores)
       if(this.scores) {
         if(this.count_points) {
           this.count_points = false;
