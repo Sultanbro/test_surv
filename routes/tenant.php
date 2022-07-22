@@ -172,6 +172,8 @@ Route::middleware([
     Route::post('/playlists/get', [VideoPlaylistController::class, 'getPlaylist']);
     Route::post('/playlists/add-video', [VideoPlaylistController::class, 'add_video']);
     Route::post('/playlists/save-video', [VideoPlaylistController::class, 'save_video']);
+    Route::post('/playlists/save-video-fast', [VideoPlaylistController::class, 'save_video_fast']);
+
     Route::post('/playlists/delete-video', [VideoPlaylistController::class, 'delete_video']);
     Route::post('/playlists/remove-video', [VideoPlaylistController::class, 'remove_video']);
     Route::post('/playlists/save', [VideoPlaylistController::class, 'save']);

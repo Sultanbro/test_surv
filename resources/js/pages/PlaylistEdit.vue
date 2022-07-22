@@ -72,7 +72,7 @@
               </div>
             </div>
 
-            <div class="row mb-2">
+            <div class="row mb-2" v-if="mode == 'edit'">
               <div class="col-md-12">
                 <button class="btn btn-primary" @click="saveActiveVideoFast">Сохранить</button>
               </div>
