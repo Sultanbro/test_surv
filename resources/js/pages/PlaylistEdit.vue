@@ -74,14 +74,7 @@
 
             <div class="row mb-2">
               <div class="col-md-12">
-                <textarea
-                  class="form-control"
-                  v-if="mode == 'edit'"
-                  placeholder="Описание видео"
-                  v-model="activeVideo.text"
-                  :disabled="mode == 'read'"
-                ></textarea>
-                <p v-else class="v-desc"> {{ activeVideo.title }} </p>
+                <button class="btn btn-primary" @click="saveActiveVideoFast">Сохранить</button>
               </div>
             </div>
 
@@ -100,7 +93,7 @@
                     :mode="mode"
                     />
                 
-                <button class="next-btn btn btn-primary" v-if="activeVideo.questions.length == 0 || activeVideo.item_model != null"
+                <button class="next-btn btn btn-primary" v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null) && mode == 'read'"
                   @click="nextElement()">
                   Следующее видео
                   <i class="fa fa-angle-double-right ml-2"></i>
@@ -349,6 +342,19 @@ export default {
         });
     },
 
+     saveActiveVideoFast() {
+      axios
+        .post("/playlists/save-video-fast", {
+          id: this.activeVideo.id,
+          title: this.activeVideo.title,
+        })
+        .then((response) => {
+          this.$message.success("Сохранено");
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
 
     saveActiveVideo() {
       console.log("saveActiveVideo");
@@ -387,7 +393,8 @@ export default {
 
     showVideo(video, key, autoplay = true) {
     
-      
+      let loader = this.$loading.show();
+
        axios
         .post("/playlists/video", {
           id: video.id,
@@ -395,6 +402,7 @@ export default {
         .then((response) => {
 
           if(autoplay) {
+            loader.hide()
             this.activeVideo = response.data.video;
             this.activeVideoLink = this.activeVideo.links;
             this.video_changed++;
@@ -404,6 +412,7 @@ export default {
           }
         })
         .catch((error) => {
+          loader.hide()
           alert(error);
         });
 

@@ -245,6 +245,17 @@ class VideoPlaylistController extends Controller {
 		
 	}	
 
+	public function save_video_fast(Request $request) {
+
+		$video = Video::find($request->id);
+
+		if($video) {
+			$video->title = $request->title;
+			$video->save();
+		}
+	}	
+	
+
 	public function remove_video(Request $request) {
 		$video = Video::find($request->id);
 		$video->playlist_id = 0;
