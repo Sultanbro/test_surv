@@ -364,6 +364,7 @@ export default {
       
       if(not_answered_question) {
         this.$message.error('Ответьте на все вопросы!');
+        
         return;
       }
 
@@ -373,6 +374,8 @@ export default {
         } else {
           this.$emit('passed');
         }
+      } else {
+        this.points = -1;
       }
     },
 
