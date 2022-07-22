@@ -198,7 +198,7 @@
         </li>
         @if(auth()->user() && auth()->user()->program_id == 1 && tenant('id') == 'bp')
         <li class="menu-item">
-            <a href="/callibro/login" class="side-btn">
+            <a target="_blank" href="/callibro/login" class="side-btn">
                 <i class="fas fa-headset"></i>
                 <span>U-calls</span>
             </a>
