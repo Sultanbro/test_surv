@@ -173,7 +173,7 @@
                 </i>
             </p>
             <input class="form-control mb-3" v-model="pass_grade" type="number" :min="0" :max="100" @change="$emit('changePassGrade')" />
-            <span>%</span>
+       
           </div>
 
       </div>
