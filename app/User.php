@@ -161,7 +161,7 @@ class User extends Authenticatable implements Authorizable
             
             if($year == $date->year && $month == $date->month) {
                 $exclude = $workdays == 5 ? 2 : 1;
-                $applied_from = workdays_diff($applied->format('Y-m-d'), Carbon::parse($date)->addMonth()->day(1)->format('Y-m-d'), $exclude);
+                $applied_from = workdays_diff($applied->format('Y-m-d'), Carbon::parse($date)->endOfMonth()->format('Y-m-d'), $exclude);
                 //$applied_from = $applied_from - 1;
                 $applied_from = $applied_from < 0 ? 0 : $applied_from;
             }
