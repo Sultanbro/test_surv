@@ -459,6 +459,7 @@ export default {
       this.questions[this.questions.length - 1].editable = true;
       this.can_save = true;
       this.changed = true;
+      this.pass_grade = this.questions.length;
     },
 
     deleteQuestion(q_index) {
