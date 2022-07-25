@@ -219,8 +219,7 @@ export default {
   methods: { 
 
     passedTest() {
-      
-        this.activeVideo.item_model = {status: 1}
+         this.setVideoPassed()
         this.nextElement()
     },
 
