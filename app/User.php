@@ -155,6 +155,7 @@ class User extends Authenticatable implements Authorizable
         $applied_from = 0;
         if($this->user_description && $this->user_description->applied) {
             $applied = Carbon::parse($this->user_description->applied);
+            $applied->addDay();
             $year = $applied->year;
             $month = $applied->month;
             
