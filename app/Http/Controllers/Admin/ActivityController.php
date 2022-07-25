@@ -71,7 +71,7 @@ class ActivityController extends Controller
                     $item['activity_id'] = $request->activity_id;
 
 
-                    if($group_id == 42) {
+                    if($group_id == 42 || $group_id == 88) { //Kaspi
 
 
                         if($table_type == 'minutes') {
@@ -130,7 +130,7 @@ class ActivityController extends Controller
                 }
 
 
-                if($group_id == 42) {
+                if($group_id == 42  || $group_id == 88) {
                     
                     if($table_type == 'minutes') { 
 
@@ -204,6 +204,19 @@ class ActivityController extends Controller
             $save_value = 0;
             if($item['activity_id'] == 13)  (int)$save_value = $item['gatherings'];
             if($item['activity_id'] == 94) {
+                $arr = explode(':', array_key_exists('avg_time', $item) ? $item['avg_time'] : '00:00:00');
+                $save_value = (int)$arr[0] + ((int)$arr[1] / 60);
+                $save_value = round($save_value, 2);
+            }
+            if($item['activity_id'] == 1)  $save_value = (int)number_format($item['hours'] * 60, 0);
+
+            $this->updateActivity($item, $item['activity_id'], $save_value);
+           
+        }
+
+        if($item['group_id'] == 88) {
+            $save_value = 0;
+            if($item['activity_id'] == 165) {
                 $arr = explode(':', array_key_exists('avg_time', $item) ? $item['avg_time'] : '00:00:00');
                 $save_value = (int)$arr[0] + ((int)$arr[1] / 60);
                 $save_value = round($save_value, 2);
