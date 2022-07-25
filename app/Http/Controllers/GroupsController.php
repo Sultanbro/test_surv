@@ -33,8 +33,9 @@ class GroupsController extends Controller
     public function saveTimes(Request $request) {
         
         $date = $request->date;
-        $additional_minutes_remote = $this->getAdditionalMinutes($date, 'remote'); // Отсутствие связи доп время для сотрудников Remote
-        $additional_minutes_office = $this->getAdditionalMinutes($date, 'inhouse'); // Отсутствие связи доп время для сотрудников Inhouse
+        $group_id = $request->group;
+        $additional_minutes_remote = $this->getAdditionalMinutes($date, 'remote', $group_id); // Отсутствие связи доп время для сотрудников Remote
+        $additional_minutes_office = $this->getAdditionalMinutes($date, 'inhouse', $group_id); // Отсутствие связи доп время для сотрудников Inhouse
 
         $edited_users = [];
 
@@ -93,13 +94,13 @@ class GroupsController extends Controller
         }
 
      
-        $this->setZeroToUsersStartedTheDay($edited_users, $date);
+        $this->setZeroToUsersStartedTheDay($edited_users, $date, $group_id);
     }
 
 
-    public function setZeroToUsersStartedTheDay($user_ids, $date) {
+    public function setZeroToUsersStartedTheDay($user_ids, $date, $group_id) {
 
-        $group = ProfileGroup::find(42); 
+        $group = ProfileGroup::find($group_id); 
         
         $users = array_diff(json_decode($group->users, true), $user_ids);
         
@@ -131,10 +132,10 @@ class GroupsController extends Controller
 
     }
 
-    public function getAdditionalMinutes($date, $type) {
+    public function getAdditionalMinutes($date, $type, $group_id) {
 
         $day = Carbon::parse($date)->day;
-        $column = AnalyticColumn::where('group_id', 42)
+        $column = AnalyticColumn::where('group_id', $group_id)
             ->where('date', Carbon::parse($date)->day(1)->format('Y-m-d'))
             ->where('name', $day)
             ->first();

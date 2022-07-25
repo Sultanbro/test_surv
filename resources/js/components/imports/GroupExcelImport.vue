@@ -138,6 +138,7 @@ export default {
                 date: this.date,
                 items: this.items,
                 filename: this.filename,
+                group: this.group_id,
             }).then(response => {
                 this.$message.info('Сохранено');
                 loader.hide() 
