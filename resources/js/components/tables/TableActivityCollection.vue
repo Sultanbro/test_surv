@@ -532,7 +532,7 @@ export default {
     }
 }
 .z2233 {
-    z-index: 2233 !important;
+    z-index: 3 !important;
 }
 .r-to .wd .badge-success {
     display: none;
@@ -553,13 +553,13 @@ export default {
 .sticky-h1 {
     position: sticky;
     top: 0;
-    z-index: 2222;
+    z-index: 2;
     background: #bfbfbf !important;
 }
 .sticky-h2 {
     position: sticky;
     top: 31px;
-    z-index: 2222;
+    z-index: 2;
     background: #bfbfbf !important;
 }
 </style>
