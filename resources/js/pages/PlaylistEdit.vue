@@ -409,9 +409,9 @@ export default {
           id: video.id,
         })
         .then((response) => {
-
+           loader.hide()
           if(autoplay) {
-            loader.hide()
+         
             this.activeVideo = response.data.video;
             this.activeVideoLink = this.activeVideo.links;
             this.video_changed++;
