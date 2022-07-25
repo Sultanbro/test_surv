@@ -136,7 +136,7 @@
           :pass_grade="activeVideo.pass_grade"
           type="video"
           :key="refreshTest"
-          @changePassGrade="checkPassGrade"
+          @changePassGrade="changePassGrade"
           :mode="'edit'"
           />
       </div>
@@ -491,12 +491,14 @@ export default {
     
     },
 
-    checkPassGrade() {
+    changePassGrade(grade) {
       console.log('pass grade')
+
+      this.activeVideo.pass_grade = grade;
       let len = this.activeVideo.questions.length;
 
-      if(this.activeVideo.pass_grade > len) this.activeVideo.pass_grade = len;
-      if(this.activeVideo.pass_grade < 1) this.activeVideo.pass_grade = 1;
+      if(grade > len) this.activeVideo.pass_grade = len;
+      if(grade < 1) this.activeVideo.pass_grade = 1;
     },
 
     returnArray(items, indexes = []) { 

@@ -116,6 +116,7 @@ Vue.component('t-recruiter-stats', require('./components/analytics/TableRecruite
 Vue.component('user-earnings', require('./components/profile/UserEarnings.vue').default); // Блок начислений в профиле
 Vue.component('g-recruting', require('./components/analytics/Recruting.vue').default); // сводная информация рекрутинг
 Vue.component('top-gauges', require('./components/TopGauges.vue').default); // TOП спидометры, есть и в аналитике
+Vue.component('book-segment', require('./components/BookSegment.vue').default); // 
 
 /**
  * Tables

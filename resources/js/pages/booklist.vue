@@ -308,7 +308,7 @@
                   @passed="passed"
                   :key="questions_key"
                   :pass_grade="activesbook.pass_grade"
-                  @changePassGrade="checkPassGrade"
+                  @changePassGrade="changePassGrade"
                 />
 
         
@@ -337,7 +337,7 @@
                    :pass="activesbook.item_model !== null"
                   :key="questions_key"
                   :pass_grade="activesbook.pass_grade"
-                  @changePassGrade="checkPassGrade"
+                  @changePassGrade="changePassGrade"
                 />
               <div class="pb-5"></div> 
           </div>
@@ -383,7 +383,7 @@
               </form>
               <progress-bar
                 :percentage="myprogress"
-                :label="Загрузка"
+                label="Загрузка"
               />
     </b-modal>
 
@@ -1260,12 +1260,14 @@ export default {
 
     editorSave() {},
 
-    checkPassGrade() {
+    changePassGrade(grade) {
       console.log('pass grade')
+
+      this.activesbook.pass_grade = grade;
       let len = this.activesbook.questions.length;
-      
-      if(this.activesbook.pass_grade > len) this.activesbook.pass_grade = len;
-      if(this.activesbook.pass_grade < 1) this.activesbook.pass_grade = 1;
+
+      if(grade > len) this.activesbook.pass_grade = len;
+      if(grade < 1) this.activesbook.pass_grade = 1;
     },
   },
 };

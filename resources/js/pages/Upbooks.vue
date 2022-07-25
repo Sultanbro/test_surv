@@ -290,38 +290,15 @@
             </div>
           </div>
 
-          <div
-            class="test mb-3"
+          <book-segment
+            class="mb-3"
+            :segment="segment"
+            :book_id="modals.edit_book.item.id"
+            @deleteSegment="deleteSegment(s)"
             v-for="(segment, s) in modals.edit_book.segments"
             :key="s"
-          >
-            <div class="row">
-              <div class="col-3">
-                <p class="mb-0">Страница
-                  <i class="fa fa-save ml-1 pointer" @click="saveSegment(s)"></i>
-                  <i class="fa fa-trash ml-1 pointer" @click="deleteSegment(s)"></i>
-                </p>
-                <input
-                  type="number"
-                  min="1"
-                  max="9999"
-                  v-model="segment.page_start"
-                  placeholder="Страница"
-                  class="form-control mb-2"
-                />
-              </div>
-              <div class="col-9">
-                <questions
-                  :questions="segment.questions"
-                  :id="segment.id"
-                  :pass_grade="segment.pass_grade"
-                  @changePassGrade="checkPassGrade(segment)"
-                  type="book"
-                  mode="edit"
-                />
-              </div>
-            </div>
-          </div>
+          />
+          
         </div>
 
         <div class="d-flex">
@@ -406,16 +383,12 @@ export default {
     this.fetchData();
   },
   methods: {
-    selectCategory(index) {
-      this.activeCategory = this.categories[index];
+    deleteSegment(i) {
+      this.modals.edit_book.segments.splice(i,1);
     },
 
-    checkPassGrade(test) {
-      console.log('pass grade')
-      let len = test.questions.length;
-      
-      if(test.pass_grade > len) test.pass_grade = len;
-      if(test.pass_grade < 1) test.pass_grade = 1;
+    selectCategory(index) {
+      this.activeCategory = this.categories[index];
     },
 
     chooseImage(ref) {
@@ -544,7 +517,7 @@ export default {
     editBook(book) {
       let loader = this.$loading.show();
 
-      this.modals.edit_book.show = true;
+      this.modals.edit_book.show = true; 
       this.modals.edit_book.item = book;
 
       axios
@@ -685,44 +658,6 @@ export default {
         });
     },
 
-    deleteSegment(i) {
-      if(!confirm('Вы уверены? Их потом не восстановить')) {
-        return false;
-      }
-
-      axios
-        .post("/admin/upbooks/segments/delete", {
-          id: this.modals.edit_book.segments[i].id,
-        })
-        .then((response) => {
-          this.$message.success('Удалено');
-          this.modals.edit_book.segments.splice(i,1);
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    saveSegment(i) {
-
-      if(this.modals.edit_book.segments[i].questions.length == 0) {
-        this.$message.error('Добавьте минимум 1 вопрос');
-        return;
-      }
-      
-      axios
-        .post("/admin/upbooks/segments/save", {
-          item: this.modals.edit_book.segments[i],
-          book_id: this.modals.edit_book.item.id
-        })
-        .then((response) => {
-          this.modals.edit_book.segments[i].id = response.data;
-          this.$message.success('Сохранено');
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    }
 
   },
 };

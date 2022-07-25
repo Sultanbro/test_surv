@@ -172,7 +172,7 @@
                     title="Проходной балл">
                 </i>
             </p>
-            <input class="form-control mb-3" v-model="pass_grade" type="number" :min="0" :max="100" @change="$emit('changePassGrade')" />
+            <input class="form-control mb-3" v-model="pass_grade_local" type="number" :min="0" :max="100" @change="$emit('changePassGrade', pass_grade_local)" />
        
           </div>
 
@@ -206,7 +206,6 @@ export default {
       default: false
     },
     pass_grade: {
-      type: Number,
       default: 1
     },
   },
@@ -217,18 +216,28 @@ export default {
       total: 0,
       points: -1,
       count_points: false,
+      pass_grade_local: 1,
       right_ans: 0 // правильно отвеченные
     };
   },
   computed: {
     scores() {
-      let pass_grade = this.pass_grade > this.questions.length ? this.questions.length : this.pass_grade;
-      return Number(this.right_ans) - Number(pass_grade) >= 0
+      let pass_grade_local = this.pass_grade_local > this.questions.length ? this.questions.length : this.pass_grade_local;
+      return Number(this.right_ans) - Number(pass_grade_local) >= 0
     }
   },
-  watch: {
-      pass_grade(newData) {
+  watch: {  
+      pass_grade_local(grade) {
+
+        let len = this.questions.length;
+
+        if(grade > len) this.pass_grade_local = len;
+        if(grade < 1) this.pass_grade_local = 1;
+        this.$emit('changePassGrade', this.pass_grade_local)
         this.changed = true;
+      },
+      pass_grade() {
+        this.pass_grade_local = this.pass_grade
       },
       mode: {
         handler (val, oldVal) {
@@ -241,7 +250,7 @@ export default {
     },
   },
   created() {
-
+    this.pass_grade_local = this.pass_grade;
     this.setResults();
     this.prepareVariants();
 
@@ -407,6 +416,7 @@ export default {
 
       if(this.questions[q_index].text == '' || this.questions[q_index].text == null) {
           alert("Вопрос  №" + (q_index + 1) + " не заполнен!");
+          this.$emit('validate', false)
         return false;
       }
 
@@ -414,6 +424,7 @@ export default {
       if(this.questions[q_index].variants.findIndex((v) => v.text == '') != -1 &&
         this.questions[q_index].type == 0) {
         alert("Не оставляйте варианты пустыми! Вопрос №" + (q_index + 1));
+        this.$emit('validate', false)
         return false;
       }
 
@@ -422,12 +433,14 @@ export default {
         this.questions[q_index].type == 0
       ) {
         alert("Выберите один правильный вариант! Вопрос №" + (q_index + 1));
+        this.$emit('validate', false)
         return false;
       }
 
       
 
       this.questions[q_index].editable = false;
+      this.$emit('validate', true)
       return true;
     },
 
@@ -459,7 +472,7 @@ export default {
       this.questions[this.questions.length - 1].editable = true;
       this.can_save = true;
       this.changed = true;
-      this.pass_grade = this.questions.length;
+      this.$emit('changePassGrade', this.questions.length)
     },
 
     deleteQuestion(q_index) {
@@ -493,6 +506,20 @@ export default {
       this.changed = true;
     },
 
+    validate() {
+      let passed = true;
+
+      this.questions.every((q, index) => {
+        if(!this.saveQuestion(index)) {
+          passed = false;
+          return false;
+        }
+        return true;
+      });
+
+      if(!passed) return false;
+    },
+
     saveTest() {
       let passed = true;
 
@@ -506,7 +533,7 @@ export default {
 
       if(!passed) return false;
 
-      this.$emit('changePassGrade');
+      this.$emit('changePassGrade', this.pass_grade_local);
 
       let loader = this.$loading.show();
 
