@@ -25,7 +25,7 @@ function workdays_diff($start, $end, $exclude = 2) {
     $start = new \DateTime($start);
     $end = new \DateTime($end);
     // otherwise the  end date is excluded (bug?)
-    $end->modify('+1 day');
+    //$end->modify('+1 day');
 
     $interval = $end->diff($start);
 
