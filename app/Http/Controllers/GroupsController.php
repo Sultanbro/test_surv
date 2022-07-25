@@ -187,6 +187,11 @@ class GroupsController extends Controller
                     $gusers = $this->groupUsers(42);
                     $gusers = $gusers->sortBy('name');
                 }
+
+                if($group_id == 88) {
+                    $gusers = $this->groupUsers(88);
+                    $gusers = $gusers->sortBy('name');
+                }
                 
                 $items = [];
                 
