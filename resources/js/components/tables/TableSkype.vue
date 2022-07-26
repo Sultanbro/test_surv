@@ -11,7 +11,7 @@
                     <option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
                 </select>    -->
                 <div class="p-o pl-3">
-                    <date-picker value="test"  placeholder="Дата подписи" v-model="filter.dates" range multiple ></date-picker>
+                    <date-picker value="test"  placeholder="Дата подписи" v-model="filter.dates" :lang="lang" range multiple ></date-picker>
                     <!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
                 </div>
             </div>
@@ -316,6 +316,21 @@ export default {
     },
     data: function () {
         return {
+            lang:{
+                formatLocale:{
+                    firstDayOfWeek: 1,
+                        months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Йюнь', 'Йюль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+                        // MMM
+                        monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Йюн', 'Йюл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+                        // dddd
+                        weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+                        // ddd
+                        weekdaysShort: ['Вос', 'Пон', 'Втр', 'Срд', 'Чтв', 'Пят', 'Суб'],
+                        // dd
+                        weekdaysMin: ['Вс', 'По', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+                },
+                monthBeforeYear: false,
+            },
             mydate: Date.now(),
             showSkypeFields: {},
             showSkypeFieldsDesc: {},
