@@ -1028,7 +1028,6 @@ public function planRequired($arr) {
             ->whereNotNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
-            ->where('users.UF_ADMIN', 1)
             ->whereYear('ud.fire_date', $date['year'])
             ->whereMonth('ud.fire_date', $date['month'])
             ->get()
