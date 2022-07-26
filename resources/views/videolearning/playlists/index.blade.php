@@ -3,7 +3,7 @@
 @section('content')
 <page-playlists 
 token="{{ csrf_token() }}" 
-:can_edit="{{ auth()->user()->is_admin == 1 ? 'true' : 'false'}}"
+:can_edit="{{ auth()->user()->can('videos_edit') ? 'true' : 'false'}}"
 :category="{{ isset($category) ? $category : 1 }}"
 :playlist="{{ isset($playlist) ? $playlist : 0 }}"
 :video="{{ isset($video) ? $video : 0 }}" 

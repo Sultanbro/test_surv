@@ -7,9 +7,13 @@ use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\Models\Videos\Video;
 use App\KnowBase;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CourseItem extends Model
 {
+
+    use SoftDeletes;
+
     protected $table = 'course_items';
 
     public $timestamps = true;

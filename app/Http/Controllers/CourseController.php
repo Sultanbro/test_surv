@@ -152,23 +152,20 @@ class CourseController extends Controller
             $course->save();
         }
 
-        $ids = [];
-        foreach($request->course['items'] as $index => $item) {
-            if($item && array_key_exists('id', $item)) {
-                array_push($ids, $item['id']);
-            }
-        }
-        
         // elements of course
-        CourseItem::whereNotIn('id', $ids)->where('course_id', $request->course['id'])->delete();
-
-        
+        $elements = [];
         foreach($request->course['elements'] as $index => $item) {
             if($item == null) continue;
 
             if($item['type'] == 1) $model = 'App\\Models\\Books\\Book';
             if($item['type'] == 2) $model = 'App\\Models\\Videos\\VideoPlaylist';
             if($item['type'] == 3) $model = 'App\\KnowBase';
+
+
+            array_push($elements, [
+                'item_id' => $item['id'],
+                'item_model' => $model,
+            ]);
 
             $ci = CourseItem::where('item_model', $model)
                 ->where('course_id', $request->course['id'])
@@ -189,6 +186,18 @@ class CourseController extends Controller
                 CourseItem::create($arr);
             }
         }
+
+        $elements = collect($elements);
+
+        $ids = [];
+        foreach($request->course['items'] as $index => $item) {
+            if($elements->where('item_id', $item['item_id'])->where('item_model', $item['item_model'])->first() == null) {
+                array_push($ids, $item['id']);
+            }
+        }
+        
+        // delete
+        CourseItem::whereIn('id', $ids)->where('course_id', $request->course['id'])->delete();
 
         // who starts the course
         CourseModel::where('course_id', $course->id)->delete();

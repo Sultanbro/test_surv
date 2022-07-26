@@ -114,13 +114,14 @@ export default {
       axios.post('/courses/save-order', {
         id: event.item.id,
         order: event.newIndex, // oldIndex
-      })
+      }) 
       .then(response => {
           this.$message.success('Очередь сохранена');
       })
     },
     selectCourse(i) {
       this.activeCourse = this.courses[i];
+      window.history.replaceState({ id: "100" }, "Курсы", "/courses?id=" + this.activeCourse.id);
     },
 
     editAccess(i) {
@@ -189,9 +190,17 @@ export default {
         .get("/admin/courses/get", {})
         .then((response) => {
           this.courses = response.data.courses;
-          if (this.courses.length > 0) {
+
+           const urlParams = new URLSearchParams(window.location.search);
+          let course_id = urlParams.get('id');
+       
+          if(course_id != null) {
+            let i = this.courses.findIndex(el => el.id == course_id)
+            if(i != -1) this.activeCourse = this.courses[i]
+          } else if (this.courses.length > 0) {
             this.activeCourse = this.courses[0];
           }
+          
           loader.hide();
         })
         .catch((error) => {

@@ -9,9 +9,8 @@
         @end="saveOrder"
     >
         <div class="video-block" v-for="(video, v_index) in videos"
-       
-                  :key="video.id"
-                 :id="video.id"
+                :key="video.id"
+                :id="video.id"
                 :class="{
                     'active': (active == video.id),
                     'disabled': active != video.id && mode == 'read' && video.item_model == null
@@ -34,7 +33,6 @@
             <div class="controls d-flex" 
                 v-if="mode == 'edit' && !group_edit"
             >
-
                 <div class="more">
                     <i class="fas fa-ellipsis-h mr-2"></i>
                     <div class="show" @click.stop="$emit('showTests', video, true)">
@@ -78,8 +76,14 @@
     
         <div class="d-flex mb-2 p-3 aic">
             <p class="mb-0 mr-2">Плейлист</p>
-            <v-select :options="playlists" label="title" v-model="playlist_id" class="group-select w-full"></v-select>
+            <v-select :options="playlists" label="title" v-model="playlist" class="group-select w-full"></v-select>
         </div>
+
+        <div class="d-flex mb-2 p-3 aic">
+            <p class="mb-0 mr-2">Группа</p>
+            <v-select :options="groups" label="title" v-model="group" class="group-select w-full"></v-select>
+        </div>
+
 
         <div class="mb-3">
             <button class="btn btn-primary rounded m-auto " @click="move">
@@ -100,8 +104,33 @@ export default {
         return {
           modal: false,
           index: -1,
-          playlist_id: 0,
-          playlists: []
+          playlist: null,
+          group: {
+                id: 0,
+                title: 'Без группы'
+            },
+          playlists: [],
+          groups: []
+        }
+    },
+
+    watch: {
+        playlist() {
+            if(this.playlist != null) {
+                let i = this.playlists.findIndex(el => el.id == this.playlist.id)
+                if(i != -1) {
+                   
+                    this.groups = this.playlists[i].groupses;
+                    this.groups.unshift({
+                        id: 0,
+                        title: 'Без группы'
+                    });
+                     this.group = {
+                        id: 0,
+                        title: 'Без группы'
+                    }
+                }
+            }  
         }
     },
 
@@ -124,7 +153,13 @@ export default {
 
                  if(this.videos.length > 0) {
                     let i = this.playlists.findIndex(el => el.id == this.videos[0].playlist_id)
-                    if(i != -1) this.playlist_id = this.playlists[i]
+                    if(i != -1) {
+                        this.playlist = this.playlists[i]
+                        this.group = {
+                            id: 0,
+                            title: 'Без группы'
+                        };
+                    }
                 }
             })
         },  
@@ -132,7 +167,8 @@ export default {
         move() {
             axios.post('/videos/move-to-playlist', {
                 video_id: this.videos[this.index].id,
-                playlist_id: this.playlist_id.id, 
+                playlist_id: this.playlist.id, 
+                group_id: this.group.id
             })
             .then(response => {
                 this.$message.success('Видео перемещено');
@@ -141,13 +177,19 @@ export default {
         },   
 
         saveOrder(e) {
-            
+            let loader = this.$loading.show(); 
             axios.post('/videos/save-order', {
                 id: e.item.id,
                 order: e.newIndex, // oldIndex
             })
             .then(response => {
+                loader.hide()
+                this.$emit('order-changed')
                 this.$message.success('Очередь сохранена');
+            })
+            .catch(e => {
+                loader.hide()
+                console.log(e)
             })
         },
 

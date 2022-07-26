@@ -172,15 +172,20 @@
                     title="Проходной балл">
                 </i>
             </p>
-            <input class="form-control mb-3" 
-              v-model="pass_grade_local" 
-              type="number"
-              :min="0"
-              :max="100"
-              @change="$emit('changePassGrade', pass_grade_local)" 
-              @focus="$event.target.select()"
-              />
-       
+
+            <div class="d-flex aic mb-3">
+                <input class="form-control  mr-1" 
+                  v-model="pass_grade_local" 
+                  type="number"
+                  :min="0"
+                  :max="100"
+                  @change="$emit('changePassGrade', pass_grade_local)" 
+                  @focus="$event.target.select()"
+                />
+                <span> <b>из {{ questions.length }}</b></span>
+            </div>
+        
+
           </div>
 
       </div>
@@ -496,6 +501,7 @@ export default {
             })
         }
         this.changed = true;
+        this.$emit('changePassGrade', this.questions.length)
       }
     },
 

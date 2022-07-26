@@ -103,6 +103,7 @@ class VideoPlaylistController extends Controller {
 		$no_group_videos = Video::where('group_id', 0)
 			->where('playlist_id', $pl->id)
 			->with('questions')
+			->orderBy('order', 'asc')
 			->get();
 
 		if($no_group_videos->count() > 0) {
@@ -497,10 +498,12 @@ class VideoPlaylistController extends Controller {
         }
 
         $videos = Video::where('group_id', $item->group_id)
+			->where('playlist_id', $item->playlist_id)
             ->where('id', '!=', $request->id)
             ->orderBy('order', 'asc')
             ->get();
 
+		
         $order = 0;
         foreach ($videos as $video) {
             if($order == $request->order) {
@@ -515,10 +518,44 @@ class VideoPlaylistController extends Controller {
 	}
 
 	public function getPlaylistsToMove(Request $request) {
-		$playlists = Playlist::where('deleted_at', NULL)
-			->get(['title', 'id']);
+		$cats = Category::orderBy('title')->get(['id','title']);
 
-		return $playlists;
+		$all = collect([]);
+		foreach ($cats as $key => $cat) {
+			$playlists = Playlist::where('deleted_at', NULL)
+				->with('groups')
+				->where('category_id', $cat->id)
+				->get(['title', 'id']);
+
+			
+			foreach($playlists as $pl) {
+				$pl->title = $cat->title . '  ->  ' . $pl->title;
+				$pl->groupses = $this->extractGroups($pl->groups);
+				
+			}
+
+
+			$all = $all->merge($playlists);
+		}
+	
+		return $all;
+	}
+
+	private function extractGroups($groups, $prefix = '')
+	{
+		$arr = [];
+
+		foreach ($groups as $key => $group) {
+			$item = [];
+			$arr[] = [
+				'id' => $group->id,
+				'title' => $prefix . ' ' . $group->title
+			];
+
+			$arr = array_merge($arr, $this->extractGroups($group->children, $prefix . ' ' . $group->title  . '  ->  '));
+		}	
+
+		return $arr;
 	}
 
 	public function moveToPlaylist(Request $request) {
@@ -526,7 +563,7 @@ class VideoPlaylistController extends Controller {
 
 		if($video) {
 			$video->playlist_id = $request->playlist_id;
-			$video->group_id = 0;
+			$video->group_id = $request->has('group_id') ? $request->group_id : 0;
 			$video->save();
 		}
 	}

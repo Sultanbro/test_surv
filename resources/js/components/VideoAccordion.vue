@@ -23,6 +23,7 @@
             @showVideo="showVideo"
             @deleteVideo="deleteVideo"
             @showTests="showTests"
+            @order-changed="$emit('order-changed')"
             @moveTo="moveTo"
         />
 
@@ -36,6 +37,7 @@
             @showTests="showTests"
             @moveTo="moveTo"
             @deleteVideo="deleteVideo"
+            @order-changed="$emit('order-changed')"
             :is_course="is_course"
         />
 

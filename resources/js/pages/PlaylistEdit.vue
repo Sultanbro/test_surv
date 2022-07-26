@@ -115,6 +115,7 @@
           :is_course="is_course"
           @showVideo="showVideo"
           @showTests="showTests"
+          @order-changed="formMap"
           />
           
       </div>
