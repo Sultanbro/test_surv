@@ -981,7 +981,8 @@ export default {
           id: this.activesbook.id,
         })
         .then((response) => { 
-        
+          this.text_was = this.activesbook.text;
+          this.title = this.activesbook.title;
           this.edit_actives_book = false;
           this.$message.info("Сохранено");
           this.renameNode(this.tree, this.activesbook.id, this.activesbook.title);

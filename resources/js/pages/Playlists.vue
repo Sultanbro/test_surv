@@ -7,7 +7,7 @@
       <div class="d-flex">
 
         <div class="lp">
-          <h1 class="page-title">Плейлисты</h1>
+          <h1 class="page-title">Темы</h1>
 
            
           <div

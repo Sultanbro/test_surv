@@ -39,6 +39,11 @@ class VideoPlaylist extends Model implements CourseInterface
     {
         return $this->hasMany('App\Models\Videos\VideoGroup', 'category_id', 'id')->where('parent_id', 0)->with('videos', 'children'); 
     }
+
+    public function groups_alt()
+    {
+        return $this->hasMany('App\Models\Videos\VideoGroup', 'category_id', 'id')->with('children_alt'); 
+    }
     
     public function category()
     {

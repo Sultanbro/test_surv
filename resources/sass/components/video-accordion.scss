@@ -106,4 +106,46 @@
        
 
     }
+
+    .v-list {
+        .more {
+           
+            position:relative;
+
+            .show {
+                position: absolute;
+                right: 8px;
+                z-index: 99999;
+                top: -21px;
+                display: none;
+                width: 150px;
+                padding: 2px 5px;
+                border: 1px solid #efefef;
+                border-radius: 3px;
+                background: #fff;
+            }
+
+            &:hover{
+                .show {
+                    display: block;
+                }
+              
+            }
+
+            .el {
+                display: flex;
+                align-items: center;
+                font-size: 11px;
+                color: #000;
+
+                i {
+                    width: 15px;
+                }
+                &:hover {
+                    background: #eee;
+                    color: rgb(2, 107, 255);
+                }
+            }
+        }
+    }
 }
