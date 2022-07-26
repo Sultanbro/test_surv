@@ -172,7 +172,14 @@
                     title="Проходной балл">
                 </i>
             </p>
-            <input class="form-control mb-3" v-model="pass_grade_local" type="number" :min="0" :max="100" @change="$emit('changePassGrade', pass_grade_local)" />
+            <input class="form-control mb-3" 
+              v-model="pass_grade_local" 
+              type="number"
+              :min="0"
+              :max="100"
+              @change="$emit('changePassGrade', pass_grade_local)" 
+              @focus="$event.target.select()"
+              />
        
           </div>
 

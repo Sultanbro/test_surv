@@ -197,6 +197,9 @@ Route::middleware([
 
     Route::post('/playlists/video/update', [VideoController::class, 'updateVideo']);
     Route::post('/videos/upload', [VideoController::class, 'upload'])->name('videos.upload');
+    Route::post('/videos/save-order', [VideoPlaylistController::class, 'saveOrder']);
+    Route::post('/videos/get-playlists-to-move', [VideoPlaylistController::class, 'getPlaylistsToMove']);
+    Route::post('/videos/move-to-playlist', [VideoPlaylistController::class, 'moveToPlaylist']);
     Route::post('/videos/add_comment', [VideoController::class, 'add_comment'])->name('videos.add_comment');
     Route::post('/videos/get_comment', [VideoController::class, 'get_comment'])->name('videos.get_comment');
     Route::post('/videos/upload_progress', [VideoController::class, 'upload_progress'])->name('videos.upload_progress');
@@ -215,6 +218,7 @@ Route::middleware([
 
     // Книги
     Route::get('/admin/upbooks', [UpbookController::class, 'index']);
+    Route::post('/upbooks/save-cat', [UpbookController::class, 'saveCat']);
     Route::get('/admin/upbooks/get', [UpbookController::class, 'admin_get']);
     Route::post('/admin/upbooks/category/create', [UpbookController::class, 'createCategory']);
     Route::post('/admin/upbooks/category/delete', [UpbookController::class, 'deleteCategory']);

@@ -6,16 +6,30 @@
 
         <div
           class="section d-flex aic jcsb"
+          :style="'position:relative;'"
           v-for="(cat, c_index) in categories"
           :key="cat.id"
           @click="selectCategory(c_index)"
         >
           <p>{{ cat.name }}</p>
+          <div class="d-flex aic ml-2" 
+             :style="'position:absolute; right: 0; z-index: 2'"
+             >
+                 <i
+            class="fa fa-edit"
+            v-if="cat.id != 0 && mode == 'edit'"
+            @click.stop="editCat(c_index)"
+          ></i>
+
           <i
             class="fa fa-trash"
             v-if="cat.id != 0 && mode == 'edit'"
             @click.stop="deleteCat(c_index)"
           ></i>
+          </div>
+        
+
+         
         </div>
 
         <button class="btn-add" @click="modals.add_category.show = true" v-if="mode == 'edit'">
@@ -334,6 +348,27 @@
 
     </sidebar>
     
+
+
+    <!-- Переименовать категорию -->
+    <b-modal
+      v-model="showEditCat"
+      title="Переименовать категорию"
+      size="md"
+      class="modalle"
+      hide-footer
+    >
+      <input
+        type="text"
+        v-model="editcat_name"
+        placeholder="Название категории..."
+        class="form-control mb-2"
+      />
+      <button class="btn btn-primary rounded m-auto" @click="saveCat">
+        <span>Сохранить</span>
+      </button>
+    </b-modal>  
+
   </div>
 </template>
 
@@ -354,6 +389,9 @@ export default {
   data() {
     return {
       activeBook: null,
+      editcat_name: '',
+      editcat_id: '',
+      showEditCat: false,
       activeCategory: null,
       details: null,
       showSettings: false,
@@ -423,6 +461,12 @@ export default {
 
     back() {
       this.activeBook = null;
+    },
+
+    editCat(i) {
+      this.editcat_id = this.categories[i].id
+      this.editcat_name = this.categories[i].name
+      this.showEditCat = true
     },
 
     deleteCat(i) {
@@ -657,6 +701,38 @@ export default {
           alert(error);
         });
     },
+
+    saveCat() {
+      if (this.editcat_name.length <= 2) {
+        alert("Слишком короткое название!");
+        return "";
+      }
+
+      let loader = this.$loading.show();
+
+      axios
+        .post("/upbooks/save-cat", {
+          title: this.editcat_name,
+          id: this.editcat_id,
+        })
+        .then((response) => {
+        
+
+          let i = this.categories.findIndex(el => el.id == this.editcat_id)
+          if(i != -1) this.categories[i].name = this.editcat_name
+
+          this.showEditCat = false;
+          this.editcat_name = '';
+
+          this.$message.success("Сохранено!");
+          loader.hide();
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+    },
+
 
 
   },

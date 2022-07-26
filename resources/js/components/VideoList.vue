@@ -9,7 +9,9 @@
         @end="saveOrder"
     >
         <div class="video-block" v-for="(video, v_index) in videos"
-                :key="video.id"
+       
+                  :key="video.id"
+                 :id="video.id"
                 :class="{
                     'active': (active == video.id),
                     'disabled': active != video.id && mode == 'read' && video.item_model == null
@@ -32,8 +34,25 @@
             <div class="controls d-flex" 
                 v-if="mode == 'edit' && !group_edit"
             >
-                <i class="far fa-arrow-alt-circle-right mr-2" title="Переместить из группы" @click.stop="moveTo(v_index)"></i>
-                <i class="far fa-question-circle mr-2" title="Вопросы к видео" @click.stop="showTests(video, v_index)"></i>
+
+                <div class="more">
+                    <i class="fas fa-ellipsis-h mr-2"></i>
+                    <div class="show" @click.stop="$emit('showTests', video, true)">
+                         <div class="el" >
+                            <i class="fa fa-edit  mr-2" title="Текст" ></i>
+                            <span>Переименовать</span>
+                        </div>
+                        <div class="el"  @click.stop="moveTo(video, v_index)">
+                            <i class="fas fa-angle-double-right  mr-2" title="Текст"></i>
+                            <span>Переместить</span>
+                        </div>
+                        <div class="el"  @click.stop="$emit('showTests', video, false)">
+                            <i class="far fa-question-circle mr-2" title="Вопросы к видео"></i>
+                            <span>Вопросы к видео</span>
+                        </div>
+                    </div>
+                </div>
+               
                 <i  class="far fa-trash-alt" 
                     title="Убрать из плейлиста" 
                     @click.stop="$emit('deleteVideo', {
@@ -46,6 +65,30 @@
             </div>
         </div>
     </draggable>
+
+
+    <!-- Переместить -->
+    <sidebar
+      v-model="modal"
+      title="Переместить видео"
+        :open="modal"
+        @close="modal = false"
+        width="50%"
+    >   
+    
+        <div class="d-flex mb-2 p-3 aic">
+            <p class="mb-0 mr-2">Плейлист</p>
+            <v-select :options="playlists" label="title" v-model="playlist_id" class="group-select w-full"></v-select>
+        </div>
+
+        <div class="mb-3">
+            <button class="btn btn-primary rounded m-auto " @click="move">
+                <span>Сохранить</span>
+            </button>
+        </div>
+      
+    </sidebar>
+
 </div>
 </template>
 
@@ -55,7 +98,10 @@ export default {
     props: ['videos', 'mode','group_edit', 'g_index', 'c_index', 'active' , 'is_course'],
     data(){
         return {
-          
+          modal: false,
+          index: -1,
+          playlist_id: 0,
+          playlists: []
         }
     },
 
@@ -64,22 +110,52 @@ export default {
     },
 
     methods: {
-        saveOrder(e) {
 
+        moveTo(video, i) {
+            this.modal = true;
+            this.fetch();
+            this.index = i
+        },
+
+        fetch() {
+            axios.post('/videos/get-playlists-to-move')
+            .then(response => {
+                this.playlists = response.data
+
+                 if(this.videos.length > 0) {
+                    let i = this.playlists.findIndex(el => el.id == this.videos[0].playlist_id)
+                    if(i != -1) this.playlist_id = this.playlists[i]
+                }
+            })
+        },  
+
+        move() {
+            axios.post('/videos/move-to-playlist', {
+                video_id: this.videos[this.index].id,
+                playlist_id: this.playlist_id.id, 
+            })
+            .then(response => {
+                this.$message.success('Видео перемещено');
+                this.videos.splice(this.index,1);
+            })
+        },   
+
+        saveOrder(e) {
+            
+            axios.post('/videos/save-order', {
+                id: e.item.id,
+                order: e.newIndex, // oldIndex
+            })
+            .then(response => {
+                this.$message.success('Очередь сохранена');
+            })
         },
 
         showVideo(video, i) {
             if(video.item_model == null && this.mode == 'read') return;
             this.$emit('showVideo', video, i);
         },
-
-        showTests(video, i) {
-            this.$emit('showTests', video, i);
-        },
-
-        moveTo(i) {
-            // move to another group
-        },
     }
 }
 </script>
+

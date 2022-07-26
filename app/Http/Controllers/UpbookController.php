@@ -381,6 +381,15 @@ class UpbookController extends Controller
                 
     }
 
+    public function saveCat(Request $request) {
+        $bg = BookGroup::where('id', $request->id)->first();
+
+        if($bg) {
+            $bg->name = $request->title;
+            $bg->save();
+        }
+    }
+
     public function deleteSegment(Request $request)
     {
         BookSegment::where('id', $request->id)->delete();

@@ -129,7 +129,17 @@
       width="70%"
     >
       <div class="p-3" v-if="activeVideo != null">
-        <p class="mt-2 mb-3"><b>{{ activeVideo.title }}</b></p>
+        <div class=" mb-3">
+          <p class="mt-2 font-bold">Название видео</p>
+          <input type="text" class="form-control" v-model="activeVideo.title" ref="activevideo_input" />
+        </div>
+         <div class="row mb-2" v-if="mode == 'edit'">
+          <div class="col-md-12">
+            <button class="btn btn-primary" @click="saveActiveVideoFast">Сохранить</button>
+          </div>
+        </div>
+
+        
         <questions 
           :questions="activeVideo.questions"
           :id="activeVideo.id"
@@ -400,7 +410,7 @@ export default {
       });
     },
 
-    showVideo(video, key, autoplay = true) {
+    showVideo(video, autoplay = true) {
     
       let loader = this.$loading.show();
 
@@ -410,14 +420,17 @@ export default {
         })
         .then((response) => {
            loader.hide()
-          if(autoplay) {
+
+           this.activeVideo = response.data.video;
+             this.activeVideoLink = this.activeVideo.links;
          
-            this.activeVideo = response.data.video;
-            this.activeVideoLink = this.activeVideo.links;
-            this.video_changed++;
             this.refreshTest++
 
             this.setActiveGroup();
+          if(autoplay) {
+               this.video_changed++;
+             
+            
           }
         })
         .catch((error) => {
@@ -437,12 +450,17 @@ export default {
      
 
     },
-
-    showTests(video, key) {
+  
+    showTests(video, input_focus = false) {
       const NO_AUTOPLAY = false;
-      this.showVideo(video, key, NO_AUTOPLAY);
+      this.showVideo(video, NO_AUTOPLAY);
       this.show_tests = true;
+      this.$refs.activevideo_input.focus()
     },
+
+    moveTo(video) {
+      this.$message.info('Переместить: ' + video.title);
+    }, 
 
     fetchData() {
       axios

@@ -488,5 +488,48 @@ class VideoPlaylistController extends Controller {
 		
 		return $ids; 
     }
+
+	public function saveOrder(Request $request) {
+		$item = Video::find($request->id);
+        if ($item) {
+            $item->order = $request->order;
+            $item->save();
+        }
+
+        $videos = Video::where('group_id', $item->group_id)
+            ->where('id', '!=', $request->id)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        $order = 0;
+        foreach ($videos as $video) {
+            if($order == $request->order) {
+                $order++;
+            } 
+            $video->order = $order;
+                $video->save();
+            $order++;
+         
+        }
+
+	}
+
+	public function getPlaylistsToMove(Request $request) {
+		$playlists = Playlist::where('deleted_at', NULL)
+			->get(['title', 'id']);
+
+		return $playlists;
+	}
+
+	public function moveToPlaylist(Request $request) {
+		$video = Video::find($request->video_id);
+
+		if($video) {
+			$video->playlist_id = $request->playlist_id;
+			$video->group_id = 0;
+			$video->save();
+		}
+	}
+	
 	
 }

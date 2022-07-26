@@ -21,6 +21,9 @@
             :active="active"
             :is_course="is_course"
             @showVideo="showVideo"
+            @deleteVideo="deleteVideo"
+            @showTests="showTests"
+            @moveTo="moveTo"
         />
 
         <video-list 
@@ -31,6 +34,7 @@
             :c_index="-1"
             @showVideo="showVideo"
             @showTests="showTests"
+            @moveTo="moveTo"
             @deleteVideo="deleteVideo"
             :is_course="is_course"
         />
@@ -86,8 +90,12 @@ export default {
             this.$emit('showVideo', video, i);
         },
 
-        showTests(video, i) {
-            this.$emit('showTests', video, i);
+        moveTo(video) {
+            this.$emit('moveTo', video);
+        },
+
+        showTests(video, input_focus) {
+            this.$emit('showTests', video, input_focus);
         },
 
         deleteVideo(o) {
