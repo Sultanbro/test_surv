@@ -5,7 +5,7 @@
         <div class="ramka mt-2" v-for="(g, rdate) in all_groups">
             <b-tabs type="card">
                 
-                <b-tab tab="Сводная" key="1" card>
+                <b-tab title="Сводная" key="1" card>
                     <p class="mt-2"><b>{{ g.group }}</b></p>
                 <table class="table b-table table-striped table-bordered table-sm">
                     <thead>
@@ -83,7 +83,7 @@
                 </table>
                 </b-tab>
 
-                <b-tab v-for="(item, index) in trainee_report" v-if="item.group_id == g.group_id" :tab="item.date" :key="index" card>
+                <b-tab v-for="(item, index) in trainee_report" v-if="item.group_id == g.group_id" :title="item.date" :key="index" card>
                     <p class="mt-2"><b>{{ item.group }}</b></p>
                 <table class="table b-table table-striped table-bordered table-sm">
                     <thead>

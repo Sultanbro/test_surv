@@ -24,13 +24,13 @@
     <b-tabs type="card" defaultActiveKey='1'>
 
 
-      <b-tab tab="Полезность" key="1" card>
+      <b-tab title="Полезность" key="1" card>
         <div class="d-flex" style="margin-bottom: 350px">
           <top-gauges :utility_items="utility" :editable="true" wrapper_class="  br-1" :key="ukey" page="top"/>
         </div>
       </b-tab>
 
-      <b-tab tab="Рентабельность операторов" key="2" card>
+      <b-tab title="Рентабельность операторов" key="2" card>
 
         <div class="d-flex flex-wrap mb-5" :key="ukey">
           <div v-for="(gauge, g_index) in rentability" :key="gauge.name">
@@ -80,7 +80,7 @@
       </b-tab>
 
 
-      <b-tab tab="Выручка" key="3" card>
+      <b-tab title="Выручка" key="3" card>
         <div class="table-responsive">
           <table class="table tops b-table table-striped table-bordered table-sm proceed no-table"
                  >
@@ -160,14 +160,14 @@
         </div>
 
       </b-tab>
-      <b-tab tab="" key="6" card>
+      <b-tab title="" key="6" card>
       </b-tab>
-      <b-tab tab="" key="7" card>
+      <b-tab title="" key="7" card>
       </b-tab>
-      <b-tab tab="" key="8" card>
+      <b-tab title="" key="8" card>
       </b-tab>
 
-      <b-tab tab="Прогноз" key="4" card>
+      <b-tab title="Прогноз" key="4" card>
         <table class="table tops b-table table-striped table-bordered table-sm w-700">
           <thead>
           <th class="text-left t-name table-title" style="background:#90d3ff">Группа
@@ -209,7 +209,7 @@
         </table>
       </b-tab>
 
-      <b-tab tab="NPS" key="5" card>
+      <b-tab title="NPS" key="5" card>
         <nps :activeuserid="activeuserid" :show_header="false"></nps>
       </b-tab>
 

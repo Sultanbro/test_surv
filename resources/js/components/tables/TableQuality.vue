@@ -53,9 +53,9 @@
     </h4>
     <div v-if="this.hasPermission">
       <b-tabs type="card" :defaultActiveKey="active">
-        <b-tab tab="Оценка диалогов" :key="1" card>
+        <b-tab title="Оценка диалогов" :key="1" card>
           <b-tabs type="card" v-if="dataLoaded" >
-            <b-tab tab="Неделя" :key="1" card>
+            <b-tab title="Неделя" :key="1" card>
               <div class="table-responsive my-table">
                 <table class="table b-table table-bordered table-sm">
                   <tr>
@@ -104,7 +104,7 @@
                 </table>
               </div>
             </b-tab>
-            <b-tab tab="Месяц " :key="2" card>
+            <b-tab title="Месяц " :key="2" card>
               <div class="table-responsive my-table">
                 <table class="table b-table table-sm table-bordered">
                   <tr>
@@ -142,7 +142,7 @@
               </div>
             </b-tab>
             <b-tab
-              tab="Оценка переговоров"
+              title="Оценка переговоров"
               key="3"
               @change="changeTab"
               v-if="can_add_records"
@@ -438,7 +438,7 @@
             </b-tab>
           </b-tabs>
         </b-tab>
-        <b-tab tab="Прогресс по курсам" :key="2" card>
+        <b-tab title="Прогресс по курсам" :key="2" card>
 
             <div class="row course-progress mb-3">
               <div class="col-3">
@@ -525,7 +525,7 @@
 
         </b-tab>
 
-        <b-tab tab="Чек Лист" :key="3" type="card" card>
+        <b-tab title="Чек Лист" :key="3" type="card" card>
 
 
           <div class="col-md-12 p-0">

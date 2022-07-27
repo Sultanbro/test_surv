@@ -29,7 +29,7 @@
 
 
                     <template v-if="currentGroup == 48">
-                        <b-tab tab="Сводная" key="1" card>
+                        <b-tab title="Сводная" key="1" card>
                             <t-recruiter-stats :data="recruiting.recruiterStats" 
                                             :daysInMonth="new Date().getDate()"
                                             :rates="recruiting.recruiterStatsRates"
@@ -48,7 +48,7 @@
                                 :data="decomposition"
                             ></t-decomposition>
                         </b-tab>
-                        <b-tab tab="Подробная" key="2" card>
+                        <b-tab title="Подробная" key="2" card>
                             <t-recruting-user v-for="hr in recruiting.hrs" :key="hr.id" 
                                 :records="hr.records"
                                 :name="hr.name"
@@ -64,7 +64,7 @@
                                 <div v-if="hr.deleted == true">{{ hr.name }}</div>
                             </div>
                         </b-tab>
-                        <b-tab tab="Стажеры" key="3" card>
+                        <b-tab title="Стажеры" key="3" card>
                             <t-skypes :month="monthInfo" 
                                 :skypes="recruiting.skypes"
                                 :groups="recruiting.sgroups"
@@ -72,13 +72,15 @@
                                 :segments="recruiting.segments"></t-skypes>
                         </b-tab>
                         <b-tab  key="4" card>
-                            <span slot="tab">
-                                <b class="roman">II</b> Этап стажировки
-                            </span>
+                       
+                            <template #title>
+                                <b-spinner type="grow" small></b-spinner> <b class="roman">II</b> Этап стажировки
+                            </template>
+                            
 
                             <b-tabs type="card">
 
-                                <b-tab tab="Сводная" key="1" card>
+                                <b-tab title="Сводная" key="1" card>
                                     <table class="table b-table table-striped table-bordered table-sm"  style="width:900px">
                                         <thead>
                                             <th class="text-left t-name table-title" style="background:#90d3ff;width:250px;">Группа</th>
@@ -101,20 +103,20 @@
                                     </table>
                                 </b-tab>
 
-                                <!--<b-tab tab="Оценка тренера" key="2">
+                                <!--<b-tab title="Оценка тренера" key="2">
                                     
 
                                     <trainee-report :trainee_report="recruiting.trainee_report" :groups="groups"></trainee-report>
                                   
                                     
                                 </b-tab>-->
-                                <b-tab tab="Оценка тренера" key="2" card>
+                                <b-tab title="Оценка тренера" key="2" card>
                                     
                                     <svod-table :trainee_report="recruiting.trainee_report" :groups="groups" ></svod-table>
                                   
                                     
                                 </b-tab>
-                                <b-tab tab="Отсутствие стажеров" key="4" card>
+                                <b-tab title="Отсутствие стажеров" key="4" card>
                                     <div class="row">
                                         <div class="col-md-4">
                                             <table class="table b-table table-striped table-bordered table-sm">
@@ -165,9 +167,9 @@
                             
                         </b-tab>
                         
-                        <b-tab tab="Воронка" key="7" card>
+                        <b-tab title="Воронка" key="7" card>
                             <b-tabs type="card" v-if="dataLoaded" defaultActiveKey="0">
-                                <b-tab tab="Сводная" key="0" card>
+                                <b-tab title="Сводная" key="0" card>
                                     <div class="row">
 
                                         <div class="col-8">
@@ -184,7 +186,7 @@
                                     
                                 </b-tab>
                                 <template v-for="(month, i) in months">
-                                    <b-tab :tab="month.month" :key="i" card>
+                                    <b-tab :title="month.month" :key="i" card>
                                         <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['hh']" title="hh" segment="hh" type="week" :date="month.date" :key="5 * 1000 * (Number(i) +  10 * Number(i))"/>
                                         <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['insta']" title="Инста" segment="insta" type="week" :date="month.date" :key="6 * 1000 * (Number(i) +  10 * Number(i))"/>
                                     </b-tab>
@@ -195,12 +197,13 @@
 
                         <b-tab  key="8" card>
 
-                            <span slot="tab">
-                                <b class="roman">IV</b> Увольнение
-                            </span>
+                            <template #title>
+                                <b-spinner type="grow" small></b-spinner> <b class="roman">IV</b> Увольнение
+                            </template>
+                            
 
                             <b-tabs>
-                                <b-tab tab="Причины и процент текучки" key="1" card>
+                                <b-tab title="Причины и процент текучки" key="1" card>
                                     <table-staff-turnover
                                         :staff="recruiting.staff"
                                         :causes="recruiting.causes"
@@ -210,7 +213,7 @@
                                 </b-tab>
                             
 
-                                <b-tab tab="Причины: Бот" key="2" card>
+                                <b-tab title="Причины: Бот" key="2" card>
                                     
                                     <div class="d-flex flex-wrap">
 
@@ -245,7 +248,7 @@
                                     </template>
                                     </div>
                                 </b-tab>
-                                <b-tab tab="Причины увольнения" key="3" card>
+                                <b-tab title="Причины увольнения" key="3" card>
                                     <div class="col-md-12 col-lg-6 d-flex align-items-center">
                                         <table class="table b-table table-striped table-bordered table-sm">
                                             <thead>

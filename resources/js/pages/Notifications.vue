@@ -4,7 +4,7 @@
      <b-tabs type="card" :defaultActiveKey='"1"' class="specialtab">
 
         <!-- user notis -->
-        <b-tab tab="Индивидуальные" key="1">
+        <b-tab title="Индивидуальные" key="1">
 
             <div class="row align-items-ceter">
         
@@ -85,12 +85,12 @@
         <!-- end of user notis -->
 
        
-        <b-tab tab="Шаблоны" key="2">
+        <b-tab title="Шаблоны" key="2">
             
 
             <b-tabs type="card" defaultActiveKey='1' class="specialtab">
                 
-                <b-tab tab="Индивидуальные" key="1" card>
+                <b-tab title="Индивидуальные" key="1" card>
                     <!-- individual notis -->
                     <div id="noti-individual" class="mb-4">
                         <div class="d-flex border">
@@ -169,7 +169,7 @@
                     <!-- end of individual notis -->
                 </b-tab>
                 
-                <b-tab tab="Должностные" key="2" card>
+                <b-tab title="Должностные" key="2" card>
                     <!-- position notis -->
                     <div id="noti-positions" class="mb-4">
                         
@@ -250,7 +250,7 @@
                     <!-- end of position notis -->
                 </b-tab>
                 
-                <b-tab tab="Групповые" key="3" card>
+                <b-tab title="Групповые" key="3" card>
                     <!-- group notis -->
                     <div id="noti-groups" class="mb-4">
                         <div class="d-flex border">
@@ -339,7 +339,7 @@
                     <!-- end of group notis -->
                 </b-tab>
 
-                <b-tab tab="Другие" key="4" card>
+                <b-tab title="Другие" key="4" card>
                     <!-- group notis -->
                     <div id="noti-groups" class="mb-4">
                         <div class="d-flex border">

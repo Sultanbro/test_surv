@@ -56,7 +56,7 @@
 
                     <b-tabs type="card"  :defaultActiveKey='active' @change="onTabChange" >
 
-                        <b-tab tab="Сводная" key="1" card>
+                        <b-tab title="Сводная" key="1" card>
                             <div class="mb-5">
                                 <analytic-stat :table="data.table" 
                                     :fields="data.columns" 
@@ -78,12 +78,12 @@
                             
                         </b-tab>
 
-                        <b-tab tab="Подробная" key="2" card>
+                        <b-tab title="Подробная" key="2" card>
 
                             <b-tabs type="card" @change="showSubTab" :defaultActiveKey='active_sub_tab'>
 
                                 <template v-for="(activity, index) in data.activities"> 
-                                    <b-tab :tab="activity.name" :key="index"  @change="showcubTab(index)">
+                                    <b-tab :title="activity.name" :key="index"  @change="showcubTab(index)">
                                         
                                         <t-activity-new v-if="activity.type == 'default'"
                                             :month="monthInfo"

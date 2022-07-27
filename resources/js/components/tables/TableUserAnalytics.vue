@@ -29,14 +29,12 @@
             </b-tab>
         </template>
         
-          <b-tab 
-                title="Контроль Качества">
-
-                <t-quality-weekly 
-                    :monthInfo="monthInfo"
-                    :items="quality"
-                ></t-quality-weekly>
-            </b-tab>
+        <b-tab title="Контроль Качества">
+            <t-quality-weekly 
+                :monthInfo="monthInfo"
+                :items="quality"
+            ></t-quality-weekly>
+        </b-tab>
     </b-tabs>
 </div>
 </template>
