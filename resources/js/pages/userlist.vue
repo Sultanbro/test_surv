@@ -130,7 +130,7 @@
   
 
 
-  <a-modal v-model="showModal"  title="Настройка списка «Сотрудники»" @ok="showModal = !showModal" ok-text="Закрыть" :width="800">
+  <b-modal v-model="showModal"  title="Настройка списка «Сотрудники»" @ok="showModal = !showModal" ok-text="Закрыть" size="lg">
       <template v-for="error in errors">
           <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
       </template>
@@ -238,10 +238,10 @@
           </b-form-checkbox>
         </div>
       </div>  
-  </a-modal>
+  </b-modal>
 
 
-  <a-modal v-model="showFilterModal"  title="Фильтр «Сотрудники»" @ok="applyFilter" ok-text="Применить">
+  <b-modal v-model="showFilterModal"  title="Фильтр «Сотрудники»" @ok="applyFilter" ok-text="Применить" size="md">
      
         <div class="row">
 
@@ -330,7 +330,7 @@
           </div>
         </div> 
 
-  </a-modal>
+  </b-modal>
 
 
 </div>

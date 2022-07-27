@@ -52,10 +52,10 @@
       <div class="mr-2 mt-2">{{ groupName }}</div>
     </h4>
     <div v-if="this.hasPermission">
-      <a-tabs type="card" :defaultActiveKey="active">
-        <a-tab-pane tab="Оценка диалогов" :key="1">
-          <a-tabs type="card" v-if="dataLoaded" >
-            <a-tab-pane tab="Неделя" :key="1">
+      <b-tabs type="card" :defaultActiveKey="active">
+        <b-tab tab="Оценка диалогов" :key="1" card>
+          <b-tabs type="card" v-if="dataLoaded" >
+            <b-tab tab="Неделя" :key="1" card>
               <div class="table-responsive my-table">
                 <table class="table b-table table-bordered table-sm">
                   <tr>
@@ -103,8 +103,8 @@
                   </tr>
                 </table>
               </div>
-            </a-tab-pane>
-            <a-tab-pane tab="Месяц " :key="2">
+            </b-tab>
+            <b-tab tab="Месяц " :key="2" card>
               <div class="table-responsive my-table">
                 <table class="table b-table table-sm table-bordered">
                   <tr>
@@ -140,12 +140,13 @@
                   </tr>
                 </table>
               </div>
-            </a-tab-pane>
-            <a-tab-pane
+            </b-tab>
+            <b-tab
               tab="Оценка переговоров"
               key="3"
               @change="changeTab"
               v-if="can_add_records"
+              card
             >
               <div class="row">
                 <div class="col-6 col-md-3">
@@ -434,10 +435,10 @@
                   :limit="3"
                 ></pagination>
               </div>
-            </a-tab-pane>
-          </a-tabs>
-        </a-tab-pane>
-        <a-tab-pane tab="Прогресс по курсам" :key="2">
+            </b-tab>
+          </b-tabs>
+        </b-tab>
+        <b-tab tab="Прогресс по курсам" :key="2" card>
 
             <div class="row course-progress mb-3">
               <div class="col-3">
@@ -522,9 +523,9 @@
             </div>
             <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
 
-        </a-tab-pane>
+        </b-tab>
 
-        <a-tab-pane tab="Чек Лист" :key="3" type="card"    >
+        <b-tab tab="Чек Лист" :key="3" type="card" card>
 
 
           <div class="col-md-12 p-0">
@@ -642,8 +643,8 @@
             </div>
           </div>
 
-        </a-tab-pane>
-      </a-tabs>
+        </b-tab>
+      </b-tabs>
     </div>
     <div v-else>
       <p>У вас нет доступа к этой группе</p>

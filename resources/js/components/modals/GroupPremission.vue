@@ -1,13 +1,13 @@
 <template>
 <div>
-  <a-modal title="Настройка доступа" v-model="openPremissionModal" @ok="savePremission">
+  <b-modal title="Настройка доступа" v-model="openPremissionModal" @ok="savePremission" size="lg" class="modalle">
     Выберите сотрудников, которым будет разрешено редактировать время
 
     <multiselect v-model="group_editors" :options="users" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Выберите" label="email" track-by="email">
       <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} выбрано</span>
       </template>
     </multiselect>
-  </a-modal>
+  </b-modal>
 
   <div class="text-right mb-3">
 

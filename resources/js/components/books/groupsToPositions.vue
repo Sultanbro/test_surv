@@ -4,8 +4,9 @@
         <div class="b-50">
             <div class="chhose">Выберите должность для ее настройки</div>
          
-            <a-alert v-if="message!=null" :message="message" type="info" showIcon />
-          
+             <b-alert v-if="message!=null" variant="info">
+                {{ message}}
+             </b-alert>
             
             <div class="listprof">
                 <div class="profitem btn btn-primary" v-for="(position,index) in positions" v-bind:key="position.id" :class="{ 'activiti' : activebtn.position == position.position }" @click="positionselect(position, index)">

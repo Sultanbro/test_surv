@@ -21,16 +21,16 @@
     </div>
 
     <!-- <a href="/timetracking/nps" class="btn link-btn" target="_blank">NPS</a> -->
-    <a-tabs type="card" defaultActiveKey='1'>
+    <b-tabs type="card" defaultActiveKey='1'>
 
 
-      <a-tab-pane tab="Полезность" key="1">
+      <b-tab tab="Полезность" key="1" card>
         <div class="d-flex" style="margin-bottom: 350px">
           <top-gauges :utility_items="utility" :editable="true" wrapper_class="  br-1" :key="ukey" page="top"/>
         </div>
-      </a-tab-pane>
+      </b-tab>
 
-      <a-tab-pane tab="Рентабельность операторов" key="2">
+      <b-tab tab="Рентабельность операторов" key="2" card>
 
         <div class="d-flex flex-wrap mb-5" :key="ukey">
           <div v-for="(gauge, g_index) in rentability" :key="gauge.name">
@@ -77,10 +77,10 @@
 
         <t-rentability :year="currentYear"></t-rentability>
 
-      </a-tab-pane>
+      </b-tab>
 
 
-      <a-tab-pane tab="Выручка" key="3">
+      <b-tab tab="Выручка" key="3" card>
         <div class="table-responsive">
           <table class="table tops b-table table-striped table-bordered table-sm proceed no-table"
                  >
@@ -159,15 +159,15 @@
           </table>
         </div>
 
-      </a-tab-pane>
-      <a-tab-pane tab="" key="6">
-      </a-tab-pane>
-      <a-tab-pane tab="" key="7">
-      </a-tab-pane>
-      <a-tab-pane tab="" key="8">
-      </a-tab-pane>
+      </b-tab>
+      <b-tab tab="" key="6" card>
+      </b-tab>
+      <b-tab tab="" key="7" card>
+      </b-tab>
+      <b-tab tab="" key="8" card>
+      </b-tab>
 
-      <a-tab-pane tab="Прогноз" key="4">
+      <b-tab tab="Прогноз" key="4" card>
         <table class="table tops b-table table-striped table-bordered table-sm w-700">
           <thead>
           <th class="text-left t-name table-title" style="background:#90d3ff">Группа
@@ -207,14 +207,14 @@
           </tr>
           </tbody>
         </table>
-      </a-tab-pane>
+      </b-tab>
 
-      <a-tab-pane tab="NPS" key="5">
+      <b-tab tab="NPS" key="5" card>
         <nps :activeuserid="activeuserid" :show_header="false"></nps>
-      </a-tab-pane>
+      </b-tab>
 
 
-    </a-tabs>
+    </b-tabs>
 
 
     <div class="empty-space"></div>

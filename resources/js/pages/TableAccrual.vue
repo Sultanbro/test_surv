@@ -101,11 +101,7 @@
         
 
         <div v-if="hasPermission">
-            
-            <a-slider :defaultValue="defaultScrollValue"
-                :max="maxScrollWidth" 
-                v-model="scrollLeft" 
-                :tooltipVisible="false" />
+        
 
             <b-table responsive 
                 striped 
@@ -382,7 +378,7 @@
      </sidebar>
 
 
-    <a-modal v-model="editPremiunWindow" ok-text="Да" cancel-text="Нет" :title="editedField.name + ': ' + editedField.type" @ok="editPremium">
+    <b-modal v-model="editPremiunWindow" ok-text="Да" cancel-text="Нет" :title="editedField.name + ': ' + editedField.type" @ok="editPremium" size="md">
        
         
         <b-form-input type="number"
@@ -393,11 +389,11 @@
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
-    </a-modal>
+    </b-modal>
 
-    <a-modal v-model="showBeforeApprove" ok-text="Да" cancel-text="Нет" title="Утверждение зарплаты" @ok="approveSalary">
+    <b-modal v-model="showBeforeApprove" ok-text="Да" cancel-text="Нет" title="Утверждение зарплаты" @ok="approveSalary" size="md">
         <p>Вы подтверждаете, что вы проверили начисления и уверены, в том что они верные?</p>
-    </a-modal>
+    </b-modal>
 
 </div>
 </template>

@@ -1,10 +1,10 @@
 <template>
 <div>
 
-     <a-tabs type="card" :defaultActiveKey='"1"' class="specialtab">
+     <b-tabs type="card" :defaultActiveKey='"1"' class="specialtab">
 
         <!-- user notis -->
-        <a-tab-pane tab="Индивидуальные" key="1">
+        <b-tab tab="Индивидуальные" key="1">
 
             <div class="row align-items-ceter">
         
@@ -81,16 +81,16 @@
                      </div>
                  </div>
             </div> 
-        </a-tab-pane>
+        </b-tab>
         <!-- end of user notis -->
 
        
-        <a-tab-pane tab="Шаблоны" key="2">
+        <b-tab tab="Шаблоны" key="2">
             
 
-            <a-tabs type="card" defaultActiveKey='1' class="specialtab">
+            <b-tabs type="card" defaultActiveKey='1' class="specialtab">
                 
-                <a-tab-pane tab="Индивидуальные" key="1">
+                <b-tab tab="Индивидуальные" key="1" card>
                     <!-- individual notis -->
                     <div id="noti-individual" class="mb-4">
                         <div class="d-flex border">
@@ -167,9 +167,9 @@
                         </div>
                     </div>            
                     <!-- end of individual notis -->
-                </a-tab-pane>
+                </b-tab>
                 
-                <a-tab-pane tab="Должностные" key="2">
+                <b-tab tab="Должностные" key="2" card>
                     <!-- position notis -->
                     <div id="noti-positions" class="mb-4">
                         
@@ -248,9 +248,9 @@
                     
                     </div>
                     <!-- end of position notis -->
-                </a-tab-pane>
+                </b-tab>
                 
-                <a-tab-pane tab="Групповые" key="3">
+                <b-tab tab="Групповые" key="3" card>
                     <!-- group notis -->
                     <div id="noti-groups" class="mb-4">
                         <div class="d-flex border">
@@ -337,9 +337,9 @@
                         </div>
                     </div>
                     <!-- end of group notis -->
-                </a-tab-pane>
+                </b-tab>
 
-                <a-tab-pane tab="Другие" key="4">
+                <b-tab tab="Другие" key="4" card>
                     <!-- group notis -->
                     <div id="noti-groups" class="mb-4">
                         <div class="d-flex border">
@@ -382,21 +382,16 @@
                         </div>
                     </div>
                     <!-- end of group notis -->
-                </a-tab-pane>
-            </a-tabs>
-            
-             
-            
-         
-
+                </b-tab>
+            </b-tabs>
             
 
-        </a-tab-pane>
+        </b-tab>
         <!-- end of group notis -->
 
     
    
-     </a-tabs>
+     </b-tabs>
 
     <div class="mmm"></div>
 </div>

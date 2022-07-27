@@ -25,11 +25,11 @@
         <div v-if="!firstEnter">
             <div v-if="this.hasPremission">
                 
-                <a-tabs type="card" v-if="dataLoaded" :defaultActiveKey='active'>
+                <b-tabs type="card" v-if="dataLoaded" :defaultActiveKey='active'>
 
 
                     <template v-if="currentGroup == 48">
-                        <a-tab-pane tab="Сводная" key="1">
+                        <b-tab tab="Сводная" key="1" card>
                             <t-recruiter-stats :data="recruiting.recruiterStats" 
                                             :daysInMonth="new Date().getDate()"
                                             :rates="recruiting.recruiterStatsRates"
@@ -47,8 +47,8 @@
                                 :month="monthInfo"
                                 :data="decomposition"
                             ></t-decomposition>
-                        </a-tab-pane>
-                        <a-tab-pane tab="Подробная" key="2">
+                        </b-tab>
+                        <b-tab tab="Подробная" key="2" card>
                             <t-recruting-user v-for="hr in recruiting.hrs" :key="hr.id" 
                                 :records="hr.records"
                                 :name="hr.name"
@@ -63,22 +63,22 @@
                             <div v-for="hr in recruiting.hrs">
                                 <div v-if="hr.deleted == true">{{ hr.name }}</div>
                             </div>
-                        </a-tab-pane>
-                        <a-tab-pane tab="Стажеры" key="3">
+                        </b-tab>
+                        <b-tab tab="Стажеры" key="3" card>
                             <t-skypes :month="monthInfo" 
                                 :skypes="recruiting.skypes"
                                 :groups="recruiting.sgroups"
                                 :invite_groups="recruiting.invite_groups"
                                 :segments="recruiting.segments"></t-skypes>
-                        </a-tab-pane>
-                        <a-tab-pane  key="4">
+                        </b-tab>
+                        <b-tab  key="4" card>
                             <span slot="tab">
                                 <b class="roman">II</b> Этап стажировки
                             </span>
 
-                            <a-tabs type="card">
+                            <b-tabs type="card">
 
-                                <a-tab-pane tab="Сводная" key="1">
+                                <b-tab tab="Сводная" key="1" card>
                                     <table class="table b-table table-striped table-bordered table-sm"  style="width:900px">
                                         <thead>
                                             <th class="text-left t-name table-title" style="background:#90d3ff;width:250px;">Группа</th>
@@ -99,22 +99,22 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                </a-tab-pane>
+                                </b-tab>
 
-                                <!--<a-tab-pane tab="Оценка тренера" key="2">
+                                <!--<b-tab tab="Оценка тренера" key="2">
                                     
 
                                     <trainee-report :trainee_report="recruiting.trainee_report" :groups="groups"></trainee-report>
                                   
                                     
-                                </a-tab-pane>-->
-                                <a-tab-pane tab="Оценка тренера" key="2">
+                                </b-tab>-->
+                                <b-tab tab="Оценка тренера" key="2" card>
                                     
                                     <svod-table :trainee_report="recruiting.trainee_report" :groups="groups" ></svod-table>
                                   
                                     
-                                </a-tab-pane>
-                                <a-tab-pane tab="Отсутствие стажеров" key="4">
+                                </b-tab>
+                                <b-tab tab="Отсутствие стажеров" key="4" card>
                                     <div class="row">
                                         <div class="col-md-4">
                                             <table class="table b-table table-striped table-bordered table-sm">
@@ -156,21 +156,18 @@
                                             </table>
                                         </div>
                                     </div>
-                                </a-tab-pane>
-                            </a-tabs>
+                                </b-tab>
+                            </b-tabs>
                             
 
                             
 
                             
-                        </a-tab-pane>
+                        </b-tab>
                         
-
-                        
-
-                        <a-tab-pane tab="Воронка" key="7">
-                            <a-tabs type="card" v-if="dataLoaded" defaultActiveKey="0">
-                                <a-tab-pane tab="Сводная" key="0">
+                        <b-tab tab="Воронка" key="7" card>
+                            <b-tabs type="card" v-if="dataLoaded" defaultActiveKey="0">
+                                <b-tab tab="Сводная" key="0" card>
                                     <div class="row">
 
                                         <div class="col-8">
@@ -185,35 +182,35 @@
                                         </div>
                                     </div>
                                     
-                                </a-tab-pane>
+                                </b-tab>
                                 <template v-for="(month, i) in months">
-                                    <a-tab-pane :tab="month.month" :key="i">
+                                    <b-tab :tab="month.month" :key="i" card>
                                         <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['hh']" title="hh" segment="hh" type="week" :date="month.date" :key="5 * 1000 * (Number(i) +  10 * Number(i))"/>
                                         <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['insta']" title="Инста" segment="insta" type="week" :date="month.date" :key="6 * 1000 * (Number(i) +  10 * Number(i))"/>
-                                    </a-tab-pane>
+                                    </b-tab>
                                 </template>
                                 
-                            </a-tabs>
-                        </a-tab-pane>
+                            </b-tabs>
+                        </b-tab>
 
-                        <a-tab-pane  key="8">
+                        <b-tab  key="8" card>
 
                             <span slot="tab">
                                 <b class="roman">IV</b> Увольнение
                             </span>
 
-                            <a-tabs>
-                                <a-tab-pane tab="Причины и процент текучки" key="1">
+                            <b-tabs>
+                                <b-tab tab="Причины и процент текучки" key="1" card>
                                     <table-staff-turnover
                                         :staff="recruiting.staff"
                                         :causes="recruiting.causes"
                                         :staff_longevity="recruiting.staff_longevity"
                                         :staff_by_group="recruiting.staff_by_group"
                                         />
-                                </a-tab-pane>
+                                </b-tab>
                             
 
-                                <a-tab-pane tab="Причины: Бот" key="2">
+                                <b-tab tab="Причины: Бот" key="2" card>
                                     
                                     <div class="d-flex flex-wrap">
 
@@ -247,8 +244,8 @@
                                         
                                     </template>
                                     </div>
-                                </a-tab-pane>
-                                <a-tab-pane tab="Причины увольнения" key="3">
+                                </b-tab>
+                                <b-tab tab="Причины увольнения" key="3" card>
                                     <div class="col-md-12 col-lg-6 d-flex align-items-center">
                                         <table class="table b-table table-striped table-bordered table-sm">
                                             <thead>
@@ -262,12 +259,12 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                </a-tab-pane>
-                            </a-tabs>
-                        </a-tab-pane>
+                                </b-tab>
+                            </b-tabs>
+                        </b-tab>
                     </template>
                     
-                </a-tabs>
+                </b-tabs>
             </div>
 
 

@@ -147,7 +147,7 @@
 
 
      <!-- Modal Create activity -->
-    <a-modal v-model="showNewGaugeWindow"  title="Добавить новый спидометр" @ok="create_gauge()" :width="700" class="modalle">
+    <b-modal v-model="showNewGaugeWindow"  title="Добавить новый спидометр" size="lg" class="modalle" @ok="create_gauge()">
         
         <div class="row">
             <div class="col-5">
@@ -194,7 +194,7 @@
             
         </div>
 
-    </a-modal>
+    </b-modal>
 
    
      

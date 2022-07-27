@@ -54,9 +54,9 @@
                         </div>
                     </div>
 
-                    <a-tabs type="card"  :defaultActiveKey='active' @change="onTabChange" >
+                    <b-tabs type="card"  :defaultActiveKey='active' @change="onTabChange" >
 
-                        <a-tab-pane tab="Сводная" key="1" >
+                        <b-tab tab="Сводная" key="1" card>
                             <div class="mb-5">
                                 <analytic-stat :table="data.table" 
                                     :fields="data.columns" 
@@ -76,14 +76,14 @@
                             ></t-decomposition>
 
                             
-                        </a-tab-pane>
+                        </b-tab>
 
-                        <a-tab-pane tab="Подробная" key="2" >
+                        <b-tab tab="Подробная" key="2" card>
 
-                            <a-tabs type="card" @change="showSubTab" :defaultActiveKey='active_sub_tab'>
+                            <b-tabs type="card" @change="showSubTab" :defaultActiveKey='active_sub_tab'>
 
                                 <template v-for="(activity, index) in data.activities"> 
-                                    <a-tab-pane :tab="activity.name" :key="index"  @change="showcubTab(index)">
+                                    <b-tab :tab="activity.name" :key="index"  @change="showcubTab(index)">
                                         
                                         <t-activity-new v-if="activity.type == 'default'"
                                             :month="monthInfo"
@@ -109,16 +109,16 @@
                                             :editable="activity.editable == 1 ? true : false"
                                         ></t-quality-weekly>
 
-                                    </a-tab-pane>
+                                    </b-tab>
                                 </template>
                         
 
-                            </a-tabs>
+                            </b-tabs>
                             <button class="btn btn-success rounded add-activity btn-sm" @click="add_activity()"><i class="fa fa-plus-square" style="font-size:14px"></i></button>
                             <button class="btn btn-primary rounded order-activity btn-sm" @click="showOrder = true"><i class="fas fa-sort-amount-down"></i></button>
-                        </a-tab-pane>
+                        </b-tab>
                     
-                    </a-tabs>
+                    </b-tabs>
                 </div>
 
                 <div v-else>
@@ -140,7 +140,7 @@
         
 
     <!-- Modal restore archived group -->
-    <a-modal v-model="showArchive"  title="Восстановить из архива" @ok="restore_analytics()" :width="800" class="modalle">
+    <b-modal v-model="showArchive"  title="Восстановить из архива" @ok="restore_analytics()" size="lg" class="modalle" >
     
         <div class="row">
             <div class="col-5">
@@ -153,10 +153,10 @@
             </div>
         </div>
         
-     </a-modal>
+    </b-modal>
 
     <!-- Modal Create activity -->
-    <a-modal v-model="showOrder"  title="Порядок активностей" @ok="save_order()" :width="400">
+    <b-modal v-model="showOrder"  title="Порядок активностей" @ok="save_order()" size="md">
         <div :key="askey">
             <draggable :list="activity_select"  @end="onEndSortcat('test')" >
                 <div v-for="act in activity_select" :key="act.id" class="drag_item">
@@ -166,11 +166,11 @@
                 </div>
             </draggable> 
         </div>
-    </a-modal>
+    </b-modal>
 
 
     <!-- Modal Create activity -->
-    <a-modal v-model="showActivityModal"  title="Добавить активность" @ok="create_activity()" :width="800" class="modalle">
+    <b-modal v-model="showActivityModal"  title="Добавить активность" @ok="create_activity()" size="lg" class="modalle">
     
         <div class="row">
             <div class="col-5">
@@ -226,7 +226,7 @@
             </div>
         </div>
 
-    </a-modal>
+    </b-modal>
 
 
 </div>

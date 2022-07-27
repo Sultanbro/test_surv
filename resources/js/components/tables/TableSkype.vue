@@ -263,7 +263,8 @@
         
     </div>
 
-    <a-modal v-model="showModal" ok-text="Сохранить" cancel-text="Отмена" title="Новый лид" @ok="saveLead">
+    
+    <b-modal v-model="showModal" ok-text="Сохранить" cancel-text="Отмена" title="Новый лид" @ok="saveLead" size="lg" class="modalle">
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
@@ -278,9 +279,9 @@
             </select>
         </div>  
         
-    </a-modal>
+    </b-modal>
 
-    <a-modal v-model="showSkypeFieldsModal"  title="Настройка списка" @ok="showSkypeFieldsModal = !showSkypeFieldsModal" ok-text="Закрыть" :width="800">
+    <b-modal v-model="showSkypeFieldsModal"  title="Настройка списка" @ok="showSkypeFieldsModal = !showSkypeFieldsModal" ok-text="Закрыть"  size="lg" class="modalle">
       <template v-for="error in errors">
           <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
       </template>
@@ -297,7 +298,7 @@
         </div>
 
       </div>  
-  </a-modal>
+    </b-modal>
 
 </div>
 </template>

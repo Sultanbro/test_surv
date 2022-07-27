@@ -19,10 +19,10 @@
             <div v-if="hasPremission">
 
 
-                <a-tabs type="card" defaultActiveKey='1'>
+                <b-tabs type="card" defaultActiveKey='1'>
 
 
-                    <a-tab-pane tab="Экзамены по книгам" key="1">
+                    <b-tab tab="Экзамены по книгам" key="1">
                         <b-table responsive striped :sticky-header="true" class="text-nowrap text-center my-table" id="tabelTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
                             <template slot="cell(success)" slot-scope="data" >
                                 <input type="checkbox" @change="updateExam('success',data)" v-model="data.value"  :disabled="!data.item.link">
@@ -34,9 +34,9 @@
                                 <input class="form-control cell-input" @change="updateExam('link',data)" v-model="data.value" :disabled="dateInfo.currentMonth !== curMonth">
                             </template>
                         </b-table>
-                    </a-tab-pane>
+                    </b-tab>
 
-                    <a-tab-pane tab="Навыки (Skills)" key="2">
+                    <b-tab tab="Навыки (Skills)" key="2">
                         <table class="table b-table table-striped table-bordered table-sm skills-table">
                             <tr>
                                 <th>Сотрудник</th>
@@ -58,9 +58,9 @@
                                 <td v-html="skill.text"></td>
                             </tr>
                         </table>   
-                    </a-tab-pane>
+                    </b-tab>
 
-                </a-tabs>
+                </b-tabs>
 
                 
 

@@ -284,7 +284,7 @@
     
 
      <!-- Modal Create activity -->
-    <a-modal v-model="showDependy"  title="Зависимость значений от ряда" @ok="save_depend()" :width="400" class="modalle">
+    <b-modal v-model="showDependy"  title="Зависимость значений от ряда" size="md" class="modalle" @ok="save_depend()">
     
          <div class="row">
              <div class="col-12">
@@ -300,10 +300,10 @@
             </div>
         </div>
 
-    </a-modal>
+    </b-modal>
 
      <!-- Modal Create activity -->
-    <a-modal v-model="showVariants"  title="Формула на 31 дней" @ok="save_cell_activity()" :width="650" class="modalle">
+    <b-modal v-model="showVariants"  title="Формула на 31 дней" size="lg" class="modalle" @ok="save_cell_activity()">
     
          <div class="row">
             <div class="col-5">
@@ -316,11 +316,10 @@
             </div>
         </div>
 
-    </a-modal>
+    </b-modal>
 
     <!-- Modal showFormula1_31 -->
-    <a-modal v-model="showFormula1_31"  title="" @ok="save_formula_1_31()" :width="650" class="modalle">
-    
+    <b-modal v-model="showFormula1_31"  title="Формула на 31 дней" size="lg" class="modalle" @ok="save_formula_1_31()">
         <div class="row">
             <div class="col-12">
                 <p>Пишите ряд для выбора в фигурных скобках, 5 ряд это - {5}</p>
@@ -338,10 +337,10 @@
             </div>
         </div>
 
-    </a-modal>
+    </b-modal>
 
     <!-- comment for remote / inhouse add minutes -->
-    <a-modal v-model="showCommentWindow"  title="" @ok="saveComment()" :width="650" class="modalle">
+    <b-modal v-model="showCommentWindow"  title="Комментарии" size="lg" class="modalle" @ok="saveComment()">
     
         <div class="row">
             <div class="col-12">
@@ -352,7 +351,7 @@
             </div>
         </div>
 
-    </a-modal>
+    </b-modal>
 
     
 

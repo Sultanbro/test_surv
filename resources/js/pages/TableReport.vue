@@ -27,13 +27,7 @@
         </div>
 
         <div v-if="hasPermission">
-            <a-slider 
-                :defaultValue="defaultScrollValue"
-                :max="maxScrollWidth"
-                v-model="scrollLeft"
-                :tooltipVisible="false"
-            />
-
+            
             <div class="row mb-3">
                 <div class="col-2">
                     <div class="overflow-auto d-flex">
@@ -143,12 +137,12 @@
                             {{ data.value.hour ? data.value.hour : data.value }}
                         </template>
 
-                        <a-popover title="" v-if="data.value.tooltip">
+                        <b-popover v-if="data.value.tooltip" :target="null" triggers="hover" placement="top">
                             <template slot="content">
                                 <div v-html="data.value.tooltip"></div>
                             </template>
                             <div class="cell-border"></div>
-                        </a-popover>
+                        </b-popover>
 
                     </div>
 
@@ -266,29 +260,29 @@
     </sidebar>
 
 
-    <a-modal v-model="modalVisibleFines" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="saveFines">
+    <b-modal v-model="modalVisibleFines" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="saveFines" size="md">
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
         <b-form-input v-model="commentFines" placeholder="Комментарий" :required="true"></b-form-input>
-    </a-modal>
+    </b-modal>
 
-    <a-modal v-model="modalVisibleDay" ok-text="Да" cancel-text="Нет" :title="modalTitle" @ok="setDayType">
+    <b-modal v-model="modalVisibleDay" ok-text="Да" cancel-text="Нет" :title="modalTitle" @ok="setDayType" size="md">
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
         <b-form-input v-model="commentDay" placeholder="Комментарий" :required="true"></b-form-input>
-    </a-modal>
+    </b-modal>
 
-    <a-modal v-model="modalVisibleApply" ok-text="Да" cancel-text="Нет" :title="'Принятие на работу'" @ok="applyPerson">
+    <b-modal v-model="modalVisibleApply" ok-text="Да" cancel-text="Нет" :title="'Принятие на работу'" @ok="applyPerson" size="md">
         <template v-for="error in errors"> 
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
         <b-form-input v-model="applyItems.schedule" placeholder="Напишите со скольки и до скольки рабочий день" :required="true"></b-form-input>
-    </a-modal>
+    </b-modal>
  
 
-    <a-modal v-model="modalVisibleAbsence" ok-text="Да" cancel-text="Нет" title="Отсутствовал на стажировке" @ok="setUserAbsent">
+    <b-modal v-model="modalVisibleAbsence" ok-text="Да" cancel-text="Нет" title="Отсутствовал на стажировке" @ok="setUserAbsent" size="md">
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
@@ -298,9 +292,9 @@
             <option v-for="cause in fire_causes" :value="cause">{{ cause }}</option>
         </select>
 
-    </a-modal>
+    </b-modal>
 
-    <a-modal v-model="modalVisibleFiring" ok-text="Да" cancel-text="Нет" :title="modalTitle" @ok="setUserFired">
+    <b-modal v-model="modalVisibleFiring" ok-text="Да" cancel-text="Нет" :title="modalTitle" @ok="setUserFired" size="md">
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
@@ -324,15 +318,15 @@
                             class="mt-3"
                             ></b-form-file>  
 
-    </a-modal>
+    </b-modal>
 
 
-    <a-modal v-model="modalVisible" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="updateHour">
+    <b-modal v-model="modalVisible" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="updateHour" size="md">
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
         <b-form-input v-model="comment" placeholder="Комментарий" :required="true"></b-form-input>
-    </a-modal>
+    </b-modal>
 
 
 </div>

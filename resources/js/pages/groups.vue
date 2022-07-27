@@ -1,7 +1,8 @@
 <template>
   <div class="groups">
-    <a-alert v-if="message != null" :message="message" type="info" showIcon />
-
+    <b-alert v-if="message!=null" variant="info">
+      {{ message}}
+    </b-alert>
     <div class="row align-items-center">
       <div class="col-lg-3 col-md-6">
         <b-form-select
@@ -362,11 +363,11 @@
       </b-modal>
 
     <!-- Modal  -->
-    <a-modal
+    <b-modal
       v-model="showEditTimeAddress"
       title="Подтягивать часы"
       @ok="saveTimeAddress()"
-      :width="700"
+      size="lg"
       class="modalle"
     >
       <div class="row">
@@ -459,7 +460,7 @@
           </multiselect>
         </div>
       </div>
-    </a-modal>
+    </b-modal>
 
     <!-- Modal restore archived group -->
     <b-modal

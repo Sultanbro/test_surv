@@ -32,14 +32,14 @@
         </div>
  
         <div v-if="hasPremission">
-            <a-modal v-model="modalVisible" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="setTimeManually">
+            <b-modal v-model="modalVisible" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="setTimeManually" size="md">
                 <template v-for="error in errors">
                     <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
                 </template>
                 <b-form-input v-model="comment" placeholder="Комментарий" :required="true"></b-form-input>
-            </a-modal>
+            </b-modal>
 
-            <a-slider :defaultValue="0" :max="maxScrollWidth" v-model="scrollLeft" :tooltipVisible="false" />
+            
             <b-table responsive striped :sticky-header="true" class="text-nowrap text-right my-table" id="comingTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
                 <template slot="cell(name)" slot-scope="data">
                     <div>

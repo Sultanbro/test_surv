@@ -12,7 +12,6 @@ import BootstrapVue from 'bootstrap-vue'
 
 import moment from 'moment'
 import Notifications from 'vue-notification'
-import Antd from 'ant-design-vue'
 import VueMask from 'v-mask' 
 import VGauge from 'vgauge';   
 import draggable from 'vuedraggable' 
@@ -68,7 +67,7 @@ Vue.use(BootstrapVue)
 Vue.use(Loading)
 Vue.use(VGauge);
 Vue.use(VueMask);
-Vue.use(Antd)
+
 Vue.use(Notifications)
 
 // Vue.use(VueCoreVideoPlayer)
