@@ -344,7 +344,7 @@ class UpbookController extends Controller
                 'book_id' => $request->book_id,
                 'page_start' => $request->item['page_start'],
                 'page_end' => $request->item['page_start'],
-                'pass_grade' => isset($request->item['pass_grade']) ? $request->item['pass_grade'] : 1,
+                'pass_grade' => array_key_exists('pass_grade', $request->item) ? $request->item['pass_grade'] : 1,
             ]);
         }
 
