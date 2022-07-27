@@ -603,13 +603,13 @@ export default {
           bonuses: this.bonuses,
         })
         .then((response) => {
-          this.$message.info("Успешно сохранено");
+          this.$toast.info("Успешно сохранено");
           this.bonuses = response.data.bonuses;
           this.messageoff();
         })
         .catch((error) => {
           console.log(error.response);
-          this.$message.info(error.response);
+          this.$toast.info(error.response);
         });
     },
 
@@ -733,14 +733,14 @@ export default {
         .then((response) => {
           this.statuses = response.data.groups;
          // this.activebtn = response.data.group;
-          this.$message.info("Успешно сохранено");
+          this.$toast.info("Успешно сохранено");
           this.messageoff();
 
           loader.hide();
         })
         .catch((error) => {
           console.log(error.response);
-          this.$message.info(error.response);
+          this.$toast.info(error.response);
           loader.hide();
         });
     },
@@ -752,10 +752,10 @@ export default {
           })
           .then((response) => {
             if (response.data.status == 1) {
-              this.$message.success("Добавлено");
+              this.$toast.success("Добавлено");
               this.statuses.push(this.new_status);
             } else {
-              this.$message.error(
+              this.$toast.error(
                 'Название "' +
                   this.new_status +
                   '" не свободно, выберите другое имя для группы!'
@@ -774,7 +774,7 @@ export default {
             group: this.activebtn,
           })
           .then((response) => {
-            this.$message.info("Удалена");
+            this.$toast.info("Удалена");
           });
 
         let ind = this.statuses.indexOf(status);
@@ -830,7 +830,7 @@ export default {
           id: this.restore_group,
         })
         .then((response) => {
-          this.$message.success("Восстановлен!");
+          this.$toast.success("Восстановлен!");
           this.selectGroup(this.restore_group);
           this.restore_group = null;
           this.showArchiveModal = false;
@@ -838,7 +838,7 @@ export default {
         })
         .catch((error) => {
           loader.hide();
-          this.$message.error("Ошибка!");
+          this.$toast.error("Ошибка!");
           alert(error);
         });
     },
@@ -884,7 +884,7 @@ export default {
         })
         .then((response) => {
             this.bonuses.splice(i, 1);
-            this.$message.success('Бонус удален');
+            this.$toast.success('Бонус удален');
         })
         .catch((error) => {
           alert(error);

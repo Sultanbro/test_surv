@@ -68,7 +68,7 @@ export default {
       .then(response => {
 
         this.items[i].id = response.data;
-        this.$message.success('Сохранено')
+        this.$toast.success('Сохранено')
       })
       .catch(error => console.log('Error'))
     },
@@ -85,7 +85,7 @@ export default {
       })
       .then(response => {
         this.items.splice(i,1)
-        this.$message.success('Удалено')
+        this.$toast.success('Удалено')
       })
       .catch(error => console.log('Error'))
     },
@@ -105,7 +105,7 @@ export default {
       Url.select();
       document.execCommand("copy");
 
-      this.$message.info("Ссылка на страницу скопирована!");
+      this.$toast.info("Ссылка на страницу скопирована!");
     },
 
   },

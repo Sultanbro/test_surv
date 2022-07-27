@@ -174,9 +174,9 @@ export default {
                 month: this.month,
                 year: this.year,
             }).then(response => {
-                this.$message.success('Успешно!');
+                this.$toast.success('Успешно!');
             }).catch(error => {
-                this.$message.error('Ошибка!');
+                this.$toast.error('Ошибка!');
                 //alert(error)
             });
         }

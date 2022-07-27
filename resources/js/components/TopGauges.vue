@@ -303,7 +303,7 @@ export default {
                     gauge: this.utility[group].gauges[gauge]
                 })
                 .then(response => {
-                    this.$message.success('Успешно удален!')
+                    this.$toast.success('Успешно удален!')
 
                  
                     this.utility[group].gauges.splice(gauge, 1);
@@ -319,7 +319,7 @@ export default {
                 })
                 .then(response => {
                     if(response.data.code == 200) {
-                        this.$message.success('Успешно сохранено!')
+                        this.$toast.success('Успешно сохранено!')
                         
                         let this_gauge = this.utility[group].gauges[gauge_index];
 
@@ -340,7 +340,7 @@ export default {
                         this.skey++
                         
                     } else {
-                        this.$message.error('Попробуйте нажать еще раз')
+                        this.$toast.error('Попробуйте нажать еще раз')
                     }
                 }).catch(error => {
                     alert(error)
@@ -432,7 +432,7 @@ export default {
                     this.normalize();
 
                     this.showNewGaugeWindow = false;
-                    this.$message.success('Успешно сохранено!')
+                    this.$toast.success('Успешно сохранено!')
                 }).catch(error => {
                     alert(error)
                 });

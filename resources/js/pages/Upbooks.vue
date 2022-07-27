@@ -479,7 +479,7 @@ export default {
             id: this.categories[i].id
           })
           .then((response) => {
-            this.$message.success("Категория успешно удалена!");
+            this.$toast.success("Категория успешно удалена!");
             this.categories.splice(i,1)
             loader.hide();
           })
@@ -512,7 +512,7 @@ export default {
             books: [],
           });
 
-          this.$message.success("Категория успешно создана!");
+          this.$toast.success("Категория успешно создана!");
           loader.hide();
         })
         .catch((error) => {
@@ -541,7 +541,7 @@ export default {
           })
           .then((response) => {
             let c = this.categories.findIndex(i => i.id == this.activeCategory.id);
-            this.$message.success("Книга успешно удалена!");
+            this.$toast.success("Книга успешно удалена!");
 
             if(c != -1) {
               this.categories[c].books.splice(i, 1);
@@ -661,7 +661,7 @@ export default {
           this.modals.edit_book.segments = [];
 
 
-          this.$message.success("Сохранено");
+          this.$toast.success("Сохранено");
           loader.hide();
         })
         .catch((error) => {
@@ -724,7 +724,7 @@ export default {
           this.showEditCat = false;
           this.editcat_name = '';
 
-          this.$message.success("Сохранено!");
+          this.$toast.success("Сохранено!");
           loader.hide();
         })
         .catch((error) => {

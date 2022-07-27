@@ -385,7 +385,7 @@ export default {
         })
         .then((response) => {
           if(response.data.error) {
-            this.$message.info('Раздел не найден');
+            this.$toast.info('Раздел не найден');
           }
           this.trees = response.data.trees;
           this.activeBook = response.data.book;
@@ -414,7 +414,7 @@ export default {
           })
           .then((response) => {
             this.books.splice(i, 1);
-            this.$message.success("Удалено");
+            this.$toast.success("Удалено");
           });
       }
     },
@@ -428,7 +428,7 @@ export default {
           .then((response) => {
             this.books.push(this.archived_books[i]);
             this.archived_books.splice(i, 1);
-            this.$message.success("Восстановлен");
+            this.$toast.success("Восстановлен");
           });
       }
     },
@@ -499,7 +499,7 @@ export default {
 
           this.books.push(response.data);
 
-          this.$message.success("Раздел успешно создан!");
+          this.$toast.success("Раздел успешно создан!");
           loader.hide();
         })
         .catch((error) => {
@@ -552,7 +552,7 @@ export default {
           this.who_can_read = [];
           this.who_can_edit = [];
 
-          this.$message.success("Изменения сохранены!"); 
+          this.$toast.success("Изменения сохранены!"); 
           loader.hide();
         })
         .catch((error) => {
@@ -569,7 +569,7 @@ export default {
           parent_id: null
         })
         .then(response => {
-           this.$message.success('Очередь сохранена');
+           this.$toast.success('Очередь сохранена');
         })
     },
 

@@ -204,7 +204,7 @@ export default {
 
             this.items.push(cells)
 
-            this.$message.info('Пункт добавлен')
+            this.$toast.info('Пункт добавлен')
         },
 
         updateSettings(e, data, index, key) {
@@ -285,7 +285,7 @@ export default {
                     to: this.month.daysInMonth,
                     index: null,
                 }
-                this.$message.info('План проставлен')
+                this.$toast.info('План проставлен')
             }
             
             
@@ -312,7 +312,7 @@ export default {
                     }
                 })
                 .then((response) => {
-                    this.$message.info('Пункт удален')
+                    this.$toast.info('Пункт удален')
                 })
                 .catch(error => {
                     alert(error)

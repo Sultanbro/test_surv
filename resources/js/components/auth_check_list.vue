@@ -106,14 +106,14 @@
 
                   console.log(response,'response')
                   this.showAuthUserCheck= false
-                  this.$message.success('Успешно выполнено');
+                  this.$toast.success('Успешно выполнено');
 
                   ;
 
                 })
 
               }else {
-                this.$message.error('заполнить поля выбранный чек листов');
+                this.$toast.error('заполнить поля выбранный чек листов');
               }
 
 

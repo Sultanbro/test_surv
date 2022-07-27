@@ -237,14 +237,14 @@ export default {
                     this.addBookWindow = false
                     // this.lastClickedRow.toggleDetails();
                     // this.lastClickedRow = null
-                    this.$message.success('Успешно сохранено');
+                    this.$toast.success('Успешно сохранено');
                     this.messageoff()
                     this.getBooks();
 
                 })
                 .catch(error => {
                     console.log(error.response)
-                    this.$message.info(error.response);
+                    this.$toast.info(error.response);
                 });
         },
         editBook() {
@@ -262,9 +262,9 @@ export default {
                     this.lastClickedRow.toggleDetails();
                     this.lastClickedRow = null
                     if (response.data.code == 1) {
-                        this.$message.success(response.data.message);
+                        this.$toast.success(response.data.message);
                     } else {
-                        this.$message.error(response.data.message);
+                        this.$toast.error(response.data.message);
                     }
 
                     this.getBooks()
@@ -272,7 +272,7 @@ export default {
                 })
                 .catch(error => {
                     console.log(error.response)
-                    this.$message.info(error.response);
+                    this.$toast.info(error.response);
                 });
         },
         deleteBook(id) {
@@ -280,13 +280,13 @@ export default {
                     id: id,
                 })
                 .then(response => {
-                    this.$message.success('Книга удалена')
+                    this.$toast.success('Книга удалена')
                     this.getBooks()
                     this.messageoff()
                 })
                 .catch(error => {
                     console.log(error.response)
-                    this.$message.info(error.response);
+                    this.$toast.info(error.response);
                 });
         },
         getBooks() {

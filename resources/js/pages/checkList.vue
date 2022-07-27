@@ -499,15 +499,15 @@
                       if (response.data.exists[0]['item_type'] == 1){
                         this.errors.message = 'Данный Пользователь '+response.data.exists[0]['title']+  ' Ранне Добавлено';
                         this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+  ' Ранне Добавлено';
-                        this.$message.error(this.errors.msg);
+                        this.$toast.error(this.errors.msg);
                       }else if(response.data.exists[0]['item_type'] == 2){
                         this.errors.message =  'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                         this.errors.msg = 'Данная Группа ' +response.data.exists[0]['title']+  ' Ранне Добавлено  ';
-                        this.$message.error(this.errors.msg);
+                        this.$toast.error(this.errors.msg);
                       }else if(response.data.exists[0]['item_type'] == 3){
                         this.errors.message = 'Данная ' +response.data.exists[0]['title']+  ' Должность Ранне Добавлено ';
                         this.errors.msg = 'Данная ' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
-                        this.$message.error(this.errors.msg);
+                        this.$toast.error(this.errors.msg);
                       }
                     }else {
 
@@ -515,7 +515,7 @@
                       //
                       // this.viewCheck()
 
-                      this.$message.success('Успешно изменен');
+                      this.$toast.success('Успешно изменен');
                       this.errors.show = false;
                       this.showCheckSideBar = false;
 
@@ -617,7 +617,7 @@
                         delete_id:id
                     }).then(response => {
                         this.viewCheckList()
-                        this.$message.success('Успешно Удалено');
+                        this.$toast.success('Успешно Удалено');
                     })
                 }
 
@@ -654,24 +654,24 @@
 
                           if (response.data.exists[0]['item_type'] == 1){
                             this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено';
-                            this.$message.error(this.errors.msg);
+                            this.$toast.error(this.errors.msg);
                             this.errors.show = true
                             this.errors.message =  'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                           }else if(response.data.exists[0]['item_type'] == 2){
                             this.errors.msg = 'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
-                            this.$message.error(this.errors.msg);
+                            this.$toast.error(this.errors.msg);
                             this.errors.show = true
                             this.errors.message =  'Данная Группа ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                           }else if (response.data.exists[0]['item_type'] == 3){
                             this.errors.msg = 'Данная Должность' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
-                            this.$message.error(this.errors.msg);
+                            this.$toast.error(this.errors.msg);
                             this.errors.show = true
                             this.errors.message =  'Данная Должность ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
                           }
                         }
                       }
                     }else {
-                      this.$message.success('Успешно Добавлено');
+                      this.$toast.success('Успешно Добавлено');
                       this.errors.show = false;
                       this.showCheckSideBar = false;
                       this.viewCheckList()
@@ -786,13 +786,13 @@
               if (this.allValueArray.length > 0){
                 for (let i = 0; i < this.allValueArray.length;i ++){
                   if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                    this.$message.error('Группа ранее добавлено');
+                    this.$toast.error('Группа ранее добавлено');
                     this.flag_type = false;
                   }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                    this.$message.error('Должность ранее добавлено');
+                    this.$toast.error('Должность ранее добавлено');
                     this.flag_type = false;
                   }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                    this.$message.error('Пользователь ранее добавлено');
+                    this.$toast.error('Пользователь ранее добавлено');
                     this.flag_type = false;
                   }
                 }

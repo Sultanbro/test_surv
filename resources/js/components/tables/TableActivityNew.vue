@@ -785,12 +785,12 @@ export default {
                 year: this.month.currentYear,
                 activity: this.local_activity,
             }).then(response => {
-                this.$message.success('Обновите, чтобы посмотреть новую таблицу!')
+                this.$toast.success('Обновите, чтобы посмотреть новую таблицу!')
                 this.showEditModal = false
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Ошибка!')
+                this.$toast.error('Ошибка!')
                 alert(error)
             });
         }, 

@@ -614,14 +614,14 @@ export default {
                 after_row_id: this.items[i_index]['name']['row_id'],
             })
             .then((response) => {
-                this.$message.success('Добавлено');
+                this.$toast.success('Добавлено');
 
              
                 this.items.splice(i_index + 1, 0, response.data);
                 //this.setDependencies();
                 loader.hide()
             }).catch(error => {
-                this.$message.error('Не получилось');
+                this.$toast.error('Не получилось');
                 console.log(error)
                 loader.hide()
             });
@@ -643,13 +643,13 @@ export default {
                     item: this.items[index]
                 })
                 .then((response) => {
-                    this.$message.success('Удалено');
+                    this.$toast.success('Удалено');
                     // Delete item from items
                     this.items.splice(index, 1);
                     this.setDependencies();
                     loader.hide()
                 }).catch(error => {
-                    this.$message.error('Не получилось');
+                    this.$toast.error('Не получилось');
                     console.log(error)
                     loader.hide()
                 });
@@ -663,13 +663,13 @@ export default {
                 depend_id: this.depend_id
             })
             .then((response) => {
-                this.$message.success('Обновите, чтобы подтянуть данные!');
+                this.$toast.success('Обновите, чтобы подтянуть данные!');
                 
                 this.showDependy = false;
                 this.depend_id = null;
                 this.itemy = null
             }).catch(error => {
-                this.$message.error('Не получилось');
+                this.$toast.error('Не получилось');
                 console.log(error)
             });
            
@@ -680,9 +680,9 @@ export default {
                 id: item.row_id,
             })
             .then((response) => {
-                this.$message.success('Обновите, чтобы подтянуть данные!');
+                this.$toast.success('Обновите, чтобы подтянуть данные!');
             }).catch(error => {
-                this.$message.error('Не получилось');
+                this.$toast.error('Не получилось');
                 console.log(error)
             });
            
@@ -785,9 +785,9 @@ export default {
                 this.showCommentWindow = false;
                 this.comment_i = '';
                 this.comment_f = '';
-                this.$message.success('Сохранено');
+                this.$toast.success('Сохранено');
             }).catch(error => {
-                this.$message.error('Не сохранено');
+                this.$toast.error('Не сохранено');
                 console.log(error)
             });
         },
@@ -805,13 +805,13 @@ export default {
                 group_id: this.group_id,
                 class: item.class,
             }).then(response => {
-                this.$message.success('Обновите чтобы подтянуть данные!')
+                this.$toast.success('Обновите чтобы подтянуть данные!')
                
                 this.item = null;
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Ошибка!')
+                this.$toast.error('Ошибка!')
                 alert(error)
             });
         },
@@ -828,7 +828,7 @@ export default {
                 group_id: this.group_id,
                 class: item.class,
             }).then(response => {
-                this.$message.success('Сумма подтянута!')
+                this.$toast.success('Сумма подтянута!')
                
 
                 this.item.value = response.data
@@ -837,7 +837,7 @@ export default {
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Ошибка!')
+                this.$toast.error('Ошибка!')
                 alert(error)
             });
         },
@@ -853,7 +853,7 @@ export default {
                 group_id: this.group_id,
                 class: item.class,
             }).then(response => {
-                this.$message.success('Среднее за месяц подтянута!')
+                this.$toast.success('Среднее за месяц подтянута!')
                
                 this.item.value = response.data
                 this.item.show_value = response.data
@@ -861,7 +861,7 @@ export default {
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Ошибка!')
+                this.$toast.error('Ошибка!')
                 alert(error)
             });
         },
@@ -883,7 +883,7 @@ export default {
                 formula: item.formula,
                 activity_id: this.activity_id
             }).then(response => {
-                this.$message.success('Обновите чтобы подтянуть данные!')
+                this.$toast.success('Обновите чтобы подтянуть данные!')
                
 
                 this.item = null;
@@ -892,7 +892,7 @@ export default {
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Ошибка!')
+                this.$toast.error('Ошибка!')
                 alert(error)
             });
         },
@@ -914,9 +914,9 @@ export default {
                 group_id: this.group_id,
             })
             .then((response) => {
-                this.$message.success('Сохранено');
+                this.$toast.success('Сохранено');
             }).catch(error => {
-                this.$message.error('Не сохранено');
+                this.$toast.error('Не сохранено');
                 console.log(error)
             });
         },
@@ -993,10 +993,10 @@ export default {
                 type: 'inhouse'
             })
             .then((response) => {
-                this.$message.success('Обновите для сохранения');
+                this.$toast.success('Обновите для сохранения');
                 this.itemy = null;
             }).catch(error => {
-                this.$message.error('Не сохранено');
+                this.$toast.error('Не сохранено');
                 console.log(error)
             });
         },
@@ -1012,10 +1012,10 @@ export default {
                 type: 'remote'
             })
             .then((response) => {
-                this.$message.success('Обновите для сохранения');
+                this.$toast.success('Обновите для сохранения');
                 this.itemy = null;
             }).catch(error => {
-                this.$message.error('Не сохранено');
+                this.$toast.error('Не сохранено');
                 console.log(error)
             });
         },
@@ -1032,10 +1032,10 @@ export default {
                 decimals: item.decimals
             })
             .then((response) => {
-                this.$message.success('Сохранено!');
+                this.$toast.success('Сохранено!');
                 this.hideContextMenu();
             }).catch(error => {
-                this.$message.error('Не сохранено');
+                this.$toast.error('Не сохранено');
                 console.log(error)
             });
         },
@@ -1062,13 +1062,13 @@ export default {
                 decimals: this.formula_1_31_decimals
             })
             .then((response) => {
-                this.$message.success('Обновите для сохранения');
+                this.$toast.success('Обновите для сохранения');
                 this.showFormula1_31 = false
                 this.formula_1_31 = '';
                 this.formula_1_31_decimals = 9;
                 this.itemy = null;
             }).catch(error => {
-                this.$message.error('Не сохранено');
+                this.$toast.error('Не сохранено');
                 console.log(error)
             });
         },
@@ -1114,7 +1114,7 @@ export default {
                 this.items[this.comment_i][this.comment_f].comment = this.comment;
                 this.showCommentWindow = false;
             } else {
-                this.$message.info('Пожалуйста, напишите подробнее');
+                this.$toast.info('Пожалуйста, напишите подробнее');
             }
         },
 

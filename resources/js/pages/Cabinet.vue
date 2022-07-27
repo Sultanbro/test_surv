@@ -454,7 +454,7 @@ export default {
 
 
         this.payments.splice(index, 1);
-        this.$message.success("Успешно Удалено");
+        this.$toast.success("Успешно Удалено");
 
         if (type_id != "dev") {
           axios
@@ -523,7 +523,7 @@ export default {
           })
           .then((response) => {
             if (response.data.success) {
-              this.$message.success("Успешно Сохранено");
+              this.$toast.success("Успешно Сохранено");
             }
           });
       } else {
@@ -578,7 +578,7 @@ export default {
           admins: this.admins,
         })
         .then((response) => {
-          this.$message.success("Сохранено");
+          this.$toast.success("Сохранено");
         })
         .catch((error) => {
           alert(error, "6565");

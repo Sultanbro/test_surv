@@ -186,7 +186,7 @@ export default {
             .post("/admin/courses/upload-image", formData)
             .then(function (res) {
               _this.course.img = response.data.img;
-              _this.$message.success('Сохранено');
+              _this.$toast.success('Сохранено');
               loader.hide();
             })
             .catch(function (err) {
@@ -225,7 +225,7 @@ export default {
           course: this.course,
         })
         .then((response) => {
-          this.$message.success("Успешно сохранено!");
+          this.$toast.success("Успешно сохранено!");
           loader.hide();
         })
         .catch((error) => {

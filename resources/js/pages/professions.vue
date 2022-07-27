@@ -128,7 +128,7 @@ export default {
         axios.post('/timetracking/settings/positions/get', {
           name: this.activebtn,
         }).then(response => {
-          //this.$message.info('Добавлена');
+          //this.$toast.info('Добавлена');
           console.log(response.data)
           this.new_name = response.data.position;
           this.position_id = response.data.id;
@@ -160,9 +160,9 @@ export default {
         position: this.new_position,
       }).then(response => {
         if(response.data.code == 201) {
-          this.$message.error('Должность с таким названием уже существует!');
+          this.$toast.error('Должность с таким названием уже существует!');
         } else {
-           this.$message.success('Добавлена');
+           this.$toast.success('Добавлена');
            this.positions.push(response.data.pos)
           this.new_position = ''
         }
@@ -183,7 +183,7 @@ export default {
           desc: this.desc,
         }).then(response => {
           this.positions = Object.values(response.data.positions)
-          this.$message.success('Сохранено');
+          this.$toast.success('Сохранено');
           this.activebtn = response.data.pos.position;
         }).catch(error => {
           console.log(error.response)
@@ -195,7 +195,7 @@ export default {
                     position: status,
                 })
                 .then(response => {
-                    this.$message.info('Удалена');
+                    this.$toast.info('Удалена');
                 })
 
             let ind = this.positions.indexOf(status);

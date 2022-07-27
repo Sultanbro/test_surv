@@ -171,7 +171,7 @@ export default {
                 group_id: this.group.id
             })
             .then(response => {
-                this.$message.success('Видео перемещено');
+                this.$toast.success('Видео перемещено');
                 this.videos.splice(this.index,1);
             })
         },   
@@ -185,7 +185,7 @@ export default {
             .then(response => {
                 loader.hide()
                 this.$emit('order-changed')
-                this.$message.success('Очередь сохранена');
+                this.$toast.success('Очередь сохранена');
             })
             .catch(e => {
                 loader.hide()

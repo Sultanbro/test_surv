@@ -134,7 +134,7 @@
             //   console.log(this.allValueArray,'07771995')
             //
             //
-            //     this.$message.success('Успешно Сохранено')
+            //     this.$toast.success('Успешно Сохранено')
             //     this.$emit('updateParent', {
             //          allValueArray: this.allValueArray
             //     })
@@ -163,13 +163,13 @@
                 if (this.allValueArray.length > 0){
                   for (let i = 0; i < this.allValueArray.length;i ++){
                       if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                           this.$message.error('Группа ранее добавлено');
+                           this.$toast.error('Группа ранее добавлено');
                            this.flag_type = false;
                       }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                           this.$message.error('Должность ранее добавлено');
+                           this.$toast.error('Должность ранее добавлено');
                            this.flag_type = false;
                       }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                          this.$message.error('Пользователь ранее добавлено');
+                          this.$toast.error('Пользователь ранее добавлено');
                           this.flag_type = false;
                       }
                     }

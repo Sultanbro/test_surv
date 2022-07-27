@@ -386,7 +386,7 @@ export default {
       });
       
       if(not_answered_question) {
-        this.$message.error('Ответьте на все вопросы!');
+        this.$toast.error('Ответьте на все вопросы!');
         
         return;
       }
@@ -563,7 +563,7 @@ export default {
           questions: this.questions,
         })
         .then((response) => { 
-          this.$message.success("Вопросы сохранены!");
+          this.$toast.success("Вопросы сохранены!");
           this.questions.forEach((item, index) => {
             item.id = response.data[index];
           });

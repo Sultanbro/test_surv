@@ -172,7 +172,7 @@ export default {
                     
                     item['ed' + i] = true;
 
-                    this.$message.success('Сохранено');
+                    this.$toast.success('Сохранено');
                 });
         },
 

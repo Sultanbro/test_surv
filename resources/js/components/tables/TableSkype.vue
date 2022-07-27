@@ -565,7 +565,7 @@ export default {
                 .then(response => {
 
                     
-                    this.$message.success('Новый лид сохранен')
+                    this.$toast.success('Новый лид сохранен')
                     this.skypes.unshift({
                         name: this.lead.name,
                         phone: this.lead.phone,
@@ -715,7 +715,7 @@ export default {
         inviteUsers() {
 
             if(this.selected.date ==  null) {
-                this.$message.info('Выберите дату приглашения')
+                this.$toast.info('Выберите дату приглашения')
                 return '';
             }
 
@@ -729,15 +729,15 @@ export default {
 
                     console.log(response)
                     if(response.data.code == 201) {
-                        this.$message.error('Группа не найдена. Обратитесь к разработчику')
+                        this.$toast.error('Группа не найдена. Обратитесь к разработчику')
                     }
 
                     if(response.data.code == 202) {
-                        this.$message.error('Не приглашены. В группе не указана ссылка на Zoom конференцию.')
+                        this.$toast.error('Не приглашены. В группе не указана ссылка на Zoom конференцию.')
                     }
 
                     if(response.data.code == 200) {
-                        this.$message.success('Успешно приглашены')
+                        this.$toast.success('Успешно приглашены')
                         this.checkedBoxes = []
                     }
                     

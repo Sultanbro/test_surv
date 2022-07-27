@@ -97,12 +97,12 @@ export default {
                     groups: this.value,
                 })
                 .then(response => {
-                    this.$message.info('Успешно сохранено');
+                    this.$toast.info('Успешно сохранено');
                     this.messageoff()
                 })
                 .catch(error => {
                     console.log(error.response)
-                    this.$message.info(error.response);
+                    this.$toast.info(error.response);
                 });
         },
         getPositions() {

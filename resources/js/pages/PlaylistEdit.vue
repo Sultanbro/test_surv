@@ -289,7 +289,7 @@ export default {
         })
         .then((response) => {
           this.playlist.videos.splice(v_index, 1);
-          this.$message.success("Исключен из плейлиста. Файл не удален");
+          this.$toast.success("Исключен из плейлиста. Файл не удален");
         })
         .catch((error) => {
           alert(error);
@@ -346,7 +346,7 @@ export default {
           video: this.activeVideo,
         })
         .then((response) => {
-          this.$message.success("Сохранено!");
+          this.$toast.success("Сохранено!");
         })
         .catch((error) => {
           alert(error);
@@ -368,7 +368,7 @@ export default {
           }
         
 
-          this.$message.success("Сохранено");
+          this.$toast.success("Сохранено");
         })
         .catch((error) => {
           alert(error);
@@ -389,10 +389,10 @@ export default {
           this.modals.upload.show = false;
 
           if (response.data.error) {
-            this.$message.success("Не добавлен");
+            this.$toast.success("Не добавлен");
           } else {
             this.playlist.videos.push(response.data.video);
-            this.$message.success("Добавлен");
+            this.$toast.success("Добавлен");
             this.modals.upload.file = null;
           }
         })
@@ -459,7 +459,7 @@ export default {
     },
 
     moveTo(video) {
-      this.$message.info('Переместить: ' + video.title);
+      this.$toast.info('Переместить: ' + video.title);
     }, 
 
     fetchData() {
@@ -629,7 +629,7 @@ export default {
 
       axios.post( '/playlists/save', formData)
         .then((response) => {
-          this.$message.success('Сохранено');
+          this.$toast.success('Сохранено');
           if(response.data !== '') this.playlist.img = response.data;
           loader.hide();
         })
@@ -646,7 +646,7 @@ export default {
           playlist: this.playlist,
         })
         .then((response) => {
-          this.$message.success('Сохранено');
+          this.$toast.success('Сохранено');
 
           this.playlist.groups = response.data.groups;
         })

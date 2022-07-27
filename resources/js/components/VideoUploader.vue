@@ -106,7 +106,7 @@ export default {
                     id: this.file.model.id,
                 })
                 .then((response) => {
-                    this.$message.success("Файл удален");
+                    this.$toast.success("Файл удален");
                     this.file = null;
                     this.step = 1;
                 })
@@ -127,7 +127,7 @@ export default {
                     loader.hide()
                     this.step = 1;
                     this.$emit('addVideoToPlaylist', response.data.video) 
-                    this.$message.success("Добавлен");
+                    this.$toast.success("Добавлен");
                     this.file = null;
 
                     this.$emit('close');

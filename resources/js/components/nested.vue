@@ -87,7 +87,7 @@ export default {
           parent_id: event.to.id
         })
         .then(response => {
-           this.$message.success('Очередь сохранена');
+           this.$toast.success('Очередь сохранена');
         })
     },
 

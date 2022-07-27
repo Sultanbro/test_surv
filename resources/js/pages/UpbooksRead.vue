@@ -305,7 +305,7 @@ export default {
 
       // check current test
       if(this.activeSegment != null && this.activeSegment.item_model == null) {
-        this.$message.info('Ответьте на вопросы, чтобы пройти дальше');
+        this.$toast.info('Ответьте на вопросы, чтобы пройти дальше');
         return 0;   
       }
 

@@ -140,7 +140,7 @@ export default {
                 filename: this.filename,
                 group: this.group_id,
             }).then(response => {
-                this.$message.info('Сохранено');
+                this.$toast.info('Сохранено');
                 loader.hide() 
             }).catch(function(e){
                 loader.hide() 

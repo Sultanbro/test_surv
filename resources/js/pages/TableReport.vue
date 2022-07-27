@@ -490,9 +490,9 @@ export default {
             axios.post('/autochecker/' + this.currentGroup, {})
                 .then(response => {
                     if(response.data.code == 200) {
-                        this.$message.success('Ссылка скопирована. Через 30 минут (в ' + response.data.time + ') не отмеченные стажеры перейдут в статус "Отсутствует"')
+                        this.$toast.success('Ссылка скопирована. Через 30 минут (в ' + response.data.time + ') не отмеченные стажеры перейдут в статус "Отсутствует"')
                     } else {
-                        this.$message.error('Попробуйте нажать еще раз')
+                        this.$toast.error('Попробуйте нажать еще раз')
                     }
                 }).catch(error => {
                     alert(error)
@@ -607,7 +607,7 @@ export default {
             this.modalVisible = true
 
             try {
-                this.$message.info('C ' + this.currentEditingCell.item[this.currentEditingCell.field.key].hour + ' на ' + hour);
+                this.$toast.info('C ' + this.currentEditingCell.item[this.currentEditingCell.field.key].hour + ' на ' + hour);
             } catch(e) {
                 alert(e);
             }
@@ -1045,7 +1045,7 @@ export default {
         editDay(data) {
             
             try {
-                this.$message.info('Вы редактируете ' + this.currentEditingCell.field.key + ' число  у ' + this.currentEditingCell.item.name);
+                this.$toast.info('Вы редактируете ' + this.currentEditingCell.field.key + ' число  у ' + this.currentEditingCell.item.name);
             }
             catch(err) {
                 console.log('it is here')
@@ -1057,7 +1057,7 @@ export default {
 
         updateHour() {
             if(this.isEmpty(this.currentEditingCell)) {
-                this.$message.error('Что-то пошло не так. Выберите поле и попробуйте снова');
+                this.$toast.error('Что-то пошло не так. Выберите поле и попробуйте снова');
                 return ;
             }
 

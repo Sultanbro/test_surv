@@ -59,9 +59,9 @@ export default {
                 name: this.new_position,
             }).then(response => {
                 if (response.data.message) {
-                    this.$message.info(response.data.message);
+                    this.$toast.info(response.data.message);
                 } else {
-                    this.$message.info('Список добавлен');
+                    this.$toast.info('Список добавлен');
                 }
 
                 this.getGroups()
@@ -75,7 +75,7 @@ export default {
                 axios.post('/bp_books/groups/delete', {
                     id: this.group_id,
                 }).then(response => {
-                    this.$message.info('Список удален');
+                    this.$toast.info('Список удален');
                     this.group_id = 0
                     this.getGroups()
                 })

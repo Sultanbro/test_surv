@@ -431,7 +431,7 @@ export default {
                 activity: this.activity,
                 group_id: this.currentGroup
             }).then(response => {
-                this.$message.success('Активность для группы добавлена!')
+                this.$toast.success('Активность для группы добавлена!')
                 this.fetchData();
 
                 this.activity = {
@@ -448,7 +448,7 @@ export default {
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Активность для группы не добавлена!')
+                this.$toast.error('Активность для группы не добавлена!')
                 alert(error)
             });
         },
@@ -460,12 +460,12 @@ export default {
                 year: this.currentYear,
                 group_id: this.currentGroup
             }).then(response => {
-                this.$message.success('Аналитика для группы добавлена!')
+                this.$toast.success('Аналитика для группы добавлена!')
                 this.fetchData();
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Аналитика для группы не добавлена!')
+                this.$toast.error('Аналитика для группы не добавлена!')
                 alert(error)
             });
         },
@@ -479,13 +479,13 @@ export default {
              axios.post('/timetracking/analytics/change_order', {
                 activities: this.activity_select
             }).then(response => {
-                this.$message.success('Порядок сохранен!');
+                this.$toast.success('Порядок сохранен!');
                 this.showOrder = false;
                 this.fetchData();
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Ошибка!');
+                this.$toast.error('Ошибка!');
                 alert(error)
             });
         },
@@ -500,12 +500,12 @@ export default {
             axios.post('/timetracking/analytics/delete_activity', {
                 id: act.id
             }).then(response => {
-                this.$message.success('Удален!');
+                this.$toast.success('Удален!');
                 this.fetchData();
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Ошибка!');
+                this.$toast.error('Ошибка!');
                 alert(error)
             });
         },
@@ -522,7 +522,7 @@ export default {
             axios.post('/timetracking/analytics/restore_analytics', {
                 id: this.restore_group
             }).then(response => {
-                this.$message.success('Восстановлен!');
+                this.$toast.success('Восстановлен!');
                 this.currentGroup = this.restore_group
                 this.ggroups = response.data.groups
                 this.fetchData();
@@ -531,7 +531,7 @@ export default {
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Ошибка!');
+                this.$toast.error('Ошибка!');
                 alert(error)
             });
         
@@ -546,13 +546,13 @@ export default {
             axios.post('/timetracking/analytics/archive_analytics', {
                 id: this.currentGroup
             }).then(response => {
-                this.$message.success('Архивирован!');
+                this.$toast.success('Архивирован!');
                 this.currentGroup = this.ggroups[0].id
                 this.fetchData();
                 loader.hide()
             }).catch(error => {
                 loader.hide()
-                this.$message.error('Ошибка!');
+                this.$toast.error('Ошибка!');
                 alert(error)
             });
         },

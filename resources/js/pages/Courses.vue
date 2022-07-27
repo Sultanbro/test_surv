@@ -116,7 +116,7 @@ export default {
         order: event.newIndex, // oldIndex
       }) 
       .then(response => {
-          this.$message.success('Очередь сохранена');
+          this.$toast.success('Очередь сохранена');
       })
     },
     selectCourse(i) {
@@ -153,7 +153,7 @@ export default {
           this.activeCourse = this.courses[this.courses.length - 1]
 
 
-          this.$message.success("Курс успешно создан!");
+          this.$toast.success("Курс успешно создан!");
           loader.hide();
         })
         .catch((error) => {
@@ -172,7 +172,7 @@ export default {
             id: this.courses[i].id
           })
           .then((response) => {
-            this.$message.success("Курс успешно удален!");
+            this.$toast.success("Курс успешно удален!");
             this.courses.splice(i,1)
             this.activeCourse = null;
             loader.hide();

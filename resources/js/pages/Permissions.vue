@@ -219,7 +219,7 @@ export default {
           this.filtered_items.splice(i,1);
 
           loader.hide();
-           this.$message.success('Доступ удален!');
+           this.$toast.success('Доступ удален!');
         })
         .catch((error) => {
           loader.hide(); 
@@ -246,7 +246,7 @@ export default {
           if(index != -1) this.items.id = response.data.id;
 
           loader.hide();
-           this.$message.success('Цели сохранены!');
+           this.$toast.success('Цели сохранены!');
         })
         .catch((error) => {
           loader.hide();
@@ -336,7 +336,7 @@ export default {
 
           this.role = null;
           loader.hide(); 
-          this.$message.success('Роль сохранена!');
+          this.$toast.success('Роль сохранена!');
         }) 
         .catch((error) => {
           loader.hide();
@@ -363,7 +363,7 @@ export default {
         .then((response) => {
           loader.hide();
            this.roles.splice(i,1);
-           this.$message.success('Роль удалена!');
+           this.$toast.success('Роль удалена!');
         })
         .catch((error) => {
           loader.hide();

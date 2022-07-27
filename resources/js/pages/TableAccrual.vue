@@ -689,7 +689,7 @@ export default {
                     loader
                     .hide();
                 }).catch(error => {
-                    this.$message.error('Ошибка');
+                    this.$toast.error('Ошибка');
                     console.log(error)
                 });
         },
@@ -940,13 +940,13 @@ export default {
                 
                 this.commentEdit = '';
                 this.amountEdit = 0;
-                this.$message.success('Сохранено');
+                this.$toast.success('Сохранено');
                 this.editedField = {name:'', type:'kpi'}
                 this.editPremiunWindow = false
 
                 
             }).catch(error => {
-                this.$message.error('Не сохранилось');
+                this.$toast.error('Не сохранилось');
                 console.log(error)
             });
         },
@@ -960,11 +960,11 @@ export default {
             })
             .then((response) => {
                 
-                this.$message.success('Сохранено');
+                this.$toast.success('Сохранено');
                 this.showBeforeApprove = false
                 this.selectedGroup.salary_approved = 1;
             }).catch(error => {
-                this.$message.error('Не получилось');
+                this.$toast.error('Не получилось');
                 console.log(error)
             });
         },
@@ -1018,7 +1018,7 @@ export default {
             .then((response) => {
 
                 if(type == 'avans') {
-                    this.$message.success('Аванс успешно сохранен');
+                    this.$toast.success('Аванс успешно сохранен');
                     this.selectedCell.item.avanses[this.selectedCell.field.key] = this.avans.sum;
                 
                     this.avans.sum = 0;
@@ -1028,7 +1028,7 @@ export default {
                 }
                 
                 if(type == 'bonus')  {
-                    this.$message.success('Бонус успешно сохранен');
+                    this.$toast.success('Бонус успешно сохранен');
                     this.selectedCell.item.bonuses[this.selectedCell.field.key] = this.bonus.sum;
 
                     this.bonus.sum = 0;
@@ -1041,7 +1041,7 @@ export default {
                 this.items[this.selectedCell.index].history.unshift(response.data)
                 
             }).catch(error => {
-                this.$message.error('Не сохранилось');
+                this.$toast.error('Не сохранилось');
                 console.log(error)
             });
 

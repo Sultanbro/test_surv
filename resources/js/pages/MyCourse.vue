@@ -174,7 +174,7 @@ export default {
         this.activeCourseItem.status = 1;
         this.activeCourseItem = null;
         this.congrats = true;
-        this.$message.success('Поздравляем с завершением курса!');
+        this.$toast.success('Поздравляем с завершением курса!');
       } 
       
     },
@@ -265,10 +265,10 @@ export default {
     nextStep() {
       let index = this.activeCourseItem.steps.findIndex(s => s.id == this.activeStep.id);
       
-      this.$message.info(index);
-      this.$message.info(this.activeCourseItem.steps[index]);
+      this.$toast.info(index);
+      this.$toast.info(this.activeCourseItem.steps[index]);
       if(this.activeCourseItem.steps[index].status != 1) {
-        this.$message.info('Ответьте на вопросы правильно!');
+        this.$toast.info('Ответьте на вопросы правильно!');
         return ;
       }
    
@@ -277,7 +277,7 @@ export default {
          
         let c_index = this.items.findIndex(s => s.id == this.activeCourseItem.id);
         if(this.items.length - 1 == c_index) {
-          this.$message.info('Конец курса!');
+          this.$toast.info('Конец курса!');
           return;
         } else {
           this.activeCourseItem = this.items[c_index + 1 ];

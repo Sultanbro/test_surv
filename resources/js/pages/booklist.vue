@@ -772,7 +772,7 @@ export default {
         xx.queue_number = index;
       });
 
-      this.$message.info("Подождите пока сохранится ...");
+      this.$toast.info("Подождите пока сохранится ...");
 
       let loader = this.$loading.show();
 
@@ -783,11 +783,11 @@ export default {
         })
         .then((response) => {
           loader.hide()
-          this.$message.success("Порядок сохранен!");
+          this.$toast.success("Порядок сохранен!");
         })
         .catch((error) => {
             loader.hide()
-          this.$message.error("Ошибка сохранения порядка");
+          this.$toast.error("Ошибка сохранения порядка");
         });
 
       this.loader = false;
@@ -840,7 +840,7 @@ export default {
 
       this.loader = false;
 
-      this.$message.info("Подождите пока сохранится ...");
+      this.$toast.info("Подождите пока сохранится ...");
 
       axios
         .post("/pages/order/", {
@@ -849,11 +849,11 @@ export default {
         })
         .then((response) => {
           this.loader = false;
-          this.$message.success("Порядок сохранен!");
+          this.$toast.success("Порядок сохранен!");
         })
         .catch((error) => {
           this.loader = false;
-          this.$message.error("Ошибка сохранения порядка");
+          this.$toast.error("Ошибка сохранения порядка");
         });
       this.loader = false;
     },
@@ -926,7 +926,7 @@ export default {
       Url.select();
       document.execCommand("copy");
 
-      this.$message.info("Ссылка на страницу скопирована!");
+      this.$toast.info("Ссылка на страницу скопирована!");
     },
     onAttachmentChange(e) {
       this.attachment = e.target.files[0];
@@ -968,7 +968,7 @@ export default {
     },
     saveServer() {
       if(this.activesbook.questions.length == 0 && !this.can_save) {
-        this.$message.error('Нельзя вносить изменения без тестов');
+        this.$toast.error('Нельзя вносить изменения без тестов');
         return;
       }
 
@@ -984,7 +984,7 @@ export default {
           this.text_was = this.activesbook.text;
           this.title = this.activesbook.title;
           this.edit_actives_book = false;
-          this.$message.info("Сохранено");
+          this.$toast.info("Сохранено");
           this.renameNode(this.tree, this.activesbook.id, this.activesbook.title);
           loader.hide()
 
@@ -1011,7 +1011,7 @@ export default {
         this.activesbook = response.data;
         this.edit_actives_book = true;
         book.children.push(this.activesbook);
-        this.$message.info('Добавлена страница');
+        this.$toast.info('Добавлена страница');
       });
     },
 
@@ -1022,7 +1022,7 @@ export default {
         this.activesbook = response.data;
         this.edit_actives_book = true;
         this.tree.push(this.activesbook);
-        this.$message.info('Добавлена страница');
+        this.$toast.info('Добавлена страница');
       });
     },
 
@@ -1110,7 +1110,7 @@ export default {
           id: this.activesbook.id,
         })
         .then((response) => {
-          this.$message.success('Удалено');
+          this.$toast.success('Удалено');
           this.removeNode(this.tree, this.activesbook.id)
           this.activesbook = null;
         });

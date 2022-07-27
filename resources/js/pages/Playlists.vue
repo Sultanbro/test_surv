@@ -409,7 +409,7 @@ export default {
             })
             .then((response) => {
               this.activeCat.playlists.splice(i, 1);
-              this.$message.success("Удалено");
+              this.$toast.success("Удалено");
             });
         }
      },
@@ -440,7 +440,7 @@ export default {
             })
             .then((response) => {
               this.categories.splice(i, 1);
-              this.$message.success("Удалено");
+              this.$toast.success("Удалено");
             });
         }
       },
@@ -470,7 +470,7 @@ export default {
           }
 
           loader.hide();
-          this.$message.success("Сохранено");
+          this.$toast.success("Сохранено");
         })
         .catch((error) => {
           console.log(error);
@@ -506,7 +506,7 @@ export default {
 
           this.categories.push(response.data);
 
-          this.$message.success("Успешно создана!");
+          this.$toast.success("Успешно создана!");
           loader.hide();
         })
         .catch((error) => {
@@ -532,7 +532,7 @@ export default {
           this.showEditCat = false;
           this.activeCat.title = this.newcat;
           this.newcat = '';
-          this.$message.success("Сохранено!");
+          this.$toast.success("Сохранено!");
           loader.hide();
         })
         .catch((error) => {
@@ -550,7 +550,7 @@ export default {
           .then((response) => {
             this.categories.splice(i, 1);
             this.activeCat = null;
-            this.$message.success("Удалено");
+            this.$toast.success("Удалено");
           });
       }
     },
@@ -574,7 +574,7 @@ export default {
 
           this.activeCat.playlists.push(response.data);
 
-          this.$message.success("Успешно создан!");
+          this.$toast.success("Успешно создан!");
           loader.hide();
         })
         .catch((error) => {

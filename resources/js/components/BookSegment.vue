@@ -64,7 +64,7 @@ export default {
           id: this.segment.id,
         })
         .then((response) => {
-          this.$message.success('Удалено');
+          this.$toast.success('Удалено');
           this.$emit('deleteSegment');
         })
         .catch((error) => { 
@@ -80,7 +80,7 @@ export default {
       }
 
       if(this.segment.questions.length == 0) {
-        this.$message.error('Добавьте минимум 1 вопрос');
+        this.$toast.error('Добавьте минимум 1 вопрос');
         return;
       }
       
@@ -94,7 +94,7 @@ export default {
            this.segment.questions.forEach((item, index) => {
             item.id = response.data.ids[index];
           });
-          this.$message.success('Сохранено');
+          this.$toast.success('Сохранено');
         })
         .catch((error) => {
           alert(error);

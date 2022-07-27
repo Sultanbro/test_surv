@@ -170,7 +170,7 @@ export default {
         //         })
         //         .then((response) => {
         //             console.log(response)
-        //             this.$message.success('Сохранено');
+        //             this.$toast.success('Сохранено');
         //             loader.hide();
         //         }).catch(function(e){
         //             loader.hide() 

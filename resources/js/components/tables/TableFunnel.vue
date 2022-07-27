@@ -176,7 +176,7 @@ export default {
             Url.value = 'https://bp.jobtron.org/timetracking/analytics/funnels?type=' + this.segment;
             //Url.value = 'https://bp.jobtron.org/timetracking/analytics/funnels/' + this.type;
 
-            this.$message.success('Ссылка скопирована ' +  this.segment)
+            this.$toast.success('Ссылка скопирована ' +  this.segment)
             Url.select();
             document.execCommand("copy");
         },
@@ -284,9 +284,9 @@ export default {
                 settings: this.items,
                 type: this.segment
             }).then(response => {
-                this.$message.success('Сохранено!');
+                this.$toast.success('Сохранено!');
             }).catch(error => {
-                this.$message.error('Ошибка');
+                this.$toast.error('Ошибка');
             })
             
         },

@@ -68,12 +68,12 @@ export default {
                 action: 'add',
             })
             .then(response => {
-                this.$message.info('Сотрудник получил книгу "' + selectedOption.name + '"');
+                this.$toast.info('Сотрудник получил книгу "' + selectedOption.name + '"');
                 this.messageoff()
             }) 
             .catch(error => {
                 console.log(error.response)
-                this.$message.info(error.response);
+                this.$toast.info(error.response);
             });
         },
         removeGroup(selectedOption) {
@@ -83,12 +83,12 @@ export default {
                 action: 'delete'
             })
             .then(response => {
-                this.$message.info('Сотрудник лишился книги "' + selectedOption.name + '"');
+                this.$toast.info('Сотрудник лишился книги "' + selectedOption.name + '"');
                 this.messageoff()
             }) 
             .catch(error => {
                 console.log(error.response)
-                this.$message.info(error.response);
+                this.$toast.info(error.response);
             });
         }
     }

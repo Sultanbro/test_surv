@@ -23,7 +23,7 @@ addPosition() {
   axios.post('/timetracking/settings/add', {
     position: this.new_position,
   }).then(response => {
-    this.$message.info('Добавлена');
+    this.$toast.info('Добавлена');
     this.getPositions()
     this.new_position = ''
   }).catch(error => {

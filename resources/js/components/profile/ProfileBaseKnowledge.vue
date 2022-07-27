@@ -103,12 +103,12 @@ export default {
     request(data, msg) {
       axios.post(this.url, data)
           .then(response => {
-            this.$message.info(msg);
+            this.$toast.info(msg);
             this.messageoff()
           })
           .catch(error => {
             console.log(error.response)
-            this.$message.info(error.response);
+            this.$toast.info(error.response);
           });
     },
 

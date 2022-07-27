@@ -491,11 +491,11 @@ export default {
                 if(status.type == 0) {
                     this.user_templates[status_index].editable = false;    
                 }
-                this.$message.success('Успешно изменено!');
+                this.$toast.success('Успешно изменено!');
 
             }).catch(error => {
                 console.log(error.response)
-                this.$message.error('Ошибка!');
+                this.$toast.error('Ошибка!');
             });
         },
         addNotiToUser() {
@@ -510,7 +510,7 @@ export default {
             let item = this.user_with_notifications.find(x => x.id === this.newUser.id);
 
             if(item !== undefined) {
-                this.$message.info('Пользователь уже есть в списке');
+                this.$toast.info('Пользователь уже есть в списке');
                 return null;
             }
 
@@ -521,7 +521,7 @@ export default {
                 []
             ];
             this.newUser = null;
-            this.$message.info('Добавьте сотруднику уведомления и сохраните');
+            this.$toast.info('Добавьте сотруднику уведомления и сохраните');
 
             
             this.selectUser()
@@ -549,11 +549,11 @@ export default {
                     noti: this.activeuser_notifications,
                 })
                 .then(response => {
-                    this.$message.success('Сохранено');
+                    this.$toast.success('Сохранено');
                 })
                 .catch(error => {
                     console.log(error.response)
-                    this.$message.error('Ошибка!');
+                    this.$toast.error('Ошибка!');
                 });
         },
 
@@ -563,7 +563,7 @@ export default {
                     noti: [],
                 })
                 .then(response => {
-                    this.$message.success('Пользователь исключен из индивидуальных уведомлений');
+                    this.$toast.success('Пользователь исключен из индивидуальных уведомлений');
                     this.activeuser_notifications = [];
 
                     let id = this.activeuser.id;
@@ -575,7 +575,7 @@ export default {
                 })
                 .catch(error => {
                     console.log(error)
-                    this.$message.error('Ошибка!');
+                    this.$toast.error('Ошибка!');
                 });
         },
 

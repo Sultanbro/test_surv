@@ -321,7 +321,7 @@ export default {
         gauge: this.rentability[g_index]
       })
           .then(response => {
-            this.$message.success('Успешно сохранено!')
+            this.$toast.success('Успешно сохранено!')
             this.rentability[g_index].editable = false
             this.fetchData()
             loader.hide()
@@ -338,7 +338,7 @@ export default {
         plan: this.prognoz_groups[index].plan,
       }).then(response => {
             
-            this.$message.success('Успешно сохранено!')
+            this.$toast.success('Успешно сохранено!')
             this.prognoz_groups[index].left_to_apply = Number(this.prognoz_groups[index].plan) - Number(this.prognoz_groups[index].fired);
             loader.hide()
           }).catch(error => {
@@ -359,7 +359,7 @@ export default {
         year: this.currentYear,
       })
           .then(response => {
-            this.$message.success('Успешно сохранено!');
+            this.$toast.success('Успешно сохранено!');
             loader.hide()
           }).catch(error => {
         alert(error)

@@ -65,7 +65,7 @@ export default {
             axios.post('/glossary/save', {word: this.words[i]})
             .then(response => {
                 this.words[i].id = response.data;
-                this.$message.success('Определение сохранено');
+                this.$toast.success('Определение сохранено');
             }).catch(error => {
                 console.error(error)
             })
@@ -86,7 +86,7 @@ export default {
             axios.post('/glossary/delete', {id: this.words[i].id})
             .then(response => {
                 this.words.splice(i, 1);
-                this.$message.success('Определение удалено');
+                this.$toast.success('Определение удалено');
             }).catch(error => {
                 console.error(error)
             })

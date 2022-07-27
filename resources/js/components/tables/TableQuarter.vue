@@ -157,7 +157,7 @@
                     }).then(response => {
 
                         if (response.data.success == 1){
-                            this.$message.success('Успешно удалено');
+                            this.$toast.success('Успешно удалено');
                             document.getElementById('clickQuarter').click();
                         }
                     })
@@ -168,7 +168,7 @@
                             user_id:this.user_id,
                         }).then(response => {
                             if (response.data.success == 1){
-                                this.$message.success('Изменения сохранены');
+                                this.$toast.success('Изменения сохранены');
                                 document.getElementById('clickQuarter').click();
                             }
                         })

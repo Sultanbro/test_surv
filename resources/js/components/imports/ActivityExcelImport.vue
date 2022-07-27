@@ -181,7 +181,7 @@ export default {
                 activity_id: this.activity_id,
                 group_id: this.group_id,
             }).then(response => {
-                this.$message.info('Сохранено');
+                this.$toast.info('Сохранено');
                 this.$emit('close');
                 this.file = undefined
                 this.showStepTwo = false

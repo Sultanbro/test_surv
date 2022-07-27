@@ -74,7 +74,7 @@ export default {
 
         addVideoToPlaylist(video) {
             let i = this.groups.findIndex(el => el.id == this.group_id)
-            if(i == -1) return this.$message.error('Ошибка при добавлении в группу в браузере');
+            if(i == -1) return this.$toast.error('Ошибка при добавлении в группу в браузере');
             this.groups[i].videos.push(video);
         },
 
@@ -108,7 +108,7 @@ export default {
                 id: o.video.id,
             })
             .then((response) => {
-                this.$message.success("Файл удален");
+                this.$toast.success("Файл удален");
                 
                 // remove video from group
                 if(o.c_index == -1) {
@@ -149,7 +149,7 @@ export default {
                         });
                     }
 
-                    this.$message.success("Сохранено!");
+                    this.$toast.success("Сохранено!");
                 })
                 .catch((error) => {
                     alert(error);
@@ -169,7 +169,7 @@ export default {
                     title: this.groups[i].title,
                 })
                 .then((response) => {
-                    this.$message.success("Сохранено!");
+                    this.$toast.success("Сохранено!");
                 })
                 .catch((error) => {
                     alert(error);
@@ -204,7 +204,7 @@ export default {
                 })
                 .then((response) => {
                     this.groups.splice(i, 1);
-                    this.$message.success("Удалено!");
+                    this.$toast.success("Удалено!");
                 })
                 .catch((error) => {
                     alert(error);
