@@ -270,7 +270,13 @@
                 <p class="mt-3"><b>Бонусы за активности</b></p>
                  <div v-for="(item,index) in Object.keys(editedField.item.awards)" >
                     <p class="fz12" v-if=" editedField.item.awards[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.awards[item] }}</p>
+                </div> 
+                
+                <p class="mt-3"><b>Бонусы за обучение</b></p>
+                 <div v-for="(item,index) in Object.keys(editedField.item.test_bonus)" >
+                    <p class="fz12" v-if=" editedField.item.test_bonus[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.test_bonus[item] }}</p>
                 </div>  
+
                     <hr>
                 <p class="mt-3"><b>Авансы </b></p>
                  <div v-for="(item,index) in Object.keys(editedField.item.avanses)" >
@@ -763,6 +769,7 @@ export default {
                     //if(tt.bonus !== null) personalBonuses += isNaN(Number(tt.bonus)) ? 0 : Number(tt.bonus);
                     if(item.bonuses[tt.day] !== null) personalBonuses += Number(item.bonuses[tt.day]);
                     if(item.awards[tt.day] !== null) personalBonuses += Number(item.awards[tt.day]);
+                    if(item.test_bonus[tt.day] !== null) personalBonuses += Number(item.test_bonus[tt.day]);
                 });
                 
                 let personalKpi =  Number(item.kpi);
@@ -830,6 +837,7 @@ export default {
                         trainings: item.trainings,
                         bonuses: item.bonuses,
                         awards: item.awards,
+                        test_bonus: item.test_bonus,
                         edited_bonus: item.edited_bonus,
                         edited_kpi: item.edited_kpi,
                         edited_salary: item.edited_salary,

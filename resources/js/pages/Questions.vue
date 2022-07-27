@@ -241,16 +241,18 @@ export default {
   watch: {  
       pass_grade_local(grade) {
 
-        let len = this.questions.length;
+        // let len = this.questions.length;
 
-        if(grade > len) this.pass_grade_local = len;
-        if(grade < 1) this.pass_grade_local = 1;
-        this.$emit('changePassGrade', this.pass_grade_local)
+        // if(grade > len) this.pass_grade_local = len;
+        // if(grade < 1) this.pass_grade_local = 1;
+        // this.$emit('changePassGrade', this.pass_grade_local)
         this.changed = true;
       },
+
       pass_grade() {
         this.pass_grade_local = this.pass_grade
       },
+      
       mode: {
         handler (val, oldVal) {
           if(val == 'edit') {

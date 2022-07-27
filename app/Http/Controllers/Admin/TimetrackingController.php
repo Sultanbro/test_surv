@@ -39,6 +39,7 @@ use App\Models\User\NotificationTemplate;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\KpiIndicator;
 use App\Models\Admin\ObtainedBonus;
+use App\Models\TestBonus;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Timeboard\UserPresence;
@@ -1624,7 +1625,21 @@ class TimetrackingController extends Controller
                     ->groupBy(function($b) {
                         return Carbon::parse($b->date)->format('d'); 
                     });
+        
+        $total_bonuses += TestBonus::where('user_id', $user->id)
+            ->whereYear('date', date('Y'))
+            ->whereMonth('date', $request->month)
+            ->get()
+            ->sum('amount');
 
+        $test_bonus = TestBonus::where('user_id', $user->id)
+                    ->whereYear('date', date('Y'))
+                    ->whereMonth('date', $request->month)
+                    ->where('amount', '>', 0)
+                    ->get()
+                    ->groupBy(function($b) {
+                        return Carbon::parse($b->date)->format('d'); 
+                    });
         // Бонусы
 
         $editedBonus = EditedBonus::where('user_id', $user->id)
@@ -1662,6 +1677,7 @@ class TimetrackingController extends Controller
             $data['salaries'][$i]['fines'] = isset($userFines[$m]) ? $userFines[$m]: []; 
             $data['salaries'][$i]['bonuses'] = isset($bonuses[$m]) ? $bonuses[$m]: [];
             $data['salaries'][$i]['awards'] = isset($obtained_bonuses[$m]) ? $obtained_bonuses[$m]: [];
+            $data['salaries'][$i]['test_bonus'] = isset($test_bonus[$m]) ? $test_bonus[$m]: [];
             $data['salaries'][$i]['avanses'] = isset($avanses[$m]) ? $avanses[$m]: [];
 
         }

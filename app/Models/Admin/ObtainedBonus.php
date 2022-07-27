@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Classes\Helpers\Currency;
 use App\Salary;
+use App\Models\TestBonus;
 
 class ObtainedBonus extends Model
 {
@@ -66,6 +67,11 @@ class ObtainedBonus extends Model
             ->whereMonth('date', $month->month)
                 ->get();
 
+        $test_bonuses_all = TestBonus::where('user_id', $user_id)
+            ->whereYear('date', $month->year)
+            ->whereMonth('date', $month->month)
+                ->get();
+
         $manual_bonus_all = Salary::where('user_id', $user_id)
             ->whereYear('date', $month->year)
             ->whereMonth('date', $month->month)
@@ -74,6 +80,7 @@ class ObtainedBonus extends Model
         for ($i = $month->daysInMonth; $i > 0; $i--) {
 
             $bonuses = $bonuses_all->where('date', $month->day($i)->format('Y-m-d'));
+            $test_bonuses = $test_bonuses_all->where('date', $month->day($i)->format('Y-m-d'));
             $manual_bonus = $manual_bonus_all->where('date', $month->day($i)->format('Y-m-d'))->first();
             
             $item = [];
@@ -98,6 +105,21 @@ class ObtainedBonus extends Model
                     }
                 }
             }
+
+
+            if($test_bonuses->count() > 0) {
+                foreach ($test_bonuses as $key => $bon) {
+                    $item['date'] = $bon->date;
+                    $sum += $bon->amount * $currency_rate;
+                    if(strlen($comment) > 0) {
+                        $comment .= 'За обучение' ? '<br>' . 'За обучение' : '';
+                    } else {
+                        $comment = 'За обучение' ? 'За обучение' : '';
+                    }
+                }
+            }
+
+            
 
             $item['sum'] = $sum;
             $item['comment'] = $comment;

@@ -258,52 +258,73 @@ class CourseController extends Controller
 
         // targets
         $targets = [];
-        foreach ($course->models as $key => $target) {
-            if($target->item_model == 'App\\ProfileGroup') {
-                $model = ProfileGroup::find($target->item_id);
 
-                if($model) {
-                    $targets[] = [
-                        "name" => $model->name,
-                        "id" => $model->id,
-                        "type" => 2,
-                    ];
+
+
+        // если указано Все проходят этот курс
+        if(
+            $course->models
+                ->where('item_id', 0)
+                ->where('item_model', 0)
+                ->first()
+        ) {
+            $targets[] = [
+                "name" => 'Все',
+                "id" => 0,
+                "type" => 0,
+            ];
+        } else {
+
+            foreach ($course->models as $key => $target) {
+                if($target->item_model == 'App\\ProfileGroup') {
+                    $model = ProfileGroup::find($target->item_id);
+    
+                    if($model) {
+                        $targets[] = [
+                            "name" => $model->name,
+                            "id" => $model->id,
+                            "type" => 2,
+                        ];
+                    }
+                }
+    
+                if($target->item_model == 'App\\User') {
+                    $model = User::withTrashed()->find($target->item_id);
+    
+                    if($model) {
+                        $targets[] = [
+                            "name" => $model->last_name . ' ' . $model->name,
+                            "id" => $model->id,
+                            "type" => 1,
+                        ];
+                    }
+                }
+    
+                if($target->item_model == 'App\\Position') {
+                    $model = Position::find($target->item_id);
+    
+                    if($model) {
+                        $targets[] = [
+                            "name" => $model->position,
+                            "id" => $model->id,
+                            "type" => 3,
+                        ];
+                    }
+                    
                 }
             }
 
-            if($target->item_model == 'App\\User') {
-                $model = User::withTrashed()->find($target->item_id);
-
-                if($model) {
-                    $targets[] = [
-                        "name" => $model->last_name . ' ' . $model->name,
-                        "id" => $model->id,
-                        "type" => 1,
-                    ];
-                }
-            }
-
-            if($target->item_model == 'App\\Position') {
-                $model = Position::find($target->item_id);
-
-                if($model) {
-                    $targets[] = [
-                        "name" => $model->position,
-                        "id" => $model->id,
-                        "type" => 3,
-                    ];
-                }
-                
-            }
         }
-
         
+     
 
         $course->targets = $targets;
         
         // get course items
 
         $items = [];
+
+   
         foreach ($course->items as $key => $target) {
             if($target->item_model == 'App\\Models\\Books\\Book') {
                 $model = Book::find($target->item_id);

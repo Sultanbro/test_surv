@@ -376,8 +376,13 @@
                     <t-recruiter-stats :data="{{ $recruiter_stats }}" daysInMonth="{{ date('d') }}" :rates="{{ $recruiter_stats_rates }}"></t-recruiter-stats>
                 </div>
                 <div class="ublocxk mb-4">
-                    <t-recruting-user :month="{{json_encode($month)}}"  :records="{{ json_encode($recruiter_records) }}" name="{{auth()->user()->last_name . ' ' . auth()->user()->name}}"></t-recruting-user>
-                </div> 
+                    <t-recruting-user
+                        :month="{{json_encode($month)}}" 
+                        :records="{{ json_encode($recruiter_records) }}"
+                        name="{{auth()->user()->last_name . ' ' . auth()->user()->name}}"
+                        :workdays="{{ $workdays }}"
+                        ></t-recruting-user>
+                    </div> 
                 <div class="ublocxk">
                 <g-recruting :records="{{ $indicators }}" :isAnalyticsPage="false"></g-recruting>
                 </div>

@@ -710,18 +710,21 @@ class Salary extends Model
                 }
             }
             
-            $test_bonuses = [];
+            $test_bonus = [];
+            
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
                 $d = '' . $i;
                 if(strlen ($i) == 1) $d = '0' . $i;
                
                 $x = $user->testBonuses->where('day', $d)->sum('amount');
                 if($x > 0) {
-                    $test_bonuses[$i] = $x;
+                    $test_bonus[$i] = $x;
                 } else {
-                    $test_bonuses[$i] = null;
+                    $test_bonus[$i] = null;
                 }
             }
+
+            $user->test_bonus = $test_bonus; 
 
             $user->fine = $fines; 
             $user->trainings = $trainings; 
@@ -735,7 +738,7 @@ class Salary extends Model
   
             $user->bonuses = $bonuses; 
             $user->awards = $awards; 
-            $user->test_bonuses = $test_bonuses; 
+            
 
             $user->edited_salary = null;
             $editedSalary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();

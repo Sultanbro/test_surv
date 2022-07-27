@@ -85,7 +85,7 @@
                     </div>
                 </div>
             </template>
-            <div v-if="sidebarContent.bonuses.length == 0 && sidebarContent.awards.length == 0">
+            <div v-if="sidebarContent.bonuses.length == 0 && sidebarContent.awards.length == 0 && sidebarContent.test_bonus.length == 0">
                 Нет бонусов
             </div>
         </div>
@@ -100,6 +100,21 @@
                     <div>
                         {{ item.comment }}
                     </div>
+                </div>
+            </template>
+        </div>
+         <div v-if="sidebarContent.test_bonus.length != 0"  class="mb-5">
+            <div>
+                За пройденные тесты
+            </div>
+            <template v-for="item in sidebarContent.test_bonus">
+                <div :key="item">
+                    <div>
+                        <b>
+                            {{ item.amount }} KZT
+                        </b>
+                    </div>
+                    
                 </div>
             </template>
         </div>
@@ -271,9 +286,11 @@ export default {
                         'fines': this.data[key][keyt]['fines'],
                         'avanses': this.data[key][keyt]['avanses'],
                         'bonuses': this.data[key][keyt]['bonuses'],
+                        'test_bonus': this.data[key][keyt]['test_bonus'],
                         'awards': this.data[key][keyt]['awards'],
                         'hasFine': this.data[key][keyt]['fines'] !== undefined && this.data[key][keyt]['fines'].length,
-                        'hasBonus': (this.data[key][keyt]['bonuses'] !== undefined && this.data[key][keyt]['bonuses'].length) || (this.data[key][keyt]['awards'] !== undefined && this.data[key][keyt]['awards'].length),
+                        'hasBonus': (this.data[key][keyt]['bonuses'] !== undefined && this.data[key][keyt]['bonuses'].length) || (this.data[key][keyt]['awards'] !== undefined && this.data[key][keyt]['awards'].length)
+                            || (this.data[key][keyt]['test_bonus'] !== undefined && this.data[key][keyt]['test_bonus'].length),
                         'hasAvans': this.data[key][keyt]['avanses'] !== undefined && this.data[key][keyt]['avanses'].length,
                         'training': this.data[key][keyt]['training'],
                     })
@@ -335,6 +352,7 @@ export default {
                 fines: data.fines,
                 avanses: data.avanses,
                 bonuses: data.bonuses,
+                test_bonus: data.test_bonus,
                 awards: data.awards,
                 training: data.training,
             }

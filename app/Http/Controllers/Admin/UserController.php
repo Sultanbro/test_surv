@@ -57,6 +57,7 @@ use App\UserReport;
 use App\Models\User\NotificationTemplate;
 use App\Models\User\Card;
 use App\Classes\Helpers\Currency;
+use App\Models\TestBonus;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Classes\UserAnalytics;
@@ -211,11 +212,21 @@ class UserController extends Controller
                 $recruiter_stats = json_encode([]);
                 $recruiter_records = json_encode([]);
 
+                // workdays recruiter
+
+                $ignore = $user->working_day_id == 1 ? [6,0] : [0];
+                $workdays = workdays(date('Y'), date('m'), $ignore);
+                $wd = $user->workdays_from_applied(date('Y-m-d'), $user->working_day_id == 1 ? 5 : 6);
+                if($wd != 0) $workdays = $wd;
+             
+                // another code 
+
                 if(in_array($user->id, $rg_users)) {
                     $is_recruiter = true;
                     $recruiter_stats = json_encode(RecruiterStat::tables(date('Y-m-d')));
 
-                    $asi  = AnalyticsSettingsIndividually::whereYear('date', date('Y'))->whereMonth('date', date('m'))
+                    $asi  = AnalyticsSettingsIndividually::whereYear('date', date('Y'))
+                        ->whereMonth('date', date('m'))
                         ->where('group_id', RM::GROUP_ID)
                         ->where('employee_id', $user->id)
                         ->first();
@@ -304,6 +315,11 @@ class UserController extends Controller
             
             $bonus = $bonuses->sum('bonus');
             $bonus += ObtainedBonus::onMonth($user->id, date('Y-m-d'));
+            $bonus += TestBonus::where('user_id', $user->id)
+                ->whereYear('date', date('Y'))
+                ->whereMonth('date', date('m'))
+                ->get()
+                ->sum('amount');
 
             $bonusHistory = ObtainedBonus::getHistory($user->id, date('Y-m-d'), $currency_rate);
 
@@ -435,6 +451,7 @@ class UserController extends Controller
                     'quality' => $quality,
                     'trainee_report' => $trainee_report,
                     'courses' => $user->getActiveCourses(),
+                    'workdays' => $workdays
                 ]);
         }
         
