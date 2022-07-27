@@ -348,6 +348,7 @@ class UpbookController extends Controller
             ]);
         }
 
+        $bs->pass_grade =  array_key_exists('pass_grade', $request->item) ? $request->item['pass_grade'] : 1;
         $bs->page_start = $request->item['page_start'];
         $bs->save();
 
