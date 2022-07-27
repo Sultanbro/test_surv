@@ -26,6 +26,13 @@ import 'vue-croppa/dist/vue-croppa.css';
 
 Vue.use(Croppa);
 
+// Toast
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+const options = {};
+Vue.use(Toast, options);
+
+
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 //import VueCoreVideoPlayer from 'vue-core-video-player';

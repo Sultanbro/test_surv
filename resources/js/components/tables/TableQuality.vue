@@ -972,7 +972,7 @@ export default {
         })
         .then((response) => {
 
-          this.$message.success("Сохранено!!");
+          this.$toast.success("Сохранено!!");
           this.showSettings = false;
           this.fetchData();
           loader.hide();
@@ -1055,7 +1055,7 @@ export default {
 
 
 
-          this.$message.success("Записи загружены");
+          this.$toast.success("Записи загружены");
           this.normalizeItems();
           this.createUserIdList();
           this.setWeeksTable();
@@ -1123,7 +1123,7 @@ export default {
 
     addRecord() {
       if (this.filters.currentEmployee == 0)
-        return this.$message.info("Выберите сотрудника!");
+        return this.$toast.info("Выберите сотрудника!");
 
       if (this.records.data.length != 0) this.records.data[0].editable = false;
 
@@ -1159,7 +1159,7 @@ export default {
       let loader = this.$loading.show();
 
       if (record.phone.length == 0) {
-        this.$message.error("Укажите телефон!!!");
+        this.$toast.error("Укажите телефон!!!");
         loader.hide();
         return;
       }
@@ -1193,10 +1193,10 @@ export default {
             record.name = this.user_ids[record.employee_id];
             // this.records.data.shift()
             // this.records.data.unshift(record)
-            this.$message.success("Сохранено");
+            this.$toast.success("Сохранено");
           }
           if (response.data.method == "update") {
-            this.$message.success("Изменено");
+            this.$toast.success("Изменено");
           }
           record.changed = false;
           this.$bvModal.hide("bv-modal");
@@ -1235,7 +1235,7 @@ export default {
           id: this.newRecord.id,
         })
         .then((response) => {
-          this.$message.info("Запись #" + this.newRecord.id + " удалена");
+          this.$toast.info("Запись #" + this.newRecord.id + " удалена");
           this.$bvModal.hide("delete-modal");
 
           // ES6 Func
@@ -1466,7 +1466,7 @@ export default {
         })
         .then((response) => {
 
-          this.$message.success("Сохранено");
+          this.$toast.success("Сохранено");
           loader.hide();
         })
         .catch(function (e) {
@@ -1564,7 +1564,7 @@ export default {
             group_id: this.currentGroup,
           })
           .then((response) => {
-            this.$message.success("Сохранено!");
+            this.$toast.success("Сохранено!");
             this.fetchData();
             loader.hide();
           })
