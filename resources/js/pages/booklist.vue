@@ -476,6 +476,30 @@ export default {
     'enable_url_manipulation',
     'course_item_id'
   ],
+  props: {
+    trees: Array,
+    parent_id: Number,
+    auth_user_id: Number,
+    parent_name: String,
+    show_page_id: {
+      default: 0,
+    },
+    can_edit: {
+      default: false,
+    },
+    mode: {
+      default: 'read'
+    },
+    course_page: {
+      default: 0,
+    },
+    enable_url_manipulation: {
+      default: true,
+    },
+    course_item_id: {
+      default: 0
+    }
+  },
   components: { 
     nestedDraggable,
     nestedCourse
@@ -1196,6 +1220,7 @@ export default {
       let loader = this.$loading.show();
       axios.post("/kb/get", {
         id: id,
+        course_item_id: this.course_item_id,
         refresh: refreshTree
       }).then((response) => {
         loader.hide()
