@@ -141,7 +141,7 @@ class MyCourseController extends Controller
         ];
     }   
 
-    private function hasCourse($id) {
+    private function getCourseIfVisible($id) {
         // prepare
         $user = auth()->user();
         $user_id = $user->id;
@@ -177,7 +177,7 @@ class MyCourseController extends Controller
         $course_result = null;
         if(in_array($id, $courses)) {
             $course_result = CourseResult::where('user_id', $user_id)
-                ->where('course_id')
+                ->where('course_id', $id)
                 //->whereIn('status', [1])
                 ->first();
             if(!$course_result) {
