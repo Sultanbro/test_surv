@@ -609,7 +609,10 @@ export default {
     },
 
     nextElement() {
+      console.log('this.activesbook.item_model');
+      console.log(this.activesbook.item_model);
       if(this.activesbook.item_model == null) {
+           console.log('this.activesbook.item_model == null');
         this.setSegmentPassed();
         this.activesbook.item_model = {status: 1}; 
       }
