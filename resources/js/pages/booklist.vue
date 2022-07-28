@@ -676,17 +676,18 @@ export default {
 
 
             if(this.show_page_id == 0 || this.show_page_id == null) {
-              this.activesbook = this.tree[0];
+             //this.activesbook = this.tree[0];
+              this.showPage(this.tree[0].id);
             } else {
               // find element 
              
               let index = this.ids.findIndex(el => el.id == this.show_page_id); 
               
-              console.log(index)
               if(index != -1) {
                 let el = this.findItem(this.ids[index]);
-                  console.log(el)
-                this.activesbook = el;
+               
+                //this.activesbook = el;
+                this.showPage(el.id);
                 if(this.activesbook != null && this.activesbook.questions.length == 0) {
                   this.passedTest = true;
                 }
