@@ -135,13 +135,13 @@
 
                         <template v-else>
                             {{ data.value.hour ? data.value.hour : data.value }}
-                        </template>
+                        </template>  
 
-                        <b-popover v-if="data.value.tooltip" :target="null" triggers="hover" placement="top">
+                        <div :class="`cell-border cell-border-${data.item.id}-${data.field.key}`" v-if="data.value.tooltip"></div>
+                        <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top">
                             <template slot="content">
                                 <div v-html="data.value.tooltip"></div>
                             </template>
-                            <div class="cell-border"></div>
                         </b-popover>
 
                     </div>
