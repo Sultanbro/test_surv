@@ -14,6 +14,7 @@ use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\Models\Videos\Video;
 use App\Models\CourseItemModel;
+use App\Models\CourseModel;
 use App\KnowBase;
 use App\User;
 use DB;
@@ -111,12 +112,19 @@ class MyCourseController extends Controller
     }   
 
     public function getMyCourse(Request $request) {
-        $course = CourseResult::activeCourse();
-        
+    
+        if($request->has('id')) {
+            $course = $this->getCourseIfVisible($request->id);
+        } else {
+            $course = CourseResult::activeCourse();
+        }
+       
+
         $all_stages = 0;
         $completed_stages = 0;
         $items = [];
         if($course) {
+            
             $items = $course->setCheckpoint($course->items);
 
             foreach ($items as $key => $item) {
@@ -133,7 +141,60 @@ class MyCourseController extends Controller
         ];
     }   
 
-    
+    private function hasCourse($id) {
+        // prepare
+        $user = auth()->user();
+        $user_id = $user->id;
+        $position_id = $user->position_id;
+
+        $groups = $user->inGroups();
+        $group_ids = [];
+        foreach ($groups as $key => $group) {
+            $group_ids[] = $group->id;
+        }
+
+        // find course
+        $courses = CourseModel::where(function($query) use ($user_id) {
+                $query->where('item_model', 'App\\User')
+                    ->where('item_id', $user_id);
+            })
+            ->orWhere(function($query) use ($group_ids) {
+                $query->where('item_model', 'App\\ProfileGroup')
+                    ->whereIn('item_id', $group_ids);
+            })
+            ->orWhere(function($query) use ($position_id) {
+                $query->where('item_model', 'App\\Position')
+                    ->where('item_id', $position_id);
+            })
+            ->orWhere(function($query) {
+                $query->where('item_model', 0)
+                    ->where('item_id', 0);
+            })
+            ->get()
+            ->pluck('course_id')
+            ->toArray();
+
+        $course_result = null;
+        if(in_array($id, $courses)) {
+            $course_result = CourseResult::where('user_id', $user_id)
+                ->where('course_id')
+                //->whereIn('status', [1])
+                ->first();
+            if(!$course_result) {
+                CourseResult::create([
+                    'course_id' => $id,
+                    'status' => 2,
+                    'progress' => 0,
+                    'points' => 0, 
+                    'started_at' => now(), 
+                    'ended_at' => null, 
+                ]);
+            }
+        }
+
+        return $course_result;
+    }
+
     private function getCourseItem(CourseItem $course_item, &$no_active)
     {
         $user_id = auth()->user()->id;
@@ -157,7 +218,6 @@ class MyCourseController extends Controller
             
             $title = $kb->title;
             KnowBase::getArray($steps, $kb);
-            
         }
 
         if($course_item->item_model == 'App\Models\Videos\VideoPlaylist') {
@@ -179,7 +239,6 @@ class MyCourseController extends Controller
 
                 if(!$fp) $statusOfCourse = CourseResult::ACTIVE;
             }
-            
         }
 
         if($course_item->item_model == 'App\Models\Books\Book') {
@@ -237,5 +296,4 @@ class MyCourseController extends Controller
             'title' => $title,
         ];
     }
-   
 }
