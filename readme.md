@@ -8,7 +8,7 @@
 - Nginx v1.10.3
 - Node v16.15
 - npm v8.11
-
+- Vue 2.6
 ## Installation
 
 * git clone https://github.com/mediasend/surv
