@@ -193,7 +193,7 @@
         <li class="menu-item">
             <a href="/timetracking/fines" class="side-btn @if($menu == 'penalties') active @endif">
                 <i class="fas fa-minus-circle"></i>
-                <span>Депри мирование</span>
+                <span>Депре мирование</span>
             </a>
         </li>
         @if(auth()->user() && auth()->user()->program_id == 1 && tenant('id') == 'bp')

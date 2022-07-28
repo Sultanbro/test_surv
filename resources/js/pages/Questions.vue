@@ -232,7 +232,7 @@ export default {
       right_ans: 0 // правильно отвеченные
     };
   },
-  computed: {
+  computed: { 
     scores() {
       let pass_grade_local = this.pass_grade_local > this.questions.length ? this.questions.length : this.pass_grade_local;
       return Number(this.right_ans) - Number(pass_grade_local) >= 0
@@ -556,11 +556,21 @@ export default {
 
       this.can_save = false;
 
+      // remove checked prop from variants
+      let _questions = this.questions;
+
+      _questions.forEach(q => {
+        q.variants.forEach(v => {
+          delete v['checked'];
+        });
+      });
+
+      // save 
       axios
         .post(url, {
           id: this.id,
           pass_grade: this.pass_grade,
-          questions: this.questions,
+          questions: _questions,
         })
         .then((response) => { 
           this.$toast.success("Вопросы сохранены!");
