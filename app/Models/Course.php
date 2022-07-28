@@ -33,7 +33,10 @@ class Course extends Model
         return $this->hasMany(CourseModel::class, 'course_id');
     }
 
-    
+    public function course_results()
+    {
+        return $this->hasMany('App\Models\CourseResult', 'course_id', 'id');
+    }
 
     /**
      * Найти точку, где остановились при прохождении курса

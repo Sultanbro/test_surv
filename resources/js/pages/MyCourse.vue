@@ -10,9 +10,9 @@
          <div class="section d-flex aic jcsb my-2"
           v-for="(course, c_index) in courses"
           :key="course.id"
-          @click="getCourse(course.course_id)"
+          @click="getCourse(course.id)"
         >
-          <p class="mb-0">{{ course.course.name }}</p>
+          <p class="mb-0">{{ course.name }}</p>
         </div>
     </div>
 

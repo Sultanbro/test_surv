@@ -44,7 +44,7 @@ class CourseResult extends Model
     {
         return $this->belongsTo('App\Models\Course', 'course_id', 'id');
     }
-
+    
     public static function getUsers($group_id, $date = null)
     {
         $user_ids = ProfileGroup::employees($group_id);
