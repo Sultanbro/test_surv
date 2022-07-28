@@ -68,6 +68,7 @@
         "vue-select": "^3.11.2",
         "vue-simple-context-menu": "^3.4.2",
         "vue-simple-flowchart": "^0.1.8",
+        "vue-toastification": "^1.7.14",
         "vue-video-player": "^5.0.2",
         "vue2-circle-progress": "^1.2.3",
         "vue2-datepicker": "^3.11.0",
