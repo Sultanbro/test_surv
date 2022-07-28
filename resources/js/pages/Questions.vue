@@ -295,7 +295,7 @@ export default {
     
     setResults() {
       this.questions.forEach((q) => {
-       
+        console.log(q)
         if(q.result === null) return;
         this.count_points = true;
         if (q.type == 0) {
