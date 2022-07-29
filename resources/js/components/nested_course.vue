@@ -13,11 +13,11 @@
           <div class="handles d-flex aic" >
             <div>
               <i class="fa fa-arrow-right pointer" v-if="active == el.id"></i>
-              <i class="fa fa-check pointer" v-else-if="el.item_model !== null"></i>
+              <i class="fa fa-check pointer" v-else-if="el.item_model != null"></i>
               <i class="fa fa-lock pointer" v-else></i>
             </div>
           </div>
-          <p class="mb-0" @click="showPage(el.id)">
+          <p class="mb-0" @click="showPage(el)">
             {{ el.title }}
             <span class="long">{{ el.title }}</span>
           </p>
@@ -51,8 +51,9 @@ export default {
     
   },
   methods: {
-    showPage(id) {
-      this.$emit('showPage', id);
+    showPage(el) {
+      if(el.item_model == null) return; 
+      this.$emit('showPage', el.id);
     },
   },
 };

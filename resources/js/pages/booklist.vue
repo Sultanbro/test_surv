@@ -338,6 +338,7 @@
                   :key="questions_key"
                   :pass_grade="activesbook.pass_grade"
                   @changePassGrade="changePassGrade"
+                   :course_item_id="course_item_id" 
                 />
               <div class="pb-5"></div> 
           </div>
@@ -589,6 +590,7 @@ export default {
           questions: this.activesbook.questions
         })
         .then((response) => {
+           this.activesbook.item_model = {status: 1}; 
          // this.activeVideo.item_models.push(response.data.item_model);
         })
         .catch((error) => {
@@ -654,7 +656,8 @@ export default {
        axios
         .post("/kb/tree", {
           id: this.parent_id,
-          can_read: this.course_page
+          can_read: this.course_page,
+          course_item_id: this.course_item_id
         })
         .then((response) => {
           this.tree = response.data.trees;
@@ -1229,6 +1232,7 @@ export default {
       }).then((response) => {
         loader.hide()
         this.activesbook = response.data.book;
+        this.questions_key++
         this.text_was = this.activesbook.text;
         this.title_was = this.activesbook.title;
         this.breadcrumbs = response.data.breadcrumbs;
