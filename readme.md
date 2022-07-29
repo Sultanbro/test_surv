@@ -2,16 +2,18 @@
 
 ## Stack
 
-- Laravel 8.83.13
-- PHP 7.3.27
-- Linux Ubuntu 16.04
+- Laravel 9.16
+- PHP 8.1.5
+- Linux Ubuntu 20.04
 - Nginx v1.10.3
-
+- Node v16.15
+- npm v8.11
+- Vue 2.6
 ## Installation
 
 * git clone https://github.com/mediasend/surv
 * composer update
-* npm run prod
+* npm run production
 * add database.php to config
 
 ## Задачи, которые нужно согласовать
