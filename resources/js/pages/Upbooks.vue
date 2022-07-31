@@ -2,7 +2,7 @@
   <div>
     <div class="upbooks-page" v-if="activeBook === null">
       <div class="lp">
-        <h1 class="page-title">Книги</h1>
+        <h1 class="page-title">Темы</h1>
 
         <div
           class="section d-flex aic jcsb"
@@ -23,7 +23,7 @@
 
           <i
             class="fa fa-trash"
-            v-if="cat.id != 0 && mode == 'edit'"
+            v-if="cat.id != 0 && mode == 'edit'" 
             @click.stop="deleteCat(c_index)"
           ></i>
           </div>

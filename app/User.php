@@ -749,18 +749,18 @@ class User extends Authenticatable implements Authorizable
 
                 $sum -= $arr->avanses[$i] ?? 0;
 
-                if($arr->edited_bonus == null) {
-                    $sum += $arr->bonuses[$i] ?? 0;
-                }
+                // if($arr->edited_bonus == null) {
+                //     $sum += $arr->bonuses[$i] ?? 0;
+                // }
             
                 //$sum += $arr->awards[$i] ?? 0;
                 //$sum += $arr->test_bonuses[$i] ?? 0;
                 
             }   
 
-            if($arr->edited_kpi == null) {
-                $sum += $arr->kpi;
-            } 
+            // if($arr->edited_kpi == null) {
+            //     $sum += $arr->kpi;
+            // } 
             // else {
             //     $sum += $arr->edited_kpi->amount;
             // }  

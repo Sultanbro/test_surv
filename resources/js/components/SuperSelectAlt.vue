@@ -52,8 +52,11 @@
                     class="option"
                     v-for="(option, index) in filtered_options"
                     :key="index"
-                    @click="addValue(index)"
-                    :class="{'selected': option.selected}" 
+                    @click="addValue(index, option.type)"
+                    :class="{
+                        'selected': option.selected,
+                        'category': option.type == 4,
+                    }" 
                 >
                     <i class="fa fa-book" v-if="option.type == 1"></i> 
                     <i class="fa fa-play" v-if="option.type == 2"></i> 
@@ -157,7 +160,8 @@ export default {
             this.addSelectedAttr();
         },
 
-        addValue(index) {
+        addValue(index, type) {
+            if(type == 4) return;
             if(this.single) this.show = false;
             if(this.single && this.values.length > 0) {
                 return;
@@ -245,3 +249,8 @@ export default {
 
 }
 </script>
+<style>
+.category {
+    background: blue;
+}
+</style>

@@ -17,6 +17,7 @@ class TestBonus extends Model
         'user_id',
         'date', // Y-m-d
         'amount', // int
+        'comment', // int
     ];
 
 }

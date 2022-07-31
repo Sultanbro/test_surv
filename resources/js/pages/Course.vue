@@ -98,6 +98,11 @@
                 <i class="fa fa-bars mover"></i>
                 <i class="fa fa-caret-right pointer shower"></i>
               </div>
+              <div>
+                <i class="fa fa-book pointer mr-2" v-if="el.type == 1"></i>
+                <i class="fa fa-play pointer mr-2" v-if="el.type == 2"></i>
+                <i class="fa fa-database pointer mr-2" v-if="el.type == 3"></i>
+              </div>
               <p @click="toggleOpen(el)" class="mb-0">{{ el.name }}</p>
               <i
                 class="fa fa-trash pointer ml-2"

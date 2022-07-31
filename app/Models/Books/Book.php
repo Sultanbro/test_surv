@@ -169,7 +169,7 @@ class Book extends Model implements CourseInterface
     public function getOrder()
     {
         $pages = TestQuestion::where([
-                'testable_type' => 'App\\Models\\Books\\Book',
+                'testable_type' => 'App\\Models\\Books\\BookSegment',
                 'testable_id' => $this->id 
             ])
             ->distinct('page')

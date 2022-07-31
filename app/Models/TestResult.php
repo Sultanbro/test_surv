@@ -19,6 +19,7 @@ class TestResult extends Model
         'test_question_id',
         'answer',
         'status',
+        'comment',
         'course_item_model_id' // rename to course_id . Silly mistake
     ];
 

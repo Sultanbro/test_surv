@@ -86,7 +86,7 @@ class AnalyticRow extends Model
                 'column_id' => $column->id,
                 'value' => $field,
                 'show_value' => $field,
-                'editable' => in_array($field, ['Impl', 'Pr, cstll', '']) ? 0 : 1,
+                'editable' => in_array($field, ['Impl', 'Pr, cstll']) ? 0 : 1,
                 'class' => 'text-left font-bold',
                 'type' => AnalyticStat::INITIAL,
             ]);

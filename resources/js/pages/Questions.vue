@@ -142,7 +142,7 @@
       </div>
 
       <p v-if="points != -1 && mode == 'read'" class="mt-3 scores">
-        <span v-if="scores">Вы набрали: {{ points }} баллов из {{ total }}</span>
+        <span v-if="scores">Вы набрали: {{ points }} бонусов из {{ total }}</span>
         <span v-else>Вы не набрали проходной балл...</span>
      </p>
     </template>
@@ -295,7 +295,6 @@ export default {
     
     setResults() {
       this.questions.forEach((q) => {
-        console.log(q)
         if(q.result === null) return;
         this.count_points = true;
         if (q.type == 0) {
@@ -394,9 +393,11 @@ export default {
       if(this.scores) {
         if(this.count_points) {
           this.count_points = false;
-        } else {
-          this.$emit('passed');
-        }
+        } 
+        // else {
+        //   this.$emit('passed');
+        // }
+         this.$emit('passed');
       } else {
         this.points = -1;
       }

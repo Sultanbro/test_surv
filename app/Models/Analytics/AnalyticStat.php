@@ -378,6 +378,7 @@ class AnalyticStat extends Model
                 'column_id' => $column->id,
                 'value' => '',
                 'show_value' => '',
+                'editable' => 1,
                 'type' => $type,
                 'class' => $class
             ]);

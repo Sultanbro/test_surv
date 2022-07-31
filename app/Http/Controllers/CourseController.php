@@ -25,6 +25,10 @@ class CourseController extends Controller
         View::share('menu', 'courses');
         View::share('link', 'faq');
 
+        if(!auth()->user()->can('courses_view')) {
+            return redirect('/');
+        }
+        
         return view('surv.courses');
     }
 
@@ -331,7 +335,7 @@ class CourseController extends Controller
 
                 if($model) {
                     $items[] = [
-                        "name" => $model->title,
+                        "name" => $model->title . ' - ' . $model->author,
                         "id" => $model->id,
                         "type" => 1,
                     ];

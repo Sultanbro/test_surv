@@ -10,7 +10,10 @@ use App\User;
 use App\ProfileGroup;
 use App\Position;
 use App\Models\Books\Book;
+use App\Models\Books\BookGroup;
+use App\Models\Videos\VideoCategory;
 use App\Models\Videos\VideoPlaylist;
+use App\Models\Videos\Video;
 use App\KnowBase;
 use App\Models\PermissionItem;
 
@@ -454,31 +457,48 @@ class PermissionController extends Controller
     {
         $options = [];
 
-        $books = Book::get();
-        $videos = VideoPlaylist::where('category_id', '!=', 0)->get();
+        $bookgroups = BookGroup::with('books')->get();
+        $playlist_cats = VideoCategory::with('playlists')->get();
         $kbs = KnowBase::whereNull('parent_id')->get();
         
-        foreach($books as $book) {
+        foreach($bookgroups as $group) {
             array_push($options, [
-                'id' => $book->id,
-                'name' => $book->title,
-                'type'=> 1
+                'id' => $group->id,
+                'name' => $group->name,
+                'type'=> 4,
             ]);
+
+            foreach ($group->books as $book) {
+                array_push($options, [
+                    'id' => $book->id,
+                    'name' => $book->title,
+                    'type'=> 1,
+                ]);
+            }
         }
 
-        foreach($videos as $video) {
+        foreach($playlist_cats as $cat) {
             array_push($options, [
-                'id' => $video->id,
-                'name' => $video->title,
-                'type'=> 2
+                'id' => $cat->id,
+                'name' => $cat->title,
+                'type'=> 4,
             ]);
+
+            foreach ($cat->playlists as $pl) {
+                array_push($options, [
+                    'id' => $pl->id,
+                    'name' => $pl->title,
+                    'type'=> 2,
+                ]);
+            }
         }
 
         foreach($kbs as $kb) {
             array_push($options, [
                 'id' => $kb->id,
                 'name' => $kb->title,
-                'type'=> 3
+                'type'=> 3,
+                'cat' => $cat->id
             ]);
         }
 

@@ -12,6 +12,7 @@ use App\Models\TestBonus;
 use App\Models\CourseProgress;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
+use App\Models\Books\BookSegment;
 use App\Models\Videos\Video;
 use App\Models\CourseItemModel;
 use App\Models\CourseModel;
@@ -88,13 +89,17 @@ class MyCourseController extends Controller
                     ->first();
 
                 if($tr) {
-                    $tr->answer =  $q['result']['answer'];
+                    $tr->answer = $q['result']['answer'];
                     $tr->save();
                 } else {    
 
                    // $tq = TestQuestion::find($q['id']);
-                    $sum_bonus = $q['points'];
+                    $sum_bonus += $q['points'];
 
+              
+
+
+            
                     TestResult::create([
                         'test_question_id' => $q['result']['test_question_id'],
                         'answer' => $q['result']['answer'],
@@ -106,12 +111,38 @@ class MyCourseController extends Controller
 
             }
         }
+        
 
         if($sum_bonus > 0) {
+
+            // get item for what user has got bonus
+            $item = null;
+            $type = '';
+            if($request->type == 1) {
+                $bs = BookSegment::find($request->id);
+                if($bs) {
+                    $item = Book::find($bs->book_id);
+                    $type = 'За чтение: ';
+                }
+            }
+            
+            if($request->type == 2) {
+                $item = Video::find($request->id);
+                $type = 'За обучение по видео: ';
+            } 
+
+            if($request->type == 3) {
+                $item = KnowBase::find($request->id);
+                $type = 'За ответы в Базе знаний: ';
+            }
+
+         
+            //save 
             TestBonus::create([
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'amount' => $sum_bonus,
+                'comment' => $item ? $type . $item->title : 'За обучение',
             ]);
         } 
 
@@ -143,6 +174,7 @@ class MyCourseController extends Controller
 
 
         }
+        //dd($items);
 
         return [
             'course' => $course,

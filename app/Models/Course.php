@@ -66,6 +66,7 @@ class Course extends Model
                 
                     $cim = CourseItemModel::where('user_id', auth()->id())
                         ->where('type', CourseItemModel::getType($item->item_model))
+                        ->where('course_item_id', $item->id)
                         ->whereIn('item_id', $model_ids)
                         ->select('item_id')
                         ->get();
@@ -128,7 +129,6 @@ class Course extends Model
                 $item->all_stages = $count;
                 $item->completed_stages = $completed_stages;
                 $item->status = CourseResult::INITIAL;
-
             }
 
         }
