@@ -378,7 +378,6 @@ class AnalyticsController extends Controller
                 $stat->value = $request->formula;
             }
 
-            
             if($request->type == 'remote' || $request->type == 'inhouse') {
 
                 if($request->type == 'remote') {
@@ -410,7 +409,6 @@ class AnalyticsController extends Controller
     }
 
     public function addHours($group_id, $user_type, $value, $old_value, $date) {
-       
             $group_users = json_decode(ProfileGroup::find($group_id)->users);
             $tts = Timetracking::whereIn('user_id', $group_users)
                 ->whereDate('enter', $date)
