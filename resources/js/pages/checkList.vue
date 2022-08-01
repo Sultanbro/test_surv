@@ -453,22 +453,6 @@
                 this.addButton = true
                 this.editButton = false
                 this.allValueArray = [];
-
-
-                // this.refreshArray()
-
-
-
-                this.arrCheckInput=
-                      [
-                          {   checked: false,
-                              text: '',
-                              https:''
-                          },
-
-                      ]
-
-
             },
             saveEditCheckList(arrCheckInput,){
 
