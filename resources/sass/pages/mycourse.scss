@@ -20,7 +20,7 @@
 
     .course-item {
         .title {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             margin-bottom: 1px;
             background: #eff2f4;
@@ -63,13 +63,36 @@
             }
         }
     }
-    
+        
+    .book_page {
+        .questions {
+            height: unset !important;
+        }    
+    }
+
     .course-name {
         font-size: 18px;
         font-weight: 600;
         padding-bottom: 6px;
         color: #2a414e;
         border-bottom: 3px double;
+    }
+
+    & > .lp {
+        max-width: 220px;
+        
+        &::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+        
+        .page-title {
+            text-align: center;
+        }
+
+        progress  {
+            width: 100%;
+        }
     }
 
     .rp {
@@ -143,7 +166,51 @@
       }
     }
   
-  
+    .chapter {
+
+        .titles {
+            padding: 0  !important;
+        }
+
+        .handles {
+            position: relative;
+            top: -4px;
+        }
+
+        p {
+            background: transparent;
+            font-size: 12px;
+            user-select: none;
+        }
+
+        &.disabled {
+            & > .titles {
+                p, i {
+                    color: #d0d0d0;
+                }
+            }
+        }
+
+
+        &.pass {
+            & > .titles {
+                p, i {
+                    color: #28a745;
+                }
+            }
+        }
+
+
+        &.active {
+            & > .titles {
+                p, i {
+                    color: #096dd9;
+                }
+            }   
+        }
+        
+        
+    }
   
     
 }

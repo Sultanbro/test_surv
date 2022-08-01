@@ -220,7 +220,19 @@ export default {
 
     passedTest() {
          this.setVideoPassed()
-        this.nextElement()
+            /// 
+
+      let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
+      if(i == -1) this.item_models.push({
+        item_id: this.activeVideo.id,
+        status: 1
+      });
+      
+      this.connectItemModels(this.playlist.groups)
+     
+      ////
+
+        //this.nextElement()
     },
 
     nextElement() {
@@ -230,7 +242,17 @@ export default {
         this.setVideoPassed()
       }
 
-      this.activeVideo.item_model = {status: 1}
+      /// 
+
+      let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
+      if(i == -1) this.item_models.push({
+        item_id: this.activeVideo.id,
+        status: 1
+      });
+      
+      this.connectItemModels(this.playlist.groups)
+      
+      ////
       
       let index = this.ids.findIndex(el => el.id == this.activeVideo.id); 
  
@@ -258,7 +280,7 @@ export default {
         })
         .then((response) => {
           setTimeout(loader.hide(), 500);
-          // this.activeVideo.item_model.push(response.data.item_model);
+          this.activeVideo.item_model = response.data.item_model;
         })
         .catch((error) => {
            loader.hide();
@@ -296,12 +318,9 @@ export default {
         });
     },
 
-
     openControlsMenu(video) {
       video.show_controls = true;
     },
-    
-  
     
     selectedGroup() {
       return this.modals.upload.children_index == -1 
@@ -353,7 +372,7 @@ export default {
         });
     },
 
-     saveActiveVideoFast() {
+    saveActiveVideoFast() {
       axios
         .post("/playlists/save-video-fast", {
           id: this.activeVideo.id,
@@ -417,6 +436,7 @@ export default {
        axios
         .post("/playlists/video", {
           id: video.id,
+          course_item_id: this.course_item_id
         })
         .then((response) => {
            loader.hide()

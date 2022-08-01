@@ -46,7 +46,7 @@
           <div class="hat">
             <div class="d-flex jsutify-content-between hat-top">
               <div class="bc">
-                <a href="#" @click="back">Видеоплейлисты</a>
+                <a href="#" @click="back">Темы</a>
                 <template v-if="activeCat">
                   <i class="fa fa-chevron-right"></i> 
                   <a href="#"  @click="back">{{ activeCat.title + ' (' + activeCat.playlists.length + ')' }}</a>

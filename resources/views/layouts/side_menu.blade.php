@@ -86,7 +86,7 @@
                     </a>
                 </li>
                 @endif
-                @if(auth()->user()->is_admin)
+                @if(auth()->user()->can('courses_view'))
                 <li>
                     <a href="/courses" class="link">
                         <i class="fas fa-graduation-cap"></i>

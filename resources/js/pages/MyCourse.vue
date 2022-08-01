@@ -18,7 +18,7 @@
 
     <!-- выбранный курс -->
     <div v-else>
-      <div class="py-3">
+      <div class="gggggg">
         <h1 class="page-title">{{ activeCourse.name }}</h1> 
 
           <div>
@@ -60,7 +60,7 @@
   <!-- правая часть -->
   <div class="rp" style="flex: 1 1 0%; padding-bottom: 0px;">
     <div class="content mt-3" :class="{'knowbase': activeCourseItem && activeCourseItem.item_model == 'App\\KnowBase'}">
-      <div v-if="activeCourse" class="p">
+      <div v-if="activeCourse" class="">
        
         <!-- поле курса -->
 
@@ -91,7 +91,7 @@
                           mode="read" />
                   </div>
 
-                  <div v-if="activeCourseItem.item_model == 'App\\KnowBase'" class="p">
+                  <div v-if="activeCourseItem.item_model == 'App\\KnowBase'" class="opopoppop">
                   
                        <booklist 
                         ref="knowbase"
@@ -142,6 +142,7 @@ export default {
       completed_stages: 0,
     };
   },
+
   created() {
     this.fetchData();
 
@@ -160,6 +161,7 @@ export default {
   },
 
   mounted() {},
+  
   methods: {
 
     after_click_next_element() {
@@ -180,13 +182,13 @@ export default {
     },
 
     nextElement() {
-      console.log(this.activeCourseItem)
+      
       if(this.activeCourseItem.item_model == 'App\\KnowBase') {
         this.$refs.knowbase.nextElement();
       }
 
       if(this.activeCourseItem.item_model == 'App\\Models\\Books\\Book') {
-         this.$refs.upbook.nextElement();
+        this.$refs.upbook.nextElement();
       }
 
       if(this.activeCourseItem.item_model == 'App\\Models\\Videos\\Video') {

@@ -121,9 +121,8 @@
       />
     </div>
 
-    <template v-if="(activeSegment && course_page) || (activeSegment == null && pageCount == page)">
+    <template v-if="(activeSegment != null && course_page && activeSegment.item_model !== null) || (activeSegment == null && pageCount == page)">
       <button class="next-btn btn btn-primary" 
-        v-if="activeSegment.item_model !== null"
         @click="nextElement()">
         Продолжить курс
         <i class="fa fa-angle-double-right ml-2"></i>
@@ -138,9 +137,11 @@
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 export default {
   name: "UpbooksRead",
+  
   components: {
     VuePdfEmbed
   },
+
   props: {
     book_id: Number,
     mode: {
@@ -159,6 +160,7 @@ export default {
       default: 0
     }
   },
+
   data() {
     return {
       page: 1,
@@ -176,11 +178,10 @@ export default {
       pdf_loaded: false,
     };
   },
+
   created() {
-
-      this.checkpoint = this.pageCount
-      this.getSegments()
-
+    this.checkpoint = this.pageCount
+    this.getSegments()
   },
 
   mounted() {
@@ -218,13 +219,18 @@ export default {
 
     nextElement() {
 
-      if(this.activeSegment.item_model == null) {
+      if(this.activeSegment != null && this.activeSegment.item_model == null) {
         this.setSegmentPassed();
         this.activeSegment.item_model = {status: 1}; 
       }
 
-      this.nextPage()
+      if(this.page == this.pageCount && this.course_page) {
+        this.$parent.after_click_next_element();
+        return;
+      }
       
+      this.nextPage()
+
     },
 
     setSegmentPassed() {
@@ -301,14 +307,16 @@ export default {
     },
 
     nextPage() {
+      console.log('here')
+      
       if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
-
+                console.log('here 2')
       // check current test
       if(this.activeSegment != null && this.activeSegment.item_model == null) {
         this.$toast.info('Ответьте на вопросы, чтобы пройти дальше');
         return 0;   
       }
-
+            console.log('here 3')
       this.map_index++;
 
       let next_page = this.page_map[this.map_index];
@@ -316,12 +324,13 @@ export default {
       this.page = next_page.page;
       // next page has test ?
       if(next_page.has_test) {
-
+            console.log('here 4')
         let i = this.segments.findIndex(el => el.page == next_page.page);
         this.activeSegment = this.segments[i]
         this.segment_key++;
-
+ 
       } else {
+         console.log('here 5')
         this.activeSegment = null;
       }
 
