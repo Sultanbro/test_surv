@@ -88,9 +88,9 @@ class Course extends Model
                 $item->completed_stages = $completed_stages;
                 $item->status = $count <= (int)$completed_stages ? CourseResult::COMPLETED : CourseResult::ACTIVE;
                 
-                dump('not found actuve');
-                dump($item->item_model . ' - ' . CourseItemModel::getType($item->item_model));
-                dump($completed_stages  . ' from ' . $count);
+                // dump('not found actuve');
+                // dump($item->item_model . ' - ' . CourseItemModel::getType($item->item_model));
+                // dump($completed_stages  . ' from ' . $count);
 
                 // found active
                 if($item->status == CourseResult::ACTIVE) {
@@ -126,10 +126,10 @@ class Course extends Model
                         ->select('item_id')
                         ->get();
 
-                    dump('active');
-                    dump($item->item_model . ' - ' . CourseItemModel::getType($item->item_model));
-                    dump($completed_stages  . ' from ' . $count);
-                    
+                    // dump('active');
+                    // dump($item->item_model . ' - ' . CourseItemModel::getType($item->item_model));
+                    // dump($completed_stages  . ' from ' . $count);
+
                     $completed_stages = $cim->count();
                 }
                 
@@ -141,7 +141,7 @@ class Course extends Model
 
         }
 
-        dd('test');
+
         return $items;
     }
 }
