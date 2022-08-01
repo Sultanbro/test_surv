@@ -94,7 +94,7 @@ class MyCourseController extends Controller
                 } else {    
 
                    // $tq = TestQuestion::find($q['id']);
-                    $sum_bonus += $q['points'];
+                if($q['success']) $sum_bonus += $q['points'];
 
               
 
