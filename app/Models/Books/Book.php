@@ -164,21 +164,14 @@ class Book extends Model implements CourseInterface
 
     /**
      * CourseInterface
-     * @return [type]
+     * @return array
      */
     public function getOrder()
     {
-        $pages = TestQuestion::where([
-                'testable_type' => 'App\\Models\\Books\\BookSegment',
-                'testable_id' => $this->id 
-            ])
-            ->distinct('page')
-            ->orderBy('page')
-            ->get('page')
-            ->pluck('page')
+        return BookSegment::where('book_id', $this->id)
+            ->get('id')
+            ->pluck('id')
             ->toArray();
-
-        return $pages;
     }
 
     /**
