@@ -33,6 +33,7 @@ class QualityRecordWeeklyStat extends Model
             ->select(['users.id','users.last_name', 'users.name'])
             ->get();
 
+       
         $items = [];
         
         // CREATE WEEKS ARRAY
