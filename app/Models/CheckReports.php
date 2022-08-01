@@ -30,7 +30,7 @@ class CheckReports extends Model
     ];
 
 
-    public function get_average_value($month,$year,$check_user_id,$type,$type_id){
+    public static function get_average_value($month,$year,$check_user_id){
 
 
 //        $month = date('n'); ;
@@ -107,19 +107,15 @@ class CheckReports extends Model
                 $week_middl[$md]['count_check'] = CheckReports::on()->where('check_users_id',$check_user_id)
                     ->where('year',$week_middl[$md]['start'][2])->where('month',$week_middl[$md]['start'][1])
                     ->where('day','>=',$week_middl[$md]['start'][0])
-                    ->where('day','<=',$week_middl[$md]['end'][0])
-                    ->where('item_id',$type_id)
-                    ->where('item_type',$type)->sum('count_check');
+                    ->where('day','<=',$week_middl[$md]['end'][0])->sum('count_check');
 
                 $week_middl[$md]['count_check_auth'] = CheckReports::on()->where('check_users_id',$check_user_id)
                     ->where('year',$week_middl[$md]['start'][2])->where('month',$week_middl[$md]['start'][1])
                     ->where('day','>=',$week_middl[$md]['start'][0])
-                    ->where('day','<=',$week_middl[$md]['end'][0])
-                    ->where('item_id',$type_id)
-                    ->where('item_type',$type)->sum('count_check_auth');
+                    ->where('day','<=',$week_middl[$md]['end'][0])->sum('count_check_auth');
 
 
-                $average_value[$md] = $week_middl[$md]['count_check'] -  $week_middl[$md]['count_check_auth'];
+                $average_value[$md] = ($week_middl[$md]['count_check_auth']) . '/' . $week_middl[$md]['count_check'];
 
 //                $average_value[$md] =  10 -  3;
 
@@ -402,10 +398,73 @@ class CheckReports extends Model
 
             }
             return ['check_users'=>$check_users,'individual_type'=>3,'individual_current'=>$request->individual_type_id];
+        }else{
+            $records = [];
+            
         }
 
 
     }
+
+    public static function getChecklistByGroup($group, $request){
+        $check_users = [];
+        $users = User::whereIn('id',json_decode($group->users))->get();
+        foreach($users as $key => $user){
+                $check_users[] = [
+                    "name" => $user->name,
+                    "last_name" => $user->last_name,
+                    "day" => self::getDaylyChecklistsByUser($user->id,$request->month, $request->year),
+                    "month" => self::getMonthlyChecklistsByUser($user, $request->year),
+                    "gr_id" => $group->id,
+                    "total_day" => self::getTotalCompletedChecklistByMonth($user->id, $request->month) . '/' . self::getTotalChecklistByMonth($user->id, $request->month),
+                    "total_month" => self::getTotalCompletedChecklistByYear($user->id, $request->year) . '/' . self::getTotalChecklistByYear($user->id, $request->year),
+                    "average" => self::get_average_value($request->month,$request->year,$user->id,$request->individual_type,$request->individual_type_id),
+                ];
+        }
+        return ['check_users'=>$check_users, 'individual_current'=>$group->id];
+    }
+
+    private static function getTotalCompletedChecklistByYear($user_id, $year){
+        return self::where('check_users_id',$user_id)->where('year',$year)->sum('count_check_auth');
+    }
+
+    private static function getTotalChecklistByYear($user_id, $year){
+        return self::where('check_users_id',$user_id)->where('year',$year)->sum('count_check');
+    }
+
+    private static function getTotalCompletedChecklistByMonth($user_id, $month){
+        return self::where('check_users_id',$user_id)->where('year',date('Y'))->where('month',$month)->sum('count_check_auth');
+    }
+
+    private static function getTotalChecklistByMonth($user_id, $month){
+        return self::where('check_users_id',$user_id)->where('year',date('Y'))->where('month',$month)->where('day','>=', 1)->sum('count_check');
+    }
+
+    public static function getDaylyChecklistsByUser($user_id, $month, $year){
+        $days_data = self::where('check_users_id', $user_id)->where('month', $month)->where('year', $year)->pluck('count_check_auth', 'day');
+        foreach($days_data as $day => $day_data){
+            $days_data[$day] = $day_data . '/' . self::where('check_users_id', $user_id)->where('month', $month)->where('year', $year)->where('day', $day)->value('count_check');
+        }
+        return $days_data;
+    }
+
+
+
+    private static function getTotalAmountOfChecklistsByMonth($month, $year,$user_id){//gets total amount of checklists only for current year
+        return self::where('item_id',$user_id)->where('year',$year)->where('month','=', $month)->count();
+    }
+
+    private static function getMonthlyChecklistsByUser($user, $year){ 
+        $months_data = self::select('month',DB::raw('SUM(count_check_auth) as monthly'))
+        ->where('year',$year)
+        ->where('check_users_id',$user->id)
+        ->groupBy('month')
+        ->pluck('monthly','month');
+        foreach($months_data as $month => $month_data){
+            $months_data[$month] = $month_data . '/' . self::where('check_users_id', $user->id)->where('month', $month)->where('year', $year)->sum('count_check');
+        }
+        return $months_data;
+     }
 
     public function test($month,$year,$check_user_id,$type,$type_id){
 

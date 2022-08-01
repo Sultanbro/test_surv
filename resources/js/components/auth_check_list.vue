@@ -126,10 +126,12 @@
                 el['check_input'].forEach(ch =>{
 
 
-                  if (ch['checked'] == true){
+                   if (ch['checked'] == true){
                     this.sendChecklist = false;
-                    if (ch['https'] != null){
+                    if (this.isValidUrl(ch['https']) && ch['checked']){
                       this.sendChecklist = true
+                    }else{
+                        this.$message.error('Ссылка не является действительной!');
                     }
                   }
                 })

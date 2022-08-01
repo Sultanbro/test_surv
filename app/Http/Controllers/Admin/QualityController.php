@@ -289,10 +289,8 @@ class QualityController extends Controller
 
 
 
-        $getReportsCheck = new CheckReports();
-        $check_users = $getReportsCheck->filterCheckList($request);
-
         $group = ProfileGroup::find($request->group_id);
+        $check_users = CheckReports::getChecklistByGroup($group, $request);
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
 
 
