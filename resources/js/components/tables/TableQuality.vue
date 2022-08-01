@@ -52,10 +52,10 @@
       <div class="mr-2 mt-2">{{ groupName }}</div>
     </h4>
     <div v-if="this.hasPermission">
-      <a-tabs type="card" :defaultActiveKey="active">
-        <a-tab-pane tab="Оценка диалогов" :key="1">
-          <a-tabs type="card" v-if="dataLoaded" >
-            <a-tab-pane tab="Неделя" :key="1">
+      <b-tabs type="card" :defaultActiveKey="active">
+        <b-tab title="Оценка диалогов" :key="1" card>
+          <b-tabs type="card" v-if="dataLoaded" >
+            <b-tab title="Неделя" :key="1" card>
               <div class="table-responsive my-table">
                 <table class="table b-table table-bordered table-sm">
                   <tr>
@@ -103,8 +103,8 @@
                   </tr>
                 </table>
               </div>
-            </a-tab-pane>
-            <a-tab-pane tab="Месяц " :key="2">
+            </b-tab>
+            <b-tab title="Месяц " :key="2" card>
               <div class="table-responsive my-table">
                 <table class="table b-table table-sm table-bordered">
                   <tr>
@@ -140,12 +140,13 @@
                   </tr>
                 </table>
               </div>
-            </a-tab-pane>
-            <a-tab-pane
-              tab="Оценка переговоров"
+            </b-tab>
+            <b-tab
+              title="Оценка переговоров"
               key="3"
               @change="changeTab"
               v-if="can_add_records"
+              card
             >
               <div class="row">
                 <div class="col-6 col-md-3">
@@ -434,10 +435,10 @@
                   :limit="3"
                 ></pagination>
               </div>
-            </a-tab-pane>
-          </a-tabs>
-        </a-tab-pane>
-        <a-tab-pane tab="Прогресс по курсам" :key="2">
+            </b-tab>
+          </b-tabs>
+        </b-tab>
+        <b-tab title="Прогресс по курсам" :key="2" card>
 
             <div class="row course-progress mb-3">
               <div class="col-3">
@@ -522,17 +523,25 @@
             </div>
             <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
 
-        </a-tab-pane>
+        </b-tab>
 
-        <a-tab-pane tab="Чек Лист" :key="3" type="card">
-          <a-tabs type="card">
-            <a-tab-pane tab="Неделя" :key="1" type="card">
-                            <table class="table b-table table-bordered table-sm">
+        <b-tab title="Чек Лист" :key="3" type="card" card>
+
+
+          <div class="col-md-12 p-0">
+            <div class="col-md-6 p-0">
+              <div>
+                 <button @click="viewStaticCheck('w')" class="btn btn-light p-2 pl-4 pr-4 check_list_mon" v-bind:class="{ isActiveCheck: viewStaticButton.weekCheck }"  type="button" >Неделя</button>
+                 <button @click="viewStaticCheck('m')" class="btn btn-light p-2 pl-4 pr-4 check_list_mon" v-bind:class="{ isActiveCheck: viewStaticButton.montheCheck }" type="button"  >Месяц  </button>
+              </div>
+            </div>
+            <div v-if="viewStaticButton.weekCheck" class="table-responsive my-table">
+              <table class="table b-table table-bordered table-sm">
                 <tr>
                   <th class="b-table-sticky-column text-left t-name wd">
                     <div>Сотрудник</div>
                   </th>
-                  <template v-for="(field, key) in checklist_fields">
+                  <template v-for="(field, key) in fields">
                     <th >
 
                       <div>{{ field.name }}</div>
@@ -589,9 +598,9 @@
                  </tr>
                </template>
               </table>
-            </a-tab-pane>
-            <a-tab-pane tab="Месяц" :key="2" type="card">
-                            <table class="table b-table table-sm table-bordered">
+            </div>
+            <div v-if="viewStaticButton.montheCheck" class="table-responsive my-table mt-5">
+              <table class="table b-table table-sm table-bordered">
                 <tr>
                   <th class="b-table-sticky-column text-left t-name wd">
                     <div>Сотрудник</div>
@@ -622,15 +631,20 @@
 
                           </template>
                         </template>
+
+
+
+
                       </td>
                     </template>
                   </tr>
                 </template>
               </table>
-            </a-tab-pane>
-          </a-tabs>
-        </a-tab-pane>
-      </a-tabs>
+            </div>
+          </div>
+
+        </b-tab>
+      </b-tabs>
     </div>
     <div v-else>
       <p>У вас нет доступа к этой группе</p>
@@ -750,13 +764,13 @@ export default {
     },
     individual_type_id:{
       default:null
-    },
-    active_group: Number,
+    }
+
+
   },
   data() {
     return {
       fields: [],
-      checklist_fields: [],
       monthFields: [],
       recordFields: [],
       filters: {
@@ -797,7 +811,7 @@ export default {
         data: [],
       },
       deletingElementIndex: 0,
-      currentGroup: this.active_group,
+      currentGroup: 42,
       groupName: "Контроль качества",
       monthInfo: {},
       user_ids: {},
@@ -843,7 +857,6 @@ export default {
       active:1,
       selected_active:1,
       flagGroup:'index',
-      checklist_tab: false,
     };
   },
 
@@ -959,7 +972,7 @@ export default {
         })
         .then((response) => {
 
-          this.$message.success("Сохранено!!");
+          this.$toast.success("Сохранено!!");
           this.showSettings = false;
           this.fetchData();
           loader.hide();
@@ -981,7 +994,7 @@ export default {
       if (this.individual_type_id != null){
         if (this.flagGroup == 'index'){
           if (this.individual_type == 2 || this.individual_type == 3){
-            this.currentGroup = this.active_group;
+            this.currentGroup = this.individual_type_id
           }
 
           // this.currentGroup = this.individual_type_id
@@ -1042,11 +1055,10 @@ export default {
 
 
 
-          this.$message.success("Записи загружены");
+          this.$toast.success("Записи загружены");
           this.normalizeItems();
           this.createUserIdList();
-          this.setChecklistWeekTable();
-          this.setWeeksTable();    
+          this.setWeeksTable();
           this.setMonthsTable();
 
           this.setRecordsTable();
@@ -1075,11 +1087,8 @@ export default {
     filterRecords() {
       this.fetchItems();
     },
-    setChecklistWeekTable() {
-        this.setChecklistWeeksTableFields();
-    },
     setWeeksTable() {
-        this.setWeeksTableFields();
+      this.setWeeksTableFields();
     },
     setMonthsTable() {
       this.setMonthsTableFields();
@@ -1114,7 +1123,7 @@ export default {
 
     addRecord() {
       if (this.filters.currentEmployee == 0)
-        return this.$message.info("Выберите сотрудника!");
+        return this.$toast.info("Выберите сотрудника!");
 
       if (this.records.data.length != 0) this.records.data[0].editable = false;
 
@@ -1150,7 +1159,7 @@ export default {
       let loader = this.$loading.show();
 
       if (record.phone.length == 0) {
-        this.$message.error("Укажите телефон!!!");
+        this.$toast.error("Укажите телефон!!!");
         loader.hide();
         return;
       }
@@ -1184,10 +1193,10 @@ export default {
             record.name = this.user_ids[record.employee_id];
             // this.records.data.shift()
             // this.records.data.unshift(record)
-            this.$message.success("Сохранено");
+            this.$toast.success("Сохранено");
           }
           if (response.data.method == "update") {
-            this.$message.success("Изменено");
+            this.$toast.success("Изменено");
           }
           record.changed = false;
           this.$bvModal.hide("bv-modal");
@@ -1226,7 +1235,7 @@ export default {
           id: this.newRecord.id,
         })
         .then((response) => {
-          this.$message.info("Запись #" + this.newRecord.id + " удалена");
+          this.$toast.info("Запись #" + this.newRecord.id + " удалена");
           this.$bvModal.hide("delete-modal");
 
           // ES6 Func
@@ -1386,63 +1395,6 @@ export default {
       });
     },
 
-    setChecklistWeeksTableFields(){
-      let fieldsArray = [];
-      let weekNumber = 1;
-      let order = 1;
-      let day = 1;
-
-      fieldsArray.push({
-        key: "total",
-        name: "Итог",
-        order: order++,
-        klass: " text-center px-1 t-total",
-      });
-
-      for (let i = 1; i <= this.monthInfo.daysInMonth; i++) {
-        let m = this.monthInfo.month.toString();
-        let d = i;
-        if (d.toString().length == 1) d = "0" + d;
-        if (m.length == 1) m = "0" + m;
-        //console.log(this.currentYear + '-' + m + '-' + d)
-
-        let date = moment(this.currentYear + "-" + m + "-" + d);
-        let dow = date.day();
-
-        fieldsArray.push({
-          key: i,
-          name: day % 8,
-          order: order++,
-          klass: "text-center px-1",
-          type: "day",
-        });
-
-        if (dow == 0) {
-          fieldsArray.push({
-            key: "avg" + weekNumber,
-            name: "Ср. " + weekNumber,
-            order: order++,
-            klass: "text-center px-1 averages",
-            type: "avg",
-          });
-          weekNumber++;
-          day = 0;
-        }
-
-        if (dow != 0 && i == this.monthInfo.daysInMonth) {
-          fieldsArray.push({
-            key: "avg" + weekNumber,
-            name: "Ср. " + weekNumber,
-            order: order++,
-            klass: "text-center px-1 averages",
-            type: "avg",
-          });
-        }
-        day++;
-      }
-
-      this.checklist_fields = fieldsArray;
-    },
     setWeeksTableFields() {
       let fieldsArray = [];
       let weekNumber = 1;
@@ -1514,7 +1466,7 @@ export default {
         })
         .then((response) => {
 
-          this.$message.success("Сохранено");
+          this.$toast.success("Сохранено");
           loader.hide();
         })
         .catch(function (e) {
@@ -1612,7 +1564,7 @@ export default {
             group_id: this.currentGroup,
           })
           .then((response) => {
-            this.$message.success("Сохранено!");
+            this.$toast.success("Сохранено!");
             this.fetchData();
             loader.hide();
           })
