@@ -242,6 +242,7 @@ export default {
           questions: this.activeSegment.questions
         })
         .then((response) => {
+          this.$emit('changeProgress');
          // this.activeVideo.item_models.push(response.data.item_model);
         })
         .catch((error) => {

@@ -76,6 +76,7 @@
                       :course_page="true"
                       :course_item_id="activeCourseItem.id"
                       :enable_url_manipulation="false"
+                      @changeProgress="completed_stages++"
                       :active_page="activeCourseItem.last_item"
                     />
                   </div>
@@ -88,6 +89,7 @@
                           :is_course="true"
                           :myvideo="activeCourseItem.last_item"
                           :enable_url_manipulation="false"
+                          @changeProgress="completed_stages++"
                           mode="read" />
                   </div>
 
@@ -103,6 +105,7 @@
                         mode="read"
                         :course_page="true"
                         :enable_url_manipulation="false"
+                        @changeProgress="completed_stages++"
                         :auth_user_id="0" /> 
 
                   </div>

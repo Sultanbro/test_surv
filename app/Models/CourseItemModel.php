@@ -40,8 +40,8 @@ class CourseItemModel extends Model
 
     public static function getType($model)
     {
-        if($model == 'App\Models\Books\BookSegment') return 1;
-        if($model == 'App\Models\Videos\Video') return 2;
+        if($model == 'App\Models\Books\Book') return 1;
+        if($model == 'App\Models\Videos\VideoPlaylist') return 2;
         if($model == 'App\KnowBase') return 3;
     }
     

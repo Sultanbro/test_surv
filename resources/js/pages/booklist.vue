@@ -611,6 +611,7 @@ export default {
           questions: this.activesbook.questions
         })
         .then((response) => {
+          this.$emit('changeProgress');
            this.activesbook.item_model = {status: 1}; 
         })
         .catch((error) => {
