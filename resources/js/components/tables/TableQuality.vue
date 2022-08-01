@@ -429,11 +429,19 @@
                 </table>
               </div>
               <div>
-                <pagination
+                <!-- <pagination
                   :data="records"
                   @pagination-change-page="getResults"
                   :limit="3"
-                ></pagination>
+                ></pagination> -->
+
+                <b-pagination
+                  @change="getResults"
+                  :limit="3"
+                  :total-rows="records.total"
+                ></b-pagination>
+
+                
               </div>
             </b-tab>
           </b-tabs>
