@@ -308,7 +308,7 @@
         <template  v-if="activesbook != null && !edit_actives_book">
           <div class="book_page">
             <div class="author d-flex aic mb-4 justify-end">
-              <img src="/images/avatar.png" alt="avatar icon">
+              <img :src="activesbook.editor_avatar" alt="avatar icon">
               <div class="text">
                 <p class="edited"><span>Cоздано:</span> {{ activesbook.created }} {{ activesbook.author }}</p>
                 <p class="edited"><span>Изменено:</span> {{ activesbook.edited_at }} {{ activesbook.editor }}</p>

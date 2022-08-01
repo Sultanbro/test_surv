@@ -234,6 +234,8 @@ class KnowBaseController extends Controller
         $page->edited_at = Carbon::parse($page->updated_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->created = Carbon::parse($page->created_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->questions = TestQuestion::where('testable_type', 'App\Knowbase')->where('testable_id', $request->id)->get();
+        $page->editor_avatar = $editor ? 'users_img/'.$editor->img_url : 'images/avatar.png';
+
 
         $breadcrumbs = $this->getBreadcrumbs($page);
         $top_parent = $this->getTopParent($request->id);
