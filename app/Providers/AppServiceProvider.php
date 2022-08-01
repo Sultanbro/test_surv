@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Notification;
 use App\UserNotification;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
@@ -76,7 +77,7 @@ class AppServiceProvider extends ServiceProvider
 
 
                
-                $head_users = User::withTrashed()->where('UF_ADMIN', '1')->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
+                $head_users = User::withTrashed()->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
                
 
                 $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
@@ -100,15 +101,25 @@ class AppServiceProvider extends ServiceProvider
                         $xuser->notified_at = now();
                         $xuser->save();
                     } else {
-
-                        if($unread > 0 && Carbon::parse($user->notified_at)->timestamp - Carbon::now()->timestamp >= 3600) {
-                            $reminder = true;
-
-                            $xuser = User::find($user->id);
-                            $xuser->notified_at = now();
-                            $xuser->save();
-
+                        if(auth()->id() == 13865) {
+                            if($unread > 0 && Carbon::now()->timestamp - Carbon::parse($user->notified_at)->timestamp  >= 60) {
+                                $reminder = true;
+    
+                                $xuser = User::find($user->id);
+                                $xuser->notified_at = now();
+                                $xuser->save();
+                            }
+                        } else {
+                            if($unread > 0 && Carbon::now()->timestamp - Carbon::parse($user->notified_at)->timestamp  >= 3600) {
+                                $reminder = true;
+    
+                                $xuser = User::find($user->id);
+                                $xuser->notified_at = now();
+                                $xuser->save();
+    
+                            }
                         }
+                        
                     }
                 }
                

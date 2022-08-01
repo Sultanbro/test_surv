@@ -27,9 +27,9 @@ class TestController extends Controller {
 	public function test() {
 	
 		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
-		$hh = new HeadHunter();
-		$hh->auth_code = 'MNEQGFCKFHI8GBVMSPDJRL6L6R0GO7LGT928IP8GBFADKBHGSIDQS5SVEBBPNP0H';
-		dd($hh->refreshAccessToken());	
+		$g = ProfileGroup::employees(71, '2022-08-01', 2);
+		// 15030
+		dd($g);
 		// $books = Book::get();
 		// foreach($books as $book) {
 		// 	$tests = TestQuestion::where([

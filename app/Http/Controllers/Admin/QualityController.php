@@ -85,12 +85,15 @@ class QualityController extends Controller
             ];
         }
 
-
+        $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
         
-      // dd('test');
+        // dd('test');
 
-        $user_ids = $this->employees($request->group_id);
-        $raw_items = User::whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id','last_name', 'name'])->get();
+        $working = ProfileGroup::employees($request->group_id, $date, 1);
+        $fired =  ProfileGroup::employees($request->group_id, $date, 2);
+        $user_ids = array_unique(array_merge($working, $fired));
+
+        $raw_items = User::withTrashed()->whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id','last_name', 'name'])->get();
 
         $items = [];
         

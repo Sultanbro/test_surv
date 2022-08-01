@@ -80,7 +80,11 @@ class UserStat extends Model
                 }
 
                 if($activity->type == 'quality') {
-                    $users_ids = ProfileGroup::employees($group_id, $date, 1) + ProfileGroup::employees($group_id, $date, 2);
+                    $working = ProfileGroup::employees($group_id, $date, 1);
+                    $fired =  ProfileGroup::employees($group_id, $date, 2);
+                    $users_ids = array_unique(array_merge($working, $fired));
+
+   
                     $item['records'] = QualityRecordWeeklyStat::table($users_ids, $date);
                 }    
                     
