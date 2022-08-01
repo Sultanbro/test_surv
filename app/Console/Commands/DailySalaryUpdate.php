@@ -99,8 +99,8 @@ class DailySalaryUpdate extends Command
 
             if($salary) {
                 dump($key . '+');
-                $salary->amount = $salary_amount;
-                $salary->save();
+                // $salary->amount = $salary_amount;
+                // $salary->save();
             } else {
                 dump($key . '-');
                 Salary::create([

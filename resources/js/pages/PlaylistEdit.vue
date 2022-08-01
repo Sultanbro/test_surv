@@ -219,11 +219,12 @@ export default {
   methods: { 
 
     passedTest() {
-         this.setVideoPassed()
-            /// 
+      if(this.activeVideo.item_model == null) {
+        this.setVideoPassed()
+      }
 
       let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
-      if(i == -1) this.item_models.push({
+      if(i == -1) this.item_models.push({ 
         item_id: this.activeVideo.id,
         status: 1
       });
@@ -243,7 +244,7 @@ export default {
       }
 
       /// 
-
+      
       let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
       if(i == -1) this.item_models.push({
         item_id: this.activeVideo.id,
@@ -281,6 +282,7 @@ export default {
         .then((response) => {
           setTimeout(loader.hide(), 500);
           this.activeVideo.item_model = response.data.item_model;
+          this.$emit('changeProgress');
         })
         .catch((error) => {
            loader.hide();
