@@ -581,15 +581,21 @@ export default {
       this.passedTest = true;
 
       // find element 
+         console.log('ids')
+         console.log(this.ids)
       let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
+         console.log(index)
       if(index != -1 && this.ids.length - 1 > index) {
+          console.log('found el') 
         let el = this.findItem(this.ids[index + 1]);
+          console.log(el)
         if(el.item_model == null) {
+               console.log('item_model = null')
           this.setSegmentPassed();
         }
       } 
       
-
+      console.log('test')
       //test 
       let i = this.item_models.findIndex(im => im.item_id == this.activesbook.id);
       if(i == -1) this.item_models.push({
@@ -598,7 +604,7 @@ export default {
       });
       
       this.connectItemModels(this.tree)
-
+      console.log('end test')
      
     },
 
@@ -645,13 +651,13 @@ export default {
           const urlParams = new URLSearchParams(window.location.search);
           let book_id = urlParams.get('b');
           this.breadcrumbs = [{id:this.id, title: this.parent_title}];
-         
-          if(this.course_page) {
-              
-            // create array of books ids
-            this.ids = [];
-            this.returnArray(this.tree);
 
+          // create array of books ids
+          this.ids = [];
+          this.returnArray(this.tree);
+
+          if(this.course_page) {
+               
             book_id = this.show_page_id
 
             if(this.show_page_id == 0 || this.show_page_id == null) {

@@ -174,8 +174,8 @@
 
                                         <div class="col-8">
                                             <t-funnel class="mb-5" :id="0" :table="recruiting.funnels['all']['all']" title="Сводная таблица" segment="segments" type="month" :date="date" />
-                                            <t-funnel class="mb-5" :id="1" :table="recruiting.funnels['all']['hh']" title="hh" segment="hh" type="month" :date="date" />
-                                            <t-funnel class="mb-5" :id="2" :table="recruiting.funnels['all']['insta']" title="Инста" segment="insta" type="month" :date="date" />   
+                                            <t-funnel class="mb-5" :id="1" :table="recruiting.funnels['all']['hh']" title="hh.ru" segment="hh" type="month" :date="date" />
+                                            <t-funnel class="mb-5" :id="2" :table="recruiting.funnels['all']['insta']" title="Job.bpartners.kz" segment="insta" type="month" :date="date" />   
                                         </div>
                                         
                                         <!-- partner link creator -->
@@ -187,8 +187,8 @@
                                 </b-tab>
                                 <template v-for="(month, i) in months">
                                     <b-tab :title="month.month" :key="i" card>
-                                        <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['hh']" title="hh" segment="hh" type="week" :date="month.date" :key="5 * 1000 * (Number(i) +  10 * Number(i))"/>
-                                        <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['insta']" title="Инста" segment="insta" type="week" :date="month.date" :key="6 * 1000 * (Number(i) +  10 * Number(i))"/>
+                                        <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['hh']" title="hh.ru" segment="hh" type="week" :date="month.date" :key="5 * 1000 * (Number(i) +  10 * Number(i))"/>
+                                        <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['insta']" title="Job.bpartners.kz" segment="insta" type="week" :date="month.date" :key="6 * 1000 * (Number(i) +  10 * Number(i))"/>
                                     </b-tab>
                                 </template>
                                 

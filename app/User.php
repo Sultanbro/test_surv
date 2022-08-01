@@ -63,6 +63,7 @@ class User extends Authenticatable implements Authorizable
         'last_group',
         'read_corp_book_at',
         'has_noti',
+        'notified_at',
         'role_id',
         'is_admin',
         'groups_all',

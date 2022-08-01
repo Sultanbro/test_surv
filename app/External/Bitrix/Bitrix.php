@@ -44,7 +44,7 @@ class Bitrix {
         if($search_by == 'segment') $filter['UF_CRM_1498210379'] = [1018,1462,1666,1604,2012,1442,2436,2362,2426,2446,2448,2536,2538];
 
         if($search_by == 'hh')    $filter['UF_CRM_1498210379'] = [1462];
-        if($search_by == 'insta') $filter['UF_CRM_1498210379'] = [1018];
+        if($search_by == 'insta') $filter['UF_CRM_1498210379'] = [1018, 2436];
         if($search_by == 'alina') $filter['UF_CRM_1498210379'] = [2426];
         if($search_by == 'saltanat') $filter['UF_CRM_1498210379'] = [2446];
         if($search_by == 'akzhol') $filter['UF_CRM_1498210379'] = [2448];
