@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Notification;
 use App\UserNotification;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
