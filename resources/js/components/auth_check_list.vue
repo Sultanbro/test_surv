@@ -96,7 +96,7 @@
         watch: {
             async currentTime(newValue, oldValue) {
                 if(newValue == this.notification_time){
-                    //this.toggle();
+                    this.toggle();
                     getNotificationTime(this.times)
                 }
                 console.log(this.notification_time);
