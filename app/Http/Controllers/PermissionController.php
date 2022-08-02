@@ -462,33 +462,38 @@ class PermissionController extends Controller
         $kbs = KnowBase::whereNull('parent_id')->get();
         
         foreach($bookgroups as $group) {
-            array_push($options, [
-                'id' => $group->id,
-                'name' => $group->name,
-                'type'=> 4,
-            ]);
+            if($group->books->count() > 0) array_push($options, [
+                    'id' => $group->id,
+                    'name' => $group->name,
+                    'type'=> 1,
+                    'disabled' => true
+                ]);
 
             foreach ($group->books as $book) {
                 array_push($options, [
                     'id' => $book->id,
                     'name' => $book->title,
                     'type'=> 1,
+                    'disabled' => false
                 ]);
             }
         }
 
         foreach($playlist_cats as $cat) {
-            array_push($options, [
-                'id' => $cat->id,
-                'name' => $cat->title,
-                'type'=> 4,
-            ]);
+            if($cat->playlists->count() > 0)  array_push($options, [
+                    'id' => $cat->id,
+                    'name' => $cat->title,
+                    'type'=> 2,
+                    'disabled' => true
+                ]);
+           
 
             foreach ($cat->playlists as $pl) {
                 array_push($options, [
                     'id' => $pl->id,
                     'name' => $pl->title,
                     'type'=> 2,
+                    'disabled' => false
                 ]);
             }
         }
@@ -498,7 +503,8 @@ class PermissionController extends Controller
                 'id' => $kb->id,
                 'name' => $kb->title,
                 'type'=> 3,
-                'cat' => $cat->id
+                'cat' => $cat->id,
+                'disabled' => false
             ]);
         }
 
