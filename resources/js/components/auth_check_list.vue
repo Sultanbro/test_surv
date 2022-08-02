@@ -77,7 +77,7 @@
                 sendChecklist :false,
                 currentTime: 0,
                 notification_time: null,
-                times: null,
+                times: 1,
             };
         },
 
@@ -94,12 +94,12 @@
         }, 
         watch: {
             async currentTime(newValue, oldValue) {
-                if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
-                    this.toggle();
-                    this.getNotificationTime(this.times)
+                if(this.notifictation_time != null){
+                    if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
+                        this.toggle();
+                        this.getNotificationTime(this.times)
+                    }
                 }
-                console.log(this.notification_time);
-                console.log(newValue);
 
             }
         },

@@ -58,9 +58,13 @@ class QualityController extends Controller
        // $acts = Activity::where('type', 'quality')->get()->pluck('group_id')->toArray();
        
         $groups = ProfileGroup::where('active', 1)->get();
-
+        $group_id = $groups[0]->id;
+        if(isset($request['user_id'])){
+            $user = User::find($request['user_id']);
+            $group_id = $user->inGroups()[0]->id;
+        }
         return view('admin.quality_control',
-            compact('groups','individual_type','individual_type_id'));
+            compact('groups','group_id'));
     }
 
     public function getRecords(Request $request) {
