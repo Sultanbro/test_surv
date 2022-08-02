@@ -529,7 +529,7 @@
             
 
             </div>
-            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
+            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" :key="course_key" />
 
         </b-tab>
 
@@ -801,6 +801,7 @@ export default {
         comments: "",
         changed: true,
       },
+      course_key: 1,
       records_unique: 0,
       records: {
         data: [],
@@ -899,8 +900,8 @@ export default {
 
     fetchData(flag = null) {
 
-
-
+      this.course_key++;
+      
       if (flag == 'selected_group'){
         this.flagGroup = 'selected_group'
       }
@@ -908,7 +909,7 @@ export default {
       let loader = this.$loading.show();
       this.setDates();
       this.fetchItems();
-      loader.hide();
+      loader.hide(); 
 
 
     },

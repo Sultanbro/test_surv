@@ -58,6 +58,9 @@ class MyCourseController extends Controller
      */
     public function pass(Request $request) {
         $user_id = auth()->id();
+
+        // save Course item model 
+
         $model = CourseItemModel::where('user_id', $user_id)
             ->where('type', $request->type)
             ->where('item_id', $request->id)
@@ -77,7 +80,8 @@ class MyCourseController extends Controller
             ]);
         }
         
-        
+        // save questions answers 
+
         $sum_bonus = 0;
 
         foreach ($request->questions as $key => $q) {
@@ -96,10 +100,6 @@ class MyCourseController extends Controller
                    // $tq = TestQuestion::find($q['id']);
                 if($q['success']) $sum_bonus += $q['points'];
 
-              
-
-
-            
                     TestResult::create([
                         'test_question_id' => $q['result']['test_question_id'],
                         'answer' => $q['result']['answer'],
@@ -112,6 +112,7 @@ class MyCourseController extends Controller
             }
         }
         
+        // save bonuses
 
         if($sum_bonus > 0) {
 
@@ -145,6 +146,44 @@ class MyCourseController extends Controller
                 'comment' => $item ? $type . $item->title : 'За обучение',
             ]);
         } 
+        
+        // count progress
+        $completed_stages = $request->completed_stages;
+
+        if($request->type == 1) $completed_stages++; // костыль
+        if($request->type == 2) $completed_stages++; // костыль
+        if($request->type == 3) $completed_stages++; // костыль
+
+        $count_progress  = round($completed_stages / $request->all_stages * 100);
+        $course_finished  = false;
+        if($completed_stages >= $request->all_stages) $course_finished = true;
+       
+     
+        // save course result for report
+        if($request->course_item_id != 0) {
+
+            $model = 0;
+            if($request->type == 1) $model = 'App\Models\Books\BookSegment';
+            if($request->type == 2) $model = 'App\Models\Videos\Video';
+            //if($request->type == 3) $model = 'App\KnowBase';
+
+            $course_item = CourseItem::where('id', $request->course_item_id)->first();
+                
+         
+            $cr = $course_item ? CourseResult::where('course_id', $course_item->course_id)->where('user_id', $user_id)->first() : null;
+      
+            if($cr) {
+                $cr->points += $sum_bonus;
+                $cr->progress = $count_progress;
+                
+                if($course_finished) {
+                    $cr->status = 1;
+                    $cr->ended_at = now();
+                }
+                $cr->save();
+         
+            }
+        }
 
         return [
             'item_model' => $model,

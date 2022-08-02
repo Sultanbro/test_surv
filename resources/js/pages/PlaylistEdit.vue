@@ -176,7 +176,13 @@ export default {
     },
     course_item_id: {
       default: 0
-    }
+    },
+    all_stages: {
+      default: 0
+    },
+    completed_stages: {
+      default: 0
+    },
   },
   
   data() {
@@ -277,7 +283,9 @@ export default {
           id: this.activeVideo.id,
           type: 2,
           course_item_id: this.course_item_id,
-          questions: this.activeVideo.questions
+          questions: this.activeVideo.questions,
+          all_stages: this.all_stages,
+          completed_stages: this.completed_stages,
         })
         .then((response) => {
           setTimeout(loader.hide(), 500);

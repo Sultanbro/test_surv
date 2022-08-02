@@ -78,6 +78,8 @@
                       :enable_url_manipulation="false"
                       @changeProgress="completed_stages++"
                       :active_page="activeCourseItem.last_item"
+                      :all_stages="all_stages"
+                      :completed_stages="completed_stages"
                     />
                   </div>
  
@@ -90,7 +92,10 @@
                           :myvideo="activeCourseItem.last_item"
                           :enable_url_manipulation="false"
                           @changeProgress="completed_stages++"
-                          mode="read" />
+                          mode="read" 
+                          :all_stages="all_stages"
+                          :completed_stages="completed_stages"
+                      />
                   </div>
 
                   <div v-if="activeCourseItem.item_model == 'App\\KnowBase'" class="opopoppop">
@@ -106,7 +111,10 @@
                         :course_page="true"
                         :enable_url_manipulation="false"
                         @changeProgress="completed_stages++"
-                        :auth_user_id="0" /> 
+                        :auth_user_id="0" 
+                        :all_stages="all_stages"
+                        :completed_stages="completed_stages"
+                      /> 
 
                   </div>
 

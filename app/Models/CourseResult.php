@@ -55,6 +55,7 @@ class CourseResult extends Model
         foreach ($user_ids as $key => $user_id) {
             $user = User::withTrashed()
                 ->with('course_results')
+                ->with('course_results.course')
                 ->find($user_id);
 
             if(!$user) continue;
@@ -139,11 +140,11 @@ class CourseResult extends Model
             return strtotime($a->ended_at) < strtotime($b->ended_at);
         })->first();
 
-        $status = self::$courses->where('status', 2)->first() ? 2 : 1;
+        $status = $user->course_results->where('status', 2)->first() ? 2 : 1;
 
         foreach($user->course_results as $result) {
 
-            $course = self::$courses->where('id', $result->id)->first();
+            $course = self::$courses->where('id', $result->course_id)->first();
             if($course) {
                 $arr = [];
                 $arr['name'] = $course->name;

@@ -486,7 +486,13 @@ export default {
     },
     course_item_id: {
       default: 0
-    }
+    },
+    all_stages: {
+      default: 0
+    },
+    completed_stages: {
+      default: 0
+    },
   },
   components: { 
     nestedDraggable,
@@ -581,8 +587,7 @@ export default {
       this.passedTest = true;
 
       // find element 
-         console.log('ids')
-         console.log(this.ids)
+
       let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
          console.log(index)
       if(index != -1 && this.ids.length - 1 > index) {
@@ -614,7 +619,9 @@ export default {
           id: this.activesbook.id,
           type: 3,
           course_item_id: this.course_item_id,
-          questions: this.activesbook.questions
+          questions: this.activesbook.questions,
+          all_stages: this.all_stages,
+          completed_stages: this.completed_stages,
         })
         .then((response) => {
           this.$emit('changeProgress');

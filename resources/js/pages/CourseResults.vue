@@ -25,13 +25,17 @@
                 <template v-for="(item, i) in users.items">
                     <tr>
                         <td v-for="(field, f) in users.fields" :key="f" :class="field.class" @click="expandUser(item)">
-                            <div>{{ item[field.key] }}</div> 
+                            <div>{{ item[field.key] }}</div>  
                         </td>
                     </tr>
                     <template v-for="course in item.courses">
                         <tr v-if="item.expanded" class="expanded">
                             <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
-                                <div>{{ course[field.key] }}</div> 
+                                <div v-if="field.key == 'progress'" class="d-flex jcc aic">
+                                    <p class="mb-0 mr-1">{{ course[field.key] }}</p>
+                                    <progress :value="course[field.key].slice(0, -1)" max="100"></progress>
+                                </div>
+                                <div v-else>{{ course[field.key] }}</div>
                             </td>
                         </tr>
                     </template>
@@ -104,7 +108,7 @@ export default {
                 this.fetchData('groups');
                 this.first = false;
             }
-        }
+        },
     },
     props: {
         monthInfo: {
