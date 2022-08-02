@@ -99,8 +99,6 @@
                     this.toggle();
                     this.getNotificationTime(this.times)
                 }
-                console.log(this.notification_time);
-                console.log(newValue);
             }
         },
         methods: {
