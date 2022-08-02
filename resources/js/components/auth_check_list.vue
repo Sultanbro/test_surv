@@ -95,7 +95,7 @@
         }, 
         watch: {
             async currentTime(newValue, oldValue) {
-                if(newValue.getTime() > this.notification_time.getTime()){
+                if(newValue.getTime() === this.notification_time.getTime()){
                     this.toggle();
                     this.getNotificationTime(this.times)
                 }
