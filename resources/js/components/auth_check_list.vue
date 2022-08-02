@@ -82,7 +82,6 @@
         },
 
         created() {
-            this.getNotificationTime();
             this.viewCheck()
               if (this.open_check == 1){
                 this.showAuthUserCheck = true;
@@ -95,20 +94,23 @@
         }, 
         watch: {
             async currentTime(newValue, oldValue) {
-                if(newValue.getTime() === this.notification_time.getTime()){
+                if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
                     this.toggle();
                     this.getNotificationTime(this.times)
                 }
+                console.log(this.notification_time);
+                console.log(newValue);
+
             }
         },
         methods: {
             getNotificationTime(times){
                 var hours = 9 / times;
                 var date = new Date();
-                var now = this.currentTime;
+                var now = new Date();
                 for(let i = 0; i < times; i++){
                     date.setHours((9 + (i * hours)), 0, 0, 0);
-                    if(date > now){
+                    if(date >= now){
                         this.notification_time = date;
                         break;
                     }
