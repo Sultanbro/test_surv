@@ -271,10 +271,10 @@ class UserStat extends Model
      */
     public static function getActivityProgress(int $user_id, int $group_id, Activity $activity, string $date = '', $return_value_and_percent = false)
     {
-       
+        // if(auth()->id() == 10360) $date = '2022-07-01';
         if($date == '') {
             $date = Carbon::now()->day(1)->format('Y-m-d');
-        }
+        } 
 
         $carbon = Carbon::parse($date);
         $user = User::withTrashed()->find($user_id);
@@ -419,6 +419,11 @@ class UserStat extends Model
                 $result = 100;
             }
         }
+
+        //  if(auth()->id() == 10360) dump($activity->daily_plan); 
+        // if(auth()->id() == 10360) dump($workdays); 
+        // if(auth()->id() == 10360) dump($total); 
+        // if(auth()->id() == 10360) dump($result); 
 
         
         if($return_value_and_percent) {

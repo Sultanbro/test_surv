@@ -25,7 +25,7 @@ class AnalyticsSettingsIndividually extends Model
      */
     public static function getActivityProgress(int $user_id, int $group_id, Activity $activity, string $date = '', $return_value_and_percent = false)
     {
-       
+      
         if($date == '') {
             $date = Carbon::now()->day(1)->format('Y-m-d');
         }
@@ -152,6 +152,7 @@ class AnalyticsSettingsIndividually extends Model
                         // dd($total);
                     } 
 
+            
                     if($activity->plan_unit == 'less_sum') {
                         $result = ($activity->daily_plan - $total) / $activity->daily_plan * 100;
                     } 
@@ -165,7 +166,12 @@ class AnalyticsSettingsIndividually extends Model
                         $result = ((float)$activity->daily_plan) / $total * 100;
                         $total = $result;
                     } 
-                    
+
+                    // if(auth()->id() == 11080) dump($activity->daily_plan); 
+                    // if(auth()->id() == 11080) dump($workdays); 
+                    // if(auth()->id() == 11080) dump($total); 
+                    // if(auth()->id() == 11080) dump($result); 
+
                   
                     
                 } 
