@@ -95,18 +95,19 @@
         }, 
         watch: {
             async currentTime(newValue, oldValue) {
-                if(newValue == this.notification_time){
+                if(newValue.getTime() > this.notification_time.getTime()){
                     this.toggle();
-                    getNotificationTime(this.times)
+                    this.getNotificationTime(this.times)
                 }
                 console.log(this.notification_time);
+                console.log(newValue);
             }
         },
         methods: {
             getNotificationTime(times){
                 var hours = 9 / times;
                 var date = new Date();
-                var now = new Date();
+                var now = this.currentTime;
                 for(let i = 0; i < times; i++){
                     date.setHours((9 + (i * hours)), 0, 0, 0);
                     if(date > now){
@@ -138,14 +139,14 @@
 
                       console.log(response,'response')
                       this.showAuthUserCheck= false
-                      this.$message.success('Успешно выполнено');
+                      this.$toast.success('Успешно выполнено');
 
                       ;
 
                     })
 
                 }else {
-                    this.$message.error('заполнить поля выбранный чек листов');
+                    this.$toast.error('заполнить поля выбранный чек листов');
                 }
             },
 
@@ -160,9 +161,10 @@
                     this.sendChecklist = false;
                     //console.log(this.isValidUrl(ch['https']));
                     if (this.isValidUrl(ch['https']) && ch['checked']){
-                      this.sendChecklist = true
+                      this.sendChecklist = true;
+                        this.$toast.success('Чек лист сохранен!');
                     }else{
-                        this.$message.error('Ссылка не является действительной!');
+                        this.$toast.error('Ссылка не является действительной!');
                     }
                   }
                 })
