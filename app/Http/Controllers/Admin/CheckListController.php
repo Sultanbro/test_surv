@@ -351,16 +351,15 @@ class CheckListController extends Controller
 
     }
 
-    public function viewAuthCheck(Request$request){
+    public function viewAuthCheck(Request $request){
 
         if (!empty($request['auth_check'])){
             foreach (json_decode($request['auth_check']) as $key => $arrCheckInput){
 
 
-                $check_list['checklist'][$key] = CheckList::on()->where('id',$arrCheckInput->check_list_id)->get()->toArray();
+                $check_list['checklist'][$key] = CheckList::where('id',$arrCheckInput->check_list_id)->get()->toArray();
 //                $check_list['check'][$key] = CheckReports::find($arrCheckInput->check_reports_id);
-
-
+                $time =  $check_list['checklist'][$key][0]['count_view'];
                 $check_list['check_day'][$key] = CheckReports::on()
                     ->where('item_type',$check_list['checklist'][$key][0]['item_type'])
                     ->where('item_id',$check_list['checklist'][$key][0]['item_id'])
@@ -383,9 +382,8 @@ class CheckListController extends Controller
 
 
 
-
             }
-
+            array_push($check_list,$time);
             return response($check_list);
         }
     }

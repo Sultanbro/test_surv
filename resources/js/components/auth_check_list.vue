@@ -31,7 +31,7 @@
                           </div>
 
                           <div style="position: absolute;right: 0px;top: 0px">
-                           <input style="width: 150%" v-model="val.https" class="form-control form-control-sm" placeholder="url">
+                           <input type="url" style="width: 150%" v-model="val.https" class="form-control form-control-sm" placeholder="url">
                          </div>
                        </div>
 
@@ -67,7 +67,7 @@
             auth_check_list:{},
             open_check:{
               default:0
-            }
+            },
         },
         data() {
             return {
@@ -75,17 +75,51 @@
                 count:0,
                 auth_check:[],
                 sendChecklist :false,
+                currentTime: 0,
+                notification_time: null,
+                times: null,
             };
         },
 
         created() {
+            this.getNotificationTime();
             this.viewCheck()
-
               if (this.open_check == 1){
                 this.showAuthUserCheck = true;
               }
         },
+        mounted: function () {
+          window.setInterval(() => {
+            this.currentTime = new Date()
+          }, 1000)
+        }, 
+        watch: {
+            async currentTime(newValue, oldValue) {
+                if(newValue == this.notification_time){
+                    this.toggle();
+                    getNotificationTime(this.times)
+                }
+                console.log(this.notification_time);
+            }
+        },
         methods: {
+            getNotificationTime(times){
+                var hours = 9 / times;
+                var date = new Date();
+                var now = new Date();
+                for(let i = 0; i < times; i++){
+                    date.setHours((9 + (i * hours)), 0, 0, 0);
+                    if(date > now){
+                        this.notification_time = date;
+                        break;
+                    }
+                }
+            },
+            isValidUrl(url){
+                var a  = document.createElement('a');
+                a.href = url;
+                return (a.host && a.host != window.location.host);
+            },
             toggle() {
                 this.showAuthUserCheck = !this.showAuthUserCheck
                 // document.getElementById('list-example').classList.toggle("sticky");
@@ -93,30 +127,26 @@
 
 
             saveCheck(){
-
                 this.validate(this.auth_check)
 
+                if (this.sendChecklist){
 
-              if (this.sendChecklist){
+                    console.log(this.auth_check,'this.auth_check')
+                    axios.post('/timetracking/settings/auth/check/user/send', {
+                      auth_check:this.auth_check
+                    }).then(response => {
 
-                console.log(this.auth_check,'this.auth_check')
-                axios.post('/timetracking/settings/auth/check/user/send', {
-                  auth_check:this.auth_check
-                }).then(response => {
+                      console.log(response,'response')
+                      this.showAuthUserCheck= false
+                      this.$message.success('Успешно выполнено');
 
-                  console.log(response,'response')
-                  this.showAuthUserCheck= false
-                  this.$toast.success('Успешно выполнено');
+                      ;
 
-                  ;
+                    })
 
-                })
-
-              }else {
-                this.$toast.error('заполнить поля выбранный чек листов');
-              }
-
-
+                }else {
+                    this.$message.error('заполнить поля выбранный чек листов');
+                }
             },
 
             validate(auth_check){
@@ -126,8 +156,9 @@
                 el['check_input'].forEach(ch =>{
 
 
-                   if (ch['checked'] == true){
+                  if (ch['checked'] == true){
                     this.sendChecklist = false;
+                    //console.log(this.isValidUrl(ch['https']));
                     if (this.isValidUrl(ch['https']) && ch['checked']){
                       this.sendChecklist = true
                     }else{
@@ -148,7 +179,6 @@
 
                 axios.post('/timetracking/settings/auth/check/user', {
                     auth_check:this.auth_check_list
-
                 }).then(response => {
 
 
@@ -186,8 +216,8 @@
                       }
                     }
 
-
-
+                    this.times = response.data[0];
+                    this.getNotificationTime(this.times);
 
                 })
             },
