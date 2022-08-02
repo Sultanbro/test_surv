@@ -153,7 +153,7 @@ class CourseResult extends Model
 
                 $progress += $result->progress;
                 $progress_count++;
-                $arr['progress'] = $result->progress . '%';
+                $arr['progress'] = $result->progress > 100 ? '100%' : $result->progress . '%';
                 
                 $points += $result->points;
                 $arr['points'] = $result->points;
@@ -166,11 +166,14 @@ class CourseResult extends Model
             }
         }
 
+        $total_progress = $progress_count > 0 ? round($progress / $progress_count) : 0;
+        if($total_progress > 100) $total_progress = 100;
+
         return [
             'courses' => $arrx,
             'totals' => [
                 'points' => $points,
-                'progress' => $progress_count > 0 ? round($progress / $progress_count) : 0,
+                'progress' => $total_progress,
                 'status' => $status,
                 'started_at' => $first_date && $first_date->started_at ? Carbon::parse($first_date->started_at)->format('d.m.Y') : '',
                 'ended_at' => $last_date && $last_date->ended_at ? Carbon::parse($last_date->ended_at)->format('d.m.Y') : '',

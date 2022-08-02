@@ -157,7 +157,7 @@ class MyCourseController extends Controller
         $count_progress  = round($completed_stages / $request->all_stages * 100);
         $course_finished  = false;
         if($completed_stages >= $request->all_stages) $course_finished = true;
-       
+        if($count_progress > 0) $count_progress = 100;
      
         // save course result for report
         if($request->course_item_id != 0) {
