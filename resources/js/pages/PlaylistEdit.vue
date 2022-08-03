@@ -238,10 +238,15 @@ export default {
         //this.nextElement()
     },
 
+    scrollToTop() {
+      document.getElementsByClassName('content')[0].scrollTo(0,0);
+      if(this.course_item_id != 0) document.getElementsByClassName('content')[1].scrollTo(0,0);
+    },
+
     nextElement() {
 
-      window.scrollTo(0,0); // scroll to top
-      
+      this.scrollToTop();
+
       if(this.activeVideo.item_model == null) {
         this.setVideoPassed()
       }
