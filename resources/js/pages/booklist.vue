@@ -522,7 +522,7 @@ export default {
       editorHeight: window.innerHeight - 128,
       attachment: null,
       breadcrumbs: [],
-     
+      
       // modals 
       showImageModal: false,
       showAudioModal: false,
@@ -585,7 +585,12 @@ export default {
         this.$parent.after_click_next_element();
       }
 
-      window.scrollTo(0,0); // scroll to top
+      this.scrollToTop();
+    },
+
+    scrollToTop() {
+      document.getElementsByClassName('content')[0].scrollTo(0,0);
+      if(this.course_item_id != 0) document.getElementsByClassName('content')[1].scrollTo(0,0);
     },
 
     passed() {
