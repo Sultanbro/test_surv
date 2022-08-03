@@ -49,7 +49,7 @@ class Kpi extends Model
      * return @int
      */
     public static function userKpi(int $user_id, string $date = '', $renew = 0) {
-        
+       
         if($renew == 0) { // if not require renew, return saved value
             
             $skpi = SavedKpi::where('user_id', $user_id);
@@ -91,7 +91,15 @@ class Kpi extends Model
             $kpi_total +=  self::groupKpi($user_id, $group->id, $date);
             
         }
-     
+        
+
+        $sk = SavedKpi::where('user_id', $user_id)
+            ->where('date', $date)
+            ->update([
+                'total' => intval($kpi_total)
+            ]);
+
+    
         return intval($kpi_total);
     }
 

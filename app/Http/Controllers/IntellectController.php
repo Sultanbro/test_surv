@@ -686,11 +686,15 @@ class IntellectController extends Controller {
                     
                     /////////////////
 
-                    return $this->contract_link . $lead->hash;    
+                    return [
+                        'link' => $this->contract_link . $lead->hash
+                    ];    
                 } 
     
                 if($request->link == 2) { // ссылка для выбора времени для офисных
-                    return $this->time_link . $lead->hash;
+                    return [
+                        'link' => $this->time_link . $lead->hash
+                    ];   
                 } 
             }
             
