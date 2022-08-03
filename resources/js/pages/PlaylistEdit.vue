@@ -50,8 +50,6 @@
         </div>
     </div>
 
-   
-
     <div class="row">
 
       <!-- Player and test questions -->
@@ -91,9 +89,10 @@
                      :pass="activeVideo.item_model !== null"
                     @passed="passedTest()"
                     :mode="mode"
+                    @nextElement="nextElement"
                     />
-                
-                <button class="next-btn btn btn-primary" v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null) && mode == 'read'"
+                <!-- v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null) && mode == 'read'" -->
+                <button class="next-btn btn btn-primary" v-if="activeVideo.questions.length == 0 && mode == 'read'"
                   @click="nextElement()">
                   Следующее видео
                   <i class="fa fa-angle-double-right ml-2"></i>
@@ -120,7 +119,6 @@
           
       </div>
     </div>
-
 
     <!-- edit tests -->
     <sidebar
@@ -152,7 +150,6 @@
           />
       </div>
     </sidebar>
-
    
   </div>
 </template>
@@ -220,7 +217,6 @@ export default {
   },
 
   mounted() {},
-
 
   methods: { 
 

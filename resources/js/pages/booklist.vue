@@ -325,25 +325,29 @@
                   :mode="mode"
                   :count_points="true"
                   @passed="passed"
-                   :pass="activesbook.item_model !== null"
+                  :pass="activesbook.item_model !== null"
                   :key="questions_key"
                   :pass_grade="activesbook.pass_grade"
                   @changePassGrade="changePassGrade"
-                   :course_item_id="course_item_id" 
+                  :course_item_id="course_item_id" 
                 />
               <div class="pb-5"></div> 
+
+
+                <button class="next-btn btn btn-primary" 
+                  v-if="course_page && activesbook.questions.length == 0"
+                  @click="nextElement()">
+                  Продолжить курс 
+                  <i class="fa fa-angle-double-right ml-2"></i>
+                </button>
+
           </div>
         </template>
       </div>
 
     </div>
 
-    <button class="next-btn btn btn-primary" 
-      v-if="course_page && (passedTest)"
-      @click="nextElement()">
-      Продолжить курс 
-      <i class="fa fa-angle-double-right ml-2"></i>
-    </button>
+  
     <!-- .content -->
 
     <!-- Right Panel -->

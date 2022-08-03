@@ -302,6 +302,7 @@ tspan:last-child {
     height: max-content;
     font-size: 20px;
     line-height: 20px;
+    text-align: center;
     border: none;
     max-width: 960px;
     margin: 0 auto;
@@ -313,6 +314,9 @@ tspan:last-child {
     outline: 0;
 }
 
+.jcsb {
+    justify-content: space-between;
+}
 
 // font
 

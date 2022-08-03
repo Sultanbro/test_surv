@@ -145,10 +145,19 @@
         </button>
       </div>
 
-      <p v-if="points != -1 && mode == 'read'" class="mt-3 scores">
-        <span v-if="scores">Вы заработали: {{ points }} бонусов из {{ total }}</span>
-        <span v-else>Вы не набрали проходной балл...</span>
-     </p>
+      <div class="d-flex jcsb">
+        <p v-if="points != -1 && mode == 'read'" class="mt-3 scores mr-3">
+          <span v-if="scores">Вы заработали: {{ points }} бонусов из {{ total }}</span>
+          <span v-else>Вы не набрали проходной балл...</span>
+        </p>
+        <button class="next-btn btn btn-primary" 
+          v-if="mode == 'read' && passed"
+          @click="$emit('nextElement')" >
+          Продолжить
+          <i class="fa fa-angle-double-right ml-2"></i>
+        </button>
+      </div>
+      
     </template>
 
     <template v-if="mode == 'edit'">
@@ -235,6 +244,7 @@ export default {
       pass_grade_local: 1,
       timer: 60,
       timer_turned_on: false,
+      passed: false,
       right_ans: 0 // правильно отвеченные
     };
   },
@@ -437,6 +447,7 @@ export default {
         //   this.$emit('passed');
         // }
          this.$emit('passed');
+         this.passed = true;
       } else {
         this.timer_turned_on = true;
         this.timer = 60;
