@@ -584,6 +584,8 @@ export default {
         // move to next course item
         this.$parent.after_click_next_element();
       }
+
+      window.scrollTo(0,0); // scroll to top
     },
 
     passed() {
