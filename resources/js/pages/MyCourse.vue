@@ -80,6 +80,7 @@
                       :active_page="activeCourseItem.last_item"
                       :all_stages="all_stages"
                       :completed_stages="completed_stages"
+                       @nextElement="nextElement"
                     />
                   </div>
  
@@ -95,6 +96,7 @@
                           mode="read" 
                           :all_stages="all_stages"
                           :completed_stages="completed_stages"
+                          @nextElement="nextElement"
                       />
                   </div>
 
@@ -114,6 +116,7 @@
                         :auth_user_id="0" 
                         :all_stages="all_stages"
                         :completed_stages="completed_stages"
+                         @nextElement="nextElement"
                       /> 
 
                   </div>

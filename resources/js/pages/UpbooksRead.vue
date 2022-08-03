@@ -118,16 +118,17 @@
         :mode="mode" 
         @continueRead="nextPage"
         @passed="nextElement"
+         @nextElement="nextElement"
       />
     </div>
 
-    <template v-if="(activeSegment != null && course_page && activeSegment.item_model !== null) || (activeSegment == null && pageCount == page)">
+    <!-- <template v-if="(activeSegment != null && course_page && activeSegment.item_model !== null) || (activeSegment == null && pageCount == page)">
       <button class="next-btn btn btn-primary" 
         @click="nextElement()">
         Продолжить курс
         <i class="fa fa-angle-double-right ml-2"></i>
       </button>
-    </template>
+    </template> -->
    
 
   </div>
