@@ -330,6 +330,7 @@
                   :pass_grade="activesbook.pass_grade"
                   @changePassGrade="changePassGrade"
                   :course_item_id="course_item_id" 
+                  @nextElement="nextElement"
                 />
               <div class="pb-5"></div> 
 
