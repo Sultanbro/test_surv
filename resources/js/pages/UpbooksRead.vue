@@ -236,6 +236,8 @@ export default {
         return;
       }
       
+      window.scrollTo(0,0); // scroll to top
+      
       this.nextPage()
 
     },

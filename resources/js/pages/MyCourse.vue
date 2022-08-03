@@ -208,6 +208,7 @@ export default {
       if(this.activeCourseItem.item_model == 'App\\Models\\Videos\\Video') {
         this.$refs.playlist.nextElement();
       }
+      
      
     },
 

@@ -240,6 +240,7 @@ export default {
 
     nextElement() {
 
+      window.scrollTo(0,0); // scroll to top
       
       if(this.activeVideo.item_model == null) {
         this.setVideoPassed()
