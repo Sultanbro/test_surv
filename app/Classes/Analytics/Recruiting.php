@@ -1501,10 +1501,12 @@ public function planRequired($arr) {
 
             $item['sent'] = $leads->count();
 
+            $users = json_decode($group->users);
             $item['working'] = \DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
-                ->whereIn('users.id', $leads->pluck('user_id')->toArray())
+                ->whereIn('users.id',$users)
+                //->whereIn('users.id', $leads->pluck('user_id')->toArray())
                 ->get()
                 ->count();
                 

@@ -147,20 +147,21 @@ class MyCourseController extends Controller
             ]);
         } 
         
-        // count progress
-        $completed_stages = $request->completed_stages;
-
-        if($request->type == 1) $completed_stages++; // костыль
-        if($request->type == 2) $completed_stages++; // костыль
-        if($request->type == 3) $completed_stages++; // костыль
-
-        $count_progress  = round($completed_stages / $request->all_stages * 100);
-        $course_finished  = false;
-        if($completed_stages >= $request->all_stages) $course_finished = true;
-        if($count_progress > 0) $count_progress = 100;
-     
-        // save course result for report
         if($request->course_item_id != 0) {
+            // count progress
+            $completed_stages = $request->completed_stages;
+
+            if($request->type == 1) $completed_stages++; // костыль
+            if($request->type == 2) $completed_stages++; // костыль
+            if($request->type == 3) $completed_stages++; // костыль
+
+            $count_progress  = $request->all_stages > 0 ? round($completed_stages / $request->all_stages * 100) : 0;
+            $course_finished  = false;
+            if($completed_stages >= $request->all_stages) $course_finished = true;
+            if($count_progress > 0) $count_progress = 100;
+        
+            // save course result for report
+
 
             $model = 0;
             if($request->type == 1) $model = 'App\Models\Books\BookSegment';

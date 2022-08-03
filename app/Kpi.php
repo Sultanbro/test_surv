@@ -67,6 +67,8 @@ class Kpi extends Model
             return $res;
         } 
 
+
+
         $kpi_total = 0;
         
         $user = User::withTrashed()->find($user_id);
@@ -87,9 +89,9 @@ class Kpi extends Model
          
         foreach ($groups as $group) {
             $kpi_total +=  self::groupKpi($user_id, $group->id, $date);
-           
+            
         }
-
+     
         return intval($kpi_total);
     }
 
@@ -244,6 +246,7 @@ class Kpi extends Model
             } else {
                 
                 $completed = UserStat::getActivityProgress($user_id, $group_id, $activity, $date);
+                // dump($completed);
             }
             
             // if(in_array($group_id, [42])) { 

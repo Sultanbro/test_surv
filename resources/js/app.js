@@ -32,11 +32,16 @@ import "vue-toastification/dist/index.css";
 const options = {};
 Vue.use(Toast, options); 
 
+// Require dependencies
+var VueCookie = require('vue-cookie');
+// Tell Vue to use the plugin 
+Vue.use(VueCookie);
+ 
 
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 //import VueCoreVideoPlayer from 'vue-core-video-player';
-
+ 
 
 import VueVideoPlayer from 'vue-video-player'
  

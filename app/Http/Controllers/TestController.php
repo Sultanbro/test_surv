@@ -27,7 +27,7 @@ class TestController extends Controller {
 	public function test() {
 	
 		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
-		$g = ProfileGroup::employees(71, '2022-08-01', 2);
+		$g = \App\Kpi::userKpi(15551, '2022-07-01', 1);
 		// 15030
 		dd($g);
 		// $books = Book::get();

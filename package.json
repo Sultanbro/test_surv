@@ -55,6 +55,7 @@
         "vgauge": "^1.2.12",
         "vue-advanced-cropper": "^1.11.1",
         "vue-axios": "^3.4.1",
+        "vue-cookie": "^1.1.4",
         "vue-core-video-player": "^0.2.0",
         "vue-croppa": "^1.3.8",
         "vue-json-editor": "^1.4.3",

@@ -129,8 +129,12 @@
 
     <template v-if="mode == 'read'">
       <div class="d-flex">
-        <button class="btn btn-success mr-2" @click.stop="checkAnswers" v-if="points == -1 || !scores">
-          Проверить
+        <button class="btn btn-success mr-2" 
+        @click.stop="checkAnswers"
+        v-if="points == -1 || !scores"
+        :disabled="timer_turned_on"
+        >
+          Проверить <span v-if="timer_turned_on">({{ timer }})</span>
         </button>
         <button
           class="btn btn-primary"
@@ -142,7 +146,7 @@
       </div>
 
       <p v-if="points != -1 && mode == 'read'" class="mt-3 scores">
-        <span v-if="scores">Вы набрали: {{ points }} бонусов из {{ total }}</span>
+        <span v-if="scores">Вы заработали: {{ points }} бонусов из {{ total }}</span>
         <span v-else>Вы не набрали проходной балл...</span>
      </p>
     </template>
@@ -229,6 +233,8 @@ export default {
       points: -1,
       count_points: false,
       pass_grade_local: 1,
+      timer: 60,
+      timer_turned_on: false,
       right_ans: 0 // правильно отвеченные
     };
   },
@@ -261,8 +267,25 @@ export default {
             });
           }
         }
-    },
+      },
+
+      timer: {
+          handler(value) {
+            
+
+              if (value > 0) {
+                  setTimeout(() => {
+                      this.timer--;
+                  }, 1000);
+              } else {
+                this.timer_turned_on = false;
+              }
+          },
+          immediate: true // This ensures the watcher is triggered upon creation
+      }
+
   },
+  
   created() {
     this.pass_grade_local = this.pass_grade;
     this.setResults();
@@ -280,6 +303,14 @@ export default {
         this.page = this.page;
       }
       
+      if(this.$cookie.get('q_timer') != null) {
+        
+        this.$cookie.set('q_timer', 60, { expires: '60s' });
+        this.timer_turned_on = true;
+        this.timer = 60;
+      }
+
+
     } else {
       this.questions.forEach((q) => {
         q.editable = false;
@@ -328,6 +359,14 @@ export default {
 
     checkAnswers() {
       // read
+
+  
+      if(this.timer_turned_on && this.$cookie.get('q_timer') != null) {
+        this.$toast.error('Вы не можете пока ответить еще ' + this.timer + ' секунд');
+        return;
+      }
+ 
+      // start count 
       this.points = 0;
       this.right_ans = 0;
 
@@ -384,9 +423,9 @@ export default {
 
       });
       
+      //
       if(not_answered_question) {
         this.$toast.error('Ответьте на все вопросы!');
-        
         return;
       }
 
@@ -399,9 +438,15 @@ export default {
         // }
          this.$emit('passed');
       } else {
+        this.timer_turned_on = true;
+        this.timer = 60;
+        this.$cookie.set('q_timer', 60, { expires: '60s' });
+
+        this.$toast.error('Вы ответили неверно. Вот Вам еще минутка чтобы найти на странице правильный ответ!');
         this.points = -1;
       }
     },
+
 
     addVariant(q_index, v_index = -1) {
       this.questions[q_index].variants.push({
