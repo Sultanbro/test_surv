@@ -560,16 +560,15 @@ export default {
     },
 
     nextElement() {
-      console.log('nextElement')
+   
       // find element 
       let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
       if(index != -1) {
         console.log('here')
         let el = this.findItem(this.ids[index]);
           this.setSegmentPassed();
-        // if(el.item_model == null) {
-        //    console.log('here 2')
-        // } 
+          this.$emit('changeProgress');
+      
          console.log('here 3')
         el.item_model = {status: 1}; 
       } 
@@ -590,7 +589,7 @@ export default {
 
     scrollToTop() {
       document.getElementsByClassName('rp')[0].scrollTo(0,0);
-      if(this.course_item_id != 0) document.getElementsByClassName('rp')[1].scrollTo(0,0);
+      if(this.course_item_id != 0 &&) document.getElementsByClassName('rp')[1].scrollTo(0,0);
     },
 
     passed() {
@@ -636,7 +635,7 @@ export default {
           completed_stages: this.completed_stages,
         })
         .then((response) => {
-          this.$emit('changeProgress');
+     
            this.activesbook.item_model = {status: 1}; 
         })
         .catch((error) => {

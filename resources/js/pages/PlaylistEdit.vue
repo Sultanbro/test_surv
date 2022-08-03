@@ -240,6 +240,7 @@ export default {
 
     scrollToTop() {
       document.getElementsByClassName('content')[0].scrollTo(0,0);
+      if(this.course_item_id != 0) document.getElementsByClassName('content')[1].scrollTo(0,0);
     },
 
     nextElement() {
