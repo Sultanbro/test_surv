@@ -145,12 +145,12 @@
         </button>
       </div>
 
-      <div class="d-flex jcsb">
+      <div class="d-flex jcsb aic">
         <p v-if="points != -1 && mode == 'read'" class="mt-3 scores mr-3">
-          <span v-if="scores">Вы заработали: {{ points }} бонусов из {{ total }}</span>
+          <span v-if="scores">Вы заработали: <b>{{ points }}</b> бонусов из <b>{{ total }}</b></span>
           <span v-else>Вы не набрали проходной балл...</span>
         </p>
-        <button class="next-btn btn btn-primary" 
+        <button class="net-btn btn btn-primary" 
           v-if="mode == 'read' && passed"
           @click="$emit('nextElement')" >
           Продолжить
