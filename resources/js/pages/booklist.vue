@@ -638,6 +638,7 @@ export default {
         .then((response) => {
             this.$emit('changeProgress');
             if(el != null) el.item_model = {status: 1}; 
+            this.activesbook.item_model = response.data.item_model;
         })
         .catch((error) => {
           alert(error);

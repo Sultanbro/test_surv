@@ -304,6 +304,7 @@ export default {
         .then((response) => {
           setTimeout(loader.hide(), 500);
           if(el) el.item_model = response.data.item_model;
+          this.activeVideo.item_model = response.data.item_model;
           this.$emit('changeProgress');
         })
         .catch((error) => {
