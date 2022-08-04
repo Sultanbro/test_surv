@@ -431,8 +431,8 @@ class CourseResult extends Model
             ->toArray();
 
         return Course::whereIn('id', array_unique($courses))
-            ->get()
             ->orderBy('order')
+            ->get()
             ->pluck('id')
             ->toArray();
     }
