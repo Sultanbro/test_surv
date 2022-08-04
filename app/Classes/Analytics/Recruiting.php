@@ -1264,7 +1264,7 @@ public function planRequired($arr) {
                 }
 
                 if($date->format('Y-m-d') == '2022-07-01') {
-                    $worked = $pgu->assigned + $pgu->fired;
+                    $worked = count($pgu->assigned) + count($pgu->fired);
                 } else {
                     $worked = $assigned + $fired;
                 }
