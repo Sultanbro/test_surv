@@ -59,6 +59,15 @@ class KnowBase extends Model implements CourseInterface
         return false;
     }
 
+    public static function getTopParent($id)
+    {
+        $kb = self::withTrashed()->find($id);
+        if ($kb && $kb->parent_id != null) {
+            return self::getTopParent($kb->parent_id);
+        }
+        return $kb;
+    }
+
     public static function getArray(&$arr, $kb) {
         foreach ($kb->children as $key => $child) {
             array_push($arr, [

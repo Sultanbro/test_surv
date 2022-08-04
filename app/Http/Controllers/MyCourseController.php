@@ -128,13 +128,18 @@ class MyCourseController extends Controller
             }
             
             if($request->type == 2) {
-                $item = Video::find($request->id);
-                $type = 'За обучение по видео: ';
+                $video = Video::find($request->id);
+                if($video) {
+                    $item = VideoPlaylist::find($video->playlist_id);
+                    $type = 'За обучение по видео: ';
+                }
             } 
 
             if($request->type == 3) {
-                $item = KnowBase::find($request->id);
-                $type = 'За ответы в Базе знаний: ';
+                $item = KnowBase::getTopParent($request->id);
+                if($item) {
+                    $type = 'За ответы в Базе знаний: ';
+                }
             }
 
          
