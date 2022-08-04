@@ -251,6 +251,8 @@ class CourseResult extends Model
     public function countWeeklyProgress() {
         $stages = 0;
 
+        if($this->weekly_progress == null) return 0;
+        
         $date = Carbon::now()->addDay();
 
         $weekly_progress = collect($this->weekly_progress);
