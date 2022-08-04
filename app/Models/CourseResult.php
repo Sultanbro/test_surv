@@ -158,9 +158,11 @@ class CourseResult extends Model
         })->first();
 
         $course_ids = self::getCourseIds($user->id);
-
+      
         foreach ($course_ids as $key => $course_id) {
-            if(!$user->course_results->where('id', $course_id)->first()) {
+            $first = $user->course_results->where('course_id', $course_id)->first();
+
+            if(!$first) {
                 $cr = self::create([
                     'user_id' => $user->id,
                     'course_id' => $course_id,
@@ -170,10 +172,16 @@ class CourseResult extends Model
                     'started_at' => null, 
                     'ended_at' => null, 
                 ]);
+                $cr->order = $key;
                 $user->course_results->push($cr);
+            } else {
+                $first->order = $first->course != null ? $first->course->order : 999;
             }
         }
 
+    
+        $user->course_results = $user->course_results->sortBy('order');
+        
         $status = $user->course_results->where('status', 2)->first() ? 2 : 1;
 
         foreach($user->course_results as $result) {
@@ -398,6 +406,15 @@ class CourseResult extends Model
         return $course;
     }
 
+    /**
+    *   @return array
+    *
+    *  order => course_id
+    *  [   
+    *     1 => 2,
+    *     2 => 3
+    *  ]
+    */
     public static function getCourseIds($user_id) {
         // prepare
         $user = User::withTrashed()->find($user_id);
@@ -433,7 +450,7 @@ class CourseResult extends Model
         return Course::whereIn('id', array_unique($courses))
             ->orderBy('order')
             ->get()
-            ->pluck('id')
+            ->pluck('id', 'order')
             ->toArray();
     }
 
