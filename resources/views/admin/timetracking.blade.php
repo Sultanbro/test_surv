@@ -322,10 +322,10 @@
                         <div class=" d-flex">
                             @foreach($courses as $course)
                             
-                            <div class="my-course mr-2" style="width:220px">
+                            <div class="my-course mr-3" style="width:220px;    flex: 0 0 220px;">
                                 <div>
                                     <a href="/my-courses?id={{$course['id']}}" class="title">
-                                        <img src="{{ $course['img'] }}" onerror="this.src = '/images/course.jpg';" style="max-width: 100%;" class="mb-3"> 
+                                        <img src="{{ $course['img'] }}" onerror="this.src = '/images/course.jpg';" style="max-width: 100%;border-radius:8px" class="mb-3"> 
                                     </a>
                                     <a href="/my-courses?id={{$course['id']}}" class="title">{{ $course['name'] }}</a>
                                     <!-- <div>

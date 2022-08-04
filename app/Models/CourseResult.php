@@ -241,9 +241,11 @@ class CourseResult extends Model
     /**
      * Get active course of user
      * 
+     * $id for compare is the active course 
+     * 
      * @return Course
      */
-    public static function activeCourse()
+    public static function activeCourse($id = 0)
     {
         // prepare
         $user = auth()->user();
@@ -294,7 +296,11 @@ class CourseResult extends Model
         // if exists active course
         if(count($diff) > 0) {
 
-            $course_id = $diff[0];
+            $course = Course::whereIn('id', $diff)
+                ->orderBy('order')    
+                ->first();
+
+            $course_id = $course ? $course->id : 0;
           
             $active_course = self::where('user_id', $user_id)
                 //->whereIn('status', [0,2])
@@ -348,6 +354,10 @@ class CourseResult extends Model
             }
         }
 
+        if($course) {
+            $course->is_active = $course->id == $id || $id == 0;
+        } 
+
         return $course;
     }
 
@@ -385,13 +395,13 @@ class CourseResult extends Model
             ->toArray();
 
         $courses = array_unique($courses);
-
+    
         $results = self::where('user_id', $user_id)
             ->whereIn('status', [1])
             ->get()
             ->pluck('course_id')
             ->toArray();
-        
+     
         $results = array_unique($results);
 
         $diff = array_values(array_diff($courses, $results));
@@ -414,6 +424,12 @@ class CourseResult extends Model
             ]);
             
             foreach ($active_courses as $key => $course) {
+
+                $text = trim($course->text);
+                if($text == '') $text = 'Нет описания';
+                $text = strlen($text) >= 100 ? mb_substr($text, 0, 100) . '...' : $text;
+                $course->text = $text;
+
                 if($course->img != null && $disk->exists($course->img)) {
                     $course->img = $disk->temporaryUrl(
                         $course->img, now()->addMinutes(360)

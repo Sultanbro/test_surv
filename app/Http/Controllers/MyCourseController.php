@@ -192,12 +192,12 @@ class MyCourseController extends Controller
     }   
 
     public function getMyCourse(Request $request) {
-     
+        
+        if($request->id == 0) $course = CourseResult::activeCourse();
         if($request->id) {
-            $course = $this->getCourseIfVisible($request->id);
-        } else {
-            $course = CourseResult::activeCourse();
-        }
+            $course = CourseResult::activeCourse($request->id);
+            //$course = $this->getCourseIfVisible($request->id);
+        } 
        
 
         $all_stages = 0;

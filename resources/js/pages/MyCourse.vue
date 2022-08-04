@@ -1,10 +1,16 @@
 <template>
 <div class="d-flex mycourse">
 
+  <div class="disable_course" v-if="disable_course">
+        <div class="d-flex aic flex-column">
+          <p>Чтобы Вам был доступен этот курс, Вам необходимо пройти все курсы <b>по порядку</b></p>
+          <button class="btn btn-primary" @click="getCourse(0)">Вернуться к текущему курсу</button>
+        </div>
+  </div>
+
   <!-- левый сайдбар -->
   <div class="lp">
    
-
     <!-- список курсов -->
     <div v-if="activeCourse == null">
          <div class="section d-flex aic jcsb my-2"
@@ -62,6 +68,7 @@
     <div class="content mt-3" :class="{'knowbase': activeCourseItem && activeCourseItem.item_model == 'App\\KnowBase'}">
       <div v-if="activeCourse" class="">
        
+    
         <!-- поле курса -->
 
             <div class="mmmm-block">
@@ -154,6 +161,7 @@ export default {
       congrats: false,
       all_stages: 0,
       completed_stages: 0,
+      disable_course: false,
     };
   },
 
@@ -316,6 +324,13 @@ export default {
         .then((response) => {
           this.items = response.data.items;
           this.activeCourse = response.data.course;
+
+
+          this.disable_course = false;
+          if(this.activeCourse != null && !this.activeCourse.is_active) {
+            this.disable_course = true;
+          }
+
           this.completed_stages = response.data.completed_stages;
           this.all_stages = response.data.all_stages;
 
