@@ -280,8 +280,14 @@ export default {
 
     setVideoPassed() {
 
-      if(this.activeVideo.item_model != null) return; 
+      // find element 
+      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+      if(index != -1) {
+        let el = this.findItem(this.ids[index]);
+        if(el.item_model != null) return; 
+      }
 
+      // pass
       let loader = this.$loading.show();
       axios
         .post("/my-courses/pass", {
@@ -308,12 +314,6 @@ export default {
       if (questions == undefined) this.playlist.videos[v_index].questions = [];
       this.modals.questions.show = true;
       this.activeVideo = this.playlist.videos[v_index];
-    },
-
-    saveOrder(evt) {
-      console.log(evt.oldIndex);
-      console.log(evt.newIndex);
-      console.log("save order");
     },
 
     removeVideo(v_index) {
@@ -410,7 +410,7 @@ export default {
     },
 
     saveActiveVideo() {
-      console.log("saveActiveVideo");
+
       axios
         .post("/playlists/save-active-video", {
           id: this.playlist.id,
@@ -437,7 +437,6 @@ export default {
 
     search(event) {
       this.modals.addVideo.searchVideos = this.all_videos.filter((el) => {
-        console.log(el.title.toLowerCase());
         return (
           el.title.toLowerCase().indexOf(event.target.value.toLowerCase()) > -1
         );
@@ -545,8 +544,6 @@ export default {
     },
 
     changePassGrade(grade) {
-      console.log('pass grade')
-
       this.activeVideo.pass_grade = grade;
       let len = this.activeVideo.questions.length;
 
@@ -619,8 +616,6 @@ export default {
     
     setActiveGroup() {
       
-      console.log('setActiveGroup')
-
       // close all
       this.playlist.groups.forEach(g=>{
         g.opened = false;

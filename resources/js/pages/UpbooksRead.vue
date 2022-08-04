@@ -265,7 +265,6 @@ export default {
     getSegments() {
       let loader = this.$loading.show();
 
-      console.log('TEST');
       axios
         .post("/admin/upbooks/segments/get", {
           id: this.book_id,
@@ -320,16 +319,16 @@ export default {
     },
 
     nextPage() {
-      console.log('here')
+
       
       if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
-                console.log('here 2')
+
       // check current test
       if(this.activeSegment != null && this.activeSegment.item_model == null) {
         this.$toast.info('Ответьте на вопросы, чтобы пройти дальше');
         return 0;   
       }
-            console.log('here 3')
+       
       this.map_index++;
 
       let next_page = this.page_map[this.map_index];
@@ -337,13 +336,13 @@ export default {
       this.page = next_page.page;
       // next page has test ?
       if(next_page.has_test) {
-            console.log('here 4')
+          
         let i = this.segments.findIndex(el => el.page == next_page.page);
         this.activeSegment = this.segments[i]
         this.segment_key++;
  
       } else {
-         console.log('here 5')
+     
         this.activeSegment = null;
       }
 
@@ -359,7 +358,7 @@ export default {
 
       this.page = prev_page.page;
 
-          console.log(this.page)
+    
       // prev_page has test ?
       if(prev_page.has_test) {
 
