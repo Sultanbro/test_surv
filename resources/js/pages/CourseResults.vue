@@ -27,7 +27,11 @@
                         'expanded-title': item.expanded
                     }">
                         <td v-for="(field, f) in users.fields" :key="f" :class="field.class" @click="expandUser(item)">
-                            <div>{{ item[field.key] }}</div>  
+                            <div v-if="field.key == 'progress'" class="d-flex jcc aic">
+                                <p class="mb-0 mr-1">{{ item[field.key] }}</p>
+                                <progress :value="item[field.key].slice(0, -1)" max="100"></progress>
+                            </div>
+                            <div v-else>{{ item[field.key] }}</div>  
                         </td>
                     </tr>
                     <template v-for="course in item.courses">
