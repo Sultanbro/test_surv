@@ -575,8 +575,8 @@ class AnalyticStat extends Model
                 $math_string = str_replace("{","",$math_string);
                 $math_string = str_replace("}","",$math_string);
             }
+            $math_string = str_replace("%","",$math_string);
             $res = eval($math_string);
-
           
         } catch(\DivisionByZeroError $e) {
           

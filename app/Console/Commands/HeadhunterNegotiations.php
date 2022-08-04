@@ -206,6 +206,28 @@ class HeadhunterNegotiations extends Command
                 $title = "inhouse " . $negotiation->name . ' : hh.ru';
             }
             
+            // bitrix_leads
+            $lead = Lead::where('lead_id', $lead_id['result'])->latest()->first();
+            if($lead) {
+                $lead->update([
+                    'name' => $negotiation->name,
+                    'phone' => $negotiation->phone,
+                    'status' => 'NEW',
+                    'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
+                    'hash' => $hash
+                ]);
+            } else {
+                $lead = Lead::create([
+                    'lead_id' => $lead_id['result'],
+                    'name' => $negotiation->name,
+                    'phone' => $negotiation->phone,
+                    'status' => 'NEW',
+                    'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
+                    'hash' => $hash
+                ]);
+            }
+
+            // lead_id
             $lead_id = $this->bitrix->createLead([
                 "TITLE" => $title, 
                 "NAME" => $negotiation->name,  
@@ -217,31 +239,15 @@ class HeadhunterNegotiations extends Command
                 'UF_CRM_1624530730434' => $ic->contract_link . $hash, // Ссылка для удаленных кандидатов
                 "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]]
             ]);
-    
             
-    
+
+            $lead->lead_id = $lead_id['result'];
+            $lead->save();
+
             $negotiation->lead_id = $lead_id['result'];
             $negotiation->save();
 
-            $lead = Lead::where('lead_id', $lead_id['result'])->latest()->first();
-            if($lead) {
-                $lead->update([
-                    'name' => $negotiation->name,
-                    'phone' => $negotiation->phone,
-                    'status' => 'NEW',
-                    'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
-                    'hash' => $hash
-                ]);
-            } else {
-                Lead::create([
-                    'lead_id' => $lead_id['result'],
-                    'name' => $negotiation->name,
-                    'phone' => $negotiation->phone,
-                    'status' => 'NEW',
-                    'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
-                    'hash' => $hash
-                ]);
-            }
+          
 
             return $lead_id['result']; 
         } catch(\Exception $e) {
