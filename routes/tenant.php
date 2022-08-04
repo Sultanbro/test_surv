@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\BookController;
+use \App\Http\Controllers\Admin\IndicatorController;
 
 use App\Http\Controllers\Video\VideoPlaylistController;
 use App\Http\Controllers\Video\VideoCategoryController;
@@ -502,9 +503,16 @@ Route::middleware([
     Route::get('/superselect/get-alt', [PermissionController::class, 'superselectAlt']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
 
-
-    
-   
+    /**
+     * Страницы для показателей
+     */
+    Route::group([
+        'prefix'     => 'indicators',
+        'middleware' => 'superuser'
+    ], function(){
+        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('indicator.all');
+        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('indicator.one');
+    });
     
     Route::group([
         'middleware' => ['api'],
