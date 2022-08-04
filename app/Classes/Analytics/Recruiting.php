@@ -1263,7 +1263,12 @@ public function planRequired($arr) {
                     // }
                 }
 
-                $worked = $assigned + $fired;
+                if($date->format('Y-m-d') == '2022-07-01') {
+                    $worked = $pgu->assigned + $pgu->fired;
+                } else {
+                    $worked = $assigned + $fired;
+                }
+          
                 
                 $staffy[$key]['m'.$i] = '0%';
                 if($worked > 0) {
