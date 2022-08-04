@@ -438,8 +438,9 @@ class CourseResult extends Model
     }
 
     public static function activeCourses() {
-   
-        $courses = self::getCourseIds(auth()->id());
+        
+        $user_id = auth()->id();
+        $courses = self::getCourseIds($user_id);
     
         $results = self::where('user_id', $user_id)
             ->whereIn('status', [1])
