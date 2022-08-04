@@ -248,7 +248,7 @@ export default {
       this.scrollToTop();
 
       if(this.activeVideo.item_model == null) {
-        this.setVideoPassed()
+        this.setVideoPassed() 
       }
 
       /// 
