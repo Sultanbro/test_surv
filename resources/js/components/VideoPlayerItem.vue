@@ -28,7 +28,7 @@ export default {
             playerOptions: {
                 // videojs options
                 muted: false,
-                autoplay: this.autoplay,
+                autoplay: false,
                 height:  360,
                 width: 100,
                 language: 'ru',
