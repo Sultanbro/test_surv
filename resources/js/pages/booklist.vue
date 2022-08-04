@@ -566,9 +566,11 @@ export default {
       if(index != -1) {
         console.log('here')
         let el = this.findItem(this.ids[index]);
-          this.setSegmentPassed();
           this.$emit('changeProgress');
-      
+          this.setSegmentPassed();
+        // if(el.item_model == null) {
+        //    console.log('here 2')
+        // } 
          console.log('here 3')
         el.item_model = {status: 1}; 
       } 
@@ -589,7 +591,7 @@ export default {
 
     scrollToTop() {
       document.getElementsByClassName('rp')[0].scrollTo(0,0);
-      if(this.course_item_id != 0) document.getElementsByClassName('rp')[1].scrollTo(0,0);
+      if(this.course_item_id != 0 &&) document.getElementsByClassName('rp')[1].scrollTo(0,0);
     },
 
     passed() {
@@ -607,7 +609,7 @@ export default {
           console.log(el)
         if(el.item_model == null) {
                console.log('item_model = null')
-          this.setSegmentPassed();
+         // this.setSegmentPassed();
         }
       } 
       
