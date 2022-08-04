@@ -399,7 +399,7 @@ class CourseResult extends Model
         $active_courses = [];
 
         if(count($diff) > 0) {
-            $active_courses = Course::whereIn('id', $diff)->get();
+            $active_courses = Course::whereIn('id', $diff)->orderBy('order', 'asc')->get();
 
             $disk = \Storage::build([
                 'driver' => 's3',
