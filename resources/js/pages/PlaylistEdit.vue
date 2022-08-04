@@ -287,7 +287,7 @@ export default {
       let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
       if(index != -1) {
         el = this.findItem(this.ids[index]);
-        if(el.item_model != null) return; 
+       // if(el.item_model != null) return; 
       }
 
       // pass
