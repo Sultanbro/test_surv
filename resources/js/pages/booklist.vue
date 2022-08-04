@@ -626,6 +626,9 @@ export default {
     },
 
     setSegmentPassed() {
+
+      if(this.activesbook.item_model != null) return; 
+
       axios
         .post("/my-courses/pass", {
           id: this.activesbook.id,

@@ -279,6 +279,9 @@ export default {
     },
 
     setVideoPassed() {
+
+      if(this.activeVideo.item_model != null) return; 
+
       let loader = this.$loading.show();
       axios
         .post("/my-courses/pass", {

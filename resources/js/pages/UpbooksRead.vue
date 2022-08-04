@@ -240,6 +240,9 @@ export default {
     },
 
     setSegmentPassed() {
+
+      if(this.activeSegment.item_model != null) return; 
+
       axios
         .post("/my-courses/pass", {
           id: this.activeSegment.id,
