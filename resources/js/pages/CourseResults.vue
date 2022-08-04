@@ -23,7 +23,9 @@
 
                 
                 <template v-for="(item, i) in users.items">
-                    <tr>
+                    <tr class="pointer" :class="{
+                        'expanded-title': item.expanded
+                    }">
                         <td v-for="(field, f) in users.fields" :key="f" :class="field.class" @click="expandUser(item)">
                             <div>{{ item[field.key] }}</div>  
                         </td>
