@@ -157,12 +157,16 @@ class CourseResult extends Model
             return strtotime($a->ended_at) < strtotime($b->ended_at);
         })->first();
 
+        // get user courses
         $course_ids = self::getCourseIds($user->id);
-      
-        foreach ($course_ids as $key => $course_id) {
-            $first = $user->course_results->where('course_id', $course_id)->first();
+        
+        // order 
+        foreach($user->course_results as $result) {
+            $result->order = $result->course != null ? $result->course->order : 999;
+        }
 
-            if(!$first) {
+        foreach ($course_ids as $key => $course_id) {
+            if(!$user->course_results->where('course_id', $course_id)->first()) {
                 $cr = self::create([
                     'user_id' => $user->id,
                     'course_id' => $course_id,
@@ -174,16 +178,16 @@ class CourseResult extends Model
                 ]);
                 $cr->order = $key;
                 $user->course_results->push($cr);
-            } else {
-                $first->order = $first->course != null ? $first->course->order : 999;
-            }
+            } 
         }
 
-    
         $user->course_results = $user->course_results->sortBy('order');
-        
+
+        // do 
         $status = $user->course_results->where('status', 2)->first() ? 2 : 1;
 
+
+        // do
         foreach($user->course_results as $result) {
 
             $course = self::$courses->where('id', $result->course_id)->first();
