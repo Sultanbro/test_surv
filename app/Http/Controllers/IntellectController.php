@@ -685,6 +685,9 @@ class IntellectController extends Controller {
                     
                     
                     /////////////////
+                    
+                    $link = $this->contract_link . $lead->hash;
+                    $this->send_msg($request->phone, 'Подписать соглашение: %0a' . $link);
 
                     return [
                         'link' => $this->contract_link . $lead->hash
@@ -692,6 +695,10 @@ class IntellectController extends Controller {
                 } 
     
                 if($request->link == 2) { // ссылка для выбора времени для офисных
+
+                    $link = $this->time_link . $lead->hash;
+                    $this->send_msg($request->phone, 'Выберите, пожалуйста, удобное для вас время стажировки: %0a' . $link);
+
                     return [
                         'link' => $this->time_link . $lead->hash
                     ];   
