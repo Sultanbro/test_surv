@@ -93,7 +93,7 @@ export default {
             } else {
                 this.fetchData('users');
             }
-        },
+        }, 
         currentGroup() {
             this.first = true;
             if(this.type == this.BY_GROUP) {
