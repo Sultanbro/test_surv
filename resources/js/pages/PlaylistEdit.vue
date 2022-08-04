@@ -55,7 +55,7 @@
       <!-- Player and test questions -->
       <div class="col-lg-6 pr-0">
         <div class="block  br" v-if="activeVideo != null">
-            <v-player :src="activeVideoLink" :key="video_changed" :autoplay="autoplay" />
+            <v-player :src="activeVideoLink" :key="video_changed" :autoplay="course_item_id != 0" />
            
             <div class="row mb-2 mt-3">
               <div class="col-md-12">
@@ -191,7 +191,6 @@ export default {
       refreshTest: 1, //key
       file_img: null,
       item_models: [],
-      autoplay: this.course_item_id != 0,
       playlist: {
         id: 1,
         category_id: 1,
