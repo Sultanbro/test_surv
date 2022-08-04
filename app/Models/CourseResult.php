@@ -132,7 +132,7 @@ class CourseResult extends Model
 
 
 
-        $arr['status'] = $uc['totals']['status'] == 2 ? 'Начал' : 'Завершил';
+        $arr['status'] = self::STATUSES[$uc['totals']['status']];  
 
 
         $arr['progress'] = $uc['totals']['progress'] . '%' ;
@@ -189,13 +189,20 @@ class CourseResult extends Model
 
         $user->course_results = $user->course_results->sortBy('order');
 
-        // do 
-        $status = $user->course_results->where('status', 2)->first() ? 2 : 1;
-
-
-        // do
+        // total status
+        if($user->course_results->whereIn('status', [1,2])->first()) {
+            if($user->course_results->where('status', 2)->first()) {
+                $status = self::ACTIVE;
+            } else {
+                $status = self::COMPLETED;
+            }
+        } else {
+            $status = self::INITIAL;
+        }
+     
+        // user courses
         foreach($user->course_results as $result) {
-
+            
             $course = self::$courses->where('id', $result->course_id)->first();
             if($course) {
                 $arr = [];
@@ -212,9 +219,9 @@ class CourseResult extends Model
                 // weekly progress
                 
                 $stages_completed = $result->countWeeklyProgress();
-                $weekly_progress = $stages_completed > 0 && $result->course != null && $result->course->stages > 0 ? round($stages_completed / $result->course->stages) : 0;
-                $arr['progress_on_week'] = $weekly_progress;
-                
+                $weekly_progress = $stages_completed > 0 && $result->course != null && $result->course->stages > 0 ? round($stages_completed / $result->course->stages * 100, 1) : 0;
+                $arr['progress_on_week'] = $weekly_progress . '%';
+               
                 $progress_weekly += $weekly_progress;
 
                 // points
@@ -254,16 +261,13 @@ class CourseResult extends Model
         if($this->weekly_progress == null) return 0;
         
         $date = Carbon::now()->addDay();
-
-        $weekly_progress = collect($this->weekly_progress);
-        
         for($i = 1; $i <= 7; $i++) {
             $day = $date->subDays(1)->format('Y-m-d');
-            if(in_array($day, $this->weekly_progress)) {
+            if(array_key_exists($day, $this->weekly_progress)) {
                 $stages += (int) $this->weekly_progress[$day];
             }
         } 
-
+       
         return $stages;
     }
 

@@ -156,14 +156,14 @@ class MyCourseController extends Controller
             // count progress
             $completed_stages = $request->completed_stages;
 
-            if($request->type == 1) $completed_stages++; // костыль
-            if($request->type == 2) $completed_stages++; // костыль
-            if($request->type == 3) $completed_stages++; // костыль
+            // if($request->type == 1) $completed_stages++; // костыль
+            // if($request->type == 2) $completed_stages++; // костыль
+            // if($request->type == 3) $completed_stages++; // костыль
 
             $count_progress  = $request->all_stages > 0 ? round($completed_stages / $request->all_stages * 100) : 0;
             $course_finished  = false;
             if($completed_stages >= $request->all_stages) $course_finished = true;
-            if($count_progress > 0) $count_progress = 100;
+            if($count_progress > 100) $count_progress = 100;
         
             // save course result for report
 
@@ -176,16 +176,32 @@ class MyCourseController extends Controller
             $course_item = CourseItem::where('id', $request->course_item_id)->first();
                 
          
-            $cr = $course_item ? CourseResult::where('course_id', $course_item->course_id)->where('user_id', $user_id)->first() : null;
+            $cr = $course_item ? CourseResult::where('course_id', $course_item->course_id)
+                ->where('user_id', $user_id)
+                ->first() : null;
       
             if($cr) {
                 $cr->points += $sum_bonus;
                 $cr->progress = $count_progress;
+
+                // week progress 
+                $wp = $cr->weekly_progress;
+                if($wp == null) $wp = [];
+
+                $sum = 1;
+                if(in_array(date('Y-m-d'), $wp)) {
+                    $sum += (int)$wp[date('Y-m-d')];
+                }
+
+                $wp[date('Y-m-d')] = $sum;
+                $cr->weekly_progress = $wp;
                 
+                // 
                 if($course_finished) {
                     $cr->status = 1;
                     $cr->ended_at = now();
                 }
+
                 $cr->save();
          
             }
