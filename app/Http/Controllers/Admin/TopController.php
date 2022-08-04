@@ -77,7 +77,7 @@ class TopController extends Controller
     
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
         
-        $this->groups = ProfileGroup::where('has_analytics', 1)->get()->pluck('id')->toArray();
+        $this->groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get()->pluck('id')->toArray();
 
 
         return response()->json([
@@ -147,7 +147,7 @@ class TopController extends Controller
             }
 
             
-            $this->groups = ProfileGroup::where('has_analytics', 1)->get()->pluck('id')->toArray();
+            $this->groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get()->pluck('id')->toArray();
             
 
 
@@ -252,7 +252,7 @@ class TopController extends Controller
                         $editable_row['Итого'] += $val;
                         $total_row[$date->format('d.m')] += $val;
                     }
-
+                    
                     $editable_row['group_id'] =  0 - $order;
                     $editable_row['w'. ($key)] = $sum;
 

@@ -29,8 +29,7 @@ Vue.use(Croppa);
 // Toast
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
-const options = {};
-Vue.use(Toast, options); 
+Vue.use(Toast, {timeout: 1500, pauseOnHover: false, rtl: true, position: "top-left",}); 
 
 // Require dependencies
 var VueCookie = require('vue-cookie');
