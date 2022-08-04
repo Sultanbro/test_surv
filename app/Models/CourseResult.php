@@ -253,12 +253,12 @@ class CourseResult extends Model
 
         $date = Carbon::now()->addDay();
 
-        $weekly_progress = collect($result->weekly_progress);
+        $weekly_progress = collect($this->weekly_progress);
         
         for($i = 1; $i <= 7; $i++) {
             $day = $date->subDays(1)->format('Y-m-d');
-            if(in_array($day, $result->weekly_progress)) {
-                $stages += (int) $result->weekly_progress[$day];
+            if(in_array($day, $this->weekly_progress)) {
+                $stages += (int) $this->weekly_progress[$day];
             }
         } 
 
