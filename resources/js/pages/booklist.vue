@@ -633,7 +633,7 @@ export default {
           course_item_id: this.course_item_id,
           questions: this.activesbook.questions,
           all_stages: this.all_stages,
-          completed_stages: this.completed_stages++,
+          completed_stages: this.completed_stages + 1,
         })
         .then((response) => {
             this.$emit('changeProgress');
