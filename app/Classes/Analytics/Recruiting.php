@@ -1262,12 +1262,12 @@ public function planRequired($arr) {
                     //     $fired += $us->full_time == 1 ? 1 : 0.5;
                     // }
                 }
-
-                if($date->format('Y-m-d') == '2022-07-01') {
-                    $worked = $pgu ? count($pgu->assigned) + count($pgu->fired) : 0;
-                } else {
-                    $worked = $assigned + $fired;
-                }
+                $worked = $assigned + $fired;
+                // if($date->format('Y-m-d') == '2022-07-01') {
+                //     $worked = $pgu ? count($pgu->assigned) + count($pgu->fired) : 0;
+                // } else {
+                 
+                // }
           
                 
                 $staffy[$key]['m'.$i] = '0%';
