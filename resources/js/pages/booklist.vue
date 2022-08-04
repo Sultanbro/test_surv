@@ -563,21 +563,19 @@ export default {
    
       // find element 
       let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
+
       if(index != -1) {
-        console.log('here')
         let el = this.findItem(this.ids[index]);
-          this.$emit('changeProgress');
-          this.setSegmentPassed();
-        // if(el.item_model == null) {
-        //    console.log('here 2')
-        // } 
-         console.log('here 3')
+  
+        this.setSegmentPassed();
+       
         el.item_model = {status: 1}; 
       } 
 
       
       // find next element 
       let index2 = this.ids.findIndex(el => el.id == this.activesbook.id); 
+      
       if(index2 != -1 && this.ids.length - 1 > index2) {
         let el = this.findItem(this.ids[index2 + 1]);
         this.showPage(el.id);
@@ -607,9 +605,10 @@ export default {
           console.log('found el') 
         let el = this.findItem(this.ids[index + 1]);
           console.log(el)
-        if(el.item_model == null) {
-               console.log('item_model = null')
-         // this.setSegmentPassed();
+          
+        // pass if its not course.  cos there not nextElement button
+        if(el.item_model == null && this.course_item_id == 0) {
+          this.setSegmentPassed();
         }
       } 
       
@@ -634,10 +633,10 @@ export default {
           course_item_id: this.course_item_id,
           questions: this.activesbook.questions,
           all_stages: this.all_stages,
-          completed_stages: this.completed_stages,
+          completed_stages: this.completed_stages++,
         })
         .then((response) => {
-     
+            this.$emit('changeProgress');
            this.activesbook.item_model = {status: 1}; 
         })
         .catch((error) => {

@@ -228,7 +228,6 @@ export default {
 
       if(this.activeSegment != null && this.activeSegment.item_model == null) {
         this.setSegmentPassed();
-        this.activeSegment.item_model = {status: 1}; 
       }
 
       if(this.page == this.pageCount && this.course_page) {
@@ -248,10 +247,11 @@ export default {
           course_item_id: this.course_item_id,
           questions: this.activeSegment.questions,
           all_stages: this.all_stages,
-          completed_stages: this.completed_stages,
+          completed_stages: this.completed_stages++,
         })
         .then((response) => {
           this.$emit('changeProgress');
+          this.activeSegment.item_model = {status: 1}; 
          // this.activeVideo.item_models.push(response.data.item_model);
         })
         .catch((error) => {

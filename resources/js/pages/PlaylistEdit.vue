@@ -221,9 +221,9 @@ export default {
   methods: { 
 
     passedTest() {
-      if(this.activeVideo.item_model == null) {
-        this.setVideoPassed()
-      }
+      // if(this.activeVideo.item_model == null) {
+      //   //this.setVideoPassed()
+      // }
 
       let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
       if(i == -1) this.item_models.push({ 
@@ -287,7 +287,7 @@ export default {
           course_item_id: this.course_item_id,
           questions: this.activeVideo.questions,
           all_stages: this.all_stages,
-          completed_stages: this.completed_stages,
+          completed_stages: this.completed_stages++,
         })
         .then((response) => {
           setTimeout(loader.hide(), 500);
