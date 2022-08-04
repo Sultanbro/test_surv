@@ -55,7 +55,7 @@
       <!-- Player and test questions -->
       <div class="col-lg-6 pr-0">
         <div class="block  br" v-if="activeVideo != null">
-            <v-player :src="activeVideoLink" :key="video_changed" />
+            <v-player :src="activeVideoLink" :key="video_changed" :autoplay="course_item_id != 0" />
            
             <div class="row mb-2 mt-3">
               <div class="col-md-12">
@@ -281,9 +281,12 @@ export default {
     setVideoPassed() {
 
       // find element 
+
+      let el = null;
+
       let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
       if(index != -1) {
-        let el = this.findItem(this.ids[index]);
+        el = this.findItem(this.ids[index]);
         if(el.item_model != null) return; 
       }
 
@@ -300,7 +303,7 @@ export default {
         })
         .then((response) => {
           setTimeout(loader.hide(), 500);
-          this.activeVideo.item_model = response.data.item_model;
+          if(el) el.item_model = response.data.item_model;
           this.$emit('changeProgress');
         })
         .catch((error) => {

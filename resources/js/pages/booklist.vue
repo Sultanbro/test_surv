@@ -561,16 +561,9 @@ export default {
 
     nextElement() {
    
-      // find element 
-      let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
-
-      if(index != -1) {
-        let el = this.findItem(this.ids[index]);
   
-        this.setSegmentPassed();
-       
-        el.item_model = {status: 1}; 
-      } 
+      this.setSegmentPassed();
+      
 
       
       // find next element 
@@ -624,10 +617,11 @@ export default {
 
     setSegmentPassed() {
 
+      let el = null;
       // find element 
       let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
       if(index != -1) {
-        let el = this.findItem(this.ids[index]);
+        el = this.findItem(this.ids[index]);
         if(el.item_model != null) return; 
       } 
 
@@ -643,7 +637,7 @@ export default {
         })
         .then((response) => {
             this.$emit('changeProgress');
-           this.activesbook.item_model = {status: 1}; 
+            if(el != null) el.item_model = {status: 1}; 
         })
         .catch((error) => {
           alert(error);
