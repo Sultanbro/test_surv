@@ -181,6 +181,8 @@ class MyCourseController extends Controller
                 ->first() : null;
       
             if($cr) {
+                if($cr->status == CourseResult::INITIAL) $cr->status = CourseResult::ACTIVE;
+
                 $cr->points += $sum_bonus;
                 $cr->progress = $count_progress;
 
@@ -189,16 +191,16 @@ class MyCourseController extends Controller
                 if($wp == null) $wp = [];
 
                 $sum = 1;
-                if(in_array(date('Y-m-d'), $wp)) {
+                if(array_key_exists(date('Y-m-d'), $wp)) {
                     $sum += (int)$wp[date('Y-m-d')];
                 }
-
                 $wp[date('Y-m-d')] = $sum;
                 $cr->weekly_progress = $wp;
+        
                 
                 // 
                 if($course_finished) {
-                    $cr->status = 1;
+                    $cr->status = CourseResult::COMPLETED;
                     $cr->ended_at = now();
                 }
 
