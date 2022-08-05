@@ -36,7 +36,7 @@ class IndicatorController extends Controller
      * @param $id
      * @return JsonResponse
      */
-    public function showIndicator($id)
+    public function showIndicator($id): JsonResponse
     {
         $indicator = Activity::withTrashed()->findOrFail($id);
 
