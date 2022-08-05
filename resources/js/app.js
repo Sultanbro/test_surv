@@ -210,8 +210,9 @@ Vue.component('check-list', require('./pages/checkList.vue').default); // чек
 
 
 // KPI
-Vue.component('kpi-pages', require('./pages/kpi/KpiPages.vue').default); // kpi
 
+Vue.component('kpi-pages', require('./pages/kpi/KpiPages.vue').default); // kpi
+Vue.component('kpi', require('./pages/kpi/Kpi.vue').default); // kpi
 
 
  

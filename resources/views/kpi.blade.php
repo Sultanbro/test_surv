@@ -2,6 +2,6 @@
 @section('title', 'KPI')
 @section('content')
 
-<kpi-pages :page="{{ $page }}">
+<kpi-pages page="{{ $page }}">
 
 @endsection

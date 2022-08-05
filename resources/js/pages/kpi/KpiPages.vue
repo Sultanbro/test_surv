@@ -1,6 +1,26 @@
 <template>
 <div>
-    test
+    
+    <b-tabs type="card" :defaultActiveKey="active">
+        <b-tab title="KPI" :key="1" card>
+                
+        </b-tab>
+        <b-tab title="Показатели" :key="2" card>
+    Показатели
+        </b-tab>
+        <b-tab title="Статистика" :key="3" card>
+        Статистика
+        </b-tab>
+        <b-tab title="Бонусы" :key="4" card>
+        Бонусы
+        </b-tab>
+        <b-tab title="Квартальная премия" :key="5" card>
+            Квартальная премия
+        </b-tab>
+    </b-tabs>
+
+
+
 </div>
 </template>
 
@@ -15,7 +35,7 @@ export default {
     },
     data() {
         return {
-            test: 1
+            active: 1,
         }
     },
 
