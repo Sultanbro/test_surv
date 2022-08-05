@@ -374,6 +374,12 @@ Route::middleware([
     Route::post('/timetracking/apply-person', [TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [TimetrackingController::class, 'getTotalsOfReports']);
 
+    Route::group([
+        'prefix' => 'group-user',
+    ], function(){
+        Route::post('/save', [TimetrackingController::class, 'addUsers']);
+        Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
+    });
 
     Route::get('/timetracking/top', [TopController::class, 'index']);
     Route::post('/timetracking/top', [TopController::class, 'fetch']);
@@ -495,16 +501,9 @@ Route::middleware([
     Route::post('/timetracking/settings/auth/check/user/responsibility', [CheckListController::class, 'responsibility']); ///   Добавить ответственного лица
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
 
-
-
-
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);
     Route::get('/superselect/get-alt', [PermissionController::class, 'superselectAlt']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
-
-
-    
-   
     
     Route::group([
         'middleware' => ['api'],
