@@ -1,17 +1,17 @@
 <template>
 <div>
-    
+        <div class="d-flex mb-2 mt-2 jcfe">
+            <button class="btn btn-primary rounded" @click="addKpi">Добавить</button>
+        </div>
       <table class="table table-hover">
         <thead>
         <tr>
             <th scope="col">Сотрудники / Отдел</th>
-            <th scope="col">KPI
-                <i class="fa fa-info-circle" style="cursor: pointer"
-                    v-b-popover.hover.right.html="'Сколько раз будет уведомление Чек лист автоматически будет всплывать в кабинете сотрудника'"
-                    title="Работают">
-                </i>
-            </th>
-            <th scope="col">Постановщик</th>
+           
+            <th scope="col">Постановщик <i class="fa fa-info-circle" style="cursor: pointer"
+                    v-b-popover.hover.right.html="'Сasdasdas'"
+                    title="asdads">
+                </i></th>
             <th scope="col" >Статистика</th>
             <th></th>
         </tr>
@@ -20,21 +20,17 @@
 
             <tr class="p-0" v-for="(item, index) in items" :key="`employee-${index}`">
                 <td>
-                asdasd
-                </td>
-                <td  >
-                asdasd
+                    {{ item.name }}
                 </td>
                 <td>
-                    asdadsd
+                    Али Акпанов
                 </td>
                 <td class=" position-relative" >
-
-                    asdasd
+                    <i class="btn btn-primary rounded fa fa-edit" @click="showStat"></i>   
                 </td>
                  <td class=" position-relative" >
-
-                    asdasd
+                    <i class="btn btn-primary rounded fa fa-edit" @click="editKpi"></i>
+                    <i class="btn btn-primary rounded fa fa-trash" @click="deleteKpi"></i>
                 </td>
             </tr>
 
@@ -47,6 +43,8 @@
 </template>
 
 <script>
+import { ToastPlugin } from 'bootstrap-vue';
+
 export default {
     name: "KPI", 
     props: {
@@ -56,11 +54,9 @@ export default {
         return {
             active: 1,
             items: [
-                {},
-                {},
-                {},
-                {},
-                {},
+                {name: 'IT отдел'},
+                {name: 'Али Акпанов'},
+                {name: 'Руслан Ташметов'},
             ]
         }
     },
@@ -83,6 +79,22 @@ export default {
                 alert(error)
             });
         },
+
+        addKpi() {
+            this.$toast.info('Добавить KPI');
+        },
+
+        editKpi() {
+            this.$toast.info('Редактировать KPI');
+        }, 
+
+        deleteKpi() {
+            this.$toast.info('Удалить KPI');
+        },
+
+        showStat() {
+            this.$toast.info('Показать статистику');
+        }
  
     } 
 }
