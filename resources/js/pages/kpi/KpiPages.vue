@@ -3,7 +3,7 @@
     
     <b-tabs type="card" :defaultActiveKey="active">
         <b-tab title="KPI" :key="1" card>
-                
+                <kpi></kpi>
         </b-tab>
         <b-tab title="Показатели" :key="2" card>
     Показатели
