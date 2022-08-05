@@ -1510,6 +1510,8 @@ public function planRequired($arr) {
             $item['working'] = \DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
+                ->whereYear('applied', $date->year)
+                ->whereMonth('applied', $date->month)
                 ->whereIn('users.id',$users)
                 //->whereIn('users.id', $leads->pluck('user_id')->toArray())
                 ->get()
