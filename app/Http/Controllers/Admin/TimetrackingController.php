@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Position;
 use App\Salary;
 use App\BPLink;
+use App\Service\GroupUserService;
 use App\TimetrackingHistory;
 use App\UserAbsenceCause;
 use App\UserFine;
@@ -23,6 +24,7 @@ use App\Kpi;
 use App\UserNotification;
 use App\Models\Books\BookGroup;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +54,7 @@ class TimetrackingController extends Controller
     {
         View::share('title', 'Табель сотрудников');
         View::share('menu', 'timetracking');
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     public function settings()
@@ -2443,5 +2445,27 @@ class TimetrackingController extends Controller
         $bonus = Bonus::where('id', $request->id)->first();
         if($bonus) $bonus->delete();
     }
-    
+
+    /**
+     * Получем массив user-ов и добавляем в таблицу group_user
+     */
+    public function addUsers(Request $request, GroupUserService $groupUserService)
+    {
+        $response = $groupUserService->save($request);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Удаляет массив юзеров.
+     * @param Request $request
+     * @param GroupUserService $groupUserService
+     * @return JsonResponse
+     */
+    public function dropUsers(Request $request, GroupUserService $groupUserService): JsonResponse
+    {
+        $response = $groupUserService->drop($request->users, $request->group_id);
+
+        return response()->json($response);
+    }
 }

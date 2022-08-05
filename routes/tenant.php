@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\IndicatorController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -374,6 +375,12 @@ Route::middleware([
     Route::post('/timetracking/apply-person', [TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [TimetrackingController::class, 'getTotalsOfReports']);
 
+    Route::group([
+        'prefix' => 'group-user',
+    ], function(){
+        Route::post('/save', [TimetrackingController::class, 'addUsers']);
+        Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
+    });
 
     Route::get('/timetracking/top', [TopController::class, 'index']);
     Route::post('/timetracking/top', [TopController::class, 'fetch']);
@@ -502,9 +509,16 @@ Route::middleware([
     Route::get('/superselect/get-alt', [PermissionController::class, 'superselectAlt']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
 
-
-    
-   
+    /**
+     * Страницы для показателей
+     */
+    Route::group([
+        'prefix'     => 'indicators',
+        'middleware' => 'superuser'
+    ], function(){
+        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('indicator.all');
+        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('indicator.one');
+    });
     
     Route::group([
         'middleware' => ['api'],
