@@ -561,21 +561,14 @@ export default {
 
     nextElement() {
    
-      // find element 
-      let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
-      if(index != -1) {
-        console.log('here')
-        let el = this.findItem(this.ids[index]);
-          this.setSegmentPassed();
-          this.$emit('changeProgress');
+  
+      this.setSegmentPassed();
       
-         console.log('here 3')
-        el.item_model = {status: 1}; 
-      } 
 
       
       // find next element 
       let index2 = this.ids.findIndex(el => el.id == this.activesbook.id); 
+      
       if(index2 != -1 && this.ids.length - 1 > index2) {
         let el = this.findItem(this.ids[index2 + 1]);
         this.showPage(el.id);
@@ -593,25 +586,24 @@ export default {
     },
 
     passed() {
-      console.log('passed test')
 
       this.passedTest = true;
 
       // find element 
 
       let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
-         console.log(index)
+   
       if(index != -1 && this.ids.length - 1 > index) {
-          console.log('found el') 
+
         let el = this.findItem(this.ids[index + 1]);
-          console.log(el)
-        if(el.item_model == null) {
-               console.log('item_model = null')
+
+        // pass if its not course.  cos there not nextElement button
+        if(el.item_model == null && this.course_item_id == 0) {
           this.setSegmentPassed();
         }
       } 
       
-      console.log('test')
+  
       //test 
       let i = this.item_models.findIndex(im => im.item_id == this.activesbook.id);
       if(i == -1) this.item_models.push({
@@ -620,11 +612,20 @@ export default {
       });
       
       this.connectItemModels(this.tree)
-      console.log('end test')
      
     },
 
     setSegmentPassed() {
+
+      let el = null;
+      // find element 
+      let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
+      if(index != -1) {
+        el = this.findItem(this.ids[index]);
+       // if(el.item_model != null) return; 
+      } 
+
+      // pass 
       axios
         .post("/my-courses/pass", {
           id: this.activesbook.id,
@@ -632,11 +633,12 @@ export default {
           course_item_id: this.course_item_id,
           questions: this.activesbook.questions,
           all_stages: this.all_stages,
-          completed_stages: this.completed_stages,
+          completed_stages: this.completed_stages + 1,
         })
         .then((response) => {
-     
-           this.activesbook.item_model = {status: 1}; 
+            this.$emit('changeProgress');
+            if(el != null) el.item_model = {status: 1}; 
+            this.activesbook.item_model = response.data.item_model;
         })
         .catch((error) => {
           alert(error);
@@ -838,7 +840,7 @@ export default {
     },
 
     deepSearchId(obj, targetId) {
-      console.log(obj.id + ' === ' + targetId)
+      
       if (obj.id == targetId) {
         return obj
       }
@@ -866,7 +868,6 @@ export default {
       arr.forEach((it, index) => {
         if (it.id === id) {
           it.title = title;
-          console.log('IT title')
         }
         this.renameNode(it.children, id, title)
       })
@@ -935,7 +936,6 @@ export default {
       let item = null;
       
       this.breadcrumbs.forEach(bc => {
-        console.log(bc.id + '--- ' + bc.parent_id)
 
         let s_index = this.tree.findIndex(t => t.id == bc.id);
 
@@ -993,8 +993,6 @@ export default {
       axios
         .post("/upload/images/", formData)
         .then((response) => {
-          console.log("Загруэенно =>", response.data.location);
-            
           success(response.data.location);
           this.loader = false;
         })
@@ -1016,7 +1014,6 @@ export default {
       axios
         .post("/upload/images/", formData, config)
         .then((response) => {
-          console.log("Загруэенно =>", response.data.location);
 
           this.addimage(response.data.location);
 

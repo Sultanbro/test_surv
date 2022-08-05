@@ -14,16 +14,21 @@
 
 <script>
 export default {
-    props: [
-        'src',
-    ],
+    props: {
+        src: {
+            default: ''
+        },
+        autoplay: {
+            default: true
+        }
+    },
 
     data(){
         return {
             playerOptions: {
                 // videojs options
                 muted: false,
-                autoplay: true,
+                autoplay: false,
                 height:  360,
                 width: 100,
                 language: 'ru',

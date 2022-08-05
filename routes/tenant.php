@@ -501,9 +501,23 @@ Route::middleware([
     Route::post('/timetracking/settings/auth/check/user/responsibility', [CheckListController::class, 'responsibility']); ///   Добавить ответственного лица
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
 
+
+
+
     Route::get('/superselect/get', [PermissionController::class, 'superselect']);
     Route::get('/superselect/get-alt', [PermissionController::class, 'superselectAlt']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
+
+    /**
+     * Страницы для показателей
+     */
+    Route::group([
+        'prefix'     => 'indicators',
+        'middleware' => 'superuser'
+    ], function(){
+        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('indicator.all');
+        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('indicator.one');
+    });
     
     Route::group([
         'middleware' => ['api'],

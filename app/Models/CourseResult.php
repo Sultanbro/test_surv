@@ -21,6 +21,10 @@ class CourseResult extends Model
 
     public $timestamps = true;
 
+    protected $casts = [
+        'weekly_progress' => 'array',
+    ];
+
     protected $fillable = [
         'user_id',
         'course_id',
@@ -29,6 +33,7 @@ class CourseResult extends Model
         'points', 
         'started_at', 
         'ended_at', 
+        'weekly_progress'
     ];
 
     // status
@@ -127,7 +132,7 @@ class CourseResult extends Model
 
 
 
-        $arr['status'] = $uc['totals']['status'] == 2 ? 'Начал' : 'Завершил';
+        $arr['status'] = self::STATUSES[$uc['totals']['status']];  
 
 
         $arr['progress'] = $uc['totals']['progress'] . '%' ;
@@ -147,6 +152,7 @@ class CourseResult extends Model
         $points = 0;
         $status = 2;
         $progress = 0;
+        $progress_weekly = 0;
         $progress_count = 0;
 
         $first_date = $user->course_results->sort(function ($a, $b) {
@@ -183,13 +189,20 @@ class CourseResult extends Model
 
         $user->course_results = $user->course_results->sortBy('order');
 
-        // do 
-        $status = $user->course_results->where('status', 2)->first() ? 2 : 1;
-
-
-        // do
+        // total status
+        if($user->course_results->whereIn('status', [1,2])->first()) {
+            if($user->course_results->where('status', 2)->first()) {
+                $status = self::ACTIVE;
+            } else {
+                $status = self::COMPLETED;
+            }
+        } else {
+            $status = self::INITIAL;
+        }
+     
+        // user courses
         foreach($user->course_results as $result) {
-
+            
             $course = self::$courses->where('id', $result->course_id)->first();
             if($course) {
                 $arr = [];
@@ -198,15 +211,24 @@ class CourseResult extends Model
                 $arr['status'] = self::STATUSES[$result->status];
                 $arr['user_id'] = $user->id;
 
+                // total progress
                 $progress += $result->progress;
                 $progress_count++;
                 $arr['progress'] = $result->progress > 100 ? '100%' : $result->progress . '%';
-                $arr['progress_on_week'] = $result->progress > 100 ? '100%' : $result->progress . '%';
+
+                // weekly progress
                 
+                $stages_completed = $result->countWeeklyProgress();
+                $weekly_progress = $stages_completed > 0 && $result->course != null && $result->course->stages > 0 ? round($stages_completed / $result->course->stages * 100, 1) : 0;
+                $arr['progress_on_week'] = $weekly_progress . '%';
+               
+                $progress_weekly += $weekly_progress;
+
+                // points
                 $points += $result->points;
                 $arr['points'] = $result->points;
 
-                
+                // dates
                 $arr['started_at'] = $result->started_at ? Carbon::parse($result->started_at)->format('d.m.Y') : '';
                 $arr['ended_at'] =  $result->ended_at ? Carbon::parse($result->ended_at)->format('d.m.Y') : '';
                 
@@ -216,18 +238,37 @@ class CourseResult extends Model
 
         $total_progress = $progress_count > 0 ? round($progress / $progress_count) : 0;
         if($total_progress > 100) $total_progress = 100;
+        
+        $total_progress_weekly = $progress_count > 0 ? round($progress_weekly / $progress_count) : 0;
+        if($total_progress_weekly > 100) $total_progress_weekly = 100;
 
         return [
             'courses' => $arrx,
             'totals' => [
                 'points' => $points,
                 'progress' => $total_progress,
-                'progress_on_week' => $total_progress,
+                'progress_on_week' => $total_progress_weekly,
                 'status' => $status,
                 'started_at' => $first_date && $first_date->started_at ? Carbon::parse($first_date->started_at)->format('d.m.Y') : '',
                 'ended_at' => $last_date && $last_date->ended_at ? Carbon::parse($last_date->ended_at)->format('d.m.Y') : '',
             ]
         ];
+    }
+
+    public function countWeeklyProgress() {
+        $stages = 0;
+
+        if($this->weekly_progress == null) return 0;
+        
+        $date = Carbon::now()->addDay();
+        for($i = 1; $i <= 7; $i++) {
+            $day = $date->subDays(1)->format('Y-m-d');
+            if(array_key_exists($day, $this->weekly_progress)) {
+                $stages += (int) $this->weekly_progress[$day];
+            }
+        } 
+       
+        return $stages;
     }
 
     public static function getGroups($date = null)

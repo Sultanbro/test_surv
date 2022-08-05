@@ -158,6 +158,8 @@ class CourseController extends Controller
 
         // elements of course
         $elements = [];
+        $stages = 0; 
+
         foreach($request->course['elements'] as $index => $item) {
             if($item == null) continue;
 
@@ -187,8 +189,10 @@ class CourseController extends Controller
             if($ci) {
                 $ci->update($arr);
             } else {
-                CourseItem::create($arr);
+                $ci = CourseItem::create($arr);
             }
+        
+            $stages += $ci->countItems();
         }
 
         $elements = collect($elements);
@@ -229,7 +233,10 @@ class CourseController extends Controller
             }
         }   
 
-        
+
+        // save course stages
+        $course->stages = $stages;
+        $course->save();
 
     }
 

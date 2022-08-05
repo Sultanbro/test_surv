@@ -258,12 +258,11 @@ export default {
 
     selectCourseItem(i) {
       
-      console.log('test');
-
       if(this.canSelect(this.items[i].status)) {
-        console.log('can select');
+  
         this.congrats = false;
         this.activeCourseItem = this.items[i];
+        
       }
         
     },

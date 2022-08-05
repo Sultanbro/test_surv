@@ -166,10 +166,9 @@
     <div class="d-flex jcsb aifs">
       <div>
         <button
-          v-if="['kb','video'].includes(type) && changed"
+          v-if="['kb','video'].includes(type)"
           class="btn btn-success mr-2" 
           @click.stop="saveTest"
-          
           >
             Сохранить
         </button>

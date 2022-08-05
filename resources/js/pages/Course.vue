@@ -170,7 +170,6 @@ export default {
           this.course = response.data.course;
           this.image = this.course.img;
           this.croppa_key++;
-          console.log(this.image)
         })
         .catch((error) => {
           loader.hide()
@@ -215,7 +214,6 @@ export default {
     
 
     addTag(newTag) {
-      console.log(newTag)
       const tag = {
         email: newTag,
         ID: newTag,

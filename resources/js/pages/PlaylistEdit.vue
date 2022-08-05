@@ -55,7 +55,7 @@
       <!-- Player and test questions -->
       <div class="col-lg-6 pr-0">
         <div class="block  br" v-if="activeVideo != null">
-            <v-player :src="activeVideoLink" :key="video_changed" />
+            <v-player :src="activeVideoLink" :key="video_changed" :autoplay="course_item_id != 0" />
            
             <div class="row mb-2 mt-3">
               <div class="col-md-12">
@@ -221,9 +221,9 @@ export default {
   methods: { 
 
     passedTest() {
-      if(this.activeVideo.item_model == null) {
-        this.setVideoPassed()
-      }
+      // if(this.activeVideo.item_model == null) {
+      //   //this.setVideoPassed()
+      // }
 
       let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
       if(i == -1) this.item_models.push({ 
@@ -240,7 +240,7 @@ export default {
 
     scrollToTop() {
       document.getElementsByClassName('content')[0].scrollTo(0,0);
-      if(this.course_item_id != 0) document.getElementsByClassName('content')[1].scrollTo(0,0);
+
     },
 
     nextElement() {
@@ -248,7 +248,7 @@ export default {
       this.scrollToTop();
 
       if(this.activeVideo.item_model == null) {
-        this.setVideoPassed()
+        this.setVideoPassed() 
       }
 
       /// 
@@ -279,6 +279,18 @@ export default {
     },
 
     setVideoPassed() {
+
+      // find element 
+
+      let el = null;
+
+      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+      if(index != -1) {
+        el = this.findItem(this.ids[index]);
+       // if(el.item_model != null) return; 
+      }
+
+      // pass
       let loader = this.$loading.show();
       axios
         .post("/my-courses/pass", {
@@ -287,10 +299,11 @@ export default {
           course_item_id: this.course_item_id,
           questions: this.activeVideo.questions,
           all_stages: this.all_stages,
-          completed_stages: this.completed_stages,
+          completed_stages: this.completed_stages + 1,
         })
         .then((response) => {
           setTimeout(loader.hide(), 500);
+          if(el) el.item_model = response.data.item_model;
           this.activeVideo.item_model = response.data.item_model;
           this.$emit('changeProgress');
         })
@@ -305,12 +318,6 @@ export default {
       if (questions == undefined) this.playlist.videos[v_index].questions = [];
       this.modals.questions.show = true;
       this.activeVideo = this.playlist.videos[v_index];
-    },
-
-    saveOrder(evt) {
-      console.log(evt.oldIndex);
-      console.log(evt.newIndex);
-      console.log("save order");
     },
 
     removeVideo(v_index) {
@@ -407,7 +414,7 @@ export default {
     },
 
     saveActiveVideo() {
-      console.log("saveActiveVideo");
+
       axios
         .post("/playlists/save-active-video", {
           id: this.playlist.id,
@@ -434,7 +441,6 @@ export default {
 
     search(event) {
       this.modals.addVideo.searchVideos = this.all_videos.filter((el) => {
-        console.log(el.title.toLowerCase());
         return (
           el.title.toLowerCase().indexOf(event.target.value.toLowerCase()) > -1
         );
@@ -542,8 +548,6 @@ export default {
     },
 
     changePassGrade(grade) {
-      console.log('pass grade')
-
       this.activeVideo.pass_grade = grade;
       let len = this.activeVideo.questions.length;
 
@@ -616,8 +620,6 @@ export default {
     
     setActiveGroup() {
       
-      console.log('setActiveGroup')
-
       // close all
       this.playlist.groups.forEach(g=>{
         g.opened = false;

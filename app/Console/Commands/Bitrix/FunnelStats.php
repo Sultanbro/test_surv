@@ -86,6 +86,7 @@ class FunnelStats extends Command
             
         } else {
             $dates = [
+                Carbon::now()->format('Y-m-d'),
                 Carbon::now()->subDays(7)->format('Y-m-d'),
                 Carbon::now()->subDays(14)->format('Y-m-d'),
                 Carbon::now()->subDays(21)->format('Y-m-d'),
