@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\IndicatorController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -32,7 +33,6 @@ use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\BookController;
-use \App\Http\Controllers\Admin\IndicatorController;
 
 use App\Http\Controllers\Video\VideoPlaylistController;
 use App\Http\Controllers\Video\VideoCategoryController;
@@ -375,6 +375,12 @@ Route::middleware([
     Route::post('/timetracking/apply-person', [TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [TimetrackingController::class, 'getTotalsOfReports']);
 
+    Route::group([
+        'prefix' => 'group-user',
+    ], function(){
+        Route::post('/save', [TimetrackingController::class, 'addUsers']);
+        Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
+    });
 
     Route::get('/timetracking/top', [TopController::class, 'index']);
     Route::post('/timetracking/top', [TopController::class, 'fetch']);
