@@ -92,6 +92,12 @@
                   title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
               />
               <p class="mb-0">{{ v.text }}</p>
+
+              <i
+                class="fa fa-check-circle right"
+                v-if="scores && v.right == true"
+              ></i>
+
             </label>
           
          
