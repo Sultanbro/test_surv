@@ -2019,7 +2019,7 @@ class GroupAnalyticsController extends Controller
             $item['working'] = \DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
-                ->whereIn('ud.user_id', $leads->pluck('user_id')->toArray())
+                ->whereIn('ud.user_id', $leads->distinct('user_id')->pluck('user_id')->toArray())
                 ->get()
                 ->count();
                 
