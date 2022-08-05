@@ -83,7 +83,7 @@
               />
             </label>
             
-            <label class="d-flex w-full" v-if="mode == 'read'">
+            <label class="d-flex w-full" v-if="mode == 'read'" :class="{'right':scores && v.right == true}">
               <input 
                   type="checkbox"
                   v-model="v.checked" 
@@ -94,7 +94,7 @@
               <p class="mb-0">{{ v.text }}</p>
 
               <i
-                class="fa fa-check-circle right"
+                class="fa fa-check-circle right ml-2 mt-1"
                 v-if="scores && v.right == true"
               ></i>
 
