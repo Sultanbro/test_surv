@@ -2016,12 +2016,12 @@ class GroupAnalyticsController extends Controller
 
             $item['sent'] = $leads->count();
 
-            $item['working'] = \DB::table('users')
+            $item['working'] = 1;/*\DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
                 ->whereIn('ud.user_id', $leads->distinct('user_id')->pluck('user_id')->toArray())
                 ->get()
-                ->count();
+                ->count();*/
                 
             $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);

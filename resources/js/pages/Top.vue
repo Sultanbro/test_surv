@@ -278,6 +278,7 @@ export default {
     this.proceeds = this.data.proceeds;
     this.prognoz_groups = this.data.prognoz_groups
     this.setMonth()
+    this.fetchData()
   },
   methods: {
     setMonth() {
