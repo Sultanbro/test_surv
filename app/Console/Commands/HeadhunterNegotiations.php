@@ -206,6 +206,22 @@ class HeadhunterNegotiations extends Command
                 $title = "inhouse " . $negotiation->name . ' : hh.ru';
             }
             
+            
+
+            // lead_id
+            $lead_id = $this->bitrix->createLead([
+                "TITLE" => $title, 
+                "NAME" => $negotiation->name,  
+                'UF_CRM_1498210379' => HeadHunter::SEGMENT, // сегмент
+                "UF_CRM_1635442762" => $countries[Phone::getCountry($negotiation->phone)], //страна
+                "ASSIGNED_BY_ID" => 23900, // Валерия Сидоренко
+                "UF_CRM_1635487718862" => 'https://wa.me/+' . Phone::normalize($negotiation->phone), // Ватсап линк 
+                'UF_CRM_1624530685082' => $ic->time_link . $hash, // Ссылка для офисных кандидатов
+                'UF_CRM_1624530730434' => $ic->contract_link . $hash, // Ссылка для удаленных кандидатов
+                "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]]
+            ]);
+            
+
             // bitrix_leads
             $lead = Lead::where('lead_id', $lead_id['result'])->latest()->first();
             if($lead) {
@@ -226,23 +242,7 @@ class HeadhunterNegotiations extends Command
                     'hash' => $hash
                 ]);
             }
-
-            // lead_id
-            $lead_id = $this->bitrix->createLead([
-                "TITLE" => $title, 
-                "NAME" => $negotiation->name,  
-                'UF_CRM_1498210379' => HeadHunter::SEGMENT, // сегмент
-                "UF_CRM_1635442762" => $countries[Phone::getCountry($negotiation->phone)], //страна
-                "ASSIGNED_BY_ID" => 23900, // Валерия Сидоренко
-                "UF_CRM_1635487718862" => 'https://wa.me/+' . Phone::normalize($negotiation->phone), // Ватсап линк 
-                'UF_CRM_1624530685082' => $ic->time_link . $hash, // Ссылка для офисных кандидатов
-                'UF_CRM_1624530730434' => $ic->contract_link . $hash, // Ссылка для удаленных кандидатов
-                "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]]
-            ]);
             
-
-            $lead->lead_id = $lead_id['result'];
-            $lead->save();
 
             $negotiation->lead_id = $lead_id['result'];
             $negotiation->save();
