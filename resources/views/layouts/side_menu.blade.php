@@ -205,6 +205,13 @@
         </li>
         @endif
 
+        <li class="menu-item">
+            <a href="/kpi" class="side-btn @if($menu == 'kpi') active @endif">
+                <i class="far fa-tv"></i>
+                <span>KPI</span>
+            </a>
+        </li>
+
         
     </ul>
     @if(auth()->user()->can('settings_view') ||  

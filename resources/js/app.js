@@ -209,6 +209,11 @@ Vue.component('bookgroups', require('./pages/bookgroups.vue').default); // об�
 Vue.component('check-list', require('./pages/checkList.vue').default); // чек лист
 
 
+// KPI
+Vue.component('kpi-pages', require('./pages/kpi/KpiPages.vue').default); // kpi
+
+
+
  
 Vue.directive("click-outside", {
   bind(el, binding, vnode) {

@@ -462,6 +462,8 @@ Route::middleware([
     Route::post('/timetracking/analytics/add-remote-inhouse', [AnalyticsController::class, 'addRemoteInhouse']);
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
+    Route::get('/kpi',[KpiController::class,'index']);
+    
 
     Route::get('/books/{id?}', [BpartnersController::class, 'books']);
     Route::any('/pages/update/', [BpartnersController::class, 'pagesupdate']);

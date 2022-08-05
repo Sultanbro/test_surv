@@ -31,6 +31,16 @@ class KpiController extends Controller
         $this->middleware('auth');
     }
     
+    public function index(Request $request)
+    {
+        View::share('title', 'KPI');
+        View::share('menu', 'timetracking');
+
+        return view('kpi')->with([
+            'page' => 'kpi'
+        ]);
+    }
+
     public function saveKPI(Request $request)
     {
         $user = User::bitrixUser();
