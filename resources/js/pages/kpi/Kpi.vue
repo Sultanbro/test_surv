@@ -49,7 +49,7 @@
                 </tr>
 
                 <template v-if="item.elements.length > 0">
-                    <tr class="collapse" :key="i">
+                    <tr class="collapse" :class="{'active': item.expanded}" :key="i">
                         <td :colspan="item.show_fields.length + 2">
                             <div class="table__wrapper">
                                 <table class="table table-inner">
@@ -90,71 +90,6 @@
         </tbody>
      </table>
       
-
-
-
-    <!-- table -->
-    <div class="j-table">
-
-        <div class="jt-heading">
-            <div class="jt-row">
-
-                <div class="jt-head">
-                    <i class="fa fa-cogs" @click="adjustFields"></i>
-                </div>
-
-                <div class="jt-head" v-for="(field, i) in show_fields" :key="i">
-                    {{ field.name }}
-                </div>
-
-                <div class="jt-head">Действия</div>
-            </div>
-        </div>
-
-        <div class="jt-body">
-            
-            <template v-for="(item, i) in items">
-                <div class="jt-row" :key="i">
-                    <div class="jt-cell" @click="item.expanded = !item.expanded">{{ i + 1 }}</div>
-                    <div class="jt-cell" v-for="(field, f) in show_fields" :key="f">
-
-                        <div v-if="field.key == 'stats'">
-                            <i class="fa fa-chart-bar btn btn-primary rounded" @click="showKpiStats(i)"></i>
-                        </div>
-
-                        <div v-else>
-                            {{ item[field.key] }}
-                        </div>
-
-                    </div>
-                    <div class="jt-cell">
-                        <i class="fa fa-edit mr-1 btn btn-primary rounded" @click="editKpi"></i>
-                        <i class="fa fa-delete btn btn-primary rounded" @click="deleteKpi"></i>
-                    </div>
-                </div>
-
-                <template v-if="item.elements.length > 0">
-                
-                    <div class="jt-row j-hidden" :class="{'j-hidden': !item.expanded}" v-for="(element, j) in item.elements" :key="i + '-' + j">
-                        <div class="jt-cell">{{ j + 1 }}</div>
-                        <div class="jt-cell">asdasd</div>
-                        <div class="jt-cell">dsfsdr</div>
-                        <div class="jt-cell">rtyr</div>
-                        <div class="jt-cell">ghjg</div>
-                        <div class="jt-cell">;lk;k</div>
-                        <div class="jt-cell">bnm</div>
-                        <div class="jt-cell">haopi</div>
-                    </div>
-                </template>
-               
-
-
-            </template>
-
-         
-
-        </div>  
-    </div>
 
 
 </div>
