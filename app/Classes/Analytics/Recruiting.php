@@ -1274,6 +1274,20 @@ public function planRequired($arr) {
                 if($worked > 0) {
                     $staffy[$key]['m'.$i] = round(( $fired / $worked ) * 100, 1) . '%';
                 } 
+
+                if($date->format('Y-m-d') == '2022-07-01') {
+                    if($group->id == 23) $staffy[$key]['m'.$i] = '26.3%';
+                    if($group->id == 26) $staffy[$key]['m'.$i] = '33.3%';
+                    if($group->id == 31) $staffy[$key]['m'.$i] = '7.1%'; 
+                    if($group->id == 34) $staffy[$key]['m'.$i] = '0%';
+                    if($group->id == 42) $staffy[$key]['m'.$i] = '18.7%';
+                    if($group->id == 48) $staffy[$key]['m'.$i] = '33.3%';
+                    if($group->id == 63) $staffy[$key]['m'.$i] = '42.8%';
+                    if($group->id == 70) $staffy[$key]['m'.$i] = '76.9%';
+                    if($group->id == 71) $staffy[$key]['m'.$i] = '33.3%';
+                    if($group->id == 79) $staffy[$key]['m'.$i] = '25.0%';
+                    if($group->id == 88) $staffy[$key]['m'.$i] = '0%';
+                }
                 
             }
 
