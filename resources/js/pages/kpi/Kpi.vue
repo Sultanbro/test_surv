@@ -12,15 +12,15 @@
         <thead>
             <tr class="table-heading">
                 
-                <td>
+                <th>
                     <i class="fa fa-cogs" @click="adjustFields"></i>
-                </td>
+                </th>
 
-                <td v-for="(field, i) in show_fields" :key="i">
+                <th v-for="(field, i) in show_fields" :key="i" :class="field.class">
                     {{ field.name }}
-                </td>
+                </th>
 
-                <td>Действия</td>
+                <th>Действия</th>
 
             </tr>
 
@@ -29,22 +29,22 @@
         <tbody>
 
             <template v-for="(item, i) in items">
-                <tr class="jt-row" :key="i">
-                    <td class="jt-cell" @click="item.expanded = !item.expanded">{{ i + 1 }}</td>
-                    <td class="jt-cell" v-for="(field, f) in show_fields" :key="f">
+                <tr :key="i">
+                    <td  @click="item.expanded = !item.expanded">{{ i + 1 }}</td>
+                    <td  v-for="(field, f) in show_fields" :key="f">
 
-                        <div v-if="field.key == 'stats'">
-                            <i class="fa fa-chart-bar btn btn-primary rounded" @click="showKpiStats(i)"></i>
+                        <div v-if="field.key == 'stats'" :class="field.class">
+                            <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
                         </div>
 
-                        <div v-else>
+                        <div v-else :class="field.class">
                             {{ item[field.key] }}
                         </div>
 
                     </td>
-                    <td class="jt-cell">
-                        <i class="fa fa-edit mr-1 btn btn-primary rounded" @click="editKpi"></i>
-                        <i class="fa fa-delete btn btn-primary rounded" @click="deleteKpi"></i>
+                    <td >
+                        <i class="fa fa-edit mr-1 btn btn-primary p-1" @click="editKpi"></i>
+                        <i class="fa fa-trash btn btn-primary p-1" @click="deleteKpi"></i>
                     </td>
                 </tr>
 
@@ -68,14 +68,14 @@
                                     </thead>
                                     <tbody>
                                         <tr class="jt-row j-hidden" :class="{'j-hidden': !item.expanded}" v-for="(element, j) in item.elements" :key="i + '-' + j">
-                                            <td class="jt-cell">{{ j + 1 }}</td>
-                                            <td class="jt-cell">asdasd</td>
-                                            <td class="jt-cell">dsfsdr</td>
-                                            <td class="jt-cell">rtyr</td>
-                                            <td class="jt-cell">ghjg</td>
-                                            <td class="jt-cell">;lk;k</td>
-                                            <td class="jt-cell">bnm</td>
-                                            <td class="jt-cell">haopi</td>
+                                            <td >{{ j + 1 }}</td>
+                                            <td >asdasd</td>
+                                            <td >dsfsdr</td>
+                                            <td >rtyr</td>
+                                            <td >ghjg</td>
+                                            <td >;lk;k</td>
+                                            <td >bnm</td>
+                                            <td >haopi</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -135,7 +135,7 @@ export default {
         },
         
         adjustFields() {
-
+            this.$toast.info('Настроить поля');
         },
 
         addStatusToItems() {
@@ -149,70 +149,80 @@ export default {
                 name: 'Кому',
                 key: 'target',
                 visible: true,
-                type: 'superselect'
+                type: 'superselect',
+                class: 'text-left'
             });
 
             fields.push({
                 name: 'Выполнение KPI от 80-99%',
                 key: 'completed_80',
                 visible: true,
-                type: 'number'
+                type: 'number',
+                class: 'text-center'
             });
 
             fields.push({
                 name: 'Выполнение KPI от 100%',
                 key: 'completed_100',
                 visible: true,
-                type: 'number'
+                type: 'number',
+                class: 'text-center'
             });
 
             fields.push({
                 name: 'Нижний порог отсечения премии, %',
                 key: 'lower_limit',
                 visible: true,
-                type: 'number'
+                type: 'number',
+                class: 'text-center'
             });
 
             fields.push({
                 name: 'Верхний порог отсечения премии, %',
                 key: 'upper_limit',
                 visible: true,
-                type: 'number'
+                type: 'number',
+                class: 'text-center'
             });
             
             fields.push({
                 name: 'Статистика',
                 key: 'stats',
                 visible: true,
-                type: 'number'
+                type: 'number',
+                class: 'text-center'
             });
 
             fields.push({
                 name: 'Дата создания',
                 key: 'created_at',
                 visible: true,
-                type: 'date'
+                type: 'date',
+                class: 'text-center'
             });
 
             fields.push({
                 name: 'Дата изменения',
                 key: 'updated_at',
                 visible: true,
-                type: 'date'
+                type: 'date',
+                class: 'text-center'
             });
 
             fields.push({
                 name: 'Постановщик',
                 key: 'created',
                 visible: true,
-                type: 'text'
+                type: 'text',
+                class: 'text-center'
             });
 
             fields.push({
                 name: 'Изменил',
                 key: 'updated',
                 visible: true,
-                type: 'text'
+                type: 'text',
+                class: 'text-center'
             });
 
             this.show_fields = fields;
