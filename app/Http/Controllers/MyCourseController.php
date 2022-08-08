@@ -182,6 +182,7 @@ class MyCourseController extends Controller
       
             if($cr) {
                 if($cr->status == CourseResult::INITIAL) $cr->status = CourseResult::ACTIVE;
+                if($cr->started_at == null) $cr->started_at = now();
 
                 $cr->points += $sum_bonus;
                 $cr->progress = $count_progress;

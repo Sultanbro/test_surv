@@ -7,4 +7,13 @@
 @import "pages/course-results";
 @import "pages/mycourse";
 @import "pages/permissions";
-@import "pages/kpi-pages";
+
+/*
+Kpi pages
+*/
+@import "pages/kpi/kpi-pages";
+@import "pages/kpi/kpi";
+@import "pages/kpi/indicators";
+@import "pages/kpi/stats";
+@import "pages/kpi/bonuses";
+@import "pages/kpi/quartal-premium";

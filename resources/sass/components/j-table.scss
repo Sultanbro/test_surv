@@ -1,0 +1,90 @@
+.j-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #ddd;
+  table-layout: fixed;
+  font-size: 14px;
+
+
+  tr th {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 10px;
+  }
+  
+  tr td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 3px 10px;
+    border: 0;
+
+    &:hover {
+      background: aliceblue;
+    }
+
+    span {
+   
+    }
+  }
+
+  .table-heading {
+    background: #3498db;
+    color: #fff;
+  }
+  
+  .collapsable {
+
+    td {
+      padding: 0;
+    }
+
+    span {
+      cursor: pointer;
+      background: #2cc16a;
+      transition: background .5s;
+    }
+
+    .table__wrapper {
+      max-height: 0px;
+      overflow: hidden;
+      transition: max-height .5s;
+    }
+
+  }
+  
+
+  .active {
+
+    span {
+      background: #fff;
+    }
+
+    .table__wrapper {
+      max-height: 1000px;
+      transition: max-height .5s;
+    }
+  }
+
+  .plus-item {
+    &:hover {
+      background: #0eeb88;
+      cursor: pointer;
+    }
+  }
+
+  .table-inner {
+    width: 100%;
+    margin-bottom: 0;
+    background: aliceblue;
+    tr td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+  }
+
+
+
+}
+
+
+

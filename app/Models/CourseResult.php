@@ -220,6 +220,7 @@ class CourseResult extends Model
                 
                 $stages_completed = $result->countWeeklyProgress();
                 $weekly_progress = $stages_completed > 0 && $result->course != null && $result->course->stages > 0 ? round($stages_completed / $result->course->stages * 100, 1) : 0;
+                if($weekly_progress > 100) $weekly_progress = 100;
                 $arr['progress_on_week'] = $weekly_progress . '%';
                
                 $progress_weekly += $weekly_progress;

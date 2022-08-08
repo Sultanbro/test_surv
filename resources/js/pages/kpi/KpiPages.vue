@@ -1,32 +1,30 @@
 <template>
-<div>
+<div class="kpi-pages">
     
     <b-tabs type="card" :defaultActiveKey="active">
         <b-tab title="KPI" :key="1" card>
-                <kpi></kpi>
+            <kpi></kpi>
         </b-tab>
         <b-tab title="Показатели" :key="2" card>
-    Показатели
+            <indicators></indicators>
         </b-tab>
         <b-tab title="Статистика" :key="3" card>
-        Статистика
+            <stats></stats>
         </b-tab>
         <b-tab title="Бонусы" :key="4" card>
-        Бонусы
+            <bonuses></bonuses>
         </b-tab>
         <b-tab title="Квартальная премия" :key="5" card>
-            Квартальная премия
+            <quartal-premium></quartal-premium>
         </b-tab>
     </b-tabs>
-
-
 
 </div>
 </template>
 
 <script>
 export default {
-    name: "KPI", 
+    name: "KPIPages", 
     props: {
         page: {
             type: String,
