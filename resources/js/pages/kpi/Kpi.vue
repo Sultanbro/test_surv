@@ -8,7 +8,7 @@
 
     <!-- table -->
 
-    <table class="table">
+    <table class="j-table">
         <thead>
             <tr class="table-heading">
                 
