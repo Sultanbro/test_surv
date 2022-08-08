@@ -31,9 +31,11 @@
             <template v-for="(item, i) in items">
                 <tr :key="i">
                     <td  @click="item.expanded = !item.expanded" class="pointer">
-                        <span class="mr-2">{{ i + 1 }}</span>
-                        <i class="fa fa-minus" v-if="item.expanded"></i>
-                        <i class="fa fa-plus" v-else></i>
+                        <div class="d-flex">
+                            <span class="mr-2">{{ i + 1 }}</span>
+                            <i class="fa fa-minus" v-if="item.expanded"></i>
+                            <i class="fa fa-plus" v-else></i>
+                        </div>
                     </td>
                     <td  v-for="(field, f) in show_fields" :key="f">
 
