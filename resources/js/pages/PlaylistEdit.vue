@@ -6,7 +6,7 @@
     <div class="d-flex mb-3"  v-if="!is_course">
       <div class="d-flex jcsb mb-1 left f-70">
         <div class="s w-full">
-          <div class="d-flex">
+          <div class="d-flex flex-column">
             <input
               v-if="mode == 'edit'"
               type="text"
@@ -15,7 +15,7 @@
               name="title"
             />
             <p v-else class="p-title mb-0"> {{ playlist.title }} </p>
-            <p v-if="noVideoInPlaylist">В этом плейлисте нет видео</p>
+            <p v-if="noVideoInPlaylist" class="mt-2">В этом плейлисте нет видео</p>
           </div>
 
           <!-- playlist description -->
