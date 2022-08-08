@@ -61,6 +61,7 @@
                                 <table class="table table-inner">
                                     <thead>
                                         <tr>
+                                            <th></th>
                                             <th>Наименование активности</th>
                                             <th>Вид плана</th>
                                             <th>Показатели</th>
@@ -73,6 +74,7 @@
                                     </thead>
                                     <tbody>
                                         <tr class="jt-row j-hidden" :class="{'j-hidden': !item.expanded}" v-for="(element, j) in item.elements" :key="i + '-' + j">
+                                            <td></td>
                                             <td >{{ element.name }}</td>
                                             <td >{{ element.plan_type }}</td>
                                             <td >{{ element.activity }}</td>
