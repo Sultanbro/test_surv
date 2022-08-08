@@ -156,7 +156,7 @@ class CheckListController extends Controller
     public function editSaveCheck(Request $request){
 
         Task::destroy($request['deleted_tasks']);
-        Checkedtask::whereIn('task_id',$request['deleted_tasks'])->delete();
+        Checkedtask::whereIn('task_id',$request['deleted_tasks'])->where('created_date',Carbon::now()->toDateString())->delete();
 
         $editedChecklist = Checklist::find($request['check_id']);
         $users = $editedChecklist->users;
