@@ -213,6 +213,10 @@ Vue.component('check-list', require('./pages/checkList.vue').default); // чек
 
 Vue.component('kpi-pages', require('./pages/kpi/KpiPages.vue').default); // kpi
 Vue.component('kpi', require('./pages/kpi/Kpi.vue').default); // kpi
+Vue.component('indicators', require('./pages/kpi/Indicators.vue').default); // kpi
+Vue.component('stats', require('./pages/kpi/Stats.vue').default); // kpi
+Vue.component('bonuses', require('./pages/kpi/Bonuses.vue').default); // kpi
+Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').default); // kpi
 
 
  
