@@ -15,7 +15,7 @@
               name="title"
             />
             <p v-else class="p-title mb-0"> {{ playlist.title }} </p>
-            <p v-if="noVideoInPlaylist" class="mt-2">В этом плейлисте нет видео</p>
+            <p v-if="noVideoInPlaylist && mode == 'read'" class="mt-2">В этом плейлисте нет видео</p>
           </div>
 
           <!-- playlist description -->
