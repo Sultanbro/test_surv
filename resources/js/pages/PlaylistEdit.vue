@@ -15,6 +15,7 @@
               name="title"
             />
             <p v-else class="p-title mb-0"> {{ playlist.title }} </p>
+            <p v-if="noVideoInPlaylist">В этом плейлисте нет видео</p>
           </div>
 
           <!-- playlist description -->
@@ -191,6 +192,7 @@ export default {
       refreshTest: 1, //key
       file_img: null,
       item_models: [],
+      noVideoInPlaylist: false,
       playlist: {
         id: 1,
         category_id: 1,
@@ -468,9 +470,9 @@ export default {
             this.setActiveGroup();
           if(autoplay) {
                this.video_changed++;
-             
-            
           }
+
+           this.noVideoInPlaylist = false;
         })
         .catch((error) => {
           loader.hide()
@@ -593,6 +595,8 @@ export default {
          
       } else if(this.ids.length > 0) {
         this.activeVideo = this.findItem(this.ids[0]);
+      } else {
+        this.noVideoInPlaylist = true;
       }
       
       this.showVideo(this.activeVideo);
