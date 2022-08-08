@@ -48,7 +48,7 @@
                     </td>
                 </tr>
 
-                <template v-if="item.elements.length > 0">
+                <template v-if="item.elements !== undefined && item.elements.length > 0">
                     <tr class="collapse" :class="{'active': item.expanded}" :key="i">
                         <td :colspan="item.show_fields.length + 2">
                             <div class="table__wrapper">
@@ -106,8 +106,8 @@ export default {
             active: 1,
             show_fields: [],
             items: [
-                {name: 'IT отдел', elements: [], expanded: false},
-                {name: 'Али Акпанов', elements: [], expanded: false},
+                {name: 'IT отдел', elements: [{}, {}], expanded: false},
+                {name: 'Али Акпанов', elements: [{}, {}], expanded: false},
                 {name: 'Руслан Ташметов', elements: [], expanded: false},
             ]
         }
