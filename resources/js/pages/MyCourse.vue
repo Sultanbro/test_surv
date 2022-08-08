@@ -110,17 +110,18 @@
 
                   <div v-if="activeCourseItem.item_model == 'App\\Models\\Books\\Book'">
                     <page-upbooks-read
-                      :book_id="activeCourseItem.item_id"
-                      mode="read"
                       ref="upbook"
+                      :book_id="activeCourseItem.item_id"
+                      :mode="'read'"
                       :course_page="true"
                       :course_item_id="activeCourseItem.id"
                       :enable_url_manipulation="false"
-                      @changeProgress="completed_stages++"
                       :active_page="activeCourseItem.last_item"
                       :all_stages="all_stages"
                       :completed_stages="completed_stages"
-                       @nextElement="nextElement"
+                      :key="activeCourseKey"
+                      @nextElement="nextElement"
+                      @changeProgress="completed_stages++"
                     />
                   </div>
  
@@ -132,11 +133,12 @@
                           :is_course="true"
                           :myvideo="activeCourseItem.last_item"
                           :enable_url_manipulation="false"
-                          @changeProgress="completed_stages++"
-                          mode="read" 
+                          :mode="'read'"
                           :all_stages="all_stages"
                           :completed_stages="completed_stages"
+                          :key="activeCourseKey"
                           @nextElement="nextElement"
+                          @changeProgress="completed_stages++"
                       />
                   </div>
 
@@ -149,14 +151,15 @@
                         :course_item_id="activeCourseItem.id"
                         :parent_id="activeCourseItem.item_id"
                         :show_page_id="activeCourseItem.last_item" 
-                        mode="read"
+                        :mode="'read'"
                         :course_page="true"
                         :enable_url_manipulation="false"
-                        @changeProgress="completed_stages++"
                         :auth_user_id="0" 
                         :all_stages="all_stages"
                         :completed_stages="completed_stages"
-                         @nextElement="nextElement"
+                        :key="activeCourseKey"
+                        @changeProgress="completed_stages++"
+                        @nextElement="nextElement"
                       /> 
 
                   </div>
@@ -195,6 +198,7 @@ export default {
       all_stages: 0,
       completed_stages: 0,
       disable_course: false,
+      activeCourseKey: 1
     };
   },
 
@@ -356,13 +360,13 @@ export default {
         .then((response) => {
           this.items = response.data.items;
           this.activeCourse = response.data.course;
-
+          this.activeCourseKey++;
 
           this.disable_course = false;
           if(this.activeCourse != null && !this.activeCourse.is_active) {
             this.disable_course = true;
           }
-
+          
           this.completed_stages = response.data.completed_stages;
           this.all_stages = response.data.all_stages;
 
