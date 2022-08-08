@@ -48,10 +48,16 @@ class CourseController extends Controller
                 'visibility' => 'public'
             ]);
 
-            if($course->img != '' && $course->img != null) {
-                if($disk->exists($course->img)) {
-                    $disk->delete($course->img);
+            
+
+            try {
+                if($course->img != '' && $course->img != null) {
+                    if($disk->exists($course->img)) {
+                        $disk->delete($course->img);
+                    }
                 }
+            } catch (\Throwable $e) {
+                // League \ Flysystem \ UnableToCheckDirectoryExistence
             }
             
             $links = $this->uploadFile('/courses', $request->file('file')); 
@@ -259,12 +265,18 @@ class CourseController extends Controller
             'visibility' => 'public'
         ]);
 
-        if($course->img != '' && $course->img != null) {
-            if($disk->exists($course->img)) {
-                $course->img = $disk->temporaryUrl(
-                    $course->img, now()->addMinutes(360)
-                );
+        
+
+        try {
+            if($course->img != '' && $course->img != null) {
+                if($disk->exists($course->img)) {
+                    $course->img = $disk->temporaryUrl(
+                        $course->img, now()->addMinutes(360)
+                    );
+                }
             }
+        } catch (\Throwable $e) {
+            // League \ Flysystem \ UnableToCheckDirectoryExistence
         }
 
         // targets

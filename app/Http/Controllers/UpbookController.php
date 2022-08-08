@@ -269,13 +269,25 @@ class UpbookController extends Controller
                 'visibility' => 'public'
             ]);
 
-            if($book->link && $book->link != '' && $disk->exists($book->link)) {
-                $disk->delete($book->link);
+            
+
+            try {
+                if($book->link && $book->link != '' && $disk->exists($book->link)) {
+                    $disk->delete($book->link);
+                }
+            } catch (\Throwable $e) {
+                // League \ Flysystem \ UnableToCheckDirectoryExistence
             }
 
-            if($book->img && $book->img != '' && $disk->exists($book->img)) {
-                $disk->delete($book->img);
+            try {
+                if($book->img && $book->img != '' && $disk->exists($book->img)) {
+                    $disk->delete($book->img);
+                }
+            } catch (\Throwable $e) {
+                // League \ Flysystem \ UnableToCheckDirectoryExistence
             }
+
+            
            
             $book->delete();
         }
@@ -313,9 +325,15 @@ class UpbookController extends Controller
                         'visibility' => 'public'
                     ]);
                     
-                    if($disk->exists($b->img)) {
-                        $disk->delete($b->img);
+                   
+                    try {
+                        if($disk->exists($b->img)) {
+                            $disk->delete($b->img);
+                        }
+                    } catch (\Throwable $e) {
+                        // League \ Flysystem \ UnableToCheckDirectoryExistence
                     }
+        
                 }
 
                 $links = $this->uploadFile('/bookcovers', $request->file('file')); 

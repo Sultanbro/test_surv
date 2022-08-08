@@ -440,10 +440,15 @@ class CourseResult extends Model
                     'visibility' => 'public'
                 ]);
 
-                if($disk->exists($course->img)) {
-                    $course->img = $disk->temporaryUrl(
-                        $course->img, now()->addMinutes(360)
-                    );
+
+                try {
+                    if($course->img != null && $disk->exists($course->img)) {
+                        $course->img = $disk->temporaryUrl(
+                            $course->img, now()->addMinutes(360)
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    // League \ Flysystem \ UnableToCheckDirectoryExistence
                 }
             }
         }
@@ -542,11 +547,18 @@ class CourseResult extends Model
                 $text = strlen($text) >= 100 ? mb_substr($text, 0, 100) . '...' : $text;
                 $course->text = $text;
 
-                if($course->img != null && $disk->exists($course->img)) {
-                    $course->img = $disk->temporaryUrl(
-                        $course->img, now()->addMinutes(360)
-                    );
+
+                try {
+                    if($course->img != null && $disk->exists($course->img)) {
+                        $course->img = $disk->temporaryUrl(
+                            $course->img, now()->addMinutes(360)
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    // League \ Flysystem \ UnableToCheckDirectoryExistence
                 }
+
+                
             }
         }
 
