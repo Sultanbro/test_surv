@@ -106,9 +106,34 @@ export default {
             active: 1,
             show_fields: [],
             items: [
-                {name: 'IT отдел', elements: [{}, {}], expanded: false},
-                {name: 'Али Акпанов', elements: [{}, {}], expanded: false},
-                {name: 'Руслан Ташметов', elements: [], expanded: false},
+                {
+                    target: 'IT отдел',
+                    completed_80: 10000,
+                    completed_100: 20000,
+                    lower_limit: 80,
+                    upper_limit: 100,
+                    stats: 1,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    created: 'Ходжа Абулхаир',
+                    updated: 'Али Акпанов',
+                    elements: [{}, {}], 
+                    expanded: false
+                },
+                {
+                    target: 'Али Акпанов',
+                    completed_80: 10000,
+                    completed_100: 30000,
+                    lower_limit: 80,
+                    upper_limit: 100,
+                    stats: 2,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    created: 'Ходжа Абулхаир',
+                    updated: 'Али Акпанов',
+                    elements: [{}, {}], 
+                    expanded: false
+                },
             ]
         }
     }, 
@@ -229,6 +254,21 @@ export default {
         },
 
         addKpi() {
+            this.items.unshift({
+                target: 'Test target',
+                completed_80: 10000,
+                completed_100: 30000,
+                lower_limit: 80,
+                upper_limit: 100,
+                stats: 3,
+                created_at: new Date(),
+                updated_at: new Date(),
+                created: 'Али Акпанов',
+                updated: 'Али Акпанов',
+                elements: [{}, {}], 
+                expanded: false
+            });
+
             this.$toast.info('Добавить KPI');
         },
 
