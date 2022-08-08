@@ -21,7 +21,7 @@
     &:hover {
       background: aliceblue;
     }
-    
+
     span {
    
     }
@@ -65,10 +65,17 @@
     }
   }
 
+  .add-activity {
+    &:hover {
+      background: #0eeb88;
+      cursor: pointer;
+    }
+  }
 
   .table-inner {
     width: 100%;
-
+    margin-bottom: 0;
+    background: aliceblue;
     tr td {
       padding: 10px;
       border: 1px solid #ddd;

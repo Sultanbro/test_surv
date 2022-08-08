@@ -87,6 +87,15 @@
                                                 <i class="fa fa-trash btn btn-primary p-1" @click="deleteKpi"></i>
                                             </td>
                                         </tr>
+
+                                        <tr>
+                                            <td></td>
+                                            <td colspan="8" class="add-activity" @click="addActivity(i)">
+                                                <div>
+                                                    <i class="fa fa-plus mr-2"></i> <span>Добавить активность</span>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -309,6 +318,10 @@ export default {
 
         showStat() {
             this.$toast.info('Показать статистику');
+        },
+
+        addActivity(i) {
+            this.items[i].elements.push({name:"Показатель"});
         }
  
     } 
