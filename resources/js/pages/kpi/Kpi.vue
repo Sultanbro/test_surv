@@ -4,6 +4,95 @@
         <button class="btn btn-primary rounded" @click="addKpi">Добавить</button>
     </div>
     
+
+
+    <!-- table -->
+
+    <table class="table">
+        <thead>
+            <tr class="table-heading">
+                
+                <td>
+                    <i class="fa fa-cogs" @click="adjustFields"></i>
+                </td>
+
+                <td v-for="(field, i) in show_fields" :key="i">
+                    {{ field.name }}
+                </td>
+
+                <td>Действия</td>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <template v-for="(item, i) in items">
+                <tr class="jt-row" :key="i">
+                    <td class="jt-cell" @click="item.expanded = !item.expanded">{{ i + 1 }}</td>
+                    <td class="jt-cell" v-for="(field, f) in show_fields" :key="f">
+
+                        <div v-if="field.key == 'stats'">
+                            <i class="fa fa-chart-bar btn btn-primary rounded" @click="showKpiStats(i)"></i>
+                        </div>
+
+                        <div v-else>
+                            {{ item[field.key] }}
+                        </div>
+
+                    </td>
+                    <td class="jt-cell">
+                        <i class="fa fa-edit mr-1 btn btn-primary rounded" @click="editKpi"></i>
+                        <i class="fa fa-delete btn btn-primary rounded" @click="deleteKpi"></i>
+                    </td>
+                </tr>
+
+                <template v-if="item.elements.length > 0">
+                    <tr class="collapse" :key="i">
+                        <td :colspan="item.show_fields.length + 2">
+                            <div class="table__wrapper">
+                                <table class="table table-inner">
+                                    <thead>
+                                        <tr>
+                                            <td>12312</td>
+                                            <td>123123</td>
+                                            <td>123123</td>
+                                            <td>123123</td>
+                                            <td>123123</td>
+                                            <td>123123</td>
+                                            <td>123123</td>
+                                            <td>123123</td>
+                                            <td>123123</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="jt-row j-hidden" :class="{'j-hidden': !item.expanded}" v-for="(element, j) in item.elements" :key="i + '-' + j">
+                                            <td class="jt-cell">{{ j + 1 }}</td>
+                                            <td class="jt-cell">asdasd</td>
+                                            <td class="jt-cell">dsfsdr</td>
+                                            <td class="jt-cell">rtyr</td>
+                                            <td class="jt-cell">ghjg</td>
+                                            <td class="jt-cell">;lk;k</td>
+                                            <td class="jt-cell">bnm</td>
+                                            <td class="jt-cell">haopi</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>                
+                </template>
+              
+            </template>
+
+          
+        </tbody>
+     </table>
+      
+
+
+
     <!-- table -->
     <div class="j-table">
 
