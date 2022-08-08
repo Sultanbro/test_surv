@@ -993,4 +993,12 @@ class User extends Authenticatable implements Authorizable
     {
         return $this->weekdays[(int)date('w')] == '1';
     }
+
+    public function created_checklists(){
+        return $this->hasMany(\App\Models\Checklist::class,'creator_id','id');
+    }
+
+    public function checklists(){
+        return $this->belongsToMany(\App\Models\Checklist::class);
+    }
 }

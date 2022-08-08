@@ -295,17 +295,6 @@ Route::middleware([
     Route::get('/user/delete/{id}', [IndexController::class, 'deleteUser']);
 
 
-    Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
-    Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
-    Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
-    Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
-    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
-    Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
-    Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
-
-
-
-
     Route::post('/timetracking/settings/groups/importexcel', [GroupsController::class, 'import']);
     Route::post('/timetracking/settings/groups/importexcel/save', [GroupsController::class, 'saveTimes']);
     Route::any('/timetracking/users/bonus/save', [GroupsController::class, 'saveBonuses']);
@@ -494,15 +483,22 @@ Route::middleware([
     Route::get('/maps', [MapsController::class, 'index'])->name('maps');
     Route::post('/selected-country/search/', [MapsController::class, 'selectedCountryAjaxSearch']);
 
+
+    Route::post('/checklist/tasks', [ChecklistController::class, 'getTasks']);
+    Route::post('/checklist/save', [ChecklistController::class, 'saveTasks']);
+
     Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
     Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
     Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
     Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
-    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
-    Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
+
+    Route::get('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
     Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
     Route::post('/timetracking/settings/auth/check/user/responsibility', [CheckListController::class, 'responsibility']); ///   Добавить ответственного лица
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
+    Route::post('/timetracking/settings/auth/check/search/selected', [CheckListController::class, 'searchSelected']); 
+
+    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
 
 
 
