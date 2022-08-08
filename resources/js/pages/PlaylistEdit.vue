@@ -448,7 +448,8 @@ export default {
     },
 
     showVideo(video, autoplay = true) {
-    
+
+      if(video == null) return;
       let loader = this.$loading.show();
 
        axios
@@ -585,7 +586,7 @@ export default {
           this.activeVideo = this.findItem(this.ids[index]);
         }
 
-      } else if(this.playlist.groups[0].videos.length > 0) { 
+      } else if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) { 
           // set active video
           this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
