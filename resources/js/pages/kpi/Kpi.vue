@@ -90,9 +90,9 @@
 
                                         <tr>
                                             <td></td>
-                                            <td colspan="8" class="add-activity" @click="addActivity(i)">
+                                            <td colspan="8" class="plus-item" @click="addActivity(i)">
                                                 <div>
-                                                    <i class="fa fa-plus mr-2"></i> <span>Добавить активность</span>
+                                                    <i class="fa fa-plus mr-2"></i> <b>Добавить активность</b>
                                                 </div>
                                             </td>
                                         </tr>
