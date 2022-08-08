@@ -30,26 +30,39 @@
     color: #fff;
   }
   
-  .collapsable span {
-    cursor: pointer;
-    background: #2cc16a;
-    transition: background .5s;
+  .collapsable {
+
+    td {
+      padding: 0;
+    }
+
+    span {
+      cursor: pointer;
+      background: #2cc16a;
+      transition: background .5s;
+    }
+
+    .table__wrapper {
+      max-height: 0px;
+      overflow: hidden;
+      transition: max-height .5s;
+    }
+
+  }
+  
+
+  .active {
+
+    span {
+      background: #fff;
+    }
+
+    .table__wrapper {
+      max-height: 1000px;
+      transition: max-height .5s;
+    }
   }
 
-  .active span {
-    background: #fff;
-  }
-
-  tr.collapsable .table__wrapper {
-    max-height: 0px;
-    overflow: hidden;
-    transition: max-height .5s;
-  }
-
-  tr.active .table__wrapper {
-    max-height: 1000px;
-    transition: max-height .5s;
-  }
 
   .table-inner {
     width: 100%;
