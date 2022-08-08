@@ -216,11 +216,7 @@ class MyCourseController extends Controller
 
     public function getMyCourse(Request $request) {
         
-        if($request->id == 0) $course = CourseResult::activeCourse();
-        if($request->id) {
-            $course = CourseResult::activeCourse($request->id);
-            //$course = $this->getCourseIfVisible($request->id);
-        } 
+        $course = CourseResult::activeCourse($request->id);
        
 
         $all_stages = 0;
@@ -246,87 +242,6 @@ class MyCourseController extends Controller
             'completed_stages' => $completed_stages
         ];
     }   
-
-    private function getCourseIfVisible($id) {
-        // prepare
-        $user = auth()->user();
-        $user_id = $user->id;
-        $position_id = $user->position_id;
-
-        $groups = $user->inGroups();
-        $group_ids = [];
-        foreach ($groups as $key => $group) {
-            $group_ids[] = $group->id;
-        }
-
-        // find course
-        $courses = CourseModel::where(function($query) use ($user_id) {
-                $query->where('item_model', 'App\\User')
-                    ->where('item_id', $user_id);
-            })
-            ->orWhere(function($query) use ($group_ids) {
-                $query->where('item_model', 'App\\ProfileGroup')
-                    ->whereIn('item_id', $group_ids);
-            })
-            ->orWhere(function($query) use ($position_id) {
-                $query->where('item_model', 'App\\Position')
-                    ->where('item_id', $position_id);
-            })
-            ->orWhere(function($query) {
-                $query->where('item_model', 0)
-                    ->where('item_id', 0);
-            })
-            ->get()
-            ->pluck('course_id')
-            ->toArray();
-
-        $course = null;
-        if(in_array($id, $courses)) {
-            $course_result = CourseResult::where('user_id', $user_id)
-                ->where('course_id', $id)
-                //->whereIn('status', [1])
-                ->first();
-            if(!$course_result) {
-                $course_result = CourseResult::create([
-                    'course_id' => $id,
-                    'status' => 2,
-                    'progress' => 0,
-                    'points' => 0, 
-                    'started_at' => now(), 
-                    'ended_at' => null, 
-                    'user_id' => $user_id
-                ]);
-            }
-
-     
-
-            // img poster
-            $course = Course::with('items')->find($course_result->course_id);
-
-            if($course && $course->img != '' && $course->img != null) {
-                $disk = \Storage::build([
-                    'driver' => 's3',
-                    'key' => 'O4493_admin',
-                    'secret' => 'nzxk4iNukQWx',
-                    'region' => 'us-east-1',
-                    'bucket' => 'tenantbp',
-                    'endpoint' => 'https://storage.oblako.kz:443',
-                    'use_path_style_endpoint' => true,
-                    'throw' => false,
-                    'visibility' => 'public'
-                ]);
-
-                if($disk->exists($course->img)) {
-                    $course->img = $disk->temporaryUrl(
-                        $course->img, now()->addMinutes(360)
-                    );
-                }
-            }
-            
-        }
-
-        return $course;
-    }
 
     private function getCourseItem(CourseItem $course_item, &$no_active)
     {

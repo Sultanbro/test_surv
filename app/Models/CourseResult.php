@@ -341,7 +341,7 @@ class CourseResult extends Model
         $user = auth()->user();
         $user_id = $user->id;
         $position_id = $user->position_id;
-
+        
         $groups = $user->inGroups();
         $group_ids = [];
         foreach ($groups as $key => $group) {
@@ -371,6 +371,8 @@ class CourseResult extends Model
 
         $courses = array_unique($courses);
 
+        $active_course_id = 0;
+
         $results = self::where('user_id', $user_id)
             ->whereIn('status', [1])
             ->get()
@@ -391,7 +393,9 @@ class CourseResult extends Model
                 ->first();
 
             $course_id = $course ? $course->id : 0;
-          
+            $active_course_id = $course_id;
+            if($id != 0) $course_id = $id;
+
             $active_course = self::where('user_id', $user_id)
                 //->whereIn('status', [0,2])
                 ->where('course_id', $course_id)
@@ -445,7 +449,7 @@ class CourseResult extends Model
         }
 
         if($course) {
-            $course->is_active = $course->id == $id || $id == 0;
+            $course->is_active = $course->id == $active_course_id || $id == 0;
         } 
 
         return $course;
