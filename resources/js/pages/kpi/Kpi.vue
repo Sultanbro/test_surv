@@ -76,12 +76,12 @@
                                         <tr class="jt-row j-hidden" :class="{'j-hidden': !item.expanded}" v-for="(element, j) in item.elements" :key="i + '-' + j">
                                             <td></td>
                                             <td >{{ element.name }}</td>
-                                            <td >{{ element.plan_type }}</td>
-                                            <td >{{ element.activity }}</td>
-                                            <td >{{ element.plan_unit }}</td>
-                                            <td >{{ element.plan }}</td>
-                                            <td >{{ element.ud_ves }}</td>
-                                            <td >{{ element.sum }}</td>
+                                            <td class="text-center">{{ element.plan_type }}</td>
+                                            <td class="text-center">{{ element.activity }}</td>
+                                            <td class="text-center">{{ element.plan_unit }}</td>
+                                            <td class="text-center">{{ element.plan }}</td>
+                                            <td class="text-center">{{ element.ud_ves }}</td>
+                                            <td class="text-center">{{ element.sum }}</td>
                                             <td>
                                                 <i class="fa fa-edit mr-1 btn btn-primary p-1" @click="editKpi"></i>
                                                 <i class="fa fa-trash btn btn-primary p-1" @click="deleteKpi"></i>
