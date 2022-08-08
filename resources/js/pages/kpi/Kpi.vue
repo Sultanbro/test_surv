@@ -49,7 +49,7 @@
                 </tr>
 
                 <template v-if="item.elements !== undefined && item.elements.length > 0">
-                    <tr class="collapse" :class="{'active': item.expanded}" :key="i + 'a'">
+                    <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
                         <td :colspan="show_fields.length + 2">
                             <div class="table__wrapper">
                                 <table class="table table-inner">

@@ -29,7 +29,7 @@
     color: #fff;
   }
   
-  .collapse span {
+  .collapsable span {
     cursor: pointer;
     background: #2cc16a;
     transition: background .5s;
@@ -39,7 +39,7 @@
     background: #fff;
   }
 
-  tr.collapse .table__wrapper {
+  tr.collapsable .table__wrapper {
     max-height: 0px;
     overflow: hidden;
     transition: max-height .5s;
