@@ -50,7 +50,7 @@
 
                 <template v-if="item.elements !== undefined && item.elements.length > 0">
                     <tr class="collapse" :class="{'active': item.expanded}" :key="i">
-                        <td :colspan="item.show_fields.length + 2">
+                        <td :colspan="show_fields.length + 2">
                             <div class="table__wrapper">
                                 <table class="table table-inner">
                                     <thead>
@@ -111,7 +111,7 @@ export default {
                 {name: 'Руслан Ташметов', elements: [], expanded: false},
             ]
         }
-    },
+    }, 
 
     created() {
        // this.fetchData()
