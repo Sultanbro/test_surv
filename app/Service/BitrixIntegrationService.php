@@ -61,7 +61,7 @@ class BitrixIntegrationService
         try {
             $this->checkPositionOfUser();
 
-            $user = User::query()->findOrFail(13865);
+            $user = Auth::user();
 
             $link = $this->host . $this->token . 'user.get';
 
@@ -88,9 +88,9 @@ class BitrixIntegrationService
      */
     private function checkPositionOfUser(): void
     {
-        $user = User::query()->findOrFail(13865)->positions()->first();
+        $position = Auth::user()->positions()->first();
 
-        if (in_array($user->id, [Position::OPERATOR_ID, Position::INTERN_ID]))
+        if (in_array($position->id, [Position::OPERATOR_ID, Position::INTERN_ID]))
         {
             Log::error('Позиция пользователя должен быть выше Оператор, Стажер');
 
