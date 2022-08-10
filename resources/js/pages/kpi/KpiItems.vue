@@ -105,7 +105,7 @@ export default {
     }, 
 
     created() {
-        fillSelectOptions()
+        this.fillSelectOptions()
     },
 
     methods: {
@@ -121,8 +121,8 @@ export default {
         },
 
         fillSelectOptions() {
-            setMethods()
-            setSources()
+            this.setMethods()
+            this.setSources()
         },
 
         setMethods() {
