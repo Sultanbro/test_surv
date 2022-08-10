@@ -16,10 +16,12 @@ class BitrixIntegrationService
     public Http $client;
     public string  $host;
     public string $token;
+    private $user;
 
     public function __construct(
         Http $client
     ){
+        $this->user   = Auth::user();
         $this->client = $client;
         $this->host   = config('bitrix')['host'];
         $this->token  = config('bitrix')['token'];
@@ -52,6 +54,21 @@ class BitrixIntegrationService
         }
     }
 
+    public function getLeads($request)
+    {
+        $this->checkPositionOfUser(
+            (array) [Position::HEAD_RECRUITER_ID, Position::RECRUITER_ID],
+            'Позиция пользователя должен быть Старший Рекрутер, Рекрутер, Администратор',
+            false
+        );
+
+        $link = $this->host . $this->token . 'user.get';
+
+        dd($this->client::get($link, [
+            'ID' => 48
+        ])->json());
+    }
+
     /**
      * Получем текущего пользователя в Bitrix24
      * @return array
@@ -59,7 +76,7 @@ class BitrixIntegrationService
     private function checkCurrentUserBitrix(): array
     {
         try {
-            $this->checkPositionOfUser();
+            $this->checkPositionOfUser([Position::OPERATOR_ID, Position::INTERN_ID],'Позиция пользователя должен быть выше Оператор, Стажер');
 
             $user = Auth::user();
 
@@ -84,17 +101,14 @@ class BitrixIntegrationService
     /**
      * Проверяем позицию текущего пользователя.
      * Важно!
-     * @return void
      */
-    private function checkPositionOfUser(): void
+    private function checkPositionOfUser(array $positionsId, string $message, bool $expression = true): void
     {
-        $position = Auth::user()->positions()->first();
+        $position = User::query()->findOrFail(5263)->positions()->first();
 
-        if (in_array($position->id, [Position::OPERATOR_ID, Position::INTERN_ID]))
+        if (in_array($position->id, $positionsId) == $expression)
         {
-            Log::error('Позиция пользователя должен быть выше Оператор, Стажер');
-
-            throw new \DomainException('Позиция пользователя должен быть выше Оператор, Стажер' );
+            throw new \DomainException($message);
         }
     }
 }

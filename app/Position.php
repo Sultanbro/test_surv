@@ -22,7 +22,23 @@ class Position extends Model
         'sum', // Сумма
     ];
 
+    /**
+     * ID оператора по должности
+     */
     const OPERATOR_ID = 32;
+    /**
+     * ID стажера по должности
+     */
     const INTERN_ID = 47;
+
+    /**
+     * ID старшего рекрутера по должности
+     */
+    const HEAD_RECRUITER_ID = 46;
+
+    /**
+     * ID рекрутера по должности
+     */
+    const RECRUITER_ID = 48;
     
 }
