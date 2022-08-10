@@ -12,7 +12,7 @@
         <thead>
             <tr class="table-heading">
                 
-                <th>
+                <th class="first-column">
                     <i class="fa fa-cogs" @click="adjustFields"></i>
                 </th>
 

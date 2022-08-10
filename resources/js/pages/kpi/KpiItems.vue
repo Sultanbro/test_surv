@@ -1,5 +1,5 @@
 <template>
-<div class="kpi-item p-3">
+<div class="kpi-item">
 
     <table class="table table-inner">
         <thead>
@@ -17,7 +17,7 @@
         </thead>
         <tbody>
             <tr class="jt-row j-hidden" :class="{'j-hidden': !expanded}" v-for="(item, i) in items" :key="i">
-                <td></td>
+                <td class="first-column"></td>
                 <td>
                     <input type="text" class="form-control" v-model="item.name" />
                 </td>
@@ -63,14 +63,14 @@
                     <input type="text" class="form-control" v-model="item.sum" />
                 </td>
                 <td>
-                    <i class="fa fa-trash btn btn-primary p-1" @click="deleteItem(i)"></i>
+                    <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)"></i>
                 </td>
             </tr>
 
             <tr>
                 <td></td>
                 <td colspan="8" class="plus-item" @click="addItem">
-                    <div>
+                    <div class="px-2 py-1">
                         <i class="fa fa-plus mr-2"></i> <b>Добавить активность</b>
                     </div>
                 </td>
