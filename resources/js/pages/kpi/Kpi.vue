@@ -91,7 +91,7 @@
 
         <div class="col-md-4 mb-2">
            <b-form-checkbox
-              v-model="showFields.updated_at"
+              v-model="show_fields.updated_at"
               :value="true"
               :unchecked-value="false"
               >
@@ -101,7 +101,7 @@
         </div> 
         <div class="col-md-4 mb-2">
            <b-form-checkbox
-              v-model="showFields.created_by"
+              v-model="show_fields.created_by"
               :value="true"
               :unchecked-value="false"
               >
@@ -113,7 +113,7 @@
 
         <div class="col-md-4 mb-2">
           <b-form-checkbox
-              v-model="showFields.updated_by"
+              v-model="show_fields.updated_by"
               :value="true"
               :unchecked-value="false"
               >
@@ -134,7 +134,7 @@ export default {
         
     },
     watch: {
-        showFields: {
+        show_fields: {
             handler: function (val) {
                 localStorage.kpi_show_fields = JSON.stringify(val);
                 this.prepareFields();
