@@ -44,7 +44,7 @@
                         </div>
 
                         <div v-else :class="field.class">
-                            {{ item[field.key] }}
+                            <input type="text" class="form-control" v-model="item[field.key]" /> 
                         </div>
 
                     </td>
@@ -58,46 +58,12 @@
                     <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
                         <td :colspan="show_fields.length + 2">
                             <div class="table__wrapper">
-                                <table class="table table-inner">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>Наименование активности</th>
-                                            <th>Вид плана</th>
-                                            <th>Показатели</th>
-                                            <th>Ед. изм.</th>
-                                            <th>Целевое значение на месяц</th>
-                                            <th>Удельный вес, %</th>
-                                            <th>Сумма премии при выполенении плана, KZT</th>
-                                            <th>Действия</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="jt-row j-hidden" :class="{'j-hidden': !item.expanded}" v-for="(element, j) in item.elements" :key="i + '-' + j">
-                                            <td></td>
-                                            <td >{{ element.name }}</td>
-                                            <td class="text-center">{{ element.plan_type }}</td>
-                                            <td class="text-center">{{ element.activity }}</td>
-                                            <td class="text-center">{{ element.plan_unit }}</td>
-                                            <td class="text-center">{{ element.plan }}</td>
-                                            <td class="text-center">{{ element.ud_ves }}</td>
-                                            <td class="text-center">{{ element.sum }}</td>
-                                            <td>
-                                                <i class="fa fa-edit mr-1 btn btn-primary p-1" @click="editKpi"></i>
-                                                <i class="fa fa-trash btn btn-primary p-1" @click="deleteKpi"></i>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td></td>
-                                            <td colspan="8" class="plus-item" @click="addActivity(i)">
-                                                <div>
-                                                    <i class="fa fa-plus mr-2"></i> <b>Добавить активность</b>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <kpi-items
+                                    :items="item.elements"
+                                    :expanded="item.expanded"
+                                    :activities="activities"
+                                >
+                                </kpi-items>
                             </div>
                         </td>
                     </tr>                
@@ -153,12 +119,38 @@ export default {
                     elements: [], 
                     expanded: false
                 },
-            ]
+            ],
+            activities: {
+                0: [
+                    {
+                        id: 1,
+                        name: 'TEst 1',
+                    },
+                    {
+                        id: 1,
+                        name: 'Test 2',
+                    }
+                ],
+                1: [
+                    {
+                        id: 3,
+                        name: 'Grouper 1',
+                    },
+                    {
+                        id: 4,
+                        name: 'Groups 2',
+                    }
+                ],
+                2: [],
+                3: [],
+            }
         }
     }, 
 
     created() {
-       // this.fetchData()
+       // this.fetchKPI()
+       // this.fetchActivities()
+
        this.prepareFields(); 
        this.addStatusToItems(); 
 
@@ -181,7 +173,7 @@ export default {
     },
     methods: {
 
-        fetchData() {
+        fetchKPI() {
             let loader = this.$loading.show();
 
             axios.post('/kpi/' + this.page, {

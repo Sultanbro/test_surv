@@ -5,20 +5,19 @@
         <b-tab title="KPI" :key="1" card>
             <kpi></kpi>
         </b-tab>
-        <b-tab title="Показатели" :key="2" card>
-            <indicators></indicators>
-        </b-tab>
-        <b-tab title="Статистика" :key="3" card>
-            <stats></stats>
-        </b-tab>
-        <b-tab title="Бонусы" :key="4" card>
+        <b-tab title="Бонусы" :key="2" card>
             <bonuses></bonuses>
         </b-tab>
-        <b-tab title="Квартальная премия" :key="5" card>
+        <b-tab title="Квартальная премия" :key="3" card>
             <quartal-premium></quartal-premium>
         </b-tab>
+        <b-tab title="Статистика" :key="4" card>
+            <stats></stats>
+        </b-tab>
+        <b-tab title="Показатели" :key="5" card>
+            <indicators></indicators>
+        </b-tab>
     </b-tabs>
-
 </div>
 </template>
 

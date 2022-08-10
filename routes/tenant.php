@@ -2,12 +2,17 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\IndicatorController;
+
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 
+use App\Http\Controllers\Kpi\KpiController;
+use App\Http\Controllers\Kpi\BonusController;
+use App\Http\Controllers\Kpi\QuartalPremiumController;
+use App\Http\Controllers\Kpi\KpiStatController;
+use App\Http\Controllers\Kpi\IndicatorController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\UserController;
@@ -15,7 +20,7 @@ use App\Http\Controllers\Admin\TraineeController;
 use App\Http\Controllers\Admin\QuartalBonusController;
 use App\Http\Controllers\Admin\IndexController;
 use App\Http\Controllers\Admin\TimetrackingController;
-use App\Http\Controllers\Admin\KpiController;
+use App\Http\Controllers\Admin\KpiController as OldKpiController;
 use App\Http\Controllers\Admin\BpartnersController;
 use App\Http\Controllers\Admin\NpsController;
 use App\Http\Controllers\Admin\QualityController;
@@ -312,10 +317,10 @@ Route::middleware([
     Route::post('/timetracking/exam', [ExamController::class, 'getexams']);
     Route::post('/timetracking/exam/update', [ExamController::class, 'update']);
 
-    Route::post('/timetracking/kpi_save', [KpiController::class, 'saveKPI']);
-    Route::post('/timetracking/kpi_get', [KpiController::class, 'getKPI']);
-    Route::post('/timetracking/kpi_save_individual', [KpiController::class, 'saveKpiIndividual']);
-    Route::post('/timetracking/kpi_get_individual', [KpiController::class, 'getKpiIndividual']);
+    Route::post('/timetracking/kpi_save', [OldKpiController::class, 'saveKPI']);
+    Route::post('/timetracking/kpi_get', [OldKpiController::class, 'getKPI']);
+    Route::post('/timetracking/kpi_save_individual', [OldKpiController::class, 'saveKpiIndividual']);
+    Route::post('/timetracking/kpi_get_individual', [OldKpiController::class, 'getKpiIndividual']);
 
     Route::any('/estimate_your_trainer', [NpsController::class, 'estimate_your_trainer']); // анкета
     Route::get('/timetracking/nps', [NpsController::class, 'index']);
