@@ -74,7 +74,7 @@
             </div>
             <div class="col-md-4">
 
-                <div class="" v-if="(group_id == 42 && activity_id == 1) || (group_id == 71)">
+                <div class="" v-if="(group_id == 88 && activity_id == 164) || (group_id == 42 && activity_id == 1) || (group_id == 71)">
                     <div  v-if="group_id == 42 && activity_id == 1">
                         <b>Дата:</b> {{ item.data }}
                     </div>
@@ -83,13 +83,13 @@
                     </div>
                 </div> 
 
-                <div class="" v-if="(group_id == 42 && activity_id == 13) || (group_id == 71)">
+                <div class="" v-if="(group_id == 88 && activity_id == 166) || (group_id == 42 && activity_id == 13) || (group_id == 71)">
                     <div>
                         <b>Сборы:</b> {{ item.gatherings }}
                     </div>
                 </div>
 
-              <div class="" v-if="(group_id == 42 && activity_id == 94) || (group_id == 71)">
+              <div class="" v-if="(group_id == 88 && activity_id == 165) || (group_id == 42 && activity_id == 94) || (group_id == 71)">
                 <div>
                   <b>Ср. время:</b> {{ item.avg_time }}
                 </div>
