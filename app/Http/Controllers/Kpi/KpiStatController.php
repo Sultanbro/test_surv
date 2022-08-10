@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Kpi;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use DB;
