@@ -505,14 +505,17 @@ class CheckListController extends Controller
                         'created_date' => Carbon::now()->toDateString()
                     ],[
                         'url' => $t['checkedtasks'][0]['url'],
-                        'checked' => $t['checkedtasks'][0]['checked'],
+                        'checked' => $t['checkedtasks'][0]['checked'] == 1 ? 'true' : 'false',
                         'user_id' => auth()->id(),
                     ]); 
                 }else if($t['checkedtasks'][0]['url'] != null){
                     return 2;
-                }else if($t['checkedtasks'][0]['checked'] == 'true'){
+                }else if($t['checkedtasks'][0]['checked'] == 'true'){   
                     return 4;
                 }else{
+                    if (filter_var($t['checkedtasks'][0]['url'], FILTER_VALIDATE_URL) === FALSE) {
+                        return 3;
+                    }
                     $checked_task = Checkedtask::updateOrCreate([
                         'task_id' => $t['id'],
                         'created_date' => Carbon::now()->toDateString()
@@ -528,5 +531,16 @@ class CheckListController extends Controller
         return 1;
     }
 
+    public function getChecklistByUser(Request $request){
+        $checkedtasks = Checkedtask::where('created_date',$request['created_date'])->where('user_id',$request['user_id'])->with('task')->get();
+        return $checkedtasks;
+    }
 
+    public function saveChecklist(Request $request){
+        foreach($request['checklists'] as $checklist){
+            $check = Checkedtask::find($checklist['id']);
+            $check->checked = $checklist['checked'] == 1 ? 'true' : 'false';
+            $check->save();
+        }
+    }
 }

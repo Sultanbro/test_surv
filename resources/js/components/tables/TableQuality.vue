@@ -529,7 +529,7 @@
             
 
             </div>
-            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" :key="course_key" />
+            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
 
         </b-tab>
 
@@ -567,7 +567,7 @@
 
                          <template v-for="(checked_day,index) in check_r.day">
                            <template v-if="index == field.name">
-                             {{checked_day}}
+                             <div v-on:click="showSidebar(check_r.user_id, index)">{{checked_day}}</div>
                            </template>
                          </template>
 
@@ -743,6 +743,33 @@
         </div>
       </div>
     </b-modal>
+    <sidebar
+        title="Индивидуальный чек лист"
+        :open="showChecklist"
+        @close="toggle()"
+        width="70%"
+    >
+        <div class="col-10 p-0 mt-2" v-for="(val,ind) in checklists">
+          <div class="mr-5">
+            <b-form-checkbox v-model="val.checked" size="sm" >
+              <span style="cursor: pointer">{{val.task.task}}</span>
+              </b-form-checkbox>
+            </div>
+
+          <div style="position: absolute;right: 0px;top: 0px">
+            <a v-if="val.url" :href="val.url" target="_blank">{{val.url}}</a>
+            <p v-else>нет ссылки</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 mt-3">
+            <div class="col-md-6 p-0">
+                <button @click.prevent="saveChecklist"   title="Сохранить" class="btn btn-primary">
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </sidebar>
   </div>
 </template>
 
@@ -764,6 +791,8 @@ export default {
   },
   data() {
     return {
+      showChecklist: false,
+      checklists:{},
       fields: [],
       checklist_fields: [],
       monthFields: [],
@@ -801,7 +830,6 @@ export default {
         comments: "",
         changed: true,
       },
-      course_key: 1,
       records_unique: 0,
       records: {
         data: [],
@@ -874,7 +902,28 @@ export default {
 
   },
   methods: {
-
+    saveChecklist(){
+      axios.post("/checklist/save-checklist",{
+        checklists: this.checklists
+      }).then(response => {
+        this.toggle();
+        this.$toast.success('Сохранено');
+      });
+    },
+    showSidebar(user_id, day){
+      this.toggle();
+      var date = this.currentYear + '-' + this.monthInfo.month.padStart(2, "0") + '-' + day.padStart(2, "0");
+      
+      axios.post("/checklist/get-checklist-by-user",{
+        user_id:user_id,
+        created_date: date
+      }).then(response => {
+        this.checklists = response.data;
+      });
+    },
+    toggle(){
+      this.showChecklist = !this.showChecklist;
+    },
     viewStaticCheck(type){
         if (type == 'w'){
             this.viewStaticButton.weekCheck = true
@@ -900,8 +949,8 @@ export default {
 
     fetchData(flag = null) {
 
-      this.course_key++;
-      
+
+
       if (flag == 'selected_group'){
         this.flagGroup = 'selected_group'
       }
@@ -909,7 +958,7 @@ export default {
       let loader = this.$loading.show();
       this.setDates();
       this.fetchItems();
-      loader.hide(); 
+      loader.hide();
 
 
     },

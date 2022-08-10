@@ -486,6 +486,8 @@ Route::middleware([
 
     Route::post('/checklist/tasks', [ChecklistController::class, 'getTasks']);
     Route::post('/checklist/save', [ChecklistController::class, 'saveTasks']);
+    Route::post('/checklist/get-checklist-by-user',[ChecklistController::class,'getChecklistByUser']);
+    Route::post('/checklist/save-checklist',[ChecklistController::class, 'saveChecklist']);
 
     Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
     Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов

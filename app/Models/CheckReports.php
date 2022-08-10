@@ -420,6 +420,7 @@ class CheckReports extends Model
         $users = User::whereIn('id',json_decode($group->users))->get();
         foreach($users as $key => $user){
                 $check_users[] = [
+                    "user_id" => $user->id,
                     "name" => $user->name,
                     "last_name" => $user->last_name,
                     "day" => self::getDaylyChecklistsByUser($user->id,$request->month, $request->year),//за каждый день

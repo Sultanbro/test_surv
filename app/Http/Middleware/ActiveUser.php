@@ -119,8 +119,8 @@ class ActiveUser
             auth()->user()->show_checklist = 0;
             $user = auth()->user();
 
-              if (!empty(auth()->user()->getCheckList->toArray())){
-                  foreach (auth()->user()->getCheckList->toArray() as $user_check_list){
+              if (!empty(auth()->user()->checklists->toArray())){
+                  foreach (auth()->user()->checklists->toArray() as $user_check_list){
                       $editUser_check_list = CheckUsers::find($user_check_list['id']);
 
 
