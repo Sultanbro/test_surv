@@ -31,10 +31,27 @@ class Activity extends Model
         'data' // дополнительно
     ];
     
-    const UNIT_MINUTES = 1;
-    const UNIT_PERCENTS = 2;
-    const UNIT_LESS_SUM = 3;
-    const UNIT_LESS_AVG = 4;
+ 
+    const UNIT_MINUTES = 1;  // сумма минут
+    const UNIT_PERCENTS = 2; // сред значение
+    const UNIT_LESS_SUM = 3; // сумма не более
+    const UNIT_LESS_AVG = 4; // среднее не более. обратное для UNIT_PERCENTS
+    const UNIT_MORE_SUM = 5; // сумма не менее
+  
+
+    const VIEW_DEFAULT = 0;
+    const VIEW_COLLECTION = 1;
+    const VIEW_QUALITY = 2;
+    const VIEW_RENTAB = 3;
+    const VIEW_TURNOVER = 4;
+    const VIEW_STAFF = 5;
+    const VIEW_CONVERSION = 6;
+
+    
+    const SOURCE_NO = 0; // без источника
+    const SOURCE_GROUP = 1; // из показателей группы
+    const SOURCE_BITRIX = 2; // из битрикса
+    const SOURCE_AMOCRM = 3; // из амо
 
     /**
      * Получить заголовки для эксель
