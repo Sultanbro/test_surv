@@ -1521,14 +1521,36 @@ public function planRequired($arr) {
             $item['sent'] = $leads->count();
 
             $users = json_decode($group->users);
-            $item['working'] = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0)
-                ->whereIn('users.id',$users)
-                //->whereIn('users.id', $leads->pluck('user_id')->toArray())
+            // $item['working'] = \DB::table('users')
+            //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            //     ->where('is_trainee', 0)
+            //     ->whereIn('users.id',$users)
+            //     //->whereIn('users.id', $leads->pluck('user_id')->toArray())
+            //     ->get()
+            //     ->count();
+
+                $item['working'] = 100;    
+            
+            $applied = User::withTrashed()
+                ->with('user_description')
+                ->whereHas('user_description', function ($query) use ($date){
+                    $query->whereDate('applied', '<=', $date->format('Y-m-d'));
+                })
+                ->whereIn('id', $users)
+                ->get(['id'])
+                ->pluck('id')
+                ->toArray();
+
+            $item['working'] = User::with('user_description')
+                ->withTrashed()
+                ->whereHas('user_description', function ($query) {
+                    $query->where('is_trainee', 0);
+                })
+                ->whereIn('id', $applied)
                 ->get()
                 ->count();
-                
+
+
             $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);
 
