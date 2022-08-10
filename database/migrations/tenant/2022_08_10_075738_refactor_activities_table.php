@@ -15,10 +15,9 @@ return new class extends Migration
     {
         Schema::table('activities', function (Blueprint $table) {
             $table->tinyInteger('method');
-            $table->string('share');
-            $table->integer('source');
-            $table->integer('view');
-            $table->dropColumn(['plan_unit', 'plan_type', 'type', 'ud_ves']);
+            $table->tinyInteger('share');
+            $table->tinyInteger('source');
+            $table->tinyInteger('view');
         });
     }
 
