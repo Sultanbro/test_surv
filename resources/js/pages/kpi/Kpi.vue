@@ -160,12 +160,14 @@ export default {
         for(let i=1;i<=a;i++) {
             el.elements.push({
                 name: 'Активность',
-                plan_type: 'среднее',
-                activity: 'ячейка из сводной',
-                plan_unit: '%',
+                activity_id: 0,
+                unit: '%',
+                method: 1,
+                source: 0,
                 plan: '90%',
-                ud_ves: '40%',
-                sum: '20000',
+                share: '40%',
+                sum: '10000',
+                fact: 100
             });
         }
      

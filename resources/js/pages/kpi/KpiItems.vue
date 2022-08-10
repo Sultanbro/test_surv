@@ -16,7 +16,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="jt-row j-hidden" :class="{'j-hidden': !expanded}" v-for="(item, i) in items" :key="i + '-' + j">
+            <tr class="jt-row j-hidden" :class="{'j-hidden': !expanded}" v-for="(item, i) in items" :key="i">
                 <td></td>
                 <td>
                     <input type="text" class="form-control" v-model="item.name" />
@@ -46,7 +46,7 @@
                             class="form-control"
                         >
                             <option value="0" selected>-</option>
-                            <option v-for="activity in activities[item.source]" :value="activity.id" :key="activity.id">{{ activity.name }}</option>
+                            <option v-for="activity in activities[item.source]" :value="activity.id" :key="item.course + ' ' + activity.id">{{ activity.name }}</option>
                         </select>
                     </div>
                 </td>
