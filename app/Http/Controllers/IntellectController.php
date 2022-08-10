@@ -648,7 +648,9 @@ class IntellectController extends Controller {
                     $this->save($request);
                 }
 
-                return $lead->name;
+                return [
+                    'name' => $lead->name
+                ];
             } else {
                 return abort(500, 'Lead is not found');
             }

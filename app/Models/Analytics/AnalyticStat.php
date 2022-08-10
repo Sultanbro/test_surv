@@ -576,7 +576,14 @@ class AnalyticStat extends Model
                 $math_string = str_replace("}","",$math_string);
             }
             $math_string = str_replace("%","",$math_string);
+            $word = "E14";
+
+        // Test if string contains the word 
+
+ 
             $res = eval($math_string);
+            
+
           
         } catch(\DivisionByZeroError $e) {
           

@@ -6,7 +6,7 @@
     <div class="d-flex mb-3"  v-if="!is_course">
       <div class="d-flex jcsb mb-1 left f-70">
         <div class="s w-full">
-          <div class="d-flex">
+          <div class="d-flex flex-column">
             <input
               v-if="mode == 'edit'"
               type="text"
@@ -15,6 +15,7 @@
               name="title"
             />
             <p v-else class="p-title mb-0"> {{ playlist.title }} </p>
+            <p v-if="noVideoInPlaylist && mode == 'read'" class="mt-2">В этом плейлисте нет видео</p>
           </div>
 
           <!-- playlist description -->
@@ -191,6 +192,7 @@ export default {
       refreshTest: 1, //key
       file_img: null,
       item_models: [],
+      noVideoInPlaylist: false,
       playlist: {
         id: 1,
         category_id: 1,
@@ -448,7 +450,8 @@ export default {
     },
 
     showVideo(video, autoplay = true) {
-    
+
+      if(video == null) return;
       let loader = this.$loading.show();
 
        axios
@@ -467,9 +470,9 @@ export default {
             this.setActiveGroup();
           if(autoplay) {
                this.video_changed++;
-             
-            
           }
+
+           this.noVideoInPlaylist = false;
         })
         .catch((error) => {
           loader.hide()
@@ -585,13 +588,15 @@ export default {
           this.activeVideo = this.findItem(this.ids[index]);
         }
 
-      } else if(this.playlist.groups[0].videos.length > 0) { 
+      } else if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) { 
           // set active video
           this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
          
       } else if(this.ids.length > 0) {
         this.activeVideo = this.findItem(this.ids[0]);
+      } else {
+        this.noVideoInPlaylist = true;
       }
       
       this.showVideo(this.activeVideo);

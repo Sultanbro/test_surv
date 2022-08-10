@@ -22,16 +22,16 @@
                    <div class="col-12 p-0">
 
                      <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in auth_check">
-                       <span class="font-weight-bold">{{item.title}}</span>
-                       <div class="col-10 p-0 mt-2" v-for="(val,ind) in item.check_input">
+                       <span class="font-weight-bold">{{index}}</span>
+                       <div class="col-10 p-0 mt-2" v-for="(val,ind) in item">
                           <div class="mr-5">
-                            <b-form-checkbox v-model="val.checked" size="sm" >
-                              <span style="cursor: pointer">{{val.text}}</span>
+                            <b-form-checkbox v-model="val.checkedtasks[0].checked" size="sm" >
+                              <span style="cursor: pointer">{{val.task}}</span>
                             </b-form-checkbox>
                           </div>
 
                           <div style="position: absolute;right: 0px;top: 0px">
-                           <input type="url" style="width: 150%" v-model="val.https" class="form-control form-control-sm" placeholder="url">
+                           <input type="url" style="width: 150%" v-model="val.checkedtasks[0].url" class="form-control form-control-sm" placeholder="url">
                          </div>
                        </div>
 
@@ -40,7 +40,7 @@
 
                     <div class="col-md-12 mt-3">
                         <div class="col-md-6 p-0">
-                            <button @click.prevent="saveCheck"   title="Сохранить" class="btn btn-primary">
+                            <button @click.prevent="saveChecklist"   title="Сохранить" class="btn btn-primary">
                                 Выполнить
                             </button>
                         </div>
@@ -64,13 +64,14 @@
         props: {
             // user_id:'',
 
-            auth_check_list:{},
+            auth_check_list: Array,
             open_check:{
               default:0
             },
         },
         data() {
             return {
+                checked_tasks:[],
                 showAuthUserCheck: false,
                 count:0,
                 auth_check:[],
@@ -82,7 +83,7 @@
         },
 
         created() {
-            this.viewCheck()
+            this.getTasks();
               if (this.open_check == 1){
                 this.showAuthUserCheck = true;
               }
@@ -100,10 +101,29 @@
                         this.getNotificationTime(this.times)
                     }
                 }
+ 
 
             }
         },
+        computed:{
+            isChecked(){
+                    return false;
+            }
+        },
         methods: {
+
+            getTasks(){
+                var ids = [];
+                this.auth_check_list.forEach(val => {
+                    ids.push(val.id);
+                })
+                axios.post('/checklist/tasks',{
+                    checklist_id:ids
+                }).then(response => {
+                    this.auth_check = response.data;
+                    console.log(response.data);
+                })
+            },
             getNotificationTime(times){
                 var hours = 9 / times;
                 var date = new Date();
@@ -126,7 +146,23 @@
                 // document.getElementById('list-example').classList.toggle("sticky");
             },
 
+            saveChecklist(){
+                
+                axios.post('/checklist/save', {
+                      auth_check:this.auth_check
+                }).then(response => {
+                  if(response.data == 1){
+                      this.showAuthUserCheck= false
+                      this.$toast.success('Успешно выполнено');
+                  }else if(response.data == 2){
+                      this.$toast.success('Поставьте галочку!');
+                  }else{
+                    this.$toast.success('Укажите правильную ссылку!');
+                  }
 
+                });   
+            
+            },
             saveCheck(){
                 this.validate(this.auth_check)
 
@@ -154,13 +190,13 @@
 
 
               this.auth_check.forEach(el => {
-                el['check_input'].forEach(ch =>{
+                el['checkedtasks'].forEach(ch =>{
 
 
                   if (ch['checked'] == true){
                     this.sendChecklist = false;
                     //console.log(this.isValidUrl(ch['https']));
-                    if (this.isValidUrl(ch['https']) && ch['checked']){
+                    if (this.isValidUrl(ch['url']) && ch['checked']){
                       this.sendChecklist = true;
                         this.$toast.success('Чек лист сохранен!');
                     }else{
@@ -175,54 +211,7 @@
 
             },
 
-            viewCheck(){
 
-
-
-                axios.post('/timetracking/settings/auth/check/user', {
-                    auth_check:this.auth_check_list
-                }).then(response => {
-
-
-
-                    if (response.data.checklist.length > 0) {
-
-                      for (let i = 0;i < response.data.checklist.length;i++){
-                        if (response.data['checklist'][i].length > 0){
-
-
-
-                          if (response.data['checklist'][i][0]['flag']){
-                            this.auth_check.push({
-                              title: response.data['checklist'][i][0]['title'],
-                              id: response.data['checklist'][i][0]['check_id'],
-                              gr_id: response.data['checklist'][i][0]['item_id'],
-                              type: response.data['checklist'][i][0]['item_type'],
-
-
-
-                              check_input:JSON.parse(response.data['checklist'][i][0]['checked'])
-                            });
-                          }else{
-                            this.auth_check.push({
-                              title: response.data['checklist'][i][0]['title'],
-                              id: response.data['checklist'][i][0]['id'],
-                              gr_id: response.data['checklist'][i][0]['item_id'],
-                              type: response.data['checklist'][i][0]['item_type'],
-                             check_input:JSON.parse(response.data['checklist'][i][0]['active_check_text'])
-                            });
-                          }
-
-
-                        }
-                      }
-                    }
-
-                    this.times = response.data[0];
-                    this.getNotificationTime(this.times);
-
-                })
-            },
 
 
 

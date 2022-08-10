@@ -23,7 +23,7 @@
 
 
     @if(!empty(auth()->user()->getCheckList->toArray()))
-        <auth-check-list auth_check_list="{{json_encode(auth()->user()->getCheckList)}}" :open_check="{{ 0}}"></auth-check-list>
+        <auth-check-list :auth_check_list="{{json_encode(auth()->user()->getCheckList)}}" :open_check="{{ 0}}"></auth-check-list>
     @endif
 <div class="btn-rm">
     <i class="fa fa-search"></i>

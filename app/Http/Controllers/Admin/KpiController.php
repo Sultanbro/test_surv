@@ -21,6 +21,7 @@ use App\Models\Analytics\IndividualKpi;
 use App\Classes\Analytics\Impl;
 use App\Models\Analytics\UserStat;
 use App\ProfileGroupUser;
+use Illuminate\Support\Facades\View;
 
 class KpiController extends Controller
 {   
@@ -31,6 +32,16 @@ class KpiController extends Controller
         $this->middleware('auth');
     }
     
+    public function index(Request $request)
+    {
+        View::share('title', 'KPI');
+        View::share('menu', 'timetracking');
+
+        return view('kpi')->with([
+            'page' => 'kpi'
+        ]);
+    }
+
     public function saveKPI(Request $request)
     {
         $user = User::bitrixUser();

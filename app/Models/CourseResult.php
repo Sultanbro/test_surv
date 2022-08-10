@@ -220,6 +220,7 @@ class CourseResult extends Model
                 
                 $stages_completed = $result->countWeeklyProgress();
                 $weekly_progress = $stages_completed > 0 && $result->course != null && $result->course->stages > 0 ? round($stages_completed / $result->course->stages * 100, 1) : 0;
+                if($weekly_progress > 100) $weekly_progress = 100;
                 $arr['progress_on_week'] = $weekly_progress . '%';
                
                 $progress_weekly += $weekly_progress;
@@ -341,7 +342,7 @@ class CourseResult extends Model
         $user = auth()->user();
         $user_id = $user->id;
         $position_id = $user->position_id;
-
+        
         $groups = $user->inGroups();
         $group_ids = [];
         foreach ($groups as $key => $group) {
@@ -371,6 +372,8 @@ class CourseResult extends Model
 
         $courses = array_unique($courses);
 
+        $active_course_id = 0;
+
         $results = self::where('user_id', $user_id)
             ->whereIn('status', [1])
             ->get()
@@ -391,7 +394,9 @@ class CourseResult extends Model
                 ->first();
 
             $course_id = $course ? $course->id : 0;
-          
+            $active_course_id = $course_id;
+            if($id != 0) $course_id = $id;
+
             $active_course = self::where('user_id', $user_id)
                 //->whereIn('status', [0,2])
                 ->where('course_id', $course_id)
@@ -436,16 +441,21 @@ class CourseResult extends Model
                     'visibility' => 'public'
                 ]);
 
-                if($disk->exists($course->img)) {
-                    $course->img = $disk->temporaryUrl(
-                        $course->img, now()->addMinutes(360)
-                    );
+
+                try {
+                    if($course->img != null && $disk->exists($course->img)) {
+                        $course->img = $disk->temporaryUrl(
+                            $course->img, now()->addMinutes(360)
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    // League \ Flysystem \ UnableToCheckDirectoryExistence
                 }
             }
         }
 
         if($course) {
-            $course->is_active = $course->id == $id || $id == 0;
+            $course->is_active = $course->id == $active_course_id || $id == 0;
         } 
 
         return $course;
@@ -538,11 +548,18 @@ class CourseResult extends Model
                 $text = strlen($text) >= 100 ? mb_substr($text, 0, 100) . '...' : $text;
                 $course->text = $text;
 
-                if($course->img != null && $disk->exists($course->img)) {
-                    $course->img = $disk->temporaryUrl(
-                        $course->img, now()->addMinutes(360)
-                    );
+
+                try {
+                    if($course->img != null && $disk->exists($course->img)) {
+                        $course->img = $disk->temporaryUrl(
+                            $course->img, now()->addMinutes(360)
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    // League \ Flysystem \ UnableToCheckDirectoryExistence
                 }
+
+                
             }
         }
 

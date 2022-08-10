@@ -1985,7 +1985,7 @@ class UserController extends Controller
 
 
             $user->zarplata()->update([
-                'zarplata' => $request->zarplata == 0 ? 70000 : $request->zarplata,
+                'zarplata' => $request->zarplata,
                 'card_number' => $request->card_number,
                 'kaspi' => $request->kaspi,
                 'jysan' => $request->jysan,

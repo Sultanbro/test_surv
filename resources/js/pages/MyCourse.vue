@@ -2,10 +2,43 @@
 <div class="d-flex mycourse">
 
   <div class="disable_course" v-if="disable_course">
-        <div class="d-flex aic flex-column">
-          <p>Чтобы Вам был доступен этот курс, Вам необходимо пройти все курсы <b>по порядку</b></p>
-          <button class="btn btn-primary" @click="getCourse(0)">Вернуться к текущему курсу</button>
+
+        <!-- <div v-if="activeCourse != null" class="d-left">
+           <div class="gggggg">
+            <h1 class="page-title">{{ activeCourse.name }}</h1> 
+
+              <div class="mb-3">
+                <img class="course-img w-full mr-3 mb-2"
+                :src="activeCourse.img"
+                onerror="this.src = '/images/course.jpg';"
+                />
+                <div class="mt-3" v-html="activeCourse.text"></div>
+              </div>
+
+             
+
+              <p><b>Блоки курса</b></p>
+              <div class="course-item pass" 
+                v-for="(item, c_index) in items"
+                :key="item.id"
+              >
+                <div class="title d-flex">
+                  <i class="fa fa-database icon" v-if="item.item_model == 'App\\KnowBase'"></i>
+                  <i class="fa fa-book icon" v-if="item.item_model == 'App\\Models\\Books\\Book'"></i>
+                  <i class="fa fa-play icon" v-if="item.item_model == 'App\\Models\\Videos\\VideoPlaylist'"></i>
+                  <span class="ml-2">{{ item.title }}</span>
+                </div>
+              </div>
+          </div>
+        </div> -->
+
+        <div class="d-right aic jcc">
+          <div class="d-flex aic flex-column">
+            <p>Чтобы Вам был доступен этот курс, Вам необходимо пройти все курсы <b>по порядку</b></p>
+            <button class="btn btn-primary" @click="getCourse(0)">Вернуться к текущему курсу</button>
+          </div>
         </div>
+       
   </div>
 
   <!-- левый сайдбар -->
@@ -77,17 +110,18 @@
 
                   <div v-if="activeCourseItem.item_model == 'App\\Models\\Books\\Book'">
                     <page-upbooks-read
-                      :book_id="activeCourseItem.item_id"
-                      mode="read"
                       ref="upbook"
+                      :book_id="activeCourseItem.item_id"
+                      :mode="'read'"
                       :course_page="true"
                       :course_item_id="activeCourseItem.id"
                       :enable_url_manipulation="false"
-                      @changeProgress="completed_stages++"
                       :active_page="activeCourseItem.last_item"
                       :all_stages="all_stages"
                       :completed_stages="completed_stages"
-                       @nextElement="nextElement"
+                      :key="activeCourseKey"
+                      @nextElement="nextElement"
+                      @changeProgress="completed_stages++"
                     />
                   </div>
  
@@ -99,11 +133,12 @@
                           :is_course="true"
                           :myvideo="activeCourseItem.last_item"
                           :enable_url_manipulation="false"
-                          @changeProgress="completed_stages++"
-                          mode="read" 
+                          :mode="'read'"
                           :all_stages="all_stages"
                           :completed_stages="completed_stages"
+                          :key="activeCourseKey"
                           @nextElement="nextElement"
+                          @changeProgress="completed_stages++"
                       />
                   </div>
 
@@ -116,14 +151,15 @@
                         :course_item_id="activeCourseItem.id"
                         :parent_id="activeCourseItem.item_id"
                         :show_page_id="activeCourseItem.last_item" 
-                        mode="read"
+                        :mode="'read'"
                         :course_page="true"
                         :enable_url_manipulation="false"
-                        @changeProgress="completed_stages++"
                         :auth_user_id="0" 
                         :all_stages="all_stages"
                         :completed_stages="completed_stages"
-                         @nextElement="nextElement"
+                        :key="activeCourseKey"
+                        @changeProgress="completed_stages++"
+                        @nextElement="nextElement"
                       /> 
 
                   </div>
@@ -162,6 +198,7 @@ export default {
       all_stages: 0,
       completed_stages: 0,
       disable_course: false,
+      activeCourseKey: 1
     };
   },
 
@@ -323,13 +360,13 @@ export default {
         .then((response) => {
           this.items = response.data.items;
           this.activeCourse = response.data.course;
-
+          this.activeCourseKey++;
 
           this.disable_course = false;
           if(this.activeCourse != null && !this.activeCourse.is_active) {
             this.disable_course = true;
           }
-
+          
           this.completed_stages = response.data.completed_stages;
           this.all_stages = response.data.all_stages;
 

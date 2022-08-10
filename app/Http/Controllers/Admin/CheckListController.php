@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\CheckUsers;
-use App\Models\CheckList;
+use App\Models\Checklist;
+use App\Models\Task;
 use App\Models\CheckReports;
 use App\Position;
 use App\ProfileGroup;
 use App\User;
+use App\Models\Checkedtask;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Auth;
+use Carbon\Carbon;
 use Artisan;
 use function Symfony\Component\Finder\name;
 
@@ -20,71 +23,17 @@ class CheckListController extends Controller
 
 
     public function store(Request $request,$edit = null){
-
-
-        
         if ($edit === null){
-            foreach ($request['allValueArray'] as $allValidate){
-                $validate = CheckList::where('item_id',$allValidate['id'])->where('item_type',$allValidate['type'])->get()->toArray();
-                if (!empty($validate)){
-                    return response(['success'=>false,'exists'=>$validate]);
-                }
-            }
+             // $checklist = new Checklist();
+             // $checklist->creator_id = auth()->id();
+             // $checklist->title = 'checklist_'.$checklist->id;
+             // $checklist->json_users = $request['allValueArray'];  
+            $this->recordChecklists($request['allValueArray'], $request['arr_check_input']['tasks'], $request['countView']);
+    
+            return 'success';
         }else{
-            $request = $edit;
-        }
-
-
-        if ($request['countView'] < 11 && $request['countView'] != 0){
-            if (isset($request['allValueArray'])){
-                foreach ($request['allValueArray'] as $allValueArray){
-                        if ($allValueArray['type'] == 2){
-                            $profileGroups = ProfileGroup::on()->find($allValueArray['id']);
-                            $checkList = new CheckList();
-                            $checkList['title'] = $profileGroups->name;
-                            $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                            $checkList['auth_name'] = auth()->user()->name;
-                            $checkList['auth_last_name'] = auth()->user()->last_name;
-                            $checkList['active_check_text'] = json_encode($request['arr_check_input']);
-                            $checkList['count_view'] = $request['countView'];
-                            $checkList['item_type'] = $allValueArray['type'];
-                            $checkList['item_id'] = $profileGroups->id;
-                            $checkList->save();
-                            $this->saveGroup($profileGroups,$checkList,$request,2);
-                        }elseif ($allValueArray['type'] == 3){
-                            $profilePosition = Position::on()->find($allValueArray['id']);
-                            $checkList = new CheckList();
-                            $checkList['title'] = $profilePosition['position'];
-                            $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                            $checkList['auth_name'] = auth()->user()->name;
-                            $checkList['auth_last_name'] = auth()->user()->last_name;
-                            $checkList['active_check_text'] =json_encode($request['arr_check_input']);
-                            $checkList['count_view'] = $request['countView'];
-                            $checkList['item_type'] =  $allValueArray['type'];
-                            $checkList['item_id'] = $profilePosition->id;
-                            $checkList->save();
-                            $this->savePosition($profilePosition, $checkList, $request, 3);
-                        }elseif ($allValueArray['type'] == 1){
-                            $profileUsers = User::on()->find($allValueArray['id']);
-                            if (!empty($profileUsers)) {
-                                $checkList = new CheckList();
-                                $checkList['title'] = $profileUsers['last_name'].' '.$profileUsers['name'];
-                                $checkList['auth_id'] = auth()->user()->getAuthIdentifier();
-                                $checkList['auth_name'] = auth()->user()->name;
-                                $checkList['auth_last_name'] = auth()->user()->last_name;
-                                $checkList['active_check_text'] = json_encode($request['arr_check_input']);
-                                $checkList['count_view'] = $request['countView'];
-                                $checkList['item_type'] =  $allValueArray['type'];
-                                $checkList['item_id'] = $profileUsers['id'];
-                                $checkList->save();
-                                $this->saveUsers($profileUsers, $checkList, $request, 1);
-                            }
-                        }
-                    }
-            }
-        }
-
-        
+            dd($edit);
+        }        
     }
 
     public function saveUsers($positionUser,$checkListId,$request,$type){
@@ -189,177 +138,70 @@ class CheckListController extends Controller
     public function listViewCheck()
     {
 
-        $checkList = CheckList::on()->get()->toArray();
+        $checkList = Checklist::with('users','creator','tasks')->get();
 
-        return $checkList;
+        return $checkList->toArray();
     }
 
     public function deleteCheck(Request $request){
-
-
-        CheckList::on()->find($request['delete_id'])->delete();
-        CheckReports::on()->where('check_id',$request['delete_id'])->delete();
-        CheckUsers::on()->where('check_list_id',$request['delete_id'])->delete();
-
+        Checklist::find($request['delete_id'])->delete();
     }
 
     public function editCheck(Request $request)
     {   
-        $check_list = CheckList::on()->find($request['check_id'])->toArray();
-       
-        return response($check_list);
+        $check_list = Checklist::where('id',$request['check_id'])->with('tasks')->first();
+        return $check_list->toArray();
     }
 
     public function editSaveCheck(Request $request){
 
+        Task::destroy($request['deleted_tasks']);
+        Checkedtask::whereIn('task_id',$request['deleted_tasks'])->where('created_date',Carbon::now()->toDateString())->delete();
 
+        $editedChecklist = Checklist::find($request['check_id']);
+        $users = $editedChecklist->users;
+        if(!isset($request['allValueArray'][0]['id'])){
+            foreach ($request['arr_check_input'] as $task){
+                $task = Task::updateOrCreate([
+                    'id' => isset($task['id']) ? $task['id'] : 0
+                ],
+                [
+                    'task' => $task['task'],
+                    'checklist_id' => $editedChecklist->id
+                ]);
+                foreach($users as $user){
+                    $task->checkedtasks()->updateOrCreate([
+                        'task_id' => $task->id,
+                        'created_date' => Carbon::now()->toDateString(),
+                        'user_id' => $user->id,                  
+                    ],
+                    [              
+                        'checked' => 'false',
+                        'url' => ''
+                    ]);
+                }
+            }
+            $checklist_data = $request['allValueArray'];
+            
+            $this->recordChecklists($checklist_data, $request['arr_check_input'], $request['countView']);
 
-        if (!empty($request['allValueArray'])){
-
-
-           if (count($request['allValueArray']) > 1){
-               foreach ($request['allValueArray'] as $keys =>$allValueArray) {
-                   if ($request['valueFindGr'] != $allValueArray['id']) {
-                       $newArrays['allValueArray'][] = $allValueArray;
-                       $validate = CheckList::where('item_id', $allValueArray['id'])->where('item_type', $allValueArray['type'])->get()->toArray();
-                       if (!empty($validate)) {
-                           return response(['success' => false, 'exists' => $validate]);
-                       }
-                   }
-               }
-               $newArrays['countView'] = $request['countView'];
-               $newArrays['arr_check_input'] = $request['arr_check_input'];
-//               $newArrays['allValueArray'] = $request['allValueArray'];
-               $this->store($request,$newArrays);
-           }
-
-
-
-
-           if (!empty($request['valueFindGr'])){
-
-               $findArray = CheckList::find($request['check_id']);
-               $findArray->auth_id = auth()->user()->id;
-               $findArray->auth_name = auth()->user()->name;
-               $findArray->auth_last_name = auth()->user()->last_name;
-               $findArray->active_check_text = json_encode($request['arr_check_input']);
-               $findArray->count_view = $request['countView'];
-               $findArray->save();
-
-               $check_users = CheckUsers::where('check_list_id',$request['check_id'])->get()->toArray();
-
-               if (!empty($check_users)){
-                   foreach ($check_users as $check_user){
-                       $check_user = CheckUsers::find($check_user['id']);
-                       $check_user->count_view = $request['countView'];
-                       $check_user->save();
-                   }
-               }
-
-
-               $checkReports = CheckReports::on()->where('item_id',$findArray->item_id)->where('item_type',$findArray->item_type)
-                   ->where('year',date('Y'))
-                   ->where('month',date('n'))
-                   ->where('day',date('d'))
-                   ->get()->toArray();
-
-               if (!empty($checkReports) && count($checkReports) > 0){
-
-                   foreach ($checkReports  as $checkReport){
-                       $checkReportSave = CheckReports::on()->find($checkReport['id']);
-                       $checkReportSave['count_check'] = count($request['arr_check_input']);
-                       $new_arr_check_input = $request['arr_check_input'];
-                       if (!empty($checkReportSave['checked'])){
-                           foreach ($new_arr_check_input as $key => $query){
-
-                               foreach (json_decode($checkReportSave['checked'],true)  as $item){
-                                   if ($query['text'] === $item['text']){
-                                       $new_arr_check_input[$key] = $item;
-                                   }
-                               }
-
-                           }
-                       }
-                       $checkReportSave['checked'] = json_encode($new_arr_check_input);
-                       $checkReportSave->save();
-                   }
-               }else{
-                   if ($findArray->item_type == 2){
-                       if (empty($checkReports) && count($checkReports) == 0){
-                           $profileGroups = ProfileGroup::on()->find($request['valueFindGr']);
-                           if (!empty($profileGroups)){
-                               foreach (json_decode($profileGroups['users']) as $profile_users_id){
-                                   $dataBaseUser = User::on()->find($profile_users_id);
-                                   if (!empty($dataBaseUser)){
-                                       $check_reports_save = new CheckReports();
-                                       $check_reports_save['check_id'] = $findArray->id;
-                                       $check_reports_save['check_users_id'] = $dataBaseUser->id ;
-                                       $check_reports_save['year'] = date('Y');
-                                       $check_reports_save['month'] = date('n');
-                                       $check_reports_save['day'] = date('d');
-                                       $check_reports_save['count_check'] = count($request['arr_check_input']);
-                                       $check_reports_save['count_check_auth'] = 0;
-                                       $check_reports_save['checked'] = json_encode($request['arr_check_input']);
-                                       $check_reports_save['item_type'] = $findArray->item_type;
-                                       $check_reports_save['item_id'] = $findArray->item_id;
-                                       $check_reports_save->save();
-
-                                   }
-                               }
-                           }
-                       }
-                   }elseif ($findArray->item_type == 3){
-                       $positionUsers = User::on()->where('position_id',$request['valueFindGr'])->get()->toArray();
-                       if (!empty($positionUsers)){
-                           $check_reports_save = new CheckReports();
-                           $check_reports_save['check_id'] = $findArray->id;
-                           $check_reports_save['check_users_id'] = $positionUsers['id'] ;
-                           $check_reports_save['year'] = date('Y');
-                           $check_reports_save['month'] = date('n');
-                           $check_reports_save['day'] = date('d');
-                           $check_reports_save['count_check'] = count($request['arr_check_input']);
-                           $check_reports_save['count_check_auth'] = 0;
-                           $check_reports_save['checked'] = json_encode($request['arr_check_input']);
-                           $check_reports_save['item_type'] = $findArray->item_type;
-                           $check_reports_save['item_id'] = $findArray->item_id;
-                           $check_reports_save->save();
-                       }
-                   }elseif ($findArray->item_type == 1){
-//                   saveReports($checkListId,$positionUser,$request,$positionUser,$type);
-                       $check_reports_save = new CheckReports();
-                       $check_reports_save['check_id'] = $findArray->id;
-                       $check_reports_save['check_users_id'] = $request['valueFindGr'] ;
-                       $check_reports_save['year'] = date('Y');
-                       $check_reports_save['month'] = date('n');
-                       $check_reports_save['day'] = date('d');
-                       $check_reports_save['count_check'] = count($request['arr_check_input']);
-                       $check_reports_save['count_check_auth'] = 0;
-                       $check_reports_save['checked'] =json_encode($request['arr_check_input']);
-                       $check_reports_save['item_type'] = $findArray->item_type;
-                       $check_reports_save['item_id'] = $findArray->item_id;
-                       $check_reports_save->save();
-                   }
-
-               }
-
-
-           }
-
+        }else{
+            $editedChecklist->delete();
+            $this->recordChecklists($request['allValueArray'], $request['arr_check_input'], $request['countView']);
         }
 
-
-
+        // Проверка на удаление пользователя
     }
 
     public function viewAuthCheck(Request $request){
 
-        if (!empty($request['auth_check'])){
+        /*if (!empty($request['auth_check'])){
             foreach (json_decode($request['auth_check']) as $key => $arrCheckInput){
 
 
                 $check_list['checklist'][$key] = CheckList::where('id',$arrCheckInput->check_list_id)->get()->toArray();
 //                $check_list['check'][$key] = CheckReports::find($arrCheckInput->check_reports_id);
-                $time =  $check_list['checklist'][$key][0]['count_view'];
+                $time =  $check_list['checklist'][$key][0]['show_count'];
                 $check_list['check_day'][$key] = CheckReports::on()
                     ->where('item_type',$check_list['checklist'][$key][0]['item_type'])
                     ->where('item_id',$check_list['checklist'][$key][0]['item_id'])
@@ -385,7 +227,9 @@ class CheckListController extends Controller
             }
             array_push($check_list,$time);
             return response($check_list);
-        }
+        }*/
+        $user = User::with('checklists.tasks')->find(auth()->user()->id);
+        return $user->checklists;
     }
 
     public function sendAuthCheck(Request$request)
@@ -472,6 +316,216 @@ class CheckListController extends Controller
 
         return $resultsUser;
 
+    }
+
+    public function createCheckListForGroup($request){
+        dd('testing');
+
+    }
+
+    public function recordChecklists($records, $tasks, $count_view){
+            
+            foreach ($records as $user_data){
+                
+                if(isset($user_data['type']) && $user_data['type'] == 2){//group
+
+                    $checklist = Checklist::updateOrCreate(
+                    [ 
+                        'json_users' => '['.$user_data['id'].']',
+                    ],
+                    [
+                        'creator_id' => auth()->id(),
+                        'title' => '',
+                        'show_count' => $count_view,
+                        'type' => 2,
+                    ]);
+
+                    $group = ProfileGroup::find($user_data['id']);
+                    $checklist->json_users = $group->id;
+                    $checklist->title = $group->name;
+                    $users = User::whereIn('id',json_decode($group->users))->get();
+                    foreach ($tasks as $task){
+                        $task = Task::updateOrCreate([
+                            'id' => isset($task['id']) ? $task['id'] : 0
+                        ],[
+                            'task' => $task['task'],
+                            'checklist_id' => $checklist->id
+                        ]);
+                        foreach($users as $user){
+                            $task->checkedtasks()->updateOrCreate([
+                                'task_id' => $task->id,
+                                'created_date' => Carbon::now()->toDateString(),
+                                'user_id' => $user->id,                  
+                            ],
+                            [              
+                                'checked' => 'false',
+                                'url' => ''
+                            ]);
+                        }
+                        
+                    }
+
+                    foreach($users as $user){
+                        $checklist->users()->updateOrCreate([
+                            'id' => $user->id
+                        ],[
+                            'checklist_id' => $checklist->id,
+                            'user_id' => $user->id
+                        ]);
+
+
+                    }
+
+                    $checklist->save();
+
+                }else if(isset($user_data['type']) && $user_data['type'] == 3 ){//team leaders
+
+                    $checklist = Checklist::updateOrCreate(
+                    [
+                        'json_users' => '['.$user_data['id'].']', 
+                    ],
+                    [
+                        'creator_id' => auth()->id(),
+                        'title' => '',
+                        'show_count' => $count_view,
+                        'type' => 3,
+                    ]);
+
+                    $profilePosition = Position::on()->find($user_data['id']);
+                    $users = User::where('position_id',$profilePosition->id)->get();
+                    foreach ($tasks as $task){
+                        $task = Task::updateOrCreate([
+                            'id' => isset($task['id']) ? $task['id'] : 0
+                        ],[
+                            'task' => $task['task'],
+                            'checklist_id' => $checklist->id
+                        ]);
+                        foreach($users as $user){
+                            $task->checkedtasks()->updateOrCreate([
+                                'task_id' => $task->id,
+                                'created_date' => Carbon::now()->toDateString(),
+                                'user_id' => $user->id,                  
+                            ],
+                            [              
+                                'checked' => 'false',
+                                'url' => ''
+                            ]);
+                        }
+                    }
+
+                    $checklist->title = $profilePosition->position;
+                    $checklist->json_users = '['.$user_data['id'].']';
+                    foreach($users as $user){
+                        $checklist->users()->updateOrCreate([
+                                'id' => $user->id
+                            ],[
+                                'checklist_id' => $checklist->id,
+                                'user_id' => $user->id
+                            ]);
+                    }
+
+                    $checklist->save();
+                }else if(isset($user_data['type'])){//simple users
+
+
+
+                    $checklist = Checklist::updateOrCreate([
+                        'json_users' => '['.$user_data['id'].']',
+                    ],
+                    [
+                        'creator_id' => auth()->id(),
+                        'title' => '',
+                        'show_count' => $count_view,
+                    ]);
+
+                    $user = User::find($user_data['id']);
+                    foreach ($tasks as $task){
+                        $task = Task::updateOrCreate([
+                            'id' => isset($task['id']) ? $task['id'] : 0
+                        ],
+                        [
+                            'task' => $task['task'],
+                            'checklist_id' => $checklist->id
+                        ]);
+                        $task->checkedtasks()->updateOrCreate([
+                                'task_id' => $task->id,
+                                'created_date' => Carbon::now()->toDateString(),
+                                'user_id' => $user->id,                  
+                            ],
+                            [              
+                                'checked' => 'false',
+                                'url' => ''
+                            ]);
+                    
+                        
+                    }
+
+                    $checklist->title = $user->name . ' ' . $user->last_name;
+                    $checklist->users()->updateOrCreate([
+                            'id' => $user_data['id']
+                        ],[
+                            'checklist_id' => $checklist->id,
+                            'user_id' => $user->id
+                        ]);
+                    $checklist->save();
+                }
+            }
+    }
+
+    public function getTasks(Request $request){
+        $checklists = Checklist::whereIn('id',$request['checklist_id'])->get();
+        $tasks = [];
+        foreach($checklists as $checklist){
+            $task = Task::where('checklist_id',$checklist->id)->with('checkedtasks')->get();
+            foreach($task as $t){
+                if(sizeof($t->checkedtasks) == 0){
+                    $t->checkedtasks[0] = [
+                        //'task_id' => $task->id,
+                        'url' => '',
+                        'created_date' => Carbon::now()->toDateString(),
+                        'checked' => 'false',
+                    ];  
+                }
+
+            }
+            $tasks[$checklist->title] = $task;
+        }
+        return $tasks;
+    }
+
+    public function saveTasks(Request $request){
+        foreach($request['auth_check'] as $task){
+            foreach($task as $t){
+                if($t['checkedtasks'][0]['url'] != null && $t['checkedtasks'][0]['checked'] != null){
+                    if (filter_var($t['checkedtasks'][0]['url'], FILTER_VALIDATE_URL) === FALSE) {
+                        return 3;
+                    }
+                    $checked_task = Checkedtask::updateOrCreate([
+                        'task_id' => $t['id'],
+                        'created_date' => Carbon::now()->toDateString()
+                    ],[
+                        'url' => $t['checkedtasks'][0]['url'],
+                        'checked' => $t['checkedtasks'][0]['checked'],
+                        'user_id' => auth()->id(),
+                    ]); 
+                }else if($t['checkedtasks'][0]['url'] != null){
+                    return 2;
+                }else if($t['checkedtasks'][0]['checked'] == 'true'){
+                    return 4;
+                }else{
+                    $checked_task = Checkedtask::updateOrCreate([
+                        'task_id' => $t['id'],
+                        'created_date' => Carbon::now()->toDateString()
+                    ],[
+                        'url' => '',
+                        'checked' => 'false',
+                    ]);
+                }
+
+            }
+
+        }
+        return 1;
     }
 
 

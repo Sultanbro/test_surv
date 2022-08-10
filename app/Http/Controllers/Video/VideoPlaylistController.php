@@ -282,9 +282,16 @@ class VideoPlaylistController extends Controller {
 				'visibility' => 'public'
 			]);
 
-			if($disk->exists($video->links)){
-				$disk->delete($video->links);
+			
+
+			try {
+				if($disk->exists($video->links)){
+					$disk->delete($video->links);
+				}
+			} catch (\Throwable $e) {
+				// League \ Flysystem \ UnableToCheckDirectoryExistence
 			}
+
 			
 			$video->delete();
 		}
@@ -315,9 +322,15 @@ class VideoPlaylistController extends Controller {
 
 		if($request->file('file')) {
 
-			if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
-                $disk->delete($playlist->img);
-            }
+			
+
+			try {
+				if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
+					$disk->delete($playlist->img);
+				}
+			} catch (\Throwable $e) {
+				// League \ Flysystem \ UnableToCheckDirectoryExistence
+			}
 			
 			$links = $this->uploadFile('/pl', $request->file('file')); 
 			$link = $links['temp'];
@@ -354,9 +367,15 @@ class VideoPlaylistController extends Controller {
 
 		if($request->file('file')) {
 
-			if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
-                $disk->delete($playlist->img);
-            }
+			
+
+			try {
+				if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
+					$disk->delete($playlist->img);
+				}
+			} catch (\Throwable $e) {
+				// League \ Flysystem \ UnableToCheckDirectoryExistence
+			}
 			
 			$links = $this->uploadFile('/pl', $request->file('file')); 
 			$link = $links['temp'];
