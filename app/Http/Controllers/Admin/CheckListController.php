@@ -144,7 +144,13 @@ class CheckListController extends Controller
     }
 
     public function deleteCheck(Request $request){
-        Checklist::find($request['delete_id'])->delete();
+        $editedChecklist = Checklist::find($request['delete_id']);
+        $tasks = $editedChecklist->tasks;
+        foreach($tasks as $task){
+            $task->checkedtasks()->where('created_date', Carbon::now()->toDateString())->delete();
+            $task->delete();
+        }
+        $editedChecklist->delete();
     }
 
     public function editCheck(Request $request)
