@@ -116,7 +116,7 @@ export default {
 
 
         addItem(i) {
-            this.items[i].elements.push({name:"Показатель"});
+            this.items.push({name:"Показатель"});
         },
 
         fillSelectOptions() {
