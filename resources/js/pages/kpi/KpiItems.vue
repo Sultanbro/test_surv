@@ -1,5 +1,5 @@
 <template>
-<div class="kpi-item p-3">
+<div class="kpi-item">
 
     <table class="table table-inner">
         <thead>
@@ -16,8 +16,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="jt-row j-hidden" :class="{'j-hidden': !expanded}" v-for="(item, i) in items" :key="i + '-' + j">
-                <td></td>
+            <tr class="jt-row j-hidden" :class="{'j-hidden': !expanded}" v-for="(item, i) in items" :key="i">
+                <td class="first-column"></td>
                 <td>
                     <input type="text" class="form-control" v-model="item.name" />
                 </td>
@@ -46,7 +46,7 @@
                             class="form-control"
                         >
                             <option value="0" selected>-</option>
-                            <option v-for="activity in activities[item.source]" :value="activity.id" :key="activity.id">{{ activity.name }}</option>
+                            <option v-for="activity in activities[item.source]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
                         </select>
                     </div>
                 </td>
@@ -63,14 +63,14 @@
                     <input type="text" class="form-control" v-model="item.sum" />
                 </td>
                 <td>
-                    <i class="fa fa-trash btn btn-primary p-1" @click="deleteItem(i)"></i>
+                    <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)"></i>
                 </td>
             </tr>
 
             <tr>
                 <td></td>
                 <td colspan="8" class="plus-item" @click="addItem">
-                    <div>
+                    <div class="px-2 py-1">
                         <i class="fa fa-plus mr-2"></i> <b>Добавить активность</b>
                     </div>
                 </td>
@@ -100,12 +100,11 @@ export default {
             active: 1,
             methods: [],
             sources: [],
-            activities: []
         }
     }, 
 
     created() {
-        fillSelectOptions()
+        this.fillSelectOptions()
     },
 
     methods: {
@@ -117,12 +116,12 @@ export default {
 
 
         addItem(i) {
-            this.items[i].elements.push({name:"Показатель"});
+            this.items.push({name:"Показатель"});
         },
 
         fillSelectOptions() {
-            setMethods()
-            setSources()
+            this.setMethods()
+            this.setSources()
         },
 
         setMethods() {

@@ -72,17 +72,52 @@
     }
   }
 
+  tr td {
+    padding: 0;
+    border: 1px solid #ddd;
+  }
+
+  input,
+  textarea,
+  select {
+    border: none !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+  }
+  
+  select.form-control:not([size]):not([multiple]) {
+      height: unset;
+  }
+
   .table-inner {
     width: 100%;
     margin-bottom: 0;
     background: aliceblue;
     tr td {
-      padding: 10px;
+      padding: 0;
       border: 1px solid #ddd;
+    }
+
+    input,
+    textarea,
+    select {
+      border: none !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+    }
+
+    select.form-control:not([size]):not([multiple]) {
+        height: unset;
     }
   }
 
-
+  .text-center {
+    input,
+    textarea,
+    select {
+      text-align: center !important;
+    }
+  }
 
 }
 
