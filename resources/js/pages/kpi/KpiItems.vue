@@ -46,7 +46,7 @@
                             class="form-control"
                         >
                             <option value="0" selected>-</option>
-                            <option v-for="activity in activities[item.source]" :value="activity.id" :key="item.course + ' ' + activity.id">{{ activity.name }}</option>
+                            <option v-for="activity in activities[item.source]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
                         </select>
                     </div>
                 </td>
@@ -100,7 +100,6 @@ export default {
             active: 1,
             methods: [],
             sources: [],
-            activities: []
         }
     }, 
 
