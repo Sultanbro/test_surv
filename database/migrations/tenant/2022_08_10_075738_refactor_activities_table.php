@@ -30,7 +30,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('activities', function (Blueprint $table) {
-            //
+            $table->dropColumn('targetable_id');
+            $table->dropColumn('targetable_type');
         });
     }
 };
