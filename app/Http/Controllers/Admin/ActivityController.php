@@ -104,22 +104,22 @@ class ActivityController extends Controller
                     if($group_id == 71) {
 
                         if($table_type == 'minutes') {
-                            $item['name'] = $row['Имя оператора'];
+                            $item['name'] = $row['Логин'];
                             if($item['name'] == null) continue;
                             $excel_date = array_key_exists('ДАТА', $row) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['Дата']) : Carbon::now();
                             $item['date'] = $excel_date ? Carbon::parse($excel_date)->format('Y-m-d') : ''; 
                             $item['data'] = $excel_date ? Carbon::parse($excel_date)->format('d.m.Y') : '';
                             if($item['activity_id'] == 149){
-                                $item['hours'] = round($this->countHours($row['Суммарное время в режиме разговора']) * 60 ,1); 
+                                $item['hours'] = round($this->countHours($row['Эффективное время']) * 60 ,1); 
                             }
                             else{
-                                $item['hours'] = $this->countHours($row['Суммарное время в логине']); 
+                                $item['hours'] = $this->countHours($row['Эффективное время']); 
                             }
                             $item['id'] = $this->getPossibleUser($gusers, $item['name']);
                         }   
                         
                         if($table_type == 'avg_time') { 
-                            $item['name'] = $row['Имя оператора'];
+                            $item['name'] = $row['Логин'];
                             $item['avg_time'] = Carbon::parse($row['Среднее время разговора, сек'])->format('i:s');
                             $item['id'] = $item['name'] ? $this->getPossibleUser($gusers, $item['name']) : 0;
                             if($row['menedzher'] == '') continue;
