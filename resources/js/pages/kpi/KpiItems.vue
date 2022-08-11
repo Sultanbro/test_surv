@@ -63,13 +63,13 @@
                     <input type="text" class="form-control" v-model="item.unit" />
                 </td>
                 <td class="text-center">
-                    <input type="text" class="form-control" v-model="item.plan" />
+                    <input type="number" class="form-control" v-model="item.plan" min="0" />
                 </td>
                 <td class="text-center">
-                    <input type="text" class="form-control" v-model="item.share" />
+                    <input type="number" class="form-control" v-model="item.share" min="0"  max="100"/>
                 </td>
                 <td class="text-center">
-                    <input type="text" class="form-control" v-model="item.sum" />
+                    <input type="number" class="form-control" v-model="item.sum" min="0" />
                 </td>
                 <td>
                     <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)"></i>

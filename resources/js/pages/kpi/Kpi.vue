@@ -39,7 +39,15 @@
                     </td>
                     <td  v-for="(field, f) in fields" :key="f">
 
-                        <div v-if="field.key == 'stats'" :class="field.class">
+                        <div v-if="field.key == 'target'" :class="field.class">
+                            <superselect
+                                class="w-full mb-4" 
+                                :values="[item.target]" 
+                                :single="true"
+                                :key="i" /> 
+                        </div>
+
+                        <div v-else-if="field.key == 'stats'" :class="field.class">
                             <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
                         </div>
 
@@ -152,12 +160,16 @@ export default {
             modalAdjustVisibleFields: false,
             items: [
                 {
-                    target: 'IT отдел',
+                    id: 1,
+                    target: {
+                        name: 'IT отдел',
+                        id: 26,
+                        type: 2
+                    },
                     completed_80: 10000,
                     completed_100: 20000,
                     lower_limit: 80,
                     upper_limit: 100,
-                    stats: 1,
                     created_at: new Date().toISOString().substr(0, 19).replace('T',' '),
                     updated_at: new Date().toISOString().substr(0, 19).replace('T',' '),
                     created_by: 'Ходжа Абулхаир',
@@ -166,7 +178,11 @@ export default {
                     expanded: false
                 },
                 {
-                    target: 'Али Акпанов',
+                    target: {
+                        name: 'Али Акпанов',
+                        id: 5,
+                        type: 1
+                    },
                     completed_80: 10000,
                     completed_100: 30000,
                     lower_limit: 80,

@@ -31,4 +31,26 @@ class KpiController extends Controller
         ]);
     }
 
+    /**
+     * Сохраняет и возвращает Kpi::with('items')
+     * @param Request $request
+     * 
+     * @return Kpi
+     */
+    public function save(Request $request)
+    {
+        
+    }
+
+    /**
+     * Редактирует и возвращает Kpi::with('items') 
+     * @param Request $request
+     * 
+     * @return Kpi
+     */
+    public function update(Request $request)
+    {
+        
+    }
+
 }
