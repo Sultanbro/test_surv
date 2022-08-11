@@ -578,15 +578,20 @@ class UserController extends Controller
 
     public function getpersons(Request $request)
     {
-        
+
         $groups = ProfileGroup::where('active', 1)->get();
   
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
             //$users = User::withTrashed()->whereIn('email', $array_accounts_email);
-
             $users = \DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+
+            if($request['job'] != 0){
+                $users = \DB::table('users')
+                ->where('position_id',$request['job'])
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+            }            
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
@@ -616,6 +621,14 @@ class UserController extends Controller
                 ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
+
+            if($request['job'] != 0){
+                $users = \DB::table('users')
+                ->where('position_id',$request['job'])
+                ->whereNotNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 0);
+            } 
             
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
@@ -662,6 +675,15 @@ class UserController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date');
+
+            if($request['job'] != 0){
+                $users = \DB::table('users')
+                ->where('position_id',$request['job'])
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 1)
+                ->whereNull('ud.fire_date');
+            }
             
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
@@ -675,6 +697,14 @@ class UserController extends Controller
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
+
+            if($request['job'] != 0){
+                $users = \DB::table('users')
+                ->where('position_id',$request['job'])
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 0);
+            }
             
            // $trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
