@@ -8,7 +8,7 @@ use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 
-use App\Http\Controllers\Kpi\KpiController;
+use App\Http\Controllers\Kpi\KpiController as KpisController;
 use App\Http\Controllers\Kpi\BonusController;
 use App\Http\Controllers\Kpi\QuartalPremiumController;
 use App\Http\Controllers\Kpi\KpiStatController;
@@ -554,6 +554,16 @@ Route::middleware([
         Route::any('/bitrix/change-resp', [IntellectController::class, 'changeResp']);   // Bitrix -> Admin 
         Route::any('/bitrix/inhouse',  [IntellectController::class, 'inhouse']);   // Bitrix -> Admin 
     
+    });
+
+    Route::group([
+        'prefix'    => 'kpi',
+        'as'        => 'kpi.'
+    ], function (){
+        Route::get('/get', [KpisController::class, 'getKpis'])->name('get');
+        Route::post('/save', [KpisController::class, 'save'])->name('save');
+        Route::put('/update', [KpisController::class, 'update'])->name('update');
+        Route::delete('/delete', [KpisController::class, 'delete'])->name('delete');
     });
 });
 

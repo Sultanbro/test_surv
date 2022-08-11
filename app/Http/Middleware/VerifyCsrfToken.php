@@ -49,7 +49,8 @@ class VerifyCsrfToken extends Middleware
         '/api/bitrix/change-resp',
         '/api/bitrix/inhouse',
         '/group-user/save',
-        '/group-user/drop'
+        '/group-user/drop',
+        '/kpi/*'
     ];
 
 

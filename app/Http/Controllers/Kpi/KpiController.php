@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Kpi;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\KpiSaveUpdateRequest;
+use App\Service\KpiService;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use DB;
@@ -16,10 +20,10 @@ use App\Models\Analytics\Activity;
 class KpiController extends Controller
 {
 
-    public function __construct()
-    {
-        $this->middleware('auth');
-    } 
+//    public function __construct()
+//    {
+//        $this->middleware('auth');
+//    }
 
     public function index(Request $request)
     {
@@ -31,4 +35,51 @@ class KpiController extends Controller
         ]);
     }
 
+    public function getKpis(Request $request, KpiService $service)
+    {
+        $response = $service->get($request->input('id'));
+
+        return response()->json($response);
+    }
+
+    /**
+     * Сохранение.
+     * @param KpiSaveUpdateRequest $request
+     * @param KpiService $kpiService
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function save(KpiSaveUpdateRequest $request, KpiService $kpiService): JsonResponse
+    {
+        $response = $kpiService->save($request);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Обновление.
+     * @param KpiSaveUpdateRequest $request
+     * @param KpiService $kpiService
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function update(KpiSaveUpdateRequest $request, KpiService $kpiService): JsonResponse
+    {
+        $response = $kpiService->update($request);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Удаление.
+     * @param Request $request
+     * @param KpiService $kpiService
+     * @return JsonResponse
+     */
+    public function delete(Request $request, KpiService $kpiService): JsonResponse
+    {
+        $response = $kpiService->delete($request);
+
+        return response()->json($response);
+    }
 }
