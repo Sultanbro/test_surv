@@ -20,6 +20,7 @@
                         <option value="4">inhouse</option>
                         <option value="5">иностранные</option>
                         <option value="6">hh</option>
+                        <option value="7">чаты</option>
                     </select>
                 </div>
             </template> 
