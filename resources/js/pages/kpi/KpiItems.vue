@@ -42,7 +42,7 @@
                         </select>
 
                         <select 
-                            v-if="item.group_id == 1"
+                            v-if="item.source == 1"
                             v-model="item.group_id"
                             class="form-control"
                         >
