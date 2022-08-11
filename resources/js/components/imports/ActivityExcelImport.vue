@@ -35,7 +35,7 @@
                     <b-button variant="primary" @click="uploadFile" class="mt-2 mb-2">
                         <i class="fa fa-file"></i> Загрузить
                     </b-button>
-                </form>	
+                </form> 
             </div>
             <div class="col-md-12">
                 <p style="color:red" v-for="error in errors">{{ error }}</p>
@@ -143,6 +143,7 @@ export default {
     },
     data() {
         return { 
+            fileIsCorrect: false,
             message: null,
             activebtn: null,
             file: undefined,
@@ -170,8 +171,23 @@ export default {
             labelHelp: 'Перемещайтесь по календарю с помощью клавиш со стрелками'
         };
     },
+    watch:{
+        file(before,after){
+            if(before.size && before.size > 1024000)
+            {
+                alert('Файл слишком большой!');
+                this.file = undefined;
+            }else{
+                this.fileIsCorrect = true;
+            }
 
+            console.log(before.size);
+        }
+    },
     methods: {
+        test(){
+            console.log('testing');
+        },
         saveConnects() {
             let loader = this.$loading.show();
             axios.post('/timetracking/analytics/activity/importexcel/save', {
