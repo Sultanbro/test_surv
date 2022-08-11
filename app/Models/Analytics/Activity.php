@@ -71,6 +71,19 @@ class Activity extends Model
     const SOURCE_BITRIX = 2; // из битрикса
     const SOURCE_AMOCRM = 3; // из амо
 
+    public static function getMethod(int $method_id) {
+        $methods = [
+            1 => 'sum', 
+            2 => 'avg', 
+            3 => 'sum_not_more', 
+            4 => 'avg_not_more', 
+            5 => 'sum_not_less', 
+            6 => 'avg_not_less', 
+        ];
+
+        return array_key_exists($method_id, $methods) ? $methods[$method_id] : 'not_found';
+    }
+    
     /**
      * Получить заголовки для эксель
      */
