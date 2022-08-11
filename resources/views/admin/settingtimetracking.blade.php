@@ -26,7 +26,7 @@
                         <div class="tab-content" id="nav-tabContent">
                             @if($active_tab == 1 && (auth()->user()->can('users_view') || auth()->user()->can('settings_view')))
                                 <div class="tab-pane fade show active  p-3" id="nav-person" role="tabpanel" aria-labelledby="nav-person-tab">
-                                    <userlist :is_admin="{{ auth()->user()->is_admin == 1 ? 'true' : 'false' }}" subdomain="{{ tenant('id') }}"></userlist>
+                                    <userlist :is_admin="{{ auth()->user()->is_admin == 1 ? 'true' : 'false' }}" subdomain="{{ tenant('id') }}" positions="{{ json_encode(\App\Position::all()) }}"></userlist>
                                 </div>
                             @endif
                             @if($active_tab == 2 && (auth()->user()->can('positions_view') || auth()->user()->can('settings_view')))

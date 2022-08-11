@@ -14,8 +14,10 @@
       <b-form-select v-model="filter.group" :options="groups" size="sm"></b-form-select>
     </div>
     <div class="col-2  d-flex align-items-center">
-      <b-form-select v-model="tableFilter" :options="tableFilters" size="sm" @change="getUsers()"></b-form-select>
-      
+      <b-form-select v-model="tableFilter" :options="tableFilters" size="sm" @change="getUsers()"></b-form-select> 
+    </div>
+    <div class="col-2  d-flex align-items-center">
+      <b-form-select v-model="position" :options="jobFilters" size="sm" @change="getUsers()"></b-form-select>  
     </div>
     <div class="col-4 justify-content-end d-flex align-items-start">
       
@@ -348,10 +350,14 @@ export default {
     subdomain: {
       type: String,
       default: 'nosub'
-    }
+    },
+    positions: String,
   },
   data() {
     return {
+      my_positions: {},
+      position: 0,
+      jobFilters: [{ text: 'Должность', value: 0 }],
       sel: false,
       newtime: '',
       auth_token: '',
@@ -505,10 +511,12 @@ export default {
     }
   },
   created() {
+    this.my_positions = JSON.parse(this.positions);
+    this.my_positions.forEach((value, index) => {
+      this.jobFilters.push({ text: value.position, value: value.id });
+    });
     this.getUsers()
-    
-      this.setDefaultShowFields()
-    
+    this.setDefaultShowFields()
   },
   computed: {
     sortOptions() {
@@ -616,6 +624,7 @@ export default {
       let filter = {
         filter: this.tableFilter,
         segment: this.filter.segment,
+        job: this.position,
       } 
 
       if(this.active.date) {
