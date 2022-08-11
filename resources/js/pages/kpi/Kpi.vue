@@ -44,6 +44,7 @@
                                 class="w-full" 
                                 :values="[item.target]" 
                                 :single="true"
+                                :ask_before_delete="'Вы уверены, что хотите поменять Кому назначен KPI?'"
                                 :key="i" /> 
                         </div>
 
@@ -196,30 +197,30 @@ export default {
                     expanded: false
                 },
             ],
-            activities: {
-                0: [
-                    {
-                        id: 1,
-                        name: 'TEst 1',
-                    },
-                    {
-                        id: 1,
-                        name: 'Test 2',
-                    }
-                ],
-                1: [
-                    {
-                        id: 3,
-                        name: 'Grouper 1',
-                    },
-                    {
-                        id: 4,
-                        name: 'Groups 2',
-                    }
-                ],
-                2: [],
-                3: [],
-            },
+            activities: [
+               {
+                    id: 1,
+                    name: 'TEst 1',
+                    source: 1,
+                    group_id: 42
+                },
+                {
+                    id: 2,
+                    name: 'Test 2',
+                    source: 1,
+                    group_id: 42
+                },
+                {
+                    id: 3,
+                    name: 'Grouper 1',
+                    source: 0
+                },
+                {
+                    id: 4,
+                    name: 'Groups 2',
+                    source: 0
+                },
+            ],
             non_editable_fields: [
                 'created_at',
                 'updated_at',
@@ -250,7 +251,9 @@ export default {
                 plan: '90%',
                 share: '40%',
                 sum: '10000',
-                fact: 100
+                fact: 100,
+                source: 1,
+                group_id: 0
             });
         }
 
