@@ -520,7 +520,7 @@ class CheckListController extends Controller
                 }else if($t['checkedtasks'][0]['checked'] == 'true'){   
                     return 4;
                 }else{
-                    if (filter_var($t['checkedtasks'][0]['url'], FILTER_VALIDATE_URL) === FALSE) {
+                    if ($t['checkedtasks'][0]['url'] != null && filter_var($t['checkedtasks'][0]['url'], FILTER_VALIDATE_URL) === FALSE) {
                         return 3;
                     }
                     $checked_task = Checkedtask::updateOrCreate([
