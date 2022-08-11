@@ -55,7 +55,7 @@
                             class="form-control"
                         >
                             <option value="0" selected>-</option>
-                            <option v-for="activity in grouped_activities[item.source]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
+                            <option v-for="activity in grouped_activities[item.source][item.group_id]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
                         </select>
                     </div>
                 </td>
@@ -91,6 +91,8 @@
 </template>
 
 <script>
+import { componentsPlugin } from 'bootstrap-vue';
+
 export default {
     name: "KpiItems", 
     props: {
@@ -136,7 +138,19 @@ export default {
         fillSelectOptions() {
             this.setMethods()
             this.setSources()
-            this.grouped_activities = this.groupBy(this.activities)
+
+            let grouped = this.groupBy(this.activities)
+            
+            let a = {};
+            Object(grouped).keys.forEach(id => {
+                if(id == 1) {
+                    a[id] = this.groupBy(grouped[id])
+                } else {
+                    a[id][0] = grouped[id];
+                }
+            })
+
+            console.log(grouped)
         },
 
         setMethods() {
