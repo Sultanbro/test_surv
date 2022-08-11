@@ -31,7 +31,7 @@
             <template v-for="(item, i) in items">
                 <tr :key="i">
                     <td  @click="item.expanded = !item.expanded" class="pointer">
-                        <div class="d-flex">
+                        <div class="d-flex px-2">
                             <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
                             <i class="fa fa-plus mt-1" v-else></i>
                             <span class="ml-2">{{ i + 1 }}</span>
@@ -66,6 +66,7 @@
                                     :items="item.elements"
                                     :expanded="item.expanded"
                                     :activities="activities"
+                                    :groups="groups"
                                 >
                                 </kpi-items>
                             </div>
@@ -147,6 +148,7 @@ export default {
             active: 1,
             show_fields: [],
             fields: [],
+            groups: [],
             modalAdjustVisibleFields: false,
             items: [
                 {
@@ -214,7 +216,7 @@ export default {
     created() {
        // this.fetchKPI()
        // this.fetchActivities()
-
+    
         this.setDefaultShowFields()
         this.prepareFields(); 
         this.addStatusToItems(); 
@@ -235,6 +237,12 @@ export default {
                 fact: 100
             });
         }
+
+        this.groups = {
+            23: 'Адм сотрудники',
+            26: 'It отдел',
+            42: 'Каспи',
+        };
      
        })
     },
@@ -246,7 +254,11 @@ export default {
             axios.post('/kpi/' + this.page, {
                 month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
             }).then(response => {
-              
+                
+                this.items = repsonse.data.items;
+                this.activities = repsonse.data.activities;
+                this.groups = repsonse.data.groups;
+
                 loader.hide()
             }).catch(error => {
                 loader.hide()
