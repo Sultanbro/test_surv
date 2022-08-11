@@ -892,9 +892,10 @@ class TimetrackingController extends Controller
             $end_month = Carbon::parse($year . '-' . $request->month . '-01')->endOfMonth();
             foreach($my_ids as $ids){
                 $hire_date = Carbon::parse($ids->applied);
-                if($hire_date->lt($end_month) || !isset($ids->applied)){
-                    $_user_ids[] = $ids->id;
-                }
+                $_user_ids[] = $ids->id;
+                // if($hire_date->lt($end_month) || !isset($ids->applied)){
+                //     $_user_ids[] = $ids->id;
+                // }
             }
         }
         
@@ -1462,10 +1463,11 @@ class TimetrackingController extends Controller
             $end_month = Carbon::parse($request->year . '-' . $request->month . '-01')->endOfMonth();
             foreach($my_ids as $ids){
                 $hire_date = Carbon::parse($ids->applied);
-                if($hire_date->lt($end_month) || !isset($ids->applied)){
-                    //dump($hire_date->toDateString());
-                    $user_ids[] = $ids->id;
-                }
+                $user_ids[] = $ids->id;
+                // if($hire_date->lt($end_month) || !isset($ids->applied)){
+                //     //dump($hire_date->toDateString());
+                //     $user_ids[] = $ids->id;
+                // }
             } 
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
