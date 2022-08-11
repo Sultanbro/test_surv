@@ -31,7 +31,7 @@
             <template v-for="(item, i) in items">
                 <tr :key="i">
                     <td  @click="item.expanded = !item.expanded" class="pointer">
-                        <div class="d-flex">
+                        <div class="d-flex px-2">
                             <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
                             <i class="fa fa-plus mt-1" v-else></i>
                             <span class="ml-2">{{ i + 1 }}</span>

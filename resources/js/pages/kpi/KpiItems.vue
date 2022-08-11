@@ -42,11 +42,20 @@
                         </select>
 
                         <select 
+                            v-if="item"
+                            v-model="item.group_id"
+                            class="form-control"
+                        >
+                            <option value="0" selected>-</option>
+                            <option v-for="activity in grouped_activities[item.source]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
+                        </select>
+
+                        <select 
                             v-model="item.activity_id"
                             class="form-control"
                         >
                             <option value="0" selected>-</option>
-                            <option v-for="activity in activities[item.source]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
+                            <option v-for="activity in grouped_activities[item.source]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
                         </select>
                     </div>
                 </td>
@@ -100,11 +109,13 @@ export default {
             active: 1,
             methods: [],
             sources: [],
+            grouped_activities: {},
         }
     }, 
 
     created() {
         this.fillSelectOptions()
+        this.fillItems('with_sources_and_group_id');
     },
 
     methods: {
@@ -122,6 +133,7 @@ export default {
         fillSelectOptions() {
             this.setMethods()
             this.setSources()
+            this.grouped_activities = this.groupBy(this.activities)
         },
 
         setMethods() {
@@ -142,6 +154,28 @@ export default {
                 3: 'из амосрм',
             }
         },
+
+        groupBy(xs, key) {
+            return xs.reduce(function(rv, x) {
+                (rv[x[key]] = rv[x[key]] || []).push(x);
+                return rv;
+            }, {});
+        },
+
+        defineSourcesAndGroups(t) {
+            this.items.forEach(el => {
+                el.source = 0;
+                el.group_id = 0;
+
+                if(el.activity_id != 0) {
+                    let i = this.activities.findIndex(a => a.id == el.activity_id);
+                    if(i != -1) {
+                        el.source = this.activities[i].source
+                        if(el.source == 1) el.group_id = this.activities[i].group_id
+                    }
+                }
+            });
+        }
  
     } 
 }
