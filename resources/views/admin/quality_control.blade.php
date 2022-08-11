@@ -21,7 +21,7 @@
 
     </div>
     <div class="col-md-12">
-    <t-quality activeuserid="{{ auth()->user()->id }}" :groups="{{ json_encode($groups)}}" active_group="{{ $group_id }}"></t-quality>
+    <t-quality activeuserid="{{ auth()->user()->id }}" :groups="{{ json_encode($groups)}}" active_group="{{ $group_id }}" check="{{ $check }}"></t-quality>
 
     </div>
     

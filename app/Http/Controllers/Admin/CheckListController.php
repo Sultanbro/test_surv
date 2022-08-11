@@ -144,6 +144,7 @@ class CheckListController extends Controller
     }
 
     public function deleteCheck(Request $request){
+
         $editedChecklist = Checklist::find($request['delete_id']);
         $tasks = $editedChecklist->tasks;
         foreach($tasks as $task){
@@ -359,11 +360,11 @@ class CheckListController extends Controller
                         ]);
                         foreach($users as $user){
                             $task->checkedtasks()->updateOrCreate([
-                                'task_id' => $task->id,
                                 'created_date' => Carbon::now()->toDateString(),
-                                'user_id' => $user->id,                  
                             ],
-                            [              
+                            [      
+                                'task_id' => $task->id,
+                                'user_id' => $user->id,              
                                 'checked' => 'false',
                                 'url' => ''
                             ]);
@@ -408,11 +409,11 @@ class CheckListController extends Controller
                         ]);
                         foreach($users as $user){
                             $task->checkedtasks()->updateOrCreate([
-                                'task_id' => $task->id,
-                                'created_date' => Carbon::now()->toDateString(),
-                                'user_id' => $user->id,                  
+                                'created_date' => Carbon::now()->toDateString(),               
                             ],
                             [              
+                                'task_id' => $task->id,
+                                'user_id' => $user->id,   
                                 'checked' => 'false',
                                 'url' => ''
                             ]);
@@ -454,11 +455,11 @@ class CheckListController extends Controller
                             'checklist_id' => $checklist->id
                         ]);
                         $task->checkedtasks()->updateOrCreate([
-                                'task_id' => $task->id,
-                                'created_date' => Carbon::now()->toDateString(),
-                                'user_id' => $user->id,                  
+                                'created_date' => Carbon::now()->toDateString(),      
                             ],
                             [              
+                                'task_id' => $task->id,
+                                'user_id' => $user->id,            
                                 'checked' => 'false',
                                 'url' => ''
                             ]);

@@ -533,7 +533,7 @@
 
         </b-tab>
 
-        <b-tab title="Чек Лист" :key="3" type="card" card>
+        <b-tab title="Чек Лист" :key="3" type="card" card :active="check == 3">
                     <b-tabs type="card">
             <b-tab title="Неделя" :key="1" >
                             <table class="table b-table table-bordered table-sm">
@@ -788,6 +788,7 @@ export default {
       default:null
     },
     active_group: String,
+    check: String,
   },
   data() {
     return {
