@@ -457,6 +457,7 @@ Route::middleware([
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
     Route::get('/kpi',[KpiController::class,'index']);
+    Route::get('/kpi/get',[KpiController::class,'get']);
     Route::post('/kpi/save',[KpiController::class,'save']);
     Route::post('/kpi/update',[KpiController::class,'update']);
     

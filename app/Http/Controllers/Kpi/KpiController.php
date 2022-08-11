@@ -21,6 +21,9 @@ class KpiController extends Controller
         $this->middleware('auth');
     } 
 
+    /**
+     * Возвращает страницу KPI c вкладками
+     */
     public function index(Request $request)
     {
         View::share('title', 'KPI');
@@ -28,6 +31,21 @@ class KpiController extends Controller
 
         return view('kpi')->with([
             'page' => 'kpi'
+        ]);
+    }
+
+    /**
+     * Возращает KPI::with('items)->paginate()
+     */
+    public function get(Request $request)
+    {
+        View::share('title', 'KPI');
+        View::share('menu', 'timetracking');
+
+        return view('kpi')->with([
+            'activities' => $activities,
+            'groups' => $groups,
+            'kpis' => $kpis,
         ]);
     }
 
