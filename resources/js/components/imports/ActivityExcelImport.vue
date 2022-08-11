@@ -75,7 +75,7 @@
             <div class="col-md-4">
 
                 <div class="" v-if="(group_id == 88 && activity_id == 164) || (group_id == 42 && activity_id == 1) || (group_id == 71)">
-                    <div  v-if="group_id == 42 && activity_id == 1">
+                    <div  v-if="(group_id == 42 && activity_id == 1) || (group_id == 88 && activity_id == 164)">
                         <b>Дата:</b> {{ item.data }}
                     </div>
                     <div>
