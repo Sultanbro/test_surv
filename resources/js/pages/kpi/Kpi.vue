@@ -41,7 +41,7 @@
 
                         <div v-if="field.key == 'target'" :class="field.class">
                             <superselect
-                                class="w-full mb-4" 
+                                class="w-full" 
                                 :values="[item.target]" 
                                 :single="true"
                                 :key="i" /> 
@@ -61,7 +61,7 @@
 
                     </td>
                     <td >
-                        <i class="fa fa-save mr-1 btn btn-primary p-1" @click="saveKpi"></i>
+                        <i class="fa fa-save ml-2 mr-1 btn btn-primary p-1" @click="saveKpi"></i>
                         <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi"></i>
                     </td>
                 </tr>
