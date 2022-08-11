@@ -29,7 +29,8 @@ class KpiService
 
         return [
             'kpis'       => $kpi->get(),
-            'activities' => DB::table('activities')->whereIn('id', $kpi->pluck('activity_id')->toArray())->get()
+            'activities' => Activity::get(),
+            'groups' => \App\ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
     }
 
