@@ -293,10 +293,6 @@ Route::middleware([
     Route::get('/wami', [TestController::class, 'send_whatsapp']);
 
 
-    Route::get('/bonus', [IndexController::class, 'bonus']);
-    Route::any('/bonus/update/{id}', [IndexController::class, 'bonusUpdate']);
-    Route::any('/max-session', [IndexController::class, 'maxSession']);
-
     Route::get('/user/delete/{id}', [IndexController::class, 'deleteUser']);
 
 
@@ -456,11 +452,62 @@ Route::middleware([
     Route::post('/timetracking/analytics/add-remote-inhouse', [AnalyticsController::class, 'addRemoteInhouse']);
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
-    Route::get('/kpi',[KpiController::class,'index']);
-    Route::get('/kpi/get',[KpiController::class,'get']);
-    Route::post('/kpi/save',[KpiController::class,'save']);
-    Route::post('/kpi/update',[KpiController::class,'update']);
-    
+    /**
+     * Страницы KPI
+     */
+    Route::group([
+        'prefix'     => 'kpi',
+        'middleware' => 'auth'
+    ], function(){
+        Route::get('/',[KpiController::class,'index'])->name('kpi.index');
+        Route::get('get',[KpiController::class,'get']);
+        Route::post('save',[KpiController::class,'save']);
+        Route::post('update',[KpiController::class,'update']);
+        Route::delete('delete',[KpiController::class,'delete']);
+    });
+
+    /**
+     * Редактирование бонусов
+     */
+    Route::group([
+        'prefix'     => 'bonus',
+        'middleware' => 'auth'
+    ], function(){
+        Route::get('get',[BonusController::class,'get']);
+        Route::post('save',[BonusController::class,'save']);
+        Route::post('update',[BonusController::class,'update']);
+        Route::delete('delete',[BonusController::class,'delete']);
+    });
+
+    /**
+     * Редактирование квартальной премии
+     */
+    Route::group([
+        'prefix'     => 'quartal-premium',
+        'middleware' => 'auth'
+    ], function(){
+        Route::get('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
+        Route::post('save',[QuartalPremiumController::class,'save'])->name('quartal-premium.save');
+        Route::post('update',[QuartalPremiumController::class,'update'])->name('quartal-premium.update');
+        Route::delete('delete',[QuartalPremiumController::class,'delete']);
+    });
+
+    /**
+     * Редактирование показателей
+     */
+    Route::group([
+        'prefix'     => 'indicators',
+        'middleware' => 'superuser'
+    ], function(){
+        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('indicator.all');
+        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('indicator.one');
+        Route::post('save',[IndicatorController::class,'save']);
+        Route::post('update',[IndicatorController::class,'update']);
+        Route::delete('delete',[IndicatorController::class,'delete']);
+    });
+   
+
+  
 
     Route::get('/books/{id?}', [BpartnersController::class, 'books']);
     Route::any('/pages/update/', [BpartnersController::class, 'pagesupdate']);
@@ -517,16 +564,7 @@ Route::middleware([
     Route::get('/superselect/get-alt', [PermissionController::class, 'superselectAlt']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
 
-    /**
-     * Страницы для показателей
-     */
-    Route::group([
-        'prefix'     => 'indicators',
-        'middleware' => 'superuser'
-    ], function(){
-        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('indicator.all');
-        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('indicator.one');
-    });
+  
     
     Route::group([
         'middleware' => ['api'],
