@@ -97,7 +97,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-3 mt-2" v-if="group_id == 71">
+            <div class="col-sm-3 mt-2" v-if="group_id == 71 || group_id == 88">
                 <b-form-datepicker id="example-datepicker" 
                     v-model="date" 
                     v-bind="datepickerLabels"
