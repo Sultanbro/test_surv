@@ -235,6 +235,7 @@ class RecruiterStats extends Command
 			$dials = (int)$hourly_dials['total']; 
 		} 
 
+        //if($admin_user->id == 14989) dd($hourly_converted);
         $converted = 0;
 		if(array_key_exists('result', $hourly_converted)) {
 			$converted = (int)$hourly_converted['total']; 
