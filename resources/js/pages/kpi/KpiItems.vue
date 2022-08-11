@@ -42,12 +42,12 @@
                         </select>
 
                         <select 
-                            v-if="item"
+                            v-if="item.group_id == 1"
                             v-model="item.group_id"
                             class="form-control"
                         >
                             <option value="0" selected>-</option>
-                            <option v-for="activity in grouped_activities[item.source]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
+                            <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
                         </select>
 
                         <select 
@@ -103,6 +103,9 @@ export default {
         activities: {
             default: {}
         },
+        groups: {
+            default: {}
+        }
     },
     data() {
         return {
