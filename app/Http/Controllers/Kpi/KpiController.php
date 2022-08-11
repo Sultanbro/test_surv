@@ -3,10 +3,6 @@
 namespace App\Http\Controllers\Kpi;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\KpiSaveUpdateRequest;
-use App\Service\KpiService;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use DB;
@@ -20,10 +16,10 @@ use App\Models\Analytics\Activity;
 class KpiController extends Controller
 {
 
-//    public function __construct()
-//    {
-//        $this->middleware('auth');
-//    }
+    public function __construct()
+    {
+        $this->middleware('auth');
+    } 
 
     public function index(Request $request)
     {

@@ -40,17 +40,8 @@ class QualityController extends Controller
     }
 
     public function index(Request $request)
-    {
-        if ($request->has('type') && $request->has('id') ) {
-            $individual_type = $request['type'];
-            $individual_type_id = $request['id'];
-        }else{
-            $individual_type = null;
-            $individual_type_id = null;
-        }
-
-
-
+    {  
+        $check = isset($request['check']) ? $request['check'] : 1;
         if(!auth()->user()->can('quality_view')) {
             return redirect('/');
         }
@@ -63,8 +54,9 @@ class QualityController extends Controller
             $user = User::find($request['user_id']);
             $group_id = $user->inGroups()[0]->id;
         }
+
         return view('admin.quality_control',
-            compact('groups','group_id'));
+            compact('groups','group_id','check'));
     }
 
     public function getRecords(Request $request) {

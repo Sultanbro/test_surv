@@ -31,7 +31,7 @@
             <template v-for="(item, i) in items">
                 <tr :key="i">
                     <td  @click="item.expanded = !item.expanded" class="pointer">
-                        <div class="d-flex">
+                        <div class="d-flex px-2">
                             <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
                             <i class="fa fa-plus mt-1" v-else></i>
                             <span class="ml-2">{{ i + 1 }}</span>
@@ -39,7 +39,15 @@
                     </td>
                     <td  v-for="(field, f) in fields" :key="f">
 
-                        <div v-if="field.key == 'stats'" :class="field.class">
+                        <div v-if="field.key == 'target'" :class="field.class">
+                            <superselect
+                                class="w-full" 
+                                :values="[item.target]" 
+                                :single="true"
+                                :key="i" /> 
+                        </div>
+
+                        <div v-else-if="field.key == 'stats'" :class="field.class">
                             <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
                         </div>
 
@@ -53,7 +61,7 @@
 
                     </td>
                     <td >
-                        <i class="fa fa-save mr-1 btn btn-primary p-1" @click="saveKpi"></i>
+                        <i class="fa fa-save ml-2 mr-1 btn btn-primary p-1" @click="saveKpi"></i>
                         <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi"></i>
                     </td>
                 </tr>
@@ -66,6 +74,7 @@
                                     :items="item.elements"
                                     :expanded="item.expanded"
                                     :activities="activities"
+                                    :groups="groups"
                                 >
                                 </kpi-items>
                             </div>
@@ -147,15 +156,20 @@ export default {
             active: 1,
             show_fields: [],
             fields: [],
+            groups: [],
             modalAdjustVisibleFields: false,
             items: [
                 {
-                    target: 'IT отдел',
+                    id: 1,
+                    target: {
+                        name: 'IT отдел',
+                        id: 26,
+                        type: 2
+                    },
                     completed_80: 10000,
                     completed_100: 20000,
                     lower_limit: 80,
                     upper_limit: 100,
-                    stats: 1,
                     created_at: new Date().toISOString().substr(0, 19).replace('T',' '),
                     updated_at: new Date().toISOString().substr(0, 19).replace('T',' '),
                     created_by: 'Ходжа Абулхаир',
@@ -164,7 +178,11 @@ export default {
                     expanded: false
                 },
                 {
-                    target: 'Али Акпанов',
+                    target: {
+                        name: 'Али Акпанов',
+                        id: 5,
+                        type: 1
+                    },
                     completed_80: 10000,
                     completed_100: 30000,
                     lower_limit: 80,
@@ -214,7 +232,7 @@ export default {
     created() {
        // this.fetchKPI()
        // this.fetchActivities()
-
+    
         this.setDefaultShowFields()
         this.prepareFields(); 
         this.addStatusToItems(); 
@@ -235,6 +253,12 @@ export default {
                 fact: 100
             });
         }
+
+        this.groups = {
+            23: 'Адм сотрудники',
+            26: 'It отдел',
+            42: 'Каспи',
+        };
      
        })
     },
@@ -246,7 +270,11 @@ export default {
             axios.post('/kpi/' + this.page, {
                 month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
             }).then(response => {
-              
+                
+                this.items = repsonse.data.items;
+                this.activities = repsonse.data.activities;
+                this.groups = repsonse.data.groups;
+
                 loader.hide()
             }).catch(error => {
                 loader.hide()

@@ -144,7 +144,14 @@ class CheckListController extends Controller
     }
 
     public function deleteCheck(Request $request){
-        Checklist::find($request['delete_id'])->delete();
+
+        $editedChecklist = Checklist::find($request['delete_id']);
+        $tasks = $editedChecklist->tasks;
+        foreach($tasks as $task){
+            $task->checkedtasks()->where('created_date', Carbon::now()->toDateString())->delete();
+            $task->delete();
+        }
+        $editedChecklist->delete();
     }
 
     public function editCheck(Request $request)
@@ -353,11 +360,11 @@ class CheckListController extends Controller
                         ]);
                         foreach($users as $user){
                             $task->checkedtasks()->updateOrCreate([
-                                'task_id' => $task->id,
                                 'created_date' => Carbon::now()->toDateString(),
-                                'user_id' => $user->id,                  
                             ],
-                            [              
+                            [      
+                                'task_id' => $task->id,
+                                'user_id' => $user->id,              
                                 'checked' => 'false',
                                 'url' => ''
                             ]);
@@ -402,11 +409,11 @@ class CheckListController extends Controller
                         ]);
                         foreach($users as $user){
                             $task->checkedtasks()->updateOrCreate([
-                                'task_id' => $task->id,
-                                'created_date' => Carbon::now()->toDateString(),
-                                'user_id' => $user->id,                  
+                                'created_date' => Carbon::now()->toDateString(),               
                             ],
                             [              
+                                'task_id' => $task->id,
+                                'user_id' => $user->id,   
                                 'checked' => 'false',
                                 'url' => ''
                             ]);
@@ -448,11 +455,11 @@ class CheckListController extends Controller
                             'checklist_id' => $checklist->id
                         ]);
                         $task->checkedtasks()->updateOrCreate([
-                                'task_id' => $task->id,
-                                'created_date' => Carbon::now()->toDateString(),
-                                'user_id' => $user->id,                  
+                                'created_date' => Carbon::now()->toDateString(),      
                             ],
                             [              
+                                'task_id' => $task->id,
+                                'user_id' => $user->id,            
                                 'checked' => 'false',
                                 'url' => ''
                             ]);
@@ -513,7 +520,7 @@ class CheckListController extends Controller
                 }else if($t['checkedtasks'][0]['checked'] == 'true'){   
                     return 4;
                 }else{
-                    if (filter_var($t['checkedtasks'][0]['url'], FILTER_VALIDATE_URL) === FALSE) {
+                    if ($t['checkedtasks'][0]['url'] != null && filter_var($t['checkedtasks'][0]['url'], FILTER_VALIDATE_URL) === FALSE) {
                         return 3;
                     }
                     $checked_task = Checkedtask::updateOrCreate([

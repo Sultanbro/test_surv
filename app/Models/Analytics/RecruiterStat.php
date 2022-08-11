@@ -33,6 +33,7 @@ class RecruiterStat extends Model
         4 => 'inhouse',
         5 => 'иностранные',
         6 => 'hh',
+        7 => 'чаты',
     ];
 
     public static function tables($date = null) {

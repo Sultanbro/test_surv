@@ -42,11 +42,20 @@
                         </select>
 
                         <select 
+                            v-if="item.source == 1"
+                            v-model="item.group_id"
+                            class="form-control"
+                        >
+                            <option value="0" selected>-</option>
+                            <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
+                        </select>
+
+                        <select 
                             v-model="item.activity_id"
                             class="form-control"
                         >
                             <option value="0" selected>-</option>
-                            <option v-for="activity in activities[item.source]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
+                            <option v-for="activity in grouped_activities[item.source][item.group_id]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
                         </select>
                     </div>
                 </td>
@@ -54,13 +63,13 @@
                     <input type="text" class="form-control" v-model="item.unit" />
                 </td>
                 <td class="text-center">
-                    <input type="text" class="form-control" v-model="item.plan" />
+                    <input type="number" class="form-control" v-model="item.plan" min="0" />
                 </td>
                 <td class="text-center">
-                    <input type="text" class="form-control" v-model="item.share" />
+                    <input type="number" class="form-control" v-model="item.share" min="0"  max="100"/>
                 </td>
                 <td class="text-center">
-                    <input type="text" class="form-control" v-model="item.sum" />
+                    <input type="number" class="form-control" v-model="item.sum" min="0" />
                 </td>
                 <td>
                     <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)"></i>
@@ -82,6 +91,8 @@
 </template>
 
 <script>
+import { componentsPlugin } from 'bootstrap-vue';
+
 export default {
     name: "KpiItems", 
     props: {
@@ -94,17 +105,22 @@ export default {
         activities: {
             default: {}
         },
+        groups: {
+            default: {}
+        }
     },
     data() {
         return {
             active: 1,
             methods: [],
             sources: [],
+            grouped_activities: {},
         }
     }, 
 
     created() {
         this.fillSelectOptions()
+        this.fillItems('with_sources_and_group_id');
     },
 
     methods: {
@@ -122,6 +138,19 @@ export default {
         fillSelectOptions() {
             this.setMethods()
             this.setSources()
+
+            let grouped = this.groupBy(this.activities)
+            
+            let a = {};
+            Object(grouped).keys.forEach(id => {
+                if(id == 1) {
+                    a[id] = this.groupBy(grouped[id])
+                } else {
+                    a[id][0] = grouped[id];
+                }
+            })
+
+            console.log(grouped)
         },
 
         setMethods() {
@@ -142,6 +171,28 @@ export default {
                 3: 'из амосрм',
             }
         },
+
+        groupBy(xs, key) {
+            return xs.reduce(function(rv, x) {
+                (rv[x[key]] = rv[x[key]] || []).push(x);
+                return rv;
+            }, {});
+        },
+
+        defineSourcesAndGroups(t) {
+            this.items.forEach(el => {
+                el.source = 0;
+                el.group_id = 0;
+
+                if(el.activity_id != 0) {
+                    let i = this.activities.findIndex(a => a.id == el.activity_id);
+                    if(i != -1) {
+                        el.source = this.activities[i].source
+                        if(el.source == 1) el.group_id = this.activities[i].group_id
+                    }
+                }
+            });
+        }
  
     } 
 }
