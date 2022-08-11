@@ -112,7 +112,7 @@ class ActivityController extends Controller
                             $item['date'] = $excel_date ? Carbon::parse($excel_date)->format('Y-m-d') : ''; 
                             $item['data'] = $excel_date ? Carbon::parse($excel_date)->format('d.m.Y') : '';
                             if($item['activity_id'] == 149){
-                                $item['hours'] = round($this->countHours($row['Суммарное время в логине']) * 60 ,1); 
+                                $item['hours'] = round($this->countHours($row['Суммарное время в режиме разговора']) * 60 ,1); 
                             }
                             else if($item['activity_id'] == 151){
                                 $item['hours'] = $this->countHours($row['Эффективное время']); 
