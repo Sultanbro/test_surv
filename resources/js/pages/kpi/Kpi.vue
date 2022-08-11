@@ -42,7 +42,7 @@
                         <div v-if="field.key == 'target'" :class="field.class">
                             <superselect
                                 class="w-full" 
-                                :values="[item.target]" 
+                                :values="item.target == null ? [] : [item.target]" 
                                 :single="true"
                                 :ask_before_delete="'Вы уверены, что хотите поменять Кому назначен KPI?'"
                                 :key="i" /> 
@@ -62,8 +62,8 @@
 
                     </td>
                     <td >
-                        <i class="fa fa-save ml-2 mr-1 btn btn-primary p-1" @click="saveKpi"></i>
-                        <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi"></i>
+                        <i class="fa fa-save ml-2 mr-1 btn btn-primary p-1" @click="saveKpi(i)"></i>
+                        <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi(i)"></i>
                     </td>
                 </tr>
 
@@ -418,7 +418,8 @@ export default {
 
         addKpi() {
             this.items.unshift({
-                target: 'Test target',
+                id: 0,
+                target: null,
                 completed_80: 10000,
                 completed_100: 30000,
                 lower_limit: 80,
@@ -435,8 +436,28 @@ export default {
             this.$toast.info('Добавить KPI');
         },
 
-        saveKpi() {
-            this.$toast.info('KPI Сохранен!');
+        saveKpi(i) {
+            let loader = this.$loading.show();
+            let item = this.items[i]
+            let method = this.items[i].id == 0 ? 'save' : 'update';
+
+            axios.post('/kpi/' + method, {
+                kpi: item
+            }).then(response => {
+                
+                let kpi = response.data.kpi;
+                
+                item.id = kpi.id;
+                item.elements.forEach((el, index) => {
+                    el.id = kpi.elements[index]
+                });
+
+                this.$toast.info('KPI Сохранен!');
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
         }, 
 
         deleteKpi() {
