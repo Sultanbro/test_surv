@@ -105,7 +105,7 @@
                     locale="ru"  
                     :start-weekday="1"></b-form-datepicker>
             </div>
-            <div class="col-sm-3 mt-2" v-if="activity_id == 94">
+            <div class="col-sm-3 mt-2" v-if="activity_id == 94 || activity_id == 165">
                 <b-form-datepicker id="example-datepicker" 
                     v-model="date" 
                     v-bind="datepickerLabels"

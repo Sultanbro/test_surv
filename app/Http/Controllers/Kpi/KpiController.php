@@ -21,9 +21,6 @@ class KpiController extends Controller
         $this->middleware('auth');
     } 
 
-    /**
-     * Возвращает страницу KPI c вкладками
-     */
     public function index(Request $request)
     {
         View::share('title', 'KPI');
@@ -34,41 +31,51 @@ class KpiController extends Controller
         ]);
     }
 
-    /**
-     * Возращает KPI::with('items)->paginate()
-     */
-    public function get(Request $request)
+    public function getKpis(Request $request, KpiService $service)
     {
-        View::share('title', 'KPI');
-        View::share('menu', 'timetracking');
+        $response = $service->get($request->input('id'));
 
-        return view('kpi')->with([
-            'activities' => $activities,
-            'groups' => $groups,
-            'kpis' => $kpis,
-        ]);
+        return response()->json($response);
     }
 
     /**
-     * Сохраняет и возвращает Kpi::with('items')
+     * Сохранение.
+     * @param KpiSaveUpdateRequest $request
+     * @param KpiService $kpiService
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function save(KpiSaveUpdateRequest $request, KpiService $kpiService): JsonResponse
+    {
+        $response = $kpiService->save($request);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Обновление.
+     * @param KpiSaveUpdateRequest $request
+     * @param KpiService $kpiService
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function update(KpiSaveUpdateRequest $request, KpiService $kpiService): JsonResponse
+    {
+        $response = $kpiService->update($request);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Удаление.
      * @param Request $request
-     * 
-     * @return Kpi
+     * @param KpiService $kpiService
+     * @return JsonResponse
      */
-    public function save(Request $request)
+    public function delete(Request $request, KpiService $kpiService): JsonResponse
     {
-        
-    }
+        $response = $kpiService->delete($request);
 
-    /**
-     * Редактирует и возвращает Kpi::with('items') 
-     * @param Request $request
-     * 
-     * @return Kpi
-     */
-    public function update(Request $request)
-    {
-        
+        return response()->json($response);
     }
-
 }
