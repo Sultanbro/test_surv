@@ -451,12 +451,11 @@ class CheckReports extends Model
     }
 
     public static function getDaylyChecklistsByUser($user_id, $month, $year){
-        $query = Checkedtask::where('user_id',$user_id);
         $checked_tasks = Checkedtask::select('created_date')->where('user_id',$user_id)->whereYear('created_date',$year)->whereMonth('created_date',$month)->distinct()->pluck('created_date')->toArray();
         $days_data = [];
         foreach($checked_tasks as $task){
             $total = Checkedtask::where('user_id',$user_id)->whereDate('created_date',$task)->count();
-            $checked = $query->whereDate('created_date',$task)->where('checked','true')->count();
+            $checked = Checkedtask::where('user_id',$user_id)->whereDate('created_date',$task)->where('checked','true')->count();
             $days_data[(int)substr($task, -2, 2)] = $checked.'/'.$total;
         }
         return $days_data;
