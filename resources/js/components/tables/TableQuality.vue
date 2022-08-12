@@ -569,7 +569,7 @@
 
                          <template v-for="(checked_day,index) in check_r.day">
                            <template v-if="index == field.name">
-                             <div v-if="auth_user.position_id == 31 && auth_user.is_admin == 1" v-on:click="showSidebar(check_r.user_id, index)" >{{checked_day}}</div>
+                             <div v-if="auth_user.position_id == 31 || auth_user.is_admin == 1" v-on:click="showSidebar(check_r.user_id, index)" >{{checked_day}}</div>
                              <div v-else>{{checked_day}}</div>
                            </template>
                          </template>
