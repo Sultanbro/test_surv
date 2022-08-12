@@ -148,7 +148,7 @@ class CheckListController extends Controller
         $editedChecklist = Checklist::find($request['delete_id']);
         $tasks = $editedChecklist->tasks;
         foreach($tasks as $task){
-            $task->checkedtasks()->where('created_date', Carbon::now()->toDateString())->delete();
+            Checkedtask::where('task_id',$task->id)->where('created_date', Carbon::now()->toDateString())->delete();
             $task->delete();
         }
         $editedChecklist->delete();
@@ -342,7 +342,7 @@ class CheckListController extends Controller
 
                     $checklist = Checklist::updateOrCreate(
                     [ 
-                        'json_users' => '['.$user_data['id'].']',
+                        'json_users' => $user_data['id'],
                     ],
                     [
                         'creator_id' => auth()->id(),
@@ -394,7 +394,7 @@ class CheckListController extends Controller
 
                     $checklist = Checklist::updateOrCreate(
                     [
-                        'json_users' => '['.$user_data['id'].']', 
+                        'json_users' => $user_data['id'], 
                     ],
                     [
                         'creator_id' => auth()->id(),
@@ -435,7 +435,7 @@ class CheckListController extends Controller
                     }
 
                     $checklist->title = $profilePosition->position;
-                    $checklist->json_users = '['.$user_data['id'].']';
+                    $checklist->json_users = $user_data['id'];
                     foreach($users as $user){
                         $checklist->users()->updateOrCreate([
                                 'id' => $user->id
@@ -451,7 +451,7 @@ class CheckListController extends Controller
 
 
                     $checklist = Checklist::updateOrCreate([
-                        'json_users' => '['.$user_data['id'].']',
+                        'json_users' => $user_data['id'],
                     ],
                     [
                         'creator_id' => auth()->id(),
