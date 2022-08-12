@@ -161,7 +161,7 @@ class CheckListController extends Controller
     }
 
     public function editSaveCheck(Request $request){
-
+        
         Task::destroy($request['deleted_tasks']);
         Checkedtask::whereIn('task_id',$request['deleted_tasks'])->where('created_date',Carbon::now()->toDateString())->delete();
 
@@ -177,7 +177,7 @@ class CheckListController extends Controller
                     'checklist_id' => $editedChecklist->id
                 ]);
                 foreach($users as $user){
-                    $task->checkedtasks()->updateOrCreate([
+                    $task->checkedtasks()->updateOrCreate([ 
                         'task_id' => $task->id,
                         'created_date' => Carbon::now()->toDateString(),
                         'user_id' => $user->id,                  
@@ -193,6 +193,10 @@ class CheckListController extends Controller
             $this->recordChecklists($checklist_data, $request['arr_check_input'], $request['countView']);
 
         }else{
+            $tasks = Task::where('checklist_id',$editedChecklist->id)->get();
+            foreach($tasks as $task){
+                Checkedtask::where('task_id',$task->id)->where('created_date', Carbon::now()->toDateString())->delete();
+            }
             $editedChecklist->delete();
             $this->recordChecklists($request['allValueArray'], $request['arr_check_input'], $request['countView']);
         }
