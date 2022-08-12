@@ -3,7 +3,8 @@
 namespace App\Service;
 
 use App\Events\TrackKpiUpdatesEvent;
-use App\Http\Requests\KpiSaveUpdateRequest;
+use App\Http\Requests\KpiSaveRequest;
+use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Kpi\Kpi;
 use Exception;
@@ -35,11 +36,11 @@ class KpiService
 
     /**
      * Сохраняем новый KPI.
-     * @param KpiSaveUpdateRequest $request
+     * @param KpiSaveRequest $request
      * @return void
      * @throws Exception
      */
-    public function save(KpiSaveUpdateRequest $request): void
+    public function save(KpiSaveRequest $request): void
     {
         try {
             $model = $this->getModel($request->input('targetableType'));
@@ -60,28 +61,20 @@ class KpiService
 
     /**
      * Обновляем данные и сохраняем в histories старые данные.
-     * @param KpiSaveUpdateRequest $request
+     * @param KpiUpdateRequest $request
      * @return void
      * @throws Exception
      */
-    public function update(KpiSaveUpdateRequest $request): void
+    public function update(KpiUpdateRequest $request): void
     {
         try {
+
             $id = $request->input('kpi_id');
 
             event(new TrackKpiUpdatesEvent($id));
 
-            $model = $this->getModel($request->input('targetableType'));
+            Kpi::query()->findOrFail($id)->update($request->all());
 
-            Kpi::query()->findOrFail($id)->update([
-                'targetable_id'     => $request->input('targetableId'),
-                'targetable_type'   => $model,
-                'completed_80'      => $request->input('completed_80'),
-                'completed_100'     => $request->input('completed_100'),
-                'lower_limit'       => $request->input('lower_limit'),
-                'upper_limit'       => $request->input('upper_limit'),
-                'colors'            => json_encode($request->input('colors'))
-            ]);
         }catch (Exception $exception){
             Log::error($exception);
             throw new Exception($exception);

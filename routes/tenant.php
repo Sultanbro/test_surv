@@ -453,20 +453,6 @@ Route::middleware([
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
     /**
-     * Страницы KPI
-     */
-    Route::group([
-        'prefix'     => 'kpi',
-        'middleware' => 'auth'
-    ], function(){
-        Route::get('/',[KpiController::class,'index'])->name('kpi.index');
-        Route::get('get',[KpiController::class,'get']);
-        Route::post('save',[KpiController::class,'save']);
-        Route::post('update',[KpiController::class,'update']);
-        Route::delete('delete',[KpiController::class,'delete']);
-    });
-
-    /**
      * Редактирование бонусов
      */
     Route::group([

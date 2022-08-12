@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class KpiSaveUpdateRequest extends FormRequest
+class KpiUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,14 +24,12 @@ class KpiSaveUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'targetableId'      => 'integer|required',
-            'targetableType'    => 'integer|required',
-            'completed_80'      => 'required',
-            'completed_100'     => 'required',
-            'lower_limit'       => 'required',
-            'upper_limit'       => 'required',
+            'kpi_id'            => 'required',
+            'completed_80'      => 'nullable',
+            'completed_100'     => 'nullable',
+            'lower_limit'       => 'nullable',
+            'upper_limit'       => 'nullable',
             'colors'            => 'array|nullable',
-            'kpi_id'            => 'nullable'
         ];
     }
 }

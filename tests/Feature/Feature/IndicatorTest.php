@@ -45,7 +45,7 @@ class IndicatorTest extends TestCase
     {
         $this->withoutMiddleware();
 
-        $response = $this->get('/indicators/' . rand(0, 10));
+        $response = $this->get('/indicators/10');
         $response->assertStatus(200)->assertSee([
             'id'            => '',
             'name'          => '',
