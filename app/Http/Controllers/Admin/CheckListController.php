@@ -523,7 +523,8 @@ class CheckListController extends Controller
                     }
                     $checked_task = Checkedtask::updateOrCreate([
                         'task_id' => $t['id'],
-                        'created_date' => Carbon::now()->toDateString()
+                        'created_date' => Carbon::now()->toDateString(),
+                        'user_id' => auth()->id(),
                     ],[
                         'url' => $t['checkedtasks'][0]['url'],
                         'checked' => $t['checkedtasks'][0]['checked'] == 1 ? 'true' : 'false',
@@ -539,7 +540,8 @@ class CheckListController extends Controller
                     }
                     $checked_task = Checkedtask::updateOrCreate([
                         'task_id' => $t['id'],
-                        'created_date' => Carbon::now()->toDateString()
+                        'created_date' => Carbon::now()->toDateString(),
+                        'user_id' => auth()->id(),
                     ],[
                         'url' => '',
                         'checked' => 'false',
