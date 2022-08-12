@@ -21,7 +21,7 @@ class Task extends Model
     ];
 
     public function checkedtasks(){
-        return $this->hasMany(Checkedtask::class,'task_id','id')->whereDate('created_at', Carbon::today());
+        return $this->hasMany(Checkedtask::class,'task_id','id')->whereDate('created_at', Carbon::today())->where('user_id',auth()->id());
     }
 
 
