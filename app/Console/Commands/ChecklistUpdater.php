@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Task;
 use App\Models\Checklist;
+use Carbon\Carbon;
 
 class ChecklistUpdater extends Command
 {
@@ -47,11 +48,11 @@ class ChecklistUpdater extends Command
             foreach($tasks as $task){
                 foreach($users as $user){
                     $task->checkedtasks()->updateOrCreate([
-                        'created_date' => Carbon::now()->toDateString(),      
+                        'created_date' => Carbon::now()->toDateString(),  
+                        'task_id' => $task->id,
+                        'user_id' => $user->id,      
                     ],
                     [              
-                        'task_id' => $task->id,
-                        'user_id' => $user->id,  
                         'checked' => 'false',
                         'url' => ''
                     ]);

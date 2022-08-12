@@ -42,8 +42,9 @@
                         <div v-if="field.key == 'target'" :class="field.class">
                             <superselect
                                 class="w-full" 
-                                :values="[item.target]" 
+                                :values="item.target == null ? [] : [item.target]" 
                                 :single="true"
+                                :ask_before_delete="'Вы уверены, что хотите поменять Кому назначен KPI?'"
                                 :key="i" /> 
                         </div>
 
@@ -61,8 +62,8 @@
 
                     </td>
                     <td >
-                        <i class="fa fa-save ml-2 mr-1 btn btn-primary p-1" @click="saveKpi"></i>
-                        <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi"></i>
+                        <i class="fa fa-save ml-2 mr-1 btn btn-primary p-1" @click="saveKpi(i)"></i>
+                        <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi(i)"></i>
                     </td>
                 </tr>
 
@@ -196,30 +197,30 @@ export default {
                     expanded: false
                 },
             ],
-            activities: {
-                0: [
-                    {
-                        id: 1,
-                        name: 'TEst 1',
-                    },
-                    {
-                        id: 1,
-                        name: 'Test 2',
-                    }
-                ],
-                1: [
-                    {
-                        id: 3,
-                        name: 'Grouper 1',
-                    },
-                    {
-                        id: 4,
-                        name: 'Groups 2',
-                    }
-                ],
-                2: [],
-                3: [],
-            },
+            activities: [
+               {
+                    id: 1,
+                    name: 'TEst 1',
+                    source: 1,
+                    group_id: 42
+                },
+                {
+                    id: 2,
+                    name: 'Test 2',
+                    source: 1,
+                    group_id: 42
+                },
+                {
+                    id: 3,
+                    name: 'Grouper 1',
+                    source: 0
+                },
+                {
+                    id: 4,
+                    name: 'Groups 2',
+                    source: 0
+                },
+            ],
             non_editable_fields: [
                 'created_at',
                 'updated_at',
@@ -250,7 +251,9 @@ export default {
                 plan: '90%',
                 share: '40%',
                 sum: '10000',
-                fact: 100
+                fact: 100,
+                source: 1,
+                group_id: 0
             });
         }
 
@@ -415,7 +418,8 @@ export default {
 
         addKpi() {
             this.items.unshift({
-                target: 'Test target',
+                id: 0,
+                target: null,
                 completed_80: 10000,
                 completed_100: 30000,
                 lower_limit: 80,
@@ -432,8 +436,28 @@ export default {
             this.$toast.info('Добавить KPI');
         },
 
-        saveKpi() {
-            this.$toast.info('KPI Сохранен!');
+        saveKpi(i) {
+            let loader = this.$loading.show();
+            let item = this.items[i]
+            let method = this.items[i].id == 0 ? 'save' : 'update';
+
+            axios.post('/kpi/' + method, {
+                kpi: item
+            }).then(response => {
+                
+                let kpi = response.data.kpi;
+                
+                item.id = kpi.id;
+                item.elements.forEach((el, index) => {
+                    el.id = kpi.elements[index]
+                });
+
+                this.$toast.info('KPI Сохранен!');
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
         }, 
 
         deleteKpi() {

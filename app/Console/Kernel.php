@@ -17,6 +17,7 @@ use App\Console\Commands\NotifyManagersAboutForeigners;
 use App\Console\Commands\SalaryTrainees;
 use App\Console\Commands\RecruitingRecordsTotals;
 use App\Console\Commands\SetAbsent;
+use App\Console\Commands\ChecklistUpdater;
 use App\Console\Commands\Bitrix\BitrixStats;
 use App\Console\Commands\Bitrix\FunnelStats;
 use App\Console\Commands\Notifications\Adaptation;

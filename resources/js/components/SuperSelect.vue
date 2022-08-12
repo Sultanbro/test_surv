@@ -84,6 +84,10 @@ export default {
             type: Boolean,
             default: false
         },
+        ask_before_delete: {
+            type: String,
+            default: ''
+        }
     },
     data() {
         return {
@@ -174,6 +178,10 @@ export default {
         },
 
         removeValue(i) {
+            if(this.ask_before_delete != '') {
+                if(!confirm(this.ask_before_delete)) return;
+            }
+
             let v = this.values[i];
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 

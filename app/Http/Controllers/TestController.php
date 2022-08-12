@@ -26,36 +26,11 @@ class TestController extends Controller {
  
 	public function test() {
 	
-		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
-		$g = \App\Kpi::userKpi(15291, '2022-07-01', 1);
-		// 15030
-		dd($g);
-		// $books = Book::get();
-		// foreach($books as $book) {
-		// 	$tests = TestQuestion::where([
-		// 		'testable_type' => 'App\\Models\\Books\\BookSegment',
-		// 		'testable_id' => $book->id
-		// 	])->get();
-
-		// 	$groups = $tests->groupBy('page');
-
-		// 	foreach ($groups as $page => $els) {
-				
-		// 		$segment = BookSegment::create([
-		// 			'title' => 'test',
-		// 			'book_id' => $book->id,
-		// 			'page_start' => $page,
-		// 			'page_end' => $page,
-		// 			'pass_grade' => 100
-		// 		]);
-
-		// 		foreach ($els as $key => $q) {
-		// 			$q->testable_id = $segment->id;
-		// 			$q->save();
-		// 		}
-		// 	}
-		// }
-
+		$a = (new \App\Service\CalculateKpiService)->getCompletePercent([
+			'daily_plan' => 100,
+			'total_fact' => 99,
+		], 1);
+		dd($a);
 	}  
 
 	public function hhRefresher() {

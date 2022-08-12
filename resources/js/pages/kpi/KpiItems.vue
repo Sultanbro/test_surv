@@ -21,8 +21,8 @@
                 <td>
                     <input type="text" class="form-control" v-model="item.name" />
                 </td>
-                <td class="text-center">
-                    <select v-model="item.method" class="form-control">
+                <td class="text-center"> 
+                    <select v-model="item.method" class="form-control small">
                         <option v-for="key in Object.keys(methods)" :key="key"
                             :value="key">
                             {{ methods[key] }}
@@ -33,7 +33,7 @@
                     <div class="d-flex">
                         <select 
                             v-model="item.source"
-                            class="form-control"
+                            class="form-control small"
                         >
                             <option v-for="key in Object.keys(sources)" :key="key"
                                 :value="key">
@@ -44,7 +44,7 @@
                         <select 
                             v-if="item.source == 1"
                             v-model="item.group_id"
-                            class="form-control"
+                            class="form-control small"
                         >
                             <option value="0" selected>-</option>
                             <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
@@ -52,10 +52,10 @@
 
                         <select 
                             v-model="item.activity_id"
-                            class="form-control"
+                            class="form-control small"
                         >
                             <option value="0" selected>-</option>
-                            <option v-for="activity in grouped_activities[item.source][item.group_id]" :value="activity.id" :key="item.source + ' ' + activity.id">{{ activity.name }}</option>
+                            <option v-for="activity in grouped_activities[item.source][item.group_id]" :value="activity.id"  >{{ activity.name }}</option>
                         </select>
                     </div>
                 </td>
@@ -120,7 +120,7 @@ export default {
 
     created() {
         this.fillSelectOptions()
-        this.fillItems('with_sources_and_group_id');
+        this.defineSourcesAndGroups('with_sources_and_group_id');
     },
 
     methods: {
@@ -139,18 +139,20 @@ export default {
             this.setMethods()
             this.setSources()
 
-            let grouped = this.groupBy(this.activities)
+            let grouped = this.groupBy(this.activities, 'source')
             
             let a = {};
-            Object(grouped).keys.forEach(id => {
+            Object.keys(grouped).forEach(id => {
                 if(id == 1) {
-                    a[id] = this.groupBy(grouped[id])
+                    a[id] = this.groupBy(grouped[id], 'group_id')
                 } else {
+                    if(a[id] === undefined) a[id] = {};
                     a[id][0] = grouped[id];
                 }
             })
 
             console.log(grouped)
+            this.grouped_activities = grouped
         },
 
         setMethods() {

@@ -2,11 +2,11 @@
 <div>
 
   <div class="row mb-2">
-    <div class="col-4 text-left">
+    <div class="col-3 text-left">
       <b-input-group size="sm">
         <b-form-input v-model="filter.email" type="search" id="filterInput" placeholder="Поиск" ></b-form-input>
         <b-input-group-append>
-          <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button>
+          <!-- <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button> -->
         </b-input-group-append>
       </b-input-group>
     </div>
@@ -19,7 +19,7 @@
     <div class="col-2  d-flex align-items-center">
       <b-form-select v-model="position" :options="jobFilters" size="sm" @change="getUsers()"></b-form-select>  
     </div>
-    <div class="col-4 justify-content-end d-flex align-items-start">
+    <div class="col-3 justify-content-end d-flex align-items-start">
       
       <a href="/timetracking/create-person" class="btn btn-success btn-sm rounded">Пригласить</a>
       <b-button @click="showModal = !showModal" class="btn-primary btn-sm rounded ml-1" title="Показывать поля">
@@ -189,7 +189,7 @@
               :value="true"
               :unchecked-value="false"
               >
-              Группы 
+              Отделы 
           </b-form-checkbox>
           <b-form-checkbox
               v-model="showFields.register_date"
@@ -423,7 +423,7 @@ export default {
         },
         {
           key: 'groups',
-          label: 'Группы',
+          label: 'Отделы',
           sortable: true
         },
         {
@@ -463,7 +463,7 @@ export default {
         },
       ],
       groups: {
-        0: 'Выберите группу'
+        0: 'Выберите отдел'
       },
       currentGroup: 0,
       totalRows: 1,
