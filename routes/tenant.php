@@ -452,19 +452,7 @@ Route::middleware([
     Route::post('/timetracking/analytics/add-remote-inhouse', [AnalyticsController::class, 'addRemoteInhouse']);
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
-    /**
-     * Страницы KPI
-     */
-    Route::group([
-        'prefix'     => 'kpi',
-        'middleware' => 'auth'
-    ], function(){
-        Route::get('/',[KpiController::class,'index'])->name('kpi.index');
-        Route::get('get',[KpiController::class,'get']);
-        Route::post('save',[KpiController::class,'save']);
-        Route::post('update',[KpiController::class,'update']);
-        Route::delete('delete',[KpiController::class,'delete']);
-    });
+   
 
     /**
      * Редактирование бонусов
@@ -597,10 +585,15 @@ Route::middleware([
     
     });
 
+
+    /**
+     * Страницы KPI
+     */
     Route::group([
         'prefix'    => 'kpi',
         'as'        => 'kpi.'
     ], function (){
+        Route::get('/',[KpisController::class,'index'])->name('index');
         Route::get('/get', [KpisController::class, 'getKpis'])->name('get');
         Route::post('/save', [KpisController::class, 'save'])->name('save');
         Route::put('/update', [KpisController::class, 'update'])->name('update');
