@@ -483,7 +483,7 @@ class QualityController extends Controller
             array_push($headings, $crit->name);
         }
         
-        array_push($headings, 'Комментарии');
+        array_push($headings, 'Совет');
         $data['records'] = [];
         
         $records = QualityRecord::whereYear('listened_on', $request->year)
