@@ -3,6 +3,11 @@
 namespace App\Http\Controllers\Kpi;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\KpiSaveRequest;
+use App\Http\Requests\KpiUpdateRequest;
+use App\Service\KpiService;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use DB;
@@ -19,7 +24,7 @@ class KpiController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-    } 
+    }
 
     public function index(Request $request)
     {
@@ -40,12 +45,12 @@ class KpiController extends Controller
 
     /**
      * Сохранение.
-     * @param KpiSaveUpdateRequest $request
+     * @param KpiSaveRequest $request
      * @param KpiService $kpiService
      * @return JsonResponse
      * @throws Exception
      */
-    public function save(KpiSaveUpdateRequest $request, KpiService $kpiService): JsonResponse
+    public function save(KpiSaveRequest $request, KpiService $kpiService): JsonResponse
     {
         $response = $kpiService->save($request);
 
@@ -54,12 +59,12 @@ class KpiController extends Controller
 
     /**
      * Обновление.
-     * @param KpiSaveUpdateRequest $request
+     * @param KpiUpdateRequest $request
      * @param KpiService $kpiService
      * @return JsonResponse
      * @throws Exception
      */
-    public function update(KpiSaveUpdateRequest $request, KpiService $kpiService): JsonResponse
+    public function update(KpiUpdateRequest $request, KpiService $kpiService): JsonResponse
     {
         $response = $kpiService->update($request);
 

@@ -25,7 +25,7 @@ class KpiItemSeeder extends Seeder
                 [
                     'id'            => $i,
                     'name'          => $faker->name,
-                    'activity_id'   => 10,
+                    'activity_id'   => $faker->numberBetween(1, 100),
                     'kpi_id'        => array_rand([1, 2, 13865]),
                     'plan'          => rand(10,300),
                     'share'         => rand(0,100),
