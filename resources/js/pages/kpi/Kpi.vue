@@ -509,8 +509,7 @@ export default {
                 //});
             }
         }
-     },
+    },
  
-    } 
 }
 </script>
