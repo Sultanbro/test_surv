@@ -45,7 +45,7 @@
                         </td>
                         <td class=" position-relative" >
 
-                            <a  v-bind:href="'/timetracking/quality-control?user_id='+arrCheckList.item_id" target="_blank">
+                            <a  v-bind:href="'/timetracking/quality-control'" target="_blank">
                                 <i class="pl-4 fa fa-signal" aria-hidden="true" style="font-size: 20px"></i>
                             </a>
 
