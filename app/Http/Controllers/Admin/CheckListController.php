@@ -176,6 +176,7 @@ class CheckListController extends Controller
                     'task' => $task['task'],
                     'checklist_id' => $editedChecklist->id
                 ]);
+                Checkedtask::where('task_id',$task->id)->where('created_date',Carbon::now()->toDateString())->delete();
                 foreach($users as $user){
                     $task->checkedtasks()->updateOrCreate([ 
                         'task_id' => $task->id,
