@@ -470,12 +470,12 @@ Route::middleware([
      */
     Route::group([
         'prefix'     => 'quartal-premium',
-        'middleware' => 'auth'
+//        'middleware' => 'auth'
     ], function(){
         Route::get('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
         Route::post('save',[QuartalPremiumController::class,'save'])->name('quartal-premium.save');
-        Route::post('update',[QuartalPremiumController::class,'update'])->name('quartal-premium.update');
-        Route::delete('delete',[QuartalPremiumController::class,'delete']);
+        Route::put('update',[QuartalPremiumController::class,'update'])->name('quartal-premium.update');
+        Route::delete('delete',[QuartalPremiumController::class,'destroy']);
     });
 
     /**

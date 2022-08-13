@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Events\TrackKpiUpdatesEvent;
+use App\Events\TrackQuartalPremiumEvent;
 use App\Listeners\TrackKpiUpdatesListener;
+use App\Listeners\TrackQuartalPremiumListener;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -20,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         TrackKpiUpdatesEvent::class => [
             TrackKpiUpdatesListener::class
+        ],
+        TrackQuartalPremiumEvent::class => [
+            TrackQuartalPremiumListener::class
         ]
     ];
 
