@@ -92,9 +92,6 @@
 </template>
 
 <script>
-import { componentsPlugin } from 'bootstrap-vue';
-import func from 'vue-editor-bridge';
-
 export default {
     name: "KpiItems", 
     props: {
