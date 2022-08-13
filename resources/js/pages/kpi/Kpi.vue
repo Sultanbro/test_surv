@@ -1,11 +1,20 @@
 <template>
 <div class="kpi p-3">
+
+    <!-- top line -->
     <div class="d-flex mb-2 mt-2 jcfe">
+        <div class="d-flex">
+           
+            <super-filter 
+                :ref="'filter'"
+                :url="'kpi/get'" 
+                @search-text-changed="onSearch"
+            >
+            </super-filter>
+        </div>
         <button class="btn btn-primary rounded" @click="addKpi">Добавить</button>
     </div>
     
-
-
     <!-- table -->
 
     <table class="j-table">
@@ -45,6 +54,7 @@
                                 :values="item.target == null ? [] : [item.target]" 
                                 :single="true"
                                 :ask_before_delete="'Вы уверены, что хотите поменять Кому назначен KPI?'"
+                                :one_choice="true"
                                 :key="i" /> 
                         </div>
 
@@ -76,6 +86,10 @@
                                     :expanded="item.expanded"
                                     :activities="activities"
                                     :groups="groups"
+                                    :completed_80="item.completed_80"
+                                    :completed_100="item.completed_100"
+                                    :lower_limit="item.lower_limit"
+                                    :upper_limit="item.upper_limit"
                                 >
                                 </kpi-items>
                             </div>
@@ -89,7 +103,7 @@
         </tbody>
      </table>
       
-
+    <!-- modal Adjust Visible fields -->
     <b-modal 
         v-model="modalAdjustVisibleFields"
         title="Настройка списка «KPI»"
@@ -158,6 +172,7 @@ export default {
             show_fields: [],
             fields: [],
             groups: [],
+            searchText: '',
             modalAdjustVisibleFields: false,
             items: [
                 {
@@ -270,9 +285,7 @@ export default {
         fetchKPI() {
             let loader = this.$loading.show();
 
-            axios.post('/kpi/' + this.page, {
-                month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-            }).then(response => {
+            axios.get('/kpi/get').then(response => {
                 
                 this.items = repsonse.data.items;
                 this.activities = repsonse.data.activities;
@@ -441,6 +454,11 @@ export default {
             let item = this.items[i]
             let method = this.items[i].id == 0 ? 'save' : 'update';
 
+            if(item.target == null) {
+                this.$toast.error('Выберите Кому назначить KPI!');
+                return;
+            }
+
             axios.post('/kpi/' + method, {
                 kpi: item
             }).then(response => {
@@ -468,9 +486,30 @@ export default {
             this.$toast.info('Показать статистику');
         },
 
-        addActivity(i) {
-            this.items[i].elements.push({name:"Показатель"});
+        onSearch(text) { 
+            this.searchText = text;
+            if(this.searchText == '') {
+                //this.filtered_items = this.items; 
+            } else {
+                // this.filtered_items = this.items.filter((el, index) => {
+                // let has = false;
+                // el.targets.forEach(target => {
+                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
+                // });
+
+                // el.groups.forEach(target => {
+                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
+                // });
+
+                // el.roles.forEach(target => {
+                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
+                // });
+
+                // return has; 
+                //});
+            }
         }
+     },
  
     } 
 }

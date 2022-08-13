@@ -211,6 +211,8 @@ Vue.component('check-list', require('./pages/checkList.vue').default); // чек
 
 // KPI
 
+Vue.component('super-filter', require('./pages/kpi/SuperFilter.vue').default); // filter like bitrix
+
 Vue.component('kpi-pages', require('./pages/kpi/KpiPages.vue').default); // kpi
 Vue.component('kpi', require('./pages/kpi/Kpi.vue').default); // kpi
 Vue.component('kpi-items', require('./pages/kpi/KpiItems.vue').default); // kpi

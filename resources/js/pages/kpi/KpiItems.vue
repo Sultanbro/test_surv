@@ -70,6 +70,7 @@
                 </td>
                 <td class="text-center">
                     <input type="number" class="form-control" v-model="item.sum" min="0" />
+                    {{ item.sum }}
                 </td>
                 <td>
                     <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)"></i>
@@ -92,6 +93,7 @@
 
 <script>
 import { componentsPlugin } from 'bootstrap-vue';
+import func from 'vue-editor-bridge';
 
 export default {
     name: "KpiItems", 
@@ -107,7 +109,47 @@ export default {
         },
         groups: {
             default: {}
-        }
+        },
+        completed_80: {
+            default: 0,
+        },
+        completed_100: {
+            default: 0,
+        },
+        lower_limit: {
+            default: 80,
+        },
+        upper_limit: {
+            default: 100,
+        },
+    },
+    watch: {
+        items: {
+            handler: function(val) {
+                this.recalc();
+            },
+            deep: true
+        },
+        lower_limit: {
+            handler: function(val) {
+                this.recalc();
+            },
+        },
+        upper_limit: {
+            handler: function(val) {
+                this.recalc();
+            },
+        },
+        completed_80: {
+            handler: function(val) {
+                this.recalc();
+            },
+        },
+        completed_100: {
+            handler: function(val) {
+                this.recalc();
+            },
+        },
     },
     data() {
         return {
@@ -125,7 +167,33 @@ export default {
 
     methods: {
 
-      
+        recalc() {
+            this.items.forEach(el => el.sum = this.calcSum(el));
+        },
+
+        calcSum(el) {
+            let result = 0; //=ЕСЛИ(F9>$D$3;ЕСЛИ(F9<$E$3;$B$3*D9*(F9-$D$3)*$E$3/($E$3-$D$3);$B$4*D9*F9);0)
+
+            let lower_limit = parseFloat(this.lower_limit) / 100.0
+            let upper_limit = parseFloat(this.upper_limit) / 100.0
+            let completed = 1; //parseFloat(el.completed) / 100.0
+            let share = parseFloat(el.share) / 100.0
+            let completed_80 = this.completed_80
+            let completed_100 = this.completed_100
+
+            if(completed > lower_limit) {
+                
+                if (completed < upper_limit) {
+                    result = completed_80 * share * (completed - lower_limit) * upper_limit / (upper_limit - lower_limit)
+                } else {
+                    result = completed_100 * share * completed
+                }
+            } 
+
+            if (result < 0) result = 0;
+            return Number(result).toFixed(1);
+        },
+
         deleteItem() {
             this.$toast.info('Удалить KPI');
         },
@@ -194,6 +262,10 @@ export default {
                     }
                 }
             });
+        },
+
+        calcSum() {
+
         }
  
     } 

@@ -8,7 +8,7 @@
             class="selected-item"
             :class="'value' + value.type">
             {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i)"></i>
+            <i class="fa fa-times" @click.stop="removeValue(i)" v-if="one_choice_made"></i>
         </div>
     </div>
     
@@ -87,6 +87,10 @@ export default {
         ask_before_delete: {
             type: String,
             default: ''
+        },
+        one_choice: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -98,13 +102,12 @@ export default {
             posClass: 'top',
             searchText: '',
             first_time: true,
-            selected_all: false
+            selected_all: false,
+            one_choice_made: false
         };
     },
     created() {
-
-      console.log(this.values,'019995');
-
+        if(this.one_choice && this.values.length > 0) this.one_choice_made = true; 
         this.checkSelectedAll();  
     },
     methods: {
