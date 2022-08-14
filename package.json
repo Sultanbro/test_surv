@@ -43,6 +43,7 @@
         "expr-eval": "^2.0.2",
         "fs": "0.0.1-security",
         "jexcel": "^3.8.2",
+        "jw-vue-pagination": "^1.0.3",
         "laravel-vue-pagination": "^2.3.1",
         "mathjs": "^10.4.0",
         "moment-weekday-calc": "^1.1.4",

@@ -26,6 +26,10 @@ import 'vue-croppa/dist/vue-croppa.css';
 
 Vue.use(Croppa);
 
+// pagination
+import JwPagination from 'jw-vue-pagination';
+Vue.component('jw-pagination', JwPagination);
+
 // Toast
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";

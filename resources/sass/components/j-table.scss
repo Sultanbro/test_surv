@@ -10,6 +10,10 @@
     border: 1px solid #ddd;
     text-align: left;
     padding: 10px;
+
+    &.w-230 {
+      width: 230px;
+    }
   }
   
   tr td {
@@ -17,6 +21,10 @@
     text-align: left;
     padding: 3px 10px;
     border: 0;
+
+    &.w-230 {
+      width: 230px;
+    }
 
     &:hover {
       background: aliceblue;
@@ -28,7 +36,7 @@
   }
 
   .table-heading {
-    background: #3498db;
+    background: #3f454d;
     color: #fff;
   }
   
@@ -92,9 +100,15 @@
   .table-inner {
     width: 100%;
     margin-bottom: 0;
-    background: #8dadc8;
+    background: #c2d0dc;
     border-bottom: 5px solid #44658d;
     
+
+    th:first-child,
+    td:first-child {
+        background: #3f454e;
+    }
+
     tr td {
       padding: 0;
       border: 1px solid #ddd;
@@ -124,4 +138,16 @@
 }
 
 
+.aifs {
+  align-items: flex-start;
+}
 
+
+.j-deleted {
+  background: rgb(255, 151, 151);
+
+  input,
+  select {
+    background: rgb(255, 151, 151);
+  }
+}

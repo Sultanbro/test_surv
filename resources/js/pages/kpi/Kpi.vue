@@ -2,17 +2,29 @@
 <div class="kpi p-3">
 
     <!-- top line -->
-    <div class="d-flex mb-2 mt-2 jcfe">
-        <div class="d-flex">
-           
+    <div class="d-flex mb-2 mt-2 jcsb aifs">
+        
+        <div class="d-flex mr-2">
+            <div class="d-flex aifs mr-2">
+                <span>Показывать:</span>
+                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2" />
+            </div>
             <super-filter 
                 :ref="'filter'"
-                :url="'kpi/get'" 
+                :groups="groups"
+                @apply="applyFilter"
                 @search-text-changed="onSearch"
             >
             </super-filter>
+            <div class="ml-2"> 
+                Найдено: {{ items.length }}
+            </div>
         </div>
-        <button class="btn btn-primary rounded" @click="addKpi">Добавить</button>
+
+        <button class="btn rounded btn-outline-success" @click="addKpi">
+            <i class="fa fa-plus mr-2"></i>
+            <span>Добавить</span>
+        </button>
     </div>
     
     <!-- table -->
@@ -37,7 +49,7 @@
 
         <tbody>
 
-            <template v-for="(item, i) in items">
+            <template v-for="(item, i) in page_items">
                 <tr :key="i">
                     <td  @click="item.expanded = !item.expanded" class="pointer">
                         <div class="d-flex px-2">
@@ -72,7 +84,7 @@
 
                     </td>
                     <td >
-                        <i class="fa fa-save ml-2 mr-1 btn btn-primary p-1" @click="saveKpi(i)"></i>
+                        <i class="fa fa-save ml-2 mr-1 btn btn-success p-1" @click="saveKpi(i)"></i>
                         <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi(i)"></i>
                     </td>
                 </tr>
@@ -103,6 +115,23 @@
         </tbody>
      </table>
       
+
+    <!-- pagination -->
+    <jw-pagination
+        class="mt-3"
+        :key="paginationKey"
+        :items="items"
+        :labels="{
+            first: '<<',
+            last: '>',
+            previous: '<',
+            next: '>>'
+        }"
+        @changePage="onChangePage"
+        :pageSize="+pageSize"
+    ></jw-pagination>
+
+
     <!-- modal Adjust Visible fields -->
     <b-modal 
         v-model="modalAdjustVisibleFields"
@@ -164,6 +193,21 @@ export default {
                 this.prepareFields();
             },
             deep: true
+        },
+        pageSize: {
+            handler: function(val) {
+                if(val < 1) {
+                    val = 1;
+                    return;
+                }
+                
+                if(val > 100) {
+                    val = 100;
+                    return;
+                }
+
+                this.paginationKey++;
+            }
         }
     },
     data() {
@@ -174,6 +218,9 @@ export default {
             groups: [],
             searchText: '',
             modalAdjustVisibleFields: false,
+            page_items: [],
+            pageSize: 10,
+            paginationKey: 1,
             items: [
                 {
                     id: 1,
@@ -282,10 +329,32 @@ export default {
     },
     methods: {
 
+        onChangePage(page_items) {
+            this.page_items = page_items;
+        },
+
         fetchKPI() {
             let loader = this.$loading.show();
 
-            axios.get('/kpi/get').then(response => {
+            axios.post('/kpi/get', {}).then(response => {
+                
+                this.items = repsonse.data.items;
+                this.activities = repsonse.data.activities;
+                this.groups = repsonse.data.groups;
+
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
+        },
+
+        applyFilter(filter) {
+            let loader = this.$loading.show();
+
+            axios.post('/kpi/get', {
+                filters: filter 
+            }).then(response => {
                 
                 this.items = repsonse.data.items;
                 this.activities = repsonse.data.activities;
@@ -337,7 +406,7 @@ export default {
                     key: 'target',
                     visible: true,
                     type: 'superselect',
-                    class: 'text-left'
+                    class: 'text-left w-230 '
                 });
             }
             
@@ -442,7 +511,14 @@ export default {
                 updated_at: new Date().toISOString().substr(0, 19).replace('T',' '),
                 created_by: 'Али Акпанов',
                 updated_by: 'Али Акпанов',
-                elements: [{}, {}], 
+                elements: [{
+                    sum: 0,
+                    method: 1,
+                    name: 'Активность',
+                    activity_id: 0,
+                    plan: 0,
+                    share: 0
+                }], 
                 expanded: false
             });
 
@@ -459,7 +535,7 @@ export default {
                 return;
             }
 
-            axios.post('/kpi/' + method, {
+            axios.put('/kpi/' + method, {
                 kpi: item
             }).then(response => {
                 
@@ -478,8 +554,31 @@ export default {
             });
         }, 
 
-        deleteKpi() {
-            this.$toast.info('Удалить KPI');
+        deleteKpi(i) {
+            let loader = this.$loading.show();
+            let item = this.items[i]
+
+            if(!confirm('Вы уверены?')) {
+                return;
+            }
+
+            if(item.id == 0) {
+                this.items.splice(i) // maybe will be error cause of page_items
+                this.$toast.info('KPI Удален!');
+            }
+
+            axios.delete('/kpi/delete', {
+                id: item.id
+            }).then(response => {
+
+                this.items.splice(i) // maybe will be error cause of page_items
+
+                this.$toast.info('KPI Удален!');
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
         },
 
         showStat() {

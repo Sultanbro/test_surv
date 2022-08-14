@@ -587,7 +587,8 @@ Route::middleware([
         'prefix'    => 'kpi',
         'as'        => 'kpi.'
     ], function (){
-        Route::get('/get', [KpisController::class, 'getKpis'])->name('get');
+        Route::get('/', [KpisController::class, 'index'])->name('index');
+        Route::post('/get', [KpisController::class, 'getKpis'])->name('get');
         Route::post('/save', [KpisController::class, 'save'])->name('save');
         Route::put('/update', [KpisController::class, 'update'])->name('update');
         Route::delete('/delete', [KpisController::class, 'delete'])->name('delete');

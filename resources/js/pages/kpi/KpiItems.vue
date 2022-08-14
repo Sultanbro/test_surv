@@ -15,8 +15,15 @@
                 <th>Действия</th>
             </tr>
         </thead>
-        <tbody>
-            <tr class="jt-row j-hidden" :class="{'j-hidden': !expanded}" v-for="(item, i) in items" :key="i">
+        <tbody :key="refreshItemsKey">
+            <tr 
+                v-for="(item, i) in items" :key="i"
+                class="jt-row j-hidden"
+                :class="{
+                    'j-hidden': !expanded,
+                    'j-deleted': item.deleted != undefined && item.deleted,
+                }"
+            >
                 <td class="first-column"></td>
                 <td>
                     <input type="text" class="form-control" v-model="item.name" />
@@ -55,7 +62,7 @@
                             class="form-control small"
                         >
                             <option value="0" selected>-</option>
-                            <option v-for="activity in grouped_activities[item.source][item.group_id]" :value="activity.id"  >{{ activity.name }}</option>
+                            <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id"  >{{ activity.name }}</option>
                         </select>
                     </div>
                 </td>
@@ -69,11 +76,11 @@
                     <input type="number" class="form-control" v-model="item.share" min="0"  max="100"/>
                 </td>
                 <td class="text-center">
-                    <input type="number" class="form-control" v-model="item.sum" min="0" />
                     {{ item.sum }}
                 </td>
                 <td>
-                    <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)"></i>
+                    <i class="fa fa-arrow-up btn btn-primary p-1 mx-2" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
+                    <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)" v-else></i>
                 </td>
             </tr>
 
@@ -153,19 +160,24 @@ export default {
             active: 1,
             methods: [],
             sources: [],
-            grouped_activities: {},
+            refreshItemsKey: 1
         }
     }, 
 
     created() {
         this.fillSelectOptions()
         this.defineSourcesAndGroups('with_sources_and_group_id');
+        this.recalc();
     },
+
+    computed: {},
 
     methods: {
 
         recalc() {
-            this.items.forEach(el => el.sum = this.calcSum(el));
+            this.items.forEach(el => {
+                el.sum = this.calcSum(el)
+            });
         },
 
         calcSum(el) {
@@ -174,12 +186,13 @@ export default {
             let lower_limit = parseFloat(this.lower_limit) / 100.0
             let upper_limit = parseFloat(this.upper_limit) / 100.0
             let completed = 1; //parseFloat(el.completed) / 100.0
-            let share = parseFloat(el.share) / 100.0
+            let share = el.share != undefined ? parseFloat(el.share) / 100.0 : 0
             let completed_80 = this.completed_80
             let completed_100 = this.completed_100
 
+
             if(completed > lower_limit) {
-                
+
                 if (completed < upper_limit) {
                     result = completed_80 * share * (completed - lower_limit) * upper_limit / (upper_limit - lower_limit)
                 } else {
@@ -187,37 +200,53 @@ export default {
                 }
             } 
 
+           
             if (result < 0) result = 0;
-            return Number(result).toFixed(1);
+            return Number(Number(result).toFixed(1));
         },
 
-        deleteItem() {
-            this.$toast.info('Удалить KPI');
+        deleteItem(i) {
+            this.items[i].deleted = true
+            this.refreshItemsKey++;
         },
 
+        restoreItem(i) {
+            this.items[i].deleted = false
+            this.refreshItemsKey++;
+        },
 
-        addItem(i) {
-            this.items.push({name:"Показатель"});
+        addItem() {
+            this.items.push({
+                sum: 0,
+                method: 1,
+                name: 'Активность',
+                activity_id: 0,
+                plan: 0,
+                share: 0
+            });
         },
 
         fillSelectOptions() {
             this.setMethods()
             this.setSources()
 
-            let grouped = this.groupBy(this.activities, 'source')
+            // let grouped = this.groupBy(this.activities, 'source')
             
-            let a = {};
-            Object.keys(grouped).forEach(id => {
-                if(id == 1) {
-                    a[id] = this.groupBy(grouped[id], 'group_id')
-                } else {
-                    if(a[id] === undefined) a[id] = {};
-                    a[id][0] = grouped[id];
-                }
-            })
+            // let a = {};
+            // Object.keys(grouped).forEach((id, sd) => {
 
-            console.log(grouped)
-            this.grouped_activities = grouped
+            //     console.log(id,sd)
+            //     if(id == 1) {
+            //         a[id] = this.groupBy(grouped[id], 'group_id')
+            //     } else {
+            //         if(a[id] === undefined) a[id] = {};
+            //         a[id][0] = grouped[id];
+            //     }
+            // })
+
+            // if(grouped[2] == undefined) grouped[2] = []
+            // if(grouped[3] == undefined) grouped[3] = []
+            // this.grouped_activities = grouped
         },
 
         setMethods() {
@@ -261,8 +290,13 @@ export default {
             });
         },
 
-        calcSum() {
-
+        grouped_activities(source, group_id) {
+            if(source == 1 && group_id != undefined) {
+                return this.activities.filter(el => el.source == source && el.group_id == group_id);
+            } else {
+                return this.activities.filter(el => el.source == source);
+            }
+           
         }
  
     } 

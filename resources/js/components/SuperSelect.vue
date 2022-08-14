@@ -8,7 +8,7 @@
             class="selected-item"
             :class="'value' + value.type">
             {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i)" v-if="one_choice_made"></i>
+            <i class="fa fa-times" @click.stop="removeValue(i)" v-if="!one_choice_made"></i>
         </div>
     </div>
     
@@ -91,7 +91,7 @@ export default {
         one_choice: {
             type: Boolean,
             default: false
-        }
+        },
     },
     data() {
         return {
