@@ -49,7 +49,8 @@ class IntegrationController extends Controller
      */
     public function getLeads(Request $request, BitrixIntegrationService $service): JsonResponse
     {
-        $response = $service->getLeads($request);
+        $page = $request->input('page');
+        $response = $service->getLeads($request, $page);
 
         return response()->json($response);
     }

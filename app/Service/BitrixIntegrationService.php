@@ -54,19 +54,31 @@ class BitrixIntegrationService
         }
     }
 
-    public function getLeads($request)
+    public function getLeads($request, $page = 1)
     {
-        $this->checkPositionOfUser(
-            (array) [Position::HEAD_RECRUITER_ID, Position::RECRUITER_ID],
-            'Позиция пользователя должен быть Старший Рекрутер, Рекрутер, Администратор',
-            false
-        );
+        try {
+            $this->checkPositionOfUser(
+                (array) [Position::HEAD_RECRUITER_ID, Position::RECRUITER_ID],
+                'Позиция пользователя должен быть Старший Рекрутер, Рекрутер, Администратор',
+                false
+            );
 
-        $link = $this->host . $this->token . 'user.get';
+            $link = $this->host . $this->token . 'crm.lead.list';
 
-        dd($this->client::get($link, [
-            'ID' => 48
-        ])->json());
+            $apiResponse = $this->client::get($link, [
+                'filter' => [
+                    'CREATED_BY_ID' => 38
+                ],
+                'start' => ($page - 1) * 50
+            ])->json();
+
+            $response = new JsonApiResponse($apiResponse);
+
+            return $response->getData();
+        }catch (\DomainException $exception)
+        {
+            throw new \DomainException($exception);
+        }
     }
 
     /**
