@@ -424,6 +424,7 @@ export default {
         this.setDependencies();
        
         //this.fields = this.columns 
+
     },
     
     mounted () {
@@ -1051,26 +1052,34 @@ export default {
             });
 
             console.log(text);
+            var regExp = /[a-zA-Z]/g;
+                        
+            if(regExp.test(text)){
+              /* do something if letters are found in your string */
+              this.$toast.error('Вы не правильно ввели формулу');
+            } else {
+                axios.post("/timetracking/analytics/add-formula-1-31", {
+                    date: this.$moment(
+                        `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+                        "MMMM YYYY"
+                    ).format("YYYY-MM-DD"),
+                    formula: text,
+                    row_id: this.itemy.row_id,
+                    decimals: this.formula_1_31_decimals
+                })
+                .then((response) => {
+                    this.$toast.success('Обновите для сохранения');
+                    this.showFormula1_31 = false
+                    this.formula_1_31 = '';
+                    this.formula_1_31_decimals = 9;
+                    this.itemy = null;
+                }).catch(error => {
+                    this.$toast.error('Не сохранено');
+                    console.log(error)
+                });
+            }
 
-            axios.post("/timetracking/analytics/add-formula-1-31", {
-                date: this.$moment(
-                    `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                    "MMMM YYYY"
-                ).format("YYYY-MM-DD"),
-                formula: text,
-                row_id: this.itemy.row_id,
-                decimals: this.formula_1_31_decimals
-            })
-            .then((response) => {
-                this.$toast.success('Обновите для сохранения');
-                this.showFormula1_31 = false
-                this.formula_1_31 = '';
-                this.formula_1_31_decimals = 9;
-                this.itemy = null;
-            }).catch(error => {
-                this.$toast.error('Не сохранено');
-                console.log(error)
-            });
+
         },
 
         change_stat(i_index, f_index) {
