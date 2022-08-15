@@ -34,6 +34,22 @@ class KpiService
     }
 
     /**
+     * Получить kpis, activities. по фильтру
+     * @param int $id
+     * @return array
+     */
+    public function fetch($filters): array
+    {   
+        if($filters !== null) {} 
+        
+        return [
+            'kpis'       => Kpi::with('kpi_items')->get(),
+            'activities' => Activity::get(),
+            'groups' => \App\ProfileGroup::get()->pluck('name', 'id')->toArray(),
+        ];
+    }
+
+    /**
      * Сохраняем новый KPI.
      * @param KpiSaveRequest $request
      * @return void
