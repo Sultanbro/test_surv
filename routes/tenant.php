@@ -479,6 +479,11 @@ Route::middleware([
     });
 
     /**
+     * Статистика для KPI.
+     */
+    Route::get('statistics/kpi/user/{id}', [KpiStatController::class, 'show'])->name('kpi-statistic.index');
+
+    /**
      * Редактирование показателей
      */
     Route::group([
@@ -593,6 +598,3 @@ Route::middleware([
         Route::delete('/delete', [KpisController::class, 'delete'])->name('delete');
     });
 });
-
-
-
