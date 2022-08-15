@@ -360,7 +360,9 @@
                 console.log(this.editValuesChanged);
                 this.deleted_tasks = [];
                 if(this.editValuesChanged && !this.editMode){
+                    this.showCheckSideBar = false;
 
+                    /*
                     if (confirm('Сохранить изменения?') == true) {
                         console.log('save');
                         this.showCheckSideBar = false;
@@ -369,9 +371,9 @@
                         console.log('do not save');
                         this.showCheckSideBar = false;
                         this.clearSideBar();
-                    }
+                    }*/
                 }else{
-                    this.clearSideBar();
+                    //this.clearSideBar();
                     this.editMode = false;
                 }
                 this.showCheckSideBar = false;
