@@ -1201,11 +1201,10 @@ class UserController extends Controller
                 if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00') {
                     $user->worked_with_us = round((Carbon::parse($user->deleted_at)->timestamp - Carbon::parse($user->applied_at)->timestamp) / 3600 / 24) . ' дней';
                 } else if(!$user->is_trainee && $user->deleted_at == null) {
-                    $user->worked_with_us = round((Carbon::now()->timestamp - Carbon::parse($user->applied_at)->timestamp) / 3600 / 24) . ' дней';
+                    $user->worked_with_us = round((Carbon::now()->timestamp - Carbon::parse($user->created_at)->timestamp) / 3600 / 24) . ' дней';
                 } else {
                     $user->worked_with_us = 'Еще стажируется';
                 }
-                
                 // humor
 
                 if($user->id == 5)  $user->worked_with_us = 'Алеке 😁!';
