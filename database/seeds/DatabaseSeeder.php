@@ -2,6 +2,7 @@
 
 use Database\Seeders\KpiItemSeeder;
 use Database\Seeders\KpiSeeder;
+use Database\Seeders\QuartalPremiumSeeder;
 use Illuminate\Database\Seeder;
 
 
@@ -16,7 +17,8 @@ class DatabaseSeeder extends Seeder
     {
          $this->call([
              KpiSeeder::class,
-             KpiItemSeeder::class
+             KpiItemSeeder::class,
+             QuartalPremiumSeeder::class
          ]);
     }
 }

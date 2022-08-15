@@ -7,6 +7,7 @@ use App\Http\Requests\KpiSaveRequest;
 use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Kpi\Kpi;
+use App\Traits\KpiHelperTrait;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,10 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 class KpiService
 {
-    const USER_ID          = 1;
-    const PROFILE_GROUP_ID = 2;
-    const POSITION_ID      = 3;
-
+    use KpiHelperTrait;
 
     /**
      * Получить kpis, activities.
@@ -94,17 +92,5 @@ class KpiService
 
         $id = $request->input('kpi_id');
         Kpi::query()->find($id)->delete();
-    }
-
-    private function getModel(int $targetId)
-    {
-        switch ($targetId) {
-            case $targetId == self::USER_ID:
-                return 'App\User';
-            case $targetId == self::PROFILE_GROUP_ID:
-                return 'App\ProfileGroup';
-            case $targetId == self::POSITION_ID:
-                return 'App\Position';
-        }
     }
 }

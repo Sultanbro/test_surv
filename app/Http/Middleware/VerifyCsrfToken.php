@@ -50,7 +50,8 @@ class VerifyCsrfToken extends Middleware
         '/api/bitrix/inhouse',
         '/group-user/save',
         '/group-user/drop',
-        '/kpi/*'
+        '/kpi/*',
+        '/quartal-premium/*'
     ];
 
 
