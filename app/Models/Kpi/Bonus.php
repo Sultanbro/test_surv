@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Admin;
+namespace App\Models\Kpi;
 
 use App\Models\Admin\ObtainedBonus;
 use Illuminate\Database\Eloquent\Model;

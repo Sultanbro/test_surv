@@ -6,7 +6,7 @@ use App\Events\BonusUpdated;
 use App\Http\Requests\BonusSaveRequest;
 use App\Http\Requests\BonusUpdateRequest;
 use App\Models\Analytics\Activity;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Traits\KpiHelperTrait;
 use Exception;
 use Illuminate\Http\Request;

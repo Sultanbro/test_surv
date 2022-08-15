@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Events\Event;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;

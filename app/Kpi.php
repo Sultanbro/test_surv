@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use App\User;
 use App\SavedKpi;
 use App\KpiChange;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Analytics\IndividualKpi;

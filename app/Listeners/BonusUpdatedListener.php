@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\BonusUpdated;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +31,7 @@ class BonusUpdatedListener
         $item = Bonus::query()->findOrFail($event->kpiId);
 
         DB::table('histories')->insert([
-            'reference_table'   => 'App\Models\Admin\Bonus',
+            'reference_table'   => 'App\Models\Kpi\Bonus',
             'reference_id'      => $item->id,
             'actor_id'          => 5,
             'payload'           => json_encode([

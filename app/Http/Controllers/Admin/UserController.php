@@ -19,7 +19,7 @@ use Auth;
 use App\Kpi;
 use App\Salary;
 use Carbon\Carbon;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Downloads;
 use App\Account;
 use App\UserNotification;

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Kpi;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BonusSaveRequest;
 use App\Http\Requests\BonusUpdateRequest;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Service\BonusService;
 use Exception;
 use Illuminate\Http\JsonResponse;
