@@ -474,7 +474,8 @@ export default {
             
             let fields = {
                 id: item.id,
-                target: item.target,
+                targetable_id: item.target.id,
+                targetable_type: item.target.type,
                 completed_80: item.completed_80,
                 completed_100: item.completed_100,
                 upper_limit: item.upper_limit,
