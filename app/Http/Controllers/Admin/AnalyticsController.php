@@ -664,6 +664,11 @@ class AnalyticsController extends Controller
                 $formula = str_replace("{". $row->id ."}", "[". $column->id .":". $row->id ."]", $formula);
             }
             
+            // replace text
+            $pattern = '/[a-zA-Z]+[0-9]+/i';
+            $formula = preg_replace($pattern, 1, $formula);
+
+            //save update service
             if($stat) {
                 $stat->update([
                     'row_id' => $formula_row->id,
