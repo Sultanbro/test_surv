@@ -154,6 +154,9 @@
                 return (a.host && a.host != window.location.host);
             },
             toggle() {
+                if(this.showAuthUserCheck){
+                    this.linkIsSet = true;
+                }
                 this.showAuthUserCheck = !this.showAuthUserCheck
                 // document.getElementById('list-example').classList.toggle("sticky");
             },
