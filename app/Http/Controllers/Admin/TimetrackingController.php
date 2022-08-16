@@ -54,7 +54,7 @@ class TimetrackingController extends Controller
     {
         View::share('title', 'Табель сотрудников');
         View::share('menu', 'timetracking');
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function settings()
