@@ -24,13 +24,17 @@ class KpiSaveRequest extends FormRequest
     public function rules()
     {
         return [
-            'targetableId'      => 'integer|required',
-            'targetableType'    => 'integer|required',
-            'completed_80'      => 'required',
-            'completed_100'     => 'required',
-            'lower_limit'       => 'required',
-            'upper_limit'       => 'required',
-            'colors'            => 'array|nullable',
+            'targetable_id'         => 'integer|required',
+            'targetable_type'       => 'integer|required',
+            'completed_80'          => 'required',
+            'completed_100'         => 'required',
+            'lower_limit'           => 'required',
+            'upper_limit'           => 'required',
+            'colors'                => 'array|nullable',
+            'items.*.name'          => 'required',
+            'items.*.plan'          => 'required|numeric',
+            'items.*share'          => 'required|numeric',
+            'items.*.activity_id'   => 'required|integer'
         ];
     }
 }
