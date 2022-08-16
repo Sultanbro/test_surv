@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="auth_check">
         <div @click="toggle()"   class="btn-rm">
             <a class="text-white rounded" >
                 <span class="far fa-address-card text-white "></span>
@@ -237,5 +237,8 @@
 </script>
 
 <style lang="scss">
-
+    .auth_check{
+        position: absolute;
+        z-index: 9999;
+    }
 </style>
