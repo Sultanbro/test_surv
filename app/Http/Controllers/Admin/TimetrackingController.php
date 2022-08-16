@@ -921,6 +921,7 @@ class TimetrackingController extends Controller
             
             $_user_ids = DB::table('users')
                 ->whereNotNull('deleted_at')
+                ->whereMonth('deleted_at',$date_for_register->month)
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $_user_ids)
                 ->where('ud.is_trainee', 0) 

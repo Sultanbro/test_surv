@@ -1,0 +1,27 @@
+.chat-app {
+    right: 15px;
+    width: unset !important;
+    z-index: 22;
+    top: 15px;
+    height: unset;
+    box-shadow: 0 0 10px 10px #eee;
+
+    .side-contacts-list {
+        height: 100%;
+        background: #fff;
+        
+    }
+
+    .chats-list {
+        height: 100%;
+    }
+
+    .chats-list-panel {
+        border: 1px solid #ccc;
+        height: 605px;
+    }
+
+    .create-chat-button {
+        border-bottom: 1px solid #ccc
+    }
+}

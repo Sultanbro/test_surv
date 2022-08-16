@@ -51,7 +51,7 @@
                  
           
         </div>
-               <chat-app />
+            
     </div>
     <notifications group="foo" />
     

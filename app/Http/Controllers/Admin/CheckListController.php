@@ -533,7 +533,7 @@ class CheckListController extends Controller
                         'user_id' => auth()->id(),
                     ],[
                         'url' => $t['checkedtasks'][0]['url'],
-                        'checked' => $t['checkedtasks'][0]['checked'] == 1 ? 'true' : 'false',
+                        'checked' => $t['checkedtasks'][0]['checked'] == 'true' ? 'true' : 'false',
                         'user_id' => auth()->id(),
                     ]); 
                 }else if($t['checkedtasks'][0]['url'] != null){
