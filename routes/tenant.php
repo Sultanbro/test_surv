@@ -593,6 +593,105 @@ Route::middleware([
         Route::put('/update', [KpisController::class, 'update'])->name('update');
         Route::delete('/delete', [KpisController::class, 'delete'])->name('delete');
     });
+
+
+
+
+
+
+    /**
+     * Authentication for pusher private channels
+     */
+    Route::post('/chat/auth', 'Api\MessagesController@pusherAuth')->name('api.pusher.auth');
+
+    /**
+     * Chat routes
+     */
+    Route::group(['prefix'    => 'v2'], function (){
+      
+        /**
+         * Get chats list
+         */
+        Route::get('/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');
+
+        /**
+         * Get users list
+         */
+        Route::get('/users', 'ChatsController@fetchUsers')->name('api.users.fetch');
+
+        /**
+         * Search chat by name
+         */
+        Route::get('/search', 'ChatsController@search')->name('api.chats.search');
+
+        /**
+         * Get chat messages
+         */
+        Route::get('/chat/{chat_id}/messages', 'MessagesController@fetchMessages')->name('api.messages.fetch');
+
+        /**
+         * Get chat info
+         */
+        Route::get('/chat/{chat_id}', 'ChatsController@getChat')->name('api.v2.getChat');
+
+        /**
+         * Send message
+         */
+        Route::post('/chat/{chat_id}/messages', 'MessagesController@sendMessage')->name('api.v2.sendMessage');
+
+        /**
+         * Edit message. Message id should be integer
+         */
+        Route::post('/message/{message_id}', 'MessagesController@editMessage')->name('api.v2.editMessage')->whereNumber('message_id');
+
+        /**
+         * Delete message
+         */
+        Route::delete('/message/{message_id}', 'MessagesController@deleteMessage')->name('api.v2.deleteMessage');
+
+        /**
+         * Pin message
+         */
+        Route::post('/message/{message_id}/pin', 'MessagesController@pinMessage')->name('api.v2.pinMessage');
+
+        /**
+         * Unpin message
+         */
+        Route::delete('/message/{message_id}/pin', 'MessagesController@unpinMessage')->name('api.v2.unpinMessage');
+
+        /**
+         * Create chat
+         */
+        Route::post('/chat', 'ChatsController@createChat')->name('api.v2.createChat');
+
+        /**
+         * Remove chat
+         */
+        Route::delete('/chat/{chat_id}', 'ChatsController@removeChat')->name('api.v2.removeChat');
+
+        /**
+         * Leave chat
+         */
+        Route::post('/chat/{chat_id}/leave', 'ChatsController@leaveChat')->name('api.v2.leaveChat');
+
+        /**
+         * Add user to chat
+         */
+        Route::post('/chat/{chat_id}/addUser', 'ChatsController@addUser')->name('api.v2.addUser');
+
+        /**
+         * Remove user from chat
+         */
+        Route::post('/chat/{chat_id}/removeUser/{user_id}', 'ChatsController@removeUser')->name('api.v2.removeUser');
+
+        /**
+         * Set messages as read
+         */
+        Route::post('/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
+    });
+    
+
+    // end of subdomain routes
 });
 
 

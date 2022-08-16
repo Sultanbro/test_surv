@@ -38,7 +38,7 @@
     ])    
     <div class="page">
 
-      
+
 
         <div class="content-wrap">
              
@@ -51,9 +51,11 @@
                  
           
         </div>
+               <chat-app />
     </div>
     <notifications group="foo" />
-        
+    
+   
     
 </div>
 
@@ -196,5 +198,10 @@ document.getElementById("app").addEventListener("click",() => {
     max-width:100%;
 }
 </style>
+
+
+
+
+
 </body>
 </html>
