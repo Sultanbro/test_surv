@@ -22,11 +22,14 @@
         "jquery": "^3.6.0",
         "laravel-mix": "^6.0.43",
         "lodash": "^4.17.4",
-        "moment": "^2.15.2",
+        "moment": "",
         "sass": "^1.52.1",
         "sass-loader": "10.0.1",
         "vue": "^2.6.12",
+        "vue-draggable-resizable": "^2.3.0",
         "vue-loader": "^15.9.8",
+        "vue-multiselect": "^2.1.6",
+        "vue-simple-context-menu": "3.4.2",
         "vue-template-compiler": "2.6.12"
     },
     "dependencies": {

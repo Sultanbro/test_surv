@@ -765,6 +765,6 @@ class AnalyticsController extends Controller
         return Excel::download(new AnalyticsImport($sheets,$group), $title .' "'.$group->name . '".xls');
         
     }
-    
+
 }
 
