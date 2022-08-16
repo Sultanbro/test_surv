@@ -1384,6 +1384,7 @@ public function planRequired($arr) {
         
         $users_off_prev = \DB::table('users')
             ->whereNotNull('deleted_at')
+            ->whereMonth('deleted_at','=',$date->month)
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->whereIn('users.id', $prev_employees)
