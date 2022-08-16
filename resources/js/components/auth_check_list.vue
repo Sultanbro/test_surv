@@ -80,6 +80,7 @@
                 currentTime: 0,
                 notification_time: null,
                 times: 1,
+                show_counts:[],
             };
         },
 
@@ -96,10 +97,12 @@
         }, 
         watch: {
             async currentTime(newValue, oldValue) {
-                if(this.notifictation_time != null){
+                console.log(newValue.getHours()+':'+newValue.getMinutes()+' -- '+ this.notification_time.getHours()+':'+ this.notification_time.getMinutes());
+                 
+                if(this.notification_time != null){
                     if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
                         this.toggle();
-                        this.getNotificationTime(this.times)
+                        this.getNotificationTime(this.show_counts)
                     }
                 }
  
@@ -121,15 +124,23 @@
                 axios.post('/checklist/tasks',{
                     checklist_id:ids
                 }).then(response => {
-                    this.auth_check = response.data;
-                    console.log(response.data);
+                    this.auth_check = response.data[0];
+                    this.show_counts = response.data[1];
+
+                    this.getNotificationTime(this.show_counts);
                 })
             },
             getNotificationTime(times){
-                var hours = 9 / times;
+                var maxtimes = 1;
+                times.forEach(val => {
+                    if(maxtimes < val){
+                        maxtimes = val;
+                    }
+                });
+                var hours = 9 / maxtimes;
                 var date = new Date();
                 var now = new Date();
-                for(let i = 0; i < times; i++){
+                for(let i = 0; i < maxtimes; i++){
                     date.setHours((9 + (i * hours)), 0, 0, 0);
                     if(date >= now){
                         this.notification_time = date;
@@ -169,12 +180,10 @@
 
                 if (this.sendChecklist){
 
-                    console.log(this.auth_check,'this.auth_check')
                     axios.post('/timetracking/settings/auth/check/user/send', {
                       auth_check:this.auth_check
                     }).then(response => {
 
-                      console.log(response,'response')
                       this.showAuthUserCheck= false
                       this.$toast.success('Успешно выполнено');
 

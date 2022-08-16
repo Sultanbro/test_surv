@@ -19,7 +19,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Imports\TimetrackingImport;
 
 class GroupsController extends Controller

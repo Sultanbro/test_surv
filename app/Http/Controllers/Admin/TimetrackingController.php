@@ -35,7 +35,7 @@ use App\AnalyticsSettingsIndividually;
 use App\Downloads;
 use App\Http\Controllers\IntellectController as IC;
 use App\Classes\Helpers\Phone;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Classes\Helpers\Currency;
 use App\Models\User\NotificationTemplate;
 use App\Models\Analytics\Activity;
@@ -54,7 +54,7 @@ class TimetrackingController extends Controller
     {
         View::share('title', 'Табель сотрудников');
         View::share('menu', 'timetracking');
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function settings()
