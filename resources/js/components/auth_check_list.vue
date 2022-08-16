@@ -40,7 +40,7 @@
 
                     <div class="col-md-12 mt-3">
                         <div class="col-md-6 p-0">
-                            <button @click.prevent="saveChecklist"   title="Сохранить" class="btn btn-primary" :disabled="linkIsSet">
+                            <button @click.prevent="saveChecklist"   title="Сохранить" :disabled="linkIsSet" v-bind:class = " linkIsSet ?'btn btn-danger':'btn btn-primary'">
                                 Выполнить
                             </button>
                         </div>
