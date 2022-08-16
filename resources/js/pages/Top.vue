@@ -30,20 +30,20 @@
         </div>
       </b-tab>
 
-      <b-tab title="Рентабельность операторов" key="2" card>
+      <b-tab title="Рентабельность операторов" key="2" @click="showIcons()" card>
 
         <div class="d-flex flex-wrap mb-5" :key="ukey">
           <div v-for="(gauge, g_index) in rentability" :key="gauge.name">
             <div @click="gauge.editable = !gauge.editable">
               <v-gauge :value="gauge.value"
                        unit="%"
-
                        :options="gauge.options"
                        :maxValue="Number(gauge.max_value)"
                        :top="true"
                        height="75px"
                        width="125px"
                        gaugeValueClass="gauge-span"/>
+              
             </div>
 
             <p class="text-center font-bold" style="font-size: 14px;margin-bottom: 0;">
@@ -229,6 +229,7 @@ export default {
   props: ['data', 'activeuserid'],
   data() {
     return {
+      afterCreated: false,
       rentability: [], // первая вкладка
       utility: [], // вторая
       proceeds: [], // третья
@@ -273,7 +274,6 @@ export default {
     }
   },
   created() {
-    this.rentability = this.data.rentability;
     this.utility = this.data.utility;
     this.proceeds = this.data.proceeds;
     this.prognoz_groups = this.data.prognoz_groups
@@ -281,6 +281,9 @@ export default {
     this.fetchData()
   },
   methods: {
+    showIcons(){
+      this.rentability = this.data.rentability;
+    },
     setMonth() {
       this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
       this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
@@ -301,8 +304,10 @@ export default {
       }).then(response => {
 
         this.setMonth()
-
-        this.rentability = response.data.rentability;
+        if(this.afterCreated){
+          this.rentability = response.data.rentability;
+        }
+        this.afterCreated = true;
         this.utility = response.data.utility;
         this.proceeds = response.data.proceeds;
 
