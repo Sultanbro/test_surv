@@ -102,7 +102,11 @@
                 if(this.notification_time != null){
                     if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
                         this.toggle();
-                        this.getNotificationTime(this.show_counts)
+                        if(newValue.getSeconds() == this.notification_time.getSeconds()){
+                            this.getNotificationTime(this.show_counts);
+                        }else{
+                            this.notification_time == null;
+                        }
                     }
                 }
  
