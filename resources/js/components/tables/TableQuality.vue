@@ -1371,7 +1371,7 @@ export default {
 
       fieldsArray.push({
         key: "comments",
-        name: "Комментарии",
+        name: "Совет",
         type: "text",
         order: order++,
         klass: " text-center px-1 comments",

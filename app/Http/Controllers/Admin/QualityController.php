@@ -27,6 +27,7 @@ use View;
 use App\Models\Analytics\Activity;
 use Auth;
 use App\Models\CallibroDialer;
+use App\UserNotification;
 
 class QualityController extends Controller
 {
@@ -341,7 +342,6 @@ class QualityController extends Controller
     public function saveRecord(Request $request) {
     
         $user_id = User::bitrixUser()->id;
-
         
 
         
@@ -447,7 +447,17 @@ class QualityController extends Controller
                 ]);
                 $id = $record->id;
             }
-
+            $color = '#ff1a00';
+            if($total >= 20 && $total < 40){$color = '#ff8d00';}
+            else if($total >= 40 && $total < 60){$color = '#e3ff00';}
+            else if($total >= 60 && $total < 80){$color = '#00ff04';}
+            else if($total >= 80 && $total <= 100){$color = '#0051ff';}
+            UserNotification::create([
+                                'user_id' => 14476,
+                                'about_id' => 0,
+                                'title' => 'Оценка переговоров',
+                                'message' => $request->comments.' Общая оценка: '.$total.' <div style="background-color:'.$color.';width:20px;height:20px;display: inline-block;"></div>'
+                            ]);
 
             return response()->json([
                 'method' => 'update',
