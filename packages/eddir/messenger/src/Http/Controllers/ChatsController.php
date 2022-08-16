@@ -8,7 +8,7 @@
 
 namespace Eddir\Messenger\Http\Controllers;
 
-use App\Models\User;
+use App\User;
 use Eddir\Messenger\Facades\MessengerFacade;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

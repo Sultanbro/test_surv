@@ -9,7 +9,7 @@
 namespace Eddir\Messenger\Http\Controllers\Api;
 
 use Eddir\Messenger\Models\MessengerMessage;
-use App\Models\User;
+use App\User;
 use Eddir\Messenger\Facades\MessengerFacade;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
