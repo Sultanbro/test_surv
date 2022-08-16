@@ -6,7 +6,7 @@
                @search="searchChats"
                @leave-chat="leaveChat"
                @create-chat="createChat"
-    />
+    /> 
     <Conversation v-show="fullscreen"
                   :messages="messages"
                   :chat="selectedChat"
