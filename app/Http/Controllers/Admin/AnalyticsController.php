@@ -60,6 +60,7 @@ use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
 use App\Imports\AnalyticsImport;
 use App\Exports\AnalyticsExport;
+use App\ProfileGroupUser as PGU;
 
 class AnalyticsController extends Controller
 {
@@ -765,6 +766,5 @@ class AnalyticsController extends Controller
         return Excel::download(new AnalyticsImport($sheets,$group), $title .' "'.$group->name . '".xls');
         
     }
-    
 }
 
