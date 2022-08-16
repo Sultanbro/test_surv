@@ -461,7 +461,7 @@ Route::middleware([
     ], function(){
         Route::get('get',[BonusController::class,'get']);
         Route::post('save',[BonusController::class,'save']);
-        Route::post('update',[BonusController::class,'update']);
+        Route::put('update',[BonusController::class,'update']);
         Route::delete('delete',[BonusController::class,'delete']);
     });
 

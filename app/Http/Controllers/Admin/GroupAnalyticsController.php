@@ -51,7 +51,7 @@ use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\DecompositionItem;
 use App\Models\Analytics\TopValue;
 use App\QualityRecordWeeklyStat;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;

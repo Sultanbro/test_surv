@@ -25,7 +25,11 @@ class EventServiceProvider extends ServiceProvider
         ],
         TrackQuartalPremiumEvent::class => [
             TrackQuartalPremiumListener::class
-        ]
+        ],
+        'App\Events\BonusUpdated' => [
+            'App\Listeners\BonusUpdatedListener',
+        ],
+        
     ];
 
     /**

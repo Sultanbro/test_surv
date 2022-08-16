@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models\Admin;
+namespace App\Models\Kpi;
 
 use App\Models\Admin\ObtainedBonus;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Analytics\Activity;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\User;
 use App\Salary;
 use App\AnalyticsSettingsIndividually;
@@ -15,7 +16,9 @@ use App\Models\Analytics\RecruiterStat;
 use DB;
 
 class Bonus extends Model
-{   
+{      
+    use SoftDeletes;
+    
     protected $table = 'kpi_bonuses';
 
     public $timestamps = false;
@@ -35,6 +38,8 @@ class Bonus extends Model
     CONST SECOND_HALF = 2;
 
     protected $fillable = [
+        'targetable_id',
+        'targetable_type',
         'title',
         'sum',
         'group_id',

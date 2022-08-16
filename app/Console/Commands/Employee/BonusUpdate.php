@@ -3,7 +3,7 @@
 namespace App\Console\Commands\Employee;
 
 use Illuminate\Console\Command;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Models\Admin\ObtainedBonus;
 use App\ProfileGroup;
 use App\ProfileGroupUser;
