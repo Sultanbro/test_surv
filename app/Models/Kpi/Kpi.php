@@ -22,7 +22,9 @@ class Kpi extends Model
         'completed_100',
         'lower_limit',
         'upper_limit',
-        'colors'
+        'colors',
+        'created_by',
+        'updated_by',
     ];
 
     protected $dates = [

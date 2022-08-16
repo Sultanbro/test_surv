@@ -21,7 +21,7 @@ class Bonus extends Model
     
     protected $table = 'kpi_bonuses';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * Unit 
@@ -48,6 +48,8 @@ class Bonus extends Model
         'quantity',
         'daypart',
         'text',
+        'created_by',
+        'updated_by',
     ];
 
     

@@ -331,7 +331,16 @@ export default {
         },
 
         addStatusToItems() {
-            this.items.forEach(el => el.on_edit = false);
+            this.items.forEach(el => {
+
+                this.elements.forEach(a => {
+                    a.source = 0
+                    a.group_id = 0
+                });
+
+                el.on_edit = false
+            
+            });
         },
 
         prepareFields() {

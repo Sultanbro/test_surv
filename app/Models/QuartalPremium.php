@@ -20,7 +20,9 @@ class QuartalPremium extends Model
         'text',
         'plan',
         'from',
-        'to'
+        'to',
+        'created_by',
+        'updated_by',
     ];
 
     protected $dates = [
