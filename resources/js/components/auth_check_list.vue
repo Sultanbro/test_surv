@@ -97,8 +97,8 @@
         }, 
         watch: {
             async currentTime(newValue, oldValue) {
-                    //console.log(newValue.getHours()+':'+newValue.getMinutes()+' -- ');
-                
+                console.log(newValue.getHours()+':'+newValue.getMinutes()+' -- '+ this.notification_time.getHours()+':'+ this.notification_time.getMinutes());
+                 
                 if(this.notification_time != null){
                     if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
                         this.toggle();
@@ -141,7 +141,7 @@
                 var date = new Date();
                 var now = new Date();
                 for(let i = 0; i < maxtimes; i++){
-                    date.setHours((12 + (i * hours)), 0, 0, 0);
+                    date.setHours((9 + (i * hours)), 0, 0, 0);
                     if(date >= now){
                         this.notification_time = date;
                         break;
