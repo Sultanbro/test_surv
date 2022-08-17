@@ -785,12 +785,9 @@ class User extends Authenticatable implements Authorizable
         return $sum; 
     }
 
-    public function getActiveCourse()
-    {
-        $c = CourseResult::activeCourse();
-        return $c ? CourseResult::with('course')->find($c->id) : null;
-    }
-
+    /**
+     * get active course
+     */
     public function getActiveCourses()
     {
         return CourseResult::activeCourses();
@@ -806,6 +803,10 @@ class User extends Authenticatable implements Authorizable
         return $this->hasMany('App\Timetracking', 'user_id', 'id');
     }
 
+    /**
+     * Date of apply of user 
+     * @return date
+     */
     public function applied_at()
     {
         $user_applied_at = null;
@@ -821,7 +822,6 @@ class User extends Authenticatable implements Authorizable
         return $user_applied_at;
     }
 
-    
 
     public function trackHistory()
     {

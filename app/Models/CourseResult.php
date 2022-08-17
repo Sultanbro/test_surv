@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use App\User;
 use App\ProfileGroup;
 use App\Models\Course;
-use App\Models\CourseResult;
 use App\Models\TestResult;
 use App\Models\UserCourse;
 use App\Models\CourseItem;
@@ -28,12 +27,12 @@ class CourseResult extends Model
     protected $fillable = [
         'user_id',
         'course_id',
-        'status',
+        'status', 
         'progress', // 0 - 100
-        'points', 
+        'points',  // how many user get
         'started_at', 
         'ended_at', 
-        'weekly_progress'
+        'weekly_progress' // recent 7 days progress
     ];
 
     // status
@@ -50,12 +49,18 @@ class CourseResult extends Model
     ];
 
     public static $courses;
-
+    
+    /**
+     * relation to course_id
+     */
     public function course()
     {
         return $this->belongsTo('App\Models\Course', 'course_id', 'id');
     }
     
+    /**
+     * get users with course_results in selected group
+     */
     public static function getUsers($group_id, $date = null)
     {
         $user_ids = ProfileGroup::employees($group_id);
@@ -80,6 +85,9 @@ class CourseResult extends Model
         ];
     }
 
+    /**
+     * user record fields 
+     */
     private static function getUserFields() {
         $arr = [];
         $arr[] = [
@@ -121,7 +129,11 @@ class CourseResult extends Model
         return $arr;
     }
     
-    private static function getUserItem($user, $date) {
+    /**
+     * Get user record with courseResults
+     */
+    private static function getUserItem($user, $date) : array
+    {
         $arr = [];
 
         $uc = self::getUserCourses($user);
@@ -139,6 +151,7 @@ class CourseResult extends Model
         $arr['progress_on_week'] = $uc['totals']['progress_on_week'] . '%' ;
         $arr['progress_number'] = $uc['totals']['progress'];  
         $arr['points'] = $uc['totals']['points'];
+        $arr['max_points'] = $uc['totals']['max_points'];
         $arr['expanded'] = false;
         $arr['started_at'] = $uc['totals']['started_at'];
         $arr['ended_at'] = $uc['totals']['ended_at'];
@@ -146,10 +159,19 @@ class CourseResult extends Model
         return $arr;
     }
 
-    private static function getUserCourses($user) {
+    /**
+     * get course results of User
+     * collapsing list
+     */
+    private static function getUserCourses($user) : array
+    {
         $arrx = [];
 
+        /**
+         * total variables
+         */
         $points = 0;
+        $max_points = 0;
         $status = 2;
         $progress = 0;
         $progress_weekly = 0;
@@ -166,7 +188,9 @@ class CourseResult extends Model
         // get user courses
         $course_ids = self::getCourseIds($user->id);
         
-        // order 
+        /**
+         *  order 
+         */
         foreach($user->course_results as $result) {
             $result->order = $result->course != null ? $result->course->order : 999;
         }
@@ -189,7 +213,9 @@ class CourseResult extends Model
 
         $user->course_results = $user->course_results->sortBy('order');
 
-        // total status
+        /**
+         * total status
+         */
         if($user->course_results->whereIn('status', [1,2])->first()) {
             if($user->course_results->where('status', 2)->first()) {
                 $status = self::ACTIVE;
@@ -200,7 +226,9 @@ class CourseResult extends Model
             $status = self::INITIAL;
         }
      
-        // user courses
+        /**
+         * user courses
+         */
         foreach($user->course_results as $result) {
             
             $course = self::$courses->where('id', $result->course_id)->first();
@@ -211,25 +239,42 @@ class CourseResult extends Model
                 $arr['status'] = self::STATUSES[$result->status];
                 $arr['user_id'] = $user->id;
 
-                // total progress
+                /**
+                 * total progress
+                 */
                 $progress += $result->progress;
                 $progress_count++;
                 $arr['progress'] = $result->progress > 100 ? '100%' : $result->progress . '%';
 
-                // weekly progress
+                /**
+                 * weekly progress
+                 */
                 
                 $stages_completed = $result->countWeeklyProgress();
-                $weekly_progress = $stages_completed > 0 && $result->course != null && $result->course->stages > 0 ? round($stages_completed / $result->course->stages * 100, 1) : 0;
+                $weekly_progress = $stages_completed > 0 && $result->course != null && $result->course->stages > 0 
+                    ? round($stages_completed / $result->course->stages * 100, 1)
+                    : 0;
                 if($weekly_progress > 100) $weekly_progress = 100;
                 $arr['progress_on_week'] = $weekly_progress . '%';
                
                 $progress_weekly += $weekly_progress;
 
-                // points
-                $points += $result->points;
-                $arr['points'] = $result->points;
+                /**
+                 * count points and max_points
+                 * prepare points string
+                 */
 
-                // dates
+                $local_max_points = $course->points != 0 ? $course->points : $result->points;
+
+                $points += $result->points;
+                $max_points += $local_max_points;
+         
+                $share_of_scored_points = $local_max_points > 0 ? round($result->points / $local_max_points, 1) . '%' : '0%';
+                $arr['points'] = $result->points . ' / ' . $local_max_points . ' / ' . $share_of_scored_points;
+
+                /**
+                 * dates
+                 */
                 $arr['started_at'] = $result->started_at ? Carbon::parse($result->started_at)->format('d.m.Y') : '';
                 $arr['ended_at'] =  $result->ended_at ? Carbon::parse($result->ended_at)->format('d.m.Y') : '';
                 
@@ -247,6 +292,7 @@ class CourseResult extends Model
             'courses' => $arrx,
             'totals' => [
                 'points' => $points,
+                'max_points' => $max_points,
                 'progress' => $total_progress,
                 'progress_on_week' => $total_progress_weekly,
                 'status' => $status,
@@ -256,7 +302,11 @@ class CourseResult extends Model
         ];
     }
 
-    public function countWeeklyProgress() {
+    /**
+     * Count amount of stages user completed recent 7 days
+     */
+    private function countWeeklyProgress() : int
+    { 
         $stages = 0;
 
         if($this->weekly_progress == null) return 0;
@@ -272,7 +322,10 @@ class CourseResult extends Model
         return $stages;
     }
 
-    public static function getGroups($date = null)
+    /**
+     * get groups with progresses in courses
+     */
+    public static function getGroups($date = null) : array
     { 
         $_groups = ProfileGroup::where('active', 1)->get();
 
@@ -291,7 +344,11 @@ class CourseResult extends Model
         ];
     }
 
-    private static function getGroupItem($users, $group) {
+    /**
+     * get group progress record
+     */
+    private static function getGroupItem($users, $group) : array
+    {
         $points = 0;
         $progress = 0;
         foreach ($users['items'] as $key => $user) {
@@ -307,7 +364,11 @@ class CourseResult extends Model
         return $arr;
     }
 
-    private static function getGroupFields() {
+    /**
+     * group record fields
+     */
+    private static function getGroupFields() : array
+    {
         $arr = [];
         $arr[] = [
             'key' => 'name',
@@ -462,15 +523,16 @@ class CourseResult extends Model
     }
 
     /**
-    *   @return array
-    *
+     * Get courses user was assigned
+     * 
     *  order => course_id
     *  [   
     *     1 => 2,
     *     2 => 3
     *  ]
     */
-    public static function getCourseIds($user_id) {
+    private static function getCourseIds($user_id) : array
+    {
         // prepare
         $user = User::withTrashed()->find($user_id);
         $position_id = $user->position_id;
@@ -509,7 +571,11 @@ class CourseResult extends Model
             ->toArray();
     }
 
-    public static function activeCourses() {
+    /**
+     * active courses of User
+     */
+    public static function activeCourses() : array
+    {
         
         $user_id = auth()->id();
         $courses = self::getCourseIds($user_id);
