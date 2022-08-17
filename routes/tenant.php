@@ -597,7 +597,7 @@ Route::middleware([
     });
 
 
-
+    Route::any('/getnewimage',[UserController::class,'getProfileImage']);
 
     Route::group([
         'prefix'   => 'messenger/api',
