@@ -269,7 +269,7 @@ class CourseResult extends Model
                 $points += $result->points;
                 $max_points += $local_max_points;
          
-                $share_of_scored_points = $local_max_points > 0 ? round($result->points / $local_max_points, 1) . '%' : '0%';
+                $share_of_scored_points = $local_max_points > 0 ? round($result->points / $local_max_points * 100, 1) . '%' : '0%';
                 $arr['points'] = $result->points . ' / ' . $local_max_points . ' / ' . $share_of_scored_points;
 
                 /**
