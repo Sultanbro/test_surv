@@ -486,14 +486,15 @@ Route::middleware([
      * Редактирование показателей
      */
     Route::group([
-        'prefix'     => 'indicators',
+        'prefix'     => 'activities',
+        'as'         => 'activities.',
         'middleware' => 'superuser'
     ], function(){
-        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('indicator.all');
-        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('indicator.one');
-        Route::post('save',[IndicatorController::class,'save']);
-        Route::post('update',[IndicatorController::class,'update']);
-        Route::delete('delete',[IndicatorController::class,'delete']);
+        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('all');
+        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('one');
+        Route::post('save',[IndicatorController::class,'save'])->name('save');
+        Route::post('update',[IndicatorController::class,'update'])->name('update');
+        Route::delete('delete',[IndicatorController::class,'delete'])->name('delete');
     });
    
 
@@ -599,7 +600,7 @@ Route::middleware([
     });
 
 
-
+    Route::any('/getnewimage',[UserController::class,'getProfileImage']);
 
     Route::group([
         'prefix'   => 'messenger/api',

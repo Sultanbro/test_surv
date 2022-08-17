@@ -2509,4 +2509,10 @@ class UserController extends Controller
 
 
     }
+    public function getProfileImage(Request $request){
+        $user = User::find($request['id']);
+        $filename = $user->img_url;
+        return $filename;
+    }
+
 }

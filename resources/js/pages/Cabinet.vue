@@ -202,6 +202,8 @@
           <!-- profile image -->
           <div class="col-4"> 
             <div class="form-group mb-0"> 
+             <!-- <canvas id="myCanvas" width="250" height="250" @click="chooseProfileImage()">
+              </canvas>-->
               <croppa
                 v-model="myCroppa"
                 :width="250"
@@ -215,8 +217,13 @@
                 :quality="2"
                 :zoom-speed="20"
                 :initial-image="image"
+                :disable-drag-to-move="true"
+                :disable-scroll-to-zoom="true"
+                @new-image-drawn="hasImage = true"
+                @image-remove="hasImage = false"
+                v-on="hasImage ? { click:chooseProfileImage } : {}"
+                
               ></croppa>
-
               <button
                 style="width: 250px; display: block"
                 class="btn btn-success"
@@ -328,11 +335,24 @@
         </div>
       </div>
     </div>
+    <b-modal v-model="showChooseProfileModal"  title="Изображение профиля" size="md" class="modalle" @ok="save_picture()">
+      <cropper
+      ref="mycrop"
+      class="cropper"
+      :src="image"
+      :stencil-props="{
+        aspectRatio: 12/12
+      }"
+      @change="change"
+    />
+    </b-modal>
   </div>
 </template>
 <script>
 import VueAvatar from "../components/vue-avatar-editor/src/components/VueAvatar.vue";
 import VueAvatarScale from "../components/vue-avatar-editor/src/components/VueAvatarScale";
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 
 export default {
   name: "Cabinet",
@@ -342,10 +362,17 @@ export default {
   computed: {
     uploadedImage() {
       return Object.keys(this.myCroppa).length !== 0;
-    },
+    }
+  },
+  components:{
+    Cropper
   },
   data() {
     return {
+      hasImage: true,
+      canvas_image: new Image(),
+      myCanvas: null,
+      showChooseProfileModal: false,
       test: "dsa",
       items: [],
       myCroppa: {},
@@ -383,6 +410,16 @@ export default {
     keywords(after, before) {
       this.fetch();
     },
+    myCanvas(after, before) {
+      if(after == null){
+        this.myCanvas = document.getElementById("myCanvas").getContext("2d");
+      }
+    }
+  },
+  mounted() {
+          this.initCanvas();
+          this.drawProfile();
+          this.hasImage = this.$root.$children[1].hasImage;
   },
   created() {
     this.fetchData();
@@ -392,9 +429,55 @@ export default {
     if (this.user.img_url != null) {
       this.image = "/users_img/" + this.user.img_url;
     }
-
+    console.log(this.$bvModal);
   },
   methods: {
+    initCanvas(){
+          var canvas = document.getElementById("myCanvas");
+          var ctx = canvas.getContext("2d");  
+          this.myCanvas = ctx;
+    },
+    drawProfile(){
+      this.canvas_image.src = this.image;
+      //this.myCanvas.drawImage(this.canvas_image, 0, 0, 250, 250);
+    },
+    change({ coordinates, canvas }) {
+      this.myCanvas = canvas;
+      //this.canvas = canvas;
+      //this.myCanvas.clearRect(0, 0, canvas.width, canvas.height);
+      //var can = canvas;
+      //this.myCanvas.drawImage(this.canvas_image, coordinates.left,  coordinates.top, coordinates.width, coordinates.height, 0, 0, 250, 250);
+      console.log(coordinates, canvas)
+    },
+    save_picture(){
+      this.myCanvas.toBlob(function(blob) {
+            const formData = new FormData();
+            formData.append("file", blob);
+            axios.post("/profile/upload/image/profile/", formData)
+                .then((response) => {
+                  $(".img_url_sm").html(response.data.img);
+                  $(".img_url_lg").html(response.data.img);
+                });
+
+      });
+
+
+      /*const formData = new FormData();
+             formData.append("file", file, this.user.img_url);
+            axios.post("/profile/upload/image/profile/", formData)
+                .then(function (res) {
+                  $(".img_url_sm").html(res.data.img);
+                })
+                .catch(function (err) {
+                  console.log(err, "error");
+                });*/
+    },
+    chooseProfileImage(){
+      axios.post("/getnewimage", {id : this.user.id}).then( (response) => {
+        this.image = "/users_img/" + response.data;
+      });
+      this.showChooseProfileModal = true;
+    },
     saveCropped() {
 
 
@@ -407,13 +490,13 @@ export default {
                 .post("/profile/upload/image/profile/", formData)
                 .then(function (res) {
                   $(".img_url_sm").html(res.data.img);
+                  $(".img_url_lg").html(res.data.img);
+                  console.log(res.data.img);
                   loader.hide();
                 })
                 .catch(function (err) {
                   console.log(err, "error");
                 });
-
-
         },
         "image/jpeg",
         0.8
@@ -566,6 +649,7 @@ export default {
           } else {
             this.img = "/users_img/noavatar.png";
           }
+          this.drawProfile();
         })
         .catch((error) => {
           alert(error);
