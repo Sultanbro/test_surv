@@ -33,7 +33,7 @@ class KpiSaveRequest extends FormRequest
             'colors'                => 'array|nullable',
             'items.*.name'          => 'required',
             'items.*.plan'          => 'required|numeric',
-            'items.*share'          => 'required|numeric',
+            'items.*.share'          => 'required|numeric',
             'items.*.activity_id'   => 'required|integer'
         ];
     }
