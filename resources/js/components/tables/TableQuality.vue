@@ -1462,7 +1462,7 @@ export default {
 
         fieldsArray.push({
           key: i,
-          name: day % 8,
+          name: i,
           order: order++,
           klass: "text-center px-1",
           type: "day",

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="auth_check">
         <div @click="toggle()"   class="btn-rm">
             <a class="text-white rounded" >
                 <span class="far fa-address-card text-white "></span>
@@ -40,7 +40,7 @@
 
                     <div class="col-md-12 mt-3">
                         <div class="col-md-6 p-0">
-                            <button @click.prevent="saveChecklist"   title="Сохранить" class="btn btn-primary" :disabled="linkIsSet">
+                            <button @click.prevent="saveChecklist"   title="Сохранить" :disabled="linkIsSet" v-bind:class = " linkIsSet ?'btn btn-danger':'btn btn-primary'">
                                 Выполнить
                             </button>
                         </div>
@@ -102,7 +102,11 @@
                 if(this.notification_time != null){
                     if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
                         this.toggle();
-                        this.getNotificationTime(this.show_counts)
+                        if(newValue.getSeconds() == this.notification_time.getSeconds()){
+                            this.getNotificationTime(this.show_counts);
+                        }else{
+                            this.notification_time == null;
+                        }
                     }
                 }
  
@@ -154,6 +158,9 @@
                 return (a.host && a.host != window.location.host);
             },
             toggle() {
+                if(this.showAuthUserCheck){
+                    this.linkIsSet = true;
+                }
                 this.showAuthUserCheck = !this.showAuthUserCheck
                 // document.getElementById('list-example').classList.toggle("sticky");
             },
@@ -230,5 +237,8 @@
 </script>
 
 <style lang="scss">
-
+    .auth_check{
+        position: absolute;
+        z-index: 9999;
+    }
 </style>

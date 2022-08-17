@@ -523,7 +523,7 @@ class CheckListController extends Controller
     public function saveTasks(Request $request){
         foreach($request['auth_check'] as $task){
             foreach($task as $t){
-                if($t['checkedtasks'][0]['url'] != null && $t['checkedtasks'][0]['checked'] == 'true'){
+                if( ($t['checkedtasks'][0]['url'] != null && $t['checkedtasks'][0]['checked'] == 'true') || ($t['checkedtasks'][0]['url'] != null && $t['checkedtasks'][0]['checked'] != null)){
                     if (filter_var($t['checkedtasks'][0]['url'], FILTER_VALIDATE_URL) === FALSE) {
                         return 3;
                     }
