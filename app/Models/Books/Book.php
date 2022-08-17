@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\Contracts\CourseInterface;
 use App\Models\TestQuestion;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Book extends Model implements CourseInterface
 {
+    use SoftDeletes;
+    
     protected $table = 'books';
 
     public $timestamps = true;
@@ -21,7 +24,7 @@ class Book extends Model implements CourseInterface
         'description',
         'link',
         'img',
-        'domain'
+        'domain',
     ];
 
     /**

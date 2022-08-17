@@ -79,6 +79,12 @@
         }
     }
     
+    .deleted {
+        p {
+            color: red !important;
+        }
+    }
+    
 }
 
 .section:hover p {
