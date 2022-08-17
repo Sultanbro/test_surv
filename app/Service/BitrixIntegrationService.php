@@ -34,7 +34,7 @@ class BitrixIntegrationService
         try {
             $bitrixUser  = $this->checkCurrentUserBitrix();
 
-            $link        = $this->host . $this->token . '/tasks.task.list';
+            $link        = $this->host . $this->token . '/' . 'tasks.task.list';
             $apiResponse = $this->client::get($link, [
                 'filter' => [
                     'RESPONSIBLE_ID' => (int) $bitrixUser['ID'],
@@ -63,7 +63,7 @@ class BitrixIntegrationService
 
             $user = Auth::user();
 
-            $link = $this->host . $this->token . 'user.get';
+            $link = $this->host . $this->token . '/' . 'user.get';
 
             $bitrixUserResponse = $this->client::get($link, [
                 'email' => $user->email
