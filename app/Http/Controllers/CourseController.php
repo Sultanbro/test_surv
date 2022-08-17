@@ -244,7 +244,7 @@ class CourseController extends Controller
 
         // save course 
         $course->stages = $stages;
-        $course->bonuses = $bonuses;
+        $course->points = $bonuses;
         $course->save();
 
     }
