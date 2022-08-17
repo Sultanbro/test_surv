@@ -88,7 +88,7 @@ class BitrixIntegrationService
      */
     private function checkPositionOfUser(): void
     {
-        $position = Auth::user()->positions()->first();
+        $position = Auth::user()->position();
 
         if (in_array($position->id, [Position::OPERATOR_ID, Position::INTERN_ID]))
         {
