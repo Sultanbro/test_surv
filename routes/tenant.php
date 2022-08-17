@@ -374,6 +374,8 @@ Route::middleware([
         Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
     });
 
+    Route::get('/bitrix/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
+
     Route::get('/timetracking/top', [TopController::class, 'index']);
     Route::post('/timetracking/top', [TopController::class, 'fetch']);
     Route::post('/timetracking/top/save_top_value', [TopController::class, 'saveTopValue']);

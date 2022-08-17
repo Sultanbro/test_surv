@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Response;
+
+class JsonApiResponse implements Response
+{
+    public $data;
+
+    public function __construct($data)
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * Получаем json() данные
+     */
+    public function getData()
+    {
+        return $this->data['result'];
+    }
+
+    public function getStatus(): bool
+    {
+        return $this->data->status() == 200;
+    }
+
+    public function getResult()
+    {
+        return $this->getData();
+    }
+
+    public function first()
+    {
+        return $this->getData()[0];
+    }
+}
