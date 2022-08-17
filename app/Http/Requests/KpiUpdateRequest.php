@@ -24,12 +24,17 @@ class KpiUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'kpi_id'            => 'required',
-            'completed_80'      => 'nullable',
-            'completed_100'     => 'nullable',
-            'lower_limit'       => 'nullable',
-            'upper_limit'       => 'nullable',
-            'colors'            => 'array|nullable',
+            'kpi_id'                => 'required',
+            'completed_80'          => 'nullable',
+            'completed_100'         => 'nullable',
+            'lower_limit'           => 'nullable',
+            'upper_limit'           => 'nullable',
+            'colors'                => 'array|nullable',
+            'items.*.name'          => 'nullable|string',
+            'items.*.plan'          => 'nullable|numeric',
+            'items.*.share'          => 'nullable|numeric',
+            'items.*.activity_id'   => 'nullable|numeric',
+            'items.*.deleted'       => 'nullable|bool'
         ];
     }
 }

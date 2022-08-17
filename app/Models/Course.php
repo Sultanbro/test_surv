@@ -21,7 +21,8 @@ class Course extends Model
         'img',
         'text',
         'order',
-        'stages'
+        'points', // amount of bonuses in course
+        'stages' // all stages in course
     ];
 
     public function items()

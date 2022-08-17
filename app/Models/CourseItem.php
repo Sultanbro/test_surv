@@ -50,8 +50,45 @@ class CourseItem extends Model
      */
     public function countItems()
     {   
-        $item = $this->model();
-        return $item ? count($item->getOrder()) : 0;
+        $model = $this->model();
+        return $model ? count($model->getOrder()) : 0;
+    }
+
+    /**
+     * Count bonuses from test questions
+     * of course_item models 
+     */
+    public function countBonuses()
+    {   
+        $model = $this->model();
+        
+        $points = 0;
+
+        if($model) {
+
+            /**
+             * find morph table to test_questions
+             */
+            if($this->isBook()) {
+                $model_name = 'App\Models\Books\BookSegment';
+            } else if($this->isVideo()) {
+                $model_name = 'App\Models\Videos\Video';
+            } else if($this->isKnowbase()) {
+                $model_name = 'App\Models\Books\Booksegment';
+            } else {
+                throw new \Exception('Model not found for counting bonuses');
+            }
+            
+            /**
+             * count total points
+             */
+            $points = \App\Models\TestQuestion::whereIn('testable_id', $model->getOrder())
+                ->where('testable_type', $model_name)
+                ->get()
+                ->sum('points');
+        }
+
+        return $points;
     }
 
     /**
