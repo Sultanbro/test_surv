@@ -32,7 +32,7 @@ class KpiUpdateRequest extends FormRequest
             'colors'                => 'array|nullable',
             'items.*.name'          => 'nullable|string',
             'items.*.plan'          => 'nullable|numeric',
-            'items.*share'          => 'nullable|numeric',
+            'items.*.share'          => 'nullable|numeric',
             'items.*.activity_id'   => 'nullable|numeric',
             'items.*.deleted'       => 'nullable|bool'
         ];
