@@ -481,7 +481,13 @@ Route::middleware([
     /**
      * Статистика для KPI.
      */
-    Route::get('statistics/kpi/user/{id}', [KpiStatController::class, 'show'])->name('kpi-statistic.index');
+    Route::group([
+        'prefix' => 'statistics',
+        'as'     => 'kpi-statistic.'
+    ], function (){
+        Route::get('kpi/user/{id}', [KpiStatController::class, 'show'])->name('index');
+        Route::get('kpi/users/', [KpiStatController::class, 'fetchGroups'])->name('fetch');
+    });
 
     /**
      * Редактирование показателей

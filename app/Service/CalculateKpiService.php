@@ -2,13 +2,8 @@
 
 namespace App\Service;
 
-use App\Events\TrackKpiUpdatesEvent;
-use App\Http\Requests\KpiSaveUpdateRequest;
 use App\Models\Analytics\Activity;
-use App\Models\Kpi\Kpi;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CalculateKpiService
@@ -22,7 +17,7 @@ class CalculateKpiService
     public function getCompletePercent(array $data, $method_id = Activity::METHOD_SUM): float
     {
         $method = Activity::getMethod($method_id);
-        
+
         if(method_exists($this, $method)) {
             try {
                 return $this->$method($data);
@@ -39,7 +34,7 @@ class CalculateKpiService
      * method 
      */
     private function sum(array $data) : float
-    { 
+    {
         $daily_plan = (float) $data['daily_plan'];
         if($data['is_user_full_time'] == 0) {
             $daily_plan = $daily_plan / 2;
