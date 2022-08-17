@@ -27,7 +27,12 @@ class MyCourseController extends Controller
         return view('admin.mycourse');
     }   
     
-    public function getCourses(Request $request) {
+    /**
+     *  get all courses of auth user
+     *  this method is hidden for non-admin users
+     */
+    public function getCourses(Request $request)
+    {
         $user_id = auth()->user()->id;
         $course_ids = CourseResult::where('user_id', $user_id)
             //->whereIn('status', [0,2])
@@ -56,11 +61,13 @@ class MyCourseController extends Controller
      * 
      * @return [type]
      */
-    public function pass(Request $request) {
+    public function pass(Request $request)
+    {
         $user_id = auth()->id();
 
-        // save Course item model 
-
+        /**
+         * save Course item model
+         */
         $model = CourseItemModel::where('user_id', $user_id)
             ->where('type', $request->type)
             ->where('item_id', $request->id)
@@ -80,8 +87,9 @@ class MyCourseController extends Controller
             ]);
         }
         
-        // save questions answers 
-
+        /**
+         * save questions answers 
+         */
         $sum_bonus = 0;
 
         foreach ($request->questions as $key => $q) {
@@ -112,8 +120,9 @@ class MyCourseController extends Controller
             }
         }
         
-        // save bonuses
-
+        /**
+         * save bonuses
+         */
         if($sum_bonus > 0) {
 
             // get item for what user has got bonus
@@ -142,7 +151,6 @@ class MyCourseController extends Controller
                 }
             }
 
-         
             //save 
             TestBonus::create([
                 'date' => date('Y-m-d'),
@@ -152,13 +160,13 @@ class MyCourseController extends Controller
             ]);
         } 
         
+        /**
+         * count progress and weekly_progress
+         * save in CourseResult
+         */
         if($request->course_item_id != 0) {
             // count progress
             $completed_stages = $request->completed_stages;
-
-            // if($request->type == 1) $completed_stages++; // костыль
-            // if($request->type == 2) $completed_stages++; // костыль
-            // if($request->type == 3) $completed_stages++; // костыль
 
             $count_progress  = $request->all_stages > 0 ? round($completed_stages / $request->all_stages * 100) : 0;
             $course_finished  = false;
@@ -166,7 +174,6 @@ class MyCourseController extends Controller
             if($count_progress > 100) $count_progress = 100;
         
             // save course result for report
-
 
             $model = 0;
             if($request->type == 1) $model = 'App\Models\Books\BookSegment';
@@ -215,26 +222,25 @@ class MyCourseController extends Controller
         ];
     }   
 
-    public function getMyCourse(Request $request) {
-        
+    /**
+     * get course
+     */
+    public function getMyCourse(Request $request) : array
+    {
         $course = CourseResult::activeCourse($request->id);
        
-
         $all_stages = 0;
         $completed_stages = 0;
         $items = [];
+
         if($course) {
-            
             $items = $course->setCheckpoint($course->items);
 
             foreach ($items as $key => $item) {
                 $all_stages += $item->all_stages;
                 $completed_stages += $item->completed_stages;
             }
-
-
         }
-        //dd($items);
 
         return [
             'course' => $course,
@@ -244,6 +250,9 @@ class MyCourseController extends Controller
         ];
     }   
 
+    /**
+     * IDK WTF is that for
+     */
     private function getCourseItem(CourseItem $course_item, &$no_active)
     {
         $user_id = auth()->user()->id;
