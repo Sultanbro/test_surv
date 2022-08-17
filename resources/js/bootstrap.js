@@ -39,8 +39,8 @@ window.Pusher = Pusher;
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: 12345,
-    //wsHost: '185.125.41.59',
     wsHost: 'bp.jobtron.org',
+   // wsHost: 'bp.jobtron.org',
     wsPort: 6001,
     wssPort: 6001,
     forceTLS: true,

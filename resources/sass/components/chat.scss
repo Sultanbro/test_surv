@@ -1,27 +1,59 @@
 .chat-app {
-    right: 15px;
     width: unset !important;
     z-index: 22;
-    top: 15px;
-    height: unset;
-    box-shadow: 0 0 10px 10px #eee;
+    height: unset !important;
+    display: flex;
+    position: fixed;
+    right: 0;
+    width: 100%;
+    justify-content: flex-end;
+    height: calc(100vh - 140px);
+
+    width: 50px !important;
+    box-shadow: 0;
+
+
+    &.fullscreen {
+        width: 650px !important; 
+        border: 1px solid #eee;
+    }
 
     .side-contacts-list {
-        height: 100%;
-        background: #fff;
-        
+        height: 100%  !important;
+        background: transparent;
+        border-left: 0 !important;
+
+        ul li {
+            border: 0 !important;
+        }
     }
 
     .chats-list {
-        height: 100%;
+        height: 100% !important;
+        max-height: 456px;
+        border: unset !important
     }
 
+    .feed {
+        max-height: 400px !important;
+    }
     .chats-list-panel {
-        border: 1px solid #ccc;
-        height: 605px;
+        height: 536px;
+        border: 1px solid #eee;
     }
 
     .create-chat-button {
         border-bottom: 1px solid #ccc
+    }
+
+    .conversation {
+        border-bottom: 1px solid #eee;
+        border-top: 1px solid #eee;
+    }
+
+    .chat-header__action {
+        display: flex !important;
+        padding-top: 1px;
+        justify-content: center;
     }
 }

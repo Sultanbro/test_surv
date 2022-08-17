@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-app" v-show="initialized">
+  <div class="chat-app" v-show="initialized" :class="{'fullscreen' : fullscreen}">
     <ChatsList v-show="fullscreen"
                :chats="chats"
                @selected="startConversationWith"
