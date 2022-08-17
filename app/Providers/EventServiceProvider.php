@@ -2,12 +2,6 @@
 
 namespace App\Providers;
 
-use App\Events\TrackKpiItemEvent;
-use App\Events\TrackKpiUpdatesEvent;
-use App\Events\TrackQuartalPremiumEvent;
-use App\Listeners\TrackKpiItemListener;
-use App\Listeners\TrackKpiUpdatesListener;
-use App\Listeners\TrackQuartalPremiumListener;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -19,20 +13,23 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\Event' => [
-            'App\Listeners\EventListener',
+        \App\Events\Event::class => [
+            \App\Listeners\EventListener::class,
         ],
-        TrackKpiUpdatesEvent::class => [
-            TrackKpiUpdatesListener::class
+        \App\Events\TrackKpiUpdatesEvent::class => [
+            \App\Listeners\TrackKpiUpdatesListener::class
         ],
-        TrackQuartalPremiumEvent::class => [
-            TrackQuartalPremiumListener::class
+        \App\Events\TrackQuartalPremiumEvent::class => [
+            \App\Listeners\TrackQuartalPremiumListener::class
         ],
-        'App\Events\BonusUpdated' => [
-            'App\Listeners\BonusUpdatedListener'
+        \App\Events\BonusUpdated::class => [
+            \App\Listeners\BonusUpdatedListener::class
         ],
-        TrackKpiItemEvent::class => [
-            TrackKpiItemListener::class
+        \App\Events\TrackKpiItemEvent::class => [
+            \App\Listeners\TrackKpiItemListener::class
+        ],
+        \App\Events\ActivityUpdated::class => [
+            \App\Listeners\ActivityUpdatedListener::class
         ]
     ];
 

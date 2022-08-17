@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             KpiItemSeeder::class,
             QuartalPremiumSeeder::class,
             BonusSeeder::class,
+            ActivitySeeder::class,
         ]);
     }
 }
