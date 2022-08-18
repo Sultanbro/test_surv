@@ -20,7 +20,9 @@ class Course extends Model
         'user_id',
         'img',
         'text',
-        'order'
+        'order',
+        'points', // amount of bonuses in course
+        'stages' // all stages in course
     ];
 
     public function items()
@@ -66,6 +68,7 @@ class Course extends Model
                 
                     $cim = CourseItemModel::where('user_id', auth()->id())
                         ->where('type', CourseItemModel::getType($item->item_model))
+                        ->where('course_item_id', $item->id)
                         ->whereIn('item_id', $model_ids)
                         ->select('item_id')
                         ->get();
@@ -86,7 +89,11 @@ class Course extends Model
                 $item->all_stages = $count;
                 $item->completed_stages = $completed_stages;
                 $item->status = $count <= (int)$completed_stages ? CourseResult::COMPLETED : CourseResult::ACTIVE;
-               
+                
+                // dump('not found actuve');
+                // dump($item->item_model . ' - ' . CourseItemModel::getType($item->item_model));
+                // dump($completed_stages  . ' from ' . $count);
+
                 // found active
                 if($item->status == CourseResult::ACTIVE) {
                     $found_active = true;
@@ -121,6 +128,10 @@ class Course extends Model
                         ->select('item_id')
                         ->get();
 
+                    // dump('active');
+                    // dump($item->item_model . ' - ' . CourseItemModel::getType($item->item_model));
+                    // dump($completed_stages  . ' from ' . $count);
+
                     $completed_stages = $cim->count();
                 }
                 
@@ -128,10 +139,10 @@ class Course extends Model
                 $item->all_stages = $count;
                 $item->completed_stages = $completed_stages;
                 $item->status = CourseResult::INITIAL;
-
             }
 
         }
+
 
         return $items;
     }

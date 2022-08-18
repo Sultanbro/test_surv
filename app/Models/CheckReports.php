@@ -7,6 +7,9 @@ use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\Checklist;
+use App\Models\Task;
+use App\Models\Checkedtask;
 
 class CheckReports extends Model
 {
@@ -30,7 +33,7 @@ class CheckReports extends Model
     ];
 
 
-    public function get_average_value($month,$year,$check_user_id,$type,$type_id){
+    public static function get_average_value($month,$year,$check_user_id){
 
 
 //        $month = date('n'); ;
@@ -101,25 +104,27 @@ class CheckReports extends Model
                 }
 
 
+                $from = $week_middl[$md]['start'][2].'-'.$week_middl[$md]['start'][1].'-'.$week_middl[$md]['start'][0];
+                $to = $week_middl[$md]['start'][2].'-'.$week_middl[$md]['start'][1].'-'.$week_middl[$md]['end'][0];
+                $week_middl[$md]['count_check'] = Checkedtask::where('user_id',$check_user_id)
+                ->whereBetween('created_date',[$from, $to])->count();
 
-
-
+                $week_middl[$md]['count_check_auth'] = Checkedtask::where('user_id',$check_user_id)->where('checked','true')
+                ->whereBetween('created_date',[$from, $to])->count();
+                /*
                 $week_middl[$md]['count_check'] = CheckReports::on()->where('check_users_id',$check_user_id)
                     ->where('year',$week_middl[$md]['start'][2])->where('month',$week_middl[$md]['start'][1])
                     ->where('day','>=',$week_middl[$md]['start'][0])
-                    ->where('day','<=',$week_middl[$md]['end'][0])
-                    ->where('item_id',$type_id)
-                    ->where('item_type',$type)->sum('count_check');
+                    ->where('day','<=',$week_middl[$md]['end'][0])->sum('count_check');
 
                 $week_middl[$md]['count_check_auth'] = CheckReports::on()->where('check_users_id',$check_user_id)
                     ->where('year',$week_middl[$md]['start'][2])->where('month',$week_middl[$md]['start'][1])
                     ->where('day','>=',$week_middl[$md]['start'][0])
-                    ->where('day','<=',$week_middl[$md]['end'][0])
-                    ->where('item_id',$type_id)
-                    ->where('item_type',$type)->sum('count_check_auth');
+                    ->where('day','<=',$week_middl[$md]['end'][0])->sum('count_check_auth');
 
-
-                $average_value[$md] = $week_middl[$md]['count_check'] -  $week_middl[$md]['count_check_auth'];
+  */
+                $average_value[$md] = ($week_middl[$md]['count_check_auth']) . '/' . $week_middl[$md]['count_check'];
+              
 
 //                $average_value[$md] =  10 -  3;
 
@@ -402,10 +407,77 @@ class CheckReports extends Model
 
             }
             return ['check_users'=>$check_users,'individual_type'=>3,'individual_current'=>$request->individual_type_id];
+        }else{
+            $records = [];
+            
         }
 
 
     }
+
+    public static function getChecklistByGroup($group, $request){
+        $check_users = [];
+        $users = User::whereIn('id',json_decode($group->users))->get();
+        foreach($users as $key => $user){
+                $check_users[] = [
+                    "user_id" => $user->id,
+                    "name" => $user->name,
+                    "last_name" => $user->last_name,
+                    "day" => self::getDaylyChecklistsByUser($user->id,$request->month, $request->year),//за каждый день
+                    "month" => self::getMonthlyChecklistsByUser($user, $request->year),//за каждый месяц
+                    "gr_id" => $group->id,
+                    "total_day" => self::getTotalCompletedChecklistByMonth($user->id, $request->month, $request->year) . '/' . self::getTotalChecklistByMonth($user->id, $request->month, $request->year),
+                    "total_month" => self::getTotalCompletedChecklistByYear($user->id, $request->year) . '/' . self::getTotalChecklistByYear($user->id, $request->year),
+                    "average" => self::get_average_value($request->month,$request->year,$user->id,$request->individual_type,$request->individual_type_id),
+                ];
+        }
+        return ['check_users'=>$check_users, 'individual_current'=>$group->id];
+    }
+
+    private static function getTotalCompletedChecklistByYear($user_id, $year){
+        return Checkedtask::where('user_id',$user_id)->whereYear('created_date',$year)->where('checked','true')->count();
+    }
+
+    private static function getTotalChecklistByYear($user_id, $year){
+        return Checkedtask::where('user_id',$user_id)->whereYear('created_date',$year)->count();
+    }
+
+    private static function getTotalCompletedChecklistByMonth($user_id, $month, $year){
+        return Checkedtask::where('user_id',$user_id)->whereMonth('created_date',$month)->whereYear('created_date',$year)->where('checked','true')->count();
+    }
+
+    private static function getTotalChecklistByMonth($user_id, $month, $year){
+        return Checkedtask::where('user_id',$user_id)->whereMonth('created_date',$month)->whereYear('created_date',$year)->count();
+    }
+
+    public static function getDaylyChecklistsByUser($user_id, $month, $year){
+        $checked_tasks = Checkedtask::select('created_date')->where('user_id',$user_id)->whereYear('created_date',$year)->whereMonth('created_date',$month)->distinct()->pluck('created_date')->toArray();
+        $days_data = [];
+        foreach($checked_tasks as $task){
+            $total = Checkedtask::where('user_id',$user_id)->whereDate('created_date',$task)->count();
+            $checked = Checkedtask::where('user_id',$user_id)->whereDate('created_date',$task)->where('checked','true')->count();
+            $days_data[(int)substr($task, -2, 2)] = $checked.'/'.$total;
+        }
+        return $days_data;
+    }
+
+
+
+    private static function getTotalAmountOfChecklistsByMonth($month, $year,$user_id){//gets total amount of checklists only for current year
+        return self::where('item_id',$user_id)->where('year',$year)->where('month','=', $month)->count();
+    }
+
+    private static function getMonthlyChecklistsByUser($user, $year){ 
+        $months_data = [];
+        $months = [1,2,3,4,5,6,7,8,9,10,11,12];
+        foreach($months as $month){
+            $total = Checkedtask::where('user_id',$user->id)->whereMonth('created_date',$month)->count();
+            $checked = Checkedtask::where('user_id',$user->id)->whereMonth('created_date',$month)->where('checked','true')->count();
+            $months_data[$month] = $checked . '/' . $total;
+        }    
+        
+        return $months_data;
+     }
 
     public function test($month,$year,$check_user_id,$type,$type_id){
 

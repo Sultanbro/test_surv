@@ -127,7 +127,7 @@ class NpsController extends Controller
                 return redirect('/');
             }
 
-            return view('estimate_your_trainer')->with([
+            return view('specific.estimate_your_trainer')->with([
                 'rooks' => $this->getRooks($groups, 45), // руководители,
                 'stars' => $this->getRooks($groups, 55), // старшие специалисты
             ]);

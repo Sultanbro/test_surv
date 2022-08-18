@@ -21,15 +21,7 @@
 
     </div>
     <div class="col-md-12">
-
-
-        @if($individual_type == null && $individual_type_id == null)
-          <t-quality activeuserid="{{ auth()->user()->id }}" :groups="{{ json_encode($groups)}}"   ></t-quality>
-        @else
-          <t-quality activeuserid="{{ auth()->user()->id }}" :groups="{{ json_encode($groups)}}" :individual_type="{{$individual_type}}" :individual_type_id="{{$individual_type_id}}" ></t-quality>
-      @endif
-
-
+     <t-quality :groups="{{ json_encode($groups)}}" active_group="{{ $group_id }}" check="{{ $check }}" user="{{ json_encode(auth()->user()) }}"></t-quality>
 
     </div>
     

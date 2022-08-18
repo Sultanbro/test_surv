@@ -2,11 +2,11 @@
 <div>
 
   <div class="row mb-2">
-    <div class="col-4 text-left">
+    <div class="col-3 text-left">
       <b-input-group size="sm">
         <b-form-input v-model="filter.email" type="search" id="filterInput" placeholder="Поиск" ></b-form-input>
         <b-input-group-append>
-          <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button>
+          <!-- <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button> -->
         </b-input-group-append>
       </b-input-group>
     </div>
@@ -14,10 +14,12 @@
       <b-form-select v-model="filter.group" :options="groups" size="sm"></b-form-select>
     </div>
     <div class="col-2  d-flex align-items-center">
-      <b-form-select v-model="tableFilter" :options="tableFilters" size="sm" @change="getUsers()"></b-form-select>
-      
+      <b-form-select v-model="tableFilter" :options="tableFilters" size="sm" @change="getUsers()"></b-form-select> 
     </div>
-    <div class="col-4 justify-content-end d-flex align-items-start">
+    <div class="col-2  d-flex align-items-center">
+      <b-form-select v-model="position" :options="jobFilters" size="sm" @change="getUsers()"></b-form-select>  
+    </div>
+    <div class="col-3 justify-content-end d-flex align-items-start">
       
       <a href="/timetracking/create-person" class="btn btn-success btn-sm rounded">Пригласить</a>
       <b-button @click="showModal = !showModal" class="btn-primary btn-sm rounded ml-1" title="Показывать поля">
@@ -187,7 +189,7 @@
               :value="true"
               :unchecked-value="false"
               >
-              Группы 
+              Отделы 
           </b-form-checkbox>
           <b-form-checkbox
               v-model="showFields.register_date"
@@ -348,10 +350,14 @@ export default {
     subdomain: {
       type: String,
       default: 'nosub'
-    }
+    },
+    positions: String,
   },
   data() {
     return {
+      my_positions: {},
+      position: 0,
+      jobFilters: [{ text: 'Должность', value: 0 }],
       sel: false,
       newtime: '',
       auth_token: '',
@@ -417,7 +423,7 @@ export default {
         },
         {
           key: 'groups',
-          label: 'Группы',
+          label: 'Отделы',
           sortable: true
         },
         {
@@ -457,7 +463,7 @@ export default {
         },
       ],
       groups: {
-        0: 'Выберите группу'
+        0: 'Выберите отдел'
       },
       currentGroup: 0,
       totalRows: 1,
@@ -505,10 +511,12 @@ export default {
     }
   },
   created() {
+    this.my_positions = JSON.parse(this.positions);
+    this.my_positions.forEach((value, index) => {
+      this.jobFilters.push({ text: value.position, value: value.id });
+    });
     this.getUsers()
-    
-      this.setDefaultShowFields()
-    
+    this.setDefaultShowFields()
   },
   computed: {
     sortOptions() {
@@ -616,6 +624,7 @@ export default {
       let filter = {
         filter: this.tableFilter,
         segment: this.filter.segment,
+        job: this.position,
       } 
 
       if(this.active.date) {

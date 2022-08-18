@@ -133,9 +133,11 @@ class IntellectController extends Controller {
                 ]);
 
                 $this->send_msg($phone, 'Добрый день, ' . $request->namex . '! %0aВы откликнулись на нашу вакансию менеджера по работе с клиентами. %0aМеня зовут Мадина 😊 . %0aЯ чат-бот, который поможет Вам устроиться на работу 😉');
-                usleep(2000000); // 2 sec
-                //$this->send_msg($phone, '/unset_tag:recruiter_bot%0a/set_tag:recruiter_bot');
-                $this->send_msg($phone, '/set_tag:recruiter_bot');
+                usleep(1000000); // 1 sec
+                $this->send_msg($phone, '/unset_tag:new_recruiter_bot');
+                usleep(1000000); // 1 sec
+                $this->send_msg($phone, '/set_tag:new_recruiter_bot');
+               // $this->send_msg($phone, '/unset_tag:new_recruiter_bot /set_tag:new_recruiter_bot');
                 //$this->send_msg($phone, '++recruiter_bot');
       
                 
@@ -646,7 +648,9 @@ class IntellectController extends Controller {
                     $this->save($request);
                 }
 
-                return $lead->name;
+                return [
+                    'name' => $lead->name
+                ];
             } else {
                 return abort(500, 'Lead is not found');
             }
@@ -655,11 +659,22 @@ class IntellectController extends Controller {
 
     public function get_link(Request $request) {
 
-        TB::send('Test');
+        TB::send('get link');
         
         if($request->has('phone')) {
             $lead = Lead::where('phone', $request->phone)->latest()->first();
             if($lead) {
+
+                if($request->has('city')) {
+                    $lead->city = $request->city;
+                    $lead->save();
+                    $this->updateFields($lead->lead_id, [
+                        'UF_CRM_1658397129' => $request->city
+                    ]);
+                }
+                
+                $this->save($request);
+
                 if($request->link == 1) { // ссылка для подписи договора дял удаленных
 
                     History::intellect('Cсылка на подпись', [
@@ -667,7 +682,10 @@ class IntellectController extends Controller {
                         $request->all(),
                     ]);
                     
-                    //if($lead->status != 'CON') {
+
+                   
+                  
+
                     if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
                         $lead->status = '40';
 
@@ -683,14 +701,25 @@ class IntellectController extends Controller {
                         $lead->save();
                     }
                     
-                    
+               
                     /////////////////
+                    
+                    $link = $this->contract_link . $lead->hash;
+                    $this->send_msg($request->phone, 'Подписать соглашение: %0a' . $link);
 
-                    return $this->contract_link . $lead->hash;    
+                    return [
+                        'link' => $this->contract_link . $lead->hash
+                    ];    
                 } 
     
                 if($request->link == 2) { // ссылка для выбора времени для офисных
-                    return $this->time_link . $lead->hash;
+
+                    $link = $this->time_link . $lead->hash;
+                    $this->send_msg($request->phone, 'Выберите, пожалуйста, удобное для вас время стажировки: %0a' . $link);
+                    
+                    return [
+                        'link' => $this->time_link . $lead->hash
+                    ];   
                 } 
             }
             
@@ -1029,21 +1058,23 @@ class IntellectController extends Controller {
                 }
 
                 if($request->isMethod('post')) {
-                  
+                    TB::send('choose time');
+
                     $lead->time = date('Y-m-d H:i:s', $request->time);
                     $lead->save();
 
-                    
+                    TB::send($request->all());
 
                     $msg = 'Поздравляю, вам назначена стажировка на '. date('H:i d.m.Y', $request->time + 3600 * 6) . '.%0a%0aМы находимся по Адресу г. Шымкент ул. Рыскулова 10А%0aТрех этажное здание "Автомир"%0aПоднимайтесь на 3й этаж и ищите 2ю дверь по левой стороне с табличкой "Business Partner"%0aКак войдете в офис, я Вас встречу 😉%0a%0ahttps://go.2gis.com/x8ppu%0a%0aПожалуйста, не опаздывайте 😊';
-
+                    
                     $this->send_msg($lead->phone, $msg); 
                     
                     $this->updateFields($lead->lead_id, [
                         'UF_CRM_1624274105' => date('Y-m-d H:i:s', $request->time + 3600 * 3), // Время в тексте СМС (собеседование со штатными)
+                        'UF_CRM_1633575435' => date('Y-m-d H:i:s', $request->time + 3600 * 3), // Время в тексте СМС (собеседование со штатными)
                         //'UF_CRM_1624274210' => date('Y-m-d H:i:s', $request->time + 3600 * 1.5), // Время прихода СМС (собеседование со штатными)
                     ]);
-
+                    TB::send(date('Y-m-d H:i:s', $request->time + 3600 * 3));
                     usleep(2000000); // 2 sec
 
                     try {

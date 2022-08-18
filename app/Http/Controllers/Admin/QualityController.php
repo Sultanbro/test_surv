@@ -27,6 +27,7 @@ use View;
 use App\Models\Analytics\Activity;
 use Auth;
 use App\Models\CallibroDialer;
+use App\UserNotification;
 
 class QualityController extends Controller
 {
@@ -40,17 +41,8 @@ class QualityController extends Controller
     }
 
     public function index(Request $request)
-    {
-        if ($request->has('type') && $request->has('id') ) {
-            $individual_type = $request['type'];
-            $individual_type_id = $request['id'];
-        }else{
-            $individual_type = null;
-            $individual_type_id = null;
-        }
-
-
-
+    {  
+        $check = isset($request['check']) ? $request['check'] : 1;
         if(!auth()->user()->can('quality_view')) {
             return redirect('/');
         }
@@ -58,9 +50,14 @@ class QualityController extends Controller
        // $acts = Activity::where('type', 'quality')->get()->pluck('group_id')->toArray();
        
         $groups = ProfileGroup::where('active', 1)->get();
+        $group_id = $groups[0]->id;
+        if(isset($request['user_id'])){
+            $user = User::find($request['user_id']);
+            $group_id = $user->inGroups()[0]->id;
+        }
 
         return view('admin.quality_control',
-            compact('groups','individual_type','individual_type_id'));
+            compact('groups','group_id','check'));
     }
 
     public function getRecords(Request $request) {
@@ -85,12 +82,15 @@ class QualityController extends Controller
             ];
         }
 
-
+        $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
         
-      // dd('test');
+        // dd('test');
 
-        $user_ids = $this->employees($request->group_id);
-        $raw_items = User::whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id','last_name', 'name'])->get();
+        $working = ProfileGroup::employees($request->group_id, $date, 1);
+        $fired =  ProfileGroup::employees($request->group_id, $date, 2);
+        $user_ids = array_unique(array_merge($working, $fired));
+
+        $raw_items = User::withTrashed()->whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id','last_name', 'name'])->get();
 
         $items = [];
         
@@ -289,10 +289,8 @@ class QualityController extends Controller
 
 
 
-        $getReportsCheck = new CheckReports();
-        $check_users = $getReportsCheck->filterCheckList($request);
-
         $group = ProfileGroup::find($request->group_id);
+        $check_users = CheckReports::getChecklistByGroup($group, $request);
         $dialer = CallibroDialer::where('group_id', $group->id)->first();
 
 
@@ -344,7 +342,6 @@ class QualityController extends Controller
     public function saveRecord(Request $request) {
     
         $user_id = User::bitrixUser()->id;
-
         
 
         
@@ -450,7 +447,17 @@ class QualityController extends Controller
                 ]);
                 $id = $record->id;
             }
-
+            $color = '#ff1a00';
+            if($total >= 20 && $total < 40){$color = '#ff8d00';}
+            else if($total >= 40 && $total < 60){$color = '#e3ff00';}
+            else if($total >= 60 && $total < 80){$color = '#00ff04';}
+            else if($total >= 80 && $total <= 100){$color = '#0051ff';}
+            UserNotification::create([
+                                'user_id' => $request->employee_id,
+                                'about_id' => 0,
+                                'title' => 'Оценка переговоров',
+                                'message' => $request->comments.' Общая оценка: '.$total.' <div style="background-color:'.$color.';width:20px;height:20px;display: inline-block;"></div>'
+                            ]);
 
             return response()->json([
                 'method' => 'update',
@@ -486,7 +493,7 @@ class QualityController extends Controller
             array_push($headings, $crit->name);
         }
         
-        array_push($headings, 'Комментарии');
+        array_push($headings, 'Совет');
         $data['records'] = [];
         
         $records = QualityRecord::whereYear('listened_on', $request->year)

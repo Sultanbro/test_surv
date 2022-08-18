@@ -114,7 +114,9 @@
                             {{ item.amount }} KZT
                         </b>
                     </div>
-                    
+                    <div>
+                        {{ item.comment }}
+                    </div>
                 </div>
             </template>
         </div>

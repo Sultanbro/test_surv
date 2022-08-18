@@ -19,7 +19,7 @@ use Auth;
 use App\Kpi;
 use App\Salary;
 use Carbon\Carbon;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Downloads;
 use App\Account;
 use App\UserNotification;
@@ -578,15 +578,20 @@ class UserController extends Controller
 
     public function getpersons(Request $request)
     {
-        
+
         $groups = ProfileGroup::where('active', 1)->get();
   
         if (isset($request['filter']) && $request['filter'] == 'all') {
 
             //$users = User::withTrashed()->whereIn('email', $array_accounts_email);
-
             $users = \DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+
+            if($request['job'] != 0){
+                $users = \DB::table('users')
+                ->where('position_id',$request['job'])
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id');
+            }            
 
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
@@ -616,6 +621,14 @@ class UserController extends Controller
                 ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
+
+            if($request['job'] != 0){
+                $users = \DB::table('users')
+                ->where('position_id',$request['job'])
+                ->whereNotNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 0);
+            } 
             
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
@@ -662,6 +675,15 @@ class UserController extends Controller
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 1)
                 ->whereNull('ud.fire_date');
+
+            if($request['job'] != 0){
+                $users = \DB::table('users')
+                ->where('position_id',$request['job'])
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 1)
+                ->whereNull('ud.fire_date');
+            }
             
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
@@ -675,6 +697,14 @@ class UserController extends Controller
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0);
+
+            if($request['job'] != 0){
+                $users = \DB::table('users')
+                ->where('position_id',$request['job'])
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('is_trainee', 0);
+            }
             
            // $trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
@@ -1171,11 +1201,10 @@ class UserController extends Controller
                 if($user->deleted_at != null && $user->deleted_at != '0000-00-00 00:00:00') {
                     $user->worked_with_us = round((Carbon::parse($user->deleted_at)->timestamp - Carbon::parse($user->applied_at)->timestamp) / 3600 / 24) . ' дней';
                 } else if(!$user->is_trainee && $user->deleted_at == null) {
-                    $user->worked_with_us = round((Carbon::now()->timestamp - Carbon::parse($user->applied_at)->timestamp) / 3600 / 24) . ' дней';
+                    $user->worked_with_us = round((Carbon::now()->timestamp - Carbon::parse($user->created_at)->timestamp) / 3600 / 24) . ' дней';
                 } else {
                     $user->worked_with_us = 'Еще стажируется';
                 }
-                
                 // humor
 
                 if($user->id == 5)  $user->worked_with_us = 'Алеке 😁!';
@@ -1985,7 +2014,7 @@ class UserController extends Controller
 
 
             $user->zarplata()->update([
-                'zarplata' => $request->zarplata == 0 ? 70000 : $request->zarplata,
+                'zarplata' => $request->zarplata,
                 'card_number' => $request->card_number,
                 'kaspi' => $request->kaspi,
                 'jysan' => $request->jysan,
@@ -2304,7 +2333,7 @@ class UserController extends Controller
     {
         $user = User::find(auth()->id());
         $user->read_corp_book_at = now();
-        $user->has_noti = 0;
+        $user->notified_at = now();
         $user->save();
 
         return ['code' => 200];
@@ -2480,4 +2509,58 @@ class UserController extends Controller
 
 
     }
+
+    public function uploadCroppedImageProfile(Request $request){
+
+
+        $user = User::withTrashed()->find(auth()->user()->getAuthIdentifier());
+
+
+
+        if ($user->cropped_img_url){
+            $filename = "cropped_users_img/".$user->cropped_img_url;
+            if (file_exists($filename)) {
+                unlink(public_path('cropped_users_img/'.$user->cropped_img_url));
+            }
+        }
+
+
+
+
+        if ($request->file == "null" || $request->file == 'undefined'){
+            $user->cropped_img_url = null;
+            $user->save();
+
+            $img = '<img src="'.url('/cropped_users_img').'/'.'noavatar.png'.'" alt="avatar" />';
+
+            return response(['img'=>$img,'filename'=>'noavatar.png','type'=>0]);
+
+        }else{
+
+            $request->validate([
+                'file' => 'required|mimes:jpg,jpeg,png'
+            ]);
+
+
+
+            $upload_path = public_path('cropped_users_img/');
+            $generated_new_name = time() . '.' .'png';
+            $request->file->move($upload_path, $generated_new_name);
+            $user->cropped_img_url = $generated_new_name;
+            $user->save();
+
+            $img = '<img src="'.url('/cropped_users_img/').'/'.$generated_new_name.'" alt="avatar" />';
+            return response(['img'=>$img,'filename'=>$generated_new_name,'type'=>1]);
+        }
+
+
+
+    }
+
+    public function getProfileImage(Request $request){
+        $user = User::find($request['id']);
+        $filename = $user->img_url;
+        return $filename;
+    }
+
 }

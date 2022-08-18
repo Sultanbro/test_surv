@@ -112,9 +112,9 @@ class ObtainedBonus extends Model
                     $item['date'] = $bon->date;
                     $sum += $bon->amount * $currency_rate;
                     if(strlen($comment) > 0) {
-                        $comment .= 'За обучение' ? '<br>' . 'За обучение' : '';
+                        $comment .= $bon->comment;
                     } else {
-                        $comment = 'За обучение' ? 'За обучение' : '';
+                        $comment = $bon->comment;
                     }
                 }
             }

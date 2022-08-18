@@ -22,5 +22,7 @@ class Position extends Model
         'sum', // Сумма
     ];
 
+    const OPERATOR_ID = 32;
+    const INTERN_ID = 47;
     
 }

@@ -92,13 +92,25 @@
         @end="saveOrder"
       >
         <template v-for="(el, e_index) in course.elements">
-          <li class="chapter opened" :id="el.id">
+          <li class="chapter opened" :id="el.id" :class="{'deleted' : el.deleted != undefined && el.deleted}">
             <div class="d-flex aic mb-2">
               <div class="handles">
                 <i class="fa fa-bars mover"></i>
                 <i class="fa fa-caret-right pointer shower"></i>
               </div>
-              <p @click="toggleOpen(el)" class="mb-0">{{ el.name }}</p>
+              <div>
+                <i class="fa fa-book pointer mr-2" v-if="el.type == 1"></i>
+                <i class="fa fa-play pointer mr-2" v-if="el.type == 2"></i>
+                <i class="fa fa-database pointer mr-2" v-if="el.type == 3"></i>
+              </div>
+              <p @click="toggleOpen(el)" class="mb-0">
+                {{ el.name }}
+                <i class="fa fa-info-circle pointer ml-2"
+                  v-if="el.deleted != undefined  && el.deleted"
+                  v-b-popover.hover.right.html="'Элемент был удален'" 
+                  title="Не найдено">
+                </i>
+              </p>
               <i
                 class="fa fa-trash pointer ml-2"
                 @click.stop="deleteItem(e_index)"
@@ -165,7 +177,6 @@ export default {
           this.course = response.data.course;
           this.image = this.course.img;
           this.croppa_key++;
-          console.log(this.image)
         })
         .catch((error) => {
           loader.hide()
@@ -210,7 +221,6 @@ export default {
     
 
     addTag(newTag) {
-      console.log(newTag)
       const tag = {
         email: newTag,
         ID: newTag,

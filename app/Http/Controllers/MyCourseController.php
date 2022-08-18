@@ -12,6 +12,7 @@ use App\Models\TestBonus;
 use App\Models\CourseProgress;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
+use App\Models\Books\BookSegment;
 use App\Models\Videos\Video;
 use App\Models\CourseItemModel;
 use App\Models\CourseModel;
@@ -26,7 +27,12 @@ class MyCourseController extends Controller
         return view('admin.mycourse');
     }   
     
-    public function getCourses(Request $request) {
+    /**
+     *  get all courses of auth user
+     *  this method is hidden for non-admin users
+     */
+    public function getCourses(Request $request)
+    {
         $user_id = auth()->user()->id;
         $course_ids = CourseResult::where('user_id', $user_id)
             //->whereIn('status', [0,2])
@@ -55,8 +61,13 @@ class MyCourseController extends Controller
      * 
      * @return [type]
      */
-    public function pass(Request $request) {
+    public function pass(Request $request)
+    {
         $user_id = auth()->id();
+
+        /**
+         * save Course item model
+         */
         $model = CourseItemModel::where('user_id', $user_id)
             ->where('type', $request->type)
             ->where('item_id', $request->id)
@@ -76,7 +87,9 @@ class MyCourseController extends Controller
             ]);
         }
         
-        
+        /**
+         * save questions answers 
+         */
         $sum_bonus = 0;
 
         foreach ($request->questions as $key => $q) {
@@ -88,12 +101,12 @@ class MyCourseController extends Controller
                     ->first();
 
                 if($tr) {
-                    $tr->answer =  $q['result']['answer'];
+                    $tr->answer = $q['result']['answer'];
                     $tr->save();
                 } else {    
 
                    // $tq = TestQuestion::find($q['id']);
-                    $sum_bonus = $q['points'];
+                if($q['success']) $sum_bonus += $q['points'];
 
                     TestResult::create([
                         'test_question_id' => $q['result']['test_question_id'],
@@ -106,42 +119,127 @@ class MyCourseController extends Controller
 
             }
         }
-
+        
+        /**
+         * save bonuses
+         */
         if($sum_bonus > 0) {
+
+            // get item for what user has got bonus
+            $item = null;
+            $type = '';
+            if($request->type == 1) {
+                $bs = BookSegment::find($request->id);
+                if($bs) {
+                    $item = Book::find($bs->book_id);
+                    $type = 'За чтение: ';
+                }
+            }
+            
+            if($request->type == 2) {
+                $video = Video::find($request->id);
+                if($video) {
+                    $item = VideoPlaylist::find($video->playlist_id);
+                    $type = 'За обучение по видео: ';
+                }
+            } 
+
+            if($request->type == 3) {
+                $item = KnowBase::getTopParent($request->id);
+                if($item) {
+                    $type = 'За ответы в Базе знаний: ';
+                }
+            }
+
+            //save 
             TestBonus::create([
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'amount' => $sum_bonus,
+                'comment' => $item ? $type . $item->title : 'За обучение',
             ]);
         } 
+        
+        /**
+         * count progress and weekly_progress
+         * save in CourseResult
+         */
+        if($request->course_item_id != 0) {
+            // count progress
+            $completed_stages = $request->completed_stages;
+
+            $count_progress  = $request->all_stages > 0 ? round($completed_stages / $request->all_stages * 100) : 0;
+            $course_finished  = false;
+            if($completed_stages >= $request->all_stages) $course_finished = true;
+            if($count_progress > 100) $count_progress = 100;
+        
+            // save course result for report
+
+            $model = 0;
+            if($request->type == 1) $model = 'App\Models\Books\BookSegment';
+            if($request->type == 2) $model = 'App\Models\Videos\Video';
+            //if($request->type == 3) $model = 'App\KnowBase';
+
+            $course_item = CourseItem::where('id', $request->course_item_id)->first();
+                
+         
+            $cr = $course_item ? CourseResult::where('course_id', $course_item->course_id)
+                ->where('user_id', $user_id)
+                ->first() : null;
+      
+            if($cr) {
+                if($cr->status == CourseResult::INITIAL) $cr->status = CourseResult::ACTIVE;
+                if($cr->started_at == null) $cr->started_at = now();
+
+                $cr->points += $sum_bonus;
+                $cr->progress = $count_progress;
+
+                // week progress 
+                $wp = $cr->weekly_progress;
+                if($wp == null) $wp = [];
+
+                $sum = 1;
+                if(array_key_exists(date('Y-m-d'), $wp)) {
+                    $sum += (int)$wp[date('Y-m-d')];
+                }
+                $wp[date('Y-m-d')] = $sum;
+                $cr->weekly_progress = $wp;
+        
+                
+                // 
+                if($course_finished) {
+                    $cr->status = CourseResult::COMPLETED;
+                    $cr->ended_at = now();
+                }
+
+                $cr->save();
+         
+            }
+        }
 
         return [
             'item_model' => $model,
         ];
     }   
 
-    public function getMyCourse(Request $request) {
-     
-        if($request->id) {
-            $course = $this->getCourseIfVisible($request->id);
-        } else {
-            $course = CourseResult::activeCourse();
-        }
+    /**
+     * get course
+     */
+    public function getMyCourse(Request $request) : array
+    {
+        $course = CourseResult::activeCourse($request->id);
        
-
         $all_stages = 0;
         $completed_stages = 0;
         $items = [];
+
         if($course) {
-            
             $items = $course->setCheckpoint($course->items);
 
             foreach ($items as $key => $item) {
                 $all_stages += $item->all_stages;
                 $completed_stages += $item->completed_stages;
             }
-
-
         }
 
         return [
@@ -152,87 +250,9 @@ class MyCourseController extends Controller
         ];
     }   
 
-    private function getCourseIfVisible($id) {
-        // prepare
-        $user = auth()->user();
-        $user_id = $user->id;
-        $position_id = $user->position_id;
-
-        $groups = $user->inGroups();
-        $group_ids = [];
-        foreach ($groups as $key => $group) {
-            $group_ids[] = $group->id;
-        }
-
-        // find course
-        $courses = CourseModel::where(function($query) use ($user_id) {
-                $query->where('item_model', 'App\\User')
-                    ->where('item_id', $user_id);
-            })
-            ->orWhere(function($query) use ($group_ids) {
-                $query->where('item_model', 'App\\ProfileGroup')
-                    ->whereIn('item_id', $group_ids);
-            })
-            ->orWhere(function($query) use ($position_id) {
-                $query->where('item_model', 'App\\Position')
-                    ->where('item_id', $position_id);
-            })
-            ->orWhere(function($query) {
-                $query->where('item_model', 0)
-                    ->where('item_id', 0);
-            })
-            ->get()
-            ->pluck('course_id')
-            ->toArray();
-
-        $course = null;
-        if(in_array($id, $courses)) {
-            $course_result = CourseResult::where('user_id', $user_id)
-                ->where('course_id', $id)
-                //->whereIn('status', [1])
-                ->first();
-            if(!$course_result) {
-                $course_result = CourseResult::create([
-                    'course_id' => $id,
-                    'status' => 2,
-                    'progress' => 0,
-                    'points' => 0, 
-                    'started_at' => now(), 
-                    'ended_at' => null, 
-                    'user_id' => $user_id
-                ]);
-            }
-
-     
-
-            // img poster
-            $course = Course::with('items')->find($course_result->course_id);
-
-            if($course && $course->img != '' && $course->img != null) {
-                $disk = \Storage::build([
-                    'driver' => 's3',
-                    'key' => 'O4493_admin',
-                    'secret' => 'nzxk4iNukQWx',
-                    'region' => 'us-east-1',
-                    'bucket' => 'tenantbp',
-                    'endpoint' => 'https://storage.oblako.kz:443',
-                    'use_path_style_endpoint' => true,
-                    'throw' => false,
-                    'visibility' => 'public'
-                ]);
-
-                if($disk->exists($course->img)) {
-                    $course->img = $disk->temporaryUrl(
-                        $course->img, now()->addMinutes(360)
-                    );
-                }
-            }
-            
-        }
-
-        return $course;
-    }
-
+    /**
+     * IDK WTF is that for
+     */
     private function getCourseItem(CourseItem $course_item, &$no_active)
     {
         $user_id = auth()->user()->id;

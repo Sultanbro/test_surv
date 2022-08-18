@@ -52,8 +52,11 @@
                     class="option"
                     v-for="(option, index) in filtered_options"
                     :key="index"
-                    @click="addValue(index)"
-                    :class="{'selected': option.selected}" 
+                    @click="addValue(index, option.type)"
+                    :class="{
+                        'selected': option.selected, 
+                        'category': option.disabled,
+                    }" 
                 >
                     <i class="fa fa-book" v-if="option.type == 1"></i> 
                     <i class="fa fa-play" v-if="option.type == 2"></i> 
@@ -157,7 +160,8 @@ export default {
             this.addSelectedAttr();
         },
 
-        addValue(index) {
+        addValue(index, type) {
+      
             if(this.single) this.show = false;
             if(this.single && this.values.length > 0) {
                 return;
@@ -165,13 +169,16 @@ export default {
             if(this.selected_all) return;
 
             let item = this.filtered_options[index];
+            
+            if(item.disabled) return;
 
             if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
 
                 this.values.push({
                     name: item.name,
                     id: item.id,
-                    type: item.type
+                    type: item.type,
+                    disabled: false
                 });
 
                 item.selected = true
@@ -203,7 +210,7 @@ export default {
                 this.filtered_options = this.options; 
             } else {
                 this.filtered_options = this.options.filter((el, index) => {
-                    return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
+                    return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1 && !el.disabled
                 }); 
             }
 
@@ -235,7 +242,8 @@ export default {
             this.values.push({
                 name: 'Все',
                 id: 0,
-                type: 0
+                type: 0,
+                disabled: false
             });
             this.show = false;
             this.selected_all = true;
@@ -245,3 +253,13 @@ export default {
 
 }
 </script>
+<style lang="scss">
+.category {
+    background: #d8d8d8;
+    font-weight: 600;
+
+    i {
+        display:none !important
+    }
+}
+</style>

@@ -21,6 +21,7 @@ use App\Models\Analytics\IndividualKpi;
 use App\Classes\Analytics\Impl;
 use App\Models\Analytics\UserStat;
 use App\ProfileGroupUser;
+use Illuminate\Support\Facades\View;
 
 class KpiController extends Controller
 {   
@@ -31,6 +32,16 @@ class KpiController extends Controller
         $this->middleware('auth');
     }
     
+    public function index(Request $request)
+    {
+        View::share('title', 'KPI');
+        View::share('menu', 'timetracking');
+
+        return view('kpi')->with([
+            'page' => 'kpi'
+        ]);
+    }
+
     public function saveKPI(Request $request)
     {
         $user = User::bitrixUser();
@@ -343,10 +354,12 @@ class KpiController extends Controller
                
                     if($request->group_id == 48) {
                         $completed =  AnalyticsSettingsIndividually::getActivityProgress($request->activeuserid, $request->group_id, $activity, '', true);
+                       
                     } else if(in_array($request->group_id, [31,42,53,57,58,63]) && time() < 1648771200) { // 1 april 2022 
                         $completed =  AnalyticsSettingsIndividually::getActivityProgress($request->activeuserid, $request->group_id, $activity, '', true);
                     } else {
                         $completed = UserStat::getActivityProgress($request->activeuserid, $request->group_id, $activity, '', true);
+                        // dump($completed);
                     }
                     
                     // if(in_array($request->group_id, [42])) { 

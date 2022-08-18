@@ -2,11 +2,17 @@
 
 declare(strict_types=1);
 
+
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 
+use App\Http\Controllers\Kpi\KpiController as KpisController;
+use App\Http\Controllers\Kpi\BonusController;
+use App\Http\Controllers\Kpi\QuartalPremiumController;
+use App\Http\Controllers\Kpi\KpiStatController;
+use App\Http\Controllers\Kpi\IndicatorController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\UserController;
@@ -14,7 +20,7 @@ use App\Http\Controllers\Admin\TraineeController;
 use App\Http\Controllers\Admin\QuartalBonusController;
 use App\Http\Controllers\Admin\IndexController;
 use App\Http\Controllers\Admin\TimetrackingController;
-use App\Http\Controllers\Admin\KpiController;
+use App\Http\Controllers\Admin\KpiController as OldKpiController;
 use App\Http\Controllers\Admin\BpartnersController;
 use App\Http\Controllers\Admin\NpsController;
 use App\Http\Controllers\Admin\QualityController;
@@ -57,7 +63,9 @@ use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\CallibroController;
-
+use Eddir\Messenger\Http\Controllers\ChatsController;
+use Eddir\Messenger\Http\Controllers\MessagesController;
+use Eddir\Messenger\Http\Controllers\Api\MessagesController as ApiMessagesController;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -210,7 +218,8 @@ Route::middleware([
     Route::post('/cabinet/save', [CabinetController::class, 'save']);
 
     ///Настройка профайл
-    Route::post('/profile/upload/image/profile/', [UserController::class, 'uploadImageProfile']); /// загрузка аватарки vue внутри profile
+    Route::post('/profile/save-cropped-image', [UserController::class, 'uploadCroppedImageProfile']); /// загрузка аватарки vue внутри profile
+    Route::post('/profile/upload/image/profile/', [UserController::class, 'uploadImageProfile']); /// загрузка обрезаной аватарки vue внутри profile
     Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
     Route::any('/profile/edit/user/cart/', [UserController::class, 'editUserProfile']); ///profile save name,last_name,date ///profile save name,last_name,date
     Route::post('/profile/remove/card/', [UserController::class, 'removeCardProfile']); ///удаление карты индивидуально
@@ -287,22 +296,7 @@ Route::middleware([
     Route::get('/wami', [TestController::class, 'send_whatsapp']);
 
 
-    Route::get('/bonus', [IndexController::class, 'bonus']);
-    Route::any('/bonus/update/{id}', [IndexController::class, 'bonusUpdate']);
-    Route::any('/max-session', [IndexController::class, 'maxSession']);
-
     Route::get('/user/delete/{id}', [IndexController::class, 'deleteUser']);
-
-
-    Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
-    Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
-    Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
-    Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
-    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
-    Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
-    Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
-
-
 
 
     Route::post('/timetracking/settings/groups/importexcel', [GroupsController::class, 'import']);
@@ -322,10 +316,10 @@ Route::middleware([
     Route::post('/timetracking/exam', [ExamController::class, 'getexams']);
     Route::post('/timetracking/exam/update', [ExamController::class, 'update']);
 
-    Route::post('/timetracking/kpi_save', [KpiController::class, 'saveKPI']);
-    Route::post('/timetracking/kpi_get', [KpiController::class, 'getKPI']);
-    Route::post('/timetracking/kpi_save_individual', [KpiController::class, 'saveKpiIndividual']);
-    Route::post('/timetracking/kpi_get_individual', [KpiController::class, 'getKpiIndividual']);
+    Route::post('/timetracking/kpi_save', [OldKpiController::class, 'saveKPI']);
+    Route::post('/timetracking/kpi_get', [OldKpiController::class, 'getKPI']);
+    Route::post('/timetracking/kpi_save_individual', [OldKpiController::class, 'saveKpiIndividual']);
+    Route::post('/timetracking/kpi_get_individual', [OldKpiController::class, 'getKpiIndividual']);
 
     Route::any('/estimate_your_trainer', [NpsController::class, 'estimate_your_trainer']); // анкета
     Route::get('/timetracking/nps', [NpsController::class, 'index']);
@@ -374,6 +368,14 @@ Route::middleware([
     Route::post('/timetracking/apply-person', [TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [TimetrackingController::class, 'getTotalsOfReports']);
 
+    Route::group([
+        'prefix' => 'group-user',
+    ], function(){
+        Route::post('/save', [TimetrackingController::class, 'addUsers']);
+        Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
+    });
+
+    Route::get('/bitrix/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
 
     Route::get('/timetracking/top', [TopController::class, 'index']);
     Route::post('/timetracking/top', [TopController::class, 'fetch']);
@@ -455,6 +457,60 @@ Route::middleware([
     Route::post('/timetracking/analytics/add-remote-inhouse', [AnalyticsController::class, 'addRemoteInhouse']);
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
+    /**
+     * Редактирование бонусов
+     */
+    Route::group([
+        'prefix'     => 'bonus',
+        'middleware' => 'auth'
+    ], function(){
+        Route::post('get',[BonusController::class,'get']);
+        Route::post('save',[BonusController::class,'save']);
+        Route::put('update',[BonusController::class,'update']);
+        Route::delete('delete',[BonusController::class,'delete']);
+    });
+
+    /**
+     * Редактирование квартальной премии
+     */
+    Route::group([
+        'prefix'     => 'quartal-premium',
+//        'middleware' => 'auth'
+    ], function(){
+        Route::get('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
+        Route::post('save',[QuartalPremiumController::class,'save'])->name('quartal-premium.save');
+        Route::put('update',[QuartalPremiumController::class,'update'])->name('quartal-premium.update');
+        Route::delete('delete',[QuartalPremiumController::class,'destroy']);
+    });
+
+    /**
+     * Статистика для KPI.
+     */
+    Route::group([
+        'prefix' => 'statistics',
+        'as'     => 'kpi-statistic.'
+    ], function (){
+        Route::get('kpi/user/{id}', [KpiStatController::class, 'show'])->name('index');
+        Route::get('kpi/users/', [KpiStatController::class, 'fetchGroups'])->name('fetch');
+    });
+
+    /**
+     * Редактирование показателей
+     */
+    Route::group([
+        'prefix'     => 'activities',
+        'as'         => 'activities.',
+        'middleware' => 'superuser'
+    ], function(){
+        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('all');
+        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('one');
+        Route::post('save',[IndicatorController::class,'save'])->name('save');
+        Route::post('update',[IndicatorController::class,'update'])->name('update');
+        Route::delete('delete',[IndicatorController::class,'delete'])->name('delete');
+    });
+   
+
+  
 
     Route::get('/books/{id?}', [BpartnersController::class, 'books']);
     Route::any('/pages/update/', [BpartnersController::class, 'pagesupdate']);
@@ -485,15 +541,24 @@ Route::middleware([
     Route::get('/maps', [MapsController::class, 'index'])->name('maps');
     Route::post('/selected-country/search/', [MapsController::class, 'selectedCountryAjaxSearch']);
 
+
+    Route::post('/checklist/tasks', [ChecklistController::class, 'getTasks']);
+    Route::post('/checklist/save', [ChecklistController::class, 'saveTasks']);
+    Route::post('/checklist/get-checklist-by-user',[ChecklistController::class,'getChecklistByUser']);
+    Route::post('/checklist/save-checklist',[ChecklistController::class, 'saveChecklist']);
+
     Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
     Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
     Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
     Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
-    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
-    Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
+
+    Route::get('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
     Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
     Route::post('/timetracking/settings/auth/check/user/responsibility', [CheckListController::class, 'responsibility']); ///   Добавить ответственного лица
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
+    Route::post('/timetracking/settings/auth/check/search/selected', [CheckListController::class, 'searchSelected']); 
+
+    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
 
 
 
@@ -502,9 +567,7 @@ Route::middleware([
     Route::get('/superselect/get-alt', [PermissionController::class, 'superselectAlt']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
 
-
-    
-   
+  
     
     Route::group([
         'middleware' => ['api'],
@@ -536,7 +599,109 @@ Route::middleware([
         Route::any('/bitrix/inhouse',  [IntellectController::class, 'inhouse']);   // Bitrix -> Admin 
     
     });
+
+    Route::group([
+        'prefix'    => 'kpi',
+        'as'        => 'kpi.'
+    ], function (){
+        Route::get('/', [KpisController::class, 'index'])->name('index');
+        Route::post('/get', [KpisController::class, 'getKpis'])->name('get');
+        Route::post('/save', [KpisController::class, 'save'])->name('save');
+        Route::put('/update', [KpisController::class, 'update'])->name('update');
+        Route::delete('/delete', [KpisController::class, 'delete'])->name('delete');
+    });
+
+
+    Route::any('/getnewimage',[UserController::class,'getProfileImage']);
+
+    Route::group([
+        'prefix'   => 'messenger/api',
+    ], function() {
+
+        /**
+         * Authentication for pusher private channels
+         */
+        Route::post('/chat/auth', [ApiMessagesController::class, 'pusherAuth'])->name('api.pusher.auth');
+
+        /**
+         * Get chats list
+         */
+        Route::get('/v2/chats', [ChatsController::class, 'fetchChats'])->name('api.chats.fetch');
+
+        /**
+         * Get users list
+         */
+        Route::get('/v2/users', [ChatsController::class, 'fetchUsers'])->name('api.users.fetch');
+
+        /**
+         * Search chat by name
+         */
+        Route::get('/v2/search', [ChatsController::class, 'search'])->name('api.chats.search');
+
+        /**
+         * Get chat messages
+         */
+        Route::get('/v2/chat/{chat_id}/messages', [MessagesController::class, 'fetchMessages'])->name('api.messages.fetch');
+
+        /**
+         * Get chat info
+         */
+        Route::get('/v2/chat/{chat_id}', [ChatsController::class, 'fetchChagetChatts'])->name('api.v2.getChat');
+
+        /**
+         * Send message
+         */
+        Route::post('/v2/chat/{chat_id}/messages', [MessagesController::class, 'sendMessage'])->name('api.v2.sendMessage');
+
+        /**
+         * Edit message. Message id should be integer
+         */
+        Route::post('/v2/message/{message_id}', [MessagesController::class, 'editMessage'])->name('api.v2.editMessage');
+
+        /**
+         * Delete message
+         */
+        Route::delete('/v2/message/{message_id}', [MessagesController::class, 'deleteMessage'])->name('api.v2.deleteMessage');
+
+        /**
+         * Pin message
+         */
+        Route::post('/v2/message/{message_id}/pin', [MessagesController::class, 'pinMessage'])->name('api.v2.pinMessage');
+
+        /**
+         * Unpin message
+         */
+        Route::delete('/v2/message/{message_id}/pin', [MessagesController::class, 'unpinMessage'])->name('api.v2.unpinMessage');
+
+        /**
+         * Create chat
+         */
+        Route::post('/v2/chat', [ChatsController::class, 'createChat'])->name('api.v2.createChat');
+
+        /**
+         * Remove chat
+         */
+        Route::delete('/v2/chat/{chat_id}', [ChatsController::class, 'removeChat'])->name('api.v2.removeChat');
+
+        /**
+         * Leave chat
+         */
+        Route::post('/v2/chat/{chat_id}/leave', [ChatsController::class, 'leaveChat'])->name('api.v2.leaveChat');
+
+        /**
+         * Add user to chat
+         */
+        Route::post('/v2/chat/{chat_id}/addUser', [ChatsController::class, 'addUser'])->name('api.v2.addUser');
+
+        /**
+         * Remove user from chat
+         */
+        Route::post('/v2/chat/{chat_id}/removeUser/{user_id}', [ChatsController::class, 'removeUser'])->name('api.v2.removeUser');
+
+        /**
+         * Set messages as read
+         */
+        Route::post('/v2/messages/read', [MessagesController::class, 'setMessagesAsRead'])->name('api.v2.setMessagesAsRead');
+
+    });
 });
-
-
-

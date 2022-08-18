@@ -154,6 +154,7 @@ class KnowBaseController extends Controller
 
     public function getTree(Request $request)
     {
+        $course_item_id = $request->course_item_id;
         
         $trees = [];
         $book = null;
@@ -195,7 +196,7 @@ class KnowBaseController extends Controller
         $item_models = CourseItemModel::whereIn('item_id', $kb_ids)
             ->where('type', 3)
             ->where('user_id', auth()->id())
-            ->where('course_item_id', 0)
+            ->where('course_item_id', $course_item_id)
             ->get();
         
         return [
@@ -233,6 +234,8 @@ class KnowBaseController extends Controller
         $page->edited_at = Carbon::parse($page->updated_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->created = Carbon::parse($page->created_at)->setTimezone('Asia/Almaty')->format('d.m.Y H:i');
         $page->questions = TestQuestion::where('testable_type', 'App\Knowbase')->where('testable_id', $request->id)->get();
+        $page->editor_avatar = $editor ? 'users_img/'.$editor->img_url : 'images/avatar.png';
+
 
         $breadcrumbs = $this->getBreadcrumbs($page);
         $top_parent = $this->getTopParent($request->id);

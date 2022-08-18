@@ -15,7 +15,7 @@ use App\QualityRecordMonthlyStat;
 use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Analytics\IndividualKpi;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 
 class UserStat extends Model
 {
@@ -80,7 +80,11 @@ class UserStat extends Model
                 }
 
                 if($activity->type == 'quality') {
-                    $users_ids = ProfileGroup::employees($group_id, $date, 1) + ProfileGroup::employees($group_id, $date, 2);
+                    $working = ProfileGroup::employees($group_id, $date, 1);
+                    $fired =  ProfileGroup::employees($group_id, $date, 2);
+                    $users_ids = array_unique(array_merge($working, $fired));
+
+   
                     $item['records'] = QualityRecordWeeklyStat::table($users_ids, $date);
                 }    
                     
@@ -267,11 +271,13 @@ class UserStat extends Model
      */
     public static function getActivityProgress(int $user_id, int $group_id, Activity $activity, string $date = '', $return_value_and_percent = false)
     {
-       
+        $test_id = 1;
+        if($user_id == $test_id)  $date = '2022-07-01';
         if($date == '') {
             $date = Carbon::now()->day(1)->format('Y-m-d');
-        }
+        } 
 
+    
         $carbon = Carbon::parse($date);
         $user = User::withTrashed()->find($user_id);
         
@@ -321,7 +327,11 @@ class UserStat extends Model
                 $result = 0;
             }
            
-           
+            if($user_id == $test_id) dump($activity->daily_plan); 
+            if($user_id == $test_id)  dump($workdays); 
+            if($user_id == $test_id)  dump($total); 
+            if($user_id == $test_id)  dump($result); 
+
             if($return_value_and_percent) {
                 return [
                     'value' => (int)$total,
@@ -355,10 +365,12 @@ class UserStat extends Model
                     
                     if($applied_from != 0) {
                         $result = $total / ($_plan * $applied_from) * 100;
+                        // if($user_id == 15551)  dump($total); 
                     } else {
                         $result = $total / ($_plan * $workdays) * 100;
                     } 
                     
+                   
                 } 
 
                 if($activity->plan_unit == 'less_sum') {
@@ -415,6 +427,10 @@ class UserStat extends Model
                 $result = 100;
             }
         }
+        if($user_id == $test_id) dump($activity->daily_plan); 
+        if($user_id == $test_id)  dump($workdays); 
+        if($user_id == $test_id)  dump($total); 
+        if($user_id == $test_id)  dump($result); 
 
         
         if($return_value_and_percent) {

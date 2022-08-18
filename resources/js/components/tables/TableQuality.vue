@@ -1,5 +1,6 @@
 <template>
   <div class="mt-2 px-3 quality quality-page">
+    
     <div class="row">
 
       <div class="col-3" v-if="individual_request">
@@ -35,8 +36,8 @@
       <div
         class="col-2"
         v-if="
-          Number(activeuserid) == 18 ||
-          Number(activeuserid) == 5
+          Number(auth_user.id) == 18 ||
+          Number(auth_user.id) == 5
         "
       >
         <button class="btn btn-primary d-block ml-auto" @click="showSettings = true">
@@ -52,7 +53,7 @@
       <div class="mr-2 mt-2">{{ groupName }}</div>
     </h4>
     <div v-if="this.hasPermission">
-      <b-tabs type="card" :defaultActiveKey="active">
+      <b-tabs type="card" :defaultActiveKey="3">
         <b-tab title="Оценка диалогов" :key="1" card>
           <b-tabs type="card" v-if="dataLoaded" >
             <b-tab title="Неделя" :key="1" card>
@@ -429,11 +430,19 @@
                 </table>
               </div>
               <div>
-                <pagination
+                <!-- <pagination
                   :data="records"
                   @pagination-change-page="getResults"
                   :limit="3"
-                ></pagination>
+                ></pagination> -->
+
+                <b-pagination
+                  @change="getResults"
+                  :limit="3"
+                  :total-rows="records.total"
+                ></b-pagination>
+
+                
               </div>
             </b-tab>
           </b-tabs>
@@ -525,23 +534,16 @@
 
         </b-tab>
 
-        <b-tab title="Чек Лист" :key="3" type="card" card>
-
-
-          <div class="col-md-12 p-0">
-            <div class="col-md-6 p-0">
-              <div>
-                 <button @click="viewStaticCheck('w')" class="btn btn-light p-2 pl-4 pr-4 check_list_mon" v-bind:class="{ isActiveCheck: viewStaticButton.weekCheck }"  type="button" >Неделя</button>
-                 <button @click="viewStaticCheck('m')" class="btn btn-light p-2 pl-4 pr-4 check_list_mon" v-bind:class="{ isActiveCheck: viewStaticButton.montheCheck }" type="button"  >Месяц  </button>
-              </div>
-            </div>
-            <div v-if="viewStaticButton.weekCheck" class="table-responsive my-table">
-              <table class="table b-table table-bordered table-sm">
+        <b-tab title="Чек Лист" :key="3" type="card" card :active="check == 3">
+                    <b-tabs type="card">
+            <b-tab title="Неделя" :key="1" >
+                            <table class="table b-table table-bordered table-sm">
                 <tr>
                   <th class="b-table-sticky-column text-left t-name wd">
-                    <div>Сотрудник</div>
+                    <div>
+      Сотрудник</div>
                   </th>
-                  <template v-for="(field, key) in fields">
+                  <template v-for="(field, key) in checklist_fields">
                     <th >
 
                       <div>{{ field.name }}</div>
@@ -567,7 +569,8 @@
 
                          <template v-for="(checked_day,index) in check_r.day">
                            <template v-if="index == field.name">
-                             {{checked_day}}
+                             <div  v-on:click="showSidebar(check_r.user_id, index)" >{{checked_day}}</div>
+                            
                            </template>
                          </template>
 
@@ -598,9 +601,9 @@
                  </tr>
                </template>
               </table>
-            </div>
-            <div v-if="viewStaticButton.montheCheck" class="table-responsive my-table mt-5">
-              <table class="table b-table table-sm table-bordered">
+            </b-tab>
+            <b-tab title="Месяц" :key="2">
+                            <table class="table b-table table-sm table-bordered">
                 <tr>
                   <th class="b-table-sticky-column text-left t-name wd">
                     <div>Сотрудник</div>
@@ -631,18 +634,13 @@
 
                           </template>
                         </template>
-
-
-
-
                       </td>
                     </template>
                   </tr>
                 </template>
               </table>
-            </div>
-          </div>
-
+            </b-tab>
+          </b-tabs>
         </b-tab>
       </b-tabs>
     </div>
@@ -748,6 +746,33 @@
         </div>
       </div>
     </b-modal>
+    <sidebar
+        title="Индивидуальный чек лист"
+        :open="showChecklist"
+        @close="toggle()"
+        width="70%"
+    >
+        <div class="col-10 p-0 mt-2" v-for="(val,ind) in checklists">
+          <div class="mr-5">
+            <b-form-checkbox v-model="val.checked" size="sm" >
+              <span style="cursor: pointer">{{val.task.task}}</span>
+              </b-form-checkbox>
+            </div>
+
+          <div style="position: absolute;right: 0px;top: 0px">
+            <a v-if="val.url" :href="val.url" target="_blank">{{val.url}}</a>
+            <p v-else>нет ссылки</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 mt-3">
+            <div class="col-md-6 p-0">
+                <button @click.prevent="saveChecklist"   title="Сохранить" class="btn btn-primary">
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </sidebar>
   </div>
 </template>
 
@@ -757,20 +782,24 @@ export default {
   name: "TableQuality",
   components: {Template},
   props: {
-    activeuserid: String,
     groups: Array,
     individual_type:{
       default:null
     },
     individual_type_id:{
       default:null
-    }
-
-
+    },
+    active_group: String,
+    check: String,
+    user: String
   },
   data() {
     return {
+      auth_user: JSON.parse(this.user),
+      showChecklist: false,
+      checklists:{},
       fields: [],
+      checklist_fields: [],
       monthFields: [],
       recordFields: [],
       filters: {
@@ -811,7 +840,7 @@ export default {
         data: [],
       },
       deletingElementIndex: 0,
-      currentGroup: 42,
+      currentGroup: this.active_group,
       groupName: "Контроль качества",
       monthInfo: {},
       user_ids: {},
@@ -831,7 +860,6 @@ export default {
         11: "6_30 RED",
         12: "6_30",
       },
-      message: null,
       loader: null, 
       fill:{ gradient: ["#1890ff", "#28a745"] },
       items: [],
@@ -857,28 +885,38 @@ export default {
       active:1,
       selected_active:1,
       flagGroup:'index',
+      checklist_tab: false,
     };
   },
 
   created() {
-
-
-    if (this.individual_type != null  &&  this.individual_type_id != null){
-
-      this.active = 3;
-
-      if(this.individual_type === 1 || this.individual_type === 3){
-        this.individual_request = false
-      }
-    }
-
-
     this.fetchData();
 
 
   },
   methods: {
-
+    saveChecklist(){
+      axios.post("/checklist/save-checklist",{
+        checklists: this.checklists
+      }).then(response => {
+        this.toggle();
+        this.$toast.success('Сохранено');
+      });
+    },
+    showSidebar(user_id, day){
+      this.toggle();
+      var date = this.currentYear + '-' + this.monthInfo.month.padStart(2, "0") + '-' + day.padStart(2, "0");
+      
+      axios.post("/checklist/get-checklist-by-user",{
+        user_id:user_id,
+        created_date: date
+      }).then(response => {
+        this.checklists = response.data;
+      });
+    },
+    toggle(){
+      this.showChecklist = !this.showChecklist;
+    },
     viewStaticCheck(type){
         if (type == 'w'){
             this.viewStaticButton.weekCheck = true
@@ -994,7 +1032,7 @@ export default {
       if (this.individual_type_id != null){
         if (this.flagGroup == 'index'){
           if (this.individual_type == 2 || this.individual_type == 3){
-            this.currentGroup = this.individual_type_id
+            this.currentGroup = this.active_group;
           }
 
           // this.currentGroup = this.individual_type_id
@@ -1058,7 +1096,8 @@ export default {
           this.$toast.success("Записи загружены");
           this.normalizeItems();
           this.createUserIdList();
-          this.setWeeksTable();
+          this.setChecklistWeekTable();
+          this.setWeeksTable();    
           this.setMonthsTable();
 
           this.setRecordsTable();
@@ -1087,8 +1126,11 @@ export default {
     filterRecords() {
       this.fetchItems();
     },
+    setChecklistWeekTable() {
+        this.setChecklistWeeksTableFields();
+    },
     setWeeksTable() {
-      this.setWeeksTableFields();
+        this.setWeeksTableFields();
     },
     setMonthsTable() {
       this.setMonthsTableFields();
@@ -1329,7 +1371,7 @@ export default {
 
       fieldsArray.push({
         key: "comments",
-        name: "Комментарии",
+        name: "Совет",
         type: "text",
         order: order++,
         klass: " text-center px-1 comments",
@@ -1395,6 +1437,63 @@ export default {
       });
     },
 
+    setChecklistWeeksTableFields(){
+      let fieldsArray = [];
+      let weekNumber = 1;
+      let order = 1;
+      let day = 1;
+
+      fieldsArray.push({
+        key: "total",
+        name: "Итог",
+        order: order++,
+        klass: " text-center px-1 t-total",
+      });
+
+      for (let i = 1; i <= this.monthInfo.daysInMonth; i++) {
+        let m = this.monthInfo.month.toString();
+        let d = i;
+        if (d.toString().length == 1) d = "0" + d;
+        if (m.length == 1) m = "0" + m;
+        //console.log(this.currentYear + '-' + m + '-' + d)
+
+        let date = moment(this.currentYear + "-" + m + "-" + d);
+        let dow = date.day();
+
+        fieldsArray.push({
+          key: i,
+          name: i,
+          order: order++,
+          klass: "text-center px-1",
+          type: "day",
+        });
+
+        if (dow == 0) {
+          fieldsArray.push({
+            key: "avg" + weekNumber,
+            name: "Ср. " + weekNumber,
+            order: order++,
+            klass: "text-center px-1 averages",
+            type: "avg",
+          });
+          weekNumber++;
+          day = 0;
+        }
+
+        if (dow != 0 && i == this.monthInfo.daysInMonth) {
+          fieldsArray.push({
+            key: "avg" + weekNumber,
+            name: "Ср. " + weekNumber,
+            order: order++,
+            klass: "text-center px-1 averages",
+            type: "avg",
+          });
+        }
+        day++;
+      }
+
+      this.checklist_fields = fieldsArray;
+    },
     setWeeksTableFields() {
       let fieldsArray = [];
       let weekNumber = 1;

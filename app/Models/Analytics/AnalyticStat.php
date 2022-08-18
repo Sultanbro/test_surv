@@ -378,6 +378,7 @@ class AnalyticStat extends Model
                 'column_id' => $column->id,
                 'value' => '',
                 'show_value' => '',
+                'editable' => 1,
                 'type' => $type,
                 'class' => $class
             ]);
@@ -574,7 +575,14 @@ class AnalyticStat extends Model
                 $math_string = str_replace("{","",$math_string);
                 $math_string = str_replace("}","",$math_string);
             }
+            $math_string = str_replace("%","",$math_string);
+            $word = "E14";
+
+        // Test if string contains the word 
+
+ 
             $res = eval($math_string);
+            
 
           
         } catch(\DivisionByZeroError $e) {

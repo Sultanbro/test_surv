@@ -3,6 +3,8 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -63,6 +65,7 @@ class User extends Authenticatable implements Authorizable
         'last_group',
         'read_corp_book_at',
         'has_noti',
+        'notified_at',
         'role_id',
         'is_admin',
         'groups_all',
@@ -76,9 +79,21 @@ class User extends Authenticatable implements Authorizable
         'phone_4',
     ];
 
+    /**
+     * @return MorphMany
+     */
+    public function kpis(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Kpi', 'targetable', 'targetable_type');
+    }
 
-
-    //public $remember_token = true;
+    /**
+     * @return HasMany
+     */
+    public function statistics(): HasMany
+    {
+        return $this->hasMany('App\Models\Analytics\UserStat', 'user_id');
+    }
 
     public function getCheckList()
     {
@@ -89,6 +104,11 @@ class User extends Authenticatable implements Authorizable
 //    {
 //        return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'id');
 //    }
+
+    public function position()
+    {
+        return $this->belongsTo('App\Position', 'position_id');
+    }
 
     /**
      * Получает пользователя из системных таблицы Битрикса
@@ -749,18 +769,18 @@ class User extends Authenticatable implements Authorizable
 
                 $sum -= $arr->avanses[$i] ?? 0;
 
-                if($arr->edited_bonus == null) {
-                    $sum += $arr->bonuses[$i] ?? 0;
-                }
+                // if($arr->edited_bonus == null) {
+                //     $sum += $arr->bonuses[$i] ?? 0;
+                // }
             
                 //$sum += $arr->awards[$i] ?? 0;
                 //$sum += $arr->test_bonuses[$i] ?? 0;
                 
             }   
 
-            if($arr->edited_kpi == null) {
-                $sum += $arr->kpi;
-            } 
+            // if($arr->edited_kpi == null) {
+            //     $sum += $arr->kpi;
+            // } 
             // else {
             //     $sum += $arr->edited_kpi->amount;
             // }  
@@ -800,6 +820,10 @@ class User extends Authenticatable implements Authorizable
         return $this->hasMany('App\Timetracking', 'user_id', 'id');
     }
 
+    /**
+     * Date of apply of user
+     * @return date
+     */
     public function applied_at()
     {
         $user_applied_at = null;
@@ -991,5 +1015,13 @@ class User extends Authenticatable implements Authorizable
     public function canWorkThisDay()
     {
         return $this->weekdays[(int)date('w')] == '1';
+    }
+
+    public function created_checklists(){
+        return $this->hasMany(\App\Models\Checklist::class,'creator_id','id');
+    }
+
+    public function checklists(){
+        return $this->belongsToMany(\App\Models\Checklist::class);
     }
 }

@@ -86,7 +86,7 @@
                     </a>
                 </li>
                 @endif
-                @if(auth()->user()->is_admin)
+                @if(auth()->user()->can('courses_view'))
                 <li>
                     <a href="/courses" class="link">
                         <i class="fas fa-graduation-cap"></i>
@@ -205,6 +205,14 @@
         </li>
         @endif
 
+        @if(auth()->user()->is_admin)
+        <li class="menu-item">
+            <a href="/kpi" class="side-btn @if($menu == 'kpi') active @endif">
+                <i class="fas fa-tv"></i>
+                <span>KPI</span>
+            </a>
+        </li>
+        @endif
         
     </ul>
     @if(auth()->user()->can('settings_view') ||  

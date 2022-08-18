@@ -26,17 +26,25 @@ import 'vue-croppa/dist/vue-croppa.css';
 
 Vue.use(Croppa);
 
+// pagination
+import JwPagination from 'jw-vue-pagination';
+Vue.component('jw-pagination', JwPagination);
+
 // Toast
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
-const options = {};
-Vue.use(Toast, options);
+Vue.use(Toast, {timeout: 1500, pauseOnHover: false, rtl: true, position: "top-left",}); 
 
+// Require dependencies
+var VueCookie = require('vue-cookie');
+// Tell Vue to use the plugin 
+Vue.use(VueCookie);
+ 
 
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 //import VueCoreVideoPlayer from 'vue-core-video-player';
-
+ 
 
 import VueVideoPlayer from 'vue-video-player'
  
@@ -105,8 +113,12 @@ Vue.component('selected-modal-checkList', require('./components/selectedModalChe
 
 Vue.component('ref-linker', require('./components/RefLinker.vue').default); // рефералки
 
+Vue.component('chat-app', require('./components/Chat/ChatApp.vue').default); // рефералки
+
+// import ChatApp from './components/Chat/ChatApp.vue';
+// Vue.use(ChatApp);
 /** 
- * Components
+ * Components 
  */
 Vue.component('upload-files', require('./components/UploadFiles.vue').default); // загрузка файлов
 Vue.component('t-kpi-indicator', require('./components/tables/TableKpiIndicator.vue').default); // ряд активности в таблице KPI
@@ -203,6 +215,19 @@ Vue.component('fines', require('./pages/Fines.vue').default); // штрафы ta
 Vue.component('s-notifications', require('./pages/Notifications.vue').default); // Уведомления
 Vue.component('bookgroups', require('./pages/bookgroups.vue').default); // обучение книги
 Vue.component('check-list', require('./pages/checkList.vue').default); // чек лист
+
+
+// KPI
+
+Vue.component('super-filter', require('./pages/kpi/SuperFilter.vue').default); // filter like bitrix
+
+Vue.component('kpi-pages', require('./pages/kpi/KpiPages.vue').default); // kpi
+Vue.component('kpi', require('./pages/kpi/Kpi.vue').default); // kpi
+Vue.component('kpi-items', require('./pages/kpi/KpiItems.vue').default); // kpi
+Vue.component('indicators', require('./pages/kpi/Indicators.vue').default); // kpi
+Vue.component('stats', require('./pages/kpi/Stats.vue').default); // kpi
+Vue.component('bonuses', require('./pages/kpi/Bonuses.vue').default); // kpi
+Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').default); // kpi
 
 
  

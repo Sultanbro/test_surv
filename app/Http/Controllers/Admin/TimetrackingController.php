@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Classes\Helpers\InsertData;
 use App\Components\TelegramBot;
 use App\DayType;
 use App\Fine;
@@ -550,7 +549,7 @@ class TimetrackingController extends Controller
             //if(!$group) $group = ProfileGroup::find($request->group);
             
             if ($group->users != null) {
-                $users = $group->users()->pluck('user_id')->toArray();
+                $users = json_decode($group->users);
                 $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
            
@@ -643,29 +642,22 @@ class TimetrackingController extends Controller
             ]);
         }
 
-        DB::transaction(function () use (
-            $group,
-            $request,
-            $users_id
-        ) {
-            $this->insertDataToGroupUser($group, $users_id);
+        //
+        $group->work_start = $request['timeon'];
+        $group->work_end = $request['timeoff'];
+        $group->users = json_encode(array_unique($users_id));
 
-            $group->work_start = $request['timeon'];
-            $group->work_end = $request['timeoff'];
 
-            $group->name = $request['gname'];
-            $group->zoom_link = $request['zoom_link'];
-            $group->bp_link = $request['bp_link'];
-            $group->workdays = $request['workdays'];
-            $group->payment_terms = $request['payment_terms'];
-            $group->editable_time = $request['editable_time'];
-            $group->paid_internship = $request['paid_internship'];
-            $group->quality = $request['quality'];
-            $group->show_payment_terms = $request['show_payment_terms'];
-
-            $group->save();
-        });
-
+        $group->name = $request['gname'];
+        $group->zoom_link = $request['zoom_link'];
+        $group->bp_link = $request['bp_link'];
+        $group->workdays = $request['workdays'];
+        $group->payment_terms = $request['payment_terms'];
+        $group->editable_time = $request['editable_time'];
+        $group->paid_internship = $request['paid_internship'];
+        $group->quality = $request['quality'];
+        $group->show_payment_terms = $request['show_payment_terms'];
+        $group->save();
 
         if($request['dialer_id']) {
             if($group->dialer) {
@@ -852,11 +844,28 @@ class TimetrackingController extends Controller
 
     public function getReports(Request $request)
     {
+
         $year = $request['year'];
+
         $users_ids = [];
         $head_ids = [];
-        $group = ProfileGroup::find($request['group_id']);
+        if ($request['group_id']) {
+            $group = ProfileGroup::find($request['group_id']);
+            if (!empty($group) && $group->users != null) {
+                // $check_users = json_decode($group->users);
+                
+                // foreach($check_users as $check_user){
+                //    $ud = UserDescription::where('user_id',$check_user)->whereDate('applied', '>=', Carbon::parse($year . '-' . $request->month . '-01')->startOfMonth())->value('user_id');
+                //    if(isset($ud)){
+                //        $users_ids[] = $ud;
+                //    }
+                // }
+                $users_ids = json_decode($group->users);
+                $head_ids = json_decode($group->head_id);
+            }
+        }
 
+       
         $currentUser = User::bitrixUser();
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
@@ -865,19 +874,18 @@ class TimetrackingController extends Controller
                 'error' => 'access',
             ];
         }
+        
         /**
          * Выбираем кого покзаывать
          */
 
         if($request->user_types == 0) { // Действующие
-            $_user_ids = [];
+            $_user_ids = [];    
             $my_ids = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->when($group, function ($query) use ($group) {
-                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
-                })
-                ->where('ud.is_trainee', 0)
+                ->whereIn('users.id', $users_ids)
+                ->where('ud.is_trainee', 0) 
                 ->get(['users.id','ud.applied']);
             $end_month = Carbon::parse($year . '-' . $request->month . '-01')->endOfMonth();
             foreach($my_ids as $ids){
@@ -887,34 +895,32 @@ class TimetrackingController extends Controller
                 }
             }
         }
-
+        
         if($request->user_types == 1) { // Уволенныне
-            $_user_ids = User::onlyTrashed()->when($group, function ($query) use ($group) {
-                return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
-            })->pluck('id')->toArray();
+            $_user_ids = User::onlyTrashed()->whereIn('id', $users_ids)->pluck('id')->toArray();
             //////////////////////
             $date = $year . '-' . $request->month . '-01';
-            $date_for_register = Carbon::parse($date);
+            $date_for_register = Carbon::parse($date); 
             $date_for_fire = Carbon::parse($date)->startOfMonth();
             $d_users = User::onlyTrashed()
                 //->whereDate('created_at', '<', $date_for_register)
                 ->whereDate('deleted_at', '>=', $date_for_fire)
                 ->get();
-
+            
             foreach($d_users as $d_user) {
                 if($d_user->last_group != NULL) {
                     $lg = json_decode($d_user->last_group);
                     if(in_array($request['group_id'], $lg)) {
                         array_push($_user_ids, $d_user->id);
                     }
-                }
-            }
-
+                } 
+            } 
+            
             $_user_ids = DB::table('users')
                 ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $_user_ids)
-                ->where('ud.is_trainee', 0)
+                ->where('ud.is_trainee', 0) 
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
@@ -925,22 +931,20 @@ class TimetrackingController extends Controller
             $_user_ids = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->when($group, function ($query) use ($group) {
-                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
-                })
-                ->where('ud.is_trainee', 1)
+                ->whereIn('users.id', $users_ids)
+                ->where('ud.is_trainee', 1) 
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
         }
 
 
-
+        
 
         //////////////////////
-
+      
         $users = Timetracking::getTimeTrackingReportPaginate($request, $_user_ids, $year);
-
+      
 
         $data = [];
 
@@ -956,21 +960,21 @@ class TimetrackingController extends Controller
         $data['head_ids'] = $head_ids;
         $data['total_resources'] = 0;
         $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $year);
-
+        
 
         $data['users'] = [];
 
-
+    
         foreach ($users as $user) {
             $fines = [];
             $daytypes = [];
             $weekdays = [];
-
+   
             $days = $user->daytypes->whereIn('type', [5,7])->sortBy('day')->toArray();
-
+          
             $data['total_resources'] += $user->full_time == 1 ? 1 : 0.5;
            // if(count($days) > 1) $enable_comment_for_trainee_2 = $days[1]['day'];
-
+                
             $enable_comment = [ // для стажера
                 '1' => 0,
                 '2' => 0,
@@ -983,7 +987,7 @@ class TimetrackingController extends Controller
                 $daytypes[$i] = $x->type ?? null;
 
                 $weekdays[$i] = $user->weekdays[(int)$month->day($i)->dayOfWeek] == 1 ? 1 : 0;
-
+               
                 if($x && in_array($x->type,[2,5,7]) && $enable_comment['1'] == 0) {
                     $enable_comment['1'] = $x->day;
                 }
@@ -991,7 +995,7 @@ class TimetrackingController extends Controller
                     $enable_comment['2'] = $x->day;
                 }
             }
-
+            
             $user->enable_comment = $enable_comment;
 
             $user->selectedFines = $fines;
@@ -1011,14 +1015,14 @@ class TimetrackingController extends Controller
                 $user->applied_at = 0;
             }
 
-
+            
             $data['users'][] = $user;
             // if(self::showFiredEmployee($user, $request->month, $year) == true) { // Проверка не уволен ли сотрудник
             //     $data['users'][] = $user;
             // }
-
-
-
+             
+            
+            
             foreach($user->timetracking as $tt) {
                 $tt->minutes = $tt->total_hours;
             }
@@ -1045,8 +1049,8 @@ class TimetrackingController extends Controller
 
 
         $data['editable_time'] = $group->editable_time;
-
-
+        
+        
         return $data;
     }
 
@@ -2438,6 +2442,29 @@ class TimetrackingController extends Controller
     {
         $bonus = Bonus::where('id', $request->id)->first();
         if($bonus) $bonus->delete();
+    }
+
+    /**
+     * Получем массив user-ов и добавляем в таблицу group_user
+     */
+    public function addUsers(Request $request, GroupUserService $groupUserService)
+    {
+        $response = $groupUserService->save($request);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Удаляет массив юзеров.
+     * @param Request $request
+     * @param GroupUserService $groupUserService
+     * @return JsonResponse
+     */
+    public function dropUsers(Request $request, GroupUserService $groupUserService): JsonResponse
+    {
+        $response = $groupUserService->drop($request->users, $request->group_id);
+
+        return response()->json($response);
     }
 
     /**

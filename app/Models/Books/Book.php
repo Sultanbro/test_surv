@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\Contracts\CourseInterface;
 use App\Models\TestQuestion;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Book extends Model implements CourseInterface
 {
+    use SoftDeletes;
+    
     protected $table = 'books';
 
     public $timestamps = true;
@@ -21,7 +24,7 @@ class Book extends Model implements CourseInterface
         'description',
         'link',
         'img',
-        'domain'
+        'domain',
     ];
 
     /**
@@ -164,21 +167,14 @@ class Book extends Model implements CourseInterface
 
     /**
      * CourseInterface
-     * @return [type]
+     * @return array
      */
     public function getOrder()
     {
-        $pages = TestQuestion::where([
-                'testable_type' => 'App\\Models\\Books\\Book',
-                'testable_id' => $this->id 
-            ])
-            ->distinct('page')
-            ->orderBy('page')
-            ->get('page')
-            ->pluck('page')
+        return BookSegment::where('book_id', $this->id)
+            ->get('id')
+            ->pluck('id')
             ->toArray();
-
-        return $pages;
     }
 
     /**

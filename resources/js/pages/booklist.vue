@@ -83,13 +83,12 @@
             </button>
 
             <template v-if="edit_actives_book">
-               <button
+              <button
                 class="form-control btn-action btn-medium ml-2"
                 @click="showImageModal = true"
               >
                 <i class="far fa-image"></i>
               </button>
-
 
               <button
                 class="form-control btn-action btn-medium ml-2"
@@ -97,9 +96,7 @@
               >
                 <i class="fas fa-volume-up"></i>
               </button>
-        
-              
-              
+         
               <button
                 class="form-control btn-delete btn-medium ml-2"
                 @click="deletePage"
@@ -117,9 +114,7 @@
 
             <template v-else>
 
-     
               <button
-              
                 class="form-control btn-action btn-medium ml-2"
                 title="Поделиться ссылкой"
                 @click="copyLink(activesbook)"
@@ -128,7 +123,7 @@
               </button>
               
               <button
-              v-if="mode == 'edit'"
+                v-if="mode == 'edit'"
                 class="form-control btn-danger btn-medium ml-2"
                 @click="deletePage"
               >
@@ -136,7 +131,7 @@
               </button>
 
               <button
-              v-if="mode == 'edit'"
+                v-if="mode == 'edit'"
                 class="form-control btn-save btn-medium ml-2"
                 @click="edit_actives_book = true"
               >
@@ -146,10 +141,6 @@
             
             </template>
              
-
-              
-              
-              
             </div>
           </div>
         </div>
@@ -317,7 +308,7 @@
         <template  v-if="activesbook != null && !edit_actives_book">
           <div class="book_page">
             <div class="author d-flex aic mb-4 justify-end">
-              <img src="/images/avatar.png" alt="avatar icon">
+              <img :src="activesbook.editor_avatar" alt="avatar icon">
               <div class="text">
                 <p class="edited"><span>Cоздано:</span> {{ activesbook.created }} {{ activesbook.author }}</p>
                 <p class="edited"><span>Изменено:</span> {{ activesbook.edited_at }} {{ activesbook.editor }}</p>
@@ -334,57 +325,59 @@
                   :mode="mode"
                   :count_points="true"
                   @passed="passed"
-                   :pass="activesbook.item_model !== null"
+                  :pass="activesbook.item_model !== null"
                   :key="questions_key"
                   :pass_grade="activesbook.pass_grade"
                   @changePassGrade="changePassGrade"
+                  :course_item_id="course_item_id" 
+                  @nextElement="nextElement"
                 />
               <div class="pb-5"></div> 
+
+
+                <button class="next-btn btn btn-primary" 
+                  v-if="course_page && activesbook.questions.length == 0"
+                  @click="nextElement()">
+                  Продолжить курс 
+                  <i class="fa fa-angle-double-right ml-2"></i>
+                </button>
+
           </div>
         </template>
       </div>
 
     </div>
 
-
-    <button class="next-btn btn btn-primary" 
-      v-if="course_page && (passedTest )"
-      @click="nextElement()">
-      Продолжить курс 
-      <i class="fa fa-angle-double-right ml-2"></i>
-    </button>
-
-
+  
     <!-- .content -->
 
     <!-- Right Panel -->
 
     <b-modal v-model="showImageModal" title="Загрузить изображение">
-              <form
-                @submit.prevent="submit"
-                action="/upload/images/"
-                enctype="multipart/form-data"
-                method="post"
-                style=" max-width: 300px;margin: 0 auto;"
-              >
-                <div class="form-group">
-                  <div class="custom-file">
-                    <input
-                      type="file"
-                      class="custom-file-input"
-                      id="customFile"
-                      @change="onAttachmentChange"
-                      accept="image/*"
-                    />
-                    <label class="custom-file-label" for="customFile"
-                      >Выберите файл</label>
-                  </div>
-                </div>
-              </form>
-              <progress-bar
-                :percentage="myprogress"
-                label="Загрузка"
-              />
+      <form
+        @submit.prevent="submit"
+        action="/upload/images/"
+        enctype="multipart/form-data"
+        method="post"
+        style=" max-width: 300px;margin: 0 auto;"
+      >
+        <div class="form-group">
+          <div class="custom-file">
+            <input
+              type="file"
+              class="custom-file-input"
+              id="customFile"
+              @change="onAttachmentChange"
+              accept="image/*"
+            />
+            <label class="custom-file-label" for="customFile">Выберите файл</label>
+          </div>
+        </div>
+      </form>
+      <progress-bar
+        :percentage="myprogress"
+        label="Загрузка"
+      />
     </b-modal>
 
     <b-modal v-model="showAudioModal" title="Загрузить аудио">
@@ -498,7 +491,13 @@ export default {
     },
     course_item_id: {
       default: 0
-    }
+    },
+    all_stages: {
+      default: 0
+    },
+    completed_stages: {
+      default: 0
+    },
   },
   components: { 
     nestedDraggable,
@@ -506,38 +505,32 @@ export default {
   }, 
   data() {
     return {
+      activesbook: null,
+      tree: [],
+      ids: [], // array of books ids
+
+      // misc
+      can_save: false, // сохранять без тестов 
       myprogress: 0,
       id: 0,
       loader: false,
-      delo: 0,
       parent_title: '',
-      showSearch: false,
-      can_save: false,
       search: {
         input: '',
         items: []
       },
+      editorHeight: window.innerHeight - 128,
+      attachment: null,
+      breadcrumbs: [],
+      
+      // modals 
       showImageModal: false,
       showAudioModal: false,
       showPermissionModal: false,
-      showaddbook: false,
-      newbook: "Новая книга",
-      selecttree: null,
-      selectone: null,
-      actives: null,
-      activesbook: null,
       edit_actives_book: false,
-      audioarray: [],
-      tree: [],
-      books: [],
-      editorHeight: window.innerHeight - 128,
-      checkedNames: [],
-      seatchbooks: null,
-      editors: "",
-      imagegroup: [],
-      attachment: null,
-      breadcrumbs: [],
-      ids: [],
+      showSearch: false,
+
+      // courses
       passedTest: false,
       questions_key: 1,
       text_was: '',                                                        
@@ -547,49 +540,180 @@ export default {
   },
 
   created() {
-
     this.getTree();
- 
     this.parent_title = this.parent_name;
-
- 
     this.id = this.parent_id;
-    
   },
 
   mounted() {
-
     if(!this.course_page) {
       window.addEventListener('beforeunload', e => this.beforeunloadFn(e))
     }
-    
   },
 
   methods: {
+
     beforeunloadFn(e) {
       if(this.text_was != this.activesbook.text || this.title_was != this.activesbook.title) {
         e.returnValue = 'Are you sure you want to leave?';
       }
     },
-    passed() {
-      this.passedTest = true;
-      if(this.activesbook.item_model == null) {
-        this.setSegmentPassed();
-        this.activesbook.item_model = {status: 1}; 
+
+    nextElement() {
+   
+  
+      this.setSegmentPassed();
+      
+
+      
+      // find next element 
+      let index2 = this.ids.findIndex(el => el.id == this.activesbook.id); 
+      
+      if(index2 != -1 && this.ids.length - 1 > index2) {
+        let el = this.findItem(this.ids[index2 + 1]);
+        this.showPage(el.id);
+      } else { 
+        // move to next course item
+        this.$parent.after_click_next_element();
       }
-      console.log('passed test')
+
+      this.scrollToTop();
+    },
+
+    scrollToTop() {
+      document.getElementsByClassName('rp')[0].scrollTo(0,0);
+      if(this.course_item_id != 0) document.getElementsByClassName('rp')[1].scrollTo(0,0);
+    },
+
+    passed() {
+
+      this.passedTest = true;
+
+      // find element 
+
+      let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
+   
+      if(index != -1 && this.ids.length - 1 > index) {
+
+        let el = this.findItem(this.ids[index + 1]);
+
+        // pass if its not course.  cos there not nextElement button
+        if(el.item_model == null && this.course_item_id == 0) {
+          this.setSegmentPassed();
+        }
+      } 
+      
+  
+      //test 
+      let i = this.item_models.findIndex(im => im.item_id == this.activesbook.id);
+      if(i == -1) this.item_models.push({
+        item_id: this.activesbook.id,
+        status: 1
+      });
+      
+      this.connectItemModels(this.tree)
+     
     },
 
     setSegmentPassed() {
+
+      let el = null;
+      // find element 
+      let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
+      if(index != -1) {
+        el = this.findItem(this.ids[index]);
+       // if(el.item_model != null) return; 
+      } 
+
+      // pass 
       axios
         .post("/my-courses/pass", {
           id: this.activesbook.id,
           type: 3,
           course_item_id: this.course_item_id,
-          questions: this.activesbook.questions
+          questions: this.activesbook.questions,
+          all_stages: this.all_stages,
+          completed_stages: this.completed_stages + 1,
         })
         .then((response) => {
-         // this.activeVideo.item_models.push(response.data.item_model);
+            this.$emit('changeProgress');
+            if(el != null) el.item_model = {status: 1}; 
+            this.activesbook.item_model = response.data.item_model;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+
+    findItem(el) {
+      if(el.i.length == 1) return this.tree[el.i[0]];
+      if(el.i.length == 2) return this.tree[el.i[0]].children[el.i[1]];
+      if(el.i.length == 3) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]];
+      if(el.i.length == 4) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]];
+      if(el.i.length == 5) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]];
+      if(el.i.length == 6) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].children[el.i[5]];
+    },
+
+    getTree() {
+       axios
+        .post("/kb/tree", {
+          id: this.parent_id,
+          can_read: this.course_page,
+          course_item_id: this.course_item_id
+        }) 
+        .then((response) => {
+          this.tree = response.data.trees;
+          this.item_models = response.data.item_models;
+
+          this.can_save = response.data.can_save; // without test
+
+          // set active book
+          const urlParams = new URLSearchParams(window.location.search);
+          let book_id = urlParams.get('b');
+          this.breadcrumbs = [{id:this.id, title: this.parent_title}];
+
+          // create array of books ids
+          this.ids = [];
+          this.returnArray(this.tree);
+
+          if(this.course_page) {
+               
+            book_id = this.show_page_id
+
+            if(this.show_page_id == 0 || this.show_page_id == null) {
+              this.showPage(this.tree[0].id);
+            } else {
+              // find element 
+              let index = this.ids.findIndex(el => el.id == this.show_page_id); 
+              
+              if(index != -1) {
+                let el = this.findItem(this.ids[index]);
+                this.showPage(el.id);
+              }
+            }
+            
+
+          } else { // not course page
+
+
+              let result = null
+              this.tree.every(obj => {
+                result = this.deepSearchId(obj, book_id)
+
+
+                if (result != null) { 
+        
+                  this.showPage(book_id, false, true);
+                  return false;
+                }
+                return true;
+              });
+
+          }
+          
+          // passed steps
+          this.connectItemModels(this.tree)
+          
         })
         .catch((error) => {
           alert(error);
@@ -608,131 +732,12 @@ export default {
       });
     },
 
-    nextElement() {
-      console.log('this.activesbook.item_model');
-      console.log(this.activesbook.item_model);
-      if(this.activesbook.item_model == null) {
-           console.log('this.activesbook.item_model == null');
-        this.setSegmentPassed();
-        this.activesbook.item_model = {status: 1}; 
-      }
-   
-      // find next element 
-      let index = this.ids.findIndex(el => el.id == this.activesbook.id); 
-      if(index != -1 && this.ids.length - 1 > index) {
-        
-        let el = this.findItem(this.ids[index + 1]);
-
-       
-        this.passedTest = false;
-        this.activesbook = el;
-        this.questions_key++;
-
-        if(this.activesbook != null) {
-          console.log(this.activesbook)
-          if(this.activesbook.questions.length == 0) {
-            this.passedTest = true;
-          }
-        }
-          
-      } else {
-        // move to next course item
-        this.$parent.after_click_next_element();
-      }
-    },
-
-    findItem(el) {
-      if(el.i.length == 1) return this.tree[el.i[0]];
-      if(el.i.length == 2) return this.tree[el.i[0]].children[el.i[1]];
-      if(el.i.length == 3) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]];
-      if(el.i.length == 4) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]];
-      if(el.i.length == 5) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]];
-      if(el.i.length == 6) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].children[el.i[5]];
-    },
-
-    getTree() {
-       axios
-        .post("/kb/tree", {
-          id: this.parent_id,
-          can_read: this.course_page
-        })
-        .then((response) => {
-          this.tree = response.data.trees;
-          this.item_models = response.data.item_models;
-
-          this.can_save = response.data.can_save; // without test
-
-          this.books = [];
-
-          const urlParams = new URLSearchParams(window.location.search);
-          let book_id = urlParams.get('b');
-          this.breadcrumbs = [{id:this.id, title: this.parent_title}];
-         
-          
-          if(this.course_page) {
-              
-            // create array of books ids
-            this.ids = [];
-            this.returnArray(this.tree);
-
-            book_id = this.show_page_id
-
-
-            if(this.show_page_id == 0 || this.show_page_id == null) {
-             //this.activesbook = this.tree[0];
-              this.showPage(this.tree[0].id);
-            } else {
-              // find element 
-             
-              let index = this.ids.findIndex(el => el.id == this.show_page_id); 
-              
-              if(index != -1) {
-                let el = this.findItem(this.ids[index]);
-               
-                //this.activesbook = el;
-                this.showPage(el.id);
-                if(this.activesbook != null && this.activesbook.questions.length == 0) {
-                  this.passedTest = true;
-                }
-              }
-            }
-            
-
-          
-
-          } else {
-
-
-              let result = null
-              this.tree.every(obj => {
-                result = this.deepSearchId(obj, book_id)
-
-
-                if (result != null) { 
-                  console.log(result);
-                  this.showPage(book_id, false, true);
-                  return false;
-                }
-                return true;
-              });
-
-          }
-
-          this.connectItemModels(this.tree)
-          
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
     connectItemModels(tree) {
       tree.forEach((el, e) => {
-        console.log(this.item_models)
+
         let i = this.item_models.findIndex(im => im.item_id == el.id);
         if(i != -1) {
           el.item_model = this.item_models[i];
-          this.item_models.splice(i,1);
         } else {
           el.item_model = null;
         }
@@ -766,234 +771,6 @@ export default {
       });
     },
 
-    movecatt() {
-      this.actives.parent_cat_id = this.selectone;
-      axios
-        .post("/books/move/", {
-          id: this.actives.id,
-          parent: this.selectone,
-        }) 
-        .then((response) => {}); 
-    },
-
-    renamebooks(book) {
-      axios
-        .post("/pages/rename/", {
-          id: book.id,
-          name: book.title,
-        })
-        .then((response) => {});
-    },
-
-    rename(tre) {
-      console.log("tre=>", tre);
-      axios
-        .post("/books/rename/", {
-          id: tre.id,
-          name: tre.name,
-        })
-        .then((response) => {});
-    },
-
-    onEndSortcat(tree) {
-      tree.forEach((xx, index) => {
-        xx.queue_number = index;
-      });
-
-      this.$toast.info("Подождите пока сохранится ...");
-
-      let loader = this.$loading.show();
-
-      axios
-        .post("/books/order/", {
-          tree: this.tree,
-          id: this.id,
-        })
-        .then((response) => {
-          loader.hide()
-          this.$toast.success("Порядок сохранен!");
-        })
-        .catch((error) => {
-            loader.hide()
-          this.$toast.error("Ошибка сохранения порядка");
-        });
-
-      this.loader = false;
-    },
-
-    select(sel) {
-      if (sel == "koren") {
-        this.selectone = null;
-      } else {
-        this.selectone = sel;
-      }
-    },
-
-    passte() {
-      this.checkedNames.forEach((xx) => {
-        this.books.find((x) => x.id == xx).text = this.activesbook.text;
-      });
-
-      axios
-        .post("/pages/search/", {
-          idbooks: this.checkedNames,
-          text: this.activesbook.text,
-        })
-        .then((response) => {});
-    },
-
-    searchitem() {
-      this.seatchbooks = this.books.filter(
-        (x) => x.title.toLowerCase() == this.activesbook.title.toLowerCase()
-      );
-      this.seatchbooks.forEach((xx) => {
-        xx.namecat = this.tree.find((x) => x.id == xx.category_id).name;
-      });
-    },
-
-    bookshow() {
-      this.showaddbook = !this.showaddbook;
-      setTimeout(() => {
-        this.$refs.adddglabook.select();
-      }, 500);
-    },
-
-    onEndSort(books, id) {
-      let arr;
-      arr = books.filter((book) => book.category_id == id);
-
-      arr.forEach((xx, index) => {
-        xx.queue_number = index;
-      });
-
-      this.loader = false;
-
-      this.$toast.info("Подождите пока сохранится ...");
-
-      axios
-        .post("/pages/order/", {
-          books: arr,
-          id: id,
-        })
-        .then((response) => {
-          this.loader = false;
-          this.$toast.success("Порядок сохранен!");
-        })
-        .catch((error) => {
-          this.loader = false;
-          this.$toast.error("Ошибка сохранения порядка");
-        });
-      this.loader = false;
-    },
-
-    addaudio(url) {
-      tinymce.activeEditor.insertContent(
-        '<audio controls src="' + url + '"></audio>'
-      );
-    },
-
-    addimage(url) {
-      tinymce.activeEditor.insertContent(
-        '<img alt="картинка" src="'+ url + '"/>'
-      );
-    },
-
-    submit_tinymce(blobInfo, success, failure) {
-      
-      this.loader = true;
-      const config = { "content-type": "multipart/form-data" };
-      const formData = new FormData();
-      formData.append('attachment', blobInfo.blob());
-      formData.append("id", this.activesbook.id);
-      axios
-        .post("/upload/images/", formData)
-        .then((response) => {
-          console.log("Загруэенно =>", response.data.location);
-            
-          success(response.data.location);
-          this.loader = false;
-        })
-        .catch((error) => console.log(error));
-    },
-
-    submit() {
-      this.loader = true;
-      const config = { 
-        onUploadProgress: progressEvent => {
-          let { progress } = this.myprogress;
-          progress = (progressEvent.loaded / progressEvent.total) * 100;
-          this.myprogress = progress;
-        }
-      };
-      const formData = new FormData();
-      formData.append("attachment", this.attachment);
-      formData.append("id", this.activesbook.id);
-      axios
-        .post("/upload/images/", formData, config)
-        .then((response) => {
-          console.log("Загруэенно =>", response.data.location);
-
-          this.addimage(response.data.location);
-        //   this.imagegroup.push({
-        //     url: "https://bp.jobtron.org/" + response.data.location,
-        //   });
-
-          if(this.myprogress >= 100){
-            this.showImageModal = false;
-            this.loader = false;
-            this.myprogress = 0;
-          }
-        })
-        .catch((error) => console.log(error));
-    },
-
-    copyLink(book) {
-      var Url = this.$refs["mylink" + book.id];
-      Url.value = "http://bp.jobtron.org/corp_book/" + book.hash;
-
-      Url.select();
-      document.execCommand("copy");
-
-      this.$toast.info("Ссылка на страницу скопирована!");
-    },
-    onAttachmentChange(e) {
-      this.attachment = e.target.files[0];
-      console.log(this.attachment);
-      this.submit();
-    },
-    onAttachmentChangeaudio(e) {
-      this.attachment = e.target.files[0];
-      console.log(this.attachment);
-      this.submitaudio();
-    },
-    submitaudio() {
-      this.loader = true;
-      const config = { "content-type": "multipart/form-data" };
-      const formData = new FormData();
-      formData.append("attachment", this.attachment);
-      formData.append("id", this.activesbook.id);
-      axios
-        .post("/upload/audio/", formData)
-        .then((response) => {
-        //   this.audioarray.push({
-        //     url: "https://bp.jobtron.org/" + response.data.location,
-        //   });
-
-          this.addaudio(response.data.location);
-          this.showAudioModal = false;
-          this.loader = false;
-        })
-        .catch((error) => console.log(error));
-    },
-    savepass() {
-      axios
-        .post("/books/password/", {
-          id: this.actives.id,
-          login: this.actives.login,
-          password: this.actives.password,
-        })
-        .then((response) => {});
-    },
     saveServer() {
       if(this.activesbook.questions.length == 0 && !this.can_save) {
         this.$toast.error('Нельзя вносить изменения без тестов');
@@ -1020,18 +797,6 @@ export default {
         .catch((error) => {loader.hide()})
     },
 
-  
-    deletecat(cat) {
-      if (confirm("Вы уверены что хотите удалить категорию?") == true) {
-        this.tree.splice(this.tree.indexOf(cat), 1);
-        axios
-          .post("/books/delete/", {
-            id: cat.id,
-          })
-          .then((response) => {});
-      }
-    },
-
     addPage(book) {
       axios.post("/kb/page/create", {
         id: book.id
@@ -1054,83 +819,6 @@ export default {
       });
     },
 
-    addpage(id, name) {
-      if (name > "") {
-        let ids = new Date().getTime();
-        this.books.push({
-          id: ids,
-          title: name,
-          text: "Description for book2",
-          category_id: id,
-          order: 0,
-        });
-        this.showaddbook = false;
-        this.newbook = "Новая страница";
-        console.log(
-          "pages",
-          this.books.find((x) => x.id == ids)
-        );
-        axios
-          .post("/pages/create/", {
-            page: this.books.find((x) => x.id == ids),
-          })
-          .then((response) => {
-            this.books.find((x) => x.id == ids).id = response.data.id;
-          });
-      }
-    },
-    addcat(id, name) {
-      if (name > "") {
-        let ids = new Date().getTime();
-        this.tree.push({
-          id: ids,
-          parent_cat_id: id,
-          name: name,
-          group_id: 0,
-          login: null,
-          password: null,
-        });
-        this.showaddbook = false;
-        this.newbook = "Новая книга";
-
-        axios
-          .post("/books/create/", {
-            parent_cat_id: id,
-            categoryes: this.tree.find((x) => x.id == ids),
-          })
-          .then((response) => {
-            this.tree.find((x) => x.id == ids).id = response.data.id;
-          });
-      }
-    },
-    addbook() {
-      if (this.newbook > "") {
-        let ids = new Date().getTime();
-        this.tree.push({
-          id: ids,
-          parent_cat_id: null,
-          name: this.newbook,
-          group_id: 0,
-          login: "admin",
-          password: "pass",
-        });
-        this.showaddbook = false;
-        this.newbook = "Новая книга";
-
-        axios
-          .post("/books/create/", {
-            categoryes: this.tree.find((x) => x.id == ids),
-          })
-          .then((response) => {
-            this.tree.find((x) => x.id == ids).id = response.data.id;
-          });
-      }
-    },
-    active(tre) {
-      this.actives = tre;
-      this.activesbook = null;
-    },
-
     deletePage() {
       if(confirm('Вы уверены?')) {
         axios
@@ -1144,6 +832,7 @@ export default {
         });
       }
     },
+
     deepSearch(array, item) {
       return array.some(function s(el) {
         return el == item || ((el instanceof Array) && el.some(s));
@@ -1151,7 +840,7 @@ export default {
     },
 
     deepSearchId(obj, targetId) {
-      console.log(obj.id + ' === ' + targetId)
+      
       if (obj.id == targetId) {
         return obj
       }
@@ -1179,34 +868,9 @@ export default {
       arr.forEach((it, index) => {
         if (it.id === id) {
           it.title = title;
-          console.log('IT title')
         }
         this.renameNode(it.children, id, title)
       })
-    },
-
-    
-    recurse(arr, id, objToMerge, inAncestor = false) {
-      return arr.map(obj => {
-        const mergeThis = inAncestor || obj.id == id;
-        const merged = !mergeThis ? obj : { ...obj, config: { ...obj.config, ...objToMerge } };
-        if (merged.children) {
-          merged.children = this.recurse(merged.children, id, objToMerge, mergeThis);
-        }
-        return merged;
-      });
-    },
-
-    activebook(book) {
-      axios
-        .post("/books/get_book/", {
-          id: book.id,
-        })
-        .then((response) => {
-          console.log(response.data.book);
-          this.activesbook = response.data.book;
-        });
-      this.actives = null;
     },
 
     showPage(id, refreshTree = false, expand = false) {
@@ -1228,24 +892,34 @@ export default {
         refresh: refreshTree
       }).then((response) => {
         loader.hide()
-        this.activesbook = response.data.book;
+ 
+        // @TODO 
+        this.activesbook = response.data.book;  
+  
+      
+
+        this.questions_key++
         this.text_was = this.activesbook.text;
         this.title_was = this.activesbook.title;
         this.breadcrumbs = response.data.breadcrumbs;
         this.edit_actives_book = false;
         
-    
         if(refreshTree) {
           this.id = response.data.top_parent.id;
-          this.parent_title = response.data.top_parent.title
+          this.parent_title = response.data.top_parent.title 
           this.tree = response.data.tree
           this.showSearch = false;
           this.search.input = false;
           this.search.items = [];
-         
+        }
+        
+        // for course
+        this.passedTest = false;
+        if(this.activesbook != null && this.activesbook.questions.length == 0) {
+          this.passedTest = true;
         }
 
-        if(expand)  this.expandTree();
+        if(expand) this.expandTree();
         this.setTargetBlank();
         
         if(this.enable_url_manipulation) {
@@ -1262,7 +936,6 @@ export default {
       let item = null;
       
       this.breadcrumbs.forEach(bc => {
-        console.log(bc.id + '--- ' + bc.parent_id)
 
         let s_index = this.tree.findIndex(t => t.id == bc.id);
 
@@ -1291,14 +964,104 @@ export default {
     editorSave() {},
 
     changePassGrade(grade) {
-      console.log('pass grade')
-
       this.activesbook.pass_grade = grade;
       let len = this.activesbook.questions.length;
 
       if(grade > len) this.activesbook.pass_grade = len;
       if(grade < 1) this.activesbook.pass_grade = 1;
     },
+
+    addaudio(url) {
+      tinymce.activeEditor.insertContent(
+        '<audio controls src="' + url + '"></audio>'
+      );
+    },
+
+    addimage(url) {
+      tinymce.activeEditor.insertContent(
+        '<img alt="картинка" src="'+ url + '"/>'
+      );
+    },
+
+    submit_tinymce(blobInfo, success, failure) {
+      
+      this.loader = true;
+      const config = { "content-type": "multipart/form-data" };
+      const formData = new FormData();
+      formData.append('attachment', blobInfo.blob());
+      formData.append("id", this.activesbook.id);
+      axios
+        .post("/upload/images/", formData)
+        .then((response) => {
+          success(response.data.location);
+          this.loader = false;
+        })
+        .catch((error) => console.log(error));
+    },
+
+    submit() {
+      this.loader = true;
+      const config = { 
+        onUploadProgress: progressEvent => {
+          let { progress } = this.myprogress;
+          progress = (progressEvent.loaded / progressEvent.total) * 100;
+          this.myprogress = progress;
+        }
+      };
+      const formData = new FormData();
+      formData.append("attachment", this.attachment);
+      formData.append("id", this.activesbook.id);
+      axios
+        .post("/upload/images/", formData, config)
+        .then((response) => {
+
+          this.addimage(response.data.location);
+
+          if(this.myprogress >= 100){
+            this.showImageModal = false;
+            this.loader = false;
+            this.myprogress = 0;
+          }
+        })
+        .catch((error) => console.log(error));
+    },
+
+    copyLink(book) {
+      var Url = this.$refs["mylink" + book.id];
+      Url.value = "http://bp.jobtron.org/corp_book/" + book.hash;
+
+      Url.select();
+      document.execCommand("copy");
+
+      this.$toast.info("Ссылка на страницу скопирована!");
+    },
+
+    onAttachmentChange(e) {
+      this.attachment = e.target.files[0];
+      this.submit();
+    },
+
+    onAttachmentChangeaudio(e) {
+      this.attachment = e.target.files[0];
+      this.submitaudio();
+    },
+
+    submitaudio() {
+      this.loader = true;
+      const config = { "content-type": "multipart/form-data" };
+      const formData = new FormData();
+      formData.append("attachment", this.attachment);
+      formData.append("id", this.activesbook.id);
+      axios
+        .post("/upload/audio/", formData)
+        .then((response) => {
+          this.addaudio(response.data.location);
+          this.showAudioModal = false;
+          this.loader = false;
+        })
+        .catch((error) => console.log(error));
+    },
+
   },
 };
 

@@ -33,6 +33,8 @@ $hover-blue: #007bff;
 @import "components/video-accordion";
 @import "components/course-progress";
 @import "components/glossary";
+@import "components/j-table";
+@import "components/chat";
 
 @import "misc";
 @import "nonsorted";
@@ -44,7 +46,9 @@ $hover-blue: #007bff;
  
 
 
-
+.jcfe {
+  justify-content: flex-end;
+}
 
 /**** video player */
 

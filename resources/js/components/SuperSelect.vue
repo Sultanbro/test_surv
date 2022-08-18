@@ -8,7 +8,7 @@
             class="selected-item"
             :class="'value' + value.type">
             {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i)"></i>
+            <i class="fa fa-times" @click.stop="removeValue(i)" v-if="!one_choice_made"></i>
         </div>
     </div>
     
@@ -84,6 +84,14 @@ export default {
             type: Boolean,
             default: false
         },
+        ask_before_delete: {
+            type: String,
+            default: ''
+        },
+        one_choice: {
+            type: Boolean,
+            default: false
+        },
     },
     data() {
         return {
@@ -94,13 +102,14 @@ export default {
             posClass: 'top',
             searchText: '',
             first_time: true,
-            selected_all: false
+            selected_all: false,
+            one_choice_made: false
         };
     },
     created() {
-
-      console.log(this.values,'019995');
-
+        console.log(this.values)
+        console.log(this.values.length)
+        if(this.one_choice && this.values.length > 0) this.one_choice_made = true; 
         this.checkSelectedAll();  
     },
     methods: {
@@ -128,10 +137,19 @@ export default {
         },
 
         toggleShow() {
+ 
+
+            if(this.one_choice_made) {
+                return;
+            }
+             
             this.show = !this.show;
+
+
             if(this.first_time) {
                 this.fetch();
             }
+            
             
             this.$nextTick(() => {
                 if(this.$refs.search !== undefined) this.$refs.search.focus();
@@ -156,24 +174,33 @@ export default {
             if(this.single) this.show = false;
             if(this.single && this.values.length > 0) {
                 return;
-            };
+            }; 
+
+            
             if(this.selected_all) return;
 
             let item = this.filtered_options[index];
 
             if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
 
-                this.values.push({
+                let value = {
                     name: item.name,
                     id: item.id,
                     type: item.type
-                });
+                };
+
+                this.$emit('choose', value);
+                this.values.push(value);
 
                 item.selected = true
             }
         },
 
         removeValue(i) {
+            if(this.ask_before_delete != '') {
+                if(!confirm(this.ask_before_delete)) return;
+            }
+
             let v = this.values[i];
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
@@ -215,7 +242,7 @@ export default {
                 .then((response) => {
 
                     this.options = response.data.options;
-
+                    this.first_time = false;
                     this.filterType();
                     this.addSelectedAttr();
                 })

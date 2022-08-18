@@ -50,7 +50,7 @@ use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\DecompositionItem;
 use App\Models\Analytics\TopValue;
 use App\QualityRecordWeeklyStat;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
@@ -378,7 +378,6 @@ class AnalyticsController extends Controller
                 $stat->value = $request->formula;
             }
 
-            
             if($request->type == 'remote' || $request->type == 'inhouse') {
 
                 if($request->type == 'remote') {
@@ -398,18 +397,18 @@ class AnalyticsController extends Controller
             }
 
             $stat->type = $request->type;
-            if($request->value == 0 || isset($request->value)){
-               $stat->class = 'text-center text-center'; 
-            }
-            else{
-                $stat->class = $request->class;
-            }
+            // if($request->value == 0 || isset($request->value)){
+            //    $stat->class = 'text-center text-center'; 
+            // }
+            // else{
+                
+            // }
+            $stat->class = $request->class;
             $stat->save(); 
         }
     }
 
     public function addHours($group_id, $user_type, $value, $old_value, $date) {
-       
             $group_users = json_decode(ProfileGroup::find($group_id)->users);
             $tts = Timetracking::whereIn('user_id', $group_users)
                 ->whereDate('enter', $date)
@@ -665,6 +664,11 @@ class AnalyticsController extends Controller
                 $formula = str_replace("{". $row->id ."}", "[". $column->id .":". $row->id ."]", $formula);
             }
             
+            // replace text
+            $pattern = '/[a-zA-Z]+[0-9]+/i';
+            $formula = preg_replace($pattern, 1, $formula);
+
+            //save update service
             if($stat) {
                 $stat->update([
                     'row_id' => $formula_row->id,
@@ -761,6 +765,6 @@ class AnalyticsController extends Controller
         return Excel::download(new AnalyticsImport($sheets,$group), $title .' "'.$group->name . '".xls');
         
     }
-    
+
 }
 

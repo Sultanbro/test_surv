@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use App\User;
 use App\SavedKpi;
 use App\KpiChange;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Analytics\IndividualKpi;
@@ -49,7 +49,7 @@ class Kpi extends Model
      * return @int
      */
     public static function userKpi(int $user_id, string $date = '', $renew = 0) {
-        
+       
         if($renew == 0) { // if not require renew, return saved value
             
             $skpi = SavedKpi::where('user_id', $user_id);
@@ -66,6 +66,8 @@ class Kpi extends Model
             } 
             return $res;
         } 
+
+
 
         $kpi_total = 0;
         
@@ -87,9 +89,17 @@ class Kpi extends Model
          
         foreach ($groups as $group) {
             $kpi_total +=  self::groupKpi($user_id, $group->id, $date);
-           
+            
         }
+        
 
+        $sk = SavedKpi::where('user_id', $user_id)
+            ->where('date', $date)
+            ->update([
+                'total' => intval($kpi_total)
+            ]);
+
+    
         return intval($kpi_total);
     }
 
@@ -244,6 +254,7 @@ class Kpi extends Model
             } else {
                 
                 $completed = UserStat::getActivityProgress($user_id, $group_id, $activity, $date);
+                // dump($completed);
             }
             
             // if(in_array($group_id, [42])) { 

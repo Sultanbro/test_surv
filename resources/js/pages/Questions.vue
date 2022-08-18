@@ -83,7 +83,7 @@
               />
             </label>
             
-            <label class="d-flex w-full" v-if="mode == 'read'">
+            <label class="d-flex w-full" v-if="mode == 'read'" :class="{'right':scores && v.right == true}">
               <input 
                   type="checkbox"
                   v-model="v.checked" 
@@ -92,6 +92,12 @@
                   title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
               />
               <p class="mb-0">{{ v.text }}</p>
+
+              <i
+                class="fa fa-check-circle right ml-2 mt-1"
+                v-if="scores && v.right == true"
+              ></i>
+
             </label>
           
          
@@ -129,8 +135,12 @@
 
     <template v-if="mode == 'read'">
       <div class="d-flex">
-        <button class="btn btn-success mr-2" @click.stop="checkAnswers" v-if="points == -1 || !scores">
-          Проверить
+        <button class="btn btn-success mr-2" 
+        @click.stop="checkAnswers"
+        v-if="points == -1 || !scores"
+        :disabled="timer_turned_on"
+        >
+          Проверить <span v-if="timer_turned_on">({{ timer }})</span>
         </button>
         <button
           class="btn btn-primary"
@@ -141,10 +151,19 @@
         </button>
       </div>
 
-      <p v-if="points != -1 && mode == 'read'" class="mt-3 scores">
-        <span v-if="scores">Вы набрали: {{ points }} баллов из {{ total }}</span>
-        <span v-else>Вы не набрали проходной балл...</span>
-     </p>
+      <div class="d-flex jcsb aic">
+        <p v-if="points != -1 && mode == 'read'" class="mt-3 scores mr-3">
+          <span v-if="scores">Вы заработали: <b>{{ points }}</b> бонусов из <b>{{ total }}</b></span>
+          <span v-else>Вы не набрали проходной балл...</span>
+        </p>
+        <button class="net-btn btn btn-primary" 
+          v-if="mode == 'read' && passed"
+          @click="$emit('nextElement')" >
+          Продолжить
+          <i class="fa fa-angle-double-right ml-2"></i>
+        </button>
+      </div>
+      
     </template>
 
     <template v-if="mode == 'edit'">
@@ -153,10 +172,9 @@
     <div class="d-flex jcsb aifs">
       <div>
         <button
-          v-if="['kb','video'].includes(type) && changed"
+          v-if="['kb','video'].includes(type)"
           class="btn btn-success mr-2" 
           @click.stop="saveTest"
-          
           >
             Сохранить
         </button>
@@ -229,6 +247,9 @@ export default {
       points: -1,
       count_points: false,
       pass_grade_local: 1,
+      timer: 60,
+      timer_turned_on: false,
+      passed: false,
       right_ans: 0 // правильно отвеченные
     };
   },
@@ -253,6 +274,7 @@ export default {
         this.pass_grade_local = this.pass_grade
       },
       
+     
       mode: {
         handler (val, oldVal) {
           if(val == 'edit') {
@@ -261,8 +283,25 @@ export default {
             });
           }
         }
-    },
+      },
+
+      timer: {
+          handler(value) {
+            
+
+              if (value > 0) {
+                  setTimeout(() => {
+                      this.timer--;
+                  }, 1000);
+              } else {
+                this.timer_turned_on = false;
+              }
+          },
+          immediate: true // This ensures the watcher is triggered upon creation
+      }
+
   },
+  
   created() {
     this.pass_grade_local = this.pass_grade;
     this.setResults();
@@ -280,6 +319,14 @@ export default {
         this.page = this.page;
       }
       
+      if(this.$cookie.get('q_timer') != null) {
+        
+        this.$cookie.set('q_timer', 60, { expires: '60s' });
+        this.timer_turned_on = true;
+        this.timer = 60;
+      }
+
+
     } else {
       this.questions.forEach((q) => {
         q.editable = false;
@@ -295,7 +342,6 @@ export default {
     
     setResults() {
       this.questions.forEach((q) => {
-        console.log(q)
         if(q.result === null) return;
         this.count_points = true;
         if (q.type == 0) {
@@ -329,6 +375,14 @@ export default {
 
     checkAnswers() {
       // read
+
+  
+      if(this.timer_turned_on && this.$cookie.get('q_timer') != null) {
+        this.$toast.error('Вы не можете пока ответить еще ' + this.timer + ' секунд');
+        return;
+      }
+ 
+      // start count 
       this.points = 0;
       this.right_ans = 0;
 
@@ -385,22 +439,31 @@ export default {
 
       });
       
+      //
       if(not_answered_question) {
         this.$toast.error('Ответьте на все вопросы!');
-        
         return;
       }
 
       if(this.scores) {
         if(this.count_points) {
           this.count_points = false;
-        } else {
-          this.$emit('passed');
-        }
+        } 
+        // else {
+        //   this.$emit('passed');
+        // }
+         this.$emit('passed');
+         this.passed = true;
       } else {
+        this.timer_turned_on = true;
+        this.timer = 60;
+        this.$cookie.set('q_timer', 60, { expires: '60s' });
+
+        this.$toast.error('Вы ответили неверно. Вот Вам еще минутка чтобы найти на странице правильный ответ!');
         this.points = -1;
       }
     },
+
 
     addVariant(q_index, v_index = -1) {
       this.questions[q_index].variants.push({

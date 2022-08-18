@@ -206,6 +206,9 @@ class HeadhunterNegotiations extends Command
                 $title = "inhouse " . $negotiation->name . ' : hh.ru';
             }
             
+            
+
+            // lead_id
             $lead_id = $this->bitrix->createLead([
                 "TITLE" => $title, 
                 "NAME" => $negotiation->name,  
@@ -215,14 +218,12 @@ class HeadhunterNegotiations extends Command
                 "UF_CRM_1635487718862" => 'https://wa.me/+' . Phone::normalize($negotiation->phone), // Ватсап линк 
                 'UF_CRM_1624530685082' => $ic->time_link . $hash, // Ссылка для офисных кандидатов
                 'UF_CRM_1624530730434' => $ic->contract_link . $hash, // Ссылка для удаленных кандидатов
-                "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]]
+                "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]],
+                "UF_CRM_1658397129" => $vac ? $vac->city : '' // город
             ]);
-    
             
-    
-            $negotiation->lead_id = $lead_id['result'];
-            $negotiation->save();
 
+            // bitrix_leads
             $lead = Lead::where('lead_id', $lead_id['result'])->latest()->first();
             if($lead) {
                 $lead->update([
@@ -233,7 +234,7 @@ class HeadhunterNegotiations extends Command
                     'hash' => $hash
                 ]);
             } else {
-                Lead::create([
+                $lead = Lead::create([
                     'lead_id' => $lead_id['result'],
                     'name' => $negotiation->name,
                     'phone' => $negotiation->phone,
@@ -242,6 +243,12 @@ class HeadhunterNegotiations extends Command
                     'hash' => $hash
                 ]);
             }
+            
+
+            $negotiation->lead_id = $lead_id['result'];
+            $negotiation->save();
+
+          
 
             return $lead_id['result']; 
         } catch(\Exception $e) {

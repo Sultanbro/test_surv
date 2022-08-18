@@ -6,7 +6,7 @@
     <div class="d-flex mb-3"  v-if="!is_course">
       <div class="d-flex jcsb mb-1 left f-70">
         <div class="s w-full">
-          <div class="d-flex">
+          <div class="d-flex flex-column">
             <input
               v-if="mode == 'edit'"
               type="text"
@@ -15,6 +15,7 @@
               name="title"
             />
             <p v-else class="p-title mb-0"> {{ playlist.title }} </p>
+            <p v-if="noVideoInPlaylist && mode == 'read'" class="mt-2">В этом плейлисте нет видео</p>
           </div>
 
           <!-- playlist description -->
@@ -50,14 +51,12 @@
         </div>
     </div>
 
-   
-
     <div class="row">
 
       <!-- Player and test questions -->
       <div class="col-lg-6 pr-0">
         <div class="block  br" v-if="activeVideo != null">
-            <v-player :src="activeVideoLink" :key="video_changed" />
+            <v-player :src="activeVideoLink" :key="video_changed" :autoplay="course_item_id != 0" />
            
             <div class="row mb-2 mt-3">
               <div class="col-md-12">
@@ -91,9 +90,10 @@
                      :pass="activeVideo.item_model !== null"
                     @passed="passedTest()"
                     :mode="mode"
+                    @nextElement="nextElement"
                     />
-                
-                <button class="next-btn btn btn-primary" v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null) && mode == 'read'"
+                <!-- v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null) && mode == 'read'" -->
+                <button class="next-btn btn btn-primary" v-if="activeVideo.questions.length == 0 && mode == 'read'"
                   @click="nextElement()">
                   Следующее видео
                   <i class="fa fa-angle-double-right ml-2"></i>
@@ -120,7 +120,6 @@
           
       </div>
     </div>
-
 
     <!-- edit tests -->
     <sidebar
@@ -152,7 +151,6 @@
           />
       </div>
     </sidebar>
-
    
   </div>
 </template>
@@ -176,7 +174,13 @@ export default {
     },
     course_item_id: {
       default: 0
-    }
+    },
+    all_stages: {
+      default: 0
+    },
+    completed_stages: {
+      default: 0
+    },
   },
   
   data() {
@@ -188,6 +192,7 @@ export default {
       refreshTest: 1, //key
       file_img: null,
       item_models: [],
+      noVideoInPlaylist: false,
       playlist: {
         id: 1,
         category_id: 1,
@@ -215,22 +220,50 @@ export default {
 
   mounted() {},
 
-
   methods: { 
 
     passedTest() {
-         this.setVideoPassed()
-        this.nextElement()
+      // if(this.activeVideo.item_model == null) {
+      //   //this.setVideoPassed()
+      // }
+
+      let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
+      if(i == -1) this.item_models.push({ 
+        item_id: this.activeVideo.id,
+        status: 1
+      });
+      
+      this.connectItemModels(this.playlist.groups)
+     
+      ////
+
+        //this.nextElement()
+    },
+
+    scrollToTop() {
+      document.getElementsByClassName('content')[0].scrollTo(0,0);
+
     },
 
     nextElement() {
 
-      
+      this.scrollToTop();
+
       if(this.activeVideo.item_model == null) {
-        this.setVideoPassed()
+        this.setVideoPassed() 
       }
 
-      this.activeVideo.item_model = {status: 1}
+      /// 
+      
+      let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
+      if(i == -1) this.item_models.push({
+        item_id: this.activeVideo.id,
+        status: 1
+      });
+      
+      this.connectItemModels(this.playlist.groups)
+      
+      ////
       
       let index = this.ids.findIndex(el => el.id == this.activeVideo.id); 
  
@@ -248,17 +281,33 @@ export default {
     },
 
     setVideoPassed() {
+
+      // find element 
+
+      let el = null;
+
+      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+      if(index != -1) {
+        el = this.findItem(this.ids[index]);
+       // if(el.item_model != null) return; 
+      }
+
+      // pass
       let loader = this.$loading.show();
       axios
         .post("/my-courses/pass", {
           id: this.activeVideo.id,
           type: 2,
           course_item_id: this.course_item_id,
-          questions: this.activeVideo.questions
+          questions: this.activeVideo.questions,
+          all_stages: this.all_stages,
+          completed_stages: this.completed_stages + 1,
         })
         .then((response) => {
           setTimeout(loader.hide(), 500);
-          // this.activeVideo.item_model.push(response.data.item_model);
+          if(el) el.item_model = response.data.item_model;
+          this.activeVideo.item_model = response.data.item_model;
+          this.$emit('changeProgress');
         })
         .catch((error) => {
            loader.hide();
@@ -271,12 +320,6 @@ export default {
       if (questions == undefined) this.playlist.videos[v_index].questions = [];
       this.modals.questions.show = true;
       this.activeVideo = this.playlist.videos[v_index];
-    },
-
-    saveOrder(evt) {
-      console.log(evt.oldIndex);
-      console.log(evt.newIndex);
-      console.log("save order");
     },
 
     removeVideo(v_index) {
@@ -296,12 +339,9 @@ export default {
         });
     },
 
-
     openControlsMenu(video) {
       video.show_controls = true;
     },
-    
-  
     
     selectedGroup() {
       return this.modals.upload.children_index == -1 
@@ -353,7 +393,7 @@ export default {
         });
     },
 
-     saveActiveVideoFast() {
+    saveActiveVideoFast() {
       axios
         .post("/playlists/save-video-fast", {
           id: this.activeVideo.id,
@@ -376,7 +416,7 @@ export default {
     },
 
     saveActiveVideo() {
-      console.log("saveActiveVideo");
+
       axios
         .post("/playlists/save-active-video", {
           id: this.playlist.id,
@@ -403,7 +443,6 @@ export default {
 
     search(event) {
       this.modals.addVideo.searchVideos = this.all_videos.filter((el) => {
-        console.log(el.title.toLowerCase());
         return (
           el.title.toLowerCase().indexOf(event.target.value.toLowerCase()) > -1
         );
@@ -411,12 +450,14 @@ export default {
     },
 
     showVideo(video, autoplay = true) {
-    
+
+      if(video == null) return;
       let loader = this.$loading.show();
 
        axios
         .post("/playlists/video", {
           id: video.id,
+          course_item_id: this.course_item_id
         })
         .then((response) => {
            loader.hide()
@@ -429,9 +470,9 @@ export default {
             this.setActiveGroup();
           if(autoplay) {
                this.video_changed++;
-             
-            
           }
+
+           this.noVideoInPlaylist = false;
         })
         .catch((error) => {
           loader.hide()
@@ -510,8 +551,6 @@ export default {
     },
 
     changePassGrade(grade) {
-      console.log('pass grade')
-
       this.activeVideo.pass_grade = grade;
       let len = this.activeVideo.questions.length;
 
@@ -549,13 +588,15 @@ export default {
           this.activeVideo = this.findItem(this.ids[index]);
         }
 
-      } else if(this.playlist.groups[0].videos.length > 0) { 
+      } else if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) { 
           // set active video
           this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
          
       } else if(this.ids.length > 0) {
         this.activeVideo = this.findItem(this.ids[0]);
+      } else {
+        this.noVideoInPlaylist = true;
       }
       
       this.showVideo(this.activeVideo);
@@ -584,8 +625,6 @@ export default {
     
     setActiveGroup() {
       
-      console.log('setActiveGroup')
-
       // close all
       this.playlist.groups.forEach(g=>{
         g.opened = false;

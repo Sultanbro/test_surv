@@ -51,7 +51,7 @@ use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\DecompositionItem;
 use App\Models\Analytics\TopValue;
 use App\QualityRecordWeeklyStat;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
@@ -2016,12 +2016,12 @@ class GroupAnalyticsController extends Controller
 
             $item['sent'] = $leads->count();
 
-            $item['working'] = \DB::table('users')
+            $item['working'] = 1;/*\DB::table('users')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->where('is_trainee', 0)
-                ->whereIn('users.id', $leads->pluck('user_id')->toArray())
+                ->whereIn('ud.user_id', $leads->distinct('user_id')->pluck('user_id')->toArray())
                 ->get()
-                ->count();
+                ->count();*/
                 
             $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);
