@@ -302,11 +302,7 @@ export default {
         },
 
         setDefaultShowFields() {
-        
-            if(localStorage.bonus_show_fields) {
-                this.show_fields = JSON.parse(localStorage.getItem('quartal_premium_show_fields'));
-            } else {
-                this.show_fields = { // Какие поля показывать
+            obj = { // Какие поля показывать
                     target: true,
                     title: true,
                     sum: true,
@@ -318,8 +314,14 @@ export default {
                     created_by: true,
                     updated_by: true,
                     created_at: true,
-                    updated_at: true,x
+                    updated_at: true,
                 };
+
+            if(localStorage.quartal_premium_show_fields) {
+                this.show_fields = JSON.parse(localStorage.getItem('quartal_premium_show_fields'));
+                if(this.show_fields == null) this.show_fields = obj
+            } else {
+                this.show_fields = obj
             }
 
         },

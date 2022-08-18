@@ -463,7 +463,7 @@ Route::middleware([
         'prefix'     => 'bonus',
         'middleware' => 'auth'
     ], function(){
-        Route::get('get',[BonusController::class,'get']);
+        Route::post('get',[BonusController::class,'get']);
         Route::post('save',[BonusController::class,'save']);
         Route::put('update',[BonusController::class,'update']);
         Route::delete('delete',[BonusController::class,'delete']);
