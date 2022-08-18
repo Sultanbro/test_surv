@@ -216,7 +216,7 @@
                 :file-size-limit="0"
                 :quality="2"
                 :zoom-speed="20"
-                :initial-image="image"
+                :initial-image="crop_image"
                 :disable-drag-to-move="true"
                 :disable-scroll-to-zoom="true"
                 @new-image-drawn="hasImage = true"
@@ -339,7 +339,7 @@
       <cropper
       ref="mycrop"
       class="cropper"
-      :src="image"
+      :src="my_crop_image"
       :stencil-props="{
         aspectRatio: 12/12
       }"
@@ -369,6 +369,8 @@ export default {
   },
   data() {
     return {
+      my_crop_image: "",
+      crop_image: "",
       hasImage: true,
       canvas_image: new Image(),
       myCanvas: null,
@@ -429,6 +431,13 @@ export default {
     if (this.user.img_url != null) {
       this.image = "/users_img/" + this.user.img_url;
     }
+    console.log(this.user.cropped_img_url);
+    if(this.user.cropped_img_url != null){
+      this.crop_image = "/cropped_users_img/" + this.user.cropped_img_url;
+    }
+    else{
+      this.crop_image = "/users_img/" + this.user.img_url;
+    }
     console.log(this.$bvModal);
   },
   methods: {
@@ -461,37 +470,25 @@ export default {
 
       });
 
-
-      /*const formData = new FormData();
-             formData.append("file", file, this.user.img_url);
-            axios.post("/profile/upload/image/profile/", formData)
-                .then(function (res) {
-                  $(".img_url_sm").html(res.data.img);
-                })
-                .catch(function (err) {
-                  console.log(err, "error");
-                });*/
+      this.saveCropped();
     },
     chooseProfileImage(){
-      axios.post("/getnewimage", {id : this.user.id}).then( (response) => {
+      //console.log(this.myCroppa);
+      this.my_crop_image = this.myCroppa.canvas.toDataURL();
+      /*axios.post("/getnewimage", {id : this.user.id}).then( (response) => {
         this.image = "/users_img/" + response.data;
-      });
+      });*/
       this.showChooseProfileModal = true;
     },
     saveCropped() {
-
-
       this.myCroppa.generateBlob(
         (blob) => {
             let loader = this.$loading.show();
             const formData = new FormData();
              formData.append("file", blob);
             axios
-                .post("/profile/upload/image/profile/", formData)
+                .post("/profile/save-cropped-image", formData)
                 .then(function (res) {
-                  $(".img_url_sm").html(res.data.img);
-                  $(".img_url_lg").html(res.data.img);
-                  console.log(res.data.img);
                   loader.hide();
                 })
                 .catch(function (err) {
