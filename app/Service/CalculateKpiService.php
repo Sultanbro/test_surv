@@ -69,7 +69,7 @@ class CalculateKpiService
      * method 
      */
     private function avg(array $data) : float
-    { 
+    {
         if($data['records_count'] > 0) {
             $avg = $data['total_fact'] / $data['records_count'];
             $result =  $avg / ((float)$data['daily_plan']) * 100;

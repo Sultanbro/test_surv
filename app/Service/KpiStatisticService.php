@@ -101,17 +101,20 @@ class KpiStatisticService
                 'user_stats.activity_id',
                 'users.full_time',
                 'users.working_day_id'
-            )
-            ->get()->toArray();
+            )->get()->toArray();
 
-        $kpiIds     = User::query()->findOrFail($userId)->kpis()->pluck('id')->toArray();
-
-        $userPlans  = KpiItem::query()->whereIn('kpi_id', $kpiIds)->get(['activity_id', 'plan', 'kpi_id'])->toArray();
+        $kpItems = Kpi::query()
+            ->join('kpi_items', 'kpis.id', '=', 'kpi_items.kpi_id')
+            ->where([
+            ['targetable_id', '=', $userId],
+            ['targetable_type', '=', 'App\User']
+        ])->get()->toArray();
 
         $statistics = [];
+
         foreach ($userStats as $userStat)
         {
-            foreach ($userPlans as $userPlan)
+            foreach ($kpItems as $userPlan)
             {
                 if ($userStat['activity_id'] == $userPlan['activity_id']){
                     $workdays = $userStat['working_day_id'] != 1 ? [6,0] : [0];
@@ -123,7 +126,12 @@ class KpiStatisticService
                         'is_user_full_time'         => $userStat['full_time'],
                         'workdays'                  => workdays(date('Y'), date('m'), $workdays),
                         'days_from_user_applied'    => 0,
-                        'records_count'             => $this->getRecordsCount($date, $userId)
+                        'records_count'             => $this->getRecordsCount($date, $userId),
+                        'lower_limit'               => $userPlan['lower_limit'],
+                        'upper_limit'               => $userPlan['upper_limit'],
+                        'share'                     => $userPlan['share'],
+                        'completed_80'              => $userPlan['completed_80'],
+                        'completed_100'             => $userPlan['completed_100']
                     ];
                 }
             }
@@ -146,7 +154,15 @@ class KpiStatisticService
 
         foreach ($statistics as $index => $statistic)
         {
-            $statistics[$index]['percent'] = $calculateKpi->getCompletePercent($statistic, $method);
+            $statistics[$index]['percent']    = $calculateKpi->getCompletePercent($statistic, $method);
+            $statistics[$index]['premiumSum'] = $this->sumOfActivity(
+                $statistic['lower_limit'],
+                $statistic['upper_limit'],
+                $calculateKpi->getCompletePercent($statistic, $method),
+                $statistic['share'],
+                $statistic['completed_80'],
+                $statistic['completed_100']
+            );
         }
 
         return $statistics;
@@ -195,5 +211,46 @@ class KpiStatisticService
         return UserStat::query()->where('user_id', $userId)->when(!empty($date), function ($kpi) use ($date) {
             $kpi->whereYear('created_at', $date['year'])->whereMonth('created_at', $date['month']);
         })->count();
+    }
+
+    /**
+     * @param int $lower_limit
+     * @param int $upper_limit
+     * @param float $completed_percent
+     * @param int $share
+     * @param float $completed_80
+     * @param float $completed_100
+     * @return float|int
+     */
+    private function sumOfActivity(
+        int $lower_limit,
+        int $upper_limit,
+        float $completed_percent,
+        int $share,
+        float $completed_80,
+        float $completed_100): float|int
+    {
+        $result = 0;
+        $completed_percent = 80;
+        $lower_limit = $lower_limit / 100;
+        $upper_limit = $upper_limit / 100;
+        $completed_percent = $completed_percent / 100;
+        $share = $share / 100;
+
+        if($completed_percent > $lower_limit) {
+            if ($completed_percent < $upper_limit) {
+                $result = $completed_80 * $share * ($completed_percent - $lower_limit) * $upper_limit / ($upper_limit - $lower_limit);
+            } else {
+                $result = $completed_100 * $share * $completed_percent;
+            }
+        } else {
+            $result = 0;
+        }
+
+
+        if ($result < 0) {
+            $result = 0;
+        }
+        return $result;
     }
 }
