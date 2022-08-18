@@ -25,7 +25,7 @@ class BonusService
     public function get(int $id): array
     {
         return [
-            'kpis'       => Bonus::query()->findOrFail($id),
+            'bonuses'       => Bonus::query()->findOrFail($id),
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
@@ -40,7 +40,7 @@ class BonusService
         if($filters !== null) {} 
         
         return [
-            'kpis'       => Bonus::with('kpi_items')->get(),
+            'bonuses'       => Bonus::with('kpi_items')->get(),
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
