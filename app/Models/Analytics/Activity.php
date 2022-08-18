@@ -50,7 +50,7 @@ class Activity extends Model
     const METHOD_SUM_NOT_MORE = 3; // сумма не более
     const METHOD_AVG_NOT_MORE = 4; // среднее не более. обратное для UNIT_PERCENTS
     const METHOD_SUM_NOT_LESS = 5; // сумма не менее
-    const METHOD_AVG_NOT_LESS = 5; // сумма не более
+    const METHOD_AVG_NOT_LESS = 6; // сумма не более
 
     /**
      * Views

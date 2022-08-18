@@ -38,7 +38,7 @@ class BonusTest extends TestCase
 
     public function test_save_bonus()
     {
-        $this->withoutExceptionHandling();
+        $this->withoutExceptionHandling(); 
         $this->withoutMiddleware();
         $faker = Faker::create();
 

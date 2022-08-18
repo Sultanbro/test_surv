@@ -2,13 +2,13 @@
 
 namespace App\Listeners;
 
-use App\Events\BonusUpdated;
-use App\Models\Kpi\Bonus;
+use App\Events\ActivityUpdated;
+use App\Models\Analytics\Activity;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
 
-class BonusUpdatedListener
+class ActivityUpdatedListener
 {
     /**
      * Create the event listener.
@@ -26,26 +26,28 @@ class BonusUpdatedListener
      * @param  TrackKpiUpdatesEvent  $event
      * @return void
      */
-    public function handle(BonusUpdated $event)
+    public function handle(ActivityUpdated $event)
     {
-        $item = Bonus::query()->findOrFail($event->bonus_id);
+        $item = Activity::query()->findOrFail($event->activity_id);
 
         DB::table('histories')->insert([
-            'reference_table'   => 'App\Models\Kpi\Bonus',
+            'reference_table'   => 'App\Models\Analytics\Activity',
             'reference_id'      => $item->id,
-            'actor_id'          => 5,
+            'actor_id'          => auth()->id() ?? 5,
             'payload'           => json_encode([
-                'title'  => $item->title ?? null,
-                'sum' => $item->sum ?? null,
+                'name'  => $item->name ?? null,
                 'group_id'   => $item->group_id ?? null,
-                'activity_id'   => $item->activity_id ?? null,
                 'unit'        => $item->unit ?? null,
-                'quantity'        => $item->quantity ?? null,
-                'daypart'        => $item->daypart ?? null,
-                'text'        => $item->text ?? null,
+                'share' => $item->share ?? null,
+                'daily_plan'   => $item->daily_plan ?? null,
+                'method'        => $item->method ?? null,
+                'view'        => $item->view ?? null,
+                'source'        => $item->source ?? null,
+                'weekdays'        => $item->source ?? null,
             ]),
             'created_at'         => now(),
             'updated_at'         => now()
         ]);
+
     }
 }

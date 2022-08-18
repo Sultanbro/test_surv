@@ -1,6 +1,23 @@
 <template>
-<div class="stats">
-    <div class="p-3">Статистика</div>   
+<div class="stats p-3">
+     <table class="j-table">
+        <thead>
+            <tr class="table-heading">
+                
+                <th class="first-column">
+                    <i class="fa fa-cogs" @click="adjustFields"></i>
+                </th>
+
+                <th>Кому</th>
+                <th>Процент выполнения</th>
+                <th>Заработано</th>
+                <th>???</th>
+
+                <th>Действия</th>
+
+            </tr>
+        </thead>
+    </table>
 </div>
 </template>
 
@@ -25,6 +42,9 @@ export default {
        // this.fetchData()
     },
     methods: {
+        adjustFields() {
+
+        },
 
         fetchData() {
             let loader = this.$loading.show();
