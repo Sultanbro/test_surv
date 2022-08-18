@@ -2509,6 +2509,54 @@ class UserController extends Controller
 
 
     }
+
+    public function uploadCroppedImageProfile(Request $request){
+
+
+        $user = User::withTrashed()->find(auth()->user()->getAuthIdentifier());
+
+
+
+        if ($user->cropped_img_url){
+            $filename = "cropped_users_img/".$user->cropped_img_url;
+            if (file_exists($filename)) {
+                unlink(public_path('cropped_users_img/'.$user->cropped_img_url));
+            }
+        }
+
+
+
+
+        if ($request->file == "null" || $request->file == 'undefined'){
+            $user->cropped_img_url = null;
+            $user->save();
+
+            $img = '<img src="'.url('/cropped_users_img').'/'.'noavatar.png'.'" alt="avatar" />';
+
+            return response(['img'=>$img,'filename'=>'noavatar.png','type'=>0]);
+
+        }else{
+
+            $request->validate([
+                'file' => 'required|mimes:jpg,jpeg,png'
+            ]);
+
+
+
+            $upload_path = public_path('cropped_users_img/');
+            $generated_new_name = time() . '.' .'png';
+            $request->file->move($upload_path, $generated_new_name);
+            $user->cropped_img_url = $generated_new_name;
+            $user->save();
+
+            $img = '<img src="'.url('/cropped_users_img/').'/'.$generated_new_name.'" alt="avatar" />';
+            return response(['img'=>$img,'filename'=>$generated_new_name,'type'=>1]);
+        }
+
+
+
+    }
+
     public function getProfileImage(Request $request){
         $user = User::find($request['id']);
         $filename = $user->img_url;
