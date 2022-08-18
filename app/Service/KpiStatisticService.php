@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Models\Analytics\UserStat;
 use App\Models\Kpi\Kpi;
 use App\Models\Kpi\KpiItem;
 use App\ProfileGroup;
@@ -90,16 +91,18 @@ class KpiStatisticService
      */
     private function getUserStatistics(int $userId, $date): array
     {
-
-        $userStats  = User::query()
+        $userStats = User::query()
             ->join('user_stats', 'users.id', '=', 'user_stats.user_id')
             ->where('users.id', $userId)
-            ->get([
+            ->groupByRaw('MONTH(user_stats.created_at), user_stats.user_id, user_stats.activity_id, users.full_time, users.working_day_id')
+            ->select(
+                DB::raw('sum(user_stats.value) as total_fact'),
+                'user_stats.user_id',
                 'user_stats.activity_id',
-                'user_stats.value',
                 'users.full_time',
                 'users.working_day_id'
-            ])->toArray();
+            )
+            ->get()->toArray();
 
         $kpiIds     = User::query()->findOrFail($userId)->kpis()->pluck('id')->toArray();
 
@@ -116,7 +119,7 @@ class KpiStatisticService
                         'kpi_id'                    => $userPlan['kpi_id'],
                         'activity_id'               => $userStat['activity_id'],
                         'daily_plan'                => $userPlan['plan'],
-                        'total_fact'                => $userStat['value'],
+                        'total_fact'                => $userStat['total_fact'],
                         'is_user_full_time'         => $userStat['full_time'],
                         'workdays'                  => workdays(date('Y'), date('m'), $workdays),
                         'days_from_user_applied'    => 0,
@@ -182,11 +185,14 @@ class KpiStatisticService
         ])->get()->toArray();
     }
 
-    private function getRecordsCount(array $date, int $userId)
+    /**
+     * @param array $date
+     * @param int $userId
+     * @return int
+     */
+    private function getRecordsCount(array $date, int $userId): int
     {
-        $user = User::query()->findOrFail($userId);
-
-        return $user->kpis()->when(!empty($date), function ($kpi) use ($date) {
+        return UserStat::query()->where('user_id', $userId)->when(!empty($date), function ($kpi) use ($date) {
             $kpi->whereYear('created_at', $date['year'])->whereMonth('created_at', $date['month']);
         })->count();
     }

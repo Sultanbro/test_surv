@@ -41,12 +41,12 @@ class CalculateKpiService
         }
         
         if($data['days_from_user_applied'] != 0) { // zero means user applied before this month
-            $plan = $daily_plan * $data['days_from_user_applied'] * 100;
+            $plan = $daily_plan * $data['days_from_user_applied'];
         } else {
-            $plan = $daily_plan * $data['workdays'] * 100;
-        } 
+            $plan = $daily_plan * $data['workdays'];
+        }
 
-        return $plan != 0 ? round($data['total_fact'] / $plan * 100, 2) : 0.00;
+        return $plan != 0 ? round($data['total_fact'] / $plan, 2) * 100 : 0.00;
     }
 
     /**
