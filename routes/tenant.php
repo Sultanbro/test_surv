@@ -218,7 +218,8 @@ Route::middleware([
     Route::post('/cabinet/save', [CabinetController::class, 'save']);
 
     ///Настройка профайл
-    Route::post('/profile/upload/image/profile/', [UserController::class, 'uploadImageProfile']); /// загрузка аватарки vue внутри profile
+    Route::post('/profile/save-cropped-image', [UserController::class, 'uploadCroppedImageProfile']); /// загрузка аватарки vue внутри profile
+    Route::post('/profile/upload/image/profile/', [UserController::class, 'uploadImageProfile']); /// загрузка обрезаной аватарки vue внутри profile
     Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
     Route::any('/profile/edit/user/cart/', [UserController::class, 'editUserProfile']); ///profile save name,last_name,date ///profile save name,last_name,date
     Route::post('/profile/remove/card/', [UserController::class, 'removeCardProfile']); ///удаление карты индивидуально
@@ -463,7 +464,7 @@ Route::middleware([
         'prefix'     => 'bonus',
         'middleware' => 'auth'
     ], function(){
-        Route::get('get',[BonusController::class,'get']);
+        Route::post('get',[BonusController::class,'get']);
         Route::post('save',[BonusController::class,'save']);
         Route::put('update',[BonusController::class,'update']);
         Route::delete('delete',[BonusController::class,'delete']);

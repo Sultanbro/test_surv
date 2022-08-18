@@ -6,10 +6,15 @@ use App\Events\TrackQuartalPremiumEvent;
 use App\Http\Requests\QuartalPremiumSaveRequest;
 use App\Http\Requests\QuartalPremiumUpdateRequest;
 use App\Models\QuartalPremium;
-use App\Traits\KpiHelperTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use App\Models\Analytics\Activity;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\ProfileGroup;
+use App\Traits\KpiHelperTrait;
 
 class QuartalPremiumService
 {
@@ -28,6 +33,20 @@ class QuartalPremiumService
         }catch (\DomainException $exception){
             throw new \DomainException($exception);
         }
+    }
+
+    /**
+     * вытащить все квартальные премии
+     */
+    public function fetch($filters): array
+    {   
+        if($filters !== null) {} 
+        
+        return [
+            'items'       => QuartalPremium::get(),
+            'activities' => Activity::get(),
+            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+        ];
     }
 
     /**

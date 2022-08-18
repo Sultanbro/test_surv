@@ -19,7 +19,7 @@ use App\Position;
 use App\Models\Analytics\Activity;
 use App\Service\GroupUserService;
 
-class KpiController extends Controller
+class BonusController extends Controller
 {
     protected $bonusService;
 

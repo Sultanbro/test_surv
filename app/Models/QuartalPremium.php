@@ -21,6 +21,7 @@ class QuartalPremium extends Model
         'plan',
         'from',
         'to',
+        'sum',
         'created_by',
         'updated_by',
     ];
