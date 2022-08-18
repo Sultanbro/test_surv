@@ -568,7 +568,7 @@ class CheckListController extends Controller
     public function saveChecklist(Request $request){
         foreach($request['checklists'] as $checklist){
             $check = Checkedtask::find($checklist['id']);
-            $check->checked = $checklist['checked'] == 1 ? 'true' : 'false';
+            $check->checked = $checklist['checked'] == 'true' ? 'true' : 'false';
             $check->save();
         }
     }
