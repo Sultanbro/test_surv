@@ -1,9 +1,6 @@
 <?php
 
-use Database\Seeders\KpiItemSeeder;
-use Database\Seeders\KpiSeeder;
 use Illuminate\Database\Seeder;
-
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,9 +11,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-         $this->call([
-             KpiSeeder::class,
-             KpiItemSeeder::class
-         ]);
+        $this->call([
+            KpiSeeder::class,
+            KpiItemSeeder::class,
+            QuartalPremiumSeeder::class,
+            BonusSeeder::class,
+            ActivitySeeder::class,
+        ]);
     }
 }

@@ -33,19 +33,6 @@
 
 </div>
 <div class="chat noscrollbar">
-    @if(auth()->user()->id == 13865) 
-
-    
-    <div id="dance" style="display:none">
-    @for($i = 1;$i<=30;$i++)
-    
-        <div class="btn-rm" style="filter:hue-rotate({{ $i * 157 }}deg);overflow:hidden;" >
-            <img src="/users_img/{{ auth()->user()->img_url }}" alt="avatar" style="animation: 1.5s {{ $i / 5  }}s bell ease infinite;position:absolute;width:80px;height:140px;left:0" >
-        </div>
-    
-    @endfor
-    </div>
-    @endif
-
+    <chat-app />
 </div>
 </aside>

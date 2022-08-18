@@ -15,7 +15,7 @@ use App\QualityRecordMonthlyStat;
 use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Analytics\IndividualKpi;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 
 class UserStat extends Model
 {

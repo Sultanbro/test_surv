@@ -8,7 +8,7 @@
             class="selected-item"
             :class="'value' + value.type">
             {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i)" v-if="one_choice_made"></i>
+            <i class="fa fa-times" @click.stop="removeValue(i)" v-if="!one_choice_made"></i>
         </div>
     </div>
     
@@ -91,7 +91,7 @@ export default {
         one_choice: {
             type: Boolean,
             default: false
-        }
+        },
     },
     data() {
         return {
@@ -107,6 +107,8 @@ export default {
         };
     },
     created() {
+        console.log(this.values)
+        console.log(this.values.length)
         if(this.one_choice && this.values.length > 0) this.one_choice_made = true; 
         this.checkSelectedAll();  
     },
@@ -135,10 +137,19 @@ export default {
         },
 
         toggleShow() {
+ 
+
+            if(this.one_choice_made) {
+                return;
+            }
+             
             this.show = !this.show;
+
+
             if(this.first_time) {
                 this.fetch();
             }
+            
             
             this.$nextTick(() => {
                 if(this.$refs.search !== undefined) this.$refs.search.focus();
@@ -163,18 +174,23 @@ export default {
             if(this.single) this.show = false;
             if(this.single && this.values.length > 0) {
                 return;
-            };
+            }; 
+
+            
             if(this.selected_all) return;
 
             let item = this.filtered_options[index];
 
             if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
 
-                this.values.push({
+                let value = {
                     name: item.name,
                     id: item.id,
                     type: item.type
-                });
+                };
+
+                this.$emit('choose', value);
+                this.values.push(value);
 
                 item.selected = true
             }
@@ -226,7 +242,7 @@ export default {
                 .then((response) => {
 
                     this.options = response.data.options;
-
+                    this.first_time = false;
                     this.filterType();
                     this.addSelectedAttr();
                 })

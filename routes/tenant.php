@@ -63,7 +63,9 @@ use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\CallibroController;
-
+use Eddir\Messenger\Http\Controllers\ChatsController;
+use Eddir\Messenger\Http\Controllers\MessagesController;
+use Eddir\Messenger\Http\Controllers\Api\MessagesController as ApiMessagesController;
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -372,6 +374,8 @@ Route::middleware([
         Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
     });
 
+    Route::get('/bitrix/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
+
     Route::get('/timetracking/top', [TopController::class, 'index']);
     Route::post('/timetracking/top', [TopController::class, 'fetch']);
     Route::post('/timetracking/top/save_top_value', [TopController::class, 'saveTopValue']);
@@ -461,7 +465,7 @@ Route::middleware([
     ], function(){
         Route::get('get',[BonusController::class,'get']);
         Route::post('save',[BonusController::class,'save']);
-        Route::post('update',[BonusController::class,'update']);
+        Route::put('update',[BonusController::class,'update']);
         Route::delete('delete',[BonusController::class,'delete']);
     });
 
@@ -470,12 +474,12 @@ Route::middleware([
      */
     Route::group([
         'prefix'     => 'quartal-premium',
-        'middleware' => 'auth'
+//        'middleware' => 'auth'
     ], function(){
         Route::get('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
         Route::post('save',[QuartalPremiumController::class,'save'])->name('quartal-premium.save');
-        Route::post('update',[QuartalPremiumController::class,'update'])->name('quartal-premium.update');
-        Route::delete('delete',[QuartalPremiumController::class,'delete']);
+        Route::put('update',[QuartalPremiumController::class,'update'])->name('quartal-premium.update');
+        Route::delete('delete',[QuartalPremiumController::class,'destroy']);
     });
 
     /**
@@ -493,14 +497,15 @@ Route::middleware([
      * Редактирование показателей
      */
     Route::group([
-        'prefix'     => 'indicators',
+        'prefix'     => 'activities',
+        'as'         => 'activities.',
         'middleware' => 'superuser'
     ], function(){
-        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('indicator.all');
-        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('indicator.one');
-        Route::post('save',[IndicatorController::class,'save']);
-        Route::post('update',[IndicatorController::class,'update']);
-        Route::delete('delete',[IndicatorController::class,'delete']);
+        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('all');
+        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('one');
+        Route::post('save',[IndicatorController::class,'save'])->name('save');
+        Route::post('update',[IndicatorController::class,'update'])->name('update');
+        Route::delete('delete',[IndicatorController::class,'delete'])->name('delete');
     });
    
 
@@ -598,9 +603,104 @@ Route::middleware([
         'prefix'    => 'kpi',
         'as'        => 'kpi.'
     ], function (){
-        Route::get('/get', [KpisController::class, 'getKpis'])->name('get');
+        Route::get('/', [KpisController::class, 'index'])->name('index');
+        Route::post('/get', [KpisController::class, 'getKpis'])->name('get');
         Route::post('/save', [KpisController::class, 'save'])->name('save');
         Route::put('/update', [KpisController::class, 'update'])->name('update');
         Route::delete('/delete', [KpisController::class, 'delete'])->name('delete');
+    });
+
+
+    Route::any('/getnewimage',[UserController::class,'getProfileImage']);
+
+    Route::group([
+        'prefix'   => 'messenger/api',
+    ], function() {
+
+        /**
+         * Authentication for pusher private channels
+         */
+        Route::post('/chat/auth', [ApiMessagesController::class, 'pusherAuth'])->name('api.pusher.auth');
+
+        /**
+         * Get chats list
+         */
+        Route::get('/v2/chats', [ChatsController::class, 'fetchChats'])->name('api.chats.fetch');
+
+        /**
+         * Get users list
+         */
+        Route::get('/v2/users', [ChatsController::class, 'fetchUsers'])->name('api.users.fetch');
+
+        /**
+         * Search chat by name
+         */
+        Route::get('/v2/search', [ChatsController::class, 'search'])->name('api.chats.search');
+
+        /**
+         * Get chat messages
+         */
+        Route::get('/v2/chat/{chat_id}/messages', [MessagesController::class, 'fetchMessages'])->name('api.messages.fetch');
+
+        /**
+         * Get chat info
+         */
+        Route::get('/v2/chat/{chat_id}', [ChatsController::class, 'fetchChagetChatts'])->name('api.v2.getChat');
+
+        /**
+         * Send message
+         */
+        Route::post('/v2/chat/{chat_id}/messages', [MessagesController::class, 'sendMessage'])->name('api.v2.sendMessage');
+
+        /**
+         * Edit message. Message id should be integer
+         */
+        Route::post('/v2/message/{message_id}', [MessagesController::class, 'editMessage'])->name('api.v2.editMessage');
+
+        /**
+         * Delete message
+         */
+        Route::delete('/v2/message/{message_id}', [MessagesController::class, 'deleteMessage'])->name('api.v2.deleteMessage');
+
+        /**
+         * Pin message
+         */
+        Route::post('/v2/message/{message_id}/pin', [MessagesController::class, 'pinMessage'])->name('api.v2.pinMessage');
+
+        /**
+         * Unpin message
+         */
+        Route::delete('/v2/message/{message_id}/pin', [MessagesController::class, 'unpinMessage'])->name('api.v2.unpinMessage');
+
+        /**
+         * Create chat
+         */
+        Route::post('/v2/chat', [ChatsController::class, 'createChat'])->name('api.v2.createChat');
+
+        /**
+         * Remove chat
+         */
+        Route::delete('/v2/chat/{chat_id}', [ChatsController::class, 'removeChat'])->name('api.v2.removeChat');
+
+        /**
+         * Leave chat
+         */
+        Route::post('/v2/chat/{chat_id}/leave', [ChatsController::class, 'leaveChat'])->name('api.v2.leaveChat');
+
+        /**
+         * Add user to chat
+         */
+        Route::post('/v2/chat/{chat_id}/addUser', [ChatsController::class, 'addUser'])->name('api.v2.addUser');
+
+        /**
+         * Remove user from chat
+         */
+        Route::post('/v2/chat/{chat_id}/removeUser/{user_id}', [ChatsController::class, 'removeUser'])->name('api.v2.removeUser');
+
+        /**
+         * Set messages as read
+         */
+        Route::post('/v2/messages/read', [MessagesController::class, 'setMessagesAsRead'])->name('api.v2.setMessagesAsRead');
+
     });
 });

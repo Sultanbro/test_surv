@@ -161,11 +161,13 @@ class CheckListController extends Controller
     }
 
     public function editSaveCheck(Request $request){
-        
+
         Task::destroy($request['deleted_tasks']);
         Checkedtask::whereIn('task_id',$request['deleted_tasks'])->where('created_date',Carbon::now()->toDateString())->delete();
 
         $editedChecklist = Checklist::find($request['check_id']);
+        $editedChecklist->show_count = $request['countView'];
+        $editedChecklist->save();
         $users = $editedChecklist->users;
         if(!isset($request['allValueArray'][0]['id'])){
             foreach ($request['arr_check_input'] as $task){
@@ -173,9 +175,11 @@ class CheckListController extends Controller
                     'id' => isset($task['id']) ? $task['id'] : 0
                 ],
                 [
+
                     'task' => $task['task'],
                     'checklist_id' => $editedChecklist->id
                 ]);
+                Checkedtask::where('task_id',$task->id)->where('created_date',Carbon::now()->toDateString())->delete();
                 foreach($users as $user){
                     $task->checkedtasks()->updateOrCreate([ 
                         'task_id' => $task->id,
@@ -496,7 +500,9 @@ class CheckListController extends Controller
     public function getTasks(Request $request){
         $checklists = Checklist::whereIn('id',$request['checklist_id'])->get();
         $tasks = [];
+        $chow_counts = [];
         foreach($checklists as $checklist){
+            $show_counts[] = $checklist->show_count;
             $task = Task::where('checklist_id',$checklist->id)->with('checkedtasks')->get();
             foreach($task as $t){
                 if(sizeof($t->checkedtasks) == 0){
@@ -511,13 +517,13 @@ class CheckListController extends Controller
             }
             $tasks[$checklist->title] = $task;
         }
-        return $tasks;
+        return [$tasks,$show_counts];
     }
 
     public function saveTasks(Request $request){
         foreach($request['auth_check'] as $task){
             foreach($task as $t){
-                if($t['checkedtasks'][0]['url'] != null && $t['checkedtasks'][0]['checked'] != null){
+                if( ($t['checkedtasks'][0]['url'] != null && $t['checkedtasks'][0]['checked'] == 'true') || ($t['checkedtasks'][0]['url'] != null && $t['checkedtasks'][0]['checked'] != null)){
                     if (filter_var($t['checkedtasks'][0]['url'], FILTER_VALIDATE_URL) === FALSE) {
                         return 3;
                     }
@@ -527,7 +533,7 @@ class CheckListController extends Controller
                         'user_id' => auth()->id(),
                     ],[
                         'url' => $t['checkedtasks'][0]['url'],
-                        'checked' => $t['checkedtasks'][0]['checked'] == 1 ? 'true' : 'false',
+                        'checked' => $t['checkedtasks'][0]['checked'] == 'true' ? 'true' : 'false',
                         'user_id' => auth()->id(),
                     ]); 
                 }else if($t['checkedtasks'][0]['url'] != null){

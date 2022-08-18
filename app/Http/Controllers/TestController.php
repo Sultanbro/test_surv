@@ -25,7 +25,7 @@ use Spatie\Permission\Models\Permission;
 class TestController extends Controller { 
  
 	public function test() {
-	
+		dd(config( 'messenger' ));
 		$a = (new \App\Service\CalculateKpiService)->getCompletePercent([
 			'daily_plan' => 100,
 			'total_fact' => 99,

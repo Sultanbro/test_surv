@@ -19,8 +19,16 @@ use Carbon\Carbon;
 use DB;
 
 class CourseController extends Controller
-{
-    public function index(Request $request)
+{   
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * courses page
+     */
+    public function index()
     {   
         View::share('menu', 'courses');
         View::share('link', 'faq');
@@ -32,6 +40,9 @@ class CourseController extends Controller
         return view('surv.courses');
     }
 
+    /**
+     * upload cover img of course
+     */
     public function uploadImage(Request $request) {
         $course = Course::find($request->course_id);
         if($course) {
@@ -72,6 +83,9 @@ class CourseController extends Controller
         }
     }
     
+    /**
+     * Change all courses order
+     */
     public function saveOrder(Request $request, $id = null)
     {
 
@@ -97,17 +111,15 @@ class CourseController extends Controller
 
     }
     
-        /**
-     * Upload file to S3 and return relative link
+    /**
+     * Upload file to S3 and return relative and temp link
      * @param String $path
      * @param mixed $file
-     * 
-     * @return array 
      * 
      * 'relative' => String
      * 'temp' => String
      */
-    private function uploadFile(String $path, $file)
+    private function uploadFile(String $path, $file) : array
     {
         $disk = \Storage::build([
             'driver' => 's3',
@@ -137,7 +149,9 @@ class CourseController extends Controller
         ];
     }
         
-    
+    /**
+     * get all courses
+     */
     public function get(Request $request)
     {   
 
@@ -152,7 +166,10 @@ class CourseController extends Controller
         ];
     }
 
-    public function save(Request $request)
+    /**
+     * Save Course
+     */
+    public function save(Request $request) : void
     {   
         $course = Course::find($request->course['id']);
 
@@ -165,6 +182,7 @@ class CourseController extends Controller
         // elements of course
         $elements = [];
         $stages = 0; 
+        $bonuses = 0; 
 
         foreach($request->course['elements'] as $index => $item) {
             if($item == null) continue;
@@ -199,6 +217,7 @@ class CourseController extends Controller
             }
         
             $stages += $ci->countItems();
+            $bonuses += $ci->countBonuses();
         }
 
         $elements = collect($elements);
@@ -240,13 +259,18 @@ class CourseController extends Controller
         }   
 
 
-        // save course stages
+        // save course 
         $course->stages = $stages;
+        $course->points = $bonuses;
         $course->save();
 
     }
 
-
+    /**
+     * get Course
+     * 
+     * @return Course
+     */
     public function getItem(Request $request)
     {   
 
@@ -350,13 +374,14 @@ class CourseController extends Controller
    
         foreach ($course->items as $key => $target) {
             if($target->item_model == 'App\\Models\\Books\\Book') {
-                $model = Book::find($target->item_id);
+                $model = Book::withTrashed()->find($target->item_id);
 
                 if($model) {
                     $items[] = [
                         "name" => $model->title . ' - ' . $model->author,
                         "id" => $model->id,
                         "type" => 1,
+                        "deleted" => $model->deleted_at != null ? true : false
                     ];
                 }
             }
@@ -369,18 +394,20 @@ class CourseController extends Controller
                         "name" => $model->title,
                         "id" => $model->id,
                         "type" => 2,
+                        "deleted" => $model->deleted_at != null ? true : false
                     ];
                 }
             }
 
             if($target->item_model == 'App\\KnowBase') {
-                $model = KnowBase::whereNull('parent_id')->find($target->item_id);
+                $model = KnowBase::withTrashed()->whereNull('parent_id')->find($target->item_id);
 
                 if($model) {
                     $items[] = [
                         "name" => $model->title,
                         "id" => $model->id,
                         "type" => 3,
+                        "deleted" => $model->deleted_at != null ? true : false
                     ];
                 }
                 
@@ -399,6 +426,9 @@ class CourseController extends Controller
         ];
     }
 
+    /**
+     * create Course
+     */
     public function create(Request $request)
     {
         return Course::create([
@@ -406,7 +436,10 @@ class CourseController extends Controller
             'user_id' => auth()->id()
         ]);
     }
-
+    
+    /**
+     * delete Course
+     */
     public function delete(Request $request) {
         $course = Course::find($request->id);
 

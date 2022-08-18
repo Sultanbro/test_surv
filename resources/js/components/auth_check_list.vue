@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="auth_check">
         <div @click="toggle()"   class="btn-rm">
             <a class="text-white rounded" >
                 <span class="far fa-address-card text-white "></span>
@@ -31,7 +31,7 @@
                           </div>
 
                           <div style="position: absolute;right: 0px;top: 0px">
-                           <input type="url" style="width: 150%" v-model="val.checkedtasks[0].url" class="form-control form-control-sm" placeholder="url">
+                           <input type="url" style="width: 150%" v-model="val.checkedtasks[0].url" @input="event => val.checkedtasks[0].url >= 0 ? linkIsSet = true : linkIsSet = false" class="form-control form-control-sm" placeholder="url">
                          </div>
                        </div>
 
@@ -40,7 +40,7 @@
 
                     <div class="col-md-12 mt-3">
                         <div class="col-md-6 p-0">
-                            <button @click.prevent="saveChecklist"   title="Сохранить" class="btn btn-primary">
+                            <button @click.prevent="saveChecklist"   title="Сохранить" :disabled="linkIsSet" v-bind:class = " linkIsSet ?'btn btn-danger':'btn btn-primary'">
                                 Выполнить
                             </button>
                         </div>
@@ -71,6 +71,7 @@
         },
         data() {
             return {
+                linkIsSet: true,
                 checked_tasks:[],
                 showAuthUserCheck: false,
                 count:0,
@@ -79,6 +80,7 @@
                 currentTime: 0,
                 notification_time: null,
                 times: 1,
+                show_counts:[],
             };
         },
 
@@ -95,10 +97,16 @@
         }, 
         watch: {
             async currentTime(newValue, oldValue) {
-                if(this.notifictation_time != null){
+                console.log(newValue.getHours()+':'+newValue.getMinutes()+' -- '+ this.notification_time.getHours()+':'+ this.notification_time.getMinutes());
+                 
+                if(this.notification_time != null){
                     if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
                         this.toggle();
-                        this.getNotificationTime(this.times)
+                        if(newValue.getSeconds() == this.notification_time.getSeconds()){
+                            this.getNotificationTime(this.show_counts);
+                        }else{
+                            this.notification_time == null;
+                        }
                     }
                 }
  
@@ -120,15 +128,23 @@
                 axios.post('/checklist/tasks',{
                     checklist_id:ids
                 }).then(response => {
-                    this.auth_check = response.data;
-                    console.log(response.data);
+                    this.auth_check = response.data[0];
+                    this.show_counts = response.data[1];
+
+                    this.getNotificationTime(this.show_counts);
                 })
             },
             getNotificationTime(times){
-                var hours = 9 / times;
+                var maxtimes = 1;
+                times.forEach(val => {
+                    if(maxtimes < val){
+                        maxtimes = val;
+                    }
+                });
+                var hours = 9 / maxtimes;
                 var date = new Date();
                 var now = new Date();
-                for(let i = 0; i < times; i++){
+                for(let i = 0; i < maxtimes; i++){
                     date.setHours((9 + (i * hours)), 0, 0, 0);
                     if(date >= now){
                         this.notification_time = date;
@@ -142,6 +158,9 @@
                 return (a.host && a.host != window.location.host);
             },
             toggle() {
+                if(this.showAuthUserCheck){
+                    this.linkIsSet = true;
+                }
                 this.showAuthUserCheck = !this.showAuthUserCheck
                 // document.getElementById('list-example').classList.toggle("sticky");
             },
@@ -168,12 +187,10 @@
 
                 if (this.sendChecklist){
 
-                    console.log(this.auth_check,'this.auth_check')
                     axios.post('/timetracking/settings/auth/check/user/send', {
                       auth_check:this.auth_check
                     }).then(response => {
 
-                      console.log(response,'response')
                       this.showAuthUserCheck= false
                       this.$toast.success('Успешно выполнено');
 
@@ -220,5 +237,8 @@
 </script>
 
 <style lang="scss">
-
+    .auth_check{
+        position: absolute;
+        z-index: 9999;
+    }
 </style>

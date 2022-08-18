@@ -45,7 +45,7 @@
                         </td>
                         <td class=" position-relative" >
 
-                            <a  v-bind:href="'/timetracking/quality-control?user_id='+arrCheckList.item_id" target="_blank">
+                            <a  v-bind:href="'/timetracking/quality-control'" target="_blank">
                                 <i class="pl-4 fa fa-signal" aria-hidden="true" style="font-size: 20px"></i>
                             </a>
 
@@ -360,7 +360,9 @@
                 console.log(this.editValuesChanged);
                 this.deleted_tasks = [];
                 if(this.editValuesChanged && !this.editMode){
+                    this.showCheckSideBar = false;
 
+                    /*
                     if (confirm('Сохранить изменения?') == true) {
                         console.log('save');
                         this.showCheckSideBar = false;
@@ -369,9 +371,9 @@
                         console.log('do not save');
                         this.showCheckSideBar = false;
                         this.clearSideBar();
-                    }
+                    }*/
                 }else{
-                    this.clearSideBar();
+                    //this.clearSideBar();
                     this.editMode = false;
                 }
                 this.showCheckSideBar = false;

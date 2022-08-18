@@ -100,6 +100,16 @@ class User extends Authenticatable implements Authorizable
         return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'id');
     }
 
+//    public function getCheckList()
+//    {
+//        return $this->hasMany('App\Models\CheckUsers', 'check_users_id', 'id');
+//    }
+
+    public function position()
+    {
+        return $this->belongsTo('App\Position', 'position_id');
+    }
+
     /**
      * Получает пользователя из системных таблицы Битрикса
      */
@@ -810,6 +820,10 @@ class User extends Authenticatable implements Authorizable
         return $this->hasMany('App\Timetracking', 'user_id', 'id');
     }
 
+    /**
+     * Date of apply of user
+     * @return date
+     */
     public function applied_at()
     {
         $user_applied_at = null;

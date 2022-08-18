@@ -16,14 +16,18 @@ use App\User;
 use App\ProfileGroup;
 use App\Position;
 use App\Models\Analytics\Activity;
+use App\Service\GroupUserService;
+
 // use App\Models\Kpi\Kpi;
 
 class KpiController extends Controller
 {
+    protected $kpiService;
 
-    public function __construct()
+    public function __construct(KpiService $kpiService)
     {
-        $this->middleware('auth');
+        $this->kpiService = $kpiService;
+//        $this->middleware('auth');
     }
 
     public function index(Request $request)
@@ -36,9 +40,11 @@ class KpiController extends Controller
         ]);
     }
 
-    public function getKpis(Request $request, KpiService $service)
+    public function getKpis(Request $request)
     {
-        $response = $service->get($request->input('id'));
+       // $response = $kpiService->get($request->input('id'));
+     
+        $response = $this->kpiService->fetch($request->filters);
 
         return response()->json($response);
     }
@@ -50,9 +56,9 @@ class KpiController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function save(KpiSaveRequest $request, KpiService $kpiService): JsonResponse
+    public function save(KpiSaveRequest $request): JsonResponse
     {
-        $response = $kpiService->save($request);
+        $response = $this->kpiService->save($request);
 
         return response()->json($response);
     }
@@ -64,9 +70,9 @@ class KpiController extends Controller
      * @return JsonResponse
      * @throws Exception
      */
-    public function update(KpiUpdateRequest $request, KpiService $kpiService): JsonResponse
+    public function update(KpiUpdateRequest $request): JsonResponse
     {
-        $response = $kpiService->update($request);
+        $response = $this->kpiService->update($request);
 
         return response()->json($response);
     }
@@ -77,9 +83,9 @@ class KpiController extends Controller
      * @param KpiService $kpiService
      * @return JsonResponse
      */
-    public function delete(Request $request, KpiService $kpiService): JsonResponse
+    public function delete(Request $request): JsonResponse
     {
-        $response = $kpiService->delete($request);
+        $response = $this->kpiService->delete($request);
 
         return response()->json($response);
     }

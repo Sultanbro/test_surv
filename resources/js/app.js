@@ -26,6 +26,10 @@ import 'vue-croppa/dist/vue-croppa.css';
 
 Vue.use(Croppa);
 
+// pagination
+import JwPagination from 'jw-vue-pagination';
+Vue.component('jw-pagination', JwPagination);
+
 // Toast
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
@@ -109,8 +113,12 @@ Vue.component('selected-modal-checkList', require('./components/selectedModalChe
 
 Vue.component('ref-linker', require('./components/RefLinker.vue').default); // рефералки
 
+Vue.component('chat-app', require('./components/Chat/ChatApp.vue').default); // рефералки
+
+// import ChatApp from './components/Chat/ChatApp.vue';
+// Vue.use(ChatApp);
 /** 
- * Components
+ * Components 
  */
 Vue.component('upload-files', require('./components/UploadFiles.vue').default); // загрузка файлов
 Vue.component('t-kpi-indicator', require('./components/tables/TableKpiIndicator.vue').default); // ряд активности в таблице KPI
