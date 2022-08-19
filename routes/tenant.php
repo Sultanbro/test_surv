@@ -474,10 +474,10 @@ Route::middleware([
      * Редактирование квартальной премии
      */
     Route::group([
-        'prefix'     => 'quartal-premium',
+        'prefix'     => 'quartal-premiums',
 //        'middleware' => 'auth'
     ], function(){
-        Route::get('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
+        Route::post('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
         Route::post('save',[QuartalPremiumController::class,'save'])->name('quartal-premium.save');
         Route::put('update',[QuartalPremiumController::class,'update'])->name('quartal-premium.update');
         Route::delete('delete',[QuartalPremiumController::class,'destroy']);
@@ -491,7 +491,7 @@ Route::middleware([
         'as'         => 'activities.',
         'middleware' => 'superuser'
     ], function(){
-        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('all');
+        Route::post('/get', [IndicatorController::class, 'getAllIndicators'])->name('all');
         Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('one');
         Route::post('save',[IndicatorController::class,'save'])->name('save');
         Route::post('update',[IndicatorController::class,'update'])->name('update');

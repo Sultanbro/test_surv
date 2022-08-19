@@ -1,5 +1,5 @@
 <template>
-<div class="indicators p-3">
+<div class="activities p-3">
 
     <!-- top line -->
     <div class="d-flex mb-2 mt-2 jcsb aifs">
@@ -162,7 +162,7 @@ export default {
     watch: {
         show_fields: {
             handler: function (val) {
-                localStorage.indicators_show_fields = JSON.stringify(val);
+                localStorage.activities_show_fields = JSON.stringify(val);
                 this.prepareFields();
             },
             deep: true
@@ -226,7 +226,7 @@ export default {
         fetch(filter = null) {
             let loader = this.$loading.show();
 
-            axios.post('/indicators/get', {
+            axios.post('/activities/get', {
                 filters: filter 
             }).then(response => {
                 
@@ -244,8 +244,8 @@ export default {
 
         setDefaultShowFields() {
         
-            if(localStorage.indicators_show_fields) {
-                this.show_fields = JSON.parse(localStorage.getItem('indicators_show_fields'));
+            if(localStorage.activities_show_fields) {
+                this.show_fields = JSON.parse(localStorage.getItem('activities_show_fields'));
             } else {
                 this.show_fields = { // Какие поля показывать
                     name: true,
@@ -437,14 +437,14 @@ export default {
             let fields = {...item};
  
             let req = this.items[i].id == 0 
-                ? axios.post('/indicators/' + method, fields)
-                : axios.put('/indicators/' + method, fields);
+                ? axios.post('/activities/' + method, fields)
+                : axios.put('/activities/' + method, fields);
 
             req.then(response => {
                 
-                let indicator = response.data.indicator;
+                let activity = response.data.activity;
                 
-                item.id = indicator.id;
+                item.id = activity.id;
 
                 this.$toast.info('Квартальная премия Сохранена!');
                 loader.hide()
@@ -468,7 +468,7 @@ export default {
                 return;
             }
 
-            axios.delete('/indicators/delete', {
+            axios.delete('/activities/delete', {
                 id: item.id
             }).then(response => {
 

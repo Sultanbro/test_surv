@@ -302,7 +302,7 @@ export default {
         },
 
         setDefaultShowFields() {
-            obj = { // Какие поля показывать
+            let obj = { // Какие поля показывать
                     target: true,
                     title: true,
                     sum: true,

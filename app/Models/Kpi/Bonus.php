@@ -23,19 +23,7 @@ class Bonus extends Model
 
     public $timestamps = true;
 
-    /**
-     * Unit 
-     */
-    CONST FOR_ONE = 'one';
-    CONST FOR_ALL = 'all';
-    CONST FOR_FIRST = 'first';
-
-    /**
-     * Daypart
-     */
-    CONST FULL_DAY = 0;
-    CONST FIRST_HALF = 1;
-    CONST SECOND_HALF = 2;
+    protected $appends = ['target'];
 
     protected $fillable = [
         'targetable_id',
@@ -51,8 +39,48 @@ class Bonus extends Model
         'created_by',
         'updated_by',
     ];
-
     
+    /**
+     * Unit 
+     */
+    CONST FOR_ONE = 'one';
+    CONST FOR_ALL = 'all';
+    CONST FOR_FIRST = 'first';
+
+    /**
+     * Daypart
+     */
+    CONST FULL_DAY = 0;
+    CONST FIRST_HALF = 1;
+    CONST SECOND_HALF = 2;
+
+    /**
+     * models
+     */
+    const TARGETS = [
+        'App\User' => 1,
+        'App\ProfileGroup' => 2,
+        'App\Position' => 3,
+    ];
+
+
+    /**
+     * Таргет
+     * @return array | null
+     */
+    public function getTargetAttribute() 
+    {
+        $target = $this->targetable;
+        return $target ? [
+            'id' => $this->targetable_id,
+            'name' => $target->name,
+            'type' => self::TARGETS[$this->targetable_type],
+        ] : null;
+    }
+
+    /**
+     * count obtained bonuses of users in group
+     */
     public static function obtained_in_group($group_id, $date) {
         $group = ProfileGroup::find($group_id);
         

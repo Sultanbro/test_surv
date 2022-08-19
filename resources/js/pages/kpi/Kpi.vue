@@ -51,7 +51,7 @@
 
             <template v-for="(item, i) in page_items">
                 <tr :key="i">
-                    <td  @click="item.expanded = !item.expanded" class="pointer">
+                    <td  @click="expand(i)" class="pointer">
                         <div class="d-flex px-2">
                             <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
                             <i class="fa fa-plus mt-1" v-else></i>
@@ -96,12 +96,12 @@
                     </td>
                 </tr>
 
-                <template v-if="item.elements !== undefined && item.elements.length > 0">
+                <template v-if="item.items !== undefined && item.items.length > 0">
                     <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
                         <td :colspan="fields.length + 2">
                             <div class="table__wrapper">
                                 <kpi-items
-                                    :items="item.elements"
+                                    :items="item.items"
                                     :expanded="item.expanded"
                                     :activities="activities"
                                     :groups="groups"
@@ -251,7 +251,7 @@ export default {
     //     let a = Math.floor(Math.random() * 3) + 1
 
     //     for(let i=1;i<=a;i++) {
-    //         el.elements.push({
+    //         el.items.push({
     //             name: 'Активность',
     //             activity_id: 0,
     //             unit: '%',
@@ -276,8 +276,8 @@ export default {
     },
     methods: {
         
-        setTarget(item) {
-
+        expand(i) {
+            this.page_items[i].expanded = !this.page_items[i].expanded
         },
 
         onChangePage(page_items) {
@@ -333,7 +333,7 @@ export default {
         addStatusToItems() {
             this.items.forEach(el => {
 
-                this.elements.forEach(a => {
+                el.items.forEach(a => {
                     a.source = 0
                     a.group_id = 0
                 });
@@ -457,7 +457,7 @@ export default {
                 updated_at: new Date().toISOString().substr(0, 19).replace('T',' '),
                 created_by: 'Али Акпанов',
                 updated_by: 'Али Акпанов',
-                elements: [{
+                items: [{
                     sum: 0,
                     method: 1,
                     name: 'Активность',
@@ -489,7 +489,7 @@ export default {
                 completed_100: item.completed_100,
                 upper_limit: item.upper_limit,
                 lower_limit: item.lower_limit,
-                items: item.elements 
+                items: item.items 
             };
  
             let req = this.items[i].id == 0 
@@ -501,8 +501,8 @@ export default {
                 let kpi = response.data.kpi;
                 
                 item.id = kpi.id;
-                item.elements.forEach((el, index) => {
-                    el.id = kpi.elements[index].id
+                item.items.forEach((el, index) => {
+                    el.id = kpi.items[index].id
                 });
 
                 this.$toast.info('KPI Сохранен!');

@@ -40,7 +40,7 @@ class BonusService
         if($filters !== null) {} 
         
         return [
-            'bonuses'       => Bonus::with('kpi_items')->get(),
+            'bonuses'       => Bonus::get(),
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];

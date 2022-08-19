@@ -276,12 +276,16 @@ export default {
     }, 
 
     created() {
-        this.fetch()
+    
     
         this.setDefaultShowFields()
         this.prepareFields(); 
         this.addStatusToItems(); 
 
+    },
+
+    mounted() {
+        this.fetch()
     },
 
     methods: {

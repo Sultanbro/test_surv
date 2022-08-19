@@ -44,8 +44,10 @@ class KpiService
     {   
         if($filters !== null) {} 
         
+        $kpis = Kpi::with('items')->get();
+
         return [
-            'kpis'       => Kpi::with('kpi_items')->get(),
+            'kpis'       => $kpis,
             'activities' => Activity::get(),
             'groups' => \App\ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];

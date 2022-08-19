@@ -1,21 +1,21 @@
 <template>
 <div class="kpi-pages">
     
-    <b-tabs type="card" :defaultActiveKey="active">
-        <b-tab title="KPI" :key="1" card>
-            <kpi></kpi>
+    <b-tabs type="card" :value="active" @activate-tab="(n,p,e) => active = n">
+        <b-tab title="KPI" :key="0" card >
+            <kpi v-if="active == 0"></kpi>
         </b-tab>
-        <b-tab title="Бонусы" :key="2" card>
-            <bonuses></bonuses>
+        <b-tab title="Бонусы" :key="1" card >
+            <bonuses v-if="active == 1"></bonuses>
         </b-tab>
-        <b-tab title="Квартальная премия" :key="3" card>
-            <quartal-premium></quartal-premium>
+        <b-tab title="Квартальная премия" :key="2" card >
+            <quartal-premium v-if="active == 2"></quartal-premium>
         </b-tab>
-        <b-tab title="Статистика" :key="4" card>
-            <stats></stats>
+        <b-tab title="Статистика" :key="3" card>
+            <stats v-if="active == 3"></stats>
         </b-tab>
-        <b-tab title="Показатели" :key="5" card>
-            <indicators></indicators>
+        <b-tab title="Показатели" :key="4" card>
+            <indicators v-if="active == 4"></indicators>
         </b-tab>
     </b-tabs>
 </div>
@@ -32,7 +32,7 @@ export default {
     },
     data() {
         return {
-            active: 1,
+            active: 0,
         }
     },
 

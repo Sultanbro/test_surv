@@ -30,6 +30,17 @@ class Kpi extends Model
         'updated_at',
     ];
 
+    protected $appends = ['target', 'expanded'];
+
+    /**
+     * models
+     */
+    const TARGETS = [
+        'App\User' => 1,
+        'App\ProfileGroup' => 2,
+        'App\Position' => 3,
+    ];
+
     /**
      * One To Many отношения с kpi_items.
      * У одного kpi могут быть несколько показателей.
@@ -47,5 +58,28 @@ class Kpi extends Model
     public function targetable()
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Таргет
+     * @return array | null
+     */
+    public function getTargetAttribute() 
+    {
+        $target = $this->targetable;
+        return $target ? [
+            'id' => $this->targetable_id,
+            'name' => $target->name,
+            'type' => self::TARGETS[$this->targetable_type],
+        ] : null;
+    }
+
+    /**
+     * Helper for vue
+     * @return array | null
+     */
+    public function getExpandedAttribute() 
+    {
+        return false;
     }
 }
