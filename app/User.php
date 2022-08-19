@@ -3,6 +3,8 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -77,9 +79,21 @@ class User extends Authenticatable implements Authorizable
         'phone_4',
     ];
 
+    /**
+     * @return MorphMany
+     */
+    public function kpis(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Kpi', 'targetable', 'targetable_type');
+    }
 
-
-    //public $remember_token = true;
+    /**
+     * @return HasMany
+     */
+    public function statistics(): HasMany
+    {
+        return $this->hasMany('App\Models\Analytics\UserStat', 'user_id');
+    }
 
     public function getCheckList()
     {
@@ -785,9 +799,12 @@ class User extends Authenticatable implements Authorizable
         return $sum; 
     }
 
-    /**
-     * get active course
-     */
+    public function getActiveCourse()
+    {
+        $c = CourseResult::activeCourse();
+        return $c ? CourseResult::with('course')->find($c->id) : null;
+    }
+
     public function getActiveCourses()
     {
         return CourseResult::activeCourses();
@@ -804,7 +821,7 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
-     * Date of apply of user 
+     * Date of apply of user
      * @return date
      */
     public function applied_at()
@@ -822,6 +839,7 @@ class User extends Authenticatable implements Authorizable
         return $user_applied_at;
     }
 
+    
 
     public function trackHistory()
     {
