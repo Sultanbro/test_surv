@@ -51,88 +51,30 @@
 
             <template v-for="(item, i) in page_items">
                 <tr :key="i">
-                    <td  @click="item.expanded = !item.expanded" class="pointer">
+                    <td  class="pointer">
                         <div class="d-flex px-2">
-                            <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
-                            <i class="fa fa-plus mt-1" v-else></i>
                             <span class="ml-2">{{ i + 1 }}</span>
                         </div>
                     </td>
-                    <td  v-for="(field, f) in fields" :key="f">
+                    <td  v-for="(field, f) in fields" :key="f" @click="openSidebar(i)">
 
                         <div v-if="field.key == 'target'" :class="field.class">
-                            <superselect
-                                v-if="item.target == null"
-                                class="w-full" 
-                                :values="[]" 
-                                :single="true"
-                                @choose="(target) => item.target = target"
-                                :key="i" /> 
-                            <div v-else class="d-flex aic">
-                                <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i> 
-                                <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i> 
-                                <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i> 
-                                <span class="ml-2">{{ item.target.name }}</span>
-                            </div>
+                            <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i> 
+                            <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i> 
+                            <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i> 
+                            <span class="ml-2">{{ item.target.name }}</span>
                         </div>
 
-                        <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
-                           {{ item[field.key] }}
+                        <div v-if="field.key == 'daypart' && dayparts[item[field.key]] != undefined">
+                            {{ dayparts[item[field.key]] }}
                         </div>
 
-                        <div v-else-if="field.key == 'activity_id' && item.source != undefined" :class="field.class">
-                           <div class="d-flex">
-                                <select 
-                                    v-model="item.source"
-                                    class="form-control small"
-                                >
-                                    <option v-for="key in Object.keys(sources)" :key="key"
-                                        :value="key">
-                                        {{ sources[key] }}
-                                    </option>
-                                </select>
-
-                                <select 
-                                    v-if="item.source == 1"
-                                    v-model="item.group_id"
-                                    class="form-control small"
-                                >
-                                    <option value="0" selected>-</option>
-                                    <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
-                                </select>
-
-                                <select 
-                                    v-model="item.activity_id"
-                                    class="form-control small"
-                                >
-                                    <option value="0" selected>-</option>
-                                    <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id"  >{{ activity.name }}</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div v-else-if="field.key == 'unit'" :class="field.class">
-                            <select 
-                                v-model="item.unit"
-                                class="form-control"
-                            >
-                                <option value="0" selected>-</option>
-                                <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
-                            </select>
+                        <div v-if="field.key == 'unit' && units[item[field.key]] != undefined">
+                            {{ units[item[field.key]] }}
                         </div>
 
-                        <div v-else-if="field.key == 'daypart'" :class="field.class">
-                            <select 
-                                v-model="item.unit"
-                                class="form-control"
-                            >
-                                <option value="0" selected>-</option>
-                                <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
-                            </select>
-                        </div>
-
-                        <div v-else :class="field.class">
-                            <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" /> 
+                        <div v-else>
+                            {{ item[field.key] }}
                         </div>
 
                     </td>
@@ -141,7 +83,7 @@
                         <i class="fa fa-trash btn btn-danger p-1" @click="deleteItem(i)"></i>
                     </td>
                 </tr>
-              
+                
             </template>
 
           
@@ -210,6 +152,95 @@
       </div>  
     </b-modal>
 
+
+    <sidebar
+        title="Бонусы"
+        :open="activeItem != null"
+        @close="activeItem == null"
+        width="50%"
+    >
+         <div  class="p-3" v-for="(field, f) in fields" :key="f">
+                        
+                        <div class="mb-2 mt-2">{{ field.name }}</div>
+
+                        <div v-if="field.key == 'target'" :class="field.class">
+                            <superselect
+                                v-if="activeItem.target == null"
+                                class="w-full" 
+                                :values="[]" 
+                                :single="true"
+                                @choose="(target) => activeItem.target = target"
+                                :key="i" /> 
+                            <div v-else class="d-flex aic">
+                                <i class="fa fa-user ml-2" v-if="activeItem.target.type == 1"></i> 
+                                <i class="fa fa-users ml-2" v-if="activeItem.target.type == 2"></i> 
+                                <i class="fa fa-briefcase ml-2" v-if="activeItem.target.type == 3"></i> 
+                                <span class="ml-2">{{ activeItem.target.name }}</span>
+                            </div>
+                        </div>
+
+                        <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
+                            {{ activeItem[field.key] }}
+                        </div>
+
+                        <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined" :class="field.class">
+                           <div class="d-flex">
+                                <select 
+                                    v-model="activeItem.source"
+                                    class="form-control small"
+                                >
+                                    <option v-for="key in Object.keys(sources)" :key="key"
+                                        :value="key">
+                                        {{ sources[key] }}
+                                    </option>
+                                </select>
+
+                                <select 
+                                    v-if="activeItem.source == 1"
+                                    v-model="item.group_id"
+                                    class="form-control small"
+                                >
+                                    <option value="0" selected>-</option>
+                                    <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
+                                </select>
+
+                                <select 
+                                    v-model="activeItem.activity_id"
+                                    class="form-control small"
+                                >
+                                    <option value="0" selected>-</option>
+                                    <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id"  >{{ activity.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div v-else-if="field.key == 'unit'" :class="field.class">
+                            <select 
+                                v-model="activeItem.unit"
+                                class="form-control"
+                            >
+                                <option value="0" selected>-</option>
+                                <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
+                            </select>
+                        </div>
+
+                        <div v-else-if="field.key == 'daypart'" :class="field.class">
+                            <select 
+                                v-model="activeItem.unit"
+                                class="form-control"
+                            >
+                                <option value="0" selected>-</option>
+                                <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                            </select>
+                        </div>
+
+                        <div v-else :class="field.class">
+                            
+                            <input type="text" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
+                        </div>
+
+        </div>
+    </sidebar>
 </div>
 </template>
 
@@ -246,6 +277,7 @@ export default {
     data() {
         return {
             active: 1,
+            activeItem: null,
             show_fields: [],
             fields: [],
             groups: [],
@@ -317,6 +349,10 @@ export default {
                 loader.hide()
                 alert(error)
             });
+        },
+
+        openSidebar(i) {
+            this.activeItem = this.page_items[i]     
         },
 
         setDefaultShowFields() {
@@ -591,6 +627,14 @@ export default {
 
             if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
                 value = 100;
+            }
+        },
+
+        grouped_activities(source, group_id) {
+            if(source == 1 && group_id != undefined) {
+                return this.activities.filter(el => el.source == source && el.group_id == group_id);
+            } else {
+                return this.activities.filter(el => el.source == source);
             }
         }
     },
