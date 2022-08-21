@@ -1,3 +1,84 @@
+$bon-first-column: 80px;
+$bon-last-column: 92px;
+$bon-gradient: linear-gradient(0deg, #353e4b, #254c83);
+$bon-bg-grey: #e8ebef;
+
 .kpi-pages {
     
+    .searcher {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        min-width: 250px;
+    }
+
+    table {
+        td, th {
+            min-width: 125px;
+            padding: 0;
+            height: 1px;
+
+            &:first-child {
+                width: $bon-first-column;
+                min-width: $bon-first-column !important;
+            }
+
+            &:last-child {
+                width: $bon-last-column;
+                min-width: $bon-last-column !important;
+            }
+        }
+
+        
+
+        th {
+            height: 40px;
+            background: $bon-gradient;
+            padding: 10px;
+            color: #fff;
+        }
+
+        .b-table-sticky-column {
+            background: $bon-bg-grey;
+        }
+
+        th.b-table-sticky-column {
+            background: $bon-gradient;
+        }
+
+        textarea,
+        select,
+        input {
+            min-width: 200px;
+            border: none;
+        }
+
+        .text-center {
+            textarea,
+            select,
+            input {
+                text-align: center;
+            }
+        }
+
+        input[type="checkbox"] {
+            min-width: unset !important;
+        }
+
+        .l-2 {
+            left: $bon-first-column;
+        }
+    }
+}
+
+.field {
+    font-weight: 600;
+}
+
+
+.input-sm {
+    padding: 3px 10px;
+}
+
+.w-lg {
+    width: 200px;
 }

@@ -25,6 +25,11 @@ class Bonus extends Model
 
     protected $appends = ['target'];
 
+    protected $casts = [
+        'created_at'  => 'date:d.m.Y H:i',
+        'updated_at'  => 'date:d.m.Y H:i',
+    ];
+
     protected $fillable = [
         'targetable_id',
         'targetable_type',
@@ -77,6 +82,31 @@ class Bonus extends Model
             'type' => self::TARGETS[$this->targetable_type],
         ] : null;
     }
+
+    /**
+     * Get the parent targetable model (user, group, position).
+     */
+    public function targetable()
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * Создатель
+     */
+    public function creator()
+    {
+        return $this->hasOne('App\User', 'id', 'created_by');
+    }
+    
+    /**
+     * Кто изменил в последний раз
+     */
+    public function updater()
+    {
+        return $this->hasOne('App\User', 'id', 'updated_by');
+    }
+
 
     /**
      * count obtained bonuses of users in group

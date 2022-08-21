@@ -900,8 +900,12 @@ class TimetrackingController extends Controller
         }
         
         if($request->user_types == 1) { // Уволенныне
-            $_user_ids = User::onlyTrashed()->whereIn('id', $users_ids)->pluck('id')->toArray();
+        //     $_user_ids = User::onlyTrashed()
+        //    // ->whereIn('id', $users_ids)
+        //     ->pluck('id')
+        //     ->toArray();
             //////////////////////
+            $_user_ids = [];
             $date = $year . '-' . $request->month . '-01';
             $date_for_register = Carbon::parse($date); 
             $date_for_fire = Carbon::parse($date)->startOfMonth();
@@ -921,7 +925,7 @@ class TimetrackingController extends Controller
             
             $_user_ids = DB::table('users')
                 ->whereNotNull('deleted_at')
-                ->whereMonth('deleted_at',$date_for_register->month)
+                ->whereDate('deleted_at', '>=', $date_for_fire)
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $_user_ids)
                 ->where('ud.is_trainee', 0) 

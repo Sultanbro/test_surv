@@ -40,7 +40,7 @@ class BonusService
         if($filters !== null) {} 
         
         return [
-            'bonuses'       => Bonus::get(),
+            'bonuses'    => Bonus::with('creator', 'updater')->get(),
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
@@ -49,12 +49,12 @@ class BonusService
     /**
      * Сохраняем новый бонус.
      */
-    public function save(BonusSaveRequest $request): void
+    public function save(BonusSaveRequest $request): array
     {
         try {
             $model = $this->getModel($request->input('targetable_type'));
 
-            Bonus::query()->create([
+            $bonus = Bonus::create([
                 'targetable_id'     => $request->targetable_id,
                 'targetable_type'   => $model,
                 'title'     => $request->title,
@@ -69,6 +69,10 @@ class BonusService
         } catch (Exception $exception) {
             throw new Exception($exception);
         }
+
+        return [
+            'bonus' => $bonus
+        ];
     }
 
     /**

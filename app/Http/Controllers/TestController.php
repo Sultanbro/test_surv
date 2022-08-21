@@ -19,17 +19,15 @@ use App\KnowBase;
 use App\Models\TestQuestion;
 use App\Models\Books\Book;
 use App\Models\Books\BookSegment;
+use App\Models\Kpi\Bonus;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class TestController extends Controller { 
  
 	public function test() {
-		dd(config( 'messenger' ));
-		$a = (new \App\Service\CalculateKpiService)->getCompletePercent([
-			'daily_plan' => 100,
-			'total_fact' => 99,
-		], 1);
+
+		$a = \App\Models\Anviz\Time::orderBy('CheckTime', 'desc')->whereDate('CheckTime', '2022-08-10')->where('Userid', '14312')->get()->toArray(); 
 		dd($a);
 	}  
 
