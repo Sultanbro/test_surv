@@ -62,6 +62,7 @@ class ActivityService
                 'editable'     => $request->editable,
                 'order'     => $request->order,
                 'weekdays'     => $request->weekdays,
+                'created_by' => auth()->id()
             ]);
 
             return [
@@ -81,10 +82,12 @@ class ActivityService
         try {
 
             $id = $request->id;
+            $all = $request->all();
+            $all['updated_by'] = auth()->id();
 
             event(new ActivityUpdated($id));
 
-            Activity::query()->findOrFail($id)->update($request->all());
+            Activity::query()->findOrFail($id)->update($all);
 
         } catch (Exception $exception){
             Log::error($exception);
