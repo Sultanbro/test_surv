@@ -602,7 +602,8 @@ Route::middleware([
 
     Route::group([
         'prefix'    => 'kpi',
-        'as'        => 'kpi.'
+        'as'        => 'kpi.',
+        'middleware' => 'auth'
     ], function (){
         Route::get('/', [KpisController::class, 'index'])->name('index');
         Route::post('/get', [KpisController::class, 'getKpis'])->name('get');
