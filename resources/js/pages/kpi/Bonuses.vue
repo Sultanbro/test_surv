@@ -49,7 +49,7 @@
         </tr>
 
         <template v-for="(item, i) in page_items">
-            <tr :key="i">
+            <tr>
                 <td class="b-table-sticky-column text-left">
                     <input class="ml-2" type="checkbox" v-model="item.selected" />
                     <span class="ml-2">{{ i + 1 }}</span>
@@ -67,9 +67,9 @@
                             @choose="(target) => item.target = target"
                         /> 
                         <div v-else class="d-flex aic">
-                            <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i> 
-                            <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i> 
-                            <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i> 
+                            <i class="fa fa-user ml-2 color-user" v-if="item.target.type == 1"></i> 
+                            <i class="fa fa-users ml-2 color-group" v-if="item.target.type == 2"></i> 
+                            <i class="fa fa-briefcase ml-2 color-position" v-if="item.target.type == 3"></i> 
                             <span class="ml-2">{{ item.target.name }}</span>
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                                 class="form-control small"
                                 @change="++source_key"
                             >
-                                <option v-for="key in Object.keys(sources)" :key="key"
+                                <option v-for="key in Object.keys(sources)"
                                     :value="key">
                                     {{ sources[key] }}
                                 </option>
@@ -105,10 +105,10 @@
                                 v-if="Number(item.source) == 1"
                                 v-model="item.group_id"
                                 class="form-control small"
-                                :key="source_key"
+                                :key="'c' + source_key"
                             >
                                 <option value="0" selected>-</option>
-                                <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
+                                <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
                             </select>
 
                             <div v-else></div>        
@@ -116,7 +116,7 @@
                             <select 
                                 v-model="item.activity_id"
                                 class="form-control small"
-                                :key="source_key"
+                                :key="'d' + source_key"
                             >
                                 <option value="0" selected>-</option>
                                 <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id"  >{{ activity.name }}</option>
@@ -149,7 +149,7 @@
                 </td>
                 <td>
                      <i
-                        class="fa fa-save btn btn-danger p-1 ml-1"
+                        class="fa fa-save btn btn-success p-1 ml-1"
                         @click="saveItemFromTable(i)"
                     />
                     <i
@@ -167,7 +167,7 @@
 
     <!-- pagination -->
     <jw-pagination
-        class="mt-3"
+        class=""
         :key="paginationKey"
         :items="items"
         :labels="{
@@ -191,13 +191,13 @@
      
         <div class="row">
 
-            <div class="col-md-4 mb-2" v-for="(field, f) in all_fields" :key="f">
+            <div class="col-md-4 mb-2" v-for="(field, f) in all_fields">
                 <b-form-checkbox
                     v-model="show_fields[field.key]"
                     :value="true"
                     :unchecked-value="false"
                 >
-                    Дата изменения
+                    {{ field.name }}
                 </b-form-checkbox>
             </div>
             
@@ -212,22 +212,22 @@
         @close="closeSidebar"
         width="40%"
     >   
-        <div class="p-2">
-            <div class="mb-3" v-for="(field, f) in all_fields" :key="f">
+        <div class="row m-0">
+            <div class="mb-3" v-for="(field, f) in all_fields" :class="field.alter_class">
                         
                         <div class="mb-2 mt-2 field">{{ field.name }}</div>
 
                         <div v-if="field.key == 'target'" class="mr-5">
                             <superselect
-                                v-if="activeItem.target == null"
+                                v-if="activeItem.id == 0"
                                 class="w-full" 
-                                :values="[]" 
+                                :values="activeItem.target == null ? [] : [activeItem.target]" 
                                 :single="true"
                                 @choose="(target) => activeItem.target = target" /> 
                             <div v-else class="d-flex aic">
-                                <i class="fa fa-user ml-2" v-if="activeItem.target.type == 1"></i> 
-                                <i class="fa fa-users ml-2" v-if="activeItem.target.type == 2"></i> 
-                                <i class="fa fa-briefcase ml-2" v-if="activeItem.target.type == 3"></i> 
+                                <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
+                                <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
+                                <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
                                 <span class="ml-2">{{ activeItem.target.name }}</span>
                             </div>
                         </div>
@@ -247,13 +247,13 @@
                       
 
                         <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
-                           <div class="d-flex">
+                            <div class="d-flex">
                                 <select 
                                     v-model="activeItem.source"
-                                    class="form-control small"
+                                    class="form-control small mr-2"
                                     @change="++source_key"
                                 >
-                                    <option v-for="key in Object.keys(sources)" :key="key"
+                                    <option v-for="key in Object.keys(sources)"
                                         :value="key">
                                         {{ sources[key] }}
                                     </option>
@@ -262,16 +262,21 @@
                                 <select 
                                     v-if="Number(activeItem.source) == 1"
                                     v-model="activeItem.group_id"
-                                    class="form-control small"
-                                    :key="source_key"
+                                    class="form-control small mr-2"
+                                    :key="'a' + source_key"
                                 >
                                     <option value="0" selected>-</option>
-                                    <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
+                                    <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
+                                </select>      
+
+                                <select 
+                                    v-model="activeItem.activity_id"
+                                    class="form-control small"
+                                    :key="'b' + source_key"
+                                >
+                                    <option value="0" selected>-</option>
+                                    <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
                                 </select>
-
-                                <div v-else></div>        
-
-                              
                             </div>
                         </div>
                         
@@ -293,7 +298,7 @@
                                 <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
                             </select>
                         </div>
-
+                    
                         <div v-else>
                             <input type="text" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
                         </div>
@@ -301,7 +306,7 @@
             </div>
             <div>
                 <button
-                    class="d-flex aic  btn btn-success" 
+                    class="d-flex aic  btn btn-success ml-3" 
                     @click="saveItem"
                 >
                     <i 
@@ -317,7 +322,8 @@
 </template>
 
 <script>
-import {fields} from "./bonuses.js";
+import {fields, Bonus} from "./bonuses.js";
+import {findModel} from "./helpers.js";
 
 export default {
     name: "Bonuses", 
@@ -392,12 +398,9 @@ export default {
     }, 
 
     created() {
-    
-    
         this.setDefaultShowFields()
         this.prepareFields(); 
         this.addStatusToItems(); 
-
     },
 
     mounted() {
@@ -491,27 +494,10 @@ export default {
         },
 
         addItem() {
-            this.activeItem = {
-                id: 0,
-                target: null,
-                title: '',
-                sum: 0,
-                group_id: 0,
-                activity_id: 1,
-                unit: 'all',
-                quantity: 1,
-                daypart: 0,
-                text: '',
-                created_at: new Date().toISOString().substr(0, 19).replace('T',' '),
-                updated_at: new Date().toISOString().substr(0, 19).replace('T',' '),
-                created_by: 'Вы',
-                updated_by: 'Вы',
-                expanded: false
-            }   
-
+            this.activeItem = Bonus 
             this.showSidebar = true
         },
-        
+
         save(item) {
             let loader = this.$loading.show();
             let method = item.id == 0 ? 'save' : 'update';
@@ -520,28 +506,59 @@ export default {
                 this.$toast.error('Выберите Кому назначить бонус!');
                 return;
             }
-            
-            let fields = {...item};
+
+            let fields = {
+                targetable_id: item.target.id,
+                targetable_type: findModel(item.target.type),
+                ...item
+            };
  
-            let req = this.item.id == 0 
+            let req = item.id == 0 
                 ? axios.post('/bonus/' + method, fields)
                 : axios.put('/bonus/' + method, fields);
 
             req.then(response => {
-                
+                console.log('code')
                 if(method == 'save') {
                     let bonus = response.data.bonus;
                     item.id = bonus.id;
                     this.items.unshift(item);
+                    this.all_items.unshift(item);
                     this.showSidebar = false
                 }
 
                 this.$toast.info('Бонус сохранен');
                 loader.hide()
             }).catch(error => {
+                let m = error;
+                if(error.message == 'Request failed with status code 409') {
+                    m = 'Выберите другую цель "Кому"';
+                }
+                
+                loader.hide()
+                alert(m)
+            });
+        },
+
+        deletee(id, i) {
+            let loader = this.$loading.show();
+            axios.delete('/bonus/delete/' + id).then(response => {
+                this.deleteEvery(id, i)
+                loader.hide()
+            }).catch(error => {
                 loader.hide()
                 alert(error)
             });
+        },
+
+        deleteEvery(id, i) {
+            this.page_items.splice(i) // maybe will be error cause of page_items
+            let a = this.items.findIndex(el => el.id == id)
+            let b = this.all_items.findIndex(el => el.id == id)
+            if(a != -1) this.items.splice(a);
+            if(b != -1) this.all_items.splice(b);
+
+            this.$toast.info('Бонус Удален!');
         },
 
         saveItem() {
@@ -553,7 +570,7 @@ export default {
         },
 
         deleteItem(i) {
-            let loader = this.$loading.show();
+          
             let item = this.page_items[i]
 
             if(!confirm('Вы уверены?')) {
@@ -561,23 +578,11 @@ export default {
             }
 
             if(item.id == 0) {
-                this.items.splice(i) // maybe will be error cause of page_items
-                this.$toast.info('Бонус Удален!');
+                this.deleteEvery(item.id, i);
                 return;
             }
 
-            axios.delete('/bonus/delete', {
-                id: item.id
-            }).then(response => {
-
-                this.page_items.splice(i) // maybe will be error cause of page_items
-
-                this.$toast.info('Бонус Удален!');
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
+            this.deletee(item.id, i);
         },
 
         showStat() {
@@ -633,7 +638,7 @@ export default {
         },
 
         validate(value, field) {
-            value = abs(Number(value));
+            value = Math.abs(Number(value));
             if(isNaN(value) || isFinite(value)) {
                 value = 0;
             }

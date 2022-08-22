@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\ProfileGroup;
+use App\Exceptions\Kpi\TargetDuplicateException;
 
 class BonusService
 {
@@ -25,7 +26,7 @@ class BonusService
     public function get(int $id): array
     {
         return [
-            'bonuses'       => Bonus::query()->findOrFail($id),
+            'bonuses'    => Bonus::query()->findOrFail($id),
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
@@ -51,12 +52,15 @@ class BonusService
      */
     public function save(BonusSaveRequest $request): array
     {
-        try {
-            $model = $this->getModel($request->input('targetable_type'));
+        
+        if($this->hasDuplicate($request)) {
+            throw new TargetDuplicateException();
+        }
 
+        try {
             $bonus = Bonus::create([
                 'targetable_id'     => $request->targetable_id,
-                'targetable_type'   => $model,
+                'targetable_type'   => $request->targetable_type,
                 'title'     => $request->title,
                 'sum'     => $request->sum,
                 'group_id'     => $request->group_id,
@@ -65,6 +69,8 @@ class BonusService
                 'quantity'     => $request->quantity,
                 'daypart'     => $request->daypart,
                 'text'     => $request->text,
+                'created_by' => auth()->id(),
+                'updated_by' => auth()->id(),
             ]);
         } catch (Exception $exception) {
             throw new Exception($exception);
@@ -82,14 +88,22 @@ class BonusService
     {
         try {
 
+            if($this->hasDuplicate($request)) {
+                throw new TargetDuplicateException();
+            }
+
             $id = $request->input('id');
 
             event(new BonusUpdated($id));
+          
+            $all = $request->all();
+            $all['updated_by'] = auth()->id();
 
-            Bonus::query()->findOrFail($id)->update($request->all());
+            Bonus::query()->findOrFail($id)->update($all);
 
         } catch (Exception $exception){
             Log::error($exception);
+            
             throw new Exception($exception);
         }
     }
@@ -100,5 +114,17 @@ class BonusService
     public function delete(Request $request): void
     {
         Bonus::find($request->id)->delete();
+    }
+
+    /**
+     * Получить бонусы и активности и группы.
+     * @param array $filters
+     */
+    private function hasDuplicate(Request $request): bool
+    {   
+        return Bonus::where([
+            'targetable_id' => $request->targetable_id,
+            'targetable_type' => $request->targetable_type,
+        ])->exists();
     }
 }

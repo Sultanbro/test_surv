@@ -76,10 +76,16 @@ class Bonus extends Model
     public function getTargetAttribute() 
     {
         $target = $this->targetable;
+        $type = self::TARGETS[$this->targetable_type];
+
+        if($type == 1) $name = $target->last_name . ' ' . $target->name; 
+        if($type == 2) $name = $target->name; 
+        if($type == 3) $name = $target->position; 
+
         return $target ? [
             'id' => $this->targetable_id,
-            'name' => $target->name,
-            'type' => self::TARGETS[$this->targetable_type],
+            'name' => $name,
+            'type' => $type,
         ] : null;
     }
 

@@ -467,7 +467,7 @@ Route::middleware([
         Route::post('get',[BonusController::class,'get']);
         Route::post('save',[BonusController::class,'save']);
         Route::put('update',[BonusController::class,'update']);
-        Route::delete('delete',[BonusController::class,'delete']);
+        Route::delete('delete/{id}',[BonusController::class,'delete']);
     });
 
     /**
@@ -608,7 +608,7 @@ Route::middleware([
         Route::post('/get', [KpisController::class, 'getKpis'])->name('get');
         Route::post('/save', [KpisController::class, 'save'])->name('save');
         Route::put('/update', [KpisController::class, 'update'])->name('update');
-        Route::delete('/delete', [KpisController::class, 'delete'])->name('delete');
+        Route::delete('/delete/{id}', [KpisController::class, 'delete'])->name('delete');
     });
 
 

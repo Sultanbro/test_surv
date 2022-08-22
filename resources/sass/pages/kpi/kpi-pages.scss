@@ -2,6 +2,9 @@ $bon-first-column: 80px;
 $bon-last-column: 92px;
 $bon-gradient: linear-gradient(0deg, #353e4b, #254c83);
 $bon-bg-grey: #e8ebef;
+$color-user: rgb(38, 98, 166); 
+$color-group: rgb(208, 138, 33);
+$color-position: rgb(54, 182, 73);
 
 .kpi-pages {
     
@@ -80,5 +83,20 @@ $bon-bg-grey: #e8ebef;
 }
 
 .w-lg {
-    width: 200px;
+    min-width: 250px !important;
+}
+
+.color {
+
+    &-user {
+        color: $color-user;
+    }
+
+    &-group {
+        color: $color-group;
+    }
+
+    &-position {
+        color: $color-position;
+    }
 }
