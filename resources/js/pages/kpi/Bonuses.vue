@@ -189,7 +189,7 @@
     <!-- modal Adjust Visible fields -->
     <b-modal 
         v-model="modalAdjustVisibleFields"
-        title="Настройка списка «Бонусы»"
+        title="Настройка списка"
         @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
         ok-text="Закрыть"
         size="lg">
@@ -211,7 +211,7 @@
 
 
     <sidebar
-        title="Бонусы"
+        title="Настроить бонус"
         v-if="activeItem != null"
         :open="showSidebar"
         @close="closeSidebar"
@@ -304,6 +304,9 @@
                             </select>
                         </div>
 
+                        <div v-else-if="field.key == 'text'">
+                            <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
+                        </div>
 
                         <div v-else>
                             <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
@@ -364,6 +367,7 @@ export default {
         return {
             active: 1,
             activeItem: null,
+            uri: 'bonus',
             showSidebar: false,
             show_fields: [],
             fields: [],
@@ -415,10 +419,6 @@ export default {
 
     methods: {
 
-        setTarget(item) {
-
-        },
-
         onChangePage(page_items) {
             this.page_items = page_items;
         },
@@ -426,7 +426,7 @@ export default {
         fetch(filter = null) {
             let loader = this.$loading.show();
 
-            axios.post('/bonus/get', {
+            axios.post( this.uri + '/get', {
                 filters: filter 
             }).then(response => {
                 
@@ -507,9 +507,22 @@ export default {
         validateMsg(item) {
             let msg = '';
 
-            if(item.target == null)    msg = 'Выберите Кому назначить бонус'
+            if(item.target == null)    msg = 'Выберите Кому назначить'
             if(item.title.length <= 1) msg = 'Заполните название'
-            if(item.activity_id == 0 || item.activity_id == undefined) msg = 'Выберите показатель'
+            
+            // activity id
+            let a;
+            if(item.source == 1) {
+                a = this.activities.findIndex(el => el.source == item.source && el.group_id == item.group_id && el.id == item.activity_id);
+            } else {
+                a = this.activities.findIndex(el => el.source == item.source && el.id == item.activity_id);
+            }
+            
+            if(item.activity_id == 0 || item.activity_id == undefined || a == -1) {
+                msg = 'Выберите показатель';
+            } 
+
+            // another
             if(item.quantity <= 0)     msg = 'Кол-во должно быть больше нуля'
             if(item.sum <= 0)          msg = 'Вознаграждение должно быть больше нуля'
             
@@ -540,8 +553,8 @@ export default {
             };
  
             let req = item.id == 0 
-                ? axios.post('/bonus/' + method, fields)
-                : axios.put('/bonus/' + method, fields);
+                ? axios.post(this.uri + '/' + method, fields)
+                : axios.put(this.uri + '/' + method, fields);
 
             /**
              * request
@@ -556,7 +569,7 @@ export default {
                     this.showSidebar = false
                 }
 
-                this.$toast.info('Бонус сохранен');
+                this.$toast.info('Сохранено');
                 loader.hide()
             }).catch(error => {
                 let m = error;
@@ -571,7 +584,7 @@ export default {
 
         deletee(id, i) {
             let loader = this.$loading.show();
-            axios.delete('/bonus/delete/' + id).then(response => {
+            axios.delete(this.uri + '/delete/' + id).then(response => {
                 this.deleteEvery(id, i)
                 loader.hide()
             }).catch(error => {
@@ -587,7 +600,7 @@ export default {
 
             this.onSearch();
 
-            this.$toast.info('Бонус Удален!');
+            this.$toast.info('Удалено');
         },
 
         saveItem() {
@@ -694,13 +707,12 @@ export default {
         },
 
         grouped_activities(source, group_id) {
-            if(source == 1 && group_id != undefined) {
+            if(source == 1) {
                 return this.activities.filter(el => el.source == source && el.group_id == group_id);
             } else {
                 group_id = 0
                 return this.activities.filter(el => el.source == source);
             }
-           
         }
     },
  

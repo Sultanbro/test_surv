@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models\Kpi\Traits;
+
+trait Targetable
+{
+    /**
+     * models
+     */
+    public array $targets = [
+        'App\User' => 1,
+        'App\ProfileGroup' => 2,
+        'App\Position' => 3,
+    ];
+
+    /**
+     * Таргет
+     * @return array | null
+     */
+    public function getTargetAttribute() 
+    {
+        $target = $this->targetable;
+        $type = $this->targets[$this->targetable_type];
+
+        if($type == 1) $name = $target->last_name . ' ' . $target->name; 
+        if($type == 2) $name = $target->name; 
+        if($type == 3) $name = $target->position; 
+
+        return $target ? [
+            'id' => $this->targetable_id,
+            'name' => $name,
+            'type' => $type,
+        ] : null;
+    }
+
+    /**
+     * Get the parent targetable model (user, group, position).
+     */
+    public function targetable()
+    {
+        return $this->morphTo();
+    }
+}

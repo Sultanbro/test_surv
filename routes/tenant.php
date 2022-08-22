@@ -480,7 +480,7 @@ Route::middleware([
         Route::post('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
         Route::post('save',[QuartalPremiumController::class,'save'])->name('quartal-premium.save');
         Route::put('update',[QuartalPremiumController::class,'update'])->name('quartal-premium.update');
-        Route::delete('delete',[QuartalPremiumController::class,'destroy']);
+        Route::delete('delete/{id}',[QuartalPremiumController::class,'destroy']);
     });
 
     /**

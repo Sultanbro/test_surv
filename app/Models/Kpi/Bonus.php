@@ -13,17 +13,20 @@ use Carbon\Carbon;
 use App\ProfileGroup;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\RecruiterStat;
+use App\Models\Kpi\Traits\Targetable;
+use App\Models\Kpi\Traits\WithActivityFields;
+use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use DB;
 
 class Bonus extends Model
 {      
-    use SoftDeletes;
+    use SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields; 
     
     protected $table = 'kpi_bonuses';
 
     public $timestamps = true;
 
-    protected $appends = ['target'];
+    protected $appends = ['target', 'group_id', 'source'];
 
     protected $casts = [
         'created_at'  => 'date:d.m.Y H:i',
@@ -59,61 +62,7 @@ class Bonus extends Model
     CONST FIRST_HALF = 1;
     CONST SECOND_HALF = 2;
 
-    /**
-     * models
-     */
-    const TARGETS = [
-        'App\User' => 1,
-        'App\ProfileGroup' => 2,
-        'App\Position' => 3,
-    ];
-
-
-    /**
-     * Таргет
-     * @return array | null
-     */
-    public function getTargetAttribute() 
-    {
-        $target = $this->targetable;
-        $type = self::TARGETS[$this->targetable_type];
-
-        if($type == 1) $name = $target->last_name . ' ' . $target->name; 
-        if($type == 2) $name = $target->name; 
-        if($type == 3) $name = $target->position; 
-
-        return $target ? [
-            'id' => $this->targetable_id,
-            'name' => $name,
-            'type' => $type,
-        ] : null;
-    }
-
-    /**
-     * Get the parent targetable model (user, group, position).
-     */
-    public function targetable()
-    {
-        return $this->morphTo();
-    }
-
-    /**
-     * Создатель
-     */
-    public function creator()
-    {
-        return $this->hasOne('App\User', 'id', 'created_by');
-    }
-    
-    /**
-     * Кто изменил в последний раз
-     */
-    public function updater()
-    {
-        return $this->hasOne('App\User', 'id', 'updated_by');
-    }
-
-
+   
     /**
      * count obtained bonuses of users in group
      */

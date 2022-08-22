@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class QuartalPremiumSaveRequest extends FormRequest
 {
@@ -25,7 +26,14 @@ class QuartalPremiumSaveRequest extends FormRequest
     {
         return [
             'targetable_id'     => 'required|integer',
-            'targetable_type'   => 'required|integer',
+            'targetable_type'    => [
+                'required',
+                Rule::in([
+                    'App\User',
+                    'App\ProfileGroup',
+                    'App\Position'
+                ]),
+            ],
             'activity_id'       => 'required|integer',
             'title'             => 'required|max:100',
             'text'              => 'required|max:255',

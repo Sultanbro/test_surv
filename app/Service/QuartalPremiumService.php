@@ -26,11 +26,10 @@ class QuartalPremiumService
     public function get(Request $request):array
     {
         try {
-            $id = $request->input('id');
 
-            return QuartalPremium::query()->find($id)->toArray();
+            return QuartalPremium::find($request->id)->toArray();
 
-        }catch (\DomainException $exception){
+        } catch (\DomainException $exception){
             throw new \DomainException($exception);
         }
     }
@@ -43,7 +42,7 @@ class QuartalPremiumService
         if($filters !== null) {} 
         
         return [
-            'items'       => QuartalPremium::get(),
+            'items'      => QuartalPremium::with('creator', 'updater')->get(),
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
@@ -56,11 +55,10 @@ class QuartalPremiumService
     public function save(QuartalPremiumSaveRequest $request): array
     {
         try {
-            $model = $this->getModel($request->input('targetable_type'));
 
-            QuartalPremium::query()->create([
+            $quartal_premium = QuartalPremium::query()->create([
                 'targetable_id'     => $request->input('targetable_id'),
-                'targetable_type'   => $model,
+                'targetable_type'   => $request->targetable_type,
                 'activity_id'       => $request->input('activity_id'),
                 'title'             => $request->input('title'),
                 'text'              => $request->input('text'),
@@ -70,11 +68,10 @@ class QuartalPremiumService
             ]);
 
             return [
-                'status' => ResponseAlias::HTTP_OK,
-                'message' => 'success'
+                'quartal_premium' => $quartal_premium
             ];
 
-        }catch (\DomainException $exception){
+        } catch (\DomainException $exception){
             throw new \DomainException($exception);
         }
     }
@@ -86,17 +83,20 @@ class QuartalPremiumService
     public function update(QuartalPremiumUpdateRequest $request): array
     {
         try {
-            $quartalPremiumId = $request->input('quartal_premium_id');
 
-            event(new TrackQuartalPremiumEvent($quartalPremiumId));
+            $all = $request->all();
+            $all['updated_by'] = auth()->id();
 
-            QuartalPremium::query()->findOrFail($quartalPremiumId)->update($request->all());
+            $id = $request->id;
+            event(new TrackQuartalPremiumEvent($id));
+
+            QuartalPremium::findOrFail($id)->update($all);
 
             return [
-                'status' => ResponseAlias::HTTP_OK,
+                'status'  => ResponseAlias::HTTP_OK,
                 'message' => 'success'
             ];
-        }catch (\DomainException $exception){
+        } catch (\DomainException $exception){
             throw new \DomainException($exception);
         }
     }
@@ -108,17 +108,13 @@ class QuartalPremiumService
     public function delete(Request $request): array
     {
         try {
-            $request->only(['id']);
-
-            $id = $request->input('id');
-
-            QuartalPremium::query()->find($id)->delete();
+            QuartalPremium::find($request->id)->delete();
 
             return [
-                'status' => ResponseAlias::HTTP_OK,
+                'status'  => ResponseAlias::HTTP_OK,
                 'message' => 'success'
             ];
-        }catch (\DomainException $exception){
+        } catch (\DomainException $exception){
 
         }
     }

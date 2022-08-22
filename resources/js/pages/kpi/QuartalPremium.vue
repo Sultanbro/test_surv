@@ -1,24 +1,24 @@
 <template>
-<div class="quartal-premiums p-3">
+<div class="quartal-premiums px-3 py-1">
 
     <!-- top line -->
     <div class="d-flex mb-2 mt-2 jcsb aifs">
         
-        <div class="d-flex mr-2">
-            <div class="d-flex aifs mr-2">
+        <div class="d-flex aic mr-2">
+            <div class="d-flex aic mr-2">
                 <span>Показывать:</span>
-                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2" />
+                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
-            <super-filter 
-                :ref="'filter'"
-                :groups="groups"
-                @apply="fetch"
-                @search-text-changed="onSearch"
+            <input 
+                class="searcher mr-2 input-sm"
+                v-model="searchText"
+                type="text"
+                placeholder="Поиск по совпадениям..."
+                @keyup="onSearch"
             >
-            </super-filter>
-            <div class="ml-2"> 
+            <span class="ml-2"> 
                 Найдено: {{ items.length }}
-            </div>
+            </span>
         </div>
 
         <button class="btn rounded btn-outline-success" @click="addItem">
@@ -27,131 +27,131 @@
         </button>
     </div>
     
-    <!-- table -->
+    <!-- table NEW -->
+    <table class="table b-table table-bordered table-sm table-responsive mb-3">
+        <tr>
+            <th class="b-table-sticky-column text-center px-1">
+                <i class="fa fa-cogs" @click="adjustFields"></i>
+            </th>
+            <th 
+                v-for="(field, i) in fields"
+                :class="[
+                     field.class,
+                    {'b-table-sticky-column l-2' : field.key == 'target'
+                }]"
+            >
+                {{ field.name }}
+            </th>
+            <th></th>
+        </tr>
+        <tr>
+            
+        </tr>
 
-    <table class="j-table">
-        <thead>
-            <tr class="table-heading">
-                
-                <th class="first-column">
-                    <i class="fa fa-cogs" @click="adjustFields"></i>
-                </th>
+        <template v-for="(item, i) in page_items">
+            <tr>
+                <td class="b-table-sticky-column text-left">
+                    <input class="ml-2" type="checkbox" v-model="item.selected" />
+                    <span class="ml-2">{{ i + 1 }}</span>
+                </td>
+                <td v-for="(field, f) in fields"  :class="[
+                     field.class,
+                    {'b-table-sticky-column l-2' : field.key == 'target'
+                }]">
+                    <div v-if="field.key == 'target'">
+                        <superselect
+                            v-if="item.target == null"
+                            class="w-full" 
+                            :values="[]" 
+                            :single="true"
+                            @choose="(target) => item.target = target"
+                        /> 
+                        <div v-else class="d-flex aic">
+                            <i class="fa fa-user ml-2 color-user" v-if="item.target.type == 1"></i> 
+                            <i class="fa fa-users ml-2 color-group" v-if="item.target.type == 2"></i> 
+                            <i class="fa fa-briefcase ml-2 color-position" v-if="item.target.type == 3"></i> 
+                            <span class="ml-2">{{ item.target.name }}</span>
+                        </div>
+                    </div>
+                         
+                    <div v-else-if="field.key == 'created_by' && item.creator != null">
+                        {{ item.creator.last_name + ' ' + item.creator.name }}
+                    </div>
 
-                <th v-for="(field, i) in fields" :key="i" :class="field.class">
-                    {{ field.name }}
-                </th>
+                    <div v-else-if="field.key == 'updated_by' && item.updater != null">
+                        {{ item.updater.last_name + ' ' + item.updater.name }}
+                    </div>
 
-                <th>Действия</th>
+                    <div v-else-if="non_editable_fields.includes(field.key)">
+                        {{ item[field.key] }}
+                    </div>
 
+                    <div v-else-if="field.key == 'activity_id' && item.source != undefined">
+                        <div class="d-flex">
+                            <select 
+                                v-model="item.source"
+                                class="form-control small"
+                                @change="++source_key"
+                            >
+                                <option v-for="key in Object.keys(sources)"
+                                    :value="key">
+                                    {{ sources[key] }}
+                                </option>
+                            </select>
+
+                            <select 
+                                v-if="Number(item.source) == 1"
+                                v-model="item.group_id"
+                                class="form-control small"
+                                :key="'c' + source_key"
+                            >
+                                <option value="0" selected>-</option>
+                                <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
+                            </select>
+
+                            <div v-else></div>        
+
+                            <select 
+                                v-model="item.activity_id"
+                                class="form-control small"
+                                :key="'d' + source_key"
+                            >
+                                <option value="0" selected>-</option>
+                                <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id"  >{{ activity.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div v-else>
+                        <input
+                            :type="field.type"
+                            class="form-control"
+                            v-model="item[field.key]"
+                            @change="validate(item[field.key], field.key)"
+                        /> 
+                    </div>
+                </td>
+                <td>
+                    <i
+                        class="fa fa-save btn btn-success p-1 ml-1"
+                        @click="saveItemFromTable(i)"
+                    />
+                    <i
+                        class="fa fa-edit btn btn-primary p-1"
+                        @click="openSidebar(i)"
+                    />
+                    <i
+                        class="fa fa-trash btn btn-danger p-1"
+                        @click="deleteItem(i)"
+                    />
+                </td>
             </tr>
-
-        </thead>
-
-        <tbody>
-
-            <template v-for="(item, i) in page_items">
-                <tr :key="i">
-                    <td  @click="item.expanded = !item.expanded" class="pointer">
-                        <div class="d-flex px-2">
-                            <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
-                            <i class="fa fa-plus mt-1" v-else></i>
-                            <span class="ml-2">{{ i + 1 }}</span>
-                        </div>
-                    </td>
-                    <td  v-for="(field, f) in fields" :key="f">
-
-                        <div v-if="field.key == 'target'" :class="field.class">
-                            <superselect
-                                v-if="item.target == null"
-                                class="w-full" 
-                                :values="[]" 
-                                :single="true"
-                                @choose="(target) => item.target = target"
-                                :key="i" /> 
-                            <div v-else class="d-flex aic">
-                                <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i> 
-                                <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i> 
-                                <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i> 
-                                <span class="ml-2">{{ item.target.name }}</span>
-                            </div>
-                        </div>
-
-                        <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
-                           {{ item[field.key] }}
-                        </div>
-
-                        <div v-else-if="field.key == 'activity_id' && item.source != undefined" :class="field.class">
-                           <div class="d-flex">
-                                <select 
-                                    v-model="item.source"
-                                    class="form-control small"
-                                >
-                                    <option v-for="key in Object.keys(sources)" :key="key"
-                                        :value="key">
-                                        {{ sources[key] }}
-                                    </option>
-                                </select>
-
-                                <select 
-                                    v-if="item.source == 1"
-                                    v-model="item.group_id"
-                                    class="form-control small"
-                                >
-                                    <option value="0" selected>-</option>
-                                    <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
-                                </select>
-
-                                <select 
-                                    v-model="item.activity_id"
-                                    class="form-control small"
-                                >
-                                    <option value="0" selected>-</option>
-                                    <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id"  >{{ activity.name }}</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div v-else-if="field.key == 'unit'" :class="field.class">
-                            <select 
-                                v-model="item.unit"
-                                class="form-control"
-                            >
-                                <option value="0" selected>-</option>
-                                <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
-                            </select>
-                        </div>
-
-                        <div v-else-if="field.key == 'daypart'" :class="field.class">
-                            <select 
-                                v-model="item.unit"
-                                class="form-control"
-                            >
-                                <option value="0" selected>-</option>
-                                <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
-                            </select>
-                        </div>
-
-                        <div v-else :class="field.class">
-                            <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" /> 
-                        </div>
-
-                    </td>
-                    <td >
-                        <i class="fa fa-save ml-2 mr-1 btn btn-success p-1" @click="saveItem(i)"></i>
-                        <i class="fa fa-trash btn btn-danger p-1" @click="deleteItem(i)"></i>
-                    </td>
-                </tr>
-              
-            </template>
-
-          
-        </tbody>
-     </table>
-      
+        </template>
+    </table>
 
     <!-- pagination -->
     <jw-pagination
-        class="mt-3"
+        class=""
         :key="paginationKey"
         :items="items"
         :labels="{
@@ -168,52 +168,130 @@
     <!-- modal Adjust Visible fields -->
     <b-modal 
         v-model="modalAdjustVisibleFields"
-        title="Настройка списка Квартальные премии"
+        title="Настройка списка"
         @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
         ok-text="Закрыть"
         size="lg">
      
-      <div class="row">
+        <div class="row">
 
-        <div class="col-md-4 mb-2">
-           <b-form-checkbox
-              v-model="show_fields.updated_at"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Дата изменения
-          </b-form-checkbox>
-        
-        </div> 
-        <div class="col-md-4 mb-2">
-           <b-form-checkbox
-              v-model="show_fields.created_by"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Постановщик
-          </b-form-checkbox>
-        
-          
+            <div class="col-md-4 mb-2" v-for="(field, f) in all_fields">
+                <b-form-checkbox
+                    v-model="show_fields[field.key]"
+                    :value="true"
+                    :unchecked-value="false"
+                >
+                    {{ field.name }}
+                </b-form-checkbox>
+            </div>
+            
         </div>  
-
-        <div class="col-md-4 mb-2">
-          <b-form-checkbox
-              v-model="show_fields.updated_by"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Изменил
-          </b-form-checkbox>
-       
-        </div>
-      </div>  
     </b-modal>
 
+
+    <sidebar
+        title="Настроить премию"
+        v-if="activeItem != null"
+        :open="showSidebar"
+        @close="closeSidebar"
+        width="40%"
+    >   
+        <div class="row m-0">
+            <div class="mb-3" v-for="(field, f) in all_fields" :class="field.alter_class">
+                        
+                        <div class="mb-2 mt-2 field">{{ field.name }}</div>
+
+                        <div v-if="field.key == 'target'" class="mr-5">
+                            <superselect
+                                v-if="activeItem.id == 0"
+                                class="w-full" 
+                                :values="activeItem.target == null ? [] : [activeItem.target]" 
+                                :single="true"
+                                @choose="(target) => activeItem.target = target" /> 
+                            <div v-else class="d-flex aic">
+                                <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
+                                <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
+                                <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
+                                <span class="ml-2">{{ activeItem.target.name }}</span>
+                            </div>
+                        </div>
+                         
+                        <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
+                            {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
+                        </div>
+
+                        <div v-else-if="field.key == 'updated_by' && activeItem.updater != null">
+                            {{ activeItem.updater.last_name + ' ' + activeItem.updater.name }}
+                        </div>
+
+                        <div v-else-if="non_editable_fields.includes(field.key)">
+                            {{ activeItem[field.key] }}
+                        </div>
+
+                        <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
+                            <div class="d-flex">
+                                <select 
+                                    v-model="activeItem.source"
+                                    class="form-control small mr-2"
+                                    @change="++source_key"
+                                >
+                                    <option v-for="key in Object.keys(sources)"
+                                        :value="key">
+                                        {{ sources[key] }}
+                                    </option>
+                                </select>
+
+                                <select 
+                                    v-if="Number(activeItem.source) == 1"
+                                    v-model="activeItem.group_id"
+                                    class="form-control small mr-2"
+                                    :key="'a' + source_key"
+                                >
+                                    <option value="0" selected>-</option>
+                                    <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
+                                </select>      
+
+                                <select 
+                                    v-model="activeItem.activity_id"
+                                    class="form-control small"
+                                    :key="'b' + source_key"
+                                >
+                                    <option value="0" selected>-</option>
+                                    <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div v-else-if="field.key == 'text'">
+                            <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
+                        </div>
+
+                        <div v-else>
+                            <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
+                        </div>
+
+            </div>
+            <div>
+                <button
+                    class="d-flex aic  btn btn-success ml-3" 
+                    @click="saveItem"
+                >
+                    <i 
+                        class="fa fa-save"
+                    />
+                    <span class="ml-2">Сохранить</span>
+                </button>
+            </div>
+        </div>
+        
+    </sidebar>
 </div>
 </template>
 
 <script>
+import {fields, newQuartalPremium} from "./quartal_premiums.js";
+import {findModel} from "./helpers.js";
+
 export default {
     name: "QuartalPremiums", 
     props: {
@@ -246,16 +324,28 @@ export default {
     data() {
         return {
             active: 1,
+            activeItem: null,
+            uri: 'quartal-premiums',
+            showSidebar: false,
             show_fields: [],
             fields: [],
+            all_fields: fields,
             groups: [],
             searchText: '',
             modalAdjustVisibleFields: false,
             page_items: [],
             pageSize: 10,
             paginationKey: 1,
-            items: [],
+            items: [], // after filter changes
+            all_items: [],
             activities: [],
+            source_key: 1,
+            sources: {
+                0: 'без источника',
+                1: 'из показателей отдела',
+                2: 'из битрикса',
+                3: 'из амосрм',
+            },
             non_editable_fields: [
                 'created_at',
                 'updated_at',
@@ -266,12 +356,13 @@ export default {
     }, 
 
     created() {
-        this.fetch()
-    
         this.setDefaultShowFields()
         this.prepareFields(); 
         this.addStatusToItems(); 
+    },
 
+    mounted() {
+        this.fetch()
     },
 
     methods: {
@@ -283,13 +374,16 @@ export default {
         fetch(filter = null) {
             let loader = this.$loading.show();
 
-            axios.post('/quartal-premiums/get', {
+            axios.post(this.uri + '/get', {
                 filters: filter 
             }).then(response => {
                 
+                this.all_items = response.data.items
                 this.items = response.data.items;
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
+
+                this.defineSourcesAndGroups('t');
 
                 this.items.forEach(el => el.expanded = false);
                 this.page_items = this.items.slice(0, this.pageSize);
@@ -301,21 +395,20 @@ export default {
             });
         },
 
+        openSidebar(i) {
+            this.activeItem = this.page_items[i]     
+            this.showSidebar = true
+        },
+
+        closeSidebar() {
+            this.showSidebar = false
+            this.activeItem = null;
+        },
+        
         setDefaultShowFields() {
-            let obj = { // Какие поля показывать
-                    target: true,
-                    title: true,
-                    sum: true,
-                    activity_id: true,
-                    from: true,
-                    to: true,
-                    plan: true,
-                    text: true,
-                    created_by: true,
-                    updated_by: true,
-                    created_at: true,
-                    updated_at: true,
-                };
+
+            let obj = {}; // Какие поля показывать
+            fields.forEach(field => obj[field.key] = true); 
 
             if(localStorage.quartal_premium_show_fields) {
                 this.show_fields = JSON.parse(localStorage.getItem('quartal_premium_show_fields'));
@@ -335,238 +428,209 @@ export default {
                 el.on_edit = false
                 el.source = 0
                 el.group_id = 0
+                el.selected = false
             });
         },
 
         prepareFields() {
-            let fields = [];
+            let visible_fields = [],
+                show_fields = this.show_fields;
             
-            if(this.show_fields['target']) {
-                fields.push({
-                    name: 'Кому',
-                    key: 'target',
-                    visible: true,
-                    type: 'superselect',
-                    class: 'text-left w-230 '
-                });
-            }
-            
-            if(this.show_fields['title']) {
-                fields.push({
-                    name: 'Название',
-                    key: 'title',
-                    visible: true,
-                    type: 'text',
-                    class: 'text-center'
-                });
-            }
+            fields.forEach((field, i) => {
+                if(this.show_fields[field.key] != undefined
+                    && this.show_fields[field.key]
+                ) {
+                    visible_fields.push(field)
+                }
+            });
 
-            if(this.show_fields['activity_id']) {
-                fields.push({
-                    name: 'Показатели',
-                    key: 'activity_id',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['unit']) {
-                fields.push({
-                    name: 'План',
-                    key: 'plan',
-                    visible: true,
-                    type: 'text',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['quantity']) {
-                fields.push({
-                    name: 'Кол-во',
-                    key: 'from',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['daypart']) {
-                fields.push({
-                    name: 'Период',
-                    key: 'to',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-             if(this.show_fields['text']) {
-                fields.push({
-                    name: 'Текст',
-                    key: 'text',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-             if(this.show_fields['sum']) {
-                fields.push({
-                    name: 'Вознаграждение',
-                    key: 'sum',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['created_at']) {
-                fields.push({
-                    name: 'Дата создания',
-                    key: 'created_at',
-                    visible: true,
-                    type: 'date',
-                    class: 'text-center'
-                });
-            }
-
-            if(this.show_fields['updated_at']) {
-                fields.push({
-                    name: 'Дата изменения',
-                    key: 'updated_at',
-                    visible: true,
-                    type: 'date',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['created_by']) {
-                fields.push({
-                    name: 'Постановщик',
-                    key: 'created_by',
-                    visible: true,
-                    type: 'text',
-                    class: 'text-center'
-                });
-            }
-
-            if(this.show_fields['updated_by']) {
-                fields.push({
-                    name: 'Изменил',
-                    key: 'updated_by',
-                    visible: true,
-                    type: 'text',
-                    class: 'text-center'
-                });
-            }
-
-            this.fields = fields;
+            this.fields = visible_fields;
         },
 
         addItem() {
-            this.items.unshift({
-                id: 0,
-                target: null,
-                title: '',
-                sum: 0,
-                source: 0,
-                group_id: 0,
-                activity_id: 1,
-                from: null,
-                to: null,
-                text: '',
-                created_at: new Date().toISOString().substr(0, 19).replace('T',' '),
-                updated_at: new Date().toISOString().substr(0, 19).replace('T',' '),
-                created_by: 'Али Акпанов',
-                updated_by: 'Али Акпанов',
-                expanded: false
-            });
-
-            this.$toast.info('Добавить Бонус');
+            this.activeItem = newQuartalPremium()
+            this.showSidebar = true
         },
 
-        saveItem(i) {
-            let loader = this.$loading.show();
-            let item = this.items[i]
-            let method = this.items[i].id == 0 ? 'save' : 'update';
+        validateMsg(item) {
+            let msg = '';
 
-            if(item.target == null) {
-                this.$toast.error('Выберите Кому назначить бонус!');
+            if(item.target == null)    msg = 'Выберите Кому назначить'
+            if(item.title.length <= 1) msg = 'Заполните название'
+
+            // activity id
+            let a;
+            if(item.source == 1) {
+                a = this.activities.findIndex(el => el.source == item.source && el.group_id == item.group_id && el.id == item.activity_id);
+            } else {
+                a = this.activities.findIndex(el => el.source == item.source && el.id == item.activity_id);
+            }
+            
+            if(item.activity_id == 0 || item.activity_id == undefined || a == -1) {
+                msg = 'Выберите показатель';
+            } 
+            
+            // another
+            if(item.quantity <= 0)     msg = 'Кол-во должно быть больше нуля'
+            if(item.plan <= 0)         msg = 'План должен быть больше нуля'
+            if(item.sum <= 0)          msg = 'Вознаграждение должно быть больше нуля'
+            
+            return msg;
+        },
+
+        save(item) {
+            
+            /**
+             * validate item
+             */
+            let not_validated_msg = this.validateMsg(item);
+            if(not_validated_msg != '') {
+                this.$toast.error(not_validated_msg)
                 return;
             }
             
-            let fields = {...item};
+            /**
+             * prepare fields
+             */
+            let loader = this.$loading.show();
+            let method = item.id == 0 ? 'save' : 'update';
+
+            let fields = {
+                targetable_id: item.target.id,
+                targetable_type: findModel(item.target.type),
+                ...item
+            };
  
-            let req = this.items[i].id == 0 
-                ? axios.post('/quartal-premiums/' + method, fields)
-                : axios.put('/quartal-premiums/' + method, fields);
+            let req = item.id == 0 
+                ? axios.post(this.uri + '/' + method, fields)
+                : axios.put(this.uri + '/' + method, fields);
 
+            /**
+             * request
+             */
             req.then(response => {
-                
-                let bonus = response.data.bonus;
-                
-                item.id = bonus.id;
+    
+                if(method == 'save') {
+                    let quartal_premium = response.data.quartal_premium;
+                    item.id = quartal_premium.id;
+                   // this.items.unshift(item);
+                    this.all_items.unshift(item);
+                    this.showSidebar = false
+                }
 
-                this.$toast.info('Квартальная премия Сохранена!');
+                this.$toast.info('Сохранено');
+                loader.hide()
+            }).catch(error => {
+                let m = error;
+                if(error.message == 'Request failed with status code 409') {
+                    m = 'Выберите другую цель "Кому"';
+                }
+                
+                loader.hide()
+                alert(m)
+            });
+        },
+
+        deletee(id, i) {
+            let loader = this.$loading.show();
+            axios.delete(this.uri + '/delete/' + id).then(response => {
+                this.deleteEvery(id, i)
                 loader.hide()
             }).catch(error => {
                 loader.hide()
                 alert(error)
             });
+        },
+
+        deleteEvery(id, i) {
+            
+            let a = this.all_items.findIndex(el => el.id == id)
+            if(a != -1) this.all_items.splice(a, 1);
+
+            this.onSearch();
+
+            this.$toast.info('Удалено');
+        },
+
+        saveItem() {
+            this.save(this.activeItem)
         }, 
 
+        saveItemFromTable(i) {
+            this.save(this.page_items[i])
+        },
+
         deleteItem(i) {
-            let loader = this.$loading.show();
-            let item = this.items[i]
+          
+            let item = this.page_items[i]
 
             if(!confirm('Вы уверены?')) {
                 return;
             }
 
             if(item.id == 0) {
-                this.items.splice(i) // maybe will be error cause of page_items
-                this.$toast.info('Квартальная Удалена!');
+                this.deleteEvery(item.id, i);
                 return;
             }
 
-            axios.delete('/quartal-premiums/delete', {
-                id: item.id
-            }).then(response => {
-
-                this.items.splice(i) // maybe will be error cause of page_items
-
-                this.$toast.info('Квартальная Удалена!');
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
+            this.deletee(item.id, i);
         },
 
         showStat() {
             this.$toast.info('Показать статистику');
         },
-
-        onSearch(text) { 
-            this.searchText = text;
+ 
+        onSearch() { 
+            let text = this.searchText;
+     
             if(this.searchText == '') {
-                //this.filtered_items = this.items; 
+               this.items = this.all_items;
             } else {
-                // this.filtered_items = this.items.filter((el, index) => {
-                // let has = false;
-                // el.targets.forEach(target => {
-                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-                // });
+                this.items = this.all_items.filter((el, index) => {
+                    let has = false;
 
-                // el.groups.forEach(target => {
-                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-                // });
+                    if (
+                        el.target != null
+                        && el.target.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                    ) {
+                        has = true;
+                    }
 
-                // el.roles.forEach(target => {
-                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-                // });
+                    if (
+                        el.title.toLowerCase().indexOf(text.toLowerCase()) > -1
+                    ) {
+                        has = true;
+                    }
 
-                // return has; 
-                //}); 
+                    if (
+                        el.creator != null
+                        && (
+                            el.creator.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                            || el.creator.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                        )
+                    ) {
+                        has = true;
+                    }
+
+                    if (
+                        el.updater != null
+                        && (
+                            el.updater.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                            || el.updater.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                        )
+                    ) {
+                        has = true;
+                    }
+
+                    return has; 
+                }); 
             }
+
+            this.page_items = this.items.slice(0, this.pageSize);
         },
 
         validate(value, field) {
-            value = abs(Number(value));
+            value = Math.abs(Number(value));
             if(isNaN(value) || isFinite(value)) {
                 value = 0;
             }
@@ -574,7 +638,32 @@ export default {
             if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
                 value = 100;
             }
+        },
+
+        defineSourcesAndGroups(t) {
+            this.items.forEach(el => {
+                el.source = 0;
+                el.group_id = 0;
+
+                if(el.activity_id != 0) {
+                    let i = this.activities.findIndex(a => a.id == el.activity_id);
+                    if(i != -1) {
+                        el.source = this.activities[i].source
+                        if(el.source == 1) el.group_id = this.activities[i].group_id
+                    }
+                }
+            });
+        },
+
+        grouped_activities(source, group_id) {
+            if(source == 1) {
+                return this.activities.filter(el => el.source == source && el.group_id == group_id);
+            } else {
+                group_id = 0
+                return this.activities.filter(el => el.source == source);
+            }
         }
+        
     },
  
 }
