@@ -16,7 +16,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     public function register()
     {
-        // Telescope::night();
+       // Telescope::night();
 
         $this->hideSensitiveRequestDetails();
 
@@ -27,6 +27,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
             return $entry->isReportableException() ||
                    $entry->isFailedRequest() ||
+                   $entry->isRequest() ||
                    $entry->isFailedJob() ||
                    $entry->isScheduledTask() ||
                    $entry->hasMonitoredTag();

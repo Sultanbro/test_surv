@@ -194,7 +194,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
         App\Providers\TenancyServiceProvider::class, // <-- here
-//        Eddir\Messenger\MessengerServiceProvider::class,
+        Eddir\Messenger\MessengerServiceProvider::class,
        // Spatie\Permission\PermissionServiceProvider::class,
 
     ],

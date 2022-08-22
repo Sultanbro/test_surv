@@ -26,7 +26,7 @@ use Spatie\Permission\Models\Permission;
 class TestController extends Controller { 
  
 	public function test() {
-
+		dd(config('telescope.domain'));
 		$a = \App\Models\Anviz\Time::orderBy('CheckTime', 'desc')->whereDate('CheckTime', '2022-08-10')->where('Userid', '14312')->get()->toArray(); 
 		dd($a);
 	}  
