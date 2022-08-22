@@ -59,7 +59,7 @@ var fields = [
         name: 'Текст',
         key: 'text',
         visible: true,
-        type: 'number',
+        type: 'text',
         class: 'text-center',
         alter_class: 'col-md-6'
     },
@@ -111,27 +111,29 @@ function formatDate(d) {
 
 var datestring = formatDate(new Date());
 
-// bonus object 
-var Bonus = {
-    id: 0,
-    target: null,
-    title: '',
-    sum: 0,
-    source: 0,
-    group_id: 0,
-    activity_id: 1,
-    unit: 'all',
-    quantity: 1,
-    daypart: 0,
-    text: '',
-    created_at: datestring,
-    updated_at: datestring,
-    created_by: 'Вы',
-    updated_by: 'Вы',
-    expanded: false
-};
+
+function newBonus() {
+    return  {
+        id: 0,
+        target: null,
+        title: '',
+        sum: 0,
+        source: 0,
+        group_id: 0,
+        activity_id: 0,
+        unit: 'all',
+        quantity: 1,
+        daypart: 0,
+        text: '',
+        created_at: datestring,
+        updated_at: datestring,
+        created_by: 'Вы',
+        updated_by: 'Вы',
+        expanded: false
+    };
+}
 
 module.exports = {
     fields: fields,
-    Bonus: Bonus
+    newBonus: newBonus
 };

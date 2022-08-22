@@ -61,13 +61,15 @@ class KpiService
      */
     public function save(KpiSaveRequest $request): void
     {
-        try {
-            $model = $this->getModel($request->input('targetable_type'));
+        if($this->hasDuplicate($request)) {
+            throw new TargetDuplicateException();
+        }
 
-            DB::transaction(function () use ($request, $model){
+        try {
+            DB::transaction(function () use ($request){
                 $kpi = Kpi::query()->create([
                     'targetable_id'     => $request->input('targetable_id'),
-                    'targetable_type'   => $model,
+                    'targetable_type'   => $request->targetable_type,
                     'completed_80'      => $request->input('completed_80'),
                     'completed_100'     => $request->input('completed_100'),
                     'lower_limit'       => $request->input('lower_limit'),
@@ -91,6 +93,10 @@ class KpiService
     public function update(KpiUpdateRequest $request): void
     {
         try {
+
+            if($this->hasDuplicate($request)) {
+                throw new TargetDuplicateException();
+            }
 
             $id = $request->input('kpi_id');
 
@@ -165,5 +171,17 @@ class KpiService
                 $kpi->items()->where('id', $item['id'])->update($item);
             }
         }
+    }
+
+    /**
+     *  Уже назначен на эту цель kpi
+     * @param array $filters
+     */
+    private function hasDuplicate(Request $request): bool
+    {   
+        return Kpi::where([
+            'targetable_id' => $request->targetable_id,
+            'targetable_type' => $request->targetable_type,
+        ])->exists();
     }
 }

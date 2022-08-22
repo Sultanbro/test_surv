@@ -144,11 +144,16 @@
                     </div>
 
                     <div v-else>
-                        <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" /> 
+                        <input
+                            :type="field.type"
+                            class="form-control"
+                            v-model="item[field.key]"
+                            @change="validate(item[field.key], field.key)"
+                        /> 
                     </div>
                 </td>
                 <td>
-                     <i
+                    <i
                         class="fa fa-save btn btn-success p-1 ml-1"
                         @click="saveItemFromTable(i)"
                     />
@@ -298,9 +303,10 @@
                                 <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
                             </select>
                         </div>
-                    
+
+
                         <div v-else>
-                            <input type="text" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
+                            <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
                         </div>
 
             </div>
@@ -322,7 +328,7 @@
 </template>
 
 <script>
-import {fields, Bonus} from "./bonuses.js";
+import {fields, newBonus} from "./bonuses.js";
 import {findModel} from "./helpers.js";
 
 export default {
@@ -494,18 +500,38 @@ export default {
         },
 
         addItem() {
-            this.activeItem = Bonus 
+            this.activeItem = newBonus()
             this.showSidebar = true
         },
 
-        save(item) {
-            let loader = this.$loading.show();
-            let method = item.id == 0 ? 'save' : 'update';
+        validateMsg(item) {
+            let msg = '';
 
-            if(item.target == null) {
-                this.$toast.error('Выберите Кому назначить бонус!');
+            if(item.target == null)    msg = 'Выберите Кому назначить бонус'
+            if(item.title.length <= 1) msg = 'Заполните название'
+            if(item.activity_id == 0 || item.activity_id == undefined) msg = 'Выберите показатель'
+            if(item.quantity <= 0)     msg = 'Кол-во должно быть больше нуля'
+            if(item.sum <= 0)          msg = 'Вознаграждение должно быть больше нуля'
+            
+            return msg;
+        },
+
+        save(item) {
+            
+            /**
+             * validate item
+             */
+            let not_validated_msg = this.validateMsg(item);
+            if(not_validated_msg != '') {
+                this.$toast.error(not_validated_msg)
                 return;
             }
+            
+            /**
+             * prepare fields
+             */
+            let loader = this.$loading.show();
+            let method = item.id == 0 ? 'save' : 'update';
 
             let fields = {
                 targetable_id: item.target.id,
@@ -517,12 +543,15 @@ export default {
                 ? axios.post('/bonus/' + method, fields)
                 : axios.put('/bonus/' + method, fields);
 
+            /**
+             * request
+             */
             req.then(response => {
-                console.log('code')
+    
                 if(method == 'save') {
                     let bonus = response.data.bonus;
                     item.id = bonus.id;
-                    this.items.unshift(item);
+                   // this.items.unshift(item);
                     this.all_items.unshift(item);
                     this.showSidebar = false
                 }
@@ -552,11 +581,11 @@ export default {
         },
 
         deleteEvery(id, i) {
-            this.page_items.splice(i) // maybe will be error cause of page_items
-            let a = this.items.findIndex(el => el.id == id)
-            let b = this.all_items.findIndex(el => el.id == id)
-            if(a != -1) this.items.splice(a);
-            if(b != -1) this.all_items.splice(b);
+            
+            let a = this.all_items.findIndex(el => el.id == id)
+            if(a != -1) this.all_items.splice(a, 1);
+
+            this.onSearch();
 
             this.$toast.info('Бонус Удален!');
         },
@@ -591,6 +620,7 @@ export default {
  
         onSearch() { 
             let text = this.searchText;
+     
             if(this.searchText == '') {
                this.items = this.all_items;
             } else {

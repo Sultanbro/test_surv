@@ -52,11 +52,6 @@ class BonusService
      */
     public function save(BonusSaveRequest $request): array
     {
-        
-        if($this->hasDuplicate($request)) {
-            throw new TargetDuplicateException();
-        }
-
         try {
             $bonus = Bonus::create([
                 'targetable_id'     => $request->targetable_id,
@@ -88,10 +83,6 @@ class BonusService
     {
         try {
 
-            if($this->hasDuplicate($request)) {
-                throw new TargetDuplicateException();
-            }
-
             $id = $request->input('id');
 
             event(new BonusUpdated($id));
@@ -114,17 +105,5 @@ class BonusService
     public function delete(Request $request): void
     {
         Bonus::find($request->id)->delete();
-    }
-
-    /**
-     * Получить бонусы и активности и группы.
-     * @param array $filters
-     */
-    private function hasDuplicate(Request $request): bool
-    {   
-        return Bonus::where([
-            'targetable_id' => $request->targetable_id,
-            'targetable_type' => $request->targetable_type,
-        ])->exists();
     }
 }
