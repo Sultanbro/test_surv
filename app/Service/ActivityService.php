@@ -21,7 +21,7 @@ class ActivityService
     public function get(int $id): array
     {
         return [
-            'activities' => Activity::witTrashed()->find($id),
+            'items'      => Activity::withTrashed()->with('creator', 'updater')->find($id),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
     }
@@ -35,7 +35,7 @@ class ActivityService
         if($filters !== null) {} 
         
         return [
-            'activities' => Activity::get(),
+            'items'      => Activity::with('creator', 'updater')->get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
     }
@@ -43,24 +43,30 @@ class ActivityService
     /**
      * Сохраняем новую активность.
      */
-    public function save(ActivitySaveRequest $request): void
+    public function save(ActivitySaveRequest $request): array
     {
         try {
 
-            Activity::query()->create([
-                'name'     => $request->targetable_id,
+            $activity = Activity::query()->create([
+                'name'     => $request->name,
                 'group_id'     => $request->group_id,
                 'daily_plan'     => $request->daily_plan,
                 'unit'     => $request->unit,
-                'share'     => $request->share,
+                'share'     => 0,
+                'type'     => 0,
+                'plan_unit'     => 0,
+                'plan_type'     => 0,
                 'method'     => $request->method,
                 'view'     => $request->view,
                 'source'     => $request->source,
                 'editable'     => $request->editable,
                 'order'     => $request->order,
-                'type'     => $request->type,
                 'weekdays'     => $request->weekdays,
             ]);
+
+            return [
+                'indicator' => $activity
+            ];
             
         } catch (Exception $exception) {
             throw new Exception($exception);
@@ -74,7 +80,7 @@ class ActivityService
     {
         try {
 
-            $id = $request->input('id');
+            $id = $request->id;
 
             event(new ActivityUpdated($id));
 

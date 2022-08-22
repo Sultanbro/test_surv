@@ -2,6 +2,9 @@
 
 namespace App\Models\Kpi;
 
+use App\Models\Kpi\Traits\Targetable;
+use App\Models\Kpi\Traits\WithActivityFields;
+use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Kpi extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields;
 
     protected $table = 'kpis';
 
@@ -29,17 +32,13 @@ class Kpi extends Model
         'created_at',
         'updated_at',
     ];
-
-    protected $appends = ['target', 'expanded'];
-
-    /**
-     * models
-     */
-    const TARGETS = [
-        'App\User' => 1,
-        'App\ProfileGroup' => 2,
-        'App\Position' => 3,
+    
+    protected $casts = [
+        'created_at'  => 'date:d.m.Y H:i',
+        'updated_at'  => 'date:d.m.Y H:i',
     ];
+    
+    protected $appends = ['target', 'expanded'];
 
     /**
      * One To Many отношения с kpi_items.
@@ -50,28 +49,6 @@ class Kpi extends Model
     public function items(): HasMany
     {
         return $this->hasMany('App\Models\Kpi\KpiItem');
-    }
-
-    /**
-     * Get the parent targetable model (user, group, position).
-     */
-    public function targetable()
-    {
-        return $this->morphTo();
-    }
-
-    /**
-     * Таргет
-     * @return array | null
-     */
-    public function getTargetAttribute() 
-    {
-        $target = $this->targetable;
-        return $target ? [
-            'id' => $this->targetable_id,
-            'name' => $target->name,
-            'type' => self::TARGETS[$this->targetable_type],
-        ] : null;
     }
 
     /**

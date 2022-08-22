@@ -502,11 +502,11 @@ Route::middleware([
         'as'         => 'activities.',
         'middleware' => 'superuser'
     ], function(){
-        Route::post('/get', [IndicatorController::class, 'getAllIndicators'])->name('all');
-        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('one');
+        Route::post('/get', [IndicatorController::class, 'fetch'])->name('all');
+        Route::get('/{id}', [IndicatorController::class, 'get'])->name('one');
         Route::post('save',[IndicatorController::class,'save'])->name('save');
-        Route::post('update',[IndicatorController::class,'update'])->name('update');
-        Route::delete('delete',[IndicatorController::class,'delete'])->name('delete');
+        Route::put('update',[IndicatorController::class,'update'])->name('update');
+        Route::delete('delete/{id}',[IndicatorController::class,'delete'])->name('delete');
     });
    
 

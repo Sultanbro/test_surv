@@ -1,24 +1,24 @@
 <template>
-<div class="kpi p-3">
+<div class="kpi px-3 py-1">
 
     <!-- top line -->
     <div class="d-flex mb-2 mt-2 jcsb aifs">
         
-        <div class="d-flex mr-2">
-            <div class="d-flex aifs mr-2">
+         <div class="d-flex aic mr-2">
+            <div class="d-flex aic mr-2">
                 <span>Показывать:</span>
-                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2" />
+                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
-            <super-filter 
-                :ref="'filter'"
-                :groups="groups"
-                @apply="fetchKPI"
-                @search-text-changed="onSearch"
+            <input 
+                class="searcher mr-2 input-sm"
+                v-model="searchText"
+                type="text"
+                placeholder="Поиск по совпадениям..."
+                @keyup="onSearch"
             >
-            </super-filter>
-            <div class="ml-2"> 
+            <span class="ml-2"> 
                 Найдено: {{ items.length }}
-            </div>
+            </span>
         </div>
 
         <button class="btn rounded btn-outline-success" @click="addKpi">
@@ -229,6 +229,7 @@ export default {
             pageSize: 10,
             paginationKey: 1,
             items: [],
+            all_items: [],
             activities: [],
             non_editable_fields: [
                 'created_at',
@@ -241,38 +242,10 @@ export default {
 
     created() {
         this.fetchKPI()
-        // this.fetchActivities()
     
         this.setDefaultShowFields()
         this.prepareFields(); 
         this.addStatusToItems(); 
-
-    //     this.items.forEach(el => {
-    //     let a = Math.floor(Math.random() * 3) + 1
-
-    //     for(let i=1;i<=a;i++) {
-    //         el.items.push({
-    //             name: 'Активность',
-    //             activity_id: 0,
-    //             unit: '%',
-    //             method: 1,
-    //             source: 0,
-    //             plan: '90%',
-    //             share: '40%',
-    //             sum: '10000',
-    //             fact: 100,
-    //             source: 1,
-    //             group_id: 0
-    //         });
-    //     }
-
-    //     this.groups = {
-    //         23: 'Адм сотрудники',
-    //         26: 'It отдел',
-    //         42: 'Каспи',
-    //     };
-     
-    //    })
     },
     methods: {
         
@@ -292,6 +265,7 @@ export default {
             }).then(response => {
                 
                 this.items = response.data.kpis;
+                this.all_items = response.data.kpis;
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
 
@@ -545,28 +519,53 @@ export default {
             this.$toast.info('Показать статистику');
         },
 
-        onSearch(text) { 
-            this.searchText = text;
+        onSearch() { 
+            let text = this.searchText;
+     
             if(this.searchText == '') {
-                //this.filtered_items = this.items; 
+               this.items = this.all_items;
             } else {
-                // this.filtered_items = this.items.filter((el, index) => {
-                // let has = false;
-                // el.targets.forEach(target => {
-                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-                // });
+                this.items = this.all_items.filter((el, index) => {
+                    let has = false;
 
-                // el.groups.forEach(target => {
-                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-                // });
+                    if (
+                        el.target != null
+                        && el.target.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                    ) {
+                        has = true;
+                    }
 
-                // el.roles.forEach(target => {
-                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-                // });
+                    if (
+                        el.title.toLowerCase().indexOf(text.toLowerCase()) > -1
+                    ) {
+                        has = true;
+                    }
 
-                // return has; 
-                //}); 
+                    if (
+                        el.creator != null
+                        && (
+                            el.creator.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                            || el.creator.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                        )
+                    ) {
+                        has = true;
+                    }
+
+                    if (
+                        el.updater != null
+                        && (
+                            el.updater.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                            || el.updater.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                        )
+                    ) {
+                        has = true;
+                    }
+
+                    return has; 
+                }); 
             }
+
+            this.page_items = this.items.slice(0, this.pageSize);
         },
 
         validate(value, field) {

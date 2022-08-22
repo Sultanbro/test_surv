@@ -14,12 +14,27 @@ $color-position: rgb(54, 182, 73);
         min-width: 250px;
     }
 
+    .kpi {
+        table
+        {
+            td, th {
+                min-width: 40px;
+            }
+
+            textarea,
+            select,
+            input {
+                min-width: 40px;
+                border: none;
+            }
+        }
+    }
     table {
         td, th {
             min-width: 125px;
             padding: 0;
             height: 1px;
-
+            
             &:first-child {
                 width: $bon-first-column;
                 min-width: $bon-first-column !important;
@@ -31,6 +46,7 @@ $color-position: rgb(54, 182, 73);
             }
         }
 
+        
         
 
         th {

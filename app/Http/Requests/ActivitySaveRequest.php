@@ -28,8 +28,6 @@ class ActivitySaveRequest extends FormRequest
             'name'      => 'string|required',
             'group_id'      => 'integer|required',
             'daily_plan'      => 'required',
-            'unit'      => 'string',
-            'share'      => 'integer|required|between:0,100',
             'method'    => [
                 'required',
                 Rule::in([1,2,3,4,5,6]),
@@ -42,9 +40,8 @@ class ActivitySaveRequest extends FormRequest
                 'required',
                 Rule::in([0,1,2,3]),
             ],
-            'source'      => 'string|required',
             'editable'      => 'integer',
-            'order'      => 'integer',
+            'order'         => 'integer',
             'weekdays'      => 'integer',
         ];
     }

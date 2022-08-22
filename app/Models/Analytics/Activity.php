@@ -2,20 +2,25 @@
 
 namespace App\Models\Analytics;
 
+use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
 class Activity extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, WithCreatorAndUpdater;
+
     protected $table = 'activities';
 
     public $timestamps = true;
 
     protected $casts = [
         'data' => 'array',
+        'created_at'  => 'date:d.m.Y H:i',
+        'updated_at'  => 'date:d.m.Y H:i',
     ];
+
     
     protected $fillable = [
         'name',
@@ -32,7 +37,9 @@ class Activity extends Model
         'order',
         'type',
         'weekdays', // рабочие дни в неделе, для выставления плана на месяц
-        'data' // дополнительно
+        'data', // дополнительно
+        'created_by', // 
+        'updated_by', // 
     ];
     
     // old consts for plan_units
