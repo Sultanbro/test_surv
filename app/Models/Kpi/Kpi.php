@@ -2,6 +2,7 @@
 
 namespace App\Models\Kpi;
 
+use App\Models\Kpi\Traits\Expandable;
 use App\Models\Kpi\Traits\Targetable;
 use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
@@ -12,10 +13,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Kpi extends Model
 {
-    use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields;
+    use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable;
 
     protected $table = 'kpis';
 
+    protected $appends = ['target', 'expanded'];
+    
     protected $fillable = [
         'targetable_id',
         'targetable_type',
@@ -37,8 +40,6 @@ class Kpi extends Model
         'created_at'  => 'date:d.m.Y H:i',
         'updated_at'  => 'date:d.m.Y H:i',
     ];
-    
-    protected $appends = ['target', 'expanded'];
 
     /**
      * One To Many отношения с kpi_items.
@@ -49,14 +50,5 @@ class Kpi extends Model
     public function items(): HasMany
     {
         return $this->hasMany('App\Models\Kpi\KpiItem');
-    }
-
-    /**
-     * Helper for vue
-     * @return array | null
-     */
-    public function getExpandedAttribute() 
-    {
-        return false;
     }
 }

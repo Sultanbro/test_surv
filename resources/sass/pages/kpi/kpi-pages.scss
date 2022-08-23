@@ -8,6 +8,28 @@ $color-position: rgb(54, 182, 73);
 
 .kpi-pages {
     
+    tr.collapsable {
+        display: none;
+
+        &.active {
+            display: table-row;
+        }
+    }
+
+    .collapse-table {
+      
+        td, th {
+            &:last-child {
+                width: 100% !important;
+            }
+        }
+    }
+
+    .table__wrapper {
+        width: calc(100vw - 154px);
+        overflow: auto;
+    }
+    
     .searcher {
         border: 1px solid #ced4da;
         border-radius: 5px;

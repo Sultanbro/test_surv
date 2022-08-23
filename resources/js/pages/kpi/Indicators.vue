@@ -277,7 +277,6 @@
 
 <script>
 import {fields, newItem} from "./indicators.js";
-import {findModel} from "./helpers.js";
 
 export default {
     name: "Indicators", 
@@ -554,10 +553,16 @@ export default {
  
         onSearch() { 
             let text = this.searchText;
-     
+
             if(this.searchText == '') {
+
                this.items = this.all_items;
+
             } else {
+
+                let groups = this.groups;
+                let group_ids = Object.keys(groups).filter(key => groups[key].toLowerCase().indexOf(text.toLowerCase()) > -1)
+                console.log(group_ids);
                 this.items = this.all_items.filter((el, index) => {
                     let has = false;
 
@@ -566,6 +571,12 @@ export default {
                     ) {
                         has = true;
                     }
+                    
+                    
+                    if (group_ids.includes[el.group_id]) {
+                        has = true;
+                    }
+
 
                     if (
                         el.creator != null

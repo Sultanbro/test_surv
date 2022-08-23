@@ -677,39 +677,51 @@ class IntellectController extends Controller {
 
                 if($request->link == 1) { // ссылка для подписи договора дял удаленных
 
-                    History::intellect('Cсылка на подпись', [
-                        $lead->status,
-                        $request->all(),
-                    ]);
                     
-
-                   
+                    $lead->files = json_encode([]);
+                    $lead->signed = 2;   
+                    $lead->status = '39';
+    
+                    // if($lead->status != 'LOSE') {
+                    //     $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6); // Раньше был, чтобы фиксировать время заполнения скайпа. Сейчас для хранения времени подписи
+                    // }
+                    
+                    $lead->save();
+    
+                    History::system('Уд Соискатель готов', [
+                        'lead_id' => $lead->lead_id,
+                        'date' => date('Y-m-d H:i:s', time() + 3600 * 6),
+                    ]);
+    
+                    $this->updateFields($lead->lead_id, [
+                        'UF_CRM_1628091269' => 1, // Подписал соглашение о неразглашении
+                    ]);
                   
 
-                    if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
-                        $lead->status = '40';
+                    // if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
+                    //     $lead->status = '40';
 
-                        $this->updateFields($lead->lead_id, [
-                            'STATUS_ID' => '40' // Статус: Рекрут: Подходящий, ждем подписания
-                        ]);
+                    //     $this->updateFields($lead->lead_id, [
+                    //         'STATUS_ID' => '40' // Статус: Рекрут: Подходящий, ждем подписания
+                    //     ]);
 
-                        //////////
+                    //     //////////
 
-                        usleep(4000000); // 3 sec
-                        $bitrix = new Bitrix();
-                        $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
-                        $lead->save();
-                    }
+                    //     usleep(4000000); // 3 sec
+                    //     $bitrix = new Bitrix();
+                    //     $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
+                    //     $lead->save();
+                    // }
                     
                
-                    /////////////////
+                    // /////////////////
                     
-                    $link = $this->contract_link . $lead->hash;
-                    $this->send_msg($request->phone, 'Подписать соглашение: %0a' . $link);
+                    // $link = $this->contract_link . $lead->hash;
+                    // $this->send_msg($request->phone, 'Подписать соглашение: %0a' . $link);
 
-                    return [
-                        'link' => $this->contract_link . $lead->hash
-                    ];    
+                    // return [
+                    //     'link' => $this->contract_link . $lead->hash
+                    // ];    
                 } 
     
                 if($request->link == 2) { // ссылка для выбора времени для офисных

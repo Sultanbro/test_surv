@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Kpi\Traits\Expandable;
 use App\Models\Kpi\Traits\Targetable;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Models\Kpi\Traits\WithActivityFields;
@@ -11,11 +12,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class QuartalPremium extends Model
 {
-    use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields; 
+    use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable; 
 
     protected $table = 'quartal_premiums';
 
-    protected $appends = ['target', 'group_id', 'source'];
+    protected $appends = ['target', 'group_id', 'source', 'expanded'];
     
     protected $casts = [
         'created_at'  => 'date:d.m.Y H:i',

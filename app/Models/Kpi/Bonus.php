@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use App\ProfileGroup;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\RecruiterStat;
+use App\Models\Kpi\Traits\Expandable;
 use App\Models\Kpi\Traits\Targetable;
 use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
@@ -20,13 +21,13 @@ use DB;
 
 class Bonus extends Model
 {      
-    use SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields; 
+    use SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable; 
     
     protected $table = 'kpi_bonuses';
 
     public $timestamps = true;
 
-    protected $appends = ['target', 'group_id', 'source'];
+    protected $appends = ['target', 'group_id', 'source', 'expanded'];
 
     protected $casts = [
         'created_at'  => 'date:d.m.Y H:i',

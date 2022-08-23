@@ -40,11 +40,36 @@ class BonusService
     {   
         if($filters !== null) {} 
         
+        $bonuses = Bonus::with('creator', 'updater')->get();
+ 
         return [
-            'bonuses'    => Bonus::with('creator', 'updater')->get(),
+            'bonuses'    => $this->groupItems($bonuses),
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
+    }
+
+    /**
+     * Группировать бонусы
+     */
+    private function groupItems($items) {
+        $arr = [];
+
+        $types = $items->groupBy('target.type');
+ 
+        foreach ($types as $type => $type_items) {
+            foreach ($type_items->groupBy('target.name') as $name => $name_items) {
+                $arr[] = [
+                    'type'     => $type,
+                    'name'     => $name,
+                    'id'       => $name_items[0]->target['id'],
+                    'items'    => $name_items,
+                    'expanded' => false
+                ];
+            }
+        }
+        
+        return $arr;
     }
 
     /**
