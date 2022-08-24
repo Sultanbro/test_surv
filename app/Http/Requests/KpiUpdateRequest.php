@@ -24,7 +24,6 @@ class KpiUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'kpi_id'                => 'required',
             'completed_80'          => 'nullable',
             'completed_100'         => 'nullable',
             'lower_limit'           => 'nullable',

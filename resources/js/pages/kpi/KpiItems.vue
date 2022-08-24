@@ -41,6 +41,7 @@
                         <select 
                             v-model="item.source"
                             class="form-control small"
+                            @change="++source_key"
                         >
                             <option v-for="key in Object.keys(sources)" :key="key"
                                 :value="key">
@@ -52,6 +53,8 @@
                             v-if="item.source == 1"
                             v-model="item.group_id"
                             class="form-control small"
+                            :key="'c' + source_key"
+                            @change="++source_key"
                         >
                             <option value="0" selected>-</option>
                             <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
@@ -60,6 +63,7 @@
                         <select 
                             v-model="item.activity_id"
                             class="form-control small"
+                            :key="'d' + source_key"
                         >
                             <option value="0" selected>-</option>
                             <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id"  >{{ activity.name }}</option>
@@ -99,9 +103,14 @@
 </template>
 
 <script>
+import {newKpiItem} from "./kpis.js";
+
 export default {
     name: "KpiItems", 
     props: {
+        kpi_id: {
+            default: 0
+        },
         expanded: {
             default: false,
         },
@@ -160,7 +169,8 @@ export default {
             active: 1,
             methods: [],
             sources: [],
-            refreshItemsKey: 1
+            refreshItemsKey: 1,
+            source_key: 1
         }
     }, 
 
@@ -207,6 +217,7 @@ export default {
 
         deleteItem(i) {
             this.items[i].deleted = true
+            if(this.kpi_id == 0) this.items.splice(i, 1);
             this.refreshItemsKey++;
         },
 
@@ -216,37 +227,12 @@ export default {
         },
 
         addItem() {
-            this.items.push({
-                sum: 0,
-                method: 1,
-                name: 'Активность',
-                activity_id: 0,
-                plan: 0,
-                share: 0
-            });
+            this.items.push(newKpiItem());
         },
 
         fillSelectOptions() {
             this.setMethods()
             this.setSources()
-
-            // let grouped = this.groupBy(this.activities, 'source')
-            
-            // let a = {};
-            // Object.keys(grouped).forEach((id, sd) => {
-
-            //     console.log(id,sd)
-            //     if(id == 1) {
-            //         a[id] = this.groupBy(grouped[id], 'group_id')
-            //     } else {
-            //         if(a[id] === undefined) a[id] = {};
-            //         a[id][0] = grouped[id];
-            //     }
-            // })
-
-            // if(grouped[2] == undefined) grouped[2] = []
-            // if(grouped[3] == undefined) grouped[3] = []
-            // this.grouped_activities = grouped
         },
 
         setMethods() {
@@ -256,6 +242,7 @@ export default {
                 3: 'сумма, не более',
                 4: 'среднее, не более',
                 5: 'сумма, не менее',
+                6: 'среднее, не менее',
             };
         },
 
@@ -291,12 +278,12 @@ export default {
         },
 
         grouped_activities(source, group_id) {
-            if(source == 1 && group_id != undefined) {
+            if(source == 1) {
                 return this.activities.filter(el => el.source == source && el.group_id == group_id);
             } else {
+                group_id = 0
                 return this.activities.filter(el => el.source == source);
             }
-           
         }
  
     } 

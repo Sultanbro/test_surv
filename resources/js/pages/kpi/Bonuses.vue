@@ -145,9 +145,7 @@
                                                 >
                                                     <option value="0" selected>-</option>
                                                     <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
-                                                </select>
-
-                                                <div v-else></div>        
+                                                </select>    
 
                                                 <select 
                                                     v-model="item.activity_id"

@@ -21,10 +21,10 @@ trait Targetable
     {
         $target = $this->targetable;
         $type = $this->targets[$this->targetable_type];
-
-        if($type == 1) $name = $target->last_name . ' ' . $target->name; 
-        if($type == 2) $name = $target->name; 
-        if($type == 3) $name = $target->position; 
+        
+        if($type == 1 && $target) $name = $target->last_name . ' ' . $target->name; 
+        if($type == 2 && $target) $name = $target->name; 
+        if($type == 3 && $target) $name = $target->position; 
 
         return $target ? [
             'id' => $this->targetable_id,
@@ -38,6 +38,6 @@ trait Targetable
      */
     public function targetable()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
 }

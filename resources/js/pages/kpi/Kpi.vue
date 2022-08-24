@@ -58,9 +58,9 @@
                             <span class="ml-2">{{ i + 1 }}</span>
                         </div>
                     </td>
-                    <td  v-for="(field, f) in fields" :key="f">
+                    <td  v-for="(field, f) in fields" :key="f" :class="field.class"> 
 
-                        <div v-if="field.key == 'target'" :class="field.class">
+                        <div v-if="field.key == 'target'" >
                             <superselect
                                 v-if="item.target == null"
                                 class="w-full" 
@@ -96,12 +96,13 @@
                     </td>
                 </tr>
 
-                <template v-if="item.items !== undefined && item.items.length > 0">
+                <template v-if="item.items !== undefined">
                     <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
                         <td :colspan="fields.length + 2">
                             <div class="table__wrapper">
                                 <kpi-items
-                                    :items="item.items"
+                                    :kpi_id="item.id"
+                                    :items="item.items" 
                                     :expanded="item.expanded"
                                     :activities="activities"
                                     :groups="groups"
@@ -109,8 +110,7 @@
                                     :completed_100="item.completed_100"
                                     :lower_limit="item.lower_limit"
                                     :upper_limit="item.upper_limit"
-                                >
-                                </kpi-items>
+                                />
                             </div>
                         </td>
                     </tr>                
@@ -149,38 +149,16 @@
      
       <div class="row">
 
-        <div class="col-md-4 mb-2">
-           <b-form-checkbox
-              v-model="show_fields.updated_at"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Дата изменения
-          </b-form-checkbox>
-        
-        </div> 
-        <div class="col-md-4 mb-2">
-           <b-form-checkbox
-              v-model="show_fields.created_by"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Постановщик
-          </b-form-checkbox>
-        
-          
-        </div>  
-
-        <div class="col-md-4 mb-2">
-          <b-form-checkbox
-              v-model="show_fields.updated_by"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Изменил
-          </b-form-checkbox>
-       
+         <div class="col-md-4 mb-2" v-for="(field, f) in all_fields">
+            <b-form-checkbox
+                v-model="show_fields[field.key]"
+                :value="true"
+                :unchecked-value="false"
+            >
+                {{ field.name }}
+            </b-form-checkbox>
         </div>
+
       </div>  
     </b-modal>
 
@@ -188,6 +166,9 @@
 </template>
 
 <script>
+import {kpi_fields, newKpi} from "./kpis.js";
+import {findModel, groupBy} from "./helpers.js";
+
 export default {
     name: "KPI", 
     props: {
@@ -221,7 +202,9 @@ export default {
         return {
             active: 1,
             show_fields: [],
+            all_fields: kpi_fields,
             fields: [],
+            uri: 'kpi',
             groups: [],
             searchText: '',
             modalAdjustVisibleFields: false,
@@ -260,7 +243,7 @@ export default {
         fetchKPI(filter = null) {
             let loader = this.$loading.show();
 
-            axios.post('/kpi/get', {
+            axios.post(this.uri + '/' + 'get', {
                 filters: filter 
             }).then(response => {
                 
@@ -269,7 +252,6 @@ export default {
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
 
-                this.items.forEach(el => el.expanded = false);
                 this.page_items = this.items.slice(0, this.pageSize);
 
                 loader.hide()
@@ -280,24 +262,15 @@ export default {
         },
 
         setDefaultShowFields() {
-        
+            let obj = {}; // Какие поля показывать
+            kpi_fields.forEach(field => obj[field.key] = true); 
+
             if(localStorage.kpi_show_fields) {
                 this.show_fields = JSON.parse(localStorage.getItem('kpi_show_fields'));
+                if(this.show_fields == null) this.show_fields = obj
             } else {
-                this.show_fields = { // Какие поля показывать
-                    target: true,
-                    completed_80: true,
-                    completed_100: true,
-                    lower_limit: true,
-                    upper_limit: true,
-                    stats: true,
-                    created_at: true,
-                    updated_at: true,
-                    created_by: true,
-                    updated_by: true,
-                };
+                this.show_fields = obj
             }
-
         },
 
         adjustFields() {
@@ -318,131 +291,23 @@ export default {
         },
 
         prepareFields() {
-            let fields = [];
+            let visible_fields = [],
+                show_fields = this.show_fields;
             
-            if(this.show_fields['target']) {
-                fields.push({
-                    name: 'Кому',
-                    key: 'target',
-                    visible: true,
-                    type: 'superselect',
-                    class: 'text-left w-230 '
-                });
-            }
-            
-            if(this.show_fields['completed_80']) {
-                fields.push({
-                    name: 'Выполнение KPI от 80-99%',
-                    key: 'completed_80',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
+            kpi_fields.forEach((field, i) => {
+                if(this.show_fields[field.key] != undefined
+                    && this.show_fields[field.key]
+                ) {
+                    visible_fields.push(field)
+                }
+            });
 
-            if(this.show_fields['completed_100']) {
-                fields.push({
-                    name: 'Выполнение KPI от 100%',
-                    key: 'completed_100',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['lower_limit']) {
-                fields.push({
-                    name: 'Нижний порог отсечения премии, %',
-                    key: 'lower_limit',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['upper_limit']) {
-                fields.push({
-                    name: 'Верхний порог отсечения премии, %',
-                    key: 'upper_limit',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['stats']) {
-                fields.push({
-                    name: 'Статистика',
-                    key: 'stats',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['created_at']) {
-                fields.push({
-                    name: 'Дата создания',
-                    key: 'created_at',
-                    visible: true,
-                    type: 'date',
-                    class: 'text-center'
-                });
-            }
-
-            if(this.show_fields['updated_at']) {
-                fields.push({
-                    name: 'Дата изменения',
-                    key: 'updated_at',
-                    visible: true,
-                    type: 'date',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['created_by']) {
-                fields.push({
-                    name: 'Постановщик',
-                    key: 'created_by',
-                    visible: true,
-                    type: 'text',
-                    class: 'text-center'
-                });
-            }
-
-            if(this.show_fields['updated_by']) {
-                fields.push({
-                    name: 'Изменил',
-                    key: 'updated_by',
-                    visible: true,
-                    type: 'text',
-                    class: 'text-center'
-                });
-            }
-
-            this.fields = fields;
+            this.fields = visible_fields;
         },
 
         addKpi() {
-            this.items.unshift({
-                id: 0,
-                target: null,
-                completed_80: 10000,
-                completed_100: 30000,
-                lower_limit: 80,
-                upper_limit: 100,
-                stats: 3,
-                created_at: new Date().toISOString().substr(0, 19).replace('T',' '),
-                updated_at: new Date().toISOString().substr(0, 19).replace('T',' '),
-                created_by: 'Али Акпанов',
-                updated_by: 'Али Акпанов',
-                items: [{
-                    sum: 0,
-                    method: 1,
-                    name: 'Активность',
-                    activity_id: 0,
-                    plan: 0,
-                    share: 0
-                }], 
-                expanded: false
-            });
-
-            this.$toast.info('Добавить KPI');
+            this.items.unshift(newKpi());
+            this.$toast.info('Добавлен KPI');
         },
 
         saveKpi(i) {
@@ -458,7 +323,7 @@ export default {
             let fields = {
                 id: item.id,
                 targetable_id: item.target.id,
-                targetable_type: item.target.type,
+                targetable_type: findModel(item.target.type),
                 completed_80: item.completed_80,
                 completed_100: item.completed_100,
                 upper_limit: item.upper_limit,
@@ -467,45 +332,67 @@ export default {
             };
  
             let req = this.items[i].id == 0 
-                ? axios.post('/kpi/' + method, fields)
-                : axios.put('/kpi/' + method, fields);
+                ? axios.post(this.uri + '/' + method, fields)
+                : axios.put(this.uri + '/' + method, fields);
 
             req.then(response => {
                 
-                let kpi = response.data.kpi;
-                
-                item.id = kpi.id;
+                item.id = response.data.id;
                 item.items.forEach((el, index) => {
-                    el.id = kpi.items[index].id
+                    el.id = response.data.items[index]
                 });
+
+                this.removeDeletedItems(item.items)
+                
+
 
                 this.$toast.info('KPI Сохранен!');
                 loader.hide()
             }).catch(error => {
+                let m = error;
+                if(error.message == 'Request failed with status code 409') {
+                    m = 'Выберите другую цель "Кому". Этому объекту уже назначен KPI';
+                }
+                
                 loader.hide()
-                alert(error)
+                alert(m)
             });
-        }, 
+        },  
+
+        removeDeletedItems(items) {
+            let indexes = [];
+            items.forEach((el, index) => {
+                if(el.deleted != undefined && el.deleted) {
+                    indexes.push(index)
+                }
+            });
+
+            indexes.forEach(index => items.splice(index, -1));
+
+        },
 
         deleteKpi(i) {
-            let loader = this.$loading.show();
+         
             let item = this.items[i]
+            let a = this.all_items.findIndex(el => el.id == item.id);
 
             if(!confirm('Вы уверены?')) {
                 return;
             }
 
             if(item.id == 0) {
-                this.items.splice(i) // maybe will be error cause of page_items
+                if(a != -1) this.all_items.splice(a, 1);
+                 this.onSearch();
                 this.$toast.info('KPI Удален!');
                 return;
             }
 
-            axios.delete('/kpi/delete', {
-                id: item.id
-            }).then(response => {
+            let loader = this.$loading.show();
+            axios.delete(this.uri + '/delete/' + item.id).then(response => {
 
-                this.items.splice(i) // maybe will be error cause of page_items
+             
+                if(a != -1) this.all_items.splice(a, 1);
+                this.onSearch();
 
                 this.$toast.info('KPI Удален!');
                 loader.hide()
