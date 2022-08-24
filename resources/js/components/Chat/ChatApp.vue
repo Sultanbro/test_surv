@@ -6,7 +6,7 @@
                @search="searchChats"
                @leave-chat="leaveChat"
                @create-chat="createChat"
-    /> 
+    />
     <Conversation v-show="fullscreen"
                   :messages="messages"
                   :chat="selectedChat"
@@ -43,14 +43,10 @@ export default {
       pinnedMessage: null,
     };
   },
-  created() {
-    console.log('updateChats mounted')
-  },
   mounted() {
-    console.log('updateChats mounted')
     this.updateChats(() => {
       this.initialized = true;
-      console.log('test')
+
       // new message notification
       window.Echo.channel(`messages.${this.user.id}`).listen('.newMessage', e => {
         this.handleIncomingMessage(e.message);
@@ -72,7 +68,8 @@ export default {
   methods: {
     updateChats(callback = () => {}) {
       API.fetchChats(response => {
-        this.chats = response.chats;
+        // sort by last message date
+        this.chats = this.sortChats(response.chats);
         this.user = response.user;
         callback(response);
       });
@@ -81,7 +78,14 @@ export default {
       if (search.length > 0) {
 
         API.searchChats(search, chats => {
-          this.chats = chats;
+          chats.users.forEach(user => {
+            user.id = 'user' + user.id;
+            user.title = user.name;
+            user.private = true;
+          });
+
+          this.chats = chats.users;
+          this.chats = this.chats.concat(chats.chats);
         });
       } else {
         this.updateChats();
@@ -96,21 +100,34 @@ export default {
       // Get chat info
       API.getChatInfo(chat.id, response => {
         this.selectedChat = response;
+
+        // API fetch messages
+        API.fetchMessages(response.id, messages => {
+          this.messages = messages.reverse();
+
+          // get messages ids
+          let messagesIds = messages.map(message => message.id);
+
+          // set messages as read
+          API.setMessagesAsRead(messagesIds, chats => {
+            this.chats = this.sortChats(chats);
+          });
+        });
+
+
         this.handlePinnedMessage(response.pinned_message);
       });
 
-      // API fetch messages
-      API.fetchMessages(chat.id, messages => {
-        this.messages = messages.reverse();
-
-        // get messages ids
-        let messagesIds = messages.map(message => message.id);
-
-        // set messages as read
-        API.setMessagesAsRead(messagesIds, chats => {
-          this.chats = chats;
-        });
+    },
+    sortChats(chats) {
+      chats.sort((a, b) => {
+        // check if created_at is not null
+        if (a.last_message === null || b.last_message === null) {
+          return 1;
+        }
+        return new Date(b.last_message.created_at) - new Date(a.last_message.created_at);
       });
+      return chats;
     },
     saveNewMessage(message) {
       this.messages.push(message);

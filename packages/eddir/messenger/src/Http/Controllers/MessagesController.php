@@ -44,14 +44,14 @@ class MessagesController {
      */
     public function sendMessage(int $chatId, Request $request): JsonResponse
     {
-        $response = [];
+        $message = [];
         // check is user is not authorized
         if (!Auth::check()) {
             return response()->json([ 'message' => 'Unauthorized' ], 401);
         }
         // check if message is empty
-        if (empty($request->message)) {
-            return response()->json([ 'message' => 'Message is empty' ], 400);
+        if ($request->message == "") {
+            return response()->json([ 'message' => 'Message is empty: ' ], 400);
         }
         // check if message is too long
         if (strlen($request->message) > 1000) {
@@ -59,12 +59,14 @@ class MessagesController {
             $parts = str_split($request->message, 1000);
             // send each part
             foreach ($parts as $part) {
-                $response = MessengerFacade::sendMessage($chatId, Auth::user()->id, $part);
+                $message = MessengerFacade::sendMessage($chatId, Auth::user()->id, $part);
             }
         } else {
-            $response = MessengerFacade::sendMessage($chatId, Auth::user()->id, $request->get('message'));
+            $message = MessengerFacade::sendMessage($chatId, Auth::user()->id, $request->get('message'));
         }
-        return response()->json($response);
+        // set message as read
+        MessengerFacade::setMessageAsRead($message, Auth::user());
+        return response()->json($message);
     }
 
     /**

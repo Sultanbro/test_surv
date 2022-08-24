@@ -3,19 +3,16 @@
     <input
       type="text"
       class="search-input"
-      placeholder="Поиск"
+      placeholder="Search"
       v-model="search"
       @input="onSearchInput()"
     />
-    <div v-if="!chats.length">
-      <button class="create-chat-button" @click="showCreateModal">
-        Создать чат
-      </button>
-      <CreateChatModal v-show="createModalVisible"
-                       :users="createModalUsers"
-                       @create="createChat"
-                       @close="createModalVisible=false"/>
-    </div>
+<!--    кнопка создать-->
+    <button class="create-chat-button" @click="showCreateModal()">Create</button>
+    <CreateChatModal v-show="createModalVisible"
+                     :users="createModalUsers"
+                     @create="createChat"
+                     @close="createModalVisible=false"/>
     <div class="chats-list">
       <ul>
         <li
@@ -60,6 +57,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    users: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -82,7 +83,20 @@ export default {
     selectContact(chat) {
       this.selected = chat;
 
-      this.$emit('selected', chat);
+      // // check if the chat is private
+      // if (chat.private) {
+      //   console.log("private chat");
+      //
+      //   // get user id as part after user in chat.id
+      //   const userId = chat.id.split("user")[1];
+      //
+      //   this.$emit('selected', {id: userId})
+      //
+      // } else {
+        this.$emit('selected', chat);
+        this.search = "";
+      // }
+
     },
     onSearchInput() {
       this.$emit('search', this.search);
@@ -117,6 +131,7 @@ export default {
   height: 600px;
   overflow: auto;
   border-left: 1px solid #a6a6a6;
+  border-top: 1px solid #a6a6a6;
 }
 
 .chats-list ul {
@@ -213,7 +228,6 @@ export default {
 .search-input {
   flex: 1;
   border: none;
-  border-bottom: 1px solid #a6a6a6;
   padding: 10px;
   font-size: 18px;
   outline: none;
@@ -228,15 +242,14 @@ export default {
 }
 
 .create-chat-button {
-  flex: 1;
-  width: 100%;
-  border: none;
+/*  прямоугольник с круглыми углами с серым фоном */
+  background-color: #f5f5f5;
+  border-radius: 25px;
+  border: 1px solid #e1dddd;
   padding: 10px;
   font-size: 18px;
   outline: none;
   height: 50px;
-  background-color: white;
-  cursor: pointer;
 }
 
 .create-chat-button:hover {

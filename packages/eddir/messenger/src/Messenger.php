@@ -68,11 +68,16 @@ class Messenger {
                               } )
                               ->get();
         $chats->each( function ( MessengerChat $chat ) use ( $user ) {
-            $chat->unread_messages_count = $chat->getUnreadMessagesCount($user);
+            $chat->unread_messages_count = $chat->getUnreadMessagesCount( $user );
             // last message with sender
             $chat->last_message = $chat->getLastMessage();
             if ( $chat->last_message ) {
                 $chat->last_message->sender = $chat->last_message->sender;
+            }
+
+            if ($chat->private) {
+                // set title as username
+                $chat->title = $chat->users()->where('user_id', '!=', $user->id)->first()->name;
             }
         } );
 
@@ -84,15 +89,18 @@ class Messenger {
      *
      * @param string $name
      * @param int $userId
+     * @param int $limit
      *
      * @return Collection
      */
-    public function searchChats( string $name, int $userId ): Collection {
+    public function searchChats( string $name, int $userId, int $limit = 100 ): Collection {
         return MessengerChat::query()
                             ->whereHas( 'users', function ( Builder $query ) use ( $userId ) {
                                 $query->where( 'user_id', $userId );
                             } )
                             ->where( 'title', 'like', "%$name%" )
+                            ->where( 'private', false )
+                            ->limit( $limit )
                             ->get();
     }
 
@@ -100,12 +108,16 @@ class Messenger {
      * Search users by name.
      *
      * @param string $name
+     * @param int $limit
      *
      * @return Collection
      */
-    public function searchUsers( string $name ): Collection {
+    public function searchUsers( string $name, int $limit = 100 ): Collection {
         return User::query()
                    ->where( 'name', 'like', "%$name%" )
+                   ->orWhere( 'last_name', 'like', "%$name%" )
+                   ->select(\DB::raw("CONCAT_WS(' ', last_name, name) as name"), 'id', 'img_url as avatar')
+                   ->limit( $limit )
                    ->get();
     }
 
@@ -121,6 +133,44 @@ class Messenger {
                             ->where( 'id', $chatId )
                             ->first();
     }
+
+    /**
+     * Get private chat by user id or create new one if it doesn't exist.
+     *
+     * @param int $userId
+     * @param int $otherUserId
+     *
+     * @return Builder|Model
+     */
+    public function getPrivateChat( int $userId, int $otherUserId ): Builder|Model {
+        // get chat when has user userId
+        $chat = MessengerChat::query()
+                             ->whereHas( 'users', function ( Builder $query ) use ( $userId ) {
+                                 $query->where( 'user_id', $userId );
+                             } )
+                             ->whereHas( 'users', function ( Builder $query ) use ( $otherUserId ) {
+                                 $query->where( 'user_id', $otherUserId );
+                             } )
+                             ->first();
+        if ( $chat ) {
+            return $chat;
+        }
+        // create new chat if it doesn't exist
+        $chat = MessengerChat::query()
+                            ->create( [
+                                'owner_id' => $userId,
+                                'title' => '',
+                                'private' => true,
+                            ] );
+
+        // attach each user
+        $chat->users()->attach( $userId );
+        $chat->users()->attach( $otherUserId );
+        $chat->save();
+
+        return $chat;
+    }
+
 
     /**
      * Fetch chat messages with pagination.
@@ -154,6 +204,19 @@ class Messenger {
             $message->readers()->syncWithoutDetaching( $user );
         } );
         return $messages;
+    }
+
+    /**
+     * Set message as read.
+     *
+     * @param MessengerMessage $message
+     * @param User $user
+     *
+     * @return MessengerMessage
+     */
+    public function setMessageAsRead(MessengerMessage $message, User $user) {
+        $message->readers()->syncWithoutDetaching($user);
+        return $message;
     }
 
     /**
@@ -206,7 +269,6 @@ class Messenger {
      *
      * @return MessengerMessage
      * @throws ApiErrorException
-     * @throws GuzzleException
      * @throws PusherException
      * @throws Exception
      */

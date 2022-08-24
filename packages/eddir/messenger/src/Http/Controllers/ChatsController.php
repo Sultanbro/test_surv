@@ -86,12 +86,13 @@ class ChatsController extends Controller
         if (strlen($request->get('q')) < 1) {
             return response()->json([ 'message' => 'Search query must be at least 1 characters long' ], 422);
         }
-//        $chats = MessengerFacade::searchChats($request->get('q'), 369);
         $chats = MessengerFacade::searchChats($request->get('q'), Auth::user()->id);
-//        $users = MessengerFacade::searchUsers($request->get('q'));
-        return response()->json($chats);
+        $users = MessengerFacade::searchUsers($request->get('q'));
+        return response()->json([
+            'chats' => $chats,
+            'users' => $users,
+        ]);
     }
-
 
     /**
      * Get chat information by id
@@ -102,6 +103,7 @@ class ChatsController extends Controller
      */
     public function getChat(int $chat_id): JsonResponse
     {
+
         // get chat
         $chat = MessengerFacade::getChat($chat_id);
         // check if chat exists
@@ -113,6 +115,18 @@ class ChatsController extends Controller
 
         // return chat model
         return response()->json($chat);
+    }
+
+    /**
+     * Get private chat info
+     *
+     * @param int $user_id
+     *
+     * @return JsonResponse
+     */
+    public function getPrivateChat(int $user_id): JsonResponse
+    {
+        return response()->json( MessengerFacade::getPrivateChat(Auth::user()->id, $user_id) );
     }
 
     /**

@@ -1,5 +1,5 @@
 <template>
-  <modal v-on="$listeners">
+  <modal v-on="$listeners" :closeButton="false">
     <template v-slot:header>
       Создание чата
     </template>
@@ -73,5 +73,8 @@ export default {
 <style>
   label {
     display: block;
+  }
+  .form-control {
+    border: 1px solid #e8e8e8;
   }
 </style>

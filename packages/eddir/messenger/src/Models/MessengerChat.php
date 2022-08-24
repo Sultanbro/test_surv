@@ -22,6 +22,7 @@ class MessengerChat extends Model
         'title',
         'description',
         'image',
+        'private'
     ];
 
     public function owner(): BelongsTo

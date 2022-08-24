@@ -20,7 +20,7 @@ class MessengerServiceProvider extends ServiceProvider
         /*
          * Optional methods to load your package assets
          */
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'chat');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'messenger');
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
         Route::group([
