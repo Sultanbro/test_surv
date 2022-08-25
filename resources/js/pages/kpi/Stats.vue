@@ -16,10 +16,6 @@
             </span>
         </div>
 
-        <button class="btn rounded btn-outline-success" @click="addKpi">
-            <i class="fa fa-plus mr-2"></i>
-            <span>Добавить</span>
-        </button>
     </div>
     
     <!-- table -->
@@ -29,14 +25,13 @@
             <tr class="table-heading">
                 
                 <th class="first-column">
-                    <i class="fa fa-cogs" @click="adjustFields"></i>
+   
+
                 </th>
 
-                <th v-for="(field, i) in fields" :key="i" :class="field.class">
-                    {{ field.name }}
-                </th>
-
-                <th>Действия</th>
+                <th>Сотрудник</th>
+               
+                <th></th>
 
             </tr>
 
@@ -44,75 +39,103 @@
 
         <tbody>
 
-            <template v-for="(item, i) in page_items">
-                <tr :key="i">
-                    <td  @click="expand(i)" class="pointer">
+            
+
+           
+            <template v-for="(wrap_item, w) in page_items">
+                
+                <tr class="main-row">
+
+                    <td  @click="expand(w)" class="pointer">
                         <div class="d-flex px-2">
-                            <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
+                            <i class="fa fa-minus mt-1" v-if="wrap_item.expanded"></i>
                             <i class="fa fa-plus mt-1" v-else></i>
-                            <span class="ml-2">{{ i + 1 }}</span>
+                            <span class="ml-2">{{ w + 1 }}</span>
                         </div>
                     </td>
-                    <td  v-for="(field, f) in fields" :key="f" :class="field.class"> 
-
-                        <div v-if="field.key == 'target'" >
-                            <superselect
-                                v-if="item.target == null || item.id == 0"
-                                class="w-full" 
-                                :values="item.target == null ? [] : [item.target]" 
-                                :single="true"
-                                @choose="(target) => item.target = target"
-                                @remove="() => item.target = null"
-                                :key="i" /> 
-                            <div v-else class="d-flex aic">
-                                <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i> 
-                                <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i> 
-                                <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i> 
-                                <span class="ml-2">{{ item.target.name }}</span>
-                                
-                            </div>
-                        </div>
-
-                        <div v-else-if="field.key == 'stats'" :class="field.class">
-                            <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
-                        </div>
-
-                        <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
-                           {{ item[field.key] }}
-                        </div>
-
-                        <div v-else :class="field.class">
-                            <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" /> 
-                        </div>
-
-                    </td>
-                    <td >
-                        <i class="fa fa-save ml-2 mr-1 btn btn-success p-1" @click="saveKpi(i)"></i>
-                        <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi(i)"></i>
-                    </td>
+                    <td>{{ wrap_item.name }}</td>
+                    <td></td>
+                    
+                        
                 </tr>
 
-                <template v-if="item.items !== undefined">
-                    <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
+                <template v-if="wrap_item.kpis != undefined && wrap_item.kpis.length > 0">
+                    <tr class="collapsable" :class="{'active': wrap_item.expanded}" :key="w + 'a'">
                         <td :colspan="fields.length + 2">
                             <div class="table__wrapper">
-                                <kpi-items
-                                    :kpi_id="item.id"
-                                    :items="item.items" 
-                                    :expanded="item.expanded"
-                                    :activities="activities"
-                                    :groups="groups"
-                                    :completed_80="item.completed_80"
-                                    :completed_100="item.completed_100"
-                                    :lower_limit="item.lower_limit"
-                                    :upper_limit="item.upper_limit"
-                                />
+                            <table>
+                                <template v-for="(item, i) in wrap_item.kpis">
+                                    <tr :key="i">
+                                        <td  @click="expand(i)" class="pointer">
+                                            <span class="ml-2">{{ i + 1 }}</span>
+                                        </td>
+                                        <td  v-for="(field, f) in fields" :key="f" :class="field.class"> 
+
+                                         
+
+                                            <div v-if="field.key == 'stats'" :class="field.class">
+                                                <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
+                                            </div>
+
+                                            <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
+                                            {{ item[field.key] }}
+                                            </div>
+
+                                            <div v-else :class="field.class">
+                                                <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" /> 
+                                            </div>
+
+                                        </td>
+                                        <td >
+                                            <i class="fa fa-save ml-2 mr-1 btn btn-success p-1" @click="saveKpi(i)"></i>
+                                            <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi(i)"></i>
+                                        </td>
+                                    </tr>
+
+                                    <template v-if="item.items !== undefined">
+                                        <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
+                                            <td :colspan="fields.length + 2">
+                                                <div class="table__wrapper">
+                                                    <kpi-items
+                                                        :kpi_id="item.id"
+                                                        :items="item.items" 
+                                                        :expanded="item.expanded"
+                                                        :activities="activities"
+                                                        :groups="groups"
+                                                        :completed_80="item.completed_80"
+                                                        :completed_100="item.completed_100"
+                                                        :lower_limit="item.lower_limit"
+                                                        :upper_limit="item.upper_limit"
+                                                        :editable="false"
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>                
+                                    </template>
+                                
+                                </template>
+                            </table>
                             </div>
                         </td>
-                    </tr>                
+                    </tr>
                 </template>
+
+
+
+
               
+
             </template>
+
+
+
+
+
+
+
+
+
+            
 
           
         </tbody>
@@ -137,7 +160,10 @@
 </div>
 </template>
 
-<script>
+<script> 
+import {kpi_fields} from "./kpis.js";
+import {findModel} from "./helpers.js";
+
 export default {
     name: "Stats", 
     props: {
@@ -146,16 +172,96 @@ export default {
     data() {
         return {
             active: 1,
-            items: [],
-            groups: {}
+            paginationKey: 1,
+
+            items: [
+                {
+                    expanded: false,
+                    user_id: 123,
+                    type: 'user',
+                    name: 'Али Акпанов',
+                    kpis: [
+                        {
+                            id: 2,
+                            completed_80: 20000,
+                            completed_100: 30000,
+                            lower_limit: 80,
+                            upper_limit: 100,
+                            kpi_items: [
+                                {
+                                    id: 13,
+                                    method: 1,
+                                    name: 'Кол=во минут',
+                                    activity_id: 0,
+                                    plan: 450,
+                                    share: 100,
+                                    fact: 355, // факт с user_stat
+                                }
+                            ]
+                        },
+                        {
+                            id: 2,
+                            completed_80: 20000,
+                            completed_100: 30000,
+                            lower_limit: 80,
+                            upper_limit: 100,
+                            kpi_items: []
+                        }
+                    ]
+                }
+            ],
+            groups: {
+                42: 'kaspi',
+                26: 'IT отдел'
+            },
+            page_items: [],
+            pageSize: 10,
+            active: 1,
+            show_fields: [],
+            all_fields: kpi_fields,
+            fields: [],
+            groups: [],
+            modalAdjustVisibleFields: false,
+            all_items: [],
+            activities: [],
+            non_editable_fields: [
+                'created_at',
+                'updated_at',
+                'created_by',
+                'updated_by',
+            ]
         }
     },
 
     created() {
        // this.fetchData()
+       this.prepareFields()
+       this.page_items = this.items.slice(0, this.pageSize);
     },
     methods: {
- 
+        
+        expand(i) {
+            this.page_items[i].expanded = !this.page_items[i].expanded
+        },
+
+        onChangePage(page_items) {
+            this.page_items = page_items;
+        },
+
+        prepareFields() {
+            let visible_fields = [],
+                show_fields = this.show_fields;
+            
+            kpi_fields.forEach((field, i) => {
+                if(this.show_fields[field.key] != undefined
+                    && this.show_fields[field.key]
+                ) {
+                    visible_fields.push(field)
+                }
+            });
+
+            this.fields = kpi_fields;
+        },
     } 
 }
 </script>

@@ -16,86 +16,119 @@
             </tr>
         </thead>
         <tbody :key="refreshItemsKey">
-            <tr 
-                v-for="(item, i) in items" :key="i"
-                class="jt-row j-hidden"
-                :class="{
-                    'j-hidden': !expanded,
-                    'j-deleted': item.deleted != undefined && item.deleted,
-                }"
-            >
-                <td class="first-column"></td>
-                <td>
-                    <input type="text" class="form-control" v-model="item.name" />
-                </td>
-                <td class="text-center"> 
-                    <select v-model="item.method" class="form-control small">
-                        <option v-for="key in Object.keys(methods)" :key="key"
-                            :value="key">
-                            {{ methods[key] }}
-                        </option>
-                    </select>
-                </td>
-                <td class="text-center">
-                    <div class="d-flex">
-                        <select 
-                            v-model="item.source"
-                            class="form-control small"
-                            @change="++source_key"
-                        >
-                            <option v-for="key in Object.keys(sources)" :key="key"
+
+            <template v-if="editable">
+                <tr 
+                    v-for="(item, i) in items" :key="i"
+                    class="jt-row j-hidden"
+                    :class="{
+                        'j-hidden': !expanded,
+                        'j-deleted': item.deleted != undefined && item.deleted,
+                    }"
+                >
+                    <td class="first-column"></td>
+                    <td>
+                        <input type="text" class="form-control" v-model="item.name" />
+                    </td>
+                    <td class="text-center"> 
+                        <select v-model="item.method" class="form-control small">
+                            <option v-for="key in Object.keys(methods)" :key="key"
                                 :value="key">
-                                {{ sources[key] }}
+                                {{ methods[key] }}
                             </option>
                         </select>
+                    </td>
+                    <td class="text-center">
+                        <div class="d-flex">
+                            <select 
+                                v-model="item.source"
+                                class="form-control small"
+                                @change="++source_key"
+                            >
+                                <option v-for="key in Object.keys(sources)" :key="key"
+                                    :value="key">
+                                    {{ sources[key] }}
+                                </option>
+                            </select>
 
-                        <select 
-                            v-if="item.source == 1"
-                            v-model="item.group_id"
-                            class="form-control small"
-                            :key="'c' + source_key"
-                            @change="++source_key"
-                        >
-                            <option value="0" selected>-</option>
-                            <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
-                        </select>
+                            <select 
+                                v-if="item.source == 1"
+                                v-model="item.group_id"
+                                class="form-control small"
+                                :key="'c' + source_key"
+                                @change="++source_key"
+                            >
+                                <option value="0" selected>-</option>
+                                <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
+                            </select>
 
-                        <select 
-                            v-model="item.activity_id"
-                            class="form-control small"
-                            :key="'d' + source_key"
-                        >
-                            <option value="0" selected>-</option>
-                            <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id"  >{{ activity.name }}</option>
-                        </select>
-                    </div>
-                </td>
-                <td class="text-center w-sm">
-                    <input type="text" class="form-control w-sm" v-model="item.unit" />
-                </td>
-                <td class="text-center">
-                    <input type="number" class="form-control" v-model="item.plan" min="0" />
-                </td>
-                <td class="text-center">
-                    <input type="number" class="form-control" v-model="item.share" min="0"  max="100"/>
-                </td>
-                <td class="text-center">
-                    {{ item.sum }}
-                </td>
-                <td>
-                    <i class="fa fa-arrow-up btn btn-primary p-1 mx-2" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
-                    <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)" v-else></i>
-                </td>
-            </tr>
+                            <select 
+                                v-model="item.activity_id"
+                                class="form-control small"
+                                :key="'d' + source_key"
+                            >
+                                <option value="0" selected>-</option>
+                                <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id">{{ activity.name }}</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td class="text-center w-sm">
+                        <input type="text" class="form-control w-sm" v-model="item.unit" />
+                    </td>
+                    <td class="text-center">
+                        <input type="number" class="form-control" v-model="item.plan" min="0" />
+                    </td>
+                    <td class="text-center">
+                        <input type="number" class="form-control" v-model="item.share" min="0"  max="100"/>
+                    </td>
+                    <td class="text-center">
+                        {{ item.sum }}
+                    </td>
+                    <td>
+                        <i class="fa fa-arrow-up btn btn-primary p-1 mx-2" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
+                        <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)" v-else></i>
+                    </td>
+                </tr>
 
-            <tr>
-                <td></td>
-                <td colspan="8" class="plus-item" @click="addItem">
-                    <div class="px-2 py-1">
-                        <i class="fa fa-plus mr-2"></i> <b>Добавить активность</b>
-                    </div>
-                </td>
-            </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="8" class="plus-item" @click="addItem">
+                        <div class="px-2 py-1">
+                            <i class="fa fa-plus mr-2"></i> <b>Добавить активность</b>
+                        </div>
+                    </td>
+                </tr>
+            </template>
+
+            <template v-else>
+                <tr 
+                    v-for="(item, i) in items" :key="i"
+                    class="jt-row j-hidden"
+                    :class="{
+                        'j-hidden': !expanded,
+                    }"
+                >
+                    <td class="first-column"></td>
+                    <td>{{ item.name }}</td>
+                    <td class="text-center">{{ methods[item.method] }}</td>
+                    <td class="text-center">
+                        <div class="d-flex">
+                            <div class="mr-2">{{ sources[item.source] }}</div>
+                            <div class="mr-2">{{ groups[item.group_id] }}</div>
+                            <div class="mr-2">{{ getActivity(item.activity_id) }}</div>
+                        </div>
+                    </td>
+                    <td class="text-center w-sm">{{ item.unit }}</td>
+                    <td class="text-center">{{ item.plan }}</td>
+                    <td class="text-center">{{ item.share }}</td>
+                    <td class="text-center">
+                        <input type="number" class="form-control" v-model="item.fact" min="0" />
+                    </td>
+                    <td class="text-center">{{ item.sum }}</td>
+                </tr>
+
+            </template>
+           
         </tbody>
     </table>
       
@@ -135,6 +168,9 @@ export default {
         upper_limit: {
             default: 100,
         },
+        editable: {
+            default: false
+        }
     },
     watch: {
         items: {
@@ -228,6 +264,10 @@ export default {
 
         addItem() {
             this.items.push(newKpiItem());
+        },
+
+        getActivity(id) {
+            return this.activities.find(el => el.id == id)
         },
 
         fillSelectOptions() {

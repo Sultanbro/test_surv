@@ -111,6 +111,7 @@
                                     :completed_100="item.completed_100"
                                     :lower_limit="item.lower_limit"
                                     :upper_limit="item.upper_limit"
+                                    :editable="true"
                                 />
                             </div>
                         </td>
