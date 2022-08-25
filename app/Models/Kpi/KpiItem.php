@@ -17,7 +17,9 @@ class KpiItem extends Model
         'activity_id',
         'kpi_id',
         'plan',
-        'share'
+        'share',
+        'method',
+        'unit'
     ];
 
     protected $dates = [

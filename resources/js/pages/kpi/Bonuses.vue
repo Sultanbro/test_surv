@@ -28,10 +28,10 @@
     </div>
     
     <!-- table NEW -->
-    <table class="table b-table table-bordered table-sm mb-3 collapse-table">
+    <table class="table j-table table-bordered table-sm mb-3 collapse-table">
         <tr>
             <th class="b-table-sticky-column text-center px-1">
-          
+                <i class="fa fa-cogs" @click="adjustFields"></i>
             </th>
             <th class="text-left">
                Кому
@@ -82,7 +82,7 @@
                             <table class="table b-table table-bordered table-sm table-responsive mb-0 table-inner">
                                 <tr>
                                     <th class="b-table-sticky-column text-center px-1">
-                                        <i class="fa fa-cogs" @click="adjustFields"></i>
+                                        
                                     </th>
                                     <th
                                         class="text-left"
@@ -99,8 +99,10 @@
                                 
                                 <tr v-for="(item, i) in page_item.items">
                                     <td class="b-table-sticky-column text-left">
-                                        <input class="ml-2" type="checkbox" />
-                                        <span class="ml-2">{{ i + 1 }}</span>
+                                        <div class="d-flex">
+                                            <input class="ml-2" type="checkbox" />
+                                            <div class="ml-2 text-white">{{ i + 1 }}</div>
+                                        </div>
                                     </td>
                                     <td v-for="(field, f) in fields"  :class="[
                                         field.class,
@@ -473,8 +475,7 @@ export default {
                 filters: filter 
             }).then(response => {
                 
-                let a = groupBy(response.data.bonuses, 'target');
-                console.log(a)
+             
 
                 this.all_items = response.data.bonuses
                 this.items = response.data.bonuses;
@@ -704,38 +705,10 @@ export default {
                     let has = false;
 
                     if (
-                        el.target != null
-                        && el.target.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                        el.name.toLowerCase().indexOf(text.toLowerCase()) > -1
                     ) {
                         has = true;
                     }
-
-                    if (
-                        el.title.toLowerCase().indexOf(text.toLowerCase()) > -1
-                    ) {
-                        has = true;
-                    }
-
-                    if (
-                        el.creator != null
-                        && (
-                            el.creator.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-                            || el.creator.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
-                        )
-                    ) {
-                        has = true;
-                    }
-
-                    if (
-                        el.updater != null
-                        && (
-                            el.updater.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-                            || el.updater.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
-                        )
-                    ) {
-                        has = true;
-                    }
-
                     return has; 
                 }); 
             }

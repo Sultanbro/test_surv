@@ -41,11 +41,37 @@ class QuartalPremiumService
     {   
         if($filters !== null) {} 
         
+        $items = QuartalPremium::with('creator', 'updater')->get();
+
         return [
-            'items'      => QuartalPremium::with('creator', 'updater')->get(),
+            'items'      =>  $this->groupItems($items), 
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
+    }
+
+    /**
+     * Группировать премии
+     * Копия метода с бонусов
+     */
+    private function groupItems($items) {
+        $arr = [];
+
+        $types = $items->where('target', '!=', null)->groupBy('target.type');
+ 
+        foreach ($types as $type => $type_items) {
+            foreach ($type_items->groupBy('target.name') as $name => $name_items) {
+                $arr[] = [
+                    'type'     => $type,
+                    'name'     => $name,
+                    'id'       => $name_items[0]->target['id'],
+                    'items'    => $name_items,
+                    'expanded' => false
+                ];
+            }
+        }
+        
+        return $arr;
     }
 
     /**
@@ -57,7 +83,7 @@ class QuartalPremiumService
         try {
 
             $quartal_premium = QuartalPremium::query()->create([
-                'targetable_id'     => $request->input('targetable_id'),
+                'targetable_id'     => $request->targetable_id,
                 'targetable_type'   => $request->targetable_type,
                 'activity_id'       => $request->input('activity_id'),
                 'title'             => $request->input('title'),
@@ -105,17 +131,8 @@ class QuartalPremiumService
      * @param Request $request
      * @return array
      */
-    public function delete(Request $request): array
+    public function delete(Request $request): void
     {
-        try {
-            QuartalPremium::find($request->id)->delete();
-
-            return [
-                'status'  => ResponseAlias::HTTP_OK,
-                'message' => 'success'
-            ];
-        } catch (\DomainException $exception){
-
-        }
+        QuartalPremium::findOrFail($request->id)->delete();
     }
 }

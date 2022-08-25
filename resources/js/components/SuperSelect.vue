@@ -200,14 +200,17 @@ export default {
             if(this.ask_before_delete != '') {
                 if(!confirm(this.ask_before_delete)) return;
             }
-
+            
             let v = this.values[i];
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
             this.values.splice(i, 1);
 
             let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
-            if(index != -1) this.filtered_options.splice(index, 1);
+            if(index != -1) {
+                this.filtered_options.splice(index, 1);
+                this.$emit('remove');
+            }
         },
 
         removeValueFromList(i) {

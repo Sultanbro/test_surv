@@ -108,8 +108,7 @@ class BonusService
     {
         try {
 
-            $id = $request->input('id');
-
+            $id = $request->id;
             event(new BonusUpdated($id));
           
             $all = $request->all();
@@ -129,6 +128,6 @@ class BonusService
      */
     public function delete(Request $request): void
     {
-        Bonus::find($request->id)->delete();
+        Bonus::findOrFail($request->id)->delete();
     }
 }

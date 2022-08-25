@@ -112,7 +112,7 @@ class KpiService
 
                 $kpi_item_ids = $this->updateItems($id, $request->items);
 
-                //Kpi::findOrFail($id)->update($request->except(['source']));
+                Kpi::findOrFail($id)->update($request->except(['source']));
             });
 
 

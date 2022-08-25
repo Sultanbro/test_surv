@@ -12,7 +12,7 @@
                 <th>Целевое значение на месяц</th>
                 <th>Удельный вес, %</th>
                 <th>Сумма премии при выполнении плана, KZT</th>
-                <th>Действия</th>
+                <th></th>
             </tr>
         </thead>
         <tbody :key="refreshItemsKey">
@@ -70,8 +70,8 @@
                         </select>
                     </div>
                 </td>
-                <td class="text-center">
-                    <input type="text" class="form-control" v-model="item.unit" />
+                <td class="text-center w-sm">
+                    <input type="text" class="form-control w-sm" v-model="item.unit" />
                 </td>
                 <td class="text-center">
                     <input type="number" class="form-control" v-model="item.plan" min="0" />

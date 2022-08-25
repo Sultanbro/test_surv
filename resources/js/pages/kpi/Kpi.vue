@@ -62,11 +62,12 @@
 
                         <div v-if="field.key == 'target'" >
                             <superselect
-                                v-if="item.target == null"
+                                v-if="item.target == null || item.id == 0"
                                 class="w-full" 
-                                :values="[]" 
+                                :values="item.target == null ? [] : [item.target]" 
                                 :single="true"
                                 @choose="(target) => item.target = target"
+                                @remove="() => item.target = null"
                                 :key="i" /> 
                             <div v-else class="d-flex aic">
                                 <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i> 
@@ -310,16 +311,67 @@ export default {
             this.$toast.info('Добавлен KPI');
         },
 
+        validateMsg(item) {
+            let msg = '';
+
+            if(item.target == null)    msg = 'Выберите Кому назначить'
+            
+            let share = 0;
+
+            console.log(item);
+
+            if(item.items != undefined) {
+
+                item.items.every((el, i) => {
+
+                    share += Math.abs(el.share);
+
+                    if(el.name.length <= 1) {
+                        msg = 'Заполните название активности #' + (i+1);
+                        return false;
+                    }
+
+                    if(el.activity_id == 0 || el.activity_id == undefined) {
+                        msg = 'Выберите показатель #' + (i+1);
+                        return false;
+                    }
+
+                   
+                    if(Number(el.plan) <= 0) {
+                        msg = 'План должен быть больше 0 #' + (i+1);
+                        return false;
+                    }
+
+
+                    return true;
+                });
+            }
+            
+            
+            if(share > 100) {
+                msg = 'Доля активностей должна быть не более 100%';
+            }
+            
+            return msg;
+        },
+
         saveKpi(i) {
-            let loader = this.$loading.show();
+
             let item = this.items[i]
             let method = this.items[i].id == 0 ? 'save' : 'update';
 
-            if(item.target == null) {
-                this.$toast.error('Выберите Кому назначить KPI!');
+            /**
+             * validate item
+             */
+            let not_validated_msg = this.validateMsg(item);
+            if(not_validated_msg != '') {
+                this.$toast.error(not_validated_msg)
                 return;
             }
+
             
+            let loader = this.$loading.show();
+
             let fields = {
                 id: item.id,
                 targetable_id: item.target.id,
@@ -346,7 +398,7 @@ export default {
                 
 
 
-                this.$toast.info('KPI Сохранен!');
+                this.$toast.info('KPI Сохранен');
                 loader.hide()
             }).catch(error => {
                 let m = error;

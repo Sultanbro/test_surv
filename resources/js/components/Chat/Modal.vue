@@ -54,6 +54,8 @@ export default {
 </script>
 
 <style>
+.chat-app {
+
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -120,5 +122,6 @@ export default {
   background: #4AAE9B;
   border: 1px solid #4AAE9B;
   border-radius: 2px;
+}
 }
 </style>
