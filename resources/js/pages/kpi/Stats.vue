@@ -24,12 +24,9 @@
         <thead>
             <tr class="table-heading">
                 
-                <th class="first-column">
-   
+                <th class="first-column"></th>
 
-                </th>
-
-                <th>Сотрудник</th>
+                <th class="w-full">Сотрудник</th>
                
                 <th></th>
 
@@ -55,7 +52,6 @@
                     </td>
                     <td>{{ wrap_item.name }}</td>
                     <td></td>
-                    
                         
                 </tr>
 
@@ -99,7 +95,7 @@
                                                     <kpi-items
                                                         :kpi_id="item.id"
                                                         :items="item.items" 
-                                                        :expanded="item.expanded"
+                                                        :expanded="true"
                                                         :activities="activities"
                                                         :groups="groups"
                                                         :completed_80="item.completed_80"
@@ -261,7 +257,7 @@ export default {
             });
 
             this.fields = kpi_fields;
-        },
+        }, 
     } 
 }
 </script>

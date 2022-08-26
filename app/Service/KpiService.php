@@ -45,7 +45,7 @@ class KpiService
     {   
         if($filters !== null) {} 
         
-        $kpis = Kpi::with('items')->get();
+        $kpis = Kpi::with('items', 'creator', 'updater')->get();
 
         return [
             'kpis'       => $kpis,
@@ -78,7 +78,8 @@ class KpiService
                     'completed_100'     => $request->input('completed_100'),
                     'lower_limit'       => $request->input('lower_limit'),
                     'upper_limit'       => $request->input('upper_limit'),
-                    'colors'            => json_encode($request->input('colors'))
+                    'colors'            => json_encode($request->input('colors')),
+                    'created_by'        => auth()->id()
                 ])->id;
 
                 $kpi_item_ids = $this->saveItems($request->items, $kpi_id);
@@ -105,14 +106,22 @@ class KpiService
 
             $id = $request->id;
 
-            //event(new TrackKpiUpdatesEvent($id));
+            event(new TrackKpiUpdatesEvent($id));
             $kpi_item_ids = [];
 
-            DB::transaction(function () use ($request, $id, &$kpi_item_ids){
+      
+            
+            $user_id = auth()->id();
+
+            DB::transaction(function () use ($request, $id, &$kpi_item_ids, $user_id) {
 
                 $kpi_item_ids = $this->updateItems($id, $request->items);
 
-                Kpi::findOrFail($id)->update($request->except(['source']));
+                $all = $request->all();
+                $all['updated_by'] = auth()->id();
+                unset($all['source']);
+
+                Kpi::findOrFail($id)->update($all);
             });
 
 
@@ -142,6 +151,8 @@ class KpiService
             $item['id'] = KpiItem::create([
                 'kpi_id'        => $kpiId,
                 'name'          => $item['name'],
+                'method'        => $item['method'],
+                'unit'          => $item['unit'],
                 'plan'          => $item['plan'],
                 'share'         => $item['share'],
                 'activity_id'   => $item['activity_id']

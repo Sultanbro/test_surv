@@ -82,6 +82,14 @@
                             <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
                         </div>
 
+                        <div v-else-if="field.key == 'created_by' && item.creator != null">
+                            {{ item.creator.last_name + ' ' + item.creator.name }}
+                        </div>
+
+                        <div v-else-if="field.key == 'updated_by' && item.updater != null">
+                            {{ item.updater.last_name + ' ' + item.updater.name }}
+                        </div>
+
                         <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
                            {{ item[field.key] }}
                         </div>
