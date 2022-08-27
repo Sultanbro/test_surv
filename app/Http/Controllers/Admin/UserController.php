@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\TrackGroupChangingEvent;
+use App\Events\TrackUserFiredEvent;
 use App\Http\Controllers\Controller;
 use App\KnowBase;
 use App\Models\QuartalBonus;
@@ -77,10 +79,10 @@ use Session;
 
 class UserController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+//    public function __construct()
+//    {
+//        $this->middleware('auth');
+//    }
 
     public function surv(Request $request)
     {
@@ -2095,7 +2097,7 @@ class UserController extends Controller
       //bitrix  dd('123');
         $group = ProfileGroup::find($request['group_id']);
         $users = json_decode($group->users);
- 
+        event(new TrackGroupChangingEvent($request['user_id'], $request['action'], $request['group_id']));
       
         if($request['action'] == 'add') {
             array_push($users, $request['user_id']); 
@@ -2161,111 +2163,114 @@ class UserController extends Controller
 
     public function deleteUser(Request $request)
     {
-        $user = User::where([
-            'id' => $request->id,
-        ])->first();
-        
-        
-        // Есть заявление об увольнении
-        if ($request->hasFile('file8')) { // Заявление об увольнении
-            $file = $request->file('file8');
-            $resignation = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->id . "/resignation", $resignation);
+        DB::transaction(function () use ($request){
+            $user = User::where([
+                'id' => $request->id,
+            ])->first();
 
-            $downloads = Downloads::where('user_id', $user->id)->first();
-            if ($downloads) {
-                $downloads->resignation = $resignation;
-                $downloads->save();
-            } else {
-                $downloads = Downloads::create([
+            event(new TrackUserFiredEvent($user));
+
+            // Есть заявление об увольнении
+            if ($request->hasFile('file8')) { // Заявление об увольнении
+                $file = $request->file('file8');
+                $resignation = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->move("static/profiles/" . $user->id . "/resignation", $resignation);
+
+                $downloads = Downloads::where('user_id', $user->id)->first();
+                if ($downloads) {
+                    $downloads->resignation = $resignation;
+                    $downloads->save();
+                } else {
+                    $downloads = Downloads::create([
+                        'user_id' => $user->id,
+                        'ud_lich' => null,
+                        'dog_okaz_usl' => null,
+                        'sohr_kom_tainy' => null,
+                        'dog_o_nekonk' => null,
+                        'trud_dog' => null,
+                        'archive' => null,
+                        'resignation' => $resignation,
+                    ]);
+                }
+            }
+
+
+            ///////  УВолить с отработкой или без
+
+            if($request->delay == 1) { // Удалить через 2 недели
+
+                $delete_plan = UserDeletePlan::where('user_id', $request->id)->orderBy('id', 'desc')->first();
+
+                if($delete_plan) $delete_plan->delete();
+
+                $fire_date = Carbon::now()->addHours(24 * 14);
+
+                UserDeletePlan::create([
                     'user_id' => $user->id,
-                    'ud_lich' => null,
-                    'dog_okaz_usl' => null,
-                    'sohr_kom_tainy' => null,
-                    'dog_o_nekonk' => null,
-                    'trud_dog' => null,
-                    'archive' => null,
-                    'resignation' => $resignation,
+                    'executed' => 0,
+                    'delete_time' => $fire_date,
+                ]);
+
+            } else { // Сразу удалить
+
+
+
+                /////////// Удалить связанные уведомления
+                $notis = UserNotification::where('about_id', $user->id)->get();
+                if($notis->count() > 0) {
+                    foreach($notis as $noti) {
+                        $noti->read_at = now();
+                        $noti->save();
+                    }
+                }
+
+                //////////////////////////////
+
+                $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->id)->first();
+
+                if($trainee) {
+                    if($trainee->lead_id != 0 && $trainee->lead_id) {
+                        $lead = Lead::where('lead_id', $trainee->lead_id)->orderBy('id', 'desc')->first();
+                    } else {
+                        $lead = Lead::where('phone', $user->phone)->orderBy('id', 'desc')->first();
+                    }
+
+                    if($lead) {
+                        $bitrix = new Bitrix();
+                        $deal_id = $bitrix->findDeal($lead->lead_id, false);
+
+                        if($deal_id != 0) {
+                            $bitrix->changeDeal($deal_id, [
+                                'STAGE_ID' => 'C4:12' // не присутствовал на обучении
+                            ]);
+                        }
+
+                    }
+                }
+
+                $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
+                if($delete_plan) $delete_plan->delete();
+
+                $fire_date = now();
+                User::deleteUser($request);
+            }
+
+            // Причина увольенения
+            $cause = $request->cause2 == '' ? $request->cause : $request->cause2;
+            $ud = UserDescription::where('user_id', $request->id)->first();
+
+            if($ud) {
+                $ud->fire_cause = $cause;
+                $ud->fire_date = $fire_date;
+                $ud->save();
+            } else {
+                UserDescription::create([
+                    'user_id' => $request->id,
+                    'fire_cause' => $cause,
+                    'fire_date' => $fire_date
                 ]);
             }
-        }
-
-
-        ///////  УВолить с отработкой или без 
-
-        if($request->delay == 1) { // Удалить через 2 недели
-
-            $delete_plan = UserDeletePlan::where('user_id', $request->id)->orderBy('id', 'desc')->first();
-
-            if($delete_plan) $delete_plan->delete();
-
-            $fire_date = Carbon::now()->addHours(24 * 14);
-
-            UserDeletePlan::create([
-                'user_id' => $user->id,
-                'executed' => 0,
-                'delete_time' => $fire_date,
-            ]);
-            
-        } else { // Сразу удалить
-
-            
-            
-            /////////// Удалить связанные уведомления 
-            $notis = UserNotification::where('about_id', $user->id)->get();
-            if($notis->count() > 0) {
-                foreach($notis as $noti) {
-                    $noti->read_at = now();
-                    $noti->save();
-                }
-            }
-            
-            //////////////////////////////
-
-            $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->id)->first();
-
-            if($trainee) {
-                if($trainee->lead_id != 0 && $trainee->lead_id) {
-                    $lead = Lead::where('lead_id', $trainee->lead_id)->orderBy('id', 'desc')->first();
-                } else {
-                    $lead = Lead::where('phone', $user->phone)->orderBy('id', 'desc')->first();
-                }
-                
-                if($lead) {
-                    $bitrix = new Bitrix();
-                    $deal_id = $bitrix->findDeal($lead->lead_id, false);
-                   
-                    if($deal_id != 0) {
-                        $bitrix->changeDeal($deal_id, [
-                            'STAGE_ID' => 'C4:12' // не присутствовал на обучении
-                        ]);
-                    }
-                    
-                }
-            }
-
-            $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
-            if($delete_plan) $delete_plan->delete();
-            
-            $fire_date = now();
-            User::deleteUser($request); 
-        }
-        
-        // Причина увольенения
-        $cause = $request->cause2 == '' ? $request->cause : $request->cause2; 
-        $ud = UserDescription::where('user_id', $request->id)->first();
-
-        if($ud) { 
-            $ud->fire_cause = $cause;
-            $ud->fire_date = $fire_date;
-            $ud->save();
-        } else {
-            UserDescription::create([
-                'user_id' => $request->id,
-                'fire_cause' => $cause,
-                'fire_date' => $fire_date
-            ]);
-        }
+        });
 
         View::share('title', 'Сотрудник уволен');
         View::share('menu', 'timetrackinguser');

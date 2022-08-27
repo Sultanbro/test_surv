@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -78,6 +79,28 @@ class User extends Authenticatable implements Authorizable
         'phone_3',
         'phone_4',
     ];
+
+    /**
+     * @return BelongsToMany
+     */
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id')
+            ->withPivot(['created_at', 'updated_at', 'deleted_at'])->withTimestamps();
+    }
+
+    public function scopeGetDeletedFromGroupUser($query, $date)
+    {
+        $this->groups()->get();
+    }
+
+    /**
+     * @return MorphMany
+     */
+    public function histories(): MorphMany
+    {
+        return $this->morphMany('App\Models\History', 'reference', 'reference_table', 'reference_id', 'id');
+    }
 
     /**
      * @return MorphMany
@@ -190,7 +213,7 @@ class User extends Authenticatable implements Authorizable
         return $applied_from;
     }
 
-    public function user_description()
+    public function userDescription()
     {
        return $this->hasOne('App\UserDescription', 'user_id', 'id');
     } 
@@ -689,16 +712,9 @@ class User extends Authenticatable implements Authorizable
         return $this->hasMany('App\Voice');
     }
 
-    
-
     public function photo()
     {
         return $this->hasOne('App\Photo');
-    }
-
-    public function groups()
-    {
-        return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id');
     }
 
     public function fines()
