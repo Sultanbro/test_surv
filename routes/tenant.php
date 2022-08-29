@@ -66,6 +66,8 @@ use App\Http\Controllers\CallibroController;
 use Eddir\Messenger\Http\Controllers\ChatsController;
 use Eddir\Messenger\Http\Controllers\MessagesController;
 use Eddir\Messenger\Http\Controllers\Api\MessagesController as ApiMessagesController;
+use \App\Http\Controllers\Department\UserController as DepartmentUserController;
+
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -373,6 +375,19 @@ Route::middleware([
     ], function(){
         Route::post('/save', [TimetrackingController::class, 'addUsers']);
         Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
+    });
+
+    Route::group([
+        'prefix' => 'department',
+        'as'     => 'department.'
+    ], function () {
+        Route::get('/users/{id?}/{date?}', [DepartmentUserController::class, 'getUsers'])->name('users');
+        Route::get('/employees/{id?}/{date?}', [DepartmentUserController::class, 'getEmployees'])->name('employees');
+        Route::get('/trainees/{id?}/{date?}', [DepartmentUserController::class, 'getTrainees'])->name('trainees');
+        Route::get('/fired-users/{id?}/{date?}', [DepartmentUserController::class, 'getFiredUsers'])->name('fired-users');
+        Route::get('/fired-trainees/{id?}/{date?}', [DepartmentUserController::class, 'getFiredTrainees'])->name('fired-trainees');
+
+        Route::get('/check/user/{id}', [DepartmentUserController::class, 'userInGroup']);
     });
 
     Route::get('/bitrix/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
