@@ -43,7 +43,7 @@
                     <div class="login-panel">
 
                         <a href="/" class="">
-                            <img src="https://bp.jobtron.org/admin/images/logo.png" style="max-width: 150px;">
+                            <img src="/images/logo.png" style="max-width: 220px;">
                         </a>
 
 
