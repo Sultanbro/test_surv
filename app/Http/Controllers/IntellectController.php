@@ -681,6 +681,7 @@ class IntellectController extends Controller {
                     $lead->files = json_encode([]);
                     $lead->signed = 2;   
                     $lead->status = '39';
+                    $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6);
     
                     // if($lead->status != 'LOSE') {
                     //     $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6); // Раньше был, чтобы фиксировать время заполнения скайпа. Сейчас для хранения времени подписи
