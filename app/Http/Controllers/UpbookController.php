@@ -16,6 +16,11 @@ use App\Models\CourseItemModel;
 class UpbookController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(Request $request)
     {   
         View::share('menu', 'upbook');
