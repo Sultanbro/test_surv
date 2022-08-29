@@ -36,9 +36,6 @@
 
         <tbody>
 
-            
-
-           
             <template v-for="(wrap_item, w) in page_items">
                 
                 <tr class="main-row">
@@ -55,47 +52,27 @@
                         
                 </tr>
 
-                <template v-if="wrap_item.kpis != undefined && wrap_item.kpis.length > 0">
+                <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
                     <tr class="collapsable" :class="{'active': wrap_item.expanded}" :key="w + 'a'">
                         <td :colspan="fields.length + 2">
                             <div class="table__wrapper">
                             <table>
-                                <template v-for="(item, i) in wrap_item.kpis">
+                                <template v-for="(item, i) in wrap_item.users">
                                     <tr :key="i">
-                                        <td  @click="expand(i)" class="pointer">
+                                        <td  @click="expandUser(w, i)" class="pointer">
                                             <span class="ml-2">{{ i + 1 }}</span>
                                         </td>
-                                        <td  v-for="(field, f) in fields" :key="f" :class="field.class"> 
-
-                                         
-
-                                            <div v-if="field.key == 'stats'" :class="field.class">
-                                                <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
-                                            </div>
-
-                                            <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
-                                            {{ item[field.key] }}
-                                            </div>
-
-                                            <div v-else :class="field.class">
-                                                <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" /> 
-                                            </div>
-
-                                        </td>
-                                        <td >
-                                            <i class="fa fa-save ml-2 mr-1 btn btn-success p-1" @click="saveKpi(i)"></i>
-                                            <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi(i)"></i>
-                                        </td>
+                                        <td>{{ item.name }}</td>
                                     </tr>
 
-                                    <template v-if="item.items !== undefined">
+                                    <template v-if="item.kpi_items !== undefined">
                                         <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
                                             <td :colspan="fields.length + 2">
                                                 <div class="table__wrapper">
                                                     <kpi-items
                                                         :kpi_id="item.id"
-                                                        :items="item.items" 
-                                                        :expanded="true"
+                                                        :items="item.kpi_items" 
+                                                        :expanded="item.expanded"
                                                         :activities="activities"
                                                         :groups="groups"
                                                         :completed_80="item.completed_80"
@@ -116,23 +93,7 @@
                     </tr>
                 </template>
 
-
-
-
-              
-
             </template>
-
-
-
-
-
-
-
-
-
-            
-
           
         </tbody>
      </table>
@@ -169,20 +130,25 @@ export default {
         return {
             active: 1,
             paginationKey: 1,
-
+            
             items: [
                 {
+                    id: 1,
+                    targetable_type: '',
+                    targetable_id: 1,
+                    target: {},
+                    name: 'test line',
+                    completed_80: 20000,
+                    completed_100: 30000,
+                    lower_limit: 80,
+                    upper_limit: 100,
                     expanded: false,
-                    user_id: 123,
-                    type: 'user',
-                    name: 'Али Акпанов',
-                    kpis: [
+                    users: [
                         {
-                            id: 2,
-                            completed_80: 20000,
-                            completed_100: 30000,
-                            lower_limit: 80,
-                            upper_limit: 100,
+                            expanded: false,
+                            user_id: 123,
+                            type: 'user',
+                            name: 'Али Акпанов',
                             kpi_items: [
                                 {
                                     id: 13,
@@ -190,22 +156,26 @@ export default {
                                     name: 'Кол=во минут',
                                     activity_id: 0,
                                     plan: 450,
-                                    share: 100,
-                                    fact: 355, // факт с user_stat
-                                }
+                                    share: 50,
+                                    fact: 355,
+                                    percent: 0 
+                                },
+                                {
+                                    id: 14,
+                                    method: 2,
+                                    name: 'ОКК',
+                                    activity_id: 0,
+                                    plan: 80,
+                                    share: 50,
+                                    fact: 81,
+                                    percent: 0 
+                                },
                             ]
-                        },
-                        {
-                            id: 2,
-                            completed_80: 20000,
-                            completed_100: 30000,
-                            lower_limit: 80,
-                            upper_limit: 100,
-                            kpi_items: []
                         }
                     ]
                 }
             ],
+
             groups: {
                 42: 'kaspi',
                 26: 'IT отдел'
@@ -238,6 +208,10 @@ export default {
         
         expand(i) {
             this.page_items[i].expanded = !this.page_items[i].expanded
+        },
+
+        expandUser(w, i) {
+            this.page_items[i].users[w].expanded = !this.page_items[i].users[w].expanded
         },
 
         onChangePage(page_items) {
