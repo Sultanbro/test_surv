@@ -64,6 +64,7 @@ export default {
         title: this.name,
         members: this.members,
       });
+      this.$emit('close');
     },
   },
 };

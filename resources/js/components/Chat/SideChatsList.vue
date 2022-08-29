@@ -8,7 +8,7 @@
         @click="selectContact(contact)"
       >
         <div class="avatar">
-          <img src="https://i.pravatar.cc/" :alt="contact.title"/>
+          <img :src="contact.image" :alt="contact.title"/>
         </div>
         <span v-if="contact.unseen" class="unread">{{ contact.unseen }}</span>
       </li>

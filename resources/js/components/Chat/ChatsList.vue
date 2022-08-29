@@ -24,7 +24,7 @@
           @contextmenu.prevent.stop="handleClick($event, chat)"
         >
           <div class="avatar">
-            <img src="https://i.pravatar.cc/" :alt="chat.title"/>
+            <img :src="chat.image" :alt="chat.title"/>
           </div>
           <div class="chat">
             <p class="name">{{ chat.title }}</p>

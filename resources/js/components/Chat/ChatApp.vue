@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-app" v-show="initialized" :class="{'fullscreen' : fullscreen}">
+  <div class="chat-app" v-show="initialized"  :class="{'fullscreen' : fullscreen}">
     <ChatsList v-show="fullscreen"
                :chats="chats"
                @selected="startConversationWith"
@@ -17,7 +17,7 @@
                   @close="toggleMessenger"
     />
     <SideChatsList v-show="!fullscreen"
-                   :contacts="chats"
+                   :contacts="contacts"
                    @contact-selected="startConversationWith"
                    @open="toggleMessenger"
     />
@@ -40,6 +40,7 @@ export default {
       user: {},
       messages: [],
       chats: [],
+      contacts: [],
       pinnedMessage: null,
     };
   },
@@ -71,6 +72,10 @@ export default {
         // sort by last message date
         this.chats = this.sortChats(response.chats);
         this.user = response.user;
+
+        // this.contacts as clone of this.chats
+        this.contacts = this.chats.slice();
+
         callback(response);
       });
     },
@@ -99,6 +104,21 @@ export default {
 
       // Get chat info
       API.getChatInfo(chat.id, response => {
+        // if private set title to username
+        if (response.private) {
+          console.log("My user id", this.user.id);
+
+          // if response contains users
+          if (response.users) {
+            // find user with current user id
+            let user = response.users.find(user => user.id !== this.user.id);
+            // if user found set title to username
+            if (user) {
+              response.title = user.name;
+            }
+          }
+        }
+
         this.selectedChat = response;
 
         // API fetch messages
@@ -121,24 +141,45 @@ export default {
     },
     sortChats(chats) {
       chats.sort((a, b) => {
-        // check if created_at is not null
-        if (a.last_message === null || b.last_message === null) {
+        if (a.last_message === null) {
           return 1;
+        }
+        if (b.last_message === null) {
+          return -1;
         }
         return new Date(b.last_message.created_at) - new Date(a.last_message.created_at);
       });
+      // get chats as array of titles and last_message_date
+      let chatsArray = chats.map(chat => {
+        return {
+          lmd: chat.last_message ? chat.last_message.created_at : null,
+          title: chat.title,
+          id: chat.id,
+          private: chat.private,
+        };
+      });
+      console.log("sort", chatsArray);
       return chats;
     },
     saveNewMessage(message) {
       this.messages.push(message);
     },
     handleIncomingMessage(message) {
+      // update last message
+      this.chats.map(single => {
+          if (single.id !== message['chat_id']) {
+            return single;
+          }
+          single.last_message = message;
+          single.unread_messages_count = single.unread_messages_count + 1;
+          return single;
+        }
+      );
+      this.chats = this.sortChats(this.chats);
+
       if (this.selectedChat && message['chat_id'] === this.selectedChat.id && message['sender_id'] !== this.user.id) {
         this.saveNewMessage(message);
-        return;
       }
-
-      this.updateUnreadCount(message['chat_id'], false);
     },
     handlePinnedMessage(message) {
       if (!message) {
@@ -155,8 +196,8 @@ export default {
           return single;
         }
 
-        if (reset) single.unseen = 0;
-        else single.unseen += 1;
+        if (reset) single.unread_messages_count = 0;
+        else single.unread_messages_count += 1;
 
         return single;
       });
@@ -195,6 +236,7 @@ export default {
   display: flex;
   position: fixed;
   width: 100%;
+  height: 100vh;
   justify-content: flex-end;
 }
 </style>
