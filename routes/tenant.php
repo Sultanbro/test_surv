@@ -492,6 +492,7 @@ Route::middleware([
     ], function (){
         Route::get('kpi/user/{id}', [KpiStatController::class, 'show'])->name('index');
         Route::get('kpi/users/', [KpiStatController::class, 'fetchGroups'])->name('fetch');
+        Route::post('kpi', [KpiStatController::class, 'fetchKpis'])->name('fetchKpis');
     });
 
     /**

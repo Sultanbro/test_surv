@@ -11,6 +11,7 @@
                 <th>Ед. изм.</th>
                 <th>Целевое значение на месяц</th>
                 <th>Удельный вес, %</th>
+                <th v-if="!editable">Факт</th>
                 <th>Сумма премии при выполнении плана, KZT</th>
                 <th></th>
             </tr>
@@ -20,7 +21,7 @@
             <template v-if="editable">
                 <tr 
                     v-for="(item, i) in items" :key="i"
-                    class="jt-row j-hidden"
+                    class="jt-row"
                     :class="{
                         'j-hidden': !expanded,
                         'j-deleted': item.deleted != undefined && item.deleted,

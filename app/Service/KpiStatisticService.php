@@ -253,4 +253,134 @@ class KpiStatisticService
         }
         return $result;
     }
+
+
+    /**
+     * Вытащить kpis со стсатистикой
+     */
+    public function fetchKpis(Request $request) : array
+    {
+        $kpis = Kpi::with('items')
+            ->get();
+
+        foreach ($kpis as $key => $kpi) {
+
+            $kpi->kpi_items = [ // every kpi_item avg percent
+                [
+                    'id' => 13,
+                    'name' => 'Кол=во минут',
+                    'percent' => 0 
+                ],
+                [
+                    'id' => 14,
+                    'name' => 'ОКК',
+                    'percent' => 0 
+                ],
+            ];
+
+            $kpi->avg = rand(45, 76); // avg percent from kpi_items' percent
+
+            $kpi->users = $this->getUsersForKpi($kpi);
+        }
+
+        return [
+            'items' => $kpis
+        ];
+    }
+
+
+    private function getUsersForKpi(Kpi $kpi)
+    {
+        $users = [];
+
+        // check target exists
+        if(!$kpi->target) return [];
+
+        $type = $kpi->target['type'];
+
+        // User::class
+        if($type == 1) { 
+            $users[] = [
+                'user_id'  => $kpi->targetable_id,  
+                'name'     => $kpi->target['name'],  
+                'expanded' => false,  
+                'kpi_items' => [
+                    [
+                        'id' => 13,
+                        'method' => 1,
+                        'name' => 'Кол=во минут',
+                        'activity_id' => 0,
+                        'plan' => 450,
+                        'share' => 50,
+                        'fact' => 355,
+                        'percent' => 0,
+                        'sum' => 0
+                    ],
+                    [
+                        'id' => 14,
+                        'method' => 2,
+                        'name' => 'ОКК',
+                        'activity_id' => 0,
+                        'plan' => 80,
+                        'share' => 50,
+                        'fact' => 81,
+                        'percent' => 0,
+                        'sum' => 0
+                    ],
+                ]
+            ];
+        }
+        
+        // ProfileGroup::class
+        if($type == 2) { 
+            $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
+            
+            $_users = User::with('user_description')
+                ->withTrashed()
+                ->whereHas('user_description', function ($query) {
+                    $query->where('is_trainee', 0);
+                })
+                ->whereIn('id', $_user_ids)
+                ->select('id', 'name', 'last_name')
+                ->get();
+            
+            foreach ($_users as $key => $user) {
+                $users[] = [
+                    'user_id'  => $user->id,  
+                    'name'     => $user->last_name . ' ' . $user->name,  
+                    'expanded' => false,  
+                    'kpi_items' => [
+                        [
+                            'id' => 13,
+                            'method' => 1,
+                            'name' => 'Кол=во минут',
+                            'activity_id' => 0,
+                            'plan' => 450,
+                            'share' => 50,
+                            'fact' => 355,
+                            'percent' => 0,
+                            'sum' => 0
+                        ],
+                        [
+                            'id' => 14,
+                            'method' => 2,
+                            'name' => 'ОКК',
+                            'activity_id' => 0,
+                            'plan' => 80,
+                            'share' => 50,
+                            'fact' => 81,
+                            'percent' => 0,
+                            'sum' => 0
+                        ],
+                    ]
+                ];
+            }
+        }
+
+        // Position::class
+        if($type == 3) {}
+
+        return $users;
+    }
+    
 }

@@ -26,8 +26,10 @@
                 
                 <th class="first-column"></th>
 
-                <th class="w-full">Сотрудник</th>
-               
+                <th class="w-full">KPI</th>
+                
+                <th class="px-2">Средний %</th>
+
                 <th></th>
 
             </tr>
@@ -40,14 +42,18 @@
                 
                 <tr class="main-row">
 
-                    <td  @click="expand(w)" class="pointer">
+                    <td  @click="expand(w)" class="pointer py-1">
                         <div class="d-flex px-2">
                             <i class="fa fa-minus mt-1" v-if="wrap_item.expanded"></i>
                             <i class="fa fa-plus mt-1" v-else></i>
                             <span class="ml-2">{{ w + 1 }}</span>
                         </div>
                     </td>
-                    <td>{{ wrap_item.name }}</td>
+                    <td class="px-2 py-1">
+                        <span v-if="wrap_item.target != null">{{ wrap_item.target.name }}</span>
+                        <span v-else>---</span>
+                    </td>
+                    <td class="px-2 py-1">{{ wrap_item.avg }}%</td>
                     <td></td>
                         
                 </tr>
@@ -57,28 +63,35 @@
                         <td :colspan="fields.length + 2">
                             <div class="table__wrapper">
                             <table>
-                                <template v-for="(item, i) in wrap_item.users">
-                                    <tr :key="i">
-                                        <td  @click="expandUser(w, i)" class="pointer">
+                                <template v-for="(user, i) in wrap_item.users">
+                                    <tr :key="i" class="child-row">
+                                        <td  @click="user.expanded = !user.expanded" class="pointer px-2">
+                                            <i class="fa fa-minus mt-1 little-expander" v-if="user.expanded"></i>
+                                            <i class="fa fa-plus mt-1 little-expander" v-else></i>
                                             <span class="ml-2">{{ i + 1 }}</span>
                                         </td>
-                                        <td>{{ item.name }}</td>
+                                        <td class="px-2 py-1">{{ user.name }}</td>
+                                        
+                                        <template v-if="user.kpi_items !== undefined"">
+                                            <td class="px-2" v-for="kpi_item in user.kpi_items">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
+                                        </template>
+                                        
                                     </tr>
 
-                                    <template v-if="item.kpi_items !== undefined">
-                                        <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
+                                    <template v-if="user.kpi_items !== undefined">
+                                        <tr class="collapsable" :class="{'active': user.expanded}" :key="i + 'a'">
                                             <td :colspan="fields.length + 2">
-                                                <div class="table__wrapper">
+                                                <div class="table__wrapper__second">
                                                     <kpi-items
-                                                        :kpi_id="item.id"
-                                                        :items="item.kpi_items" 
-                                                        :expanded="item.expanded"
+                                                        :kpi_id="user.id"
+                                                        :items="user.kpi_items" 
+                                                        :expanded="user.expanded"
                                                         :activities="activities"
                                                         :groups="groups"
-                                                        :completed_80="item.completed_80"
-                                                        :completed_100="item.completed_100"
-                                                        :lower_limit="item.lower_limit"
-                                                        :upper_limit="item.upper_limit"
+                                                        :completed_80="user.completed_80"
+                                                        :completed_100="user.completed_100"
+                                                        :lower_limit="user.lower_limit"
+                                                        :upper_limit="user.upper_limit"
                                                         :editable="false"
                                                     />
                                                 </div>
@@ -131,7 +144,8 @@ export default {
             active: 1,
             paginationKey: 1,
             
-            items: [
+            items: [],
+            itsems: [
                 {
                     id: 1,
                     targetable_type: '',
@@ -142,7 +156,20 @@ export default {
                     completed_100: 30000,
                     lower_limit: 80,
                     upper_limit: 100,
+                    avg: 45,
                     expanded: false,
+                    kpi_items: [
+                        {
+                            id: 13,
+                            name: 'Кол=во минут',
+                            percent: 0 
+                        },
+                        {
+                            id: 14,
+                            name: 'ОКК',
+                            percent: 0 
+                        },
+                    ],
                     users: [
                         {
                             expanded: false,
@@ -158,7 +185,8 @@ export default {
                                     plan: 450,
                                     share: 50,
                                     fact: 355,
-                                    percent: 0 
+                                    percent: 0,
+                                    sum: 0
                                 },
                                 {
                                     id: 14,
@@ -168,7 +196,8 @@ export default {
                                     plan: 80,
                                     share: 50,
                                     fact: 81,
-                                    percent: 0 
+                                    percent: 0,
+                                    sum: 0
                                 },
                             ]
                         }
@@ -200,7 +229,7 @@ export default {
     },
 
     created() {
-       // this.fetchData()
+       this.fetchData()
        this.prepareFields()
        this.page_items = this.items.slice(0, this.pageSize);
     },
@@ -232,6 +261,27 @@ export default {
 
             this.fields = kpi_fields;
         }, 
+
+        fetchData() {
+            let loader = this.$loading.show();
+
+            axios.post('/statistics/kpi', {
+                filters: [] 
+            }).then(response => {
+                
+                // items
+                this.items = response.data.items;
+
+                // paginate
+                this.page_items = this.items.slice(0, this.pageSize);
+
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
+        },
+
     } 
 }
 </script>
