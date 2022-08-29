@@ -87,7 +87,26 @@ php artisan websockets:serve
 
 Проверить работу веб сокета можно по адресу http://your-laravel-domain.com/laravel-websockets/
 
-В клиентской части добавить подключение к сокету в bootstrap.ts и установить зависимости:
+В клиентской части добавить подключение к сокету в bootstrap.ts:
+
+```js
+import Echo from 'laravel-echo';
+
+import Pusher from 'pusher-js';
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+  broadcaster: 'pusher',
+  key: import.meta.env.VITE_PUSHER_APP_KEY,
+  wsHost: import.meta.env.VITE_PUSHER_HOST ?? `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
+  wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
+  wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
+  forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
+  enabledTransports: ['ws', 'wss'],
+});
+```
+
+Установить зависимости:
 ```shell
 npm install --save laravel-echo pusher-js 
 ```

@@ -31,6 +31,16 @@ class InstallCommand extends Command
             '--force' => true,
         ]);
 
+        $this->call('vendor:publish', [
+            '--tag' => 'messenger-vue-components',
+            '--force' => true,
+        ]);
+
+        $this->call('vendor:publish', [
+            '--tag' => 'messenger-assets',
+            '--force' => true,
+        ]);
+
         $this->info('MessengerFacade installed successfully.');
     }
 

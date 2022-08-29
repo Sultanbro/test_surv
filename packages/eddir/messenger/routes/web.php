@@ -17,7 +17,7 @@ Route::get('/chat', function () {
 /**
  * Authentication for pusher private channels
  */
-Route::post('/chat/auth', 'Api\MessagesController@pusherAuth')->name('api.pusher.auth');
+Route::post('/chat/auth', 'ChatsController@pusherAuth')->name('api.pusher.auth');
 
 /**
  * Get chats list
@@ -38,6 +38,11 @@ Route::get('/v2/search', 'ChatsController@search')->name('api.chats.search');
  * Get chat messages
  */
 Route::get('/v2/chat/{chat_id}/messages', 'MessagesController@fetchMessages')->name('api.messages.fetch');
+
+/**
+ * Get private chat info
+ */
+Route::get('/v2/chat/user{chat_id}', 'ChatsController@getPrivateChat')->name('api.v2.getPrivateChat');
 
 /**
  * Get chat info

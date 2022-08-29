@@ -170,8 +170,6 @@ export default {
 <style>
 .feed {
   background: #FFFFFF;
-  height: 100%;
-  max-height: 470px;
   overflow: auto;
 }
 

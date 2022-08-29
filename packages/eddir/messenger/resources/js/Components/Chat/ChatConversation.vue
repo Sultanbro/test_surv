@@ -77,8 +77,8 @@ export default {
 
 <style>
 .conversation {
+  display: flex;
   flex: 5;
-  display: flex-start;
   flex-direction: column;
   justify-content: space-between;
   background-color: white;

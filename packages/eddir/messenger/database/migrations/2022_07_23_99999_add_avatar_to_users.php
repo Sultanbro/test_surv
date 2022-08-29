@@ -15,8 +15,8 @@ class AddAvatarToUsers extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // if not exist, add the new column
-            if (!Schema::hasColumn('users', 'avatar')) {
-                $table->string('avatar')->default(config('messenger.user_avatar.default', 'avatar.png'));
+            if (!Schema::hasColumn('users', 'img_url')) {
+                $table->string('avatar')->nullable()->default(config('messenger.user_avatar.default'));
             }
         });
     }

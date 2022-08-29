@@ -68,20 +68,40 @@ class Messenger {
                               } )
                               ->get();
         $chats->each( function ( MessengerChat $chat ) use ( $user ) {
-            $chat->unread_messages_count = $chat->getUnreadMessagesCount( $user );
-            // last message with sender
-            $chat->last_message = $chat->getLastMessage();
-            if ( $chat->last_message ) {
-                $chat->last_message->sender = $chat->last_message->sender;
-            }
-
-            if ($chat->private) {
-                // set title as username
-                $chat->title = $chat->users()->where('user_id', '!=', $user->id)->first()->name;
-            }
+            $this->getChatAttributesForUser( $chat, $user );
         } );
 
         return $chats;
+    }
+
+    /**
+     * Get chat attributes.
+     *
+     * @param MessengerChat $chat
+     * @param User $user
+     * @return MessengerChat
+     */
+    public function getChatAttributesForUser(MessengerChat $chat, User $user): MessengerChat
+    {
+        $chat->unread_messages_count = $chat->getUnreadMessagesCount( $user );
+        // last message with sender
+        $chat->last_message = $chat->getLastMessage();
+        if ( $chat->last_message ) {
+            $chat->last_message->sender = $chat->last_message->sender;
+        }
+
+        if ($chat->private) {
+            // get second user in private chat
+            $second_user = $chat->users->firstWhere('id', '!=', $user->id);
+            $chat->title = $second_user->name . " " . $second_user->last_name;
+            $chat->image = $second_user->img_url;
+        }
+
+        if (!$chat->image) {
+            $chat->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
+        }
+
+        return $chat;
     }
 
     /**
@@ -115,8 +135,6 @@ class Messenger {
     public function searchUsers( string $name, int $limit = 100 ): Collection {
         return User::query()
                    ->where( 'name', 'like', "%$name%" )
-                   ->orWhere( 'last_name', 'like', "%$name%" )
-                   ->select(\DB::raw("CONCAT_WS(' ', last_name, name) as name"), 'id', 'img_url as avatar')
                    ->limit( $limit )
                    ->get();
     }

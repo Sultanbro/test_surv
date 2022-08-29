@@ -66,4 +66,5 @@ class MessengerChat extends Model
     public function getPinnedMessages(): Collection {
         return $this->messages()->where('pinned', true)->get();
     }
+
 }

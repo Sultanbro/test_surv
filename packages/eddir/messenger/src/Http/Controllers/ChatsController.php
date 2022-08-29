@@ -103,14 +103,15 @@ class ChatsController extends Controller
      */
     public function getChat(int $chat_id): JsonResponse
     {
-
         // get chat
         $chat = MessengerFacade::getChat($chat_id);
+
         // check if chat exists
         if (!$chat->users) { // need to check users, so we can return later chat data with users as polymorphic call
             return response()->json([ 'message' => 'Chat not found' ], 404);
         }
 
+        $chat = MessengerFacade::getChatAttributesForUser($chat, Auth::user());
         $chat->pinned_message = $chat->getPinnedMessages()->last();
 
         // return chat model

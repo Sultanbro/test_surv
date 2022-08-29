@@ -1,7 +1,7 @@
 <template>
   <div class="chat-header" v-if="contact">
     <div class="chat-header__avatar">
-      <img src="https://i.pravatar.cc/" alt="">
+      <img :src="contact.image" alt="">
     </div>
     <div class="chat-header__info">
       <div class="chat-header__name">
