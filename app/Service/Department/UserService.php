@@ -3,6 +3,7 @@
 namespace App\Service\Department;
 
 use App\Models\GroupUser;
+use App\Models\History;
 use App\ProfileGroup;
 use App\User;
 use Carbon\Carbon;
@@ -167,9 +168,9 @@ class UserService
             $user = User::withTrashed()->where('users.id', $firedTrainee->user_id)
                 ->withWhereHas('userDescription', fn($description) => $description->where('is_trainee', 1))
                 ->when($firedTrainee->deleted_at == null, fn ($user) => $user->withWhereHas(
-                        'histories', fn($history) => $history
-                        ->whereYear('payload->action_date', $this->getYear($date))
-                        ->whereMonth('payload->action_date', $this->getMonth($date))
+                    'histories', fn($history) => $history
+                    ->whereYear('payload->delete_action_date', $this->getYear($date))
+                    ->whereMonth('payload->delete_action_date', $this->getMonth($date))
                     ))->first();
 
             if (empty($user)){
@@ -196,8 +197,8 @@ class UserService
                 ->when($firedUser->deleted_at == null, fn ($user) =>
                     $user->withWhereHas(
                     'histories', fn($history) => $history
-                        ->whereYear('payload->action_date', $this->getYear($date))
-                        ->whereMonth('payload->action_date', $this->getMonth($date))
+                        ->whereYear('payload->delete_action_date', $this->getYear($date))
+                        ->whereMonth('payload->delete_action_date', $this->getMonth($date))
                 ))->first();
 
             if (empty($user)){
@@ -223,8 +224,9 @@ class UserService
             $user = User::withTrashed()->where('users.id', $groupUser->user_id)
                 ->with(
                     [
-                        'histories' => fn($history) => $history->where('payload->action_date', '<', $this->getFullDate($date))
-                            ->where('payload->action', 'delete')
+                        'histories' => fn($history) => $history
+                            ->where('payload->add_action_date', '<', $this->getFullDate($date))
+                            ->where('payload->delete_action_date', '>', $this->getFullDate($date))
                             ->where('payload->group_id', $groupUser->group_id),
                         'userDescription' => fn($description) => $description->where('is_trainee', 1)
                     ]
@@ -254,8 +256,9 @@ class UserService
             $user = User::withTrashed()->where('users.id', $groupUser->user_id)
                 ->with(
                     [
-                        'histories' => fn($history) => $history->where('payload->action_date', '<', $this->getFullDate($date))
-                            ->where('payload->action', 'delete')
+                        'histories' => fn($history) => $history
+                            ->where('payload->add_action_date', '<', $this->getFullDate($date))
+                            ->where('payload->delete_action_date', '>', $this->getFullDate($date))
                             ->where('payload->group_id', $groupUser->group_id),
                         'userDescription' => fn($description) => $description->where('is_trainee', 0)
                     ]
@@ -283,18 +286,19 @@ class UserService
         foreach ($groups as $group)
         {
             $user = User::withTrashed()->where('users.id', $group->user_id)
-                ->when($group->deleted_at == null, fn ($user) =>
-                    $user->with([
-                        'histories' => fn($history) => $history->where('payload->action_date', '<', $this->getFullDate($date))
-                            ->where('payload->action', 'delete')
-                            ->where('payload->group_id', $group->group_id)
-                    ]))->first();
+                ->with(
+                    [
+                        'histories' => fn($history) => $history
+                            ->where('payload->add_action_date', '<', $this->getFullDate($date))
+                            ->where('payload->delete_action_date', '>', $this->getFullDate($date))
+                            ->where('payload->group_id', $group->group_id),
+                    ]
+                )
+                ->first();
 
-            if (empty($user)){
-                continue;
+            if ($user){
+                $userData[] = $user;
             }
-
-            $userData[] = $user;
         }
 
         return $userData;
