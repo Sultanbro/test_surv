@@ -345,6 +345,7 @@ class KpiStatisticService
 
                 // plan
                 $item['plan'] = $_item->activity ? $_item->activity->daily_plan : 0;
+                $item['plan'] = $_item->activity ? $_item->activity->daily_plan : 0;
              
                 $kpi_items[] = $item;
             }

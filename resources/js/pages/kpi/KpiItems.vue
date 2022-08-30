@@ -182,6 +182,9 @@ export default {
         },
         editable: {
             default: false
+        },
+        allow_overfulfillment: {
+            default: false
         }
     },
     watch: {
@@ -234,16 +237,16 @@ export default {
 
         recalc() {
             this.items.forEach(el => {
-                el.sum = this.calcSum(el)
                 el.percent = this.calcCompleted(el)
+                el.sum = this.calcSum(el)
             });
         },
         
         calcCompleted(el) {
-            res = 0;
+            let res = 0;
 
-            let fact = this.numberize(el.fact)
-            let plan = el.activity ? this.numberize(el.activity.daily_plan) : 0;
+            let fact = numberize(el.fact)
+            let plan = el.activity != null && el.activity !== undefined ? numberize(el.activity.daily_plan) : 0;
 
             if(plan <= 0) return 0;
 
@@ -264,14 +267,16 @@ export default {
 
         calcSum(el) {
             let result = 0; //=ЕСЛИ(F9>$D$3;ЕСЛИ(F9<$E$3;$B$3*D9*(F9-$D$3)*$E$3/($E$3-$D$3);$B$4*D9*F9);0)
-
+            
             let lower_limit = parseFloat(this.lower_limit) / 100.0
             let upper_limit = parseFloat(this.upper_limit) / 100.0
-            let completed = 1; //parseFloat(el.completed) / 100.0
+            let completed = this.editable ? 1 : el.percent / 100.0; //parseFloat(el.completed) / 100.0
             let share = el.share != undefined ? parseFloat(el.share) / 100.0 : 0
             let completed_80 = this.completed_80
             let completed_100 = this.completed_100
 
+            // check overfulfillment
+            if(!this.allow_overfulfillment && completed > 1) completed = 1;
 
             if(completed > lower_limit) {
 

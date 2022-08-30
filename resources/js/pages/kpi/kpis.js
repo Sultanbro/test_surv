@@ -131,7 +131,7 @@ function numberize(a) {
     return a == undefined
         || a == null
         || isNaN(Number(a))
-        || isFinite(Number(a))
+        || !isFinite(Number(a))
         ? 0 : Number(a)
 }
 

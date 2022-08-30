@@ -88,10 +88,10 @@
                                                         :expanded="user.expanded"
                                                         :activities="activities"
                                                         :groups="groups"
-                                                        :completed_80="user.completed_80"
-                                                        :completed_100="user.completed_100"
-                                                        :lower_limit="user.lower_limit"
-                                                        :upper_limit="user.upper_limit"
+                                                        :completed_80="wrap_item.completed_80"
+                                                        :completed_100="wrap_item.completed_100"
+                                                        :lower_limit="wrap_item.lower_limit"
+                                                        :upper_limit="wrap_item.upper_limit"
                                                         :editable="false"
                                                     />
                                                 </div>
