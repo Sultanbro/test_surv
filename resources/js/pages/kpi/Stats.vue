@@ -62,29 +62,29 @@
                     <tr class="collapsable" :class="{'active': wrap_item.expanded}" :key="w + 'a'">
                         <td :colspan="fields.length + 2">
                             <div class="table__wrapper">
-                            <table>
+                            <table class="child-table">
                                 <template v-for="(user, i) in wrap_item.users">
                                     <tr :key="i" class="child-row">
                                         <td  @click="user.expanded = !user.expanded" class="pointer px-2">
                                             <i class="fa fa-minus mt-1 little-expander" v-if="user.expanded"></i>
                                             <i class="fa fa-plus mt-1 little-expander" v-else></i>
-                                            <span class="ml-2">{{ i + 1 }}</span>
+                                            <span class="ml-2 bg-transparent">{{ i + 1 }}</span>
                                         </td>
                                         <td class="px-2 py-1">{{ user.name }}</td>
                                         
-                                        <template v-if="user.kpi_items !== undefined"">
-                                            <td class="px-2" v-for="kpi_item in user.kpi_items">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
+                                        <template v-if="user.items !== undefined"">
+                                            <td class="px-2" v-for="kpi_item in user.items">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
                                         </template>
                                         
                                     </tr>
 
-                                    <template v-if="user.kpi_items !== undefined">
+                                    <template v-if="user.items !== undefined">
                                         <tr class="collapsable" :class="{'active': user.expanded}" :key="i + 'a'">
                                             <td :colspan="fields.length + 2">
                                                 <div class="table__wrapper__second">
                                                     <kpi-items
                                                         :kpi_id="user.id"
-                                                        :items="user.kpi_items" 
+                                                        :items="user.items" 
                                                         :expanded="user.expanded"
                                                         :activities="activities"
                                                         :groups="groups"
@@ -271,6 +271,8 @@ export default {
                 
                 // items
                 this.items = response.data.items;
+                this.activities = response.data.activities;
+                this.groups = response.data.groups;
 
                 // paginate
                 this.page_items = this.items.slice(0, this.pageSize);

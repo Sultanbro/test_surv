@@ -154,6 +154,7 @@ class KpiService
                 'method'        => $item['method'],
                 'unit'          => $item['unit'],
                 'plan'          => $item['plan'],
+                'cell'          => $item['cell'],
                 'share'         => $item['share'],
                 'activity_id'   => $item['activity_id']
             ]);

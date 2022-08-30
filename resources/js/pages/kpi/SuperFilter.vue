@@ -1,14 +1,17 @@
 <template>
 <div class="super-filter"  v-click-outside="close">
 
-    <input 
-        class="searcher mr-2"
-        v-model="searchText"
-        type="text"
-        placeholder="Поиск по совпадениям..."
-        @click="show = true"
-        @keyup="$emit('search-text-changed', this.searchText)"
-    >
+    <div class="d-flex relative">
+        <input 
+            class="searcher mr-2 pr-3"
+            v-model="searchText"
+            type="text"
+            placeholder="Поиск по совпадениям..."
+            @click="show = true"
+            @keyup="$emit('search-text-changed', this.searchText)"
+        >
+        <i class="fa fa-search search-btn" @click="applyFilter()" ></i>
+    </div>
 
     <div class="block" :class="{'show': show}">
         <!-- item -->
@@ -18,6 +21,17 @@
                 <option v-for="key in Object.keys(groups)" :key="key"
                     :value="key">
                     {{ groups[key] }}
+                </option>
+            </select>
+        </div>
+        
+        <!-- item -->
+        <div class="item">
+            <div class="label">Что ищем</div>
+            <select v-model="s_type" class="form-control " @change="change('s_type')">
+                <option v-for="key in Object.keys(s_types)" :key="key"
+                    :value="key">
+                    {{ s_types[key] }}
                 </option>
             </select>
         </div>
@@ -86,10 +100,12 @@ export default {
             // options
             years: [],
             dates: {},
+            s_types: {},
             
             filters: {},
             // filters
             group_id: 0,
+            s_type: 1,
             created_at: {
                 variant: 0,
                 month: new Date().getMonth() + 1,
@@ -128,6 +144,12 @@ export default {
                 4: 'Текущий месяц',
                 5: 'Месяц',
                 6: 'Диапазон',
+            }
+
+            this.s_types = {
+                1: 'KPI',
+                2: 'Бонусы',
+                3: 'Квартальная премия',
             }
 
             
@@ -169,3 +191,11 @@ export default {
     } 
 }
 </script>
+
+<style scoped>
+.search-btn {
+    position: absolute;
+    right: 20px;
+    top: 12px;
+}
+</style>

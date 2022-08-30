@@ -40,6 +40,7 @@ class Activity extends Model
         'data', // дополнительно
         'created_by', // 
         'updated_by', // 
+        'common' // показатели всей группы  = 1 или идивидуальный = 0
     ];
     
     // old consts for plan_units
@@ -69,6 +70,7 @@ class Activity extends Model
     const VIEW_TURNOVER = 4;
     const VIEW_STAFF = 5;
     const VIEW_CONVERSION = 6;
+    const VIEW_CELL = 7;
 
     /**
      * Sources

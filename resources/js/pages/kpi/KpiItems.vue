@@ -7,13 +7,14 @@
                 <th></th>
                 <th>Наименование активности</th>
                 <th>Вид плана</th>
-                <th>Показатели</th>
-                <th>Ед. изм.</th>
+                <th v-if="editable">Показатели</th>
+                <th v-if="editable">Ед. изм.</th>
                 <th>Целевое значение на месяц</th>
                 <th>Удельный вес, %</th>
                 <th v-if="!editable">Факт</th>
+                <th v-if="!editable">% выполнения</th>
                 <th>Сумма премии при выполнении плана, KZT</th>
-                <th></th>
+                <th v-if="editable"></th>
             </tr>
         </thead>
         <tbody :key="refreshItemsKey">
@@ -71,6 +72,23 @@
                                 <option value="0" selected>-</option>
                                 <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id">{{ activity.name }}</option>
                             </select>
+
+                            <select 
+                                v-if="item.source == 1 && !isCell(item.activity_id)"
+                                v-model="item.common"
+                                class="form-control small"
+                            >
+                                <option value="0" selected>Свой</option>
+                                <option value="1">Всего отдела</option>
+                            </select>
+
+                            <input  
+                                v-if="item.source == 1 && isCell(item.activity_id)"
+                                type="text"
+                                class="form-control"
+                                v-model="item.cell"
+                                placeholder="Ячейка: C7"
+                            />
                         </div>
                     </td>
                     <td class="text-center w-sm">
@@ -110,21 +128,14 @@
                     }"
                 >
                     <td class="first-column"></td>
-                    <td>{{ item.name }}</td>
+                    <td class="px-2">{{ item.name }}</td>
                     <td class="text-center">{{ methods[item.method] }}</td>
-                    <td class="text-center">
-                        <div class="d-flex">
-                            <div class="mr-2">{{ sources[item.source] }}</div>
-                            <div class="mr-2">{{ groups[item.group_id] }}</div>
-                            <div class="mr-2">{{ getActivity(item.activity_id) }}</div>
-                        </div>
-                    </td>
-                    <td class="text-center w-sm">{{ item.unit }}</td>
-                    <td class="text-center">{{ item.plan }}</td>
+                    <td class="text-center">{{ item.plan }} {{ item.unit }}</td>
                     <td class="text-center">{{ item.share }}</td>
                     <td class="text-center">
                         <input type="number" class="form-control" v-model="item.fact" min="0" />
                     </td>
+                    <td class="text-center">{{ item.percent }}</td>
                     <td class="text-center">{{ item.sum }}</td>
                 </tr>
 
@@ -137,7 +148,7 @@
 </template>
 
 <script>
-import {newKpiItem} from "./kpis.js";
+import {newKpiItem, numberize} from "./kpis.js";
 
 export default {
     name: "KpiItems", 
@@ -224,7 +235,31 @@ export default {
         recalc() {
             this.items.forEach(el => {
                 el.sum = this.calcSum(el)
+                el.percent = this.calcCompleted(el)
             });
+        },
+        
+        calcCompleted(el) {
+            res = 0;
+
+            let fact = this.numberize(el.fact)
+            let plan = el.activity ? this.numberize(el.activity.daily_plan) : 0;
+
+            if(plan <= 0) return 0;
+
+            if(el.method == 1 || el.method == 2) {
+                res = (fact / plan * 100).toFixed(2);
+            }
+
+            if(el.method == 3 || el.method == 4) {
+                res = plan - fact > 0 ? 100 : 0;
+            }
+
+            if(el.method == 5 || el.method == 6) {
+                res = fact - plan > 0 ? 100 : 0;
+            }
+
+            return Number(res);
         },
 
         calcSum(el) {
@@ -278,7 +313,7 @@ export default {
 
         setMethods() {
             this.methods = {
-                1: 'сумма минут',
+                1: 'сумма',
                 2: 'среднее значение',
                 3: 'сумма, не более',
                 4: 'среднее, не более',
@@ -325,6 +360,13 @@ export default {
                 group_id = 0
                 return this.activities.filter(el => el.source == source);
             }
+        },
+
+        isCell(activity_id) {
+            let i = this.activities.findIndex(el => el.id == activity_id);
+            if(i!=-1)console.log(this.activities[i].view);
+            console.log(i != -1 && this.activities[i].view == 7);
+            return i != -1 && this.activities[i].view == 7;
         }
  
     } 

@@ -2,15 +2,16 @@
 
 namespace App\Service;
 
-use App\Models\Analytics\UserStat;
-use App\Models\Kpi\Kpi;
-use App\Models\Kpi\KpiItem;
-use App\ProfileGroup;
-use App\User;
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Exception;
+use App\User;
+use App\ProfileGroup;
+use App\Models\Kpi\KpiItem;
+use App\Models\Kpi\Kpi;
+use App\Models\Analytics\UserStat;
+use App\Models\Analytics\Activity;
 
 class KpiStatisticService
 {
@@ -202,9 +203,7 @@ class KpiStatisticService
     }
 
     /**
-     * @param array $date
-     * @param int $userId
-     * @return int
+     *  кол-во записей с UserStat
      */
     private function getRecordsCount(array $date, int $userId): int
     {
@@ -214,13 +213,7 @@ class KpiStatisticService
     }
 
     /**
-     * @param int $lower_limit
-     * @param int $upper_limit
-     * @param float $completed_percent
-     * @param int $share
-     * @param float $completed_80
-     * @param float $completed_100
-     * @return float|int
+     * Расчет суммы К выдаче по результатам KPI
      */
     private function sumOfActivity(
         int $lower_limit,
@@ -228,8 +221,8 @@ class KpiStatisticService
         float $completed_percent,
         int $share,
         float $completed_80,
-        float $completed_100): float|int
-    {
+        float $completed_100
+    ) : float|int {
         $result = 0;
         $completed_percent = 80;
         $lower_limit = $lower_limit / 100;
@@ -256,11 +249,15 @@ class KpiStatisticService
 
 
     /**
-     * Вытащить kpis со стсатистикой
+     * Вытащить kpis со статистикой
+     * 
+     * getUsersForKpi($kpi)
+     * getUserStats($kpi, $_user_ids, $date)
+     * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
     public function fetchKpis(Request $request) : array
     {
-        $kpis = Kpi::with('items')
+        $kpis = Kpi::with('items.activity')
             ->get();
 
         foreach ($kpis as $key => $kpi) {
@@ -284,103 +281,142 @@ class KpiStatisticService
         }
 
         return [
-            'items' => $kpis
+            'items' => $kpis,
+            'activities' => Activity::get(),
+            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
         ];
     }
 
-
+    /**
+     * helper for fetchKpis()
+     */
     private function getUsersForKpi(Kpi $kpi)
     {
-        $users = [];
-
         // check target exists
         if(!$kpi->target) return [];
 
         $type = $kpi->target['type'];
+        $date = Carbon::createFromDate(2022, 8, 1);
 
         // User::class
-        if($type == 1) { 
-            $users[] = [
-                'user_id'  => $kpi->targetable_id,  
-                'name'     => $kpi->target['name'],  
-                'expanded' => false,  
-                'kpi_items' => [
-                    [
-                        'id' => 13,
-                        'method' => 1,
-                        'name' => 'Кол=во минут',
-                        'activity_id' => 0,
-                        'plan' => 450,
-                        'share' => 50,
-                        'fact' => 355,
-                        'percent' => 0,
-                        'sum' => 0
-                    ],
-                    [
-                        'id' => 14,
-                        'method' => 2,
-                        'name' => 'ОКК',
-                        'activity_id' => 0,
-                        'plan' => 80,
-                        'share' => 50,
-                        'fact' => 81,
-                        'percent' => 0,
-                        'sum' => 0
-                    ],
-                ]
-            ];
-        }
+        if($type == 1) $_user_ids = [$kpi->targetable_id];
         
         // ProfileGroup::class
-        if($type == 2) { 
-            $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
-            
-            $_users = User::with('user_description')
-                ->withTrashed()
-                ->whereHas('user_description', function ($query) {
-                    $query->where('is_trainee', 0);
-                })
-                ->whereIn('id', $_user_ids)
-                ->select('id', 'name', 'last_name')
-                ->get();
-            
-            foreach ($_users as $key => $user) {
-                $users[] = [
-                    'user_id'  => $user->id,  
-                    'name'     => $user->last_name . ' ' . $user->name,  
-                    'expanded' => false,  
-                    'kpi_items' => [
-                        [
-                            'id' => 13,
-                            'method' => 1,
-                            'name' => 'Кол=во минут',
-                            'activity_id' => 0,
-                            'plan' => 450,
-                            'share' => 50,
-                            'fact' => 355,
-                            'percent' => 0,
-                            'sum' => 0
-                        ],
-                        [
-                            'id' => 14,
-                            'method' => 2,
-                            'name' => 'ОКК',
-                            'activity_id' => 0,
-                            'plan' => 80,
-                            'share' => 50,
-                            'fact' => 81,
-                            'percent' => 0,
-                            'sum' => 0
-                        ],
-                    ]
-                ];
-            }
-        }
+        if($type == 2) $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
 
         // Position::class
-        if($type == 3) {}
+        if($type == 3) $_user_ids = [];
+
+        // get users with user stats
+        $_users = $this->getUserStats($kpi, $_user_ids, $date);
+        
+        // create final users array
+        $users = $this->connectKpiWithUserStats($kpi, $_users);
 
         return $users;
+    }
+
+    /**
+     * create final users array
+     */
+    private function connectKpiWithUserStats(Kpi $kpi, $_users) {
+        $users = [];
+
+        foreach ($_users as $key => $user) {
+
+            $kpi_items = [];
+            
+            foreach ($kpi->items as $key => $_item) {
+
+                // to array because object changes every loop
+                $item = $_item->toArray();
+
+                // check user stat exists 
+                $exists = collect($user['items'])
+                    ->where('activity_id', $item['activity_id'])
+                    ->first();
+                
+                // assign keys
+                if($exists) {
+                    $item['fact'] = $exists->sum;
+                } else {
+                    $item['fact'] = 0;
+                }
+
+                // plan
+                $item['plan'] = $_item->activity ? $_item->activity->daily_plan : 0;
+             
+                $kpi_items[] = $item;
+            }
+            
+            $user['items'] = $kpi_items;
+            
+        
+            $users[] = $user;
+        }
+
+        return $users;
+    }
+
+    /**
+     * get users with user stats
+     */
+    private function getUserStats(Kpi $kpi, array $user_ids, Carbon $date) : \Illuminate\Support\Collection
+    {
+
+        $activities = $kpi->items
+            ->pluck('activity_id')
+            ->unique()
+            ->toArray();
+
+		$sum_and_counts = \DB::table('user_stats')
+			->selectRaw("user_id,
+				SUM(value) as sum,
+				AVG(value) as avg,
+				COUNT(value) as count,
+				activity_id,
+				date")
+			->whereMonth('date', $date->month)
+			->whereYear('date', $date->year)
+			->groupBy('user_id', 'activity_id');
+		
+		$users = User::withTrashed()
+			->select([
+				'users.id',
+				'users.last_name',
+				'users.name',
+				'sum_and_counts.sum',
+				'sum_and_counts.avg',
+				'sum_and_counts.count', 
+				'sum_and_counts.activity_id',
+			])
+			->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+			->joinSub($sum_and_counts, 'sum_and_counts', function ($join)
+			{
+				$join->on('users.id', '=', 'sum_and_counts.user_id');
+			})
+			->where('ud.is_trainee', 0)
+			->whereIn('users.id', $user_ids)
+		    ->whereIn('sum_and_counts.activity_id', $activities)
+			->orderBy('last_name')
+			->get();
+
+		$users = $users->groupBy('id')
+			->map(function($items) {
+				return [
+					'id' => $items[0]->id,
+					'name' => $items[0]->last_name . ' ' . $items[0]->name,
+					'items' => $items->map(function ($item) {
+						$item->percent = 0;
+						$item->fact = 0;
+						$item->share = 0;
+						return $item;
+					}),
+					'expanded' => false
+				];
+			});
+
+		return $users->values(); //array_values($users->toArray());
     }
     
 }

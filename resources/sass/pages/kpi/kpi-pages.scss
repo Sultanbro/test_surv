@@ -161,7 +161,7 @@ $color-position: rgb(54, 182, 73);
 }
  
 .child-row {
-    background:#c0c9d5;
+    background:#7fabe7;
 }
 
 .input-sm {
@@ -199,5 +199,18 @@ $color-position: rgb(54, 182, 73);
 .little-expander {
     font-size: 8px;
     position: relative;
-    top: 3px;
+    top: -1px;
+}
+
+
+
+
+.kpi-pages table.child-table td:last-child,
+.kpi-pages table.child-table th:last-child {
+    width: unset;
+    min-width: unset !important;
+}
+
+.bg-transparent {
+    background: transparent !important;
 }

@@ -121,12 +121,24 @@ function newKpiItem() {
         name: 'Активность',
         activity_id: 0,
         plan: 0,
-        share: 0
+        share: 0,
+        cell: '',
     }
 }
+
+
+function numberize(a) {
+    return a == undefined
+        || a == null
+        || isNaN(Number(a))
+        || isFinite(Number(a))
+        ? 0 : Number(a)
+}
+
 
 module.exports = {
     kpi_fields: kpi_fields,
     newKpi: newKpi,
     newKpiItem: newKpiItem,
+    numberize: numberize,
 };

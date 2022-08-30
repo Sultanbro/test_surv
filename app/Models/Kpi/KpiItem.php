@@ -19,7 +19,9 @@ class KpiItem extends Model
         'plan',
         'share',
         'method',
-        'unit'
+        'unit',
+        'cell',
+        'common',
     ];
 
     protected $dates = [
@@ -27,4 +29,13 @@ class KpiItem extends Model
         'updated_at',
         'deleted_at'
     ];
+
+    /**
+     * 
+     */
+    public function activity()
+    {
+        return $this->belongsTo( 'App\Models\Analytics\Activity', 'activity_id', 'id')
+            ->withTrashed();
+    }
 }
