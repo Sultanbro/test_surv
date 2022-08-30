@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\TrackGroupChangingEvent;
+use App\Models\GroupUser;
 use App\Models\History;
 use App\ProfileGroup;
 use App\User;
@@ -47,9 +48,10 @@ class TrackGroupChangingListener
         }
     }
 
-    private function creating($event)
+    private function creating(TrackGroupChangingEvent $event)
     {
         $user = User::query()->findOrFail($event->userId);
+        $this->updateDeletedAt($event);
 
         return History::query()->create([
             'reference_table'   => 'App\User',
@@ -79,5 +81,15 @@ class TrackGroupChangingListener
         return $original->latest()->update([
             'payload' => $payload
         ]);
+    }
+
+    private function updateDeletedAt($event)
+    {
+        GroupUser::withTrashed()->where([
+            ['user_id', '=', $event->userId],
+            ['group_id', '=', $event->groupId]
+        ])->whereNotNull('deleted_at')->update([
+            'deleted_at' => null
+        ]);;
     }
 }
