@@ -218,6 +218,11 @@ class User extends Authenticatable implements Authorizable
        return $this->hasOne('App\UserDescription', 'user_id', 'id');
     } 
 
+    public function user_description()
+    {
+       return $this->hasOne('App\UserDescription', 'user_id', 'id');
+    } 
+
     public function lead()
     {
        return $this->hasOne('App\Models\Bitrix\Lead', 'user_id', 'id');

@@ -25,8 +25,7 @@ return new class extends Migration
      * @return void
      */
     public function down()
-    {
-        Gr
+    { 
         Schema::table('group_user', function (Blueprint $table) {
             $table->dropColumn('created_at');
             $table->dropColumn('updated_at');
