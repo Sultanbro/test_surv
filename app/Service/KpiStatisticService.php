@@ -247,9 +247,24 @@ class KpiStatisticService
         return $result;
     }
 
+    /**
+     * Список Квартальных премии
+     */
+    public function fetchBonuses(Request $request) : array
+    {
+        return [];
+    }
 
     /**
-     * Вытащить kpis со статистикой
+     * Список Квартальных премии
+     */
+    public function fetchQuartalPremiums(Request $request) : array
+    {
+        return [];
+    }
+
+    /**
+     * Вытащить список kpi со статистикой
      * 
      * getUsersForKpi($kpi)
      * getUserStats($kpi, $_user_ids, $date)

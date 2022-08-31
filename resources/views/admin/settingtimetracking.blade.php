@@ -21,6 +21,7 @@
                                 @if(auth()->user()->can('notifications_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 5) active @endif" id="nav-notifications-tab"  href="/timetracking/settings?tab=5#nav-notifications" aria-controls="nav-notifications" aria-selected="false">Уведомления</a>@endif
                                 @if(auth()->user()->can('permissions_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 6) active @endif" id="nav-permissions-tab"  href="/timetracking/settings?tab=6#nav-permissions" aria-controls="nav-permissions" aria-selected="false">Доступы</a>@endif
                                 @if(auth()->user()->can('checklists_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 7) active @endif" id="nav-checkList-tab"  href="/timetracking/settings?tab=7#nav-checkList" aria-controls="nav-checkList" aria-selected="false">Чек-листы</a>@endif
+                                @if(auth()->user()->is_admin == 1)<a class="nav-item nav-link @if($active_tab == 8) active @endif" id="nav-integrations-tab"  href="/timetracking/settings?tab=8#nav-integrations" aria-controls="nav-integrations" aria-selected="false">Интеграции</a>@endif
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
@@ -69,6 +70,26 @@
                                     <div class="tab-pane fade show active   p-3" id="checkList" role="tabpanel" aria-labelledby="nav-checkList-tab">
                                         <check-list/>
                                     </div>
+                            @endif
+
+                            @if($active_tab == 8 && auth()->user()->is_admin == 1)
+                                <div class="tab-pane fade show active p-3" id="integrations" role="tabpanel" aria-labelledby="nav-integrations-tab">
+                                    
+                                    <div class="d-flex">
+                                        <div class="d-flex jcc aic mr-2 flex-column" style="width: 150px; height: 120px;padding: 7.5px 10px;background: #f8fcfe;border: 1px solid #daecf5;">
+                                            Bitrix24 <span style="color:red;font-size:8px">Не настроен</span>
+                                        </div>
+
+                                        <div class="d-flex jcc aic mr-2 flex-column" style="width: 150px; height: 120px;padding: 7.5px 10px;background: #f8fcfe;border: 1px solid #daecf5;">
+                                            AmoCRM <span style="color:red;font-size:8px">Не подключен</span>
+                                        </div>
+
+                                        <div class="d-flex jcc aic mr-2 flex-column" style="width: 150px; height: 120px;padding: 7.5px 10px;background: #f8fcfe;border: 1px solid #daecf5;">
+                                            Callibro <span style="color:red;font-size:8px">Не настроен</span>
+                                        </div>
+                                    </div>
+
+                                </div>
                             @endif
                         </div>
                     </div>

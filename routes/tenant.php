@@ -508,6 +508,8 @@ Route::middleware([
         Route::get('kpi/user/{id}', [KpiStatController::class, 'show'])->name('index');
         Route::get('kpi/users/', [KpiStatController::class, 'fetchGroups'])->name('fetch');
         Route::any('kpi', [KpiStatController::class, 'fetchKpis'])->name('fetchKpis');
+        Route::any('bonuses', [KpiStatController::class, 'fetchBonuses'])->name('fetchBonuses');
+        Route::any('quartal-premiums', [KpiStatController::class, 'fetchQuartalPremiums'])->name('fetchQuartalPremiums');
     });
 
     /**

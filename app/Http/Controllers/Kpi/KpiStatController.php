@@ -72,4 +72,27 @@ class KpiStatController extends Controller
         return response()->json($response);
     }
     
+    /**
+     * Вытащить бонусы по фильтрам
+     */
+    public function fetchBonuses(Request $request): JsonResponse
+    {
+        $response = $this->service->fetchBonuses($request);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Вытащить премии по фильтрам
+     */
+    public function fetchQuartalPremiums(Request $request): JsonResponse
+    {
+        $response = $this->service->fetchQuartalPremiums($request);
+
+        return response()->json($response);
+    }
+    
+
+
+    
 }
