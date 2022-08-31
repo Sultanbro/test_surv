@@ -10,6 +10,8 @@ use App\ProfileGroup;
 use App\QualityRecordWeeklyStat;
 use App\QualityRecordMonthlyStat;
 use App\Models\CallibroDialer;
+use App\Models\Analytics\Activity;
+use App\Models\Analytics\UserStat;
 
 class FillQualityGrades extends Command
 {
@@ -164,6 +166,14 @@ class FillQualityGrades extends Command
                 'group_id' => $group_id,
             ]);
         }
+
+        // save user_stats
+        UserStat::saveQuality([
+            'date'     => $this->date,
+            'user_id'  => $user_id,
+            'value'    => (int)$grade,
+            'group_id' => $group_id,
+        ]);
     }
 
     /**

@@ -25,6 +25,7 @@ use DB;
 use Illuminate\Http\Request;
 use View;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\UserStat;
 use Auth;
 use App\Models\CallibroDialer;
 use App\UserNotification;
@@ -578,6 +579,10 @@ class QualityController extends Controller
 
     /**
      * Save weekly, where not have daily records
+     * 
+     * @TODO
+     * there is mistake 
+     * not have group-id 
      */
     public function saveWeeklyRecord(Request $request){
         $rec = QualityRecordWeeklyStat::where([
@@ -585,6 +590,7 @@ class QualityController extends Controller
             'month' => $request->month,
             'year' => $request->year,
             'user_id' => $request->user_id,
+            'group_id' => $request->group_id,
         ])->first();
 
         if($rec) {
@@ -592,6 +598,14 @@ class QualityController extends Controller
         } else {
             $rec = QualityRecordWeeklyStat::create($request->all());
         }
+
+        // save user_stats
+        UserStat::saveQuality([
+            'date'     => Carbon::createFromDate($request->day, $request->month, $request->day)->format('Y-m-d'),
+            'user_id'  => $request->user_id,
+            'value'    => $request->total,
+            'group_id' => $request->group_id,
+        ]);
         
         return $rec;
     }

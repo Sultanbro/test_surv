@@ -202,14 +202,46 @@ class Activity extends Model
                 'name' => 'OKK',
                 'group_id' => $group_id,
                 'daily_plan' => 100,
-                'plan_unit' => 'percent', // метод расчета
-                'unit' => '', // ед изм 
+                'plan_unit' => 'percent', 
+                'method' => self::METHOD_SUM,
+                'unit' => '',
+                'ud_ves' => 0,
+                'editable' => true,
+                'order' => 0,
+                'source' => self::SOURCE_GROUP,
+                'type' => 'quality',
+                'view' => self::VIEW_QUALITY,
+            ]);
+        }
+    }
+
+    /**
+     * get Quality table id
+     */
+    public static function qualityId(int $group_id) {
+        $act = Activity::withTrashed()
+            ->where('group_id', $group_id)
+            ->where('view', self::VIEW_QUALITY)
+            ->first();
+        
+        if(!$act) {
+            $act = Activity::create([
+                'name' => 'OKK',
+                'group_id' => $group_id,
+                'daily_plan' => 100,
+                'source' => self::SOURCE_GROUP,
+                'plan_unit' => 'percent', 
+                'method' => self::METHOD_SUM,
+                'unit' => '',
                 'ud_ves' => 0,
                 'editable' => true,
                 'order' => 0,
                 'type' => 'quality',
+                'view' => self::VIEW_QUALITY,
             ]);
         }
+
+        return $act->id;
     }
 
 }

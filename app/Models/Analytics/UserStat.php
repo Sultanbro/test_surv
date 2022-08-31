@@ -578,4 +578,35 @@ class UserStat extends Model
         }
         return $count;
     }
+
+    /**
+     * Сохранить UserStat по quality
+     * 
+     * date
+     * user_id
+     * value
+     * group_id
+     */
+    public static function saveQuality(array $data) : void
+    {
+        $data['activity_id'] = Activity::qualityId($data['group_id']);
+        
+        $us = UserStat::where([
+            'date'        => $data['date'],
+            'user_id'     => $data['user_id'],
+            'activity_id' => $data['activity_id'],
+        ])->first();
+
+        if($us) {
+            $us->value = $data['value'];
+            $us->save();
+        } else {
+            UserStat::create([
+                'date'        => $data['date'],
+                'user_id'     => $data['user_id'],
+                'activity_id' => $data['activity_id'],
+                'value'       => $data['value'],
+            ]);
+        }
+    }
 }
