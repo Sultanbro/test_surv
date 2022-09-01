@@ -18,6 +18,7 @@ use App\Classes\Helpers\Currency;
 use App\Models\TestBonus;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
+use App\SavedKpi;
 
 class ProfileSalaryController extends Controller
 {
@@ -117,7 +118,12 @@ class ProfileSalaryController extends Controller
         if($editedKpi) {
             $kpi = $editedKpi->amount;
         } else {
-            $kpi = Kpi::userKpi($user->id);
+
+            $sk = SavedKpi::where('user_id', $user->id)
+                ->where('date', $date->format('Y-m-d'))
+                ->first();
+
+            $kpi = $sk ? $sk->total : 0;
         }   
 
         $salary = $user->getCurrentSalary();
