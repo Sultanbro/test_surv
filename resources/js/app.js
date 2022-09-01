@@ -226,8 +226,12 @@ Vue.component('kpi', require('./pages/kpi/Kpi.vue').default); // kpi
 Vue.component('kpi-items', require('./pages/kpi/KpiItems.vue').default); // kpi
 Vue.component('indicators', require('./pages/kpi/Indicators.vue').default); // kpi
 Vue.component('stats', require('./pages/kpi/Stats.vue').default); // kpi
+Vue.component('t-stats', require('./pages/kpi/StatsTable.vue').default); // kpi
 Vue.component('bonuses', require('./pages/kpi/Bonuses.vue').default); // kpi
 Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').default); // kpi
+
+// temp
+Vue.component('profile-salary-info', require('./pages/ProfileSalaryInfo.vue').default); 
 
 
  

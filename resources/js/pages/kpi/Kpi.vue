@@ -120,6 +120,7 @@
                                     :lower_limit="item.lower_limit"
                                     :upper_limit="item.upper_limit"
                                     :editable="true"
+                                    :kpi_page="true"
                                 />
                             </div>
                         </td>
@@ -219,7 +220,7 @@ export default {
             searchText: '',
             modalAdjustVisibleFields: false,
             page_items: [],
-            pageSize: 10,
+            pageSize: 100,
             paginationKey: 1,
             items: [],
             all_items: [],

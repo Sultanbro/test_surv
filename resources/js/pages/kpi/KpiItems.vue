@@ -7,19 +7,19 @@
                 <th></th>
                 <th>Наименование активности</th>
                 <th>Вид плана</th>
-                <th v-if="editable">Показатели</th>
-                <th v-if="editable">Ед. изм.</th>
+                <th v-if="kpi_page">Показатели</th>
+                <th v-if="kpi_page">Ед. изм.</th>
                 <th>Целевое значение на месяц</th>
                 <th>Удельный вес, %</th>
-                <th v-if="!editable">Факт</th>
-                <th v-if="!editable">% выполнения</th>
+                <th v-if="!kpi_page">Факт</th>
+                <th v-if="!kpi_page">% выполнения</th>
                 <th>Сумма премии при выполнении плана, KZT</th>
-                <th v-if="editable"></th>
+                <th v-if="kpi_page"></th>
             </tr>
         </thead>
         <tbody :key="refreshItemsKey">
 
-            <template v-if="editable">
+            <template v-if="kpi_page">
                 <tr 
                     v-for="(item, i) in items" :key="i"
                     class="jt-row"
@@ -132,9 +132,10 @@
                     <td class="text-center">{{ methods[item.method] }}</td>
                     <td class="text-center">{{ item.plan }} {{ item.unit }}</td>
                     <td class="text-center">{{ item.share }}</td>
-                    <td class="text-center">
+                    <td class="text-center" v-if="editable">
                         <input type="number" class="form-control" v-model="item.fact" min="0" />
                     </td>
+                    <td class="text-center" v-else>{{ item.fact }}</td>
                     <td class="text-center">{{ item.percent }}</td>
                     <td class="text-center">{{ item.sum }}</td>
                 </tr>
@@ -148,7 +149,7 @@
 </template>
 
 <script>
-import {newKpiItem, numberize} from "./kpis.js";
+import {newKpiItem, numberize, calcCompleted, calcSum} from "./kpis.js";
 
 export default {
     name: "KpiItems", 
@@ -181,6 +182,9 @@ export default {
             default: 100,
         },
         editable: {
+            default: false
+        },
+        kpi_page: {
             default: false
         },
         allow_overfulfillment: {
@@ -229,71 +233,38 @@ export default {
         this.fillSelectOptions()
         this.defineSourcesAndGroups('with_sources_and_group_id');
         this.recalc();
+
+        if(!this.editable) {
+            this.items.forEach(el => el.expanded = true);
+        }
     },
 
     computed: {},
 
     methods: {
-
+      
         recalc() {
             this.items.forEach(el => {
-                el.percent = this.calcCompleted(el)
-                el.sum = this.calcSum(el)
+                if([1,3,5].includes(el.method) && !this.kpi_page) {
+                    let plan = el.activity != null && el.activity !== undefined ? numberize(el.activity.daily_plan) : 0;
+                    el.plan = plan * numberize(el.workdays);
+                }
+                el.percent = calcCompleted(el);
+                el.sum = calcSum(el,
+                    {
+                        lower_limit: this.lower_limit,
+                        upper_limit: this.upper_limit,
+                        completed_80: this.completed_80,
+                        completed_100: this.completed_100,
+                        allow_overfulfillment: this.allow_overfulfillment,
+                    },
+                    this.kpi_page ? 1 : el.percent / 100.0,
+                );
             });
         },
         
-        calcCompleted(el) {
-            let res = 0;
-
-            let fact = numberize(el.fact)
-            let plan = el.activity != null && el.activity !== undefined ? numberize(el.activity.daily_plan) : 0;
-
-            if(plan <= 0) return 0;
-
-            if(el.method == 1 || el.method == 2) {
-                res = (fact / plan * 100).toFixed(2);
-            }
-
-            if(el.method == 3 || el.method == 4) {
-                res = plan - fact > 0 ? 100 : 0;
-            }
-
-            if(el.method == 5 || el.method == 6) {
-                res = fact - plan > 0 ? 100 : 0;
-            }
-
-            return Number(res);
-        },
-
-        calcSum(el) {
-            let result = 0; //=ЕСЛИ(F9>$D$3;ЕСЛИ(F9<$E$3;$B$3*D9*(F9-$D$3)*$E$3/($E$3-$D$3);$B$4*D9*F9);0)
-            
-            let lower_limit = parseFloat(this.lower_limit) / 100.0
-            let upper_limit = parseFloat(this.upper_limit) / 100.0
-            let completed = this.editable ? 1 : el.percent / 100.0; //parseFloat(el.completed) / 100.0
-            let share = el.share != undefined ? parseFloat(el.share) / 100.0 : 0
-            let completed_80 = this.completed_80
-            let completed_100 = this.completed_100
-
-            // check overfulfillment
-            if(!this.allow_overfulfillment && completed > 1) completed = 1;
-
-            if(completed > lower_limit) {
-
-                if (completed < upper_limit) {
-                    result = completed_80 * share * (completed - lower_limit) * upper_limit / (upper_limit - lower_limit)
-                } else {
-                    result = completed_100 * share * completed
-                }
-            } 
-
-           
-            if (result < 0) result = 0;
-            return Number(Number(result).toFixed(1));
-        },
-
         deleteItem(i) {
-            this.items[i].deleted = true
+            this.items[i].deleted = true 
             if(this.kpi_id == 0) this.items.splice(i, 1);
             this.refreshItemsKey++;
         },

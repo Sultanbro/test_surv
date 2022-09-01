@@ -46,23 +46,7 @@
     </div>
     <!-- Картинки с заработком: сумма начислений, крi, бонусы -->
     <div class=" non-pillar">
-        <div class="col-xl-12">
-            <div class="ublock" style="border-radius:5px 5px 0 0;">
-                <h2 class="big-title">Ваш баланс</h2>
-                <user-earnings
-
-                    :data="{{json_encode($user_earnings)}}"
-                    :activeuserid="{{json_encode(auth()->user()->id)}}"
-                    :quarters="{{json_encode($quartal)}}"
-                />
-            </div>
-        </div>
-        <!-- Таблица начислений -->
-        <div class="col-xl-12">
-            <div class="ublock pt-0 relative" style="border-top: 1px solid transparent;border-radius:0 0 5px 5px" id="pulse" >  
-                <t-usersalary activeuserid="{{json_encode(auth()->user()->id)}}" />
-            </div>
-        </div>
+          <profile-salary-info :user_id="{{ auth()->id() }}"/>
     </div>
     
 

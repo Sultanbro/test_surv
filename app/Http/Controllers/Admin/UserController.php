@@ -96,33 +96,12 @@ class UserController extends Controller
 
     public function profile(Request $request)
     {
-
-
-       
         $user = User::find(auth()->id());
 
-
-        $d1 = date('Y-m-d');
-        $kv = intval((date('m', strtotime($d1)) + 2)/3);
-
-        $quartal = QuartalBonus::on()->where('user_id',$user->id)
-            ->where('year',date('Y'))
-            ->where('quartal',$kv)
-            ->get()->toArray();
-
-        $quarter_bonus = QuartalBonus::on()->where('user_id',$user->id)
-            ->where('year',date('Y'))
-            ->where('quartal',$kv)
-            ->sum('sum');
-
-
-
-
-        $new_email = trim(strtolower($request->email));
-
+    
         /******* Смена пароля */
         if($request->isMethod('post')) {
-
+            $new_email = trim(strtolower($request->email));
            
             if($user->email != $new_email) {  // Введен новый email
                 
@@ -162,6 +141,9 @@ class UserController extends Controller
             
         } else { // GET запрос
 
+            // rate
+            $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
+
             $positions = Position::all();
             $photo = Photo::where('user_id', $user->id)->first();
             $downloads = Downloads::where('user_id', $user->id)->first();
@@ -185,7 +167,6 @@ class UserController extends Controller
             }
 
             /*** Текущая книга для прочтения */
-            //$book = app('App\Http\Controllers\Admin\ExamController')->currentBook($user->id, date('m'), date('Y'));
             $book = null;
 
             /* recruiter */
@@ -199,18 +180,10 @@ class UserController extends Controller
                     $rg_users = $rec_group->users == null ? [] : json_decode($rec_group->users);
                 }
 
-             
-
             }
 
             
 
-
-
-
-            
-
-           
                 $recruiter_stats = json_encode([]);
                 $recruiter_records = json_encode([]);
 
@@ -273,13 +246,11 @@ class UserController extends Controller
             }
             ///////////////////////////////////////
    
-            Carbon::setLocale('ru');
             $month = [
                 'daysInMonth' => Carbon::now()->daysInMonth,
                 'currentMonth' => Carbon::now()->format('F')
             ];
 
-            ////
             $recruiter_stats_rates = [];
 
             for ($i = 1; $i <= Carbon::now()->daysInMonth; $i++) {
@@ -290,120 +261,13 @@ class UserController extends Controller
             $recruiter_stats_rates = json_encode($recruiter_stats_rates);
 
             $zarplata = Zarplata::where('user_id', $user->id)->first();
+
             $oklad = 0;
             if($zarplata) $oklad = $zarplata->zarplata;
-
-            try {
-                $currency_rate = (float)Currency::rates()[$user->currency];
-            } catch(\Exception $e) {
-                $currency_rate = 0.00001;
-            }
             $oklad = round($oklad * $currency_rate, 0);
-
-            // rate
-            
-            $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
-
-            //bonuses
-            $bonuses = Salary::where('user_id', $user->id)
-                ->whereYear('date',  date('Y'))
-                ->whereMonth('date', date('m'))
-                ->where(function($query) {
-                    $query->where('award', '!=', 0)
-                        ->orWhere('bonus', '!=', 0);
-                })
-                ->orderBy('id','desc')
-                ->get();
-            
-            $bonus = $bonuses->sum('bonus');
-            $bonus += ObtainedBonus::onMonth($user->id, date('Y-m-d'));
-            $bonus += TestBonus::where('user_id', $user->id)
-                ->whereYear('date', date('Y'))
-                ->whereMonth('date', date('m'))
-                ->get()
-                ->sum('amount');
-
-            $bonusHistory = ObtainedBonus::getHistory($user->id, date('Y-m-d'), $currency_rate);
-
-            
-            // Бонусы 
-
-            $editedBonus = EditedBonus::where('user_id', $user->id)
-                ->whereYear('date',  date('Y'))
-                ->whereMonth('date',  date('m'))
-                ->first();
-            $bonus = $editedBonus ? $editedBonus->amount : $bonus;
-
-            /**
-             * EARNINGS COMPONENT
-             */
-            $editedKpi = EditedKpi::where('user_id', $user->id)
-                ->whereYear('date', date('Y'))
-                ->whereMonth('date', date('m'))
-                ->first();
-
-            if($editedKpi) {
-                $kpi = $editedKpi->amount;
-            } else {
-                $kpi = Kpi::userKpi($user->id);
-            }   
-
-            $salary = $user->getCurrentSalary();
-            
-            $potential_bonuses = '';
-            if(count($gs) > 0) {
-                foreach ($gs as $key => $g) {
-                    $potential_bonuses .= Bonus::getPotentialBonusesHtml($g->id);
-                    $potential_bonuses .= '<br>';
-                }
-            }
-            
-            // check exists ind kpi
-            $kpis = $user->inGroups();
-            $ind_kpi = IndividualKpi::where('user_id', $user->id)->first();
-            if($ind_kpi) {
-                $kpis = [[
-                    'name' => 'Условия расчета KPI',
-                    'type' => 'individual',
-                    'id' => 0,
-                ]];
-            } else {
-                foreach ($kpis as $key => $kp) {
-                    $kp->type = 'common';
-                }
-            }
-
-
-            // prepare user_earnigs 
-            $oklads = number_format(round((float)$oklad * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency);
-            $user_earnings = [
-                'quarter_bonus' => $quarter_bonus.' '. strtoupper($user->currency),
-                'oklad' => round((float)$oklad * $currency_rate, 0),
-                'bonus' => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
-                'kpis' => $kpis,
-                'bonusHistory' => $bonusHistory,
-                'editedBonus' => $editedBonus,
-                'editedKpi' => $editedKpi,
-                'potential_bonuses' => $potential_bonuses,
-                'salary_percent' => $oklad > 0 ? $salary / $oklad * 100 : 0,
-                'kpi_percent' => $kpi / 400, // kpi / 40000 * 100
-                'kpi' => number_format((float)$kpi * $currency_rate,  0, '.', '\''). ' ' . strtoupper($user->currency),
-                'salary' => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
-                'salary_info' => [
-                    'worked_days' => $user->worked_days(),
-                    'indexation_sum' => $user_position ? $user_position->sum : 0,
-                    'days_before_indexation' => $user->days_before_indexation(),
-                    'oklad' => $oklads
-                ]
-            ];
-
             $oklad = number_format($oklad, 0, '.', ' ');
 
-            // 
-            $request = new Request();
-            $request->year = date('Y');
-            $request->month = date('m');
-
+            // arc
             $activities = '[]';
             $quality = [];
             if(count($gs) > 0) {
@@ -416,7 +280,6 @@ class UserController extends Controller
                 $users_ids = json_decode($gs[0]->users);
 
                 $quality = $_activities ? QualityRecordWeeklyStat::table($users_ids, date('Y-m-d')) : [];
-                
                 
             }   
             
@@ -440,10 +303,23 @@ class UserController extends Controller
 
 
          
-            return view('admin.timetracking', compact('user', 'oklad','positions', 'user_position', 'photo', 
-                'downloads', 'groups', 'book', 'is_recruiter', 'indicators', 'month', 
-                'recruiter_stats', 'recruiter_stats_rates', 'recruiter_records', 'head_in_groups',
-                'user_earnings','quartal'))->with([
+            return view('admin.timetracking', compact(
+                'user',
+                'oklad',
+                'positions',
+                'user_position',
+                'photo', 
+                'downloads',
+                'groups',
+                'book',
+                'is_recruiter',
+                'indicators',
+                'month', 
+                'recruiter_stats',
+                'recruiter_stats_rates',
+                'recruiter_records',
+                'head_in_groups'
+                ))->with([
                     'answers' => UserExperience::getAnswers($user->id),
                     'position_desc' => $position_desc,
                     'groups_pt' => $gs,

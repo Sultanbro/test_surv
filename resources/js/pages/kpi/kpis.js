@@ -123,6 +123,7 @@ function newKpiItem() {
         plan: 0,
         share: 0,
         cell: '',
+        common: 0,
     }
 }
 
@@ -135,10 +136,77 @@ function numberize(a) {
         ? 0 : Number(a)
 }
 
+/**
+ * Calc completed percent of kpi_item
+ * 
+ * @param {Object} el 
+ * @returns 
+ */
+function calcCompleted(el) {
+    let res = 0;
+
+    let fact = numberize(el.fact)
+    let plan = el.activity != null && el.activity !== undefined ? numberize(el.activity.daily_plan) : 0;
+    let workdays = numberize(el.workdays);
+
+    if(plan <= 0) return 0;
+
+    if([1].includes(el.method)) plan = plan * workdays;
+
+    if(el.method == 1 || el.method == 2) {
+        res = (fact / plan * 100).toFixed(2); 
+    }
+
+    if(el.method == 3 || el.method == 4) {
+        res = plan - fact > 0 ? 100 : 0;
+    }
+
+    if(el.method == 5 || el.method == 6) {
+        res = fact - plan > 0 ? 100 : 0;
+    }
+
+    return Number(res);
+}
+
+/**
+ * Calc sum of kpi_item
+ * 
+ * @param {Object} el kpi_item 
+ * @param {Object} kpi 
+ * @param {Number} completed 
+ * @returns Number
+ */
+function calcSum(el, kpi, completed) {
+    let result = 0; //=ЕСЛИ(F9>$D$3;ЕСЛИ(F9<$E$3;$B$3*D9*(F9-$D$3)*$E$3/($E$3-$D$3);$B$4*D9*F9);0)
+    
+    let lower_limit = parseFloat(kpi.lower_limit) / 100.0
+    let upper_limit = parseFloat(kpi.upper_limit) / 100.0
+    let share = el.share != undefined ? parseFloat(el.share) / 100.0 : 0
+    let completed_80 = kpi.completed_80
+    let completed_100 = kpi.completed_100
+
+    // check overfulfillment
+    if(!kpi.allow_overfulfillment && completed > 1) completed = 1;
+
+    if(completed > lower_limit) {
+
+        if (completed < upper_limit) {
+            result = completed_80 * share * (completed - lower_limit) * upper_limit / (upper_limit - lower_limit)
+        } else {
+            result = completed_100 * share * completed
+        }
+    } 
+
+   
+    if (result < 0) result = 0;
+    return Number(Number(result).toFixed(1));
+}
 
 module.exports = {
     kpi_fields: kpi_fields,
     newKpi: newKpi,
     newKpiItem: newKpiItem,
     numberize: numberize,
+    calcSum: calcSum,
+    calcCompleted: calcCompleted,
 };

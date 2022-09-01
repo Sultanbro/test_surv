@@ -36,6 +36,22 @@
             </select>
         </div>
 
+         <!-- item -->
+         <div class="item d-flex" >
+            <div class="label">Данные за</div>
+
+            <!-- Choose month and year -->
+            <select v-model="data_from.month" class="form-control mr-2"  @change="changeDate('data_from', 'month')">
+                <option v-for="(month, i) in $moment.months()" :value="i + 1" :key="month">{{month}}</option>
+            </select>
+
+            <select v-model="data_from.year" class="form-control"  @change="changeDate('data_from', 'year')">
+                <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
+            </select>
+            
+        </div>
+
+
         <!-- item -->
         <div class="item d-flex" >
             <div class="label">Дата создания</div>
@@ -106,6 +122,10 @@ export default {
             // filters
             group_id: 0,
             s_type: 1,
+            data_from: {
+                month: new Date().getMonth() + 1,
+                year: new Date().getFullYear(),
+            },
             created_at: {
                 variant: 0,
                 month: new Date().getMonth() + 1,
@@ -125,6 +145,8 @@ export default {
         prepare() {
             this.fillYears()
             this.fillFiltersObj()
+
+            this.changeDate('data_from', 'month')
         },
 
         clear() {
@@ -179,9 +201,8 @@ export default {
         },
 
         changeDate(field, prop) {
-            if(field == 'created_at') {
-                this.filters.created_at = this.created_at
-            }
+            if(field == 'created_at') this.filters.created_at = this.created_at
+            if(field == 'data_from')  this.filters.data_from  = this.data_from
         },
 
         close() {
@@ -191,7 +212,7 @@ export default {
     } 
 }
 </script>
-
+  
 <style scoped>
 .search-btn {
     position: absolute;

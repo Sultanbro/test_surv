@@ -12,6 +12,7 @@ use App\Models\Kpi\KpiItem;
 use App\Models\Kpi\Kpi;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\AnalyticStat;
 
 class KpiStatisticService
 {
@@ -272,27 +273,47 @@ class KpiStatisticService
      */
     public function fetchKpis(Request $request) : array
     {
-        $kpis = Kpi::with('items.activity')
-            ->get();
+        $f = $request->filters;
+
+        /**
+         * filters
+         */
+        if(isset($f['data_from']['year']) && isset($f['data_from']['month'])) {
+            $date = Carbon::createFromDate($f['data_from']['year'], $f['data_from']['month'], 1);
+        } else {
+            $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
+        } 
+        /**
+         * get kpis
+         */
+
+        $kpis = Kpi::query()
+            //->withTrashed()
+            ->with('items.activity');
+
+        
+        if(isset($f['user_id']) && $f['user_id'] != 0) {
+            $user_id = $f['user_id'];
+            $user = User::with('groups')->find($user_id);
+            $groups = $user->groups->pluck('id')->toArray();
+         
+
+            $kpis->where(function($query) use ($user_id) {
+                    $query->where('targetable_id', $user_id)
+                        ->where('targetable_type', 'App\User');
+                })
+                ->orWhere(function($query) use ($groups) {
+                    $query->whereIn('targetable_id', $groups)
+                        ->where('targetable_type', 'App\ProfileGroup');
+                });
+        }
+
+        $kpis = $kpis->get();
 
         foreach ($kpis as $key => $kpi) {
-
-            $kpi->kpi_items = [ // every kpi_item avg percent
-                [
-                    'id' => 13,
-                    'name' => 'Кол=во минут',
-                    'percent' => 0 
-                ],
-                [
-                    'id' => 14,
-                    'name' => 'ОКК',
-                    'percent' => 0 
-                ],
-            ];
-
-            $kpi->avg = rand(45, 76); // avg percent from kpi_items' percent
-
-            $kpi->users = $this->getUsersForKpi($kpi);
+            $kpi->kpi_items = [];
+            $kpi->avg = 0; // avg percent from kpi_items' percent
+            $kpi->users = $this->getUsersForKpi($kpi, $date, isset($f['user_id']) ? $f['user_id'] : 0);
         }
 
         return [
@@ -305,19 +326,24 @@ class KpiStatisticService
     /**
      * helper for fetchKpis()
      */
-    private function getUsersForKpi(Kpi $kpi)
+    private function getUsersForKpi(Kpi $kpi, $date, $user_id = 0)
     {
         // check target exists
         if(!$kpi->target) return [];
 
         $type = $kpi->target['type'];
-        $date = Carbon::createFromDate(2022, 8, 1);
+     
 
         // User::class
-        if($type == 1) $_user_ids = [$kpi->targetable_id];
-        
+        if($type == 1) {
+            $_user_ids = [$kpi->targetable_id];
+        } 
+
         // ProfileGroup::class
-        if($type == 2) $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
+        if($type == 2) {
+            $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
+            if($user_id != 0)  $_user_ids = in_array($user_id, $_user_ids) ? [$user_id] : [];
+        }
 
         // Position::class
         if($type == 3) $_user_ids = [];
@@ -326,7 +352,7 @@ class KpiStatisticService
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
         
         // create final users array
-        $users = $this->connectKpiWithUserStats($kpi, $_users);
+        $users = $this->connectKpiWithUserStats($kpi, $_users, $date);
 
         return $users;
     }
@@ -334,8 +360,17 @@ class KpiStatisticService
     /**
      * create final users array
      */
-    private function connectKpiWithUserStats(Kpi $kpi, $_users) {
+    private function connectKpiWithUserStats(Kpi $kpi, $_users, $date) {
+
+        // count workdays in month
+        $workdays = [];
+        $workdays[5] = workdays($date->year, $date->month, [6,0]);
+        $workdays[6] = workdays($date->year, $date->month, [0]);
+
+        // fill users array
         $users = [];
+        
+        $cell_activities = Activity::withTrashed()->where('view', Activity::VIEW_CELL)->get();
 
         foreach ($_users as $key => $user) {
 
@@ -353,14 +388,36 @@ class KpiStatisticService
                 
                 // assign keys
                 if($exists) {
-                    $item['fact'] = $exists->sum;
+
+                    if(isset($item['activity']['method']) && in_array($item['activity']['method'], [1,3,5])) {
+                        $item['fact'] = $exists->sum;
+                    } else {
+                        $item['fact'] = round($exists->avg, 2);
+                    }
+                    
+                    $item['applied'] = $exists->applied;
+                    $item['days'] = $exists->days;
+                    $item['registered'] = $exists->registered_days;
                 } else {
                     $item['fact'] = 0;
+                    $item['applied'] = null;
+                    $item['days'] = 0;
+                    $item['registered'] = 0;
+                }
+                
+                // // take cell value
+                $hasCellActivity = $cell_activities->where('id', $item['activity_id'])->first();
+                if($hasCellActivity) {
+                    $item['fact'] = AnalyticStat::getCellValue(
+                        $hasCellActivity->group_id,
+                        $hasCellActivity->cell,
+                        $date->format('Y-m-d')
+                    );
                 }
 
                 // plan
                 $item['plan'] = $_item->activity ? $_item->activity->daily_plan : 0;
-                $item['plan'] = $_item->activity ? $_item->activity->daily_plan : 0;
+                $item['workdays'] = $_item->activity && $_item->activity->workdays != 0 ?  $workdays[(int) $_item->activity->workdays] : $workdays[5];
              
                 $kpi_items[] = $item;
             }
@@ -379,12 +436,13 @@ class KpiStatisticService
      */
     private function getUserStats(Kpi $kpi, array $user_ids, Carbon $date) : \Illuminate\Support\Collection
     {
-
         $activities = $kpi->items
             ->pluck('activity_id')
             ->unique()
             ->toArray();
 
+            
+        // subquery
 		$sum_and_counts = \DB::table('user_stats')
 			->selectRaw("user_id,
 				SUM(value) as sum,
@@ -394,8 +452,10 @@ class KpiStatisticService
 				date")
 			->whereMonth('date', $date->month)
 			->whereYear('date', $date->year)
+            ->whereIn('activity_id', $activities)
 			->groupBy('user_id', 'activity_id');
 		
+        // query
 		$users = User::withTrashed()
 			->select([
 				'users.id',
@@ -405,30 +465,35 @@ class KpiStatisticService
 				'sum_and_counts.avg',
 				'sum_and_counts.count', 
 				'sum_and_counts.activity_id',
+				'ud.applied',
+				\DB::raw('datediff(CURDATE(), ud.applied) as days'),
+				\DB::raw('datediff(CURDATE(), users.created_at) as registered_days')
 			])
-			->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-			->joinSub($sum_and_counts, 'sum_and_counts', function ($join)
+            ->leftJoinSub($sum_and_counts, 'sum_and_counts', function ($join)
 			{
-				$join->on('users.id', '=', 'sum_and_counts.user_id');
+		     	$join->on('users.id', '=', 'sum_and_counts.user_id');
 			})
+			->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
 			->where('ud.is_trainee', 0)
 			->whereIn('users.id', $user_ids)
-		    ->whereIn('sum_and_counts.activity_id', $activities)
 			->orderBy('last_name')
 			->get();
 
+          //  if(count($user_ids) == 1) dd($users);
+        // group collection
 		$users = $users->groupBy('id')
 			->map(function($items) {
 				return [
 					'id' => $items[0]->id,
 					'name' => $items[0]->last_name . ' ' . $items[0]->name,
+					'expanded' => false,
 					'items' => $items->map(function ($item) {
 						$item->percent = 0;
-						$item->fact = 0;
+					//	$item->fact = 0;
 						$item->share = 0;
+                        
 						return $item;
 					}),
-					'expanded' => false
 				];
 			});
 

@@ -19,7 +19,7 @@
         <p class="text-center">{{ data.salary }}</p>
     </div>
     <div class="flexy"  v-bind:class="[activeClass]">
-        <div class="filler" @click="showKpiSidebar = true">
+        <div class="filler" @click="openKpi">
             <img src="/images/money2.png"
                 alt="icon"
                 class="img-fluid w-120 back">
@@ -94,24 +94,26 @@
         </div>
         <p></p>
     </sidebar>
+
+
     <sidebar
       title="KPI"
       :open="showKpiSidebar"
       @close="showKpiSidebar = false"
       v-if="showKpiSidebar"
-      width="70%"
+      width="80%"
     >
-      <t-kpi v-for="kpi in data.kpis"
-        :activeuserid="activeuserid"
-        :group="kpi.name"
-        :group_id="kpi.id"
-        :oklad="data.oklad"
-        :key="kpi.id"
-        :type="kpi.type"
-      />
-      
+     <!-- table -->
+        <t-stats 
+            :activities="activities"
+            :groups="groups"
+            :items="kpis"
+            :editable="false"
+        />
 
     </sidebar>
+
+
     <sidebar
       title="Бонусы"
       :open="showBonusSidebar"
@@ -146,6 +148,8 @@
         </div>
       </div>
     </sidebar>
+
+
     <sidebar
       title="Квартальная премия"
       :open="showQuartalBonusSidebar"
@@ -181,26 +185,25 @@
 export default {
     name: "UserEarnings",
     props: {
+        month: {},
         data: Object,
         activeuserid: Number,
-        quarters:[],
-
-
+        quarters: {
+            type: Array
+        },
     },
     data() {
-        if(this.quarters.length == 0){
-             this.activeClass = 'col-md-4 ';
-        }else{
-             this.activeClass = 'col-md-3 '
-        }
         return {
             visible: true,
-            activeClass:this.activeClass,
+            activeClass:this.quarters.length == 0 ? 'col-md-4' : 'col-md-3',
             showQuartalBonusSidebar:false,
             showBonusSidebar: false,
             showKpiSidebar: false,
             showSalarySidebar: false,
-            editedBonus: null
+            editedBonus: null,
+            activities: [],
+            groups: {},
+            kpis: [],
         };
     },
     created() {
@@ -208,7 +211,36 @@ export default {
         console.log(this.data,'imasheev')
     },
     methods: {
-        
+        openKpi(){
+            this.fetchData({
+                data_from: {
+                    year: new Date().getFullYear(),
+                    month: this.$moment(this.month, 'MMMM').format('M')
+                },
+                user_id: this.activeuserid
+            })
+            this.showKpiSidebar = true
+        },
+
+        fetchData(filters) {
+            let loader = this.$loading.show();
+
+            axios.post('/statistics/kpi', {
+                filters: filters 
+            }).then(response => {
+                
+                // items
+                this.kpis = response.data.items;
+                this.activities = response.data.activities;
+                this.groups = response.data.groups;
+
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
+        },
+
     },
 };
 </script>

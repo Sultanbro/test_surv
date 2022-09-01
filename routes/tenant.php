@@ -60,6 +60,7 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\IntellectController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\GroupsController;
+use App\Http\Controllers\ProfileSalaryController;
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\CallibroController;
@@ -585,6 +586,9 @@ Route::middleware([
     Route::get('/superselect/get-alt', [PermissionController::class, 'superselectAlt']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
 
+    Route::post('/profile/salary/get', [ProfileSalaryController::class, 'get']);
+
+   
 
     Route::group([
         'prefix'    => 'kpi',
@@ -690,6 +694,8 @@ Route::middleware([
          */
         Route::post('/v2/messages/read', [MessagesController::class, 'setMessagesAsRead'])->name('api.v2.setMessagesAsRead');
 
+
+        
     });
 });
 

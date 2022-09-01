@@ -138,29 +138,39 @@ class KpiService
      */
     public function delete(Request $request): void
     {
-        Kpi::find($request->id)->delete();
+        $kpi = Kpi::find($request->id);
+
+        if($kpi) {
+            $kpi->updated_by = auth()->id();
+            $kpi->save();
+            $kpi->delete();
+        }
     }
 
     /**
      * Сохраняем kpi_items и возвращаем массив с id
      */
-    private function saveItems(array $items, int $kpiId): array
+    private function saveItems(array $items, int $kpiId): array 
     {
+        $ids = [];
         foreach ($items as $item)
         {
-            $item['id'] = KpiItem::create([
+            $kpi_item = KpiItem::create([
                 'kpi_id'        => $kpiId,
                 'name'          => $item['name'],
                 'method'        => $item['method'],
-                'unit'          => $item['unit'],
+                'unit'          => isset($item['unit']) ? $item['unit'] : '',
                 'plan'          => $item['plan'],
                 'cell'          => $item['cell'],
                 'share'         => $item['share'],
-                'activity_id'   => $item['activity_id']
+                'activity_id'   => $item['activity_id'],
+                'common'        => $item['common']
             ]);
+
+            $ids[] = $kpi_item->id;
         }
 
-        return array_column($items, 'id');
+        return $ids;
     }
 
     /**
@@ -179,6 +189,7 @@ class KpiService
             unset($item['source']);
             unset($item['group_id']);
             unset($item['sum']);
+            unset($item['percent']);
             
             if($item['id'] == 0) {
 
