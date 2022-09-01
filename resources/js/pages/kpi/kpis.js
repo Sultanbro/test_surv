@@ -153,6 +153,8 @@ function calcCompleted(el) {
 
     if([1].includes(el.method)) plan = plan * workdays;
 
+    if(el.full_time == 0) plan = plan / 2;
+
     if(el.method == 1 || el.method == 2) {
         res = (fact / plan * 100).toFixed(2); 
     }

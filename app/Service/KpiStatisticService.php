@@ -271,18 +271,30 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public function fetchKpis(Request $request) : array
+    public function fetchKpis(array $filters) : array
     {
-        $f = $request->filters;
-
         /**
          * filters
+         * 
+         * date_from
+         * user_id
          */
-        if(isset($f['data_from']['year']) && isset($f['data_from']['month'])) {
-            $date = Carbon::createFromDate($f['data_from']['year'], $f['data_from']['month'], 1);
+        if(
+            isset($filters['data_from']['year'])
+            && isset($filters['data_from']['month'])
+        ) {
+            $date = Carbon::createFromDate(
+                $filters['data_from']['year'],
+                $filters['data_from']['month'],
+                1
+            );
         } else {
             $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
         } 
+
+
+        $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
+
         /**
          * get kpis
          */
@@ -292,8 +304,7 @@ class KpiStatisticService
             ->with('items.activity');
 
         
-        if(isset($f['user_id']) && $f['user_id'] != 0) {
-            $user_id = $f['user_id'];
+        if($user_id != 0) {
             $user = User::with('groups')->find($user_id);
             $groups = $user->groups->pluck('id')->toArray();
          
@@ -313,7 +324,7 @@ class KpiStatisticService
         foreach ($kpis as $key => $kpi) {
             $kpi->kpi_items = [];
             $kpi->avg = 0; // avg percent from kpi_items' percent
-            $kpi->users = $this->getUsersForKpi($kpi, $date, isset($f['user_id']) ? $f['user_id'] : 0);
+            $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
         }
 
         return [
@@ -461,6 +472,7 @@ class KpiStatisticService
 				'users.id',
 				'users.last_name',
 				'users.name',
+				'users.full_time',
 				'sum_and_counts.sum',
 				'sum_and_counts.avg',
 				'sum_and_counts.count', 
