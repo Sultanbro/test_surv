@@ -307,7 +307,7 @@ class KpiStatisticService
         if($user_id != 0) {
             $user = User::with('groups')->find($user_id);
             $groups = $user->groups->pluck('id')->toArray();
-         
+            //if($user_id == 16471)dd($kpis->toArray());
 
             $kpis->where(function($query) use ($user_id) {
                     $query->where('targetable_id', $user_id)
@@ -320,12 +320,14 @@ class KpiStatisticService
         }
 
         $kpis = $kpis->get();
-
+      
         foreach ($kpis as $key => $kpi) {
             $kpi->kpi_items = [];
             $kpi->avg = 0; // avg percent from kpi_items' percent
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
         }
+
+
 
         return [
             'items' => $kpis,
@@ -361,7 +363,7 @@ class KpiStatisticService
 
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
-        
+            
         // create final users array
         $users = $this->connectKpiWithUserStats($kpi, $_users, $date);
 
@@ -399,22 +401,20 @@ class KpiStatisticService
                 
                 // assign keys
                 if($exists) {
-
-                    if(isset($item['activity']['method']) && in_array($item['activity']['method'], [1,3,5])) {
-                        $item['fact'] = $exists->sum;
-                    } else {
-                        $item['fact'] = round($exists->avg, 2);
-                    }
-                    
+                    $item['fact'] = $exists->fact;
+                    $item['avg'] = $exists->avg;
+                    $item['records_count'] = $exists->records_count;
                     $item['applied'] = $exists->applied;
                     $item['days'] = $exists->days;
                     $item['registered'] = $exists->registered_days;
                 } else {
                     $item['fact'] = 0;
+                    $item['avg'] = 0;
+                    $item['records_count'] = 0;
                     $item['applied'] = null;
                     $item['days'] = 0;
                     $item['registered'] = 0;
-                }
+                }   
                 
                 // // take cell value
                 $hasCellActivity = $cell_activities->where('id', $item['activity_id'])->first();
@@ -425,11 +425,13 @@ class KpiStatisticService
                         $date->format('Y-m-d')
                     );
                 }
-
+               
                 // plan
                 $item['plan'] = $_item->activity ? $_item->activity->daily_plan : 0;
                 $item['workdays'] = $_item->activity && $_item->activity->workdays != 0 ?  $workdays[(int) $_item->activity->workdays] : $workdays[5];
-             
+                $item['full_time'] = $user['full_time'];
+
+
                 $kpi_items[] = $item;
             }
             
@@ -456,9 +458,9 @@ class KpiStatisticService
         // subquery
 		$sum_and_counts = \DB::table('user_stats')
 			->selectRaw("user_id,
-				SUM(value) as sum,
+				SUM(value) as fact,
 				AVG(value) as avg,
-				COUNT(value) as count,
+				COUNT(value) as records_count,
 				activity_id,
 				date")
 			->whereMonth('date', $date->month)
@@ -473,9 +475,9 @@ class KpiStatisticService
 				'users.last_name',
 				'users.name',
 				'users.full_time',
-				'sum_and_counts.sum',
+				'sum_and_counts.fact',
 				'sum_and_counts.avg',
-				'sum_and_counts.count', 
+				'sum_and_counts.records_count', 
 				'sum_and_counts.activity_id',
 				'ud.applied',
 				\DB::raw('datediff(CURDATE(), ud.applied) as days'),
@@ -499,9 +501,9 @@ class KpiStatisticService
 					'id' => $items[0]->id,
 					'name' => $items[0]->last_name . ' ' . $items[0]->name,
 					'expanded' => false,
+					'full_time' => $items[0]->full_time,
 					'items' => $items->map(function ($item) {
 						$item->percent = 0;
-					//	$item->fact = 0;
 						$item->share = 0;
                         
 						return $item;

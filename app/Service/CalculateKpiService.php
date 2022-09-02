@@ -18,17 +18,17 @@ class CalculateKpiService
         float $completed_percent,
         int $share,
         float $completed_80,
-        float $completed_100
+        float $completed_100,
     ) : float|int {
 
         $result = 0;
-        $completed_percent = 80;
         $lower_limit = $lower_limit / 100;
         $upper_limit = $upper_limit / 100;
         $completed_percent = $completed_percent / 100;
         $share = $share / 100;
-
         if($completed_percent > $lower_limit) {
+     
+     
             if ($completed_percent < $upper_limit) {
                 $result = $completed_80 * $share * ($completed_percent - $lower_limit) * $upper_limit / ($upper_limit - $lower_limit);
             } else {
@@ -99,8 +99,8 @@ class CalculateKpiService
     private function avg(array $data) : float
     {
         if($data['records_count'] > 0) {
-           // $avg = $data['fact'] / $data['records_count'];
-            $result = $data['fact'] / ((float)$data['daily_plan']) * 100;
+            $avg    = $data['fact'] / $data['records_count'];
+            $result = $data['avg'] / ((float)$data['daily_plan']) * 100;
         } else {
             $result = 0.00;
         }

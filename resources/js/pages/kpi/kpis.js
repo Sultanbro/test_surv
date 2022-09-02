@@ -146,6 +146,8 @@ function calcCompleted(el) {
     let res = 0;
 
     let fact = numberize(el.fact)
+    let avg = numberize(el.avg)
+    let records_count = numberize(el.records_count)
     let plan = el.activity != null && el.activity !== undefined ? numberize(el.activity.daily_plan) : 0;
     let workdays = numberize(el.workdays);
 
@@ -155,16 +157,28 @@ function calcCompleted(el) {
 
     if(el.full_time == 0) plan = plan / 2;
 
-    if(el.method == 1 || el.method == 2) {
+    if(el.method == 1) {
         res = (fact / plan * 100).toFixed(2); 
     }
 
-    if(el.method == 3 || el.method == 4) {
+    if(el.method == 2) {
+        res = (avg / plan * 100).toFixed(2); 
+    }
+
+    if(el.method == 3) {
         res = plan - fact > 0 ? 100 : 0;
     }
 
-    if(el.method == 5 || el.method == 6) {
+    if(el.method == 4) {
+        res = plan - avg > 0 ? 100 : 0;
+    }
+
+    if(el.method == 5) {
         res = fact - plan > 0 ? 100 : 0;
+    }
+
+    if(el.method == 6) {
+        res = avg - plan > 0 ? 100 : 0;
     }
 
     return Number(res);
