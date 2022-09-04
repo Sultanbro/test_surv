@@ -23,26 +23,18 @@ use App\Models\Kpi\Bonus;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\QualityRecordWeeklyStat;
+use App\Http\Controllers\IntellectController;
 
 class TestController extends Controller { 
  
 	public function test() {
-		$qr = QualityRecordWeeklyStat::where('year', 2022)
-			->where('month', 8)
-			->get();
+	
+		//(new \App\External\Bitrix\Bitrix)->updateFields(534700, [
 
 
-		foreach ($qr as $key => $r) {
-			// save user_stats
-			UserStat::saveQuality([
-				'date'     => Carbon::createFromDate($r->year, $r->month, $r->day)->format('Y-m-d'),
-				'user_id'  => $r->user_id,
-				'value'    => $r->total,
-				'group_id' => $r->group_id,
-			]);
-		}
-
-		dd('saved 2');
+		// (new IntellectController)->updateFields(534700, [
+		// 	'UF_CRM_1628091269' => 1, // Подписал соглашение о неразглашении
+		// ]);
 	}  
 
 	public function test_mail_invitation()
@@ -60,7 +52,7 @@ class TestController extends Controller {
 	public function hhRefresher() {
 		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
 		$hh = new HeadHunter();
-		$hh->auth_code = 'U21A3DAHQTBPGFFPF05KQAM2VPS1D66ON99FIELH69F2GTUEU7DA70I5P4G54JII';
+		$hh->auth_code = 'KQO11PIM867V8R3MDUF95O1RGRKQJKKUE8LIK4L96OAM28QTFUO39APUGCUPRVNI';
 		dd($hh->refreshAccessToken());
 
 	}
