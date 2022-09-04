@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Http\Requests\KpiBonusesFilterRequest;
+use App\Traits\KpiHelperTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -16,6 +18,7 @@ use App\Models\Analytics\AnalyticStat;
 
 class KpiStatisticService
 {
+    use KpiHelperTrait;
     /**
      * Фильтры!
      *
@@ -52,6 +55,11 @@ class KpiStatisticService
      * Диапазон.
      */
     const RANGE = 6;
+
+    /**
+     * Модель группы.
+     */
+    const PROFILE_GROUP = 'App\ProfileGroup';
 
     /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
@@ -249,13 +257,45 @@ class KpiStatisticService
     }
 
     /**
-     * Список Квартальных премии
+     * Получаем KPI бонусы.
+     * @param KpiBonusesFilterRequest $request
+     * @return array
      */
-    public function fetchBonuses(Request $request) : array
+    public function fetchBonuses(KpiBonusesFilterRequest $request) : array
     {
-        return [];
+        $kpis  = $this->getKpis($request);
+        $month = $request->month ?? null;
+        $year  = $request->year ?? null;
+        $bonuses = [];
+        foreach ($kpis as $kpi)
+        {
+            if ($kpi['targetable_type'] == self::PROFILE_GROUP)
+            {
+                $bonuses[] = ProfileGroup::with([
+                    'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month,
+                        fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
+                ])->where('id', $kpi['targetable_id'])->get();
+            }
+        }
+        return  $bonuses;
+
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function getKpis(Request $request): array
+    {
+        $parameters = $request->all();
+        $type       = isset($parameters['targetable_type']) ? $this->getModel($parameters['targetable_type']) : null;
+        $id         = $parameters['targetable_id'] ?? null;
+
+        return Kpi::query()->when($type && $id, fn($kpi) => $kpi->where([
+            ['targetable_type', $type],
+            ['targetable_id', $id]
+        ]))->get()->toArray();
+    }
     /**
      * Список Квартальных премии
      */
@@ -513,5 +553,5 @@ class KpiStatisticService
 
 		return $users->values(); //array_values($users->toArray());
     }
-    
+
 }
