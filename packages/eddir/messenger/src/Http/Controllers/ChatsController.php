@@ -88,6 +88,18 @@ class ChatsController extends Controller
         }
         $chats = MessengerFacade::searchChats($request->get('q'), Auth::user()->id);
         $users = MessengerFacade::searchUsers($request->get('q'));
+
+        foreach ($chats as $chat) {
+            MessengerFacade::getChatAttributesForUser($chat, Auth::user());
+        }
+
+        foreach ($users as $user) {
+            // set default image if user has no image
+            if (empty($user->image)) {
+                $user->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
+            }
+        }
+
         return response()->json([
             'chats' => $chats,
             'users' => $users,
@@ -127,7 +139,8 @@ class ChatsController extends Controller
      */
     public function getPrivateChat(int $user_id): JsonResponse
     {
-        return response()->json( MessengerFacade::getPrivateChat(Auth::user()->id, $user_id) );
+        $chat = MessengerFacade::getPrivateChat(Auth::user()->id, $user_id);
+        return response()->json( MessengerFacade::getChatAttributesForUser($chat, Auth::user()) );
     }
 
     /**

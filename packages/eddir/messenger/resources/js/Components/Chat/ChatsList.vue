@@ -45,7 +45,7 @@
 <script>
 import VueSimpleContextMenu from "vue-simple-context-menu";
 import CreateChatModal from "./CreateChatModal.vue";
-import API from "./API.vue";
+import API from "./Store/API.vue";
 
 export default {
   components: {

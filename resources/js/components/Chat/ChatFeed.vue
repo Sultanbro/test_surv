@@ -53,7 +53,7 @@
 import VueSimpleContextMenu from 'vue-simple-context-menu';
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import moment from "moment";
-import API from "./API.vue";
+import API from "./Store/API.vue";
 
 export default {
   props: {

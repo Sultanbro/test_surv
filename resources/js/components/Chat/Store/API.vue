@@ -75,7 +75,9 @@ export default {
    * @return {Promise}
    */
   getChatInfo(chatId, callback) {
-    return axios.get(REST_URI + 'chat/' + chatId).then(response => {
+    // check if chat id contains user and should be private
+    let url = chatId.toString().includes('user') ? 'private/' + chatId.replace('user', '') : 'chat/' + chatId;
+    return axios.get(REST_URI + url).then(response => {
       callback(response.data);
     });
   },

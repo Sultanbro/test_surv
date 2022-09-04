@@ -42,7 +42,7 @@ Route::get('/v2/chat/{chat_id}/messages', 'MessagesController@fetchMessages')->n
 /**
  * Get private chat info
  */
-Route::get('/v2/chat/user{chat_id}', 'ChatsController@getPrivateChat')->name('api.v2.getPrivateChat');
+Route::get('/v2/private/{user_id}', 'ChatsController@getPrivateChat')->name('api.v2.getPrivateChat');
 
 /**
  * Get chat info

@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-app" v-show="initialized"  :class="{'fullscreen' : fullscreen}">
+  <div class="chat-app" v-show="initialized" :class="{'fullscreen' : fullscreen}">
     <ChatsList v-show="fullscreen"
                :chats="chats"
                @selected="startConversationWith"
@@ -28,7 +28,7 @@
 import Conversation from './ChatConversation.vue';
 import ChatsList from './ChatsList.vue';
 import SideChatsList from './SideChatsList.vue';
-import API from "./API.vue";
+import API from "./Store/API.vue";
 
 export default {
   components: {Conversation, ChatsList, SideChatsList},
@@ -106,7 +106,6 @@ export default {
       API.getChatInfo(chat.id, response => {
         // if private set title to username
         if (response.private) {
-          console.log("My user id", this.user.id);
 
           // if response contains users
           if (response.users) {
@@ -158,7 +157,6 @@ export default {
           private: chat.private,
         };
       });
-      console.log("sort", chatsArray);
       return chats;
     },
     saveNewMessage(message) {
@@ -167,7 +165,8 @@ export default {
     handleIncomingMessage(message) {
       // update last message
       this.chats.map(single => {
-          if (single.id !== message['chat_id']) {
+          // find chat with same id to update last message, exclude message from current user
+          if (single.id !== message['chat_id'] || message['sender_id'] === this.user.id) {
             return single;
           }
           single.last_message = message;
@@ -207,8 +206,10 @@ export default {
     },
     createChat(items) {
       let members_ids = items.members.map(member => member.id);
-      API.createChat(items.title, '', members_ids, () => {
-        this.updateChats();
+      API.createChat(items.title, '', members_ids, chat => {
+        this.updateChats(() => {
+          this.startConversationWith(chat);
+        });
       });
     },
     deleteMessage(message) {

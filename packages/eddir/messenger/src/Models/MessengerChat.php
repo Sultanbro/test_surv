@@ -47,7 +47,7 @@ class MessengerChat extends Model
 
     public function getLastMessage(): Model|HasMany|null
     {
-        return $this->messages()->latest()->first();
+        return $this->messages()->where('deleted', false)->latest()->first();
     }
 
     /**

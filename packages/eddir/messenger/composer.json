@@ -19,7 +19,8 @@
     "require": {
         "php": "^7.4|^8.0",
         "illuminate/support": "^8.0",
-        "pusher/pusher-php-server": "^7.0"
+        "pusher/pusher-php-server": "^7.0",
+        "lasserafn/php-initial-avatar-generator": "^4.2.1",
     },
     "require-dev": {
         "orchestra/testbench": "^6.0",

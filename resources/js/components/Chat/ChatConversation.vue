@@ -22,7 +22,7 @@ import ChatFeed from './ChatFeed.vue';
 import MessageInput from './MessageInput.vue';
 
 import axios from 'axios';
-import API from "./API.vue";
+import API from "./Store/API.vue";
 
 export default {
   components: {ChatHeader, ChatFeed, MessageInput},

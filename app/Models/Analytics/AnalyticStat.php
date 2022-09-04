@@ -128,16 +128,16 @@ class AnalyticStat extends Model
                         'column_id' => $column->id,
                         'cell' => $cell_letter . $cell_number,
                         'class' => $stat->class . $add_class,
-                        'editable' => $stat->editable,
+                        'editable' => $r_index == 0 ? 0 : $stat->editable,
                         'depend_id' => $row->depend_id,
                         'decimals' => $stat->decimals,
                         'comment' => $stat->comment,
                         'sign' => ''
                     ];
 
-                    if(($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) { // cant edit prcsll and impl line
-                        $arr['editable'] = 0;
-                    }
+                    // if(($r_index == 2 || $r_index == 3) && in_array($column->name, ['plan', 'sum','name'])) { // cant edit prcsll and impl line
+                    //     $arr['editable'] = 0;
+                    // }
 
                     if($stat->activity_id != null) {
                         $act = $all_activities->where('id',$stat->activity_id)->first();
@@ -225,7 +225,7 @@ class AnalyticStat extends Model
                         'decimals' => 0,
                         'type' => $type,
                         'class' => 'text-center' . $add_class,
-                        'editable' => ($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name']) ? 0 : 1,
+                        'editable' => (($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) || $r_index == 0 ? 0 : 1,
                     ]);
 
                     $arr = [
@@ -238,7 +238,7 @@ class AnalyticStat extends Model
                         'type' => $type,
                         'cell' => $cell_letter . $cell_number,
                         'class' => 'text-center' . $add_class,
-                        'editable' => ($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name']) ? 0 : 1,
+                        'editable' => (($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) || $r_index == 0 ? 0 : 1,
                         'depend_id' => $row->depend_id,
                         'comment' => '',
                         'sign' => '',
@@ -570,7 +570,10 @@ class AnalyticStat extends Model
 
 
             if($text == '') $text = '0';
-            $math_string ="return (".$text.");";
+            
+            //$math_string ="return (".$text.");";
+            $math_string ="return ".$text.";";
+
             if(str_contains($math_string,'{')){
                 $math_string = str_replace("{","",$math_string);
                 $math_string = str_replace("}","",$math_string);
@@ -589,7 +592,10 @@ class AnalyticStat extends Model
           
             $res = 0;
         } catch( \ParseError $p) {
-            dd($math_string);
+            $res = 0;
+           // dd($math_string);
+        } catch(\Throwable $e) {
+            $res = 0;
         }
 
         return round($res, $round);

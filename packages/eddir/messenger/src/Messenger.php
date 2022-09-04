@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use LasseRafn\InitialAvatarGenerator\InitialAvatar;
 use Pusher\ApiErrorException;
 use Pusher\Pusher;
 use Pusher\PusherException;
@@ -94,12 +95,19 @@ class Messenger {
             // get second user in private chat
             $second_user = $chat->users->firstWhere('id', '!=', $user->id);
             $chat->title = $second_user->name . " " . $second_user->last_name;
-            $chat->image = $second_user->img_url;
+            $chat->image = config('messenger.user_avatar.folder') . '/' . $second_user->img_url;
+
+            if (empty($chat->image)) {
+                $chat->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
+            }
+        } else {
+            if (!$chat->image) {
+                // set image as base64 from php-initial-avatar-generator
+                //$avatar = new InitialAvatar();
+                $chat->image = ''; //$avatar->name($chat->title)->background('#41A4A6')->color('#ffffff')->fontSize(0.4)->generate()->encode('data-url')->encoded;
+            }
         }
 
-        if (!$chat->image) {
-            $chat->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
-        }
 
         return $chat;
     }
@@ -202,6 +210,7 @@ class Messenger {
     public function fetchMessages( int $chatId, int $page = 0, int $perPage = 10 ): Collection {
         return MessengerMessage::query()
                                ->where( 'chat_id', $chatId )
+                               ->where( 'deleted' , false)
                                ->orderBy( 'created_at', 'desc' )
                                ->skip( $page * $perPage )
                                ->take( $perPage )
@@ -262,7 +271,7 @@ class Messenger {
      * @return Collection
      */
     public function getMessages( int $chat_id ): Collection {
-        return MessengerMessage::where( 'chat_id', $chat_id )->get();
+        return MessengerMessage::where( 'chat_id', $chat_id )->where('deleted', false)->get();
     }
 
     /**
@@ -346,14 +355,18 @@ class Messenger {
     }
 
     /**
-     * Delete message.
+     * Set message as deleted.
      *
      * @param int $messageId
      *
      * @return bool
      */
     public function deleteMessage( int $messageId ): bool {
-        return MessengerMessage::destroy( $messageId );
+        /** @var MessengerMessage $message */
+        $message = MessengerMessage::find( $messageId );
+        $message->deleted = true;
+        $message->save();
+        return true;
     }
 
     /**
