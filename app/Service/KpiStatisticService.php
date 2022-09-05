@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Kpi\Bonus;
+use App\Position;
 use App\Traits\KpiHelperTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +62,16 @@ class KpiStatisticService
      * Модель группы.
      */
     const PROFILE_GROUP = 'App\ProfileGroup';
+
+    /**
+     * Модель пользователей.
+     */
+    const USER = 'App\User';
+
+    /**
+     * Модель позиций.
+     */
+    const POSITION = 'App\Position';
 
     /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
@@ -264,24 +275,15 @@ class KpiStatisticService
      */
     public function fetchBonuses(BonusesFilterRequest $request) : array
     {
-        $kpis  = $this->getBonuses($request);
+        $bonuses   = $this->getBonuses($request);
 
-        $month = $request->month ?? null;
-        $year  = $request->year ?? null;
-        $userId = $request->user_id ?? null;
-        $bonuses = [];
-        foreach ($kpis as $kpi)
+        $bonusesArray = [];
+        foreach ($bonuses as $bonus)
         {
-            if ($kpi['targetable_type'] == self::PROFILE_GROUP)
-            {
-                $bonuses[] = ProfileGroup::with([
-                    'users' => fn ($bonus) => $bonus->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
-                        fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
-                        ->when(isset($userId), fn($user) => $user->where('id', $userId))
-                ])->where('id', $kpi['targetable_id'])->get();
-            }
+            $bonusesArray[] = $this->getTargetAbleData($bonus, $request);
         }
-        return  $bonuses;
+
+        return  $bonusesArray;
 
     }
 
@@ -289,16 +291,49 @@ class KpiStatisticService
      * @param Request $request
      * @return array
      */
-    private function getBonuses(Request $request): array
+    private function getBonuses(Request $request)
     {
         $parameters = $request->all();
         $type       = isset($parameters['targetable_type']) ? $this->getModel($parameters['targetable_type']) : null;
         $id         = $parameters['targetable_id'] ?? null;
 
-        return Bonus::query()->when($type && $id, fn($kpi) => $kpi->where([
+        return Bonus::withTrashed()->when(isset($type) && isset($id), fn($kpi) => $kpi->where([
             ['targetable_type', $type],
             ['targetable_id', $id]
-        ]))->get()->toArray();
+        ]))->get();
+    }
+
+    /**
+     * Получаем данные по targetable_type, targetable_id
+     * @param $bonus
+     * @param $request
+     * @return array
+     */
+    private function getTargetAbleData($bonus, $request): array
+    {
+        $month  = $request->month ?? null;
+        $year   = $request->year ?? null;
+        $userId = $request->user_id ?? null;
+
+        $bonuses = [];
+
+        $model = $bonus->targetable_type::query()
+            ->when(in_array($bonus->targetable_type, [self::POSITION, self::PROFILE_GROUP]), fn ($group) => $group->with([
+                    'users' => fn ($bonus) => $bonus->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
+                        fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
+                        ->when(isset($userId), fn($user) => $user->where('id', $userId))
+                ])
+            )->when($bonus->targetable_type == self::USER, fn ($user) =>
+                    $user->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
+                            fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
+            )->where('id', $bonus->targetable_id)->first();
+
+        $model->targetable_type = $bonus->targetable_type;
+        $model->targetable_id   = $bonus->targetable_id;
+
+        $bonuses[] = $model;
+
+        return $bonuses;
     }
     /**
      * Список Квартальных премии
