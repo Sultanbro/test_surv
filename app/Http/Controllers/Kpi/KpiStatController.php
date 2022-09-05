@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Kpi;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\KpiBonusesFilterRequest;
+use App\Http\Requests\BonusesFilterRequest;
 use App\Http\Requests\ShowKpiStatisticsRequest;
 use App\Service\KpiStatisticService;
 use Exception;
@@ -89,10 +89,10 @@ class KpiStatController extends Controller
      * ]
      *
      * Вытащить бонусы по фильтрам.
-     * @param KpiBonusesFilterRequest $request
+     * @param BonusesFilterRequest $request
      * @return JsonResponse
      */
-    public function fetchBonuses(KpiBonusesFilterRequest $request): JsonResponse
+    public function fetchBonuses(BonusesFilterRequest $request): JsonResponse
     {
         $response = $this->service->fetchBonuses($request);
 

@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Http\Requests\KpiBonusesFilterRequest;
+use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Kpi\Bonus;
 use App\Traits\KpiHelperTrait;
 use Illuminate\Http\Request;
@@ -259,10 +259,10 @@ class KpiStatisticService
 
     /**
      * Получаем KPI бонусы.
-     * @param KpiBonusesFilterRequest $request
+     * @param BonusesFilterRequest $request
      * @return array
      */
-    public function fetchBonuses(KpiBonusesFilterRequest $request) : array
+    public function fetchBonuses(BonusesFilterRequest $request) : array
     {
         $kpis  = $this->getBonuses($request);
 
