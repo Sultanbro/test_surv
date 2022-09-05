@@ -428,7 +428,7 @@ class KpiStatisticService
                
                 // plan
                 $item['plan'] = $_item->activity ? $_item->activity->daily_plan : 0;
-                $item['workdays'] = $_item->activity && $_item->activity->workdays != 0 ?  $workdays[(int) $_item->activity->workdays] : $workdays[5];
+                $item['workdays'] = $_item->activity && $_item->activity->weekdays != 0 ?  $workdays[(int) $_item->activity->weekdays] : $workdays[5];
                 $item['full_time'] = $user['full_time'];
 
 

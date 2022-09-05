@@ -135,7 +135,11 @@
                     <td class="text-center" v-if="editable">
                         <input type="number" class="form-control" v-model="item.fact" min="0" />
                     </td>
-                    <td class="text-center" v-else>{{ item.fact }}</td>
+                    <td class="text-center" v-else>
+                        <!-- sum or avg by method -->
+                        <div v-if="[1,3,5].includes(item.method)">{{ item.fact }}</div>
+                        <div v-else>{{ Number(item.avg).toFixed(2) }}</div>
+                    </td>
                     <td class="text-center">{{ item.percent }}</td>
                     <td class="text-center">{{ item.sum }}</td>
                 </tr>

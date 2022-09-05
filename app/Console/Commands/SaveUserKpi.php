@@ -89,7 +89,7 @@ class SaveUserKpi extends Command
             ->whereNull('deleted_at')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
-            ->where('users.id', 16471)
+            ->where('users.id', 6293)
             ->select(['users.id','users.last_name', 'users.name'])
             ->get();
    
@@ -179,7 +179,8 @@ class SaveUserKpi extends Command
             ->first();
 
         if($sk) {
-            $sk->update($data);
+            $sk->total = $data['total'];
+            $sk->save();
         } else {
             SavedKpi::create($data);
         }
