@@ -26,6 +26,7 @@ class BonusesFilterRequest extends FormRequest
         return [
             'targetable_type'   => 'numeric|nullable',
             'targetable_id'     => 'numeric|nullable',
+            'user_id'           => 'numeric',
             'month'             => 'numeric|nullable',
             'year'              => 'numeric|nullable'
         ];

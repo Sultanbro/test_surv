@@ -268,14 +268,16 @@ class KpiStatisticService
 
         $month = $request->month ?? null;
         $year  = $request->year ?? null;
+        $userId = $request->user_id ?? null;
         $bonuses = [];
         foreach ($kpis as $kpi)
         {
             if ($kpi['targetable_type'] == self::PROFILE_GROUP)
             {
                 $bonuses[] = ProfileGroup::with([
-                    'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month,
-                        fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
+                    'users' => fn ($bonus) => $bonus->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
+                        fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
+                        ->when(isset($userId), fn($user) => $user->where('id', $userId))
                 ])->where('id', $kpi['targetable_id'])->get();
             }
         }
