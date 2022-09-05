@@ -225,7 +225,8 @@ class AnalyticStat extends Model
                         'decimals' => 0,
                         'type' => $type,
                         'class' => 'text-center' . $add_class,
-                        'editable' => (($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) || $r_index == 0 ? 0 : 1,
+                        // 'editable' => (($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) || $r_index == 0 ? 0 : 1,
+                        'editable' =>  $r_index == 0 ? 0 : 1,
                     ]);
 
                     $arr = [
@@ -238,7 +239,8 @@ class AnalyticStat extends Model
                         'type' => $type,
                         'cell' => $cell_letter . $cell_number,
                         'class' => 'text-center' . $add_class,
-                        'editable' => (($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) || $r_index == 0 ? 0 : 1,
+                        //'editable' => (($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) || $r_index == 0 ? 0 : 1,
+                        'editable' =>  $r_index == 0 ? 0 : 1,
                         'depend_id' => $row->depend_id,
                         'comment' => '',
                         'sign' => '',
