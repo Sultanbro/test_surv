@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Http\Requests\KpiBonusesFilterRequest;
+use App\Models\Kpi\Bonus;
 use App\Traits\KpiHelperTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -263,7 +264,8 @@ class KpiStatisticService
      */
     public function fetchBonuses(KpiBonusesFilterRequest $request) : array
     {
-        $kpis  = $this->getKpis($request);
+        $kpis  = $this->getBonuses($request);
+
         $month = $request->month ?? null;
         $year  = $request->year ?? null;
         $bonuses = [];
@@ -285,13 +287,13 @@ class KpiStatisticService
      * @param Request $request
      * @return array
      */
-    private function getKpis(Request $request): array
+    private function getBonuses(Request $request): array
     {
         $parameters = $request->all();
         $type       = isset($parameters['targetable_type']) ? $this->getModel($parameters['targetable_type']) : null;
         $id         = $parameters['targetable_id'] ?? null;
 
-        return Kpi::query()->when($type && $id, fn($kpi) => $kpi->where([
+        return Bonus::query()->when($type && $id, fn($kpi) => $kpi->where([
             ['targetable_type', $type],
             ['targetable_id', $id]
         ]))->get()->toArray();
