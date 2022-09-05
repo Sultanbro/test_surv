@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
 
 class Position extends Model
@@ -24,5 +25,12 @@ class Position extends Model
 
     const OPERATOR_ID = 32;
     const INTERN_ID = 47;
-    
+
+    /**
+     * @return HasMany
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany('App\User', 'position_id');
+    }
 }

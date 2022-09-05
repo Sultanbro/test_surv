@@ -2,6 +2,10 @@
 
 namespace App\Service;
 
+use App\Http\Requests\BonusesFilterRequest;
+use App\Models\Kpi\Bonus;
+use App\Position;
+use App\Traits\KpiHelperTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -16,6 +20,7 @@ use App\Models\Analytics\AnalyticStat;
 
 class KpiStatisticService
 {
+    use KpiHelperTrait;
     /**
      * Фильтры!
      *
@@ -52,6 +57,21 @@ class KpiStatisticService
      * Диапазон.
      */
     const RANGE = 6;
+
+    /**
+     * Модель группы.
+     */
+    const PROFILE_GROUP = 'App\ProfileGroup';
+
+    /**
+     * Модель пользователей.
+     */
+    const USER = 'App\User';
+
+    /**
+     * Модель позиций.
+     */
+    const POSITION = 'App\Position';
 
     /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
@@ -249,13 +269,62 @@ class KpiStatisticService
     }
 
     /**
-     * Список Квартальных премии
+     * Получаем KPI бонусы.
+     * @param BonusesFilterRequest $request
+     * @return array
      */
-    public function fetchBonuses(Request $request) : array
+    public function fetchBonuses(BonusesFilterRequest $request) : array
     {
-        return [];
+        $bonuses   = $this->getBonuses($request);
+        $bonusesArray = [];
+        foreach ($bonuses as $bonus)
+        {
+            $bonusesArray[] = $this->getTargetAbleData($bonus, $request);
+        }
+
+        return  $bonusesArray;
+
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function getBonuses(Request $request)
+    {
+        $parameters = $request->all();
+        $type       = isset($parameters['targetable_type']) ? $this->getModel($parameters['targetable_type']) : null;
+        $id         = $parameters['targetable_id'] ?? null;
+
+        return Bonus::withTrashed()->when(isset($type) && isset($id), fn($kpi) => $kpi->where([
+            ['targetable_type', $type],
+            ['targetable_id', $id]
+        ]))->get();
+    }
+
+    /**
+     * Получаем данные по targetable_type, targetable_id
+     * @param $bonus
+     * @param $request
+     * @return array
+     */
+    private function getTargetAbleData($bonus, $request)
+    {
+        $month  = $request->month ?? null;
+        $year   = $request->year ?? null;
+        $userId = $request->user_id ?? null;
+
+        return $bonus->targetable_type::query()
+            ->when(in_array($bonus->targetable_type, [self::POSITION, self::PROFILE_GROUP]), fn ($group) => $group->with([
+                    'users' => fn ($bonus) => $bonus->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
+                        fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
+                        ->when(isset($userId), fn($user) => $user->where('id', $userId))
+                ])
+            )->when($bonus->targetable_type == self::USER, fn ($user) =>
+                    $user->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
+                            fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
+            )->where('id', $bonus->targetable_id)->first();
+    }
     /**
      * Список Квартальных премии
      */
@@ -513,5 +582,5 @@ class KpiStatisticService
 
 		return $users->values(); //array_values($users->toArray());
     }
-    
+
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Kpi;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BonusesFilterRequest;
 use App\Http\Requests\ShowKpiStatisticsRequest;
 use App\Service\KpiStatisticService;
 use Exception;
@@ -71,11 +72,27 @@ class KpiStatController extends Controller
 
         return response()->json($response);
     }
-    
+
     /**
-     * Вытащить бонусы по фильтрам
+     * Данные с фронта:
+     * {
+     *      "targetable_type": 2,
+     *      "targetable_id": 48,
+     *      "month": 8,
+     *      "year": 2022
+     * }
+     *
+     * types: [
+     *      1 => "App\User",
+     *      2 => "App\ProfileGroup",
+     *      3 => "App\Position"
+     * ]
+     *
+     * Вытащить бонусы по фильтрам.
+     * @param BonusesFilterRequest $request
+     * @return JsonResponse
      */
-    public function fetchBonuses(Request $request): JsonResponse
+    public function fetchBonuses(BonusesFilterRequest $request): JsonResponse
     {
         $response = $this->service->fetchBonuses($request);
 
