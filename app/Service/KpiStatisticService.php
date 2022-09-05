@@ -276,7 +276,6 @@ class KpiStatisticService
     public function fetchBonuses(BonusesFilterRequest $request) : array
     {
         $bonuses   = $this->getBonuses($request);
-
         $bonusesArray = [];
         foreach ($bonuses as $bonus)
         {
@@ -309,15 +308,13 @@ class KpiStatisticService
      * @param $request
      * @return array
      */
-    private function getTargetAbleData($bonus, $request): array
+    private function getTargetAbleData($bonus, $request)
     {
         $month  = $request->month ?? null;
         $year   = $request->year ?? null;
         $userId = $request->user_id ?? null;
 
-        $bonuses = [];
-
-        $model = $bonus->targetable_type::query()
+        return $bonus->targetable_type::query()
             ->when(in_array($bonus->targetable_type, [self::POSITION, self::PROFILE_GROUP]), fn ($group) => $group->with([
                     'users' => fn ($bonus) => $bonus->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
                         fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
@@ -327,13 +324,6 @@ class KpiStatisticService
                     $user->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
                             fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
             )->where('id', $bonus->targetable_id)->first();
-
-        $model->targetable_type = $bonus->targetable_type;
-        $model->targetable_id   = $bonus->targetable_id;
-
-        $bonuses[] = $model;
-
-        return $bonuses;
     }
     /**
      * Список Квартальных премии
