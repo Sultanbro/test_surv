@@ -310,25 +310,23 @@ class KpiStatisticService
      * Получаем сотрудников.
      * @param $userIds
      * @param $request
-     * @return Collection
      */
-    private function getUserBonus($userIds, $request): Collection
+    private function getUserBonus($userIds, $request)
     {
         $month  = $request->month ?? null;
         $year   = $request->year ?? null;
 
         return User::with([
             'obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
-        ])->whereIn('id', $userIds)->get();
+        ])->whereIn('id', $userIds)->paginate(25);
     }
 
     /**
      * Получаем по позициям.
      * @param $positionIds
      * @param $request
-     * @return Collection
      */
-    private function getPositionBonus($positionIds, $request): Collection
+    private function getPositionBonus($positionIds, $request)
     {
         $userId = $request->user_id ?? null;
         $month  = $request->month ?? null;
@@ -337,16 +335,15 @@ class KpiStatisticService
         return Position::with([
             'users' => fn($user) => $user->when($userId, fn($user) => $user->where('id', $userId)),
             'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
-        ])->whereIn('id', $positionIds)->get();
+        ])->whereIn('id', $positionIds)->paginate(25);
     }
 
     /**
      * Получаем по группам.
      * @param $groupIds
      * @param $request
-     * @return Collection
      */
-    private function getProfileGroupBonus($groupIds, $request): Collection
+    private function getProfileGroupBonus($groupIds, $request)
     {
         $userId = $request->user_id ?? null;
         $month  = $request->month ?? null;
@@ -355,7 +352,7 @@ class KpiStatisticService
         return ProfileGroup::with([
             'users' => fn($user) => $user->when($userId, fn($user) => $user->where('id', $userId)),
             'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
-        ])->whereIn('id', $groupIds)->get();
+        ])->whereIn('id', $groupIds)->paginate(25);
     }
 
     /**
