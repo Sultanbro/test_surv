@@ -4,8 +4,11 @@ namespace App\Service;
 
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Kpi\Bonus;
+use App\Models\QuartalPremium;
 use App\Position;
 use App\Traits\KpiHelperTrait;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -273,17 +276,86 @@ class KpiStatisticService
      * @param BonusesFilterRequest $request
      * @return array
      */
-    public function fetchBonuses(BonusesFilterRequest $request) : array
+    public function fetchBonuses(BonusesFilterRequest $request): array
     {
-        $bonuses   = $this->getBonuses($request);
-        $bonusesArray = [];
+        $bonuses         = $this->getBonuses($request);
+        $profileGroupIds = [];
+        $userIds         = [];
+        $positionIds     = [];
+
         foreach ($bonuses as $bonus)
         {
-            $bonusesArray[] = $this->getTargetAbleData($bonus, $request);
+            if ($bonus->targetable_type == self::PROFILE_GROUP)
+            {
+                $profileGroupIds[] = $bonus->targetable_id;
+            }
+            if ($bonus->targetable_type == self::POSITION)
+            {
+                $positionIds[] = $bonus->targetable_id;
+            }
+            if ($bonus->targetable_type == self::USER)
+            {
+                $userIds[] = $bonus->targetable_id;
+            }
         }
 
-        return  $bonusesArray;
+         return [
+            self::PROFILE_GROUP => $this->getProfileGroupBonus($profileGroupIds, $request) ?? null,
+            self::POSITION      => $this->getPositionBonus($positionIds, $request) ?? null,
+            self::USER          => $this->getUserBonus($userIds, $request) ?? null
+        ];
+    }
 
+    /**
+     * Получаем сотрудников.
+     * @param $userIds
+     * @param $request
+     * @return Collection
+     */
+    private function getUserBonus($userIds, $request): Collection
+    {
+        $month  = $request->month ?? null;
+        $year   = $request->year ?? null;
+
+        return User::with([
+            'obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
+        ])->whereIn('id', $userIds)->get();
+    }
+
+    /**
+     * Получаем по позициям.
+     * @param $positionIds
+     * @param $request
+     * @return Collection
+     */
+    private function getPositionBonus($positionIds, $request): Collection
+    {
+        $userId = $request->user_id ?? null;
+        $month  = $request->month ?? null;
+        $year   = $request->year ?? null;
+
+        return Position::with([
+            'users' => fn($user) => $user->when($userId, fn($user) => $user->where('id', $userId)),
+            'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
+        ])->whereIn('id', $positionIds)->get();
+    }
+
+    /**
+     * Получаем по группам.
+     * @param $groupIds
+     * @param $request
+     * @return Collection
+     */
+    private function getProfileGroupBonus($groupIds, $request): Collection
+    {
+        $userId = $request->user_id ?? null;
+        $month  = $request->month ?? null;
+        $year   = $request->year ?? null;
+
+        return ProfileGroup::with([
+            'users' => fn($user) => $user->when($userId, fn($user) => $user->where('id', $userId)),
+            'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
+        ])->whereIn('id', $groupIds)->get();
     }
 
     /**
@@ -303,34 +375,80 @@ class KpiStatisticService
     }
 
     /**
-     * Получаем данные по targetable_type, targetable_id
-     * @param $bonus
-     * @param $request
-     * @return array
-     */
-    private function getTargetAbleData($bonus, $request)
-    {
-        $month  = $request->month ?? null;
-        $year   = $request->year ?? null;
-        $userId = $request->user_id ?? null;
-
-        return $bonus->targetable_type::query()
-            ->when(in_array($bonus->targetable_type, [self::POSITION, self::PROFILE_GROUP]), fn ($group) => $group->with([
-                    'users' => fn ($bonus) => $bonus->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
-                        fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
-                        ->when(isset($userId), fn($user) => $user->where('id', $userId))
-                ])
-            )->when($bonus->targetable_type == self::USER, fn ($user) =>
-                    $user->with(['obtainedBonuses.bonus' => fn($bonus) => $bonus->when($year && $month,
-                            fn($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))])
-            )->where('id', $bonus->targetable_id)->first();
-    }
-    /**
      * Список Квартальных премии
      */
-    public function fetchQuartalPremiums(Request $request) : array
+    public function fetchQuartalPremiums(Request $request)
     {
-        return [];
+        $quartalPremiums = $this->getQuartalPremiums($request);
+        $profileGroupIds = [];
+        $positionIds     = [];
+        $userIds         = [];
+
+        foreach ($quartalPremiums as $quartalPremium)
+        {
+            if ($quartalPremium->targetable_type == self::PROFILE_GROUP)
+            {
+                $profileGroupIds[] = $quartalPremium->id;
+            }
+            if ($quartalPremium->targetable_type == self::POSITION)
+            {
+                $positionIds[] = $quartalPremium->targetable_id;
+            }
+            if ($quartalPremium->targetable_type == self::USER)
+            {
+                $userIds[] = $quartalPremium->targetable_id;
+            }
+        }
+
+        return [
+            self::PROFILE_GROUP => $this->getProfileGroupQp($profileGroupIds, $request) ?? null
+        ];
+    }
+
+    private function getProfileGroupQp($groupIds, $request)
+    {
+        $userId = $request->user_id ?? null;
+        $month  = $request->month ?? null;
+        $year   = $request->year ?? null;
+
+        $qp = QuartalPremium::query()->whereIn('id', $groupIds)->get();
+    }
+
+    private function getIds($ids)
+    {
+        return array_map(function ($data) {
+            return $data['id'];
+        }, $ids);
+    }
+
+    private function getQuartalPremiumTargetData($quartalPremium, $request)
+    {
+        $userId = $request->user_id ?? null;
+
+        $user = $quartalPremium->targetable_type::when($quartalPremium->targetable_type == self::USER,
+            fn ($user) => $user->with([
+                'statistics' => fn ($statistic) => $statistic->whereBetween('date', [$quartalPremium->from, $quartalPremium->to])
+                    ->where('activity_id', $quartalPremium->activity_id)
+            ])
+        )->when(in_array($quartalPremium->targetable_type, [self::PROFILE_GROUP, self::POSITION]),
+            fn ($model) => $model->with([
+                'users.statistics' => fn ($statistic) => $statistic->whereBetween('date', [$quartalPremium->from, $quartalPremium->to])
+                    ->where('activity_id', $quartalPremium->activity_id)
+            ])
+        )->where('id', $quartalPremium->targetable_id)->first();
+
+        return $user;
+    }
+
+    private function getQuartalPremiums(Request $request)
+    {
+        $type = isset($request->targetable_type) ? $this->getModel($request->targetable_type) : null;
+        $id   = $request->targetable_id ?? null;
+
+        return QuartalPremium::withTrashed()->when(isset($type) && isset($id), fn($kpi) => $kpi->where([
+            ['targetable_type', $type],
+            ['targetable_id', $id]
+        ]))->get();
     }
 
     /**
