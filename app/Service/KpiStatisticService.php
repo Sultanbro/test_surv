@@ -300,9 +300,9 @@ class KpiStatisticService
         }
 
          return [
-            self::PROFILE_GROUP => $this->getProfileGroupBonus($profileGroupIds, $request) ?? null,
-            self::POSITION      => $this->getPositionBonus($positionIds, $request) ?? null,
-            self::USER          => $this->getUserBonus($userIds, $request) ?? null
+            'groups' => $this->getProfileGroupBonus($profileGroupIds, $request) ?? null,
+            'positions' => $this->getPositionBonus($positionIds, $request) ?? null,
+            'users' => $this->getUserBonus($userIds, $request) ?? null
         ];
     }
 

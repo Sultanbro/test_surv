@@ -111,7 +111,12 @@ export default {
                 axios.get('/statistics/bonuses').then(response => {
                     //console.log(response.data);
                     // items
-                    console.log(response);
+                    let counter = 0;
+                    var status = null;
+                    this.groups = response.data.groups;
+                    var users = null;
+                    
+                    console.log(this.groups);
                     /*this.items = response.data.items;
                     this.activities = response.data.activities;
                     this.groups = response.data.groups;
