@@ -318,7 +318,7 @@ class KpiStatisticService
 
         return User::with([
             'obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
-        ])->whereIn('id', $userIds)->paginate(25);
+        ])->whereIn('id', $userIds)->get();
     }
 
     /**
@@ -335,7 +335,7 @@ class KpiStatisticService
         return Position::with([
             'users' => fn($user) => $user->when($userId, fn($user) => $user->where('id', $userId)),
             'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
-        ])->whereIn('id', $positionIds)->paginate(25);
+        ])->whereIn('id', $positionIds)->get();
     }
 
     /**
@@ -352,7 +352,7 @@ class KpiStatisticService
         return ProfileGroup::with([
             'users' => fn($user) => $user->when($userId, fn($user) => $user->where('id', $userId)),
             'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
-        ])->whereIn('id', $groupIds)->paginate(25);
+        ])->whereIn('id', $groupIds)->get();
     }
 
     /**
