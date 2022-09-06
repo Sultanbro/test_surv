@@ -342,7 +342,10 @@ export default {
                         return false;
                     }
 
-                    if(el.activity_id == 0 || el.activity_id == undefined) {
+                    if(
+                        (el.activity_id == 0 || el.activity_id == undefined) 
+                        && el.source != 0
+                    ) {
                         msg = 'Выберите показатель #' + (i+1);
                         return false;
                     }

@@ -91,6 +91,7 @@
                             </select>
 
                             <select 
+                                :class="{'hidden' : item.source == 0}"
                                 v-model="item.activity_id"
                                 class="form-control small"
                                 :key="'d' + source_key"
@@ -340,6 +341,7 @@ export default {
                 1: 'из показателей отдела',
                 2: 'из битрикса',
                 3: 'из амосрм',
+                4: 'другие',
             }
         },
 
