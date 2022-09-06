@@ -65,7 +65,7 @@
                             </select>
 
                             <select 
-                                v-if="item.source != 0"
+                                :class="{'hidden' : item.source == 0}"
                                 v-model="item.activity_id"
                                 class="form-control small"
                                 :key="'d' + source_key"
