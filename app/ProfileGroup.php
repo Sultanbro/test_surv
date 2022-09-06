@@ -56,6 +56,14 @@ class ProfileGroup extends Model
     // time_address
     CONST FROM_UCALLS = -1;
     CONST NOWHERE = 0;
+    
+    /**
+     * @return MorphMany
+     */
+    public function bonuses(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
+    }
 
     public function users()
     {
