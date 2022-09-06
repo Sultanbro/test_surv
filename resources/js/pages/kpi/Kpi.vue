@@ -121,6 +121,7 @@
                                     :upper_limit="item.upper_limit"
                                     :editable="true"
                                     :kpi_page="true"
+                                    :key="item.items"
                                 />
                             </div>
                         </td>
@@ -405,8 +406,6 @@ export default {
                 });
 
                 this.removeDeletedItems(item.items)
-                
-
 
                 this.$toast.info('KPI Сохранен');
                 loader.hide()
@@ -419,17 +418,23 @@ export default {
                 loader.hide()
                 alert(m)
             });
+
+
         },  
 
         removeDeletedItems(items) {
             let indexes = [];
+            let counter = 0;
             items.forEach((el, index) => {
                 if(el.deleted != undefined && el.deleted) {
                     indexes.push(index)
                 }
             });
-
-            indexes.forEach(index => items.splice(index, -1));
+            console.log(indexes)
+            indexes.forEach(index => {
+                items.splice(index-counter, 1);
+                counter++;
+            });
 
         },
 
