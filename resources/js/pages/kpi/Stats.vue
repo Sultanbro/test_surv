@@ -30,6 +30,7 @@
     />
 
     <t-stats-bonus
+        :groups="bonus_groups"
         v-if="s_type_main == 2"
     />
 
@@ -87,8 +88,8 @@ export default {
             all_items: [],
             page_items: [],
             groups: {},
+            bonus_groups:{},
             activities: [],
-
             bonus_items: [],
         }
     },
@@ -111,12 +112,8 @@ export default {
                 axios.get('/statistics/bonuses').then(response => {
                     //console.log(response.data);
                     // items
-                    let counter = 0;
-                    var status = null;
-                    this.groups = response.data.groups;
-                    var users = null;
+                    this.bonus_groups = response.data.groups;
                     
-                    console.log(this.groups);
                     /*this.items = response.data.items;
                     this.activities = response.data.activities;
                     this.groups = response.data.groups;

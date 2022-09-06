@@ -14,8 +14,25 @@
         <tr>
             
         </tr>
+        <template v-for="(page_item, p) in groups">
+            <tr>
+                <td 
+                    @click="expand(p)"
+                    class="pointer b-table-sticky-column"
+                >
+                        <div class="d-flex px-2">
+                            <!--<i class="fa fa-minus mt-1" v-if="page_item.expanded"></i>
+                            <i class="fa fa-plus mt-1" v-else></i>-->
+                            <span class="ml-2">{{ p + 1 }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {{page_item}}
+                    </td>
+            </tr>
+        </template>
 
-        <template v-for="(page_item, p) in page_items">
+        <!--<template v-for="(page_item, p) in page_items">
             <tr>
                 <td 
                     @click="expand(p)"
@@ -28,13 +45,13 @@
                         </div>
                     </td>
                 <td class="text-left">
-                   <!-- <superselect
+                   <superselect
                         v-if="item.target == null" 
                         class="w-full" 
                         :values="[]" 
                         :single="true"
                         @choose="(target) => item.target = target"
-                    />  -->
+                    />  
                     <div class="d-flex aic p-1">
                         <i class="fa fa-user ml-2 color-user" v-if="page_item.type == 1"></i> 
                         <i class="fa fa-users ml-2 color-group" v-if="page_item.type == 2"></i> 
@@ -106,7 +123,7 @@
                     </td>
                 </tr>
             </template>
-            <!--<template  v-if="page_item.items !== undefined && page_item.items.length > 0">
+            <template  v-if="page_item.items !== undefined && page_item.items.length > 0">
 
              
                 <tr  
@@ -244,9 +261,9 @@
                         </div>
                     </td>
                 </tr>                
-            </template>-->
+            </template>
 
-        </template>
+        </template>-->
     </table>
 
     <!-- pagination -->
@@ -415,18 +432,16 @@ export default {
     name: "Bonuses", 
     props: {
         
-        items: {
-            default: [],
-        },
-        activities: {
-            default: [],
-        },
-        groups: {
-            default: [],
-        },
-        editable: {
-            default: false
-        } 
+        // items: {
+        //     default: [],
+        // },
+        // activities: {
+        //     default: [],
+        // },
+        groups: Array,
+        // editable: {
+        //     default: false
+        // } 
     },
     watch: {
         show_fields: {
@@ -501,6 +516,7 @@ export default {
         this.setDefaultShowFields()
         this.prepareFields(); 
         this.addStatusToItems(); 
+        console.log(this.groups);
     },
 
     mounted() {
@@ -512,7 +528,8 @@ export default {
             alert('testing');
         },
         expand(i) {
-            this.page_items[i].expanded = !this.page_items[i].expanded
+            alert(i);
+            //this.page_items[i].expanded = !this.page_items[i].expanded
         },
 
         onChangePage(page_items) {
