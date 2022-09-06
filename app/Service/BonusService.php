@@ -28,7 +28,7 @@ class BonusService
         return [
             'bonuses'    => Bonus::query()->findOrFail($id),
             'activities' => Activity::get(),
-            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups'     => ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
@@ -45,7 +45,7 @@ class BonusService
         return [
             'bonuses'    => $this->groupItems($bonuses),
             'activities' => Activity::get(),
-            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups'     => ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 

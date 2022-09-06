@@ -32,7 +32,7 @@ class KpiService
         return [
             'kpis'       => $kpi->get(),
             'activities' => Activity::get(),
-            'groups' => \App\ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups' => \App\ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
@@ -50,7 +50,7 @@ class KpiService
         return [
             'kpis'       => $kpis,
             'activities' => Activity::get(),
-            'groups' => \App\ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups' => \App\ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
