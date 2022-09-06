@@ -87,10 +87,10 @@ class Messenger {
         if ($chat->private) {
             // get second user in private chat
             $second_user = $chat->users->firstWhere('id', '!=', $user->id);
-            $chat->title = $second_user->name . " " . $second_user->last_name;
-            $chat->image = config('messenger.user_avatar.folder') . '/' . $second_user->img_url;
+            $chat->title = $second_user ? $second_user->name . " " . $second_user->last_name : 'Уволен';
+            $chat->image = $second_user ? config('messenger.user_avatar.folder') . '/' . $second_user->img_url : '';
 
-            if($second_user->img_url == '' || $second_user->img_url == 'avatar.png') {
+            if($second_user && ($second_user->img_url == '' || $second_user->img_url == 'avatar.png')) {
                 $chat->image = '/images/avatar.png';
             }
 
