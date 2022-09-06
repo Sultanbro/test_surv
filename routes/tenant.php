@@ -609,8 +609,8 @@ Route::middleware([
         'prefix'   => 'messenger/api',
     ], function() {
 
-       
-        /**
+      
+/**
          * Get chats list
          */
         Route::get('/v2/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');
@@ -677,7 +677,7 @@ Route::middleware([
 
         /**
          * Leave chat
-        */
+         */
         Route::post('/v2/chat/{chat_id}/leave', 'ChatsController@leaveChat')->name('api.v2.leaveChat');
 
         /**
@@ -694,9 +694,7 @@ Route::middleware([
          * Set messages as read
          */
         Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
-
-
-        
+                
     });
 });
 
