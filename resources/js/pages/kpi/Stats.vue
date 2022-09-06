@@ -26,6 +26,11 @@
         :groups="groups"
         :items="page_items"
         :editable="true"
+        v-if="s_type_main == 1"
+    />
+
+    <t-stats-bonus
+        v-if="s_type_main == 2"
     />
 
     <!-- pagination -->
@@ -41,6 +46,7 @@
         }"
         @changePage="onChangePage"
         :pageSize="+pageSize"
+        v-if="s_type_main == 1"
     ></jw-pagination>
 
 </div>
@@ -73,6 +79,7 @@ export default {
 
     data() {
         return {
+            s_type_main: 1,
             active: 1,
             paginationKey: 1,
             pageSize: 10,
@@ -81,6 +88,8 @@ export default {
             page_items: [],
             groups: {},
             activities: [],
+
+            bonus_items: [],
         }
     },
 
@@ -97,24 +106,43 @@ export default {
  
         fetchData(filters) {
             let loader = this.$loading.show();
+            this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
+            if(this.s_type_main == 2){
+                axios.get('/statistics/bonuses').then(response => {
+                    //console.log(response.data);
+                    // items
+                    console.log(response);
+                    /*this.items = response.data.items;
+                    this.activities = response.data.activities;
+                    this.groups = response.data.groups;
 
-            axios.post('/statistics/kpi', {
-                filters: filters 
-            }).then(response => {
-                
-                // items
-                this.items = response.data.items;
-                this.activities = response.data.activities;
-                this.groups = response.data.groups;
+                    // paginate
+                    this.page_items = this.items.slice(0, this.pageSize);
+                    */
+                    loader.hide()
+                }).catch(error => {
+                    loader.hide()
+                    alert(error)
+                });
+            }else{
+                axios.post('/statistics/kpi', {
+                    filters: filters 
+                }).then(response => {
+                    console.log(response.data);
+                    // items
+                    this.items = response.data.items;
+                    this.activities = response.data.activities;
+                    this.groups = response.data.groups;
 
-                // paginate
-                this.page_items = this.items.slice(0, this.pageSize);
+                    // paginate
+                    this.page_items = this.items.slice(0, this.pageSize);
 
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
+                    loader.hide()
+                }).catch(error => {
+                    loader.hide()
+                    alert(error)
+                });
+            }
         },
 
         onSearch(asd) {

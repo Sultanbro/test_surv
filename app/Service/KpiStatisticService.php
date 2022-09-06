@@ -299,7 +299,7 @@ class KpiStatisticService
         return Bonus::withTrashed()->when(isset($type) && isset($id), fn($kpi) => $kpi->where([
             ['targetable_type', $type],
             ['targetable_id', $id]
-        ]))->get();
+        ]))->paginate(50);
     }
 
     /**

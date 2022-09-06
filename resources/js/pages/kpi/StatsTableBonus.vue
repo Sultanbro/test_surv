@@ -1,31 +1,5 @@
 <template>
 <div class="bonuses px-3 py-1">
-
-    <!-- top line -->
-    <div class="d-flex mb-2 mt-2 jcsb aifs">
-        
-        <div class="d-flex aic mr-2">
-            <div class="d-flex aic mr-2">
-                <span>Показывать:</span>
-                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
-            </div>
-            <input 
-                class="searcher mr-2 input-sm"
-                v-model="searchText"
-                type="text"
-                placeholder="Поиск по совпадениям..."
-                @keyup="onSearch"
-            >
-            <span class="ml-2"> 
-                Найдено: {{ items.length }}
-            </span>
-        </div>
-
-        <button class="btn rounded btn-outline-success" @click="addItem">
-            <i class="fa fa-plus mr-2"></i>
-            <span>Добавить</span>
-        </button>
-    </div>
     
     <!-- table NEW -->
     <table class="table j-table table-bordered table-sm mb-3 collapse-table">
@@ -441,6 +415,18 @@ export default {
     name: "Bonuses", 
     props: {
         
+        items: {
+            default: [],
+        },
+        activities: {
+            default: [],
+        },
+        groups: {
+            default: [],
+        },
+        editable: {
+            default: false
+        } 
     },
     watch: {
         show_fields: {
@@ -476,15 +462,14 @@ export default {
             show_fields: [],
             fields: [],
             all_fields: fields,
-            groups: [],
+            //groups: [],
             searchText: '',
             modalAdjustVisibleFields: false,
             page_items: [],
             pageSize: 20,
             paginationKey: 1,
-            items: [], // after filter changes
-            all_items: [],
-            activities: [],
+            //items: [], // after filter changes
+            //activities: [],
             source_key: 1,
             dayparts: {
                 0: 'Полный день',
@@ -518,7 +503,7 @@ export default {
     },
 
     mounted() {
-        this.fetch()
+        //this.fetch()
     },
 
     methods: {
@@ -533,7 +518,7 @@ export default {
             this.page_items = page_items;
         },
 
-        fetch(filter = null) {
+        /*fetch(filter = null) {
             let loader = this.$loading.show();
 
             axios.post( this.uri + '/get', {
@@ -557,7 +542,7 @@ export default {
                 loader.hide()
                 alert(error)
             });
-        },
+        },*/
 
         openSidebar(p, i) {
             this.activeItem = this.page_items[p].items[i]     
