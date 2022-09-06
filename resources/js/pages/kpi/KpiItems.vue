@@ -1,13 +1,39 @@
 <template>
 <div class="kpi-item">
 
+    <sidebar
+        title="Показатели"
+        :open="show_description"
+        @close="toggle()"
+        width="70%"
+    >
+        <p>Тут указывается какой показатель сотрудника нужно смотреть для выявления процента выполнения.</p>
+        <p>Первый select источник:</p>
+        <p><strong>- без источникa:</strong></p>
+        <p>руководитель сам будет ставить нужный коэффициент</p>
+        <p><strong>- из показателей отдела:&nbsp;</strong></p>
+        <p>берем данные из подробных таблиц в Аналитике отдела.</p>
+        <p>Появляются три selectа:</p>
+        <ul>
+        <li>выбираем отдел</li>
+        <li>выбираем показатель</li>
+        <li>выбор <em>Свой</em> или <em>Всего отдела</em>. Свой выберет только показатель пользователя, а Всего отдела - какой показатель сделал отдел.</li>
+        </ul>
+        <p>Если выбрать <em>ячейка из сводной</em> нужно будет указать название ячейки как в Excel.</p>
+        <p><strong>- из битрикса:</strong></p>
+        <p>Если в интеграции настроен <strong>Битрикс24</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из битрикса были связаны с Jobtron.</p>
+        <p><strong>- из amocrm:</strong></p>
+        <p>Если в интеграции настроен <strong>Amocrm</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из amocrm были связаны с Jobtron.</p>
+        <p><strong>- другие :</strong></p>
+        <p>разные показатели в Jobtron</p>
+    </sidebar>
     <table class="table table-inner">
         <thead>
             <tr>
                 <th></th>
                 <th>Наименование активности</th>
                 <th>Вид плана</th>
-                <th v-if="kpi_page">Показатели</th>
+                <th v-if="kpi_page">Показатели <i class="fa fa-info-circle" @click="showDescription()"></i></th>
                 <th v-if="kpi_page">Ед. изм.</th>
                 <th>Целевое значение на месяц</th>
                 <th>Удельный вес, %</th>
@@ -229,7 +255,8 @@ export default {
             methods: [],
             sources: [],
             refreshItemsKey: 1,
-            source_key: 1
+            source_key: 1,
+            show_description: false
         }
     }, 
 
@@ -246,7 +273,12 @@ export default {
     computed: {},
 
     methods: {
-      
+        toggle() {
+            this.show_description = false;
+        },
+        showDescription(){
+            this.show_description = !this.show_description;
+        },
         recalc() {
             this.items.forEach(el => {
                 if([1,3,5].includes(el.method) && !this.kpi_page) {
