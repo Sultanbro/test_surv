@@ -1,442 +1,378 @@
 <template>
-<div class="bonuses px-3 py-1">
-
-    <!-- top line -->
-    <div class="d-flex mb-2 mt-2 jcsb aifs">
-        
-        <div class="d-flex aic mr-2">
-            <div class="d-flex aic mr-2">
-                <span>Показывать:</span>
-                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
-            </div>
-            <input 
-                class="searcher mr-2 input-sm"
-                v-model="searchText"
-                type="text"
-                placeholder="Поиск по совпадениям..."
-                @keyup="onSearch"
-            >
-            <span class="ml-2"> 
-                Найдено: {{ items.length }}
-            </span>
-        </div>
-
-        <button class="btn rounded btn-outline-success" @click="addItem">
-            <i class="fa fa-plus mr-2"></i>
-            <span>Добавить</span>
-        </button>
-    </div>
+    <div class="bonuses px-3 py-1">
     
-    <!-- table NEW -->
-    <table class="table j-table table-bordered table-sm mb-3 collapse-table">
-        <tr>
-            <th class="b-table-sticky-column text-center px-1">
-                <i class="fa fa-cogs" @click="adjustFields"></i>
-            </th>
-            <th class="text-left">
-               Кому
-            </th>
-        </tr>
-        <tr>
+        <!-- top line -->
+        <div class="d-flex mb-2 mt-2 jcsb aifs">
             
-        </tr>
-
-        <template v-for="(page_item, p) in page_items">
+            <div class="d-flex aic mr-2">
+                <div class="d-flex aic mr-2">
+                    <span>Показывать:</span>
+                    <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
+                </div>
+                <input 
+                    class="searcher mr-2 input-sm"
+                    v-model="searchText"
+                    type="text"
+                    placeholder="Поиск по совпадениям..."
+                    @keyup="onSearch"
+                >
+                <span class="ml-2"> 
+                    Найдено: {{ items.length }}
+                </span>
+            </div>
+    
+            <button class="btn rounded btn-outline-success" @click="addItem">
+                <i class="fa fa-plus mr-2"></i>
+                <span>Добавить</span>
+            </button>
+        </div>
+        
+        <!-- table NEW -->
+        <table class="table j-table table-bordered table-sm mb-3 collapse-table">
             <tr>
-                <td 
-                    @click="expand(p)"
-                    class="pointer b-table-sticky-column"
-                >
-                        <div class="d-flex px-2">
-                            <i class="fa fa-minus mt-1" v-if="page_item.expanded"></i>
-                            <i class="fa fa-plus mt-1" v-else></i>
-                            <span class="ml-2">{{ p + 1 }}</span>
-                        </div>
-                    </td>
-                <td class="text-left">
-                   <!-- <superselect
-                        v-if="item.target == null" 
-                        class="w-full" 
-                        :values="[]" 
-                        :single="true"
-                        @choose="(target) => item.target = target"
-                    />  -->
-                    <div class="d-flex aic p-1">
-                        <i class="fa fa-user ml-2 color-user" v-if="page_item.type == 1"></i> 
-                        <i class="fa fa-users ml-2 color-group" v-if="page_item.type == 2"></i> 
-                        <i class="fa fa-briefcase ml-2 color-position" v-if="page_item.type == 3"></i> 
-                        <span class="ml-2">{{ page_item.name }}</span>
-                    </div>
-                </td>
+                <th class="b-table-sticky-column text-center px-1">
+                    <i class="fa fa-cogs" @click="adjustFields"></i>
+                </th>
+                <th class="text-left">
+                   Кому
+                </th>
             </tr>
-            <template v-if="page_item.items !== undefined && page_item.items.length > 0">
-                <tr  
-                    class="collapsable"
-                    :class="{'active': page_item.expanded}"
-                >
-                    <td :colspan="fields.length + 2">
-                        <div class="table__wrapper">
-                            <table class="table b-table table-bordered table-sm table-responsive mb-0 table-inner">
-                                <tr>
-                                    <th class="b-table-sticky-column text-center px-1 pointer" @click="user_collapsed = !user_collapsed">
-                                        <div class="d-flex px-2">
-                                            <i class="fa fa-plus mt-1"></i>
-                                            <span class="ml-2 bg-transparent">1</span>
-                                        </div>
-                                    </th>
-                                    <th
-                                        class="text-left"
-                                        >
-                                        Aitimov Kuanish
-                                    </th> 
-                                    <th class="w-50">
-                                        Минуты разговра <b>2500 тг</b>
-                                    </th>
-                                    <th class="pr-5">
-                                        Рейтинг оператора ОКК <b>3650 тг</b>
-                                    </th>
-                                </tr>
-                                <template v-if="user_collapsed">
-                                    <table class="table b-table table-bordered table-sm table-responsive mb-0 table-inner">
-                                        <tr>
-                                            <th></th>
-                                            <th>Наименование активности</th>
-                                            <th>За</th>
-                                            <th>Кол-во</th>
-                                            <th>Вознаграждение</th>
-                                            <th>Период</th>
-                                            <th>Заработано</th>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>Минуты разговора</td>
-                                            <td>Первый кто</td>
-                                            <td>40</td>
-                                            <td>1250</td>
-                                            <td>Весь день</td>
-                                            <td>2500</td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>Рейтинг оператора ОКК</td>
-                                            <td>За каждую ед</td>
-                                            <td>1</td>
-                                            <td>50</td>
-                                            <td>Весь день</td>
-                                            <td>3650</td>
-                                        </tr>
-                                    </table>
-                                </template>
-                            </table>
+            <tr>
+                
+            </tr>
+    
+            <template v-for="(page_item, p) in page_items">
+                <tr>
+                    <td 
+                        @click="expand(p)"
+                        class="pointer b-table-sticky-column"
+                    >
+                            <div class="d-flex px-2">
+                                <i class="fa fa-minus mt-1" v-if="page_item.expanded"></i>
+                                <i class="fa fa-plus mt-1" v-else></i>
+                                <span class="ml-2">{{ p + 1 }}</span>
+                            </div>
+                        </td>
+                    <td class="text-left">
+                       <!-- <superselect
+                            v-if="item.target == null" 
+                            class="w-full" 
+                            :values="[]" 
+                            :single="true"
+                            @choose="(target) => item.target = target"
+                        />  -->
+                        <div class="d-flex aic p-1">
+                            <i class="fa fa-user ml-2 color-user" v-if="page_item.type == 1"></i> 
+                            <i class="fa fa-users ml-2 color-group" v-if="page_item.type == 2"></i> 
+                            <i class="fa fa-briefcase ml-2 color-position" v-if="page_item.type == 3"></i> 
+                            <span class="ml-2">{{ page_item.name }}</span>
                         </div>
                     </td>
                 </tr>
-            </template>
-            <!--<template  v-if="page_item.items !== undefined && page_item.items.length > 0">
-
-             
-                <tr  
-                    class="collapsable"
-                    :class="{'active': page_item.expanded}"
-                >
-                    <td :colspan="fields.length + 2">
-                        <div class="table__wrapper">
-                            <table class="table b-table table-bordered table-sm table-responsive mb-0 table-inner">
-                                <tr>
-                                    <th class="b-table-sticky-column text-center px-1">
-                                        
-                                    </th>
-                                    <th
-                                        class="text-left"
-                                        v-for="(field, f) in fields" 
-                                        :class="[
+    
+                <template  v-if="page_item.items !== undefined && page_item.items.length > 0">
+    
+                 
+                    <tr  
+                        class="collapsable"
+                        :class="{'active': page_item.expanded}"
+                    >
+                        <td :colspan="fields.length + 2">
+                            <div class="table__wrapper">
+                                <table class="table b-table table-bordered table-sm table-responsive mb-0 table-inner">
+                                    <tr>
+                                        <th class="b-table-sticky-column text-center px-1">
+                                            
+                                        </th>
+                                        <th
+                                            class="text-left"
+                                            v-for="(field, f) in fields" 
+                                            :class="[
+                                                field.class,
+                                                {'b-table-sticky-column l-2 hidden' : field.key == 'target'
+                                            }]"
+                                            >
+                                            {{ field.name }}
+                                        </th> 
+                                        <th></th>
+                                    </tr>  
+                                    
+                                    <tr v-for="(item, i) in page_item.items">
+                                        <td class="b-table-sticky-column text-left">
+                                            <div class="d-flex">
+                                                <input class="ml-2" type="checkbox" />
+                                                <div class="ml-2 text-white">{{ i + 1 }}</div>
+                                            </div>
+                                        </td>
+                                        <td v-for="(field, f) in fields"  :class="[
                                             field.class,
                                             {'b-table-sticky-column l-2 hidden' : field.key == 'target'
-                                        }]"
-                                        >
-                                        {{ field.name }}
-                                    </th> 
-                                    <th></th>
-                                </tr>  
-                                
-                                <tr v-for="(item, i) in page_item.items">
-                                    <td class="b-table-sticky-column text-left">
-                                        <div class="d-flex">
-                                            <input class="ml-2" type="checkbox" />
-                                            <div class="ml-2 text-white">{{ i + 1 }}</div>
-                                        </div>
-                                    </td>
-                                    <td v-for="(field, f) in fields"  :class="[
-                                        field.class,
-                                        {'b-table-sticky-column l-2 hidden' : field.key == 'target'
-                                    }]">
-                                        <div v-if="field.key == 'target'">
+                                        }]">
+                                            <div v-if="field.key == 'target'">
+                                                
+                                            </div> 
+                                                
+                                            <div v-else-if="field.key == 'created_by' && item.creator != null">
+                                                {{ item.creator.last_name + ' ' + item.creator.name }}
+                                            </div>
+    
+                                            <div v-else-if="field.key == 'updated_by' && item.updater != null">
+                                                {{ item.updater.last_name + ' ' + item.updater.name }}
+                                            </div>
+    
+                                            <div v-else-if="non_editable_fields.includes(field.key)">
+                                                {{ item[field.key] }}
+                                            </div>
+    
                                             
-                                        </div> 
-                                            
-                                        <div v-else-if="field.key == 'created_by' && item.creator != null">
-                                            {{ item.creator.last_name + ' ' + item.creator.name }}
-                                        </div>
-
-                                        <div v-else-if="field.key == 'updated_by' && item.updater != null">
-                                            {{ item.updater.last_name + ' ' + item.updater.name }}
-                                        </div>
-
-                                        <div v-else-if="non_editable_fields.includes(field.key)">
-                                            {{ item[field.key] }}
-                                        </div>
-
-                                        
-
-                                        <div v-else-if="field.key == 'activity_id' && item.source != undefined">
-                                            <div class="d-flex">
+    
+                                            <div v-else-if="field.key == 'activity_id' && item.source != undefined">
+                                                <div class="d-flex">
+                                                    <select 
+                                                        v-model="item.source"
+                                                        class="form-control small"
+                                                        @change="++source_key"
+                                                    >
+                                                        <option v-for="key in Object.keys(sources)"
+                                                            :value="key">
+                                                            {{ sources[key] }}
+                                                        </option>
+                                                    </select>
+    
+                                                    <select 
+                                                        v-if="Number(item.source) == 1"
+                                                        v-model="item.group_id"
+                                                        class="form-control small"
+                                                        :key="'c' + source_key"
+                                                    >
+                                                        <option value="0" selected>-</option>
+                                                        <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
+                                                    </select>    
+    
+                                                    <select 
+                                                        v-model="item.activity_id"
+                                                        class="form-control small"
+                                                        :key="'d' + source_key"
+                                                    >
+                                                        <option value="0" selected>-</option>
+                                                        <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id"  >{{ activity.name }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                                
+                                            <div v-else-if="field.key == 'unit'">
                                                 <select 
-                                                    v-model="item.source"
-                                                    class="form-control small"
-                                                    @change="++source_key"
-                                                >
-                                                    <option v-for="key in Object.keys(sources)"
-                                                        :value="key">
-                                                        {{ sources[key] }}
-                                                    </option>
-                                                </select>
-
-                                                <select 
-                                                    v-if="Number(item.source) == 1"
-                                                    v-model="item.group_id"
-                                                    class="form-control small"
-                                                    :key="'c' + source_key"
+                                                    v-model="item.unit"
+                                                    class="form-control"
                                                 >
                                                     <option value="0" selected>-</option>
-                                                    <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
-                                                </select>    
-
-                                                <select 
-                                                    v-model="item.activity_id"
-                                                    class="form-control small"
-                                                    :key="'d' + source_key"
-                                                >
-                                                    <option value="0" selected>-</option>
-                                                    <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id"  >{{ activity.name }}</option>
+                                                    <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
                                                 </select>
                                             </div>
-                                        </div>
-                                            
-                                        <div v-else-if="field.key == 'unit'">
-                                            <select 
-                                                v-model="item.unit"
-                                                class="form-control"
-                                            >
-                                                <option value="0" selected>-</option>
-                                                <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
-                                            </select>
-                                        </div>
-
-                                        <div v-else-if="field.key == 'daypart'">
-                                            <select 
-                                                v-model="item.daypart"
-                                                class="form-control"
-                                            >
-                                                <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
-                                            </select>
-                                        </div>
-
-                                        <div v-else>
-                                            <input
-                                                :type="field.type"
-                                                class="form-control"
-                                                v-model="item[field.key]"
-                                                @change="validate(item[field.key], field.key)"
-                                            /> 
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <i
-                                            class="fa fa-save btn btn-success p-1 ml-1"
-                                            @click="saveItemFromTable(p, i)"
-                                        />
-                                        <i
-                                            class="fa fa-edit btn btn-primary p-1"
-                                            @click="openSidebar(p, i)"
-                                        />
-                                        <i
-                                            class="fa fa-trash btn btn-danger p-1"
-                                            @click="deleteItem(p, i)"
-                                        />
-                                    </td>
-                                </tr>
-                                
-                            </table>
-                        </div>
-                    </td>
-                </tr>                
-            </template>-->
-
-        </template>
-    </table>
-
-    <!-- pagination -->
-    <jw-pagination
-        class=""
-        :key="paginationKey"
-        :items="items"
-        :labels="{
-            first: '<<',
-            last: '>>',
-            previous: '<',
-            next: '>'
-        }"
-        @changePage="onChangePage"
-        :pageSize="+pageSize"
-    ></jw-pagination>
-
-    <!-- modal Adjust Visible fields -->
-    <b-modal 
-        v-model="modalAdjustVisibleFields"
-        title="Настройка списка"
-        @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
-        ok-text="Закрыть"
-        size="lg">
-     
-        <div class="row">
-
-            <div class="col-md-4 mb-2" v-for="(field, f) in all_fields">
-                <b-form-checkbox
-                    v-model="show_fields[field.key]"
-                    :value="true"
-                    :unchecked-value="false"
-                >
-                    {{ field.name }}
-                </b-form-checkbox>
+    
+                                            <div v-else-if="field.key == 'daypart'">
+                                                <select 
+                                                    v-model="item.daypart"
+                                                    class="form-control"
+                                                >
+                                                    <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                                </select>
+                                            </div>
+    
+                                            <div v-else>
+                                                <input
+                                                    :type="field.type"
+                                                    class="form-control"
+                                                    v-model="item[field.key]"
+                                                    @change="validate(item[field.key], field.key)"
+                                                /> 
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <i
+                                                class="fa fa-save btn btn-success p-1 ml-1"
+                                                @click="saveItemFromTable(p, i)"
+                                            />
+                                            <i
+                                                class="fa fa-edit btn btn-primary p-1"
+                                                @click="openSidebar(p, i)"
+                                            />
+                                            <i
+                                                class="fa fa-trash btn btn-danger p-1"
+                                                @click="deleteItem(p, i)"
+                                            />
+                                        </td>
+                                    </tr>
+                                    
+                                </table>
+                            </div>
+                        </td>
+                    </tr>                
+                </template>
+    
+            </template>
+        </table>
+    
+        <!-- pagination -->
+        <jw-pagination
+            class=""
+            :key="paginationKey"
+            :items="items"
+            :labels="{
+                first: '<<',
+                last: '>>',
+                previous: '<',
+                next: '>'
+            }"
+            @changePage="onChangePage"
+            :pageSize="+pageSize"
+        ></jw-pagination>
+    
+        <!-- modal Adjust Visible fields -->
+        <b-modal 
+            v-model="modalAdjustVisibleFields"
+            title="Настройка списка"
+            @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
+            ok-text="Закрыть"
+            size="lg">
+         
+            <div class="row">
+    
+                <div class="col-md-4 mb-2" v-for="(field, f) in all_fields">
+                    <b-form-checkbox
+                        v-model="show_fields[field.key]"
+                        :value="true"
+                        :unchecked-value="false"
+                    >
+                        {{ field.name }}
+                    </b-form-checkbox>
+                </div>
+                
+            </div>  
+        </b-modal>
+    
+        <sidebar
+            title="Настроить бонус"
+            v-if="activeItem != null"
+            :open="showSidebar"
+            @close="closeSidebar"
+            width="40%"
+        >   
+            <div class="row m-0">
+                <div class="mb-3" v-for="(field, f) in all_fields" :class="field.alter_class">
+                            
+                            <div class="mb-2 mt-2 field">{{ field.name }}</div>
+    
+                            <div v-if="field.key == 'target'" class="mr-5">
+                                <superselect
+                                    v-if="activeItem.id == 0"
+                                    class="w-full" 
+                                    :values="activeItem.target == null ? [] : [activeItem.target]" 
+                                    :single="true"
+                                    @choose="(target) => activeItem.target = target" /> 
+                                <div v-else class="d-flex aic">
+                                    <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
+                                    <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
+                                    <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
+                                    <span class="ml-2">{{ activeItem.target.name }}</span>
+                                </div>
+                            </div>
+                             
+                            <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
+                                {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
+                            </div>
+    
+                            <div v-else-if="field.key == 'updated_by' && activeItem.updater != null">
+                                {{ activeItem.updater.last_name + ' ' + activeItem.updater.name }}
+                            </div>
+    
+                            <div v-else-if="non_editable_fields.includes(field.key)">
+                                {{ activeItem[field.key] }}
+                            </div>
+    
+                          
+    
+                            <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
+                                <div class="d-flex">
+                                    <select 
+                                        v-model="activeItem.source"
+                                        class="form-control small mr-2"
+                                        @change="++source_key"
+                                    >
+                                        <option v-for="key in Object.keys(sources)"
+                                            :value="key">
+                                            {{ sources[key] }}
+                                        </option>
+                                    </select>
+    
+                                    <select 
+                                        v-if="Number(activeItem.source) == 1"
+                                        v-model="activeItem.group_id"
+                                        class="form-control small mr-2"
+                                        :key="'a' + source_key"
+                                    >
+                                        <option value="0" selected>-</option>
+                                        <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
+                                    </select>      
+    
+                                    <select 
+                                        v-model="activeItem.activity_id"
+                                        class="form-control small"
+                                        :key="'b' + source_key"
+                                    >
+                                        <option value="0" selected>-</option>
+                                        <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div v-else-if="field.key == 'unit'">
+                                <select 
+                                    v-model="activeItem.unit"
+                                    class="form-control"
+                                >
+                                    <option value="0" selected>-</option>
+                                    <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
+                                </select>
+                            </div>
+    
+                            <div v-else-if="field.key == 'daypart'">
+                                <select 
+                                    v-model="activeItem.daypart"
+                                    class="form-control"
+                                >
+                                    <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                </select>
+                            </div>
+    
+                            <div v-else-if="field.key == 'text'">
+                                <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
+                            </div>
+    
+                            <div v-else>
+                                <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
+                            </div>
+    
+                </div>
+                <div>
+                    <button
+                        class="d-flex aic  btn btn-success ml-3" 
+                        @click="saveItem"
+                    >
+                        <i 
+                            class="fa fa-save"
+                        />
+                        <span class="ml-2">Сохранить</span>
+                    </button>
+                </div>
             </div>
             
-        </div>  
-    </b-modal>
-
-    <sidebar
-        title="Настроить бонус"
-        v-if="activeItem != null"
-        :open="showSidebar"
-        @close="closeSidebar"
-        width="40%"
-    >   
-        <div class="row m-0">
-            <div class="mb-3" v-for="(field, f) in all_fields" :class="field.alter_class">
-                        
-                        <div class="mb-2 mt-2 field">{{ field.name }}</div>
-
-                        <div v-if="field.key == 'target'" class="mr-5">
-                            <superselect
-                                v-if="activeItem.id == 0"
-                                class="w-full" 
-                                :values="activeItem.target == null ? [] : [activeItem.target]" 
-                                :single="true"
-                                @choose="(target) => activeItem.target = target" /> 
-                            <div v-else class="d-flex aic">
-                                <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
-                                <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
-                                <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
-                                <span class="ml-2">{{ activeItem.target.name }}</span>
-                            </div>
-                        </div>
-                         
-                        <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
-                            {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
-                        </div>
-
-                        <div v-else-if="field.key == 'updated_by' && activeItem.updater != null">
-                            {{ activeItem.updater.last_name + ' ' + activeItem.updater.name }}
-                        </div>
-
-                        <div v-else-if="non_editable_fields.includes(field.key)">
-                            {{ activeItem[field.key] }}
-                        </div>
-
-                      
-
-                        <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
-                            <div class="d-flex">
-                                <select 
-                                    v-model="activeItem.source"
-                                    class="form-control small mr-2"
-                                    @change="++source_key"
-                                >
-                                    <option v-for="key in Object.keys(sources)"
-                                        :value="key">
-                                        {{ sources[key] }}
-                                    </option>
-                                </select>
-
-                                <select 
-                                    v-if="Number(activeItem.source) == 1"
-                                    v-model="activeItem.group_id"
-                                    class="form-control small mr-2"
-                                    :key="'a' + source_key"
-                                >
-                                    <option value="0" selected>-</option>
-                                    <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
-                                </select>      
-
-                                <select 
-                                    v-model="activeItem.activity_id"
-                                    class="form-control small"
-                                    :key="'b' + source_key"
-                                >
-                                    <option value="0" selected>-</option>
-                                    <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div v-else-if="field.key == 'unit'">
-                            <select 
-                                v-model="activeItem.unit"
-                                class="form-control"
-                            >
-                                <option value="0" selected>-</option>
-                                <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
-                            </select>
-                        </div>
-
-                        <div v-else-if="field.key == 'daypart'">
-                            <select 
-                                v-model="activeItem.daypart"
-                                class="form-control"
-                            >
-                                <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
-                            </select>
-                        </div>
-
-                        <div v-else-if="field.key == 'text'">
-                            <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
-                        </div>
-
-                        <div v-else>
-                            <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
-                        </div>
-
-            </div>
-            <div>
-                <button
-                    class="d-flex aic  btn btn-success ml-3" 
-                    @click="saveItem"
-                >
-                    <i 
-                        class="fa fa-save"
-                    />
-                    <span class="ml-2">Сохранить</span>
-                </button>
-            </div>
-        </div>
-        
-    </sidebar>
-</div>
-</template>
-
+        </sidebar>
+    </div>
+</template>    
 <script>
 import {fields, newBonus} from "./bonuses.js";
 import {findModel, groupBy} from "./helpers.js";
-
 export default {
     name: "Bonuses", 
     props: {
@@ -461,14 +397,12 @@ export default {
                     val = 100;
                     return;
                 }
-
                 this.paginationKey++;
             }
         }
     },
     data() {
         return {
-            user_collapsed: false,
             active: 1,
             activeItem: null,
             uri: 'bonus',
@@ -498,10 +432,9 @@ export default {
             },
             sources: {
                 0: 'без источника',
-                1: 'вкладка аналитика',
+                1: 'из показателей отдела',
                 2: 'из битрикса',
                 3: 'из амосрм',
-                4: 'другие',
             },
             non_editable_fields: [
                 'created_at',
@@ -517,77 +450,58 @@ export default {
         this.prepareFields(); 
         this.addStatusToItems(); 
     },
-
     mounted() {
         this.fetch()
     },
-
     methods: {
-        expand_user(){
-            alert('testing');
-        },
         expand(i) {
             this.page_items[i].expanded = !this.page_items[i].expanded
         },
-
         onChangePage(page_items) {
             this.page_items = page_items;
         },
-
         fetch(filter = null) {
             let loader = this.$loading.show();
-
             axios.post( this.uri + '/get', {
                 filters: filter 
             }).then(response => {
                 
-             
-
+                
                 this.all_items = response.data.bonuses
                 this.items = response.data.bonuses;
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
-
                 this.defineSourcesAndGroups('t');
-
                 this.items.forEach(el => el.expanded = false);
                 this.page_items = this.items.slice(0, this.pageSize);
-
                 loader.hide()
             }).catch(error => {
                 loader.hide()
                 alert(error)
             });
         },
-
         openSidebar(p, i) {
             this.activeItem = this.page_items[p].items[i]     
             this.showSidebar = true
         },
-
         closeSidebar() {
             this.showSidebar = false
             this.activeItem = null;
         },
         
         setDefaultShowFields() {
-
             let obj = {}; // Какие поля показывать
             fields.forEach(field => obj[field.key] = true); 
-
             if(localStorage.bonus_show_fields) {
                 this.show_fields = JSON.parse(localStorage.getItem('bonus_show_fields'));
                 if(this.show_fields == null) this.show_fields = obj
             } else {
                 this.show_fields = obj
             }
-
         },
-
         adjustFields() {
             this.modalAdjustVisibleFields = true;
         },
-
         addStatusToItems() {
             this.items.forEach(el => {
                 el.on_edit = false
@@ -596,7 +510,6 @@ export default {
                 el.selected = false
             });
         },
-
         prepareFields() {
             let visible_fields = [],
                 show_fields = this.show_fields;
@@ -608,18 +521,14 @@ export default {
                     visible_fields.push(field)
                 }
             });
-
             this.fields = visible_fields;
         },
-
         addItem() {
             this.activeItem = newBonus()
             this.showSidebar = true
         },
-
         validateMsg(item) {
             let msg = '';
-
             if(item.target == null)    msg = 'Выберите Кому назначить'
             if(item.title.length <= 1) msg = 'Заполните название'
             
@@ -634,14 +543,12 @@ export default {
             if(item.activity_id == 0 || item.activity_id == undefined || a == -1) {
                 msg = 'Выберите показатель';
             } 
-
             // another
             if(item.quantity <= 0)     msg = 'Кол-во должно быть больше нуля'
             if(item.sum <= 0)          msg = 'Вознаграждение должно быть больше нуля'
             
             return msg;
         },
-
         save(item) {
             
             /**
@@ -658,17 +565,15 @@ export default {
              */
             let loader = this.$loading.show();
             let method = item.id == 0 ? 'save' : 'update';
-
             let fields = {
                 targetable_id: item.target.id,
                 targetable_type: findModel(item.target.type),
                 ...item
             };
- 
+    
             let req = item.id == 0 
                 ? axios.post(this.uri + '/' + method, fields)
                 : axios.put(this.uri + '/' + method, fields);
-
             /**
              * request
              */
@@ -677,9 +582,8 @@ export default {
                 if(method == 'save') {
                     let bonus = response.data.bonus;
                     item.id = bonus.id;
-                   // this.items.unshift(item);
+                    // this.items.unshift(item);
                     
-
                     let i = this.all_items.findIndex(el => el.type == item.target.type && el.id == item.target.id);
                     if(i != -1) {
                         this.all_items[i].items.unshift(item);
@@ -692,11 +596,8 @@ export default {
                             expanded: false
                         });
                     }
-
-
                     this.showSidebar = false
                 }
-
                 this.$toast.info('Сохранено');
                 loader.hide()
             }).catch(error => {
@@ -709,7 +610,6 @@ export default {
                 alert(m)
             });
         },
-
         deletee(id, p, i) {
             let loader = this.$loading.show();
             axios.delete(this.uri + '/delete/' + id).then(response => {
@@ -720,56 +620,45 @@ export default {
                 alert(error)
             });
         },
-
         deleteEvery(id, p, i) {
             
             // let a = this.all_items.findIndex(el => el.id == id)
             // if(a != -1) this.all_items.splice(a, 1);
-
             this.all_items[p].items.splice(i, 1);
             if(this.all_items[p].items.length == 0) this.all_items.splice(p, 1)
             this.onSearch();
-
             this.$toast.info('Удалено');
         },
-
         saveItem() {
             this.save(this.activeItem)
         }, 
-
         saveItemFromTable(p, i) {
             this.save(this.page_items[p].items[i])
         },
-
         deleteItem(p, i) {
-          
+            
             let item = this.page_items[p].items[i]
-
             if(!confirm('Вы уверены?')) {
                 return;
             }
-
             if(item.id == 0) {
                 this.deleteEvery(item.id, p, i);
                 return;
             }
-
             this.deletee(item.id, p, i);
         },
-
         showStat() {
             this.$toast.info('Показать статистику');
         },
- 
+    
         onSearch() { 
             let text = this.searchText;
-     
+        
             if(this.searchText == '') {
-               this.items = this.all_items;
+                this.items = this.all_items;
             } else {
                 this.items = this.all_items.filter((el, index) => {
                     let has = false;
-
                     if (
                         el.name.toLowerCase().indexOf(text.toLowerCase()) > -1
                     ) {
@@ -778,27 +667,22 @@ export default {
                     return has; 
                 }); 
             }
-
             this.page_items = this.items.slice(0, this.pageSize);
         },
-
         validate(value, field) {
             value = Math.abs(Number(value));
             if(isNaN(value) || isFinite(value)) {
                 value = 0;
             }
-
             if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
                 value = 100;
             }
         },
-
         defineSourcesAndGroups(t) {
             this.items.forEach(p => {
                 p.items.forEach(el => {
                     el.source = 0;
                     el.group_id = 0;
-
                     if(el.activity_id != 0) {
                         let i = this.activities.findIndex(a => a.id == el.activity_id);
                         if(i != -1) {
@@ -808,9 +692,8 @@ export default {
                     }
                 });
             })
-           
+            
         },
-
         grouped_activities(source, group_id) {
             if(source == 1) {
                 return this.activities.filter(el => el.source == source && el.group_id == group_id);
@@ -820,6 +703,6 @@ export default {
             }
         }
     },
- 
+    
 }
 </script>

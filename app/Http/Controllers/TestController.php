@@ -29,12 +29,11 @@ class TestController extends Controller {
  
 	public function test() {
 	
-		//(new \App\External\Bitrix\Bitrix)->updateFields(534700, [
-
-
-		// (new IntellectController)->updateFields(534700, [
-		// 	'UF_CRM_1628091269' => 1, // Подписал соглашение о неразглашении
-		// ]);
+		dd(AnalyticStat::getCellValue(
+			42,
+			'C20',
+			'2022-08-01'
+		));
 	}  
 
 	public function test_mail_invitation()

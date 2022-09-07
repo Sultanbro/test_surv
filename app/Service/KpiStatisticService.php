@@ -547,17 +547,29 @@ class KpiStatisticService
 
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
+
             
         // create final users array
-        $users = $this->connectKpiWithUserStats($kpi, $_users, $date);
+        $users = $this->connectKpiWithUserStats(
+            $kpi,
+            $_users,
+            $date,
+        );
 
         return $users;
     }
 
+   
+
     /**
      * create final users array
      */
-    private function connectKpiWithUserStats(Kpi $kpi, $_users, $date) {
+    private function connectKpiWithUserStats(
+        Kpi $kpi,
+        $_users,
+        $date,
+    ) : array
+    {
 
         // count workdays in month
         $workdays = [];
@@ -570,7 +582,7 @@ class KpiStatisticService
         $cell_activities = Activity::withTrashed()->where('view', Activity::VIEW_CELL)->get();
 
         foreach ($_users as $key => $user) {
-
+       
             $kpi_items = [];
             
             foreach ($kpi->items as $key => $_item) {
@@ -599,16 +611,33 @@ class KpiStatisticService
                     $item['days'] = 0;
                     $item['registered'] = 0;
                 }   
-                
-                // // take cell value
-                $hasCellActivity = $cell_activities->where('id', $item['activity_id'])->first();
-                if($hasCellActivity) {
-                    $item['fact'] = AnalyticStat::getCellValue(
-                        $hasCellActivity->group_id,
-                        $hasCellActivity->cell,
-                        $date->format('Y-m-d')
-                    );
+
+                /**
+                 * if value is from all group
+                 */
+                if($_item->common == 1) {
+                    $query = UserStat::selectRaw("
+                            SUM(value) as fact,
+                            AVG(value) as avg,
+                            COUNT(value) as records_count,
+                            activity_id,
+                            date
+                        ")
+                        ->whereMonth('date', $date->month)
+                        ->whereYear('date', $date->year)
+                        ->where('activity_id', $_item->activity_id)
+                        ->first();
+                   
+                    if($query) {
+                        $item['fact'] = $query->fact ?? 0;
+                        $item['avg'] = $query->avg ?? 0;
+                        $item['records_count'] = $query->records_count ?? 0;
+                    }
+                    
                 }
+                
+                //  take cell value
+                $item['fact'] = $this->takeCellValue($_item, $date, $item['fact']);
                
                 // plan
                 $item['plan'] = $_item->activity ? $_item->activity->daily_plan : 0;
@@ -626,6 +655,21 @@ class KpiStatisticService
         }
 
         return $users;
+    }
+
+    /**
+     * take cell value from analytics
+     * for kpi item
+     */
+    private function takeCellValue($item, $date, $fact) {
+        if($item->activity && $item->activity->view == Activity::VIEW_CELL) {
+            $fact = AnalyticStat::getCellValue(
+                $item->activity->group_id,
+                $item->cell,
+                $date->format('Y-m-d')
+            );
+        }
+        return $fact;
     }
 
     /**
