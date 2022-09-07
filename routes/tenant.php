@@ -736,6 +736,13 @@ Route::middleware([
         Route::any('/bitrix/create-link',  [IntellectController::class, 'bitrixCreateLead']);  
         Route::any('/bitrix/change-resp',  [IntellectController::class, 'changeResp']);   
         Route::any('/bitrix/inhouse',      [IntellectController::class, 'inhouse']); 
+        
+        
+        Route::group([
+            'prefix' => 'statistics',
+        ], function (){
+            Route::any('/workdays', [KpiStatController::class, 'workdays']);
+        });
 
     });
 
