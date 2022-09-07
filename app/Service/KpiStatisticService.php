@@ -655,14 +655,18 @@ class KpiStatisticService
         $users = $this->getUserProfileGroup($filters);
         $result = [];
 
-        foreach ($users as $user)
-        {
+        foreach ($users as $user) {
             if ($user->applied == null) {
                 continue;
             }
 
-            $userAppliedDate   = Carbon::createFromFormat('Y-m-d H:i:s', $user->applied);
-            $ignore = $user->working_day_id == 1 ? [6,0] : [0];
+            $userAppliedDate = Carbon::createFromFormat('Y-m-d H:i:s', $user->applied);
+
+            if ($userAppliedDate->year > $filters['data_from']['year']) {
+                continue;
+            }
+
+            $ignore          = $user->working_day_id == 1 ? [6,0] : [0];
             $userWorkDays    = $this->workdays($userAppliedDate->year, $userAppliedDate->month, $userAppliedDate->day, $ignore);
             $workdaysInMonth = workdays($filters['data_from']['year'], $filters['data_from']['month'], $ignore);
 
@@ -670,6 +674,7 @@ class KpiStatisticService
             {
                 $result[] = [
                     'user_id'           => $user->user_id,
+                    'activity_id'       => $user->activity_id,
                     'applied_at'        => $user->applied,
                     'user_work_days'    => $userWorkDays,
                     'workdays_in_month' => $workdaysInMonth,
@@ -677,9 +682,9 @@ class KpiStatisticService
                     'total_plan'        => $workdaysInMonth * $user->plan
                 ];
             }else{
-
                 $result[] = [
                     'user_id'           => $user->user_id,
+                    'activity_id'       => $user->activity_id,
                     'applied_at'        => $user->applied,
                     'user_work_days'    => $workdaysInMonth,
                     'workdays_in_month' => $workdaysInMonth,
@@ -717,7 +722,7 @@ class KpiStatisticService
         $count = 0;
         $counter = mktime(0, 0, 0, $month, $day, $year);
         while (date("n", $counter) == $month) {
-            if (in_array(date("w", $counter), $ignore) == false) {
+            if (!in_array(date("w", $counter), $ignore)) {
                 $count++;
             }
             $counter = strtotime("+1 day", $counter);
