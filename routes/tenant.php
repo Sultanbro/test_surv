@@ -511,7 +511,6 @@ Route::middleware([
         Route::any('kpi', [KpiStatController::class, 'fetchKpis'])->name('fetchKpis');
         Route::any('bonuses', [KpiStatController::class, 'fetchBonuses'])->name('fetchBonuses');
         Route::any('quartal-premiums', [KpiStatController::class, 'fetchQuartalPremiums'])->name('fetchQuartalPremiums');
-        Route::any('/workdays', [KpiStatController::class, 'workdays']);
     });
 
     /**
@@ -739,6 +738,13 @@ Route::middleware([
         Route::any('/bitrix/create-link',  [IntellectController::class, 'bitrixCreateLead']);  
         Route::any('/bitrix/change-resp',  [IntellectController::class, 'changeResp']);   
         Route::any('/bitrix/inhouse',      [IntellectController::class, 'inhouse']); 
+        
+        
+        Route::group([
+            'prefix' => 'statistics',
+        ], function (){
+            Route::any('/workdays', [KpiStatController::class, 'workdays']);
+        });
 
     });
 
