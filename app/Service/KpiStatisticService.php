@@ -380,60 +380,7 @@ class KpiStatisticService
      */
     public function fetchQuartalPremiums(Request $request)
     {
-        $quartalPremiums = $this->getQuartalPremiums($request);
-        $profileGroupData = [];
-        $positionData     = [];
-        $userData         = [];
-
-        foreach ($quartalPremiums as $quartalPremium)
-        {
-            if ($quartalPremium->targetable_type == self::USER)
-            {
-                $userData[] = User::with([
-                    'statistics' => fn ($statistic) => $statistic->whereBetween('date', [$quartalPremium->from, $quartalPremium->to])
-                ])->where('id', $quartalPremium->targetable_id)->first();
-            }
-
-            if ($quartalPremium->targetable_type == self::PROFILE_GROUP)
-            {
-                $profileGroupData[] = ProfileGroup::with(['users.statistics']);
-            }
-        }
-    }
-
-    private function getProfileGroupQp($groupIds, $request)
-    {
-        $userId = $request->user_id ?? null;
-        $month  = $request->month ?? null;
-        $year   = $request->year ?? null;
-
-        $qp = QuartalPremium::query()->whereIn('id', $groupIds)->get();
-    }
-
-    private function getIds($ids)
-    {
-        return array_map(function ($data) {
-            return $data['id'];
-        }, $ids);
-    }
-
-    private function getQuartalPremiumTargetData($quartalPremium, $request)
-    {
-        $userId = $request->user_id ?? null;
-
-        $user = $quartalPremium->targetable_type::when($quartalPremium->targetable_type == self::USER,
-            fn ($user) => $user->with([
-                'statistics' => fn ($statistic) => $statistic->whereBetween('date', [$quartalPremium->from, $quartalPremium->to])
-                    ->where('activity_id', $quartalPremium->activity_id)
-            ])
-        )->when(in_array($quartalPremium->targetable_type, [self::PROFILE_GROUP, self::POSITION]),
-            fn ($model) => $model->with([
-                'users.statistics' => fn ($statistic) => $statistic->whereBetween('date', [$quartalPremium->from, $quartalPremium->to])
-                    ->where('activity_id', $quartalPremium->activity_id)
-            ])
-        )->where('id', $quartalPremium->targetable_id)->first();
-
-        return $user;
+        //
     }
 
     private function getQuartalPremiums(Request $request)
@@ -703,9 +650,9 @@ class KpiStatisticService
      */
     public function userWorkdays(Request $request): array
     {
-        $filters = $request->input('filters') ?? null;
-        $users = $this->getUserProfileGroup($filters);
+        $filters = $request->input('filters') ?? ['data_from' => ['year' => Carbon::now()->year, 'month' => Carbon::now()->month]];
 
+        $users = $this->getUserProfileGroup($filters);
         $result = [];
 
         foreach ($users as $user)
@@ -714,19 +661,32 @@ class KpiStatisticService
                 continue;
             }
 
-            $date = Carbon::createFromFormat('Y-m-d H:i:s', $user->applied);
+            $userAppliedDate   = Carbon::createFromFormat('Y-m-d H:i:s', $user->applied);
             $ignore = $user->working_day_id == 1 ? [6,0] : [0];
-            $userWorkDays = $this->workdays($date->year, $date->month, $date->day, $ignore);
-            $workdaysInMonth = workdays($date->year, $date->month, $ignore);
+            $userWorkDays    = $this->workdays($userAppliedDate->year, $userAppliedDate->month, $userAppliedDate->day, $ignore);
+            $workdaysInMonth = workdays($filters['data_from']['year'], $filters['data_from']['month'], $ignore);
 
-            $result[] = [
-                'user_id'           => $user->user_id,
-                'applied_at'        => $user->applied,
-                'user_work_days'    => $userWorkDays,
-                'workdays_in_month' => $workdaysInMonth,
-                'user_plan'         => $user->full_time == 1 ? $userWorkDays * $user->plan : $userWorkDays * $user->plan / 2,
-                'total_plan'        => $workdaysInMonth * $user->plan
-            ];
+            if ($userAppliedDate->year == $filters['data_from']['year'] && $userAppliedDate->month == $filters['data_from']['month'])
+            {
+                $result[] = [
+                    'user_id'           => $user->user_id,
+                    'applied_at'        => $user->applied,
+                    'user_work_days'    => $userWorkDays,
+                    'workdays_in_month' => $workdaysInMonth,
+                    'user_plan'         => $user->full_time == 1 ? $userWorkDays * $user->plan : $userWorkDays * $user->plan / 2,
+                    'total_plan'        => $workdaysInMonth * $user->plan
+                ];
+            }else{
+
+                $result[] = [
+                    'user_id'           => $user->user_id,
+                    'applied_at'        => $user->applied,
+                    'user_work_days'    => $workdaysInMonth,
+                    'workdays_in_month' => $workdaysInMonth,
+                    'user_plan'         => $user->full_time == 1 ? $workdaysInMonth * $user->plan : $workdaysInMonth * $user->plan / 2,
+                    'total_plan'        => $workdaysInMonth * $user->plan
+                ];
+            }
         }
 
         return $result;
@@ -741,11 +701,8 @@ class KpiStatisticService
         return User::query()
             ->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->join('group_user as gu', 'gu.user_id', '=', 'users.id')
-            ->join('kpis as kp', fn ($kp) => $kp->on('kp.targetable_id', '=', 'gu.group_id')->where('kp.targetable_type', '=', 'App\ProfileGroup'))
+            ->join('kpis as kp', fn ($kp) => $kp->on('kp.targetable_id', '=', 'gu.group_id')->where('kp.targetable_type', '=', self::PROFILE_GROUP))
             ->join('kpi_items as ki', 'ki.kpi_id', '=', 'kp.id')
-            ->when(isset($filters['data_from']), function ($user) use ($filters) {
-                $user->whereYear('ud.applied', $filters['data_from']['year'])->whereMonth('ud.applied', $filters['data_from']['month']);
-            })
             ->get();
     }
     /**
