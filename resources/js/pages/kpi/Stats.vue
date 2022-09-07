@@ -10,11 +10,13 @@
             </div>
             <super-filter
                 :groups="groups"
-                @search-text-changed="onSearch"
                 @apply="fetchData"
             />
-            <span class="ml-2"> 
+            <span class="ml-2" v-if="items"> 
                 Найдено: {{ items.length }}
+            </span>
+            <span class="ml-2" v-else> 
+                Найдено: 0
             </span>
         </div>
 
@@ -30,8 +32,11 @@
     />
 
     <t-stats-bonus
+        :items="page_items"
         :groups="bonus_groups"
+        :group_names="groups"
         v-if="s_type_main == 2"
+        :key="bonus_groups"
     />
 
     <!-- pagination -->
@@ -88,9 +93,9 @@ export default {
             all_items: [],
             page_items: [],
             groups: {},
-            bonus_groups:{},
             activities: [],
             bonus_items: [],
+            bonus_groups: []
         }
     },
 
@@ -108,29 +113,10 @@ export default {
         fetchData(filters) {
             let loader = this.$loading.show();
             this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
-            if(this.s_type_main == 2){
-                axios.get('/statistics/bonuses').then(response => {
-                    //console.log(response.data);
-                    // items
-                    this.bonus_groups = response.data.groups;
-                    
-                    /*this.items = response.data.items;
-                    this.activities = response.data.activities;
-                    this.groups = response.data.groups;
-
-                    // paginate
-                    this.page_items = this.items.slice(0, this.pageSize);
-                    */
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    alert(error)
-                });
-            }else{
+            if(this.s_type_main == 1){
                 axios.post('/statistics/kpi', {
                     filters: filters 
                 }).then(response => {
-                    console.log(response.data);
                     // items
                     this.items = response.data.items;
                     this.activities = response.data.activities;
@@ -144,12 +130,26 @@ export default {
                     loader.hide()
                     alert(error)
                 });
-            }
+            }else if(this.s_type_main == 2){
+                axios.get('/statistics/bonuses').then(response => {
+                    this.bonus_groups = response.data.groups;
+                    this.bonus_groups = this.bonus_groups.map(res=> ({...res, expanded: false}));
+                    for(let i = 0; i < this.bonus_groups.length; i++){
+                        this.bonus_groups[i].users = this.bonus_groups[i].users.map(res=> ({...res, expanded: false, totals: {
+                                quantity: 0,
+                                sum:0,
+                                amount:0
+                            }
+                        }));
+                    }
+                    loader.hide();
+                }).catch(error => {
+                    loader.hide();
+                    alert(error);
+                });
+            }        
         },
 
-        onSearch(asd) {
-            console.log(asd)
-        },
     } 
 }
 </script>
