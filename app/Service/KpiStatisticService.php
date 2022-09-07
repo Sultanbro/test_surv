@@ -401,8 +401,10 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public function fetchKpis(array $filters) : array
+    public function fetchKpis(Request $request) : array
     {
+        $filters = $request->filters;
+        
         /**
          * filters
          *
@@ -422,6 +424,9 @@ class KpiStatisticService
             $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
         }
 
+        $a = $this->userWorkdays($request);
+
+        dd(collect($a)->groupBy('user_id'));
 
         $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
 
