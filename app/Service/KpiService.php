@@ -155,6 +155,12 @@ class KpiService
         $ids = [];
         foreach ($items as $item)
         {
+            // if source is no_source 
+            // then activity also zero
+            if($item['source'] == 0) $item['activity_id'] = 0;
+
+
+            // create
             $kpi_item = KpiItem::create([
                 'kpi_id'        => $kpiId,
                 'name'          => $item['name'],
@@ -186,11 +192,17 @@ class KpiService
         {
             $item['kpi_id'] = $id;
             
-            unset($item['source']);
+           
             unset($item['group_id']);
             unset($item['sum']);
             unset($item['percent']);
             
+            // if source is no_source 
+            // then activity also zero
+            if($item['source'] == 0) $item['activity_id'] = 0;
+
+            unset($item['source']);
+
             if($item['id'] == 0) {
 
                 /**
