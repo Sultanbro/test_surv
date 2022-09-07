@@ -712,8 +712,8 @@ class KpiStatisticService
                     'user_work_days'    => $userWorkDays,
                     'workdays_in_month' => $workdaysInMonth,
                     'user_plan'         => $user->full_time == 1 ? $userWorkDays * $user->plan : $userWorkDays * $user->plan / 2,
-                    'total_plan'        => $workdaysInMonth * $user->plan,
-                    'activity_weekdays' => $user->weekdays
+                    'workdays'          => $user->working_day_id == 1 ? 5 : 6,
+                    'weekdays'          => $user->weekdays
                 ];
             }else{
                 $result[] = [
@@ -723,8 +723,8 @@ class KpiStatisticService
                     'user_work_days'    => $workdaysInMonth,
                     'workdays_in_month' => $workdaysInMonth,
                     'user_plan'         => $user->full_time == 1 ? $workdaysInMonth * $user->plan : $workdaysInMonth * $user->plan / 2,
-                    'total_plan'        => $workdaysInMonth * $user->plan,
-                    'activity_weekdays' => $user->weekdays
+                    'workdays'          => $user->working_day_id == 1 ? 5 : 6,
+                    'weekdays'          => $user->weekdays
                 ];
             }
         }
