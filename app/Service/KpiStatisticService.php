@@ -380,7 +380,39 @@ class KpiStatisticService
      */
     public function fetchQuartalPremiums(Request $request)
     {
-        //
+        $quartalPremiums = $this->getQuartalPremiums($request);
+        $usersId         = [];
+        $profileGroupsId = [];
+        $positionsId     = [];
+
+        foreach ($quartalPremiums as $quartalPremium)
+        {
+            if ($quartalPremium->targetable_type == self::USER)
+            {
+                $usersId[] = $quartalPremium->targetable_id;
+            }
+
+            if ($quartalPremium->targetable_type == self::PROFILE_GROUP)
+            {
+                $profileGroupsId[] = $quartalPremium->id;
+            }
+
+            if ($quartalPremium->targetable_type == self::POSITION)
+            {
+                $positionsId[] = $quartalPremium->id;
+            }
+        }
+
+        return [
+            self::USER => $this->getUsersQp($usersId)
+        ];
+    }
+
+    private function getUsersQp($ids)
+    {
+        return User::query()->with(['statistics' => function($statistic) {
+            dd($statistic->select('activity_id', 'user_id', DB::raw("SUM(value)"))->groupBy('activity_id', 'user_id')->get());
+        }])->whereIn('id', $ids)->get();
     }
 
     private function getQuartalPremiums(Request $request)
@@ -696,6 +728,7 @@ class KpiStatisticService
         $filters = $request->input('filters') ?? ['data_from' => ['year' => Carbon::now()->year, 'month' => Carbon::now()->month]];
 
         $users = $this->getUserProfileGroup($filters);
+
         $result = [];
 
         foreach ($users as $user) {
@@ -722,7 +755,8 @@ class KpiStatisticService
                     'user_work_days'    => $userWorkDays,
                     'workdays_in_month' => $workdaysInMonth,
                     'user_plan'         => $user->full_time == 1 ? $userWorkDays * $user->plan : $userWorkDays * $user->plan / 2,
-                    'total_plan'        => $workdaysInMonth * $user->plan
+                    'workdays'          => $user->working_day_id == 1 ? 5 : 6,
+                    'weekdays'          => $user->weekdays
                 ];
             }else{
                 $result[] = [
@@ -732,7 +766,8 @@ class KpiStatisticService
                     'user_work_days'    => $workdaysInMonth,
                     'workdays_in_month' => $workdaysInMonth,
                     'user_plan'         => $user->full_time == 1 ? $workdaysInMonth * $user->plan : $workdaysInMonth * $user->plan / 2,
-                    'total_plan'        => $workdaysInMonth * $user->plan
+                    'workdays'          => $user->working_day_id == 1 ? 5 : 6,
+                    'weekdays'          => $user->weekdays
                 ];
             }
         }
@@ -751,6 +786,7 @@ class KpiStatisticService
             ->join('group_user as gu', 'gu.user_id', '=', 'users.id')
             ->join('kpis as kp', fn ($kp) => $kp->on('kp.targetable_id', '=', 'gu.group_id')->where('kp.targetable_type', '=', self::PROFILE_GROUP))
             ->join('kpi_items as ki', 'ki.kpi_id', '=', 'kp.id')
+            ->join('activities as a', 'ki.activity_id', '=', 'a.id')
             ->get();
     }
     /**
