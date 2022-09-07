@@ -5,6 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -79,6 +80,11 @@ class User extends Authenticatable implements Authorizable
         'phone_3',
         'phone_4',
     ];
+
+    public function groupKpis()
+    {
+        return $this->hasManyThrough(ProfileGroup::class, Kpi::class);
+    }
 
     /**
      * @return BelongsToMany
@@ -213,7 +219,10 @@ class User extends Authenticatable implements Authorizable
         return $applied_from;
     }
 
-    public function userDescription()
+    /**
+     * @return HasOne
+     */
+    public function description(): HasOne
     {
        return $this->hasOne('App\UserDescription', 'user_id', 'id');
     } 
