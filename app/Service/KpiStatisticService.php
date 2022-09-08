@@ -293,8 +293,8 @@ class KpiStatisticService
     {
         $bonuses         = $this->getBonuses($request);
         $profileGroupIds = [];
-        $userIds         = [];
-        $positionIds     = [];
+        //$userIds         = [];
+        //$positionIds     = [];
 
         foreach ($bonuses as $bonus)
         {
@@ -302,20 +302,20 @@ class KpiStatisticService
             {
                 $profileGroupIds[] = $bonus->targetable_id;
             }
-            if ($bonus->targetable_type == self::POSITION)
+            /*if ($bonus->targetable_type == self::POSITION)
             {
                 $positionIds[] = $bonus->targetable_id;
             }
             if ($bonus->targetable_type == self::USER)
             {
                 $userIds[] = $bonus->targetable_id;
-            }
+            }*/
         }
 
          return [
             'groups' => $this->getProfileGroupBonus($profileGroupIds, $request) ?? null,
-            'positions' => $this->getPositionBonus($positionIds, $request) ?? null,
-            'users' => $this->getUserBonus($userIds, $request) ?? null
+            //'positions' => $this->getPositionBonus($positionIds, $request) ?? null,
+            //'users' => $this->getUserBonus($userIds, $request) ?? null
         ];
     }
 
