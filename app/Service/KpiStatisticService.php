@@ -293,8 +293,8 @@ class KpiStatisticService
     {
         $bonuses         = $this->getBonuses($request);
         $profileGroupIds = [];
-        //$userIds         = [];
-        //$positionIds     = [];
+        $userIds         = [];
+        $positionIds     = [];
 
         foreach ($bonuses as $bonus)
         {
@@ -302,20 +302,20 @@ class KpiStatisticService
             {
                 $profileGroupIds[] = $bonus->targetable_id;
             }
-            /*if ($bonus->targetable_type == self::POSITION)
+            if ($bonus->targetable_type == self::POSITION)
             {
                 $positionIds[] = $bonus->targetable_id;
             }
             if ($bonus->targetable_type == self::USER)
             {
                 $userIds[] = $bonus->targetable_id;
-            }*/
+            }
         }
 
          return [
             'groups' => $this->getProfileGroupBonus($profileGroupIds, $request) ?? null,
-            //'positions' => $this->getPositionBonus($positionIds, $request) ?? null,
-            //'users' => $this->getUserBonus($userIds, $request) ?? null
+            'positions' => $this->getPositionBonus($positionIds, $request) ?? null,
+            'users' => $this->getUserBonus($userIds, $request) ?? null
         ];
     }
 
@@ -619,7 +619,9 @@ class KpiStatisticService
                 $this->takeCellValue(   $_item, $date, $item['fact']);
                 $this->takeRentability( $_item, $date, $item['fact']);
                 $this->takeUpdatedValue($_item, $date, $item['fact'], $user['id']);
-               
+                
+                $item['fact'] = round($item['fact'], 2);
+                $item['avg'] = round($item['avg'], 2);
                 // plan
 
                 $item['full_time'] = $user['full_time'];
@@ -673,7 +675,7 @@ class KpiStatisticService
                 ->first();
            
             if($query) {
-                $item['fact'] = $query->fact ?? 0;
+                $item['fact'] = round($query->fact, 2) ?? 0;
                 $item['avg'] = $query->avg ?? 0;
                 $item['records_count'] = $query->records_count ?? 0;
             }
@@ -701,6 +703,8 @@ class KpiStatisticService
                 $date->format('Y-m-d')
             );
         }
+
+        $fact = round($fact, 2);
     }
 
     /**
@@ -722,6 +726,8 @@ class KpiStatisticService
                 $date->format('Y-m-d')
             );
         }
+
+        $rent = round($rent, 2);
     }
 
     /**
@@ -751,6 +757,8 @@ class KpiStatisticService
         $has = $has->first();
 
         if($has) $fact = (float) $has->value;
+
+        $fact = round($fact, 2);
     }
    
 
