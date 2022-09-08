@@ -78,6 +78,11 @@ class KpiStatisticService
     const POSITION = 'App\Position';
 
     /**
+     * Workdays for kpi_items
+     */
+    public $workdays;
+
+    /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
      * @param Request $request
      * @param User $user
@@ -456,11 +461,12 @@ class KpiStatisticService
             $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
         }
 
-        $a = $this->userWorkdays($request);
-
-        dd(collect($a)->groupBy('user_id'));
-
+        
         $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
+        
+        
+        $this->workdays = collect($this->userWorkdays($request));
+
 
         /**
          * get kpis
@@ -504,9 +510,13 @@ class KpiStatisticService
     }
 
     /**
-     * helper for fetchKpis()
+     * Helper for fetchKpis()
      */
-    private function getUsersForKpi(Kpi $kpi, $date, $user_id = 0)
+    private function getUsersForKpi(
+        Kpi $kpi,
+        Carbon $date,
+        int $user_id = 0
+    ) : array
     {
         // check target exists
         if(!$kpi->target) return [];
@@ -528,6 +538,7 @@ class KpiStatisticService
         // Position::class
         if($type == 3) $_user_ids = [];
 
+        
         // get users with user stats
         $_users = $this->getUserStats($kpi, $_user_ids, $date);
 
@@ -544,7 +555,7 @@ class KpiStatisticService
    
 
     /**
-     * create final users array
+     * Create final users array
      */
     private function connectKpiWithUserStats(
         Kpi $kpi,
@@ -561,8 +572,6 @@ class KpiStatisticService
         // fill users array
         $users = [];
 
-        $cell_activities = Activity::withTrashed()->where('view', Activity::VIEW_CELL)->get();
-
         foreach ($_users as $key => $user) {
        
             $kpi_items = [];
@@ -571,68 +580,56 @@ class KpiStatisticService
 
                 // to array because object changes every loop
                 $item = $_item->toArray();
-
+                
                 // check user stat exists
                 $exists = collect($user['items'])
-                    ->where('activity_id', $item['activity_id'])
-                    ->first();
+                        ->where('activity_id', $item['activity_id'])
+                        ->first();
 
                 // assign keys
                 if($exists) {
-                    $item['fact'] = $exists->fact;
-                    $item['avg'] = $exists->avg;
+                    $item['fact']          = $exists->fact;
+                    $item['avg']           = $exists->avg;
                     $item['records_count'] = $exists->records_count;
-                    $item['applied'] = $exists->applied;
-                    $item['days'] = $exists->days;
-                    $item['registered'] = $exists->registered_days;
+                    $item['days']          = $exists->days;
+                    $item['registered']    = $exists->registered_days;
+                    $item['applied']       = $exists->applied;
                 } else {
-                    $item['fact'] = 0;
-                    $item['avg'] = 0;
+                    $item['fact']          = 0;
+                    $item['avg']           = 0;
                     $item['records_count'] = 0;
-                    $item['applied'] = null;
-                    $item['days'] = 0;
-                    $item['registered'] = 0;
+                    $item['days']          = 0;
+                    $item['registered']    = 0;
+                    $item['applied']       = null;
                 }   
 
-                /**
-                 * if value is from all group
-                 */
-                if($_item->common == 1) {
-                    $query = UserStat::selectRaw("
-                            SUM(value) as fact,
-                            AVG(value) as avg,
-                            COUNT(value) as records_count,
-                            activity_id,
-                            date
-                        ")
-                        ->whereMonth('date', $date->month)
-                        ->whereYear('date', $date->year)
-                        ->where('activity_id', $_item->activity_id)
-                        ->first();
-                   
-                    if($query) {
-                        $item['fact'] = $query->fact ?? 0;
-                        $item['avg'] = $query->avg ?? 0;
-                        $item['records_count'] = $query->records_count ?? 0;
-                    }
-                    
-                }
-                
-                //  take cell value
-                $item['fact'] = $this->takeCellValue($_item, $date, $item['fact']);
+                //  take another activity values
+                $item['fact'] = $item['fact'] ?? 0;
+                $this->takeCommonValue($_item, $date, $item);
+                $this->takeCellValue(  $_item, $date, $item['fact']);
+                $this->takeRentability($_item, $date, $item['fact']);
                
                 // plan
-                $item['plan'] = $_item->activity ? $_item->activity->daily_plan : 0;
-                $item['workdays'] = $_item->activity && $_item->activity->weekdays != 0 ?  $workdays[(int) $_item->activity->weekdays] : $workdays[5];
+
                 $item['full_time'] = $user['full_time'];
+                $item['daily_plan'] = (float)$_item->plan;
+                $item['plan'] = $_item->plan;
+                $item['workdays'] = $workdays[6];
 
-
+               
+                if($_item->activity) {
+                    $has_workdays = $this->workdays->where('user_id', $user['id'])
+                                    ->where('activity_id', $_item->activity->id)
+                                    ->first();
+                    if($has_workdays) $item['workdays']  = $has_workdays['user_work_days'];
+                } 
+            
                 $kpi_items[] = $item;
             }
-
+            
             $user['items'] = $kpi_items;
 
-
+       
             $users[] = $user;
         }
 
@@ -640,19 +637,88 @@ class KpiStatisticService
     }
 
     /**
+     * If value is from all group
+     * take common value made by group
+     * 
+     * @param $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * 
+     * @return array
+     */
+    private function takeCommonValue($kpi_item, Carbon $date, array &$item) : array
+    {
+        if($kpi_item->common == 1) {
+            $query = UserStat::selectRaw("
+                    SUM(value) as fact,
+                    AVG(value) as avg,
+                    COUNT(value) as records_count,
+                    activity_id,
+                    date
+                ")
+                ->whereMonth('date', $date->month)
+                ->whereYear('date', $date->year)
+                ->where('activity_id', $kpi_item->activity_id)
+                ->first();
+           
+            if($query) {
+                $item['fact'] = $query->fact ?? 0;
+                $item['avg'] = $query->avg ?? 0;
+                $item['records_count'] = $query->records_count ?? 0;
+            }
+            
+        }
+
+        return $item;
+    }
+
+    /**
      * take cell value from analytics
      * for kpi item
+     * 
+     * @param $kpi_item
+     * @param Carbon $date
+     * @param float &$fact
+     * 
+     * @return float
      */
-    private function takeCellValue($item, $date, $fact) {
-        if($item->activity && $item->activity->view == Activity::VIEW_CELL) {
+    private function takeCellValue($kpi_item, Carbon $date, float &$fact) : float
+    {
+        if($kpi_item->activity 
+        && $kpi_item->activity->view == Activity::VIEW_CELL) {
             $fact = AnalyticStat::getCellValue(
-                $item->activity->group_id,
-                $item->cell,
+                $kpi_item->activity->group_id,
+                $kpi_item->cell,
                 $date->format('Y-m-d')
             );
         }
         return $fact;
     }
+
+    /**
+     * take rentability value from analytics
+     * for kpi item
+     * 
+     * @param $kpi_item
+     * @param Carbon $date
+     * @param float &$fact
+     * 
+     * @return float
+     */
+    private function takeRentability($kpi_item, Carbon $date, float &$rent) : float
+    {
+        if($kpi_item->activity
+        && $kpi_item->activity->view == Activity::VIEW_RENTAB) {
+            $rent = AnalyticStat::getRentability(
+                $kpi_item->activity->group_id, 
+                $date->format('Y-m-d')
+            );
+        }
+
+        return $rent;
+    }
+
+   
 
     /**
      * get users with user stats
@@ -730,7 +796,9 @@ class KpiStatisticService
      */
     public function userWorkdays(Request $request): array
     {
-        $filters = $request->input('filters') ?? ['data_from' => ['year' => Carbon::now()->year, 'month' => Carbon::now()->month]];
+        $default_date = ['year' => Carbon::now()->year, 'month' => Carbon::now()->month];
+        $filters = $request->input('filters') ?? ['data_from' => $default_date];
+        if(!array_key_exists('data_from', $filters)) $filters['data_from'] = $default_date;
 
         $users = $this->getUserProfileGroup($filters);
 
@@ -792,6 +860,7 @@ class KpiStatisticService
             ->join('kpis as kp', fn ($kp) => $kp->on('kp.targetable_id', '=', 'gu.group_id')->where('kp.targetable_type', '=', self::PROFILE_GROUP))
             ->join('kpi_items as ki', 'ki.kpi_id', '=', 'kp.id')
             ->join('activities as a', 'ki.activity_id', '=', 'a.id')
+            ->where('ud.is_trainee', 0)
             ->get();
     }
     /**

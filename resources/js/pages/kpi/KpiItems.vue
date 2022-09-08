@@ -277,14 +277,14 @@ export default {
         toggle() {
             this.show_description = false;
         },
-        showDescription(){
+        showDescription(){ 
             this.show_description = !this.show_description;
-        },
+        }, 
         recalc() {
             this.items.forEach(el => {
-                if([1,3,5].includes(el.method) && !this.kpi_page) {
-                    let plan = el.activity != null && el.activity !== undefined ? numberize(el.activity.daily_plan) : 0;
-                    el.plan = plan * numberize(el.workdays);
+                console.log(el)
+                if([1,3,5].includes(el.method) && !this.kpi_page && el.common != 1 && el.source == 1) {
+                    el.plan = el.daily_plan * numberize(el.workdays);
                 }
                 el.percent = calcCompleted(el);
                 el.sum = calcSum(el,

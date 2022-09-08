@@ -139,6 +139,7 @@ export default {
                     // paginate
                     this.page_items = this.items.slice(0, this.pageSize);
 
+                    console.log(this.page_items)
                     loader.hide()
                 }).catch(error => {
                     loader.hide()
