@@ -425,6 +425,7 @@ class KpiStatisticService
                         'from'  => $quartalPremium->from,
                         'to'    => $quartalPremium->to,
                         'sum'   => $quartalPremium->sum,
+                        'fact'  => $user->fact
                     ]
                 ];
             }
