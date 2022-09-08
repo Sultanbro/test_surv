@@ -22,6 +22,7 @@ use App\Models\Analytics\UserStat;
 use App\Models\Analytics\UpdatedUserStat;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticStat;
+use App\Models\History;
 
 class KpiStatisticService
 {
@@ -84,10 +85,14 @@ class KpiStatisticService
     public $workdays;
 
     /**
-     * Workdays for kpi_items
+     * UpdatedUserStat for kpi_items
      */
     public $updatedValues;
 
+    /**
+     * Daily plan from histories for kpi_items
+     */
+    public $dailyPlans;
 
     /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
@@ -447,6 +452,7 @@ class KpiStatisticService
      */
     public function fetchKpis(Request $request) : array
     {
+       
         $filters = $request->filters;
         
         /**
@@ -481,16 +487,21 @@ class KpiStatisticService
 
         /**
          * get kpis
-         */
+         */ 
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::query()
             //->withTrashed()
-            ->with('items.activity');
+            ->with([
+                'items.histories' => function($query) use ($last_date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+                },
+                'items.activity'
+            ]);
 
         if($user_id != 0) {
             $user = User::with('groups')->find($user_id);
             $groups = $user->groups->pluck('id')->toArray();
-            //if($user_id == 16471)dd($kpis->toArray());
 
             $kpis->where(function($query) use ($user_id) {
                     $query->where('targetable_id', $user_id)
@@ -503,14 +514,12 @@ class KpiStatisticService
         }
 
         $kpis = $kpis->get();
-
+        
         foreach ($kpis as $key => $kpi) {
             $kpi->kpi_items = [];
             $kpi->avg = 0; // avg percent from kpi_items' percent
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
         }
-
-        
 
         return [
             'items' => $kpis,
@@ -625,8 +634,15 @@ class KpiStatisticService
                 // plan
 
                 $item['full_time'] = $user['full_time'];
-                $item['daily_plan'] = (float)$_item->plan;
-                $item['plan'] = $_item->plan;
+                
+                $history = $_item->histories->first();
+                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+
+                $item['daily_plan'] = $has_edited_plan && array_key_exists('plan', $has_edited_plan)
+                    ? $has_edited_plan['plan']
+                    : (float)$_item->plan;
+                
+                $item['plan'] = $item['daily_plan'];
                 $item['workdays'] = $workdays[6];
 
                
@@ -636,7 +652,7 @@ class KpiStatisticService
                                     ->first();
                     if($has_workdays) $item['workdays']  = $has_workdays['user_work_days'];
                 } 
-            
+                
                 $kpi_items[] = $item;
             }
             
@@ -811,7 +827,6 @@ class KpiStatisticService
 			->orderBy('last_name')
 			->get();
 
-          //  if(count($user_ids) == 1) dd($users);
         // group collection
 		$users = $users->groupBy('id')
 			->map(function($items) {
