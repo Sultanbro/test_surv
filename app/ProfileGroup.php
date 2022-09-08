@@ -56,7 +56,15 @@ class ProfileGroup extends Model
     // time_address
     CONST FROM_UCALLS = -1;
     CONST NOWHERE = 0;
-    
+
+    /**
+     * @return MorphMany
+     */
+    public function qpremium(): MorphMany
+    {
+        return $this->morphMany('App\Models\QuartalPremium', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
     /**
      * @return MorphMany
      */
