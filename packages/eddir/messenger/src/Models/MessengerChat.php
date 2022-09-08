@@ -54,7 +54,6 @@ class MessengerChat extends Model
      * @param User $user
      *
      * @return int
-     * @deprecated
      */
     public function getUnreadMessagesCount(User $user): int
     {

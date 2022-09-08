@@ -10,11 +10,13 @@
             </div>
             <super-filter
                 :groups="groups"
-                @search-text-changed="onSearch"
                 @apply="fetchData"
             />
-            <span class="ml-2"> 
+            <span class="ml-2" v-if="items"> 
                 Найдено: {{ items.length }}
+            </span>
+            <span class="ml-2" v-else> 
+                Найдено: 0
             </span>
         </div>
 
@@ -26,6 +28,15 @@
         :groups="groups"
         :items="page_items"
         :editable="true"
+        v-if="s_type_main == 1"
+    />
+
+    <t-stats-bonus
+        :items="page_items"
+        :groups="bonus_groups"
+        :group_names="groups"
+        v-if="s_type_main == 2"
+        :key="bonus_groups"
     />
 
     <!-- pagination -->
@@ -41,6 +52,7 @@
         }"
         @changePage="onChangePage"
         :pageSize="+pageSize"
+        v-if="s_type_main == 1"
     ></jw-pagination>
 
 </div>
@@ -73,14 +85,17 @@ export default {
 
     data() {
         return {
+            s_type_main: 1,
             active: 1,
             paginationKey: 1,
-            pageSize: 10,
+            pageSize: 20,
             items: [],
             all_items: [],
             page_items: [],
             groups: {},
             activities: [],
+            bonus_items: [],
+            bonus_groups: []
         }
     },
 
@@ -97,29 +112,45 @@ export default {
  
         fetchData(filters) {
             let loader = this.$loading.show();
+            this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
+            if(this.s_type_main == 1){
+                axios.post('/statistics/kpi', {
+                    filters: filters 
+                }).then(response => {
+                    // items
+                    this.items = response.data.items;
+                    this.activities = response.data.activities;
+                    this.groups = response.data.groups;
 
-            axios.post('/statistics/kpi', {
-                filters: filters 
-            }).then(response => {
-                
-                // items
-                this.items = response.data.items;
-                this.activities = response.data.activities;
-                this.groups = response.data.groups;
+                    // paginate
+                    this.page_items = this.items.slice(0, this.pageSize);
 
-                // paginate
-                this.page_items = this.items.slice(0, this.pageSize);
-
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
+                    console.log(this.page_items)
+                    loader.hide()
+                }).catch(error => {
+                    loader.hide()
+                    alert(error)
+                });
+            }else if(this.s_type_main == 2){
+                axios.get('/statistics/bonuses').then(response => {
+                    this.bonus_groups = response.data.groups;
+                    this.bonus_groups = this.bonus_groups.map(res=> ({...res, expanded: false}));
+                    for(let i = 0; i < this.bonus_groups.length; i++){
+                        this.bonus_groups[i].users = this.bonus_groups[i].users.map(res=> ({...res, expanded: false, totals: {
+                                quantity: 0,
+                                sum:0,
+                                amount:0
+                            }
+                        }));
+                    }
+                    loader.hide();
+                }).catch(error => {
+                    loader.hide();
+                    alert(error);
+                });
+            }        
         },
 
-        onSearch(asd) {
-            console.log(asd)
-        },
     } 
 }
 </script>

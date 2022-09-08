@@ -46,7 +46,7 @@ class QuartalPremiumService
         return [
             'items'      =>  $this->groupItems($items), 
             'activities' => Activity::get(),
-            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups'     => ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 

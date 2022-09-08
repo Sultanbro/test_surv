@@ -2,6 +2,7 @@
 
 namespace App\Models\Kpi;
 
+use App\Models\History;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -37,5 +38,14 @@ class KpiItem extends Model
     {
         return $this->belongsTo( 'App\Models\Analytics\Activity', 'activity_id', 'id')
             ->withTrashed();
+    }
+
+    /**
+     * 
+     */
+    public function histories()
+    {
+        return $this->morphMany(History::class, 'historable', 'reference_table', 'reference_id')
+            ->orderBy('created_at', 'desc');
     }
 }

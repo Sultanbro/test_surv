@@ -2,13 +2,13 @@
 <div class="kpi-pages">
     
     <b-tabs type="card" :value="active" @activate-tab="(n,p,e) => active = n">
-        <b-tab title="KPI" :key="0" card >
+        <b-tab title="KPI" :key="0" card v-if="access == 'edit'">
             <kpi v-if="active == 0"></kpi>
         </b-tab>
-        <b-tab title="Бонусы" :key="1" card >
+        <b-tab title="Бонусы" :key="1" card v-if="access == 'edit'">
             <bonuses v-if="active == 1"></bonuses>
         </b-tab>
-        <b-tab title="Квартальная премия" :key="2" card >
+        <b-tab title="Квартальная премия" :key="2" card v-if="access == 'edit'">
             <quartal-premium v-if="active == 2"></quartal-premium>
         </b-tab>
         <b-tab title="Статистика" :key="3" card>
@@ -28,6 +28,9 @@ export default {
         page: {
             type: String,
             default: 'kpi'
+        },
+        access: {
+            default: 'view'
         }
     },
     data() {

@@ -28,7 +28,7 @@
         <!-- item -->
         <div class="item">
             <div class="label">Что ищем</div>
-            <select v-model="s_type" class="form-control " @change="change('s_type')">
+            <select v-model="s_type" class="form-control " @change="change(s_type)">
                 <option v-for="key in Object.keys(s_types)" :key="key"
                     :value="key">
                     {{ s_types[key] }}
@@ -125,6 +125,7 @@ export default {
             data_from: {
                 month: new Date().getMonth() + 1,
                 year: new Date().getFullYear(),
+                s_type: 1,
             },
             created_at: {
                 variant: 0,
@@ -186,6 +187,7 @@ export default {
         },
 
         applyFilter() {
+            console.log(this.filters);
             this.$emit('apply', this.filters)
             this.show = false;
         },
@@ -198,6 +200,7 @@ export default {
                     this.filters.group_id = this.group_id
                 }
             }
+            this.data_from.s_type = field;
         },
 
         changeDate(field, prop) {

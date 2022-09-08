@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Service\KpiStatisticService;
 use App\Service\CalculateKpiService;
+use Illuminate\Http\Request;
 
 class SaveUserKpi extends Command
 {
@@ -98,18 +99,22 @@ class SaveUserKpi extends Command
         /**
          * Calc users kpi by order
          */
+
+        
         foreach ($users as $key => $user) {
 
             $this->line($key . ' '. $user->id);
 
             // fetch kpis of user
-            $repo = $this->repo->fetchKpis([
-                'data_from' => [
-                    'month' => Carbon::parse($date)->month,
-                    'year'  => Carbon::parse($date)->year,
-                ], 
-                'user_id'   => $user->id
-            ]);
+            $repo = $this->repo->fetchKpis(new Request([
+                'filters' => [
+                    'data_from' => [
+                        'month' => Carbon::parse($date)->month,
+                        'year'  => Carbon::parse($date)->year,
+                    ], 
+                    'user_id'   => $user->id
+                ]
+            ]));
 
             // save
             $this->updateSavedKpi([
@@ -131,7 +136,8 @@ class SaveUserKpi extends Command
         
         foreach ($kpis as $key => $kpi) {
             if(!isset($kpi['users'][0])) continue;
-           
+            
+  
             foreach ($kpi['users'][0]['items'] as $item) {
                
                 $workdays = $item['activity'] && $item['activity']['weekdays'] != 0
@@ -162,6 +168,8 @@ class SaveUserKpi extends Command
                     $kpi['completed_80'],
                     $kpi['completed_100']
                 );
+
+                dump($earned);
 
             }
         }

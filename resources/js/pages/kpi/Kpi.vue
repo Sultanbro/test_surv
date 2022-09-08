@@ -49,8 +49,9 @@
 
         <tbody>
 
-            <template v-for="(item, i) in page_items">
-                <tr :key="i">
+            <template v-for="(item, i) in page_items" >
+                <!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
+                <tr :key="i" > 
                     <td  @click="expand(i)" class="pointer">
                         <div class="d-flex px-2">
                             <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
@@ -317,7 +318,9 @@ export default {
         },
 
         addKpi() {
-            this.items.unshift(newKpi());
+            this.items.unshift(newKpi()); 
+            //this.page_items.unshift(newKpi());
+           // this.page_items = this.items.slice(0, this.pageSize);
             this.$toast.info('Добавлен KPI');
         },
 
@@ -334,14 +337,18 @@ export default {
 
                 item.items.every((el, i) => {
 
-                    share += Math.abs(el.share);
-
+                    if(!(el.deleted !== undefined && el.deleted)) share += Math.abs(el.share);
+ 
+                     
                     if(el.name.length <= 1) {
                         msg = 'Заполните название активности #' + (i+1);
                         return false;
                     }
 
-                    if(el.activity_id == 0 || el.activity_id == undefined) {
+                    if(
+                        (el.activity_id == 0 || el.activity_id == undefined) 
+                        && el.source != 0
+                    ) { 
                         msg = 'Выберите показатель #' + (i+1);
                         return false;
                     }
@@ -357,10 +364,10 @@ export default {
                 });
             }
             
-            
-            if(share > 100) {
-                msg = 'Доля активностей должна быть не более 100%';
-            }
+            // console.log(share) 
+            // if(share > 100) {
+            //     msg = 'Доля активностей должна быть не более 100%';
+            // }
             
             return msg;
         },
@@ -405,8 +412,6 @@ export default {
                 });
 
                 this.removeDeletedItems(item.items)
-                
-
 
                 this.$toast.info('KPI Сохранен');
                 loader.hide()
@@ -419,17 +424,23 @@ export default {
                 loader.hide()
                 alert(m)
             });
+
+
         },  
 
         removeDeletedItems(items) {
             let indexes = [];
+            let counter = 0;
             items.forEach((el, index) => {
                 if(el.deleted != undefined && el.deleted) {
                     indexes.push(index)
                 }
             });
-
-            indexes.forEach(index => items.splice(index, -1));
+            console.log(indexes)
+            indexes.forEach(index => {
+                items.splice(index-counter, 1);
+                counter++;
+            });
 
         },
 

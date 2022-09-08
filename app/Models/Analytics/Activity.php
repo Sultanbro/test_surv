@@ -75,10 +75,10 @@ class Activity extends Model
     /**
      * Sources
      */
-    const SOURCE_NO = 0; // без источника
     const SOURCE_GROUP = 1; // из показателей группы
     const SOURCE_BITRIX = 2; // из битрикса
     const SOURCE_AMOCRM = 3; // из амо
+    const SOURCE_LOCAL = 4; // другие
 
     public static function getMethod(int $method_id) {
         $methods = [

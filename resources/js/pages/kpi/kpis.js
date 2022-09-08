@@ -148,12 +148,10 @@ function calcCompleted(el) {
     let fact = numberize(el.fact)
     let avg = numberize(el.avg)
     let records_count = numberize(el.records_count)
-    let plan = el.activity != null && el.activity !== undefined ? numberize(el.activity.daily_plan) : 0;
+    let plan = el.plan;
     let workdays = numberize(el.workdays);
 
     if(plan <= 0) return 0;
-
-    if([1].includes(el.method)) plan = plan * workdays;
 
     if(el.full_time == 0) plan = plan / 2;
 
@@ -174,6 +172,9 @@ function calcCompleted(el) {
     }
 
     if(el.method == 5) {
+        console.log('method 5')
+        console.log('fact ' + fact)
+        console.log('plan ' + plan)
         res = fact - plan > 0 ? 100 : 0;
     }
 

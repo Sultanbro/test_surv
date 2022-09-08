@@ -863,6 +863,15 @@ export default {
                         personalBonuses += Number(item.test_bonus[tt.day]);
                         total += Number(item.test_bonus[tt.day]);
                     }
+
+                    if(item.fine[tt.day] !== null) {
+                        let fine_for_day = 0;
+                        item.fine[tt.day].forEach(el => {
+                            Object.values(el).forEach(fine_sum => fine_for_day += Number(fine_sum));
+                        })
+
+                        total -= Number(fine_for_day);
+                    }
   
                     daySalaries[tt.day] = Number(total) != 0
                         ? Number(total).toFixed(0)

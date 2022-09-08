@@ -68,7 +68,7 @@ class KpiStatController extends Controller
      */
     public function fetchKpis(Request $request): JsonResponse
     {
-        $response = $this->service->fetchKpis($request->filters);
+        $response = $this->service->fetchKpis($request);
 
         return response()->json($response);
     }
@@ -110,6 +110,7 @@ class KpiStatController extends Controller
     }
 
     /**
+     * API
      * @param Request $request
      * @return JsonResponse
      */

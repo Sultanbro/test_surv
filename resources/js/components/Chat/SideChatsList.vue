@@ -115,4 +115,6 @@ export default {
 .side-contacts-list::-webkit-scrollbar-button {
   display: none;
 }
+
+
 </style>
