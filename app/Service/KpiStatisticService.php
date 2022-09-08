@@ -19,6 +19,7 @@ use App\ProfileGroup;
 use App\Models\Kpi\KpiItem;
 use App\Models\Kpi\Kpi;
 use App\Models\Analytics\UserStat;
+use App\Models\Analytics\UpdatedUserStat;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticStat;
 
@@ -81,6 +82,12 @@ class KpiStatisticService
      * Workdays for kpi_items
      */
     public $workdays;
+
+    /**
+     * Workdays for kpi_items
+     */
+    public $updatedValues;
+
 
     /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
@@ -466,7 +473,11 @@ class KpiStatisticService
         
         
         $this->workdays = collect($this->userWorkdays($request));
-
+        $this->updatedValues = UpdatedUserStat::query()
+                            ->whereMonth('date', $date->month)
+                            ->whereYear('date', $date->year)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
 
         /**
          * get kpis
@@ -475,7 +486,6 @@ class KpiStatisticService
         $kpis = Kpi::query()
             //->withTrashed()
             ->with('items.activity');
-
 
         if($user_id != 0) {
             $user = User::with('groups')->find($user_id);
@@ -500,7 +510,7 @@ class KpiStatisticService
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
         }
 
-
+        
 
         return [
             'items' => $kpis,
@@ -559,8 +569,8 @@ class KpiStatisticService
      */
     private function connectKpiWithUserStats(
         Kpi $kpi,
-        $_users,
-        $date,
+        mixed $_users,
+        Carbon $date,
     ) : array
     {
 
@@ -605,9 +615,10 @@ class KpiStatisticService
 
                 //  take another activity values
                 $item['fact'] = $item['fact'] ?? 0;
-                $this->takeCommonValue($_item, $date, $item);
-                $this->takeCellValue(  $_item, $date, $item['fact']);
-                $this->takeRentability($_item, $date, $item['fact']);
+                $this->takeCommonValue( $_item, $date, $item);
+                $this->takeCellValue(   $_item, $date, $item['fact']);
+                $this->takeRentability( $_item, $date, $item['fact']);
+                $this->takeUpdatedValue($_item, $date, $item['fact'], $user['id']);
                
                 // plan
 
@@ -640,13 +651,13 @@ class KpiStatisticService
      * If value is from all group
      * take common value made by group
      * 
-     * @param $kpi_item
+     * @param KpiItem $kpi_item
      * @param Carbon $date
      * @param array &$item
      * 
      * @return array
      */
-    private function takeCommonValue($kpi_item, Carbon $date, array &$item) : array
+    private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
     {
         if($kpi_item->common == 1) {
             $query = UserStat::selectRaw("
@@ -668,8 +679,6 @@ class KpiStatisticService
             }
             
         }
-
-        return $item;
     }
 
     /**
@@ -682,7 +691,7 @@ class KpiStatisticService
      * 
      * @return float
      */
-    private function takeCellValue($kpi_item, Carbon $date, float &$fact) : float
+    private function takeCellValue(KpiItem $kpi_item, Carbon $date, float &$fact) : void
     {
         if($kpi_item->activity 
         && $kpi_item->activity->view == Activity::VIEW_CELL) {
@@ -692,20 +701,19 @@ class KpiStatisticService
                 $date->format('Y-m-d')
             );
         }
-        return $fact;
     }
 
     /**
      * take rentability value from analytics
      * for kpi item
      * 
-     * @param $kpi_item
+     * @param KpiItem $kpi_item
      * @param Carbon $date
      * @param float &$fact
      * 
      * @return float
      */
-    private function takeRentability($kpi_item, Carbon $date, float &$rent) : float
+    private function takeRentability(KpiItem $kpi_item, Carbon $date, float &$rent) : void
     {
         if($kpi_item->activity
         && $kpi_item->activity->view == Activity::VIEW_RENTAB) {
@@ -714,10 +722,36 @@ class KpiStatisticService
                 $date->format('Y-m-d')
             );
         }
-
-        return $rent;
     }
 
+    /**
+     * take cell value from analytics
+     * for kpi item
+     * 
+     * @param $kpi_item
+     * @param Carbon $date
+     * @param float &$fact
+     * @param int $user_id
+     * 
+     * @return float
+     */
+    private function takeUpdatedValue(
+        KpiItem $kpi_item,
+        Carbon $date,
+        float &$fact,
+        int $user_id
+    ) : void
+    {
+        $has = $this->updatedValues
+                ->where('user_id', $user_id)
+                ->where('kpi_item_id', $kpi_item->id);
+
+        if($kpi_item->activity_id != 0) $has = $has->where('activity_id', $kpi_item->activity_id);
+
+        $has = $has->first();
+
+        if($has) $fact = (float) $has->value;
+    }
    
 
     /**

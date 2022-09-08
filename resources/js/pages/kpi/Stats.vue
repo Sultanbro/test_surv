@@ -83,7 +83,7 @@ export default {
             s_type_main: 1,
             active: 1,
             paginationKey: 1,
-            pageSize: 10,
+            pageSize: 20,
             items: [],
             all_items: [],
             page_items: [],

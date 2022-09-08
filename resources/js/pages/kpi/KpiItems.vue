@@ -1,32 +1,6 @@
 <template>
 <div class="kpi-item">
 
-    <sidebar
-        title="Показатели"
-        :open="show_description"
-        @close="toggle()"
-        width="70%"
-    >
-        <p>Тут указывается какой показатель сотрудника нужно смотреть для выявления процента выполнения.</p>
-        <p>Первый select источник:</p>
-        <p><strong>- без источникa:</strong></p>
-        <p>руководитель сам будет ставить нужный коэффициент</p>
-        <p><strong>- из показателей отдела:&nbsp;</strong></p>
-        <p>берем данные из подробных таблиц в Аналитике отдела.</p>
-        <p>Появляются три selectа:</p>
-        <ul>
-        <li>выбираем отдел</li>
-        <li>выбираем показатель</li>
-        <li>выбор <em>Свой</em> или <em>Всего отдела</em>. Свой выберет только показатель пользователя, а Всего отдела - какой показатель сделал отдел.</li>
-        </ul>
-        <p>Если выбрать <em>ячейка из сводной</em> нужно будет указать название ячейки как в Excel.</p>
-        <p><strong>- из битрикса:</strong></p>
-        <p>Если в интеграции настроен <strong>Битрикс24</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из битрикса были связаны с Jobtron.</p>
-        <p><strong>- из amocrm:</strong></p>
-        <p>Если в интеграции настроен <strong>Amocrm</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из amocrm были связаны с Jobtron.</p>
-        <p><strong>- другие :</strong></p>
-        <p>разные показатели в Jobtron</p>
-    </sidebar>
     <table class="table table-inner">
         <thead>
             <tr>
@@ -160,7 +134,8 @@
                     <td class="text-center">{{ item.plan }} {{ item.unit }}</td>
                     <td class="text-center">{{ item.share }}</td>
                     <td class="text-center" v-if="editable">
-                        <input type="number" class="form-control" v-model="item.fact" min="0" />
+                        <input v-if="[1,3,5].includes(item.method)" type="number" class="form-control" v-model="item.fact" min="0" />
+                        <input v-else type="number" class="form-control" v-model="item.avg" min="0" />
                     </td>
                     <td class="text-center" v-else>
                         <!-- sum or avg by method -->
@@ -175,7 +150,34 @@
            
         </tbody>
     </table>
-      
+    
+    <sidebar
+        title="Показатели"
+        :open="show_description"
+        @close="toggle()"
+        width="70%"
+    >
+        <p>Тут указывается какой показатель сотрудника нужно смотреть для выявления процента выполнения.</p>
+        <p>Первый select источник:</p>
+        <p><strong>- без источникa:</strong></p>
+        <p>руководитель сам будет ставить нужный коэффициент</p>
+        <p><strong>- из показателей отдела:&nbsp;</strong></p>
+        <p>берем данные из подробных таблиц в Аналитике отдела.</p>
+        <p>Появляются три selectа:</p>
+        <ul>
+        <li>выбираем отдел</li>
+        <li>выбираем показатель</li>
+        <li>выбор <em>Свой</em> или <em>Всего отдела</em>. Свой выберет только показатель пользователя, а Всего отдела - какой показатель сделал отдел.</li>
+        </ul>
+        <p>Если выбрать <em>ячейка из сводной</em> нужно будет указать название ячейки как в Excel.</p>
+        <p><strong>- из битрикса:</strong></p>
+        <p>Если в интеграции настроен <strong>Битрикс24</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из битрикса были связаны с Jobtron.</p>
+        <p><strong>- из amocrm:</strong></p>
+        <p>Если в интеграции настроен <strong>Amocrm</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из amocrm были связаны с Jobtron.</p>
+        <p><strong>- другие :</strong></p>
+        <p>разные показатели в Jobtron</p>
+    </sidebar>
+
 </div>
 </template>
 
@@ -282,10 +284,17 @@ export default {
         }, 
         recalc() {
             this.items.forEach(el => {
-                console.log(el)
-                if([1,3,5].includes(el.method) && !this.kpi_page && el.common != 1 && el.source == 1) {
-                    el.plan = el.daily_plan * numberize(el.workdays);
-                }
+                
+                // if(
+                //     [1,3,5].includes(el.method) 
+                //     && !this.kpi_page
+                //     && el.common != 1
+                //     && el.source == 1
+                //     && el.activity != null
+                //     && el.activity.view != 7
+                // ) {
+                //     el.plan = el.daily_plan * numberize(el.workdays);
+                // }
                 el.percent = calcCompleted(el);
                 el.sum = calcSum(el,
                     {
