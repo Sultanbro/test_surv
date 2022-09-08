@@ -137,7 +137,7 @@
                         <input v-if="[1,3,5].includes(item.method)" type="number" class="form-control" v-model="item.fact" min="0" />
                         <input v-else type="number" class="form-control" v-model="item.avg" min="0" />
                     </td>
-                    <td class="text-center" v-else>
+                    <td class="text-center" v-else> 
                         <!-- sum or avg by method -->
                         <div v-if="[1,3,5].includes(item.method)">{{ item.fact }}</div>
                         <div v-else>{{ Number(item.avg).toFixed(2) }}</div>

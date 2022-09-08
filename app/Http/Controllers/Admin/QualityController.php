@@ -601,7 +601,7 @@ class QualityController extends Controller
 
         // save user_stats
         UserStat::saveQuality([
-            'date'     => Carbon::createFromDate($request->day, $request->month, $request->day)->format('Y-m-d'),
+            'date'     => Carbon::createFromDate($request->year, $request->month, $request->day)->format('Y-m-d'),
             'user_id'  => $request->user_id,
             'value'    => $request->total,
             'group_id' => $request->group_id,
