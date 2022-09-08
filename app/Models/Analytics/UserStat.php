@@ -16,6 +16,7 @@ use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Analytics\IndividualKpi;
 use App\Models\Kpi\Bonus;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserStat extends Model
 {
@@ -25,7 +26,12 @@ class UserStat extends Model
         'activity_id',
         'value',
     ];
- 
+
+    public function users(): BelongsTo
+    {
+        return $this->belongsTo('App\User', 'user_id');
+    }
+
     /**
      * get activities
      */
