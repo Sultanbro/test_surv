@@ -9,7 +9,7 @@
             <bonuses v-if="active == 1"></bonuses>
         </b-tab>
         <b-tab title="Квартальная премия" :key="2" card v-if="access == 'edit'">
-            <quartal-premium v-if="active == 2'"></quartal-premium>
+            <quartal-premium v-if="active == 2"></quartal-premium>
         </b-tab>
         <b-tab title="Статистика" :key="3" card>
             <stats v-if="active == 3"></stats>
