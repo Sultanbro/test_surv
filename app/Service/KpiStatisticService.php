@@ -687,16 +687,17 @@ class KpiStatisticService
                 //  take another activity values
                 $item['fact'] = $item['fact'] ?? 0;
                 $this->takeCommonValue( $_item, $date, $item);
-                $this->takeCellValue(   $_item, $date, $item['fact']);
-                $this->takeRentability( $_item, $date, $item['fact']);
+              
+                $this->takeCellValue(   $_item, $date, $item);
+                $this->takeRentability( $_item, $date, $item);
+                
+
                 $this->takeUpdatedValue($_item, $date, $item['fact'], $user['id']);
                 
-                $item['fact'] = round($item['fact'], 2);
-                $item['avg'] = round($item['avg'], 2);
-                // plan
 
+
+                // plan
                 $item['full_time'] = $user['full_time'];
-                
                 $history = $_item->histories->first();
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
 
@@ -751,7 +752,7 @@ class KpiStatisticService
                 ->whereYear('date', $date->year)
                 ->where('activity_id', $kpi_item->activity_id)
                 ->first();
-           
+          
             if($query) {
                 $item['fact'] = round($query->fact, 2) ?? 0;
                 $item['avg'] = $query->avg ?? 0;
@@ -767,22 +768,25 @@ class KpiStatisticService
      * 
      * @param $kpi_item
      * @param Carbon $date
-     * @param float &$fact
+     * @param array &$item
      * 
      * @return float
      */
-    private function takeCellValue(KpiItem $kpi_item, Carbon $date, float &$fact) : void
+    private function takeCellValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
     {
         if($kpi_item->activity 
         && $kpi_item->activity->view == Activity::VIEW_CELL) {
-            $fact = AnalyticStat::getCellValue(
+            $item['fact'] = AnalyticStat::getCellValue(
                 $kpi_item->activity->group_id,
                 $kpi_item->cell,
                 $date->format('Y-m-d')
             );
+
+            $item['fact'] = round($item['fact'], 2);
+            $item['avg'] = $item['fact'];
         }
 
-        $fact = round($fact, 2);
+       
     }
 
     /**
@@ -791,21 +795,23 @@ class KpiStatisticService
      * 
      * @param KpiItem $kpi_item
      * @param Carbon $date
-     * @param float &$fact
+     * @param array &$item
      * 
      * @return float
      */
-    private function takeRentability(KpiItem $kpi_item, Carbon $date, float &$rent) : void
+    private function takeRentability(KpiItem $kpi_item, Carbon $date, array &$item) : void
     {
         if($kpi_item->activity
         && $kpi_item->activity->view == Activity::VIEW_RENTAB) {
-            $rent = AnalyticStat::getRentability(
+            $item['fact'] = AnalyticStat::getRentability(
                 $kpi_item->activity->group_id, 
                 $date->format('Y-m-d')
             );
+
+            $item['fact'] = round($item['fact'], 2);
+            $item['avg'] = $item['fact'];
         }
 
-        $rent = round($rent, 2);
     }
 
     /**

@@ -83,6 +83,7 @@
                                                         :upper_limit="wrap_item.upper_limit"
                                                         :editable="editable"
                                                         :kpi_page="false"
+                                                        :date="date"
                                                         @recalced="countAvg"
                                                     />
                                                 </div>
@@ -123,7 +124,10 @@ export default {
         },
         editable: {
             default: false
-        } 
+        },
+        date: {
+            default: null
+        }
     },
 
     watch: {

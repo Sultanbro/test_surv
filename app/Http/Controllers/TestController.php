@@ -28,7 +28,24 @@ use App\Http\Controllers\IntellectController;
 class TestController extends Controller { 
  
 	public function test() {
+
+
+		$stats = UserStat::whereDate('date', '<=', '1900-01-01')
+			->get();
+
+			foreach ($stats as $key => $stat) {
+				$date = Carbon::parse($stat->date)->year(2022)->format('Y-m-d');
+				$stat->date = $date;
+				$stat->save();
+			}
 	
+
+
+
+		dd(AnalyticStat::getRentability(
+			63, 
+			'2022-09-01'
+		));
 		dd(AnalyticStat::getCellValue(
 			42,
 			'C20',

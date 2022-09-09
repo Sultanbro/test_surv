@@ -372,7 +372,8 @@
 </template>    
 <script>
 import {fields, newBonus} from "./bonuses.js";
-import {findModel, groupBy} from "./helpers.js";
+import {findModel, groupBy, sources} from "./helpers.js";
+
 export default {
     name: "Bonuses", 
     props: {
@@ -430,12 +431,7 @@ export default {
                 all: 'За все',
                 first: 'Первый кто достигнет',
             },
-            sources: {
-                0: 'без источника',
-                1: 'из показателей отдела',
-                2: 'из битрикса',
-                3: 'из амосрм',
-            },
+            sources: sources,
             non_editable_fields: [
                 'created_at',
                 'updated_at',

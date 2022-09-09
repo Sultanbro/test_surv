@@ -134,10 +134,10 @@
                     <td class="text-center">{{ item.plan }} {{ item.unit }}</td>
                     <td class="text-center">{{ item.share }}</td>
                     <td class="text-center" v-if="editable">
-                        <input v-if="[1,3,5].includes(item.method)" type="number" class="form-control" v-model="item.fact" min="0" />
-                        <input v-else type="number" class="form-control" v-model="item.avg" min="0" />
+                        <input v-if="[1,3,5].includes(item.method)" type="number" class="form-control" v-model="item.fact" min="0" @change="updateStat(i)" />
+                        <input v-else type="number" class="form-control" v-model="item.avg" min="0" @change="updateStat(i)" />
                     </td>
-                    <td class="text-center" v-else>
+                    <td class="text-center" v-else> 
                         <!-- sum or avg by method -->
                         <div v-if="[1,3,5].includes(item.method)">{{ item.fact }}</div>
                         <div v-else>{{ Number(item.avg).toFixed(2) }}</div>
@@ -183,6 +183,7 @@
 
 <script>
 import {newKpiItem, numberize, calcCompleted, calcSum} from "./kpis.js";
+import {sources, methods} from "./helpers.js";
 
 export default {
     name: "KpiItems", 
@@ -222,7 +223,10 @@ export default {
         },
         allow_overfulfillment: {
             default: false
-        }
+        },
+        date: {
+            default: null
+        },
     },
     watch: {
         items: {
@@ -255,8 +259,8 @@ export default {
     data() {
         return {
             active: 1,
-            methods: [],
-            sources: [],
+            methods: methods,
+            sources: sources,
             refreshItemsKey: 1,
             source_key: 1,
             show_description: false
@@ -329,30 +333,6 @@ export default {
         },
 
         fillSelectOptions() {
-            this.setMethods()
-            this.setSources()
-        },
-
-        setMethods() {
-            this.methods = {
-                1: 'сумма',
-                2: 'среднее значение',
-                3: 'сумма, не более',
-                4: 'среднее, не более',
-                5: 'сумма, не менее',
-                6: 'среднее, не менее',
-            };
-        },
-
-        setSources() {
-            this.sources = {
-                0: 'без источника',
-                1: 'вкладка аналитика',
-                2: 'из битрикса',
-                3: 'из амосрм',
-                4: 'другие',
-                5: 'вкладка табель',
-            }
         },
 
         groupBy(xs, key) {
@@ -388,9 +368,32 @@ export default {
 
         isCell(activity_id) {
             let i = this.activities.findIndex(el => el.id == activity_id);
-            if(i!=-1)console.log(this.activities[i].view);
-            console.log(i != -1 && this.activities[i].view == 7);
             return i != -1 && this.activities[i].view == 7;
+        },
+
+        updateStat(i) {
+            let loader = this.$loading.show();
+
+            const item = this.items[i]
+            const date = this.date != null
+                ? this.date
+                : formatDate(new Date().toISOString().substr(0, 10))
+                
+            const value = [1,3,5].includes(item.method) ? item.fact : item.avg
+
+            axios.post('/statistics/update-stat', {
+                user_id: this.kpi_id, 
+                kpi_item_id: item.id, 
+                activity_id: item.activity_id, 
+                value: value, 
+                date: date, 
+            }).then(response => {
+                this.$toast.success('Изменено');
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
         }
  
     } 

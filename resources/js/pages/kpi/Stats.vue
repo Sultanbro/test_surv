@@ -30,6 +30,7 @@
         :items="page_items"
         :editable="true"
         :searchText="searchText"
+        :date="date"
         v-if="s_type_main == 1"
     />
 
@@ -68,6 +69,8 @@
 </template>
 
 <script> 
+import {formatDate} from "./kpis.js";
+
 export default {
     name: "Stats", 
     props: {
@@ -103,6 +106,7 @@ export default {
             all_items: [],
             page_items: [],
             groups: {},
+            date: null,
             activities: [],
             bonus_items: [],
             bonus_groups: [],
@@ -130,6 +134,8 @@ export default {
         fetchData(filters) {
             let loader = this.$loading.show();
             this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
+            
+
             if(this.s_type_main == 1){
                 axios.post('/statistics/kpi', {
                     filters: filters 
@@ -141,6 +147,11 @@ export default {
 
                     // paginate
                     this.page_items = this.items.slice(0, this.pageSize);
+
+                    this.date = filters.data_from != undefined 
+                        ? new Date(filters.data_from.year, filters.data_from.month, 1).toISOString().substr(0, 10)
+                        : new Date().toISOString().substr(0, 10);
+                        
                     loader.hide()
                 }).catch(error => {
                     loader.hide()
