@@ -456,8 +456,15 @@ export default {
           "$refs.child.searchText",
           (new_value, old_value) => (this.searchText = new_value)
         );
+
     },
     methods: {
+        swapFields(){
+            let temp = this.fields[4];
+            let temp2 = this.fields[6];
+            this.fields[6] = temp;
+            this.fields[4] = temp2;
+        },
         expand(i) {
             this.page_items[i].expanded = !this.page_items[i].expanded
         },
@@ -526,6 +533,7 @@ export default {
                 }
             });
             this.fields = visible_fields;
+            this.swapFields();
         },
         addItem() {
             this.activeItem = newBonus()
