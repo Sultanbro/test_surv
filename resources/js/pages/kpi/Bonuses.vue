@@ -9,13 +9,17 @@
                     <span>Показывать:</span>
                     <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
                 </div>
-                <input 
+                <super-filter
+                    ref="child"
+                    :groups="groups"
+                />
+                <!--<input 
                     class="searcher mr-2 input-sm"
                     v-model="searchText"
                     type="text"
                     placeholder="Поиск по совпадениям..."
                     @keyup="onSearch"
-                >
+                >-->
                 <span class="ml-2"> 
                     Найдено: {{ items.length }}
                 </span>
@@ -41,7 +45,7 @@
                 
             </tr>
     
-            <template v-for="(page_item, p) in page_items">
+            <template v-for="(page_item, p) in page_items" v-if="page_item.name.includes(searchText) || searchText.length == 0">
                 <tr>
                     <td 
                         @click="expand(p)"
@@ -447,7 +451,11 @@ export default {
         this.addStatusToItems(); 
     },
     mounted() {
-        this.fetch()
+        this.fetch();
+        this.$watch(
+          "$refs.child.searchText",
+          (new_value, old_value) => (this.searchText = new_value)
+        );
     },
     methods: {
         expand(i) {

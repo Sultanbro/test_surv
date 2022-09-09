@@ -11,7 +11,7 @@
         </tr>
         <tr>
         </tr>
-        <template v-for="(page_item, p) in users">
+        <template v-for="(page_item, p) in users" v-if="page_item.name.includes(searchText) || searchText.length == 0">
             <tr>
                 <td 
                     @click="expand_user(p)"
@@ -65,7 +65,7 @@
                 </tr>
             </template>
         </template>
-        <template v-for="(page_item, p) in groups">
+        <template v-for="(page_item, p) in groups" v-if="page_item[0].name.includes(searchText) || searchText.length == 0">
             <tr>
                 <td 
                     @click="expand_group(p)"
@@ -183,7 +183,8 @@ export default {
     name: "Bonuses", 
     props: {
         users: Array,
-        groups: Array
+        groups: Array,
+        searchText: String
     },
     watch: {
     },

@@ -46,6 +46,7 @@
         :users="quartal_users"
         :groups="quartal_groups"
         :key="quartal_users"
+        :searchText="searchText"
         v-if="s_type_main == 3"
     />
 
