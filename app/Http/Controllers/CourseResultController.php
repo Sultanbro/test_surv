@@ -28,4 +28,25 @@ class CourseResultController extends Controller
             'items' => $items,
         ];
     } 
+
+    /**
+     * Nullify progress in course for user
+     * 
+     * @param Request $request
+     */
+    public function nullify(Request $request)
+    {   
+        CourseResult::query()
+                    ->where('user_id', $request->user_id)
+                    ->where('course_id', $request->course_id)
+                    ->update([
+                        'progress'        => 0,
+                        'status'          => CourseResult::INITIAL,
+                        'points'          => 0,
+                        'started_at'      => null,
+                        'ended_at'        => null,
+                        'weekly_progress' => null,
+                    ]);
+    } 
+
 }

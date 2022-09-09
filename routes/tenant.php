@@ -171,6 +171,7 @@ Route::middleware([
     Route::post('/my-courses/pass', [MyCourseController::class, 'pass']);
 
     Route::post('/course-results/get', [CourseResultController::class, 'get']);
+    Route::post('/course-results/nullify', [CourseResultController::class, 'nullify']);
     
     Route::get('/glossary/get', [GlossaryController::class, 'get']);
     Route::post('/glossary/save', [GlossaryController::class, 'save']);

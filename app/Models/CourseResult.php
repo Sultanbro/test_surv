@@ -234,6 +234,7 @@ class CourseResult extends Model
             $course = self::$courses->where('id', $result->course_id)->first();
             if($course) {
                 $arr = [];
+                $arr['course_id'] = $result->course_id;
                 $arr['name'] = $course->name;
 
                 $arr['status'] = self::STATUSES[$result->status];

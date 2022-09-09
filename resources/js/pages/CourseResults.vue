@@ -34,17 +34,26 @@
                             <div v-else>{{ item[field.key] }}</div>  
                         </td>
                     </tr>
-                    <template v-for="course in item.courses">
+
+                    <template v-for="(course, c) in item.courses">
                         <tr v-if="item.expanded" class="expanded">
                             <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
                                 <div v-if="field.key == 'progress'" class="d-flex jcc aic">
                                     <p class="mb-0 mr-1">{{ course[field.key] }}</p>
                                     <progress :value="course[field.key].slice(0, -1)" max="100"></progress>
                                 </div>
+                                <div v-else-if="field.key == 'name'" class="relative">
+                                    
+                                    {{ course[field.key] }}
+
+                                    <i class="absolute nullify fa fa-broom" @click="nullify(i)"></i>
+
+                                </div>
                                 <div v-else>{{ course[field.key] }}</div>
                             </td>
                         </tr>
                     </template>
+
                 </template>
                 
 
@@ -176,8 +185,50 @@ export default {
             
         },
         
+        nullify(i) {
+            let user = this.users.items[i];
+
+            // course
+            // ended_at:""
+            // name:"Знакомство с нашей компанией"
+            // points:"185 / 762 / 24.3%"
+            // progress:"30%"
+            // progress_on_week:"0%"
+            // started_at:"28.07.2022"
+            // status:"Запланирован"
+            // user_id: 5
+
+            this.nullifyRequest({
+                user_id: user_id,
+                course_id: course.course_id,
+            }, (res) => {
+                console.log(res)
+            });
+
+        },
+
+        nullifyRequest(obj, callback) {
+            let loader = this.$loading.show();
+
+            axios
+                .post("/course-results/nullify", obj)
+                .then((response) => {
+
+                    callback(response);
+                    loader.hide();
+                });
+        }
         
      
     } 
 }
 </script>
+
+
+<style scoped>
+.nullify {
+    right :0;
+    top: 3px;
+    margin-right: 10px;
+}
+</style>
