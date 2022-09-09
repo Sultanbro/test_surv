@@ -101,7 +101,7 @@
                             v-model="item.method"
                             class="form-control"
                         >
-                            <option v-for="key in Object.keys(mmethods)" :value="key">{{ mmethods[key] }}</option>
+                            <option v-for="key in Object.keys(methods)" :value="key">{{ methods[key] }}</option>
                         </select>
                     </div>
 
@@ -236,7 +236,7 @@
                                 class="form-control"
                             >
                                 <option value="0" selected>-</option>
-                                <option v-for="key in Object.keys(mmethods)" :value="key">{{ mmethods[key] }}</option>
+                                <option v-for="key in Object.keys(methods)" :value="key">{{ methods[key] }}</option>
                             </select>
                         </div>
 
@@ -277,6 +277,7 @@
 
 <script>
 import {fields, newItem} from "./indicators.js";
+import {sources, methods, views} from "./helpers.js";
 
 export default {
     name: "Indicators", 
@@ -326,30 +327,9 @@ export default {
             all_items: [],
             activities: [],
             source_key: 1,
-            sources: {
-                0: 'без источника',
-                1: 'вкладка аналитика',
-                2: 'из битрикса',
-                3: 'из амосрм',
-                4: 'другие',
-            },
-            mmethods: {
-                1: 'сумма',
-                2: 'сред значение',
-                3: 'сумма не более',
-                4: 'среднее не более',
-                5: 'сумма не менее',
-                6: 'сумма не более',
-            },
-            views: {
-                0: 'по умолчанию',
-                1: 'коллекция',
-                2: 'контроль качества',
-                3: 'рентабельность',
-                4: 'текучка',
-                5: 'кол-во сотрудников',
-                6: 'конверсия',
-            },
+            sources: sources,
+            methods: methods,
+            views: views,
             non_editable_fields: [
                 'created_at',
                 'updated_at',

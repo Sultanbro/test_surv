@@ -183,6 +183,7 @@
 
 <script>
 import {newKpiItem, numberize, calcCompleted, calcSum} from "./kpis.js";
+import {sources, methods} from "./helpers.js";
 
 export default {
     name: "KpiItems", 
@@ -258,8 +259,8 @@ export default {
     data() {
         return {
             active: 1,
-            methods: [],
-            sources: [],
+            methods: methods,
+            sources: sources,
             refreshItemsKey: 1,
             source_key: 1,
             show_description: false
@@ -332,30 +333,6 @@ export default {
         },
 
         fillSelectOptions() {
-            this.setMethods()
-            this.setSources()
-        },
-
-        setMethods() {
-            this.methods = {
-                1: 'сумма',
-                2: 'среднее значение',
-                3: 'сумма, не более',
-                4: 'среднее, не более',
-                5: 'сумма, не менее',
-                6: 'среднее, не менее',
-            };
-        },
-
-        setSources() {
-            this.sources = {
-                0: 'без источника',
-                1: 'вкладка аналитика',
-                2: 'из битрикса',
-                3: 'из амосрм',
-                4: 'другие',
-                5: 'вкладка табель',
-            }
         },
 
         groupBy(xs, key) {

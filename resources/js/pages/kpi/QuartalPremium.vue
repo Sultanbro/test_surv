@@ -373,7 +373,7 @@
 
 <script>
 import {fields, newQuartalPremium} from "./quartal_premiums.js";
-import {findModel, groupBy} from "./helpers.js";
+import {findModel, sources} from "./helpers.js";
 
 export default {
     name: "QuartalPremiums", 
@@ -423,13 +423,7 @@ export default {
             all_items: [],
             activities: [],
             source_key: 1,
-            sources: {
-                0: 'без источника',
-                1: 'вкладка аналитика',
-                2: 'из битрикса',
-                3: 'из амосрм',
-                4: 'другие',
-            },
+            sources: sources,
             non_editable_fields: [
                 'created_at',
                 'updated_at',
