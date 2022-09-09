@@ -5,6 +5,7 @@ namespace App\Models\Kpi;
 use App\Models\Admin\ObtainedBonus;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Analytics\Activity;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\User;
 use App\Salary;
@@ -63,6 +64,10 @@ class Bonus extends Model
     CONST FIRST_HALF = 1;
     CONST SECOND_HALF = 2;
 
+    public function obtainedBonuses(): HasMany
+    {
+        return $this->hasMany('App\Models\Admin\ObtainedBonus', 'bonus_id');
+    }
    
     /**
      * count obtained bonuses of users in group

@@ -86,6 +86,11 @@ class User extends Authenticatable implements Authorizable
         return $this->hasManyThrough(ProfileGroup::class, Kpi::class);
     }
 
+    public function bonuses(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
     public function qpremium(): MorphMany
     {
         return $this->morphMany('App\Models\QuartalPremium', 'targetable', 'targetable_type', 'targetable_id');
