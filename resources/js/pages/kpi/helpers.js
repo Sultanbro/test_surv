@@ -14,7 +14,18 @@ function groupBy(xs, key) {
     }, {});
 }
 
+let sources = {
+    0: 'без источника',
+    1: 'вкладка "Аналитика"',
+    2: 'из битрикса',
+    3: 'из амосрм',
+    4: 'другие',
+    5: 'вкладка "Табель"',
+    6: 'вкладка "HR"',
+}
+
 module.exports = {
     findModel: findModel,
     groupBy: groupBy,
+    sources: sources,
 };

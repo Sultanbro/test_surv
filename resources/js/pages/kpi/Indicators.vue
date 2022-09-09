@@ -101,7 +101,7 @@
                             v-model="item.method"
                             class="form-control"
                         >
-                            <option v-for="key in Object.keys(mmethods)" :value="key">{{ mmethods[key] }}</option>
+                            <option v-for="key in Object.keys(methods)" :value="key">{{ methods[key] }}</option>
                         </select>
                     </div>
 
@@ -236,7 +236,7 @@
                                 class="form-control"
                             >
                                 <option value="0" selected>-</option>
-                                <option v-for="key in Object.keys(mmethods)" :value="key">{{ mmethods[key] }}</option>
+                                <option v-for="key in Object.keys(methods)" :value="key">{{ methods[key] }}</option>
                             </select>
                         </div>
 
@@ -277,6 +277,7 @@
 
 <script>
 import {fields, newItem} from "./indicators.js";
+import {sources} from "./helpers.js";
 
 export default {
     name: "Indicators", 
@@ -326,14 +327,8 @@ export default {
             all_items: [],
             activities: [],
             source_key: 1,
-            sources: {
-                0: 'без источника',
-                1: 'вкладка аналитика',
-                2: 'из битрикса',
-                3: 'из амосрм',
-                4: 'другие',
-            },
-            mmethods: {
+            sources: sources,
+            methods: {
                 1: 'сумма',
                 2: 'сред значение',
                 3: 'сумма не более',
