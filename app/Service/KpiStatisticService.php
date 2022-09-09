@@ -815,6 +815,43 @@ class KpiStatisticService
     }
 
     /**
+     * take timeboard value from analytics
+     * for kpi item
+     * 
+     * @param KpiItem $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * 
+     * @return void
+     */
+    private function takeTimeboardValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
+    {
+        if($kpi_item->activity
+        && $kpi_item->activity->source == Activity::SOURCE_TIMEBOARD) {
+            $item['fact'] = round($item['fact'], 2);
+        }
+    }
+
+    /**
+     * take HR value from analytics
+     * for kpi item
+     * 
+     * @param KpiItem $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * 
+     * @return void
+     */
+    private function takeHRValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
+    {
+        if($kpi_item->activity
+        && $kpi_item->activity->source == Activity::SOURCE_HR) {
+            $item['fact'] = round($item['fact'], 2);
+        }
+    }
+
+
+    /**
      * take cell value from analytics
      * for kpi item
      * 
