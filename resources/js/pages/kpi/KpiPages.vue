@@ -35,11 +35,12 @@ export default {
     },
     data() {
         return {
-            active: 0,
+            active: new URL(location.href).searchParams.get('target') ? 3 : 0,
         }
     },
 
     created() {
+        console.log(this);
        // this.fetchData()
     },
     methods: {

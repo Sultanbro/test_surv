@@ -84,7 +84,10 @@
                         </div>
 
                         <div v-else-if="field.key == 'stats'" :class="field.class">
-                            <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
+                            
+                            <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank">   
+                                <i class="fa fa-chart-bar btn btn-primary p-1"></i>
+                            </a>
                         </div>
 
                         <div v-else-if="field.key == 'created_by' && item.creator != null">
@@ -253,7 +256,9 @@ export default {
         );
     },
     methods: {
-        
+        showKpiStats(i){
+            alert(i);
+        },
         expand(i) {
             this.page_items[i].expanded = !this.page_items[i].expanded
         },

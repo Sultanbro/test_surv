@@ -98,7 +98,7 @@ export default {
 
     data() {
         return {
-            searchText: "",
+            searchText: new URL(location.href).searchParams.get('target') ? new URL(location.href).searchParams.get('target') : '',
             s_type_main: 1,
             active: 1,
             paginationKey: 1,
