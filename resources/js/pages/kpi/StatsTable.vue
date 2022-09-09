@@ -23,7 +23,7 @@
  
         <tbody>
 
-            <template v-for="(wrap_item, w) in items" v-if="searchText.length == 0 || (wrap_item.target && wrap_item.target.name.includes(searchText))">
+            <template v-for="(wrap_item, w) in items.slice().reverse()" v-if="searchText.length == 0 || (wrap_item.target && wrap_item.target.name.includes(searchText))">
                 
                 <tr class="main-row">
 
