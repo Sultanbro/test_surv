@@ -23,7 +23,7 @@
  
         <tbody>
 
-            <template v-for="(wrap_item, w) in items">
+            <template v-for="(wrap_item, w) in items" v-if="searchText.length == 0 || (wrap_item.target && wrap_item.target.name.includes(searchText))">
                 
                 <tr class="main-row">
 
@@ -111,6 +111,7 @@ import {kpi_fields} from "./kpis.js";
 export default {
     name: "StatsTable", 
     props: {
+        searchText: String,
         items: {
             default: [],
         },

@@ -9,6 +9,7 @@
                 <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
             <super-filter
+                ref="child"
                 :groups="groups"
                 @apply="fetchData"
             />
@@ -28,6 +29,7 @@
         :groups="groups"
         :items="page_items"
         :editable="true"
+        :searchText="searchText"
         v-if="s_type_main == 1"
     />
 
@@ -37,6 +39,13 @@
         :group_names="groups"
         v-if="s_type_main == 2"
         :key="bonus_groups"
+    />
+
+    <t-stats-quartal
+        :users="quartal_users"
+        :groups="quartal_groups"
+        :key="quartal_users"
+        v-if="s_type_main == 3"
     />
 
     <!-- pagination -->
@@ -80,11 +89,12 @@ export default {
 
                 this.paginationKey++;
             }
-        }
+        },
     },
 
     data() {
         return {
+            searchText: "",
             s_type_main: 1,
             active: 1,
             paginationKey: 1,
@@ -95,7 +105,9 @@ export default {
             groups: {},
             activities: [],
             bonus_items: [],
-            bonus_groups: []
+            bonus_groups: [],
+            quartal_users: [],
+            quartal_groups: []
         }
     },
 
@@ -103,7 +115,12 @@ export default {
        this.fetchData([])
        this.page_items = this.items.slice(0, this.pageSize);
     },
-
+    mounted() {
+        this.$watch(
+          "$refs.child.searchText",
+          (new_value, old_value) => (this.searchText = new_value)
+        );
+    },
     methods: {
         
         onChangePage(page_items) {
@@ -124,8 +141,6 @@ export default {
 
                     // paginate
                     this.page_items = this.items.slice(0, this.pageSize);
-
-                    console.log(this.page_items)
                     loader.hide()
                 }).catch(error => {
                     loader.hide()
@@ -148,7 +163,22 @@ export default {
                     loader.hide();
                     alert(error);
                 });
-            }        
+            }else if(this.s_type_main == 3){
+                axios.get('/statistics/quartal-premiums').then(response => {
+                    
+                    //this.quartal_items = response.data;
+                    this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));
+                    this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
+                    console.log(this.quartal_groups);
+                    loader.hide();
+                }).catch(error => {
+                    loader.hide();
+                    alert(error);
+                });
+            }else{
+                loader.hide();
+                alert('error!');
+            }          
         },
 
     } 
