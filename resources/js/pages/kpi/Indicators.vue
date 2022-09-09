@@ -277,7 +277,7 @@
 
 <script>
 import {fields, newItem} from "./indicators.js";
-import {sources} from "./helpers.js";
+import {sources, methods, views} from "./helpers.js";
 
 export default {
     name: "Indicators", 
@@ -328,23 +328,8 @@ export default {
             activities: [],
             source_key: 1,
             sources: sources,
-            methods: {
-                1: 'сумма',
-                2: 'сред значение',
-                3: 'сумма не более',
-                4: 'среднее не более',
-                5: 'сумма не менее',
-                6: 'сумма не более',
-            },
-            views: {
-                0: 'по умолчанию',
-                1: 'коллекция',
-                2: 'контроль качества',
-                3: 'рентабельность',
-                4: 'текучка',
-                5: 'кол-во сотрудников',
-                6: 'конверсия',
-            },
+            methods: methods,
+            views: views,
             non_editable_fields: [
                 'created_at',
                 'updated_at',
