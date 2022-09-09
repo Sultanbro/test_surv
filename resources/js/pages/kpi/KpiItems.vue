@@ -28,7 +28,7 @@
                         'j-deleted': item.deleted != undefined && item.deleted,
                     }"
                 >
-                    <td class="first-column"></td>
+                    <td class="first-column text-light"><center>{{ i + 1 }}</center></td>
                     <td>
                         <input type="text" class="form-control" v-model="item.name" />
                     </td>

@@ -228,6 +228,7 @@ Vue.component('indicators', require('./pages/kpi/Indicators.vue').default); // k
 Vue.component('stats', require('./pages/kpi/Stats.vue').default); // kpi
 Vue.component('t-stats', require('./pages/kpi/StatsTable.vue').default); // kpi
 Vue.component('t-stats-bonus', require('./pages/kpi/StatsTableBonus.vue').default); // kpi
+Vue.component('t-stats-quartal', require('./pages/kpi/StatsTableQuartal.vue').default); // kpi
 Vue.component('bonuses', require('./pages/kpi/Bonuses.vue').default); // kpi
 Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').default); // kpi
 

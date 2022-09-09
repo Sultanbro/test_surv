@@ -9,13 +9,17 @@
                 <span>Показывать:</span>
                 <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
-            <input 
+            <super-filter
+                ref="child"
+                :groups="groups"
+            />
+            <!--<input 
                 class="searcher mr-2 input-sm"
                 v-model="searchText"
                 type="text"
                 placeholder="Поиск по совпадениям..."
                 @keyup="onSearch"
-            >
+            >-->
             <span class="ml-2"> 
                 Найдено: {{ items.length }}
             </span>
@@ -49,7 +53,7 @@
 
         <tbody>
 
-            <template v-for="(item, i) in page_items" >
+            <template v-for="(item, i) in page_items" v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0">
                 <!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
                 <tr :key="i" > 
                     <td  @click="expand(i)" class="pointer">
@@ -80,7 +84,10 @@
                         </div>
 
                         <div v-else-if="field.key == 'stats'" :class="field.class">
-                            <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
+                            
+                            <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank">   
+                                <i class="fa fa-chart-bar btn btn-primary p-1"></i>
+                            </a>
                         </div>
 
                         <div v-else-if="field.key == 'created_by' && item.creator != null">
@@ -242,8 +249,16 @@ export default {
         this.prepareFields(); 
         this.addStatusToItems(); 
     },
+    mounted() {
+        this.$watch(
+          "$refs.child.searchText",
+          (new_value, old_value) => (this.searchText = new_value)
+        );
+    },
     methods: {
-        
+        showKpiStats(i){
+            alert(i);
+        },
         expand(i) {
             this.page_items[i].expanded = !this.page_items[i].expanded
         },
