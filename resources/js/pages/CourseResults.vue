@@ -186,7 +186,6 @@ export default {
         },
         
         nullify(i) {
-            let user = this.users.items[i];
 
             // course
             // ended_at:""
@@ -199,7 +198,7 @@ export default {
             // user_id: 5
 
             this.nullifyRequest({
-                user_id: user_id,
+                user_id: course.user_id,
                 course_id: course.course_id,
             }, (res) => {
                 console.log(res)
