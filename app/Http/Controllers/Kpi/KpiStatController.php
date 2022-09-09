@@ -9,6 +9,7 @@ use App\Service\KpiStatisticService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use App\User;
+use App\Models\Analytics\UpdatedUserStat;
 use Illuminate\Http\Request;
 
 class KpiStatController extends Controller
@@ -119,5 +120,19 @@ class KpiStatController extends Controller
         $response = $this->service->userWorkdays($request);
 
         return response()->json($response);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function updateStat(Request $request)
+    {
+        UpdatedUserStat::create([
+            'user_id' => $request->user_id,
+            'date' => $request->date,
+            'activity_id' => $request->activity_id,
+            'kpi_item_id' => $request->kpi_item_id,
+            'value' => $request->value,
+        ]);
     }
 }

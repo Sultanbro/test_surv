@@ -226,4 +226,5 @@ module.exports = {
     numberize: numberize,
     calcSum: calcSum,
     calcCompleted: calcCompleted,
+    formatDate: formatDate,
 };

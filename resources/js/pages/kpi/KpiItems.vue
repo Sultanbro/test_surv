@@ -134,8 +134,8 @@
                     <td class="text-center">{{ item.plan }} {{ item.unit }}</td>
                     <td class="text-center">{{ item.share }}</td>
                     <td class="text-center" v-if="editable">
-                        <input v-if="[1,3,5].includes(item.method)" type="number" class="form-control" v-model="item.fact" min="0" />
-                        <input v-else type="number" class="form-control" v-model="item.avg" min="0" />
+                        <input v-if="[1,3,5].includes(item.method)" type="number" class="form-control" v-model="item.fact" min="0" @change="updateStat(i)" />
+                        <input v-else type="number" class="form-control" v-model="item.avg" min="0" @change="updateStat(i)" />
                     </td>
                     <td class="text-center" v-else> 
                         <!-- sum or avg by method -->
@@ -222,7 +222,10 @@ export default {
         },
         allow_overfulfillment: {
             default: false
-        }
+        },
+        date: {
+            default: null
+        },
     },
     watch: {
         items: {
@@ -388,9 +391,32 @@ export default {
 
         isCell(activity_id) {
             let i = this.activities.findIndex(el => el.id == activity_id);
-            if(i!=-1)console.log(this.activities[i].view);
-            console.log(i != -1 && this.activities[i].view == 7);
             return i != -1 && this.activities[i].view == 7;
+        },
+
+        updateStat(i) {
+            let loader = this.$loading.show();
+
+            const item = this.items[i]
+            const date = this.date != null
+                ? this.date
+                : formatDate(new Date().toISOString().substr(0, 10))
+                
+            const value = [1,3,5].includes(item.method) ? item.fact : item.avg
+
+            axios.post('/statistics/update-stat', {
+                user_id: this.kpi_id, 
+                kpi_item_id: item.id, 
+                activity_id: item.activity_id, 
+                value: value, 
+                date: date, 
+            }).then(response => {
+                this.$toast.success('Изменено');
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
         }
  
     } 
