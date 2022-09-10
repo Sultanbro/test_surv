@@ -57,6 +57,9 @@
     
         created() {
            // this.fetchData()
+            let uri = window.location.search.substring(1); 
+            let params = new URLSearchParams(uri);
+            this.active = params.get("target") ? 3 : 0;
         },
         methods: {
     

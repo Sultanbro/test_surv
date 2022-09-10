@@ -128,7 +128,7 @@
                         'j-hidden': !expanded,
                     }"
                 >
-                    <td class="first-column"></td>
+                    <td class="first-column text-light"><center>{{ i + 1 }}</center></td>
                     <td class="px-2">{{ item.name }}</td>
                     <td class="text-center">{{ methods[item.method] }}</td>
                     <td class="text-center">{{ item.plan }} {{ item.unit }}</td>
