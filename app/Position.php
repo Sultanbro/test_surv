@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\Permission\Traits\HasRoles;
 
 class Position extends Model
@@ -27,10 +28,18 @@ class Position extends Model
     const INTERN_ID = 47;
 
     /**
+     * @return MorphMany
+     */
+    public function bonuses(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    /**
      * @return HasMany
      */
     public function users(): HasMany
     {
-        return $this->hasMany('App\User', 'position_id');
+        return $this->hasMany('App\User', 'position_id', 'id');
     }
 }
