@@ -60,7 +60,6 @@
            let uri = window.location.search.substring(1); 
             let params = new URLSearchParams(uri);
             this.active = params.get("target") ? 3 : 0;
-
         },
         mounted() {
             let uri = window.location.search.substring(1); 
