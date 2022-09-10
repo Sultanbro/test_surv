@@ -297,84 +297,101 @@ class KpiStatisticService
      */
     public function fetchBonuses(BonusesFilterRequest $request): array
     {
-        $bonuses = $this->getBonuses($request);
+        $bonuses    = $this->getBonuses($request);
         $kpiBonuses = [];
 
         foreach ($bonuses as $bonus)
         {
             if ($bonus->targetable_type == self::PROFILE_GROUP)
             {
-                $kpiBonuses[] = ProfileGroup::query()
-                    ->join('group_user as gu', 'gu.group_id', '=', 'profile_groups.id')
-                    ->join('kpi_obtained_bonuses as kob', 'kob.user_id', '=', 'gu.user_id')
-                    ->join('kpi_bonuses as kb', 'kb.id', '=', 'kob.user_id')
-                    ->get();
+                $kpiBonuses[] = $this->getProfileGroupBonus($bonus, $request);
             }
 
+            if ($bonus->targetable_type == self::USER)
+            {
+                $kpiBonuses[] = $this->getUserBonus($bonus, $request);
+            }
 
             if ($bonus->targetable_type == self::POSITION)
             {
-                $positionIds[] = $bonus->targetable_id;
-            }
-            if ($bonus->targetable_type == self::USER)
-            {
-                $userIds[] = $bonus->targetable_id;
+                $kpiBonuses[] = $this->getPositionBonus($bonus, $request);
             }
         }
-        dd($kpiBonuses);
 
+        return $kpiBonuses;
     }
 
     /**
      * Получаем сотрудников.
-     * @param $userIds
-     * @param $request
-     * @return Builder[]|Collection
      */
-    private function getUserBonus($userIds, $request)
+    private function getUserBonus($bonus, $request)
     {
-        $month  = $request->month ?? null;
-        $year   = $request->year ?? null;
+        $month = $request->month ?? null;
+        $year = $request->year ?? null;
 
         return User::with([
-            'obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
-        ])->whereIn('id', $userIds)->get();
+            'bonuses' => function ($bs) use ($bonus, $month, $year){
+                $bs->select('targetable_id', 'targetable_type', 'id', 'title', 'sum', 'activity_id', 'created_at')
+                    ->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
+                    ->where('activity_id', $bonus->activity_id);
+            },
+            'bonuses.obtainedBonuses'
+        ])
+            ->where('id', $bonus->targetable_id)
+            ->first(['id', 'name']);
     }
 
     /**
      * Получаем по позициям.
-     * @param $positionIds
+     * @param $bonus
      * @param $request
      * @return Builder[]|Collection
      */
-    private function getPositionBonus($positionIds, $request)
+    private function getPositionBonus($bonus, $request)
     {
         $userId = $request->user_id ?? null;
         $month  = $request->month ?? null;
         $year   = $request->year ?? null;
 
         return Position::with([
-            'users' => fn($user) => $user->when($userId, fn($user) => $user->where('id', $userId)),
-            'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
-        ])->whereIn('id', $positionIds)->get();
+            'bonuses' => fn ($bs) => $bs->select('targetable_id', 'targetable_type', 'id', 'title', 'sum', 'activity_id', 'created_at')
+                ->where('activity_id', $bonus->activity_id)
+                ->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month)),
+            'users' => fn ($user) => $user->select('id','position_id',DB::raw('CONCAT(name,\' \',last_name) as full_name')),
+            'users.obtainedBonuses' => fn ($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
+        ])->where('id', $bonus->targetable_id)->get(['id', 'position'])
+            ->each(function ($data) use ($bonus) {
+                $data->targetable_type = $bonus->targetable_type;
+                $data->targetable_id   = $bonus->targetable_id;
+                $data->activity_id     = $bonus->activity_id;
+        });
     }
 
     /**
      * Получаем по группам.
-     * @param $groupIds
+     * @param $bonus
      * @param $request
      * @return Builder[]|Collection
      */
-    private function getProfileGroupBonus($groupIds, $request)
+    private function getProfileGroupBonus($bonus, $request)
     {
         $userId = $request->user_id ?? null;
         $month  = $request->month ?? null;
         $year   = $request->year ?? null;
 
         return ProfileGroup::with([
-            'users' => fn($user) => $user->when($userId, fn($user) => $user->where('id', $userId)),
-            'users.obtainedBonuses.bonus' => fn ($bonus) => $bonus->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
-        ])->whereIn('id', $groupIds)->get();
+            'bonuses' => fn ($bs) =>
+                $bs->select('targetable_id', 'targetable_type', 'id', 'title', 'sum', 'activity_id', 'created_at')
+                    ->where('activity_id', $bonus->activity_id)
+                    ->when($year && $month, fn ($bns) => $bns->whereYear('created_at', $year)->whereMonth('created_at', $month)),
+            'users' => fn ($user) => $user->select('id', DB::raw('CONCAT(name,\' \',last_name) as full_name')),
+            'users.obtainedBonuses' => fn ($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
+        ])->where('id', $bonus->targetable_id)
+            ->get(['id', 'name'])->each(function ($data) use ($bonus){
+                $data->targetable_type = $bonus->targetable_type;
+                $data->targetable_id   = $bonus->targetable_id;
+                $data->activity_id     = $bonus->activity_id;
+            });
     }
 
     /**
