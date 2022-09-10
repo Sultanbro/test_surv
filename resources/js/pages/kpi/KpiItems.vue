@@ -128,7 +128,7 @@
                         'j-hidden': !expanded,
                     }"
                 >
-                    <td class="first-column"></td>
+                    <td class="first-column text-light"><center>{{ i + 1 }}</center></td>
                     <td class="px-2">{{ item.name }}</td>
                     <td class="text-center">{{ methods[item.method] }}</td>
                     <td class="text-center">{{ item.plan }} {{ item.unit }}</td>
@@ -232,6 +232,7 @@ export default {
         items: {
             handler: function(val) {
                 this.recalc();
+                this.getSum();
             },
             deep: true
         },
@@ -254,7 +255,7 @@ export default {
             handler: function(val) {
                 this.recalc();
             },
-        },
+        }
     },
     data() {
         return {
@@ -269,15 +270,20 @@ export default {
 
     created() {
         this.fillSelectOptions()
-        this.defineSourcesAndGroups('with_sources_and_group_id');
-        this.recalc();
 
+        this.defineSourcesAndGroups('with_sources_and_group_id');
+        
+        this.recalc();
+        this.getSum();
         if(!this.editable) {
             this.items.forEach(el => el.expanded = true);
         }
-    },
 
-    computed: {},
+    },
+    mounted(){
+    },
+    computed: {
+    },
 
     methods: {
         toggle() {
@@ -394,7 +400,15 @@ export default {
                 loader.hide()
                 alert(error)
             });
-        }
+        },
+        getSum(){
+                let sum = 0;
+                this.items.forEach(item => {
+                    sum += item.sum;
+                }); 
+                this.$emit("getSum", sum);
+            }
+        
  
     } 
 }

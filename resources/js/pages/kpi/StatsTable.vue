@@ -43,14 +43,14 @@
                     <td class="px-2 py-1" v-if="!editable">{{ wrap_item.upper_limit }}%</td>
                     <td class="px-2 py-1" v-if="!editable">{{ wrap_item.completed_80 }}</td>
                     <td class="px-2 py-1" v-if="!editable">{{ wrap_item.completed_100 }}</td>
-                    <td class="px-2 py-1" v-if="!editable">{{ wrap_item.earnings }}</td>
+                    <td class="px-2 py-1" v-if="!editable">{{ wrap_item.my_sum }}</td>
                     <td v-if="editable"></td>
                         
                 </tr>
 
                 <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
                     <tr class="collapsable" :class="{'active': wrap_item.expanded || !editable }" :key="w + 'a'">
-                        <td :colspan="editable ? 3 : 6">
+                        <td :colspan="editable ? 3 : 7">
                             <div class="table__wrapper">
                             <table class="child-table">
                                 <template v-for="(user, i) in wrap_item.users">
@@ -85,6 +85,7 @@
                                                         :editable="editable"
                                                         :kpi_page="false"
                                                         :date="date"
+                                                        @getSum="wrap_item.my_sum = $event"
                                                         @recalced="countAvg"
                                                     />
                                                 </div>
@@ -113,7 +114,9 @@ import {kpi_fields} from "./kpis.js";
 export default {
     name: "StatsTable", 
     props: {
-        searchText: String,
+        searchText: {
+            default: '',
+        },
         items: {
             default: [],
         },
@@ -158,7 +161,8 @@ export default {
     created() {
        this.prepareFields()
     },
-
+    mounted(){
+    },
     methods: {
         
         expand(w) {
@@ -198,7 +202,7 @@ export default {
 
                 // kpi.avg = count > 0 ? Number(Number(sum / count * 100).toFixed(2)) : 0;
             });
-        }
+        },
 
     } 
 }

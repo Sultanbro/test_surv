@@ -132,7 +132,6 @@ export default {
             return 'fuck';
         },
         adjustFields(){
-            alert('fuck you!');
         },
         expand(p){
             this.groups[p].expanded = !this.groups[p].expanded;

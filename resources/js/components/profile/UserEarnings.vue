@@ -111,7 +111,7 @@
             :editable="false"
         />
 
-    <p class="text-red mt-2" v-if="!is_admin">
+    <p class="text-red mt-2">
         * сумма премии за выполнение показателей начнет меняться после достижения 80% от целевого значения на месяц
     </p>
 
@@ -235,6 +235,8 @@ export default {
                 
                 // items
                 this.kpis = response.data.items;
+                this.kpis = this.kpis.map(res=> ({...res, my_sum: 0}))
+                
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
 
