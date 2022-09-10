@@ -25,7 +25,7 @@
                 </span>
             </div>
     
-            <button class="btn rounded btn-outline-success" @click="addItem">
+            <button class="btn rounded btn-outline-success" @click="addItemRow">
                 <i class="fa fa-plus mr-2"></i>
                 <span>Добавить</span>
             </button>
@@ -43,6 +43,296 @@
             </tr>
             <tr>
                 
+            </tr>
+            <tr v-if="addNewBonus">
+                <td colspan="2">
+                    <template>
+                        <table>
+                            <tr>
+                                <td v-for="(field, f) in all_fields.slice(0,4)">
+                                    <div v-if="field.key == 'target'" class="w-100">
+                                        <superselect
+                                            :placeholder="field.name"
+                                            v-if="activeItem.id == 0"
+                                            class="" 
+                                            :values="activeItem.target == null ? [] : [activeItem.target]" 
+                                            :single="true"
+                                            @choose="(target) => activeItem.target = target" /> 
+                                        <div v-else class="d-flex aic">
+                                            <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
+                                            <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
+                                            <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
+                                            <span class="ml-2">{{ activeItem.target.name }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
+                                        {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
+                                    </div>
+            
+                                    <div v-else-if="field.key == 'updated_by' && activeItem.updater != null">
+                                        {{ activeItem.updater.last_name + ' ' + activeItem.updater.name }}
+                                    </div>
+            
+                                    <div v-else-if="non_editable_fields.includes(field.key)">
+                                        {{ activeItem[field.key] }}
+                                    </div>
+            
+                                  
+            
+                                    <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
+                                        <div class="d-flex">
+                                            <select 
+                                                v-model="activeItem.source"
+                                                class="form-control small mr-2"
+                                                @change="++source_key"
+                                            >
+                                                <option v-for="key in Object.keys(sources)"
+                                                    :value="key">
+                                                    {{ sources[key] }}
+                                                </option>
+                                            </select>
+            
+                                            <select 
+                                                v-if="Number(activeItem.source) == 1"
+                                                v-model="activeItem.group_id"
+                                                class="form-control small mr-2"
+                                                :key="'a' + source_key"
+                                            >
+                                                <option value="0" selected>-</option>
+                                                <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
+                                            </select>      
+            
+                                            <select 
+                                                v-model="activeItem.activity_id"
+                                                class="form-control small"
+                                                :key="'b' + source_key"
+                                            >
+                                                <option value="0" selected>-</option>
+                                                <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div v-else-if="field.key == 'unit'">
+                                        <select 
+                                            v-model="activeItem.unit"
+                                            class="form-control"
+                                        >
+                                            <option value="0" selected>-</option>
+                                            <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
+                                        </select>
+                                    </div>
+            
+                                    <div v-else-if="field.key == 'daypart'">
+                                        <select 
+                                            v-model="activeItem.daypart"
+                                            class="form-control"
+                                        >
+                                            <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                        </select>
+                                    </div>
+            
+                                    <div v-else-if="field.key == 'text'">
+                                        <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
+                                    </div>
+            
+                                    <div v-else>
+                                        <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td v-for="(field, f) in all_fields.slice(5,9)">
+                                    <div v-if="field.key == 'target'" class="w-100">
+                                        <superselect
+                                            :placeholder="field.name"
+                                            v-if="activeItem.id == 0"
+                                            class="" 
+                                            :values="activeItem.target == null ? [] : [activeItem.target]" 
+                                            :single="true"
+                                            @choose="(target) => activeItem.target = target" /> 
+                                        <div v-else class="d-flex aic">
+                                            <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
+                                            <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
+                                            <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
+                                            <span class="ml-2">{{ activeItem.target.name }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
+                                        {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
+                                    </div>
+            
+                                    <div v-else-if="field.key == 'updated_by' && activeItem.updater != null">
+                                        {{ activeItem.updater.last_name + ' ' + activeItem.updater.name }}
+                                    </div>
+            
+                                    <div v-else-if="non_editable_fields.includes(field.key)">
+                                        {{ activeItem[field.key] }}
+                                    </div>
+            
+                                  
+            
+                                    <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
+                                        <div class="d-flex">
+                                            <select 
+                                                v-model="activeItem.source"
+                                                class="form-control small mr-2"
+                                                @change="++source_key"
+                                            >
+                                                <option v-for="key in Object.keys(sources)"
+                                                    :value="key">
+                                                    {{ sources[key] }}
+                                                </option>
+                                            </select>
+            
+                                            <select 
+                                                v-if="Number(activeItem.source) == 1"
+                                                v-model="activeItem.group_id"
+                                                class="form-control small mr-2"
+                                                :key="'a' + source_key"
+                                            >
+                                                <option value="0" selected>-</option>
+                                                <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
+                                            </select>      
+            
+                                            <select 
+                                                v-model="activeItem.activity_id"
+                                                class="form-control small"
+                                                :key="'b' + source_key"
+                                            >
+                                                <option value="0" selected>-</option>
+                                                <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div v-else-if="field.key == 'unit'">
+                                        <select 
+                                            v-model="activeItem.unit"
+                                            class="form-control"
+                                        >
+                                            <option value="0" selected>-</option>
+                                            <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
+                                        </select>
+                                    </div>
+            
+                                    <div v-else-if="field.key == 'daypart'">
+                                        <select 
+                                            v-model="activeItem.daypart"
+                                            class="form-control"
+                                        >
+                                            <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                        </select>
+                                    </div>
+            
+                                    <div v-else-if="field.key == 'text'">
+                                        <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
+                                    </div>
+            
+                                    <div v-else>
+                                        <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td v-for="(field, f) in all_fields.slice(10,13)">
+                                    <div v-if="field.key == 'target'" class="w-100">
+                                        <superselect
+                                            :placeholder="field.name"
+                                            v-if="activeItem.id == 0"
+                                            class="" 
+                                            :values="activeItem.target == null ? [] : [activeItem.target]" 
+                                            :single="true"
+                                            @choose="(target) => activeItem.target = target" /> 
+                                        <div v-else class="d-flex aic">
+                                            <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
+                                            <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
+                                            <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
+                                            <span class="ml-2">{{ activeItem.target.name }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
+                                        {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
+                                    </div>
+            
+                                    <div v-else-if="field.key == 'updated_by' && activeItem.updater != null">
+                                        {{ activeItem.updater.last_name + ' ' + activeItem.updater.name }}
+                                    </div>
+            
+                                    <div v-else-if="non_editable_fields.includes(field.key)">
+                                        {{ activeItem[field.key] }}
+                                    </div>
+            
+                                  
+            
+                                    <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
+                                        <div class="d-flex">
+                                            <select 
+                                                v-model="activeItem.source"
+                                                class="form-control small mr-2"
+                                                @change="++source_key"
+                                            >
+                                                <option v-for="key in Object.keys(sources)"
+                                                    :value="key">
+                                                    {{ sources[key] }}
+                                                </option>
+                                            </select>
+            
+                                            <select 
+                                                v-if="Number(activeItem.source) == 1"
+                                                v-model="activeItem.group_id"
+                                                class="form-control small mr-2"
+                                                :key="'a' + source_key"
+                                            >
+                                                <option value="0" selected>-</option>
+                                                <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
+                                            </select>      
+            
+                                            <select 
+                                                v-model="activeItem.activity_id"
+                                                class="form-control small"
+                                                :key="'b' + source_key"
+                                            >
+                                                <option value="0" selected>-</option>
+                                                <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div v-else-if="field.key == 'unit'">
+                                        <select 
+                                            v-model="activeItem.unit"
+                                            class="form-control"
+                                        >
+                                            <option value="0" selected>-</option>
+                                            <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
+                                        </select>
+                                    </div>
+            
+                                    <div v-else-if="field.key == 'daypart'">
+                                        <select 
+                                            v-model="activeItem.daypart"
+                                            class="form-control"
+                                        >
+                                            <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                        </select>
+                                    </div>
+            
+                                    <div v-else-if="field.key == 'text'">
+                                        <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
+                                    </div>
+            
+                                    <div v-else>
+                                        <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </template>
+                </td>
             </tr>
     
             <template v-for="(page_item, p) in page_items" v-if="page_item.name.includes(searchText) || searchText.length == 0">
@@ -408,6 +698,7 @@ export default {
     },
     data() {
         return {
+            addNewBonus: false,
             active: 1,
             activeItem: null,
             uri: 'bonus',
@@ -459,6 +750,10 @@ export default {
 
     },
     methods: {
+        addItemRow(){
+            this.activeItem = newBonus();
+            this.addNewBonus = true;
+        },
         swapFields(){
             let temp = this.fields[4];
             let temp2 = this.fields[6];

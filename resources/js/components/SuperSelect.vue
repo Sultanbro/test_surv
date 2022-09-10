@@ -1,6 +1,5 @@
 <template>
 <div class="super-select" ref="select" :class="posClass" v-click-outside="close">
-
     <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
         <div 
             v-for="(value, i) in values"
@@ -10,8 +9,12 @@
             {{ value.name }}
             <i class="fa fa-times" @click.stop="removeValue(i)" v-if="!one_choice_made"></i>
         </div>
+        <div 
+            id="placeholder"
+            class="selected-item placeholder">
+            {{ placeholder }}
+        </div>
     </div>
-    
     <div class="show" v-if="show">
         <div class="search">
             <input 
@@ -72,6 +75,10 @@
 export default {
     name: 'Superselect',
     props: {
+        placeholder:{
+            type: String,
+            default: '',
+        },
         values: {
             type: Array,
             default: []
@@ -95,6 +102,7 @@ export default {
     },
     data() {
         return {
+            show_placeholder: true,
             options: [],
             filtered_options: [],
             type: 1,
@@ -113,6 +121,9 @@ export default {
         this.checkSelectedAll();  
     },
     methods: {
+        hidePlaceholder(){
+            this.show_placeholder = !this.show_placeholder;
+        },
         checkSelectedAll() {
             if(this.values.length == 1
                 && this.values[0]['id']== 0
@@ -137,14 +148,16 @@ export default {
         },
 
         toggleShow() {
- 
-
             if(this.one_choice_made) {
                 return;
             }
              
             this.show = !this.show;
-
+            if(this.show){
+                document.getElementById('placeholder').style.display = "none";
+            }else{
+                document.getElementById('placeholder').style.display = "block";
+            }
 
             if(this.first_time) {
                 this.fetch();
@@ -270,3 +283,8 @@ export default {
 
 }
 </script>
+<style scoped lang="scss">
+    .placeholder{
+        background: #fff !important;
+    }
+</style>
