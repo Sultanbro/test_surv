@@ -44,7 +44,7 @@
                     <td class="px-2 py-1" v-if="!editable">{{ wrap_item.completed_80 }}</td>
                     <td class="px-2 py-1" v-if="!editable">{{ wrap_item.completed_100 }}</td>
                     <td class="px-2 py-1" v-if="!editable">{{ wrap_item.earnings }}</td>
-                    <td v-if="editable">test</td>
+                    <td v-if="editable"></td>
                         
                 </tr>
 
