@@ -400,13 +400,60 @@ class Salary extends Model
      */
     private static function addSpace($text, $length) {
         $a = $length - strlen($text);
-
+        
         for($i=1;$i<=$a;$i++) {
             $text = ' ' . $text;
         }
         return $text;
     }
+    
+    /**
+     * Create salaries array 
+     * with days as keys
+     * from 1 to 31 day
+     * 
+     * @param array $data
+     * @return array
+     */
+    public static function getSalaryForDays(array $data) : array
+    {   
+        $date     = Carbon::parse($data['date']);
+        $last_day = Carbon::parse($data['date'])->endOfMonth()->day;
+        $group_id = $data['group_id'];
+        $group    = ProfileGroup::query()->findOrFail($group_id);
+        $days     = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
+        $salaries = [];
+
+        $arr = Salary::salariesTable(
+            0, // user_type
+            $date->format('Y-m-d'),
+            $group->users()->pluck('id')->toArray(), 
+            $group_id
+        );
+
+        foreach ($days as $day) {
+           
+            $salaries[$day] = 0;
+
+            foreach ($arr['users'] as $user) {
+                if(isset($user['test_bonus'][$day])) $salaries[$day] += (float) $user['test_bonus'][$day];
+                if(isset($user['bonuses'][$day]))    $salaries[$day] += (float) $user['bonuses'][$day];
+                if(isset($user['awards'][$day]))     $salaries[$day] += (float) $user['awards'][$day];
+                if(isset($user['earnings'][$day]))   $salaries[$day] += (float) $user['earnings'][$day];
+                
+                if(isset($user['fine'][$day])) { 
+                    foreach($user['fine'][$day] as $fine) {
+                        $salaries[$day] -= (float) $fine;
+                    }
+                }
+
+                if($day == $last_day) $salaries[$day] += (float) $user['kpi'];
+            }
+        }
+
+        return $salaries;
+    }
 
     public static function salariesTable($user_types, $date, $users_ids, $group_id = 0)
     {

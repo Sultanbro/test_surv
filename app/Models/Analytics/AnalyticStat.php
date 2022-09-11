@@ -71,14 +71,16 @@ class AnalyticStat extends Model
             }
         }
 
-
-
         $all_activities = Activity::withTrashed()->where('group_id', $group_id)->get();
         $all_stats = self::where('group_id', $group_id)
             ->where('date', $date)
             ->get();
 
-      
+        $day_salaries = Salary::getSalaryForDays([
+            'date'     => $date,
+            'group_id' => $group_id,
+        ]);
+
         // returning items 
         foreach($rows as $r_index => $row) {
 
@@ -185,6 +187,16 @@ class AnalyticStat extends Model
 
                     if($stat->type == 'salary'){
                         $gsalary = GroupSalary::where('group_id', $group_id)->where('date', $date)->get()->sum('total');
+                        $val = floor($gsalary);
+                        $stat->show_value = $val;
+                        $stat->save();
+                        $arr['value'] = $val;
+                        $arr['show_value'] = $val;
+                    }
+
+                    if($stat->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
+                        $gsalary = array_key_exists($column->name, $day_salaries) ? $day_salaries[$column->name] : 0;
+
                         $val = floor($gsalary);
                         $stat->show_value = $val;
                         $stat->save();

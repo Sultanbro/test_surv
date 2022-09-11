@@ -472,6 +472,7 @@ Route::middleware([
     Route::post('/timetracking/analytics/restore_analytics', [AnalyticsController::class, 'restore_analytics']);
     Route::post('/timetracking/analytics/add-formula-1-31', [AnalyticsController::class, 'addFormula_1_31']);
     Route::post('/timetracking/analytics/add-remote-inhouse', [AnalyticsController::class, 'addRemoteInhouse']);
+    Route::post('/timetracking/analytics/add-salary', [AnalyticsController::class, 'addSalary']);
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
     /**
