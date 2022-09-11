@@ -42,11 +42,11 @@
                                     <p class="mb-0 mr-1">{{ course[field.key] }}</p>
                                     <progress :value="course[field.key].slice(0, -1)" max="100"></progress>
                                 </div>
-                                <div v-else-if="field.key == 'name'" class="relative">
+                                <div v-else-if="field.key == 'name'" class="relative nullify-wrap">
                                     
                                     {{ course[field.key] }}
 
-                                    <i class="absolute nullify fa fa-broom" @click="nullify(i)"></i>
+                                    <i class="absolute nullify fa fa-broom" title="Обнулить прогресс" @click="nullify(i, c)"></i>
 
                                 </div>
                                 <div v-else>{{ course[field.key] }}</div>
@@ -185,8 +185,13 @@ export default {
             
         },
         
-        nullify(i) {
+        nullify(i, c) {
 
+            if(!confirm('Вы уверены? Потом прогресс не восстановить')) {
+                return;
+            }
+
+            let course = this.users.items[i].courses[c];
             // course
             // ended_at:""
             // name:"Знакомство с нашей компанией"
@@ -201,7 +206,14 @@ export default {
                 user_id: course.user_id,
                 course_id: course.course_id,
             }, (res) => {
-                console.log(res)
+                this.$toast.success('Прогресс по курсу Обнулен');
+
+                course.progress = '0%';
+                course.started_at = '';
+                course.ended_at = '';
+                course.status = 'Запланирован';
+                course.points = '0 / 0 / 0%';
+                course.progress_on_week = '0%';
             });
 
         },
@@ -212,10 +224,11 @@ export default {
             axios
                 .post("/course-results/nullify", obj)
                 .then((response) => {
-
                     callback(response);
-                    loader.hide();
-                });
+                })
+                .catch(e => console.log(e));
+
+            loader.hide();
         }
         
      
@@ -226,8 +239,16 @@ export default {
 
 <style scoped>
 .nullify {
-    right :0;
-    top: 3px;
-    margin-right: 10px;
+    right: -6px;
+    top: -2px;
+    z-index: 2;
+    background: aliceblue;
+    padding: 6px 4px;
+    border-radius: 50px;
+    display: none;
+    cursor: pointer;
+}
+.nullify-wrap:hover .nullify {
+    display: block;
 }
 </style>
