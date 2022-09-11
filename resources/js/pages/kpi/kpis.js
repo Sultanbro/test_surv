@@ -225,6 +225,7 @@ module.exports = {
     newKpiItem: newKpiItem,
     numberize: numberize,
     calcSum: calcSum,
+    formatDate: formatDate,
     calcCompleted: calcCompleted,
     formatDate: formatDate,
 };

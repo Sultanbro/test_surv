@@ -23,6 +23,7 @@ class History extends Model
         'updated_at'
     ];
 
+<<<<<<< Updated upstream
     protected $casts = [
         'payload',
     ];
@@ -31,4 +32,6 @@ class History extends Model
     {
         return $this->morphTo(__FUNCTION__, 'reference_table', 'reference_id');
     }
+=======
+>>>>>>> Stashed changes
 }
