@@ -36,6 +36,13 @@
               {{ message.created_at | moment }}
             </span>
           </div>
+          <div class="readers-badge" v-if="message.sender_id === user.id && message.readers && message.readers.length > 0">
+            ✔ Cообщение прочитано: {{ message.readers[0].name }}
+            <template v-if="message.readers.length > 1">
+              и еще {{ message.readers.length - 1 }} человек
+            </template>
+          </div>
+
         </li>
       </ul>
       <vue-simple-context-menu
@@ -371,5 +378,13 @@ export default {
   display: block;
   font-size: 12px;
   color: #babac0;
+}
+
+.readers-badge {
+  display: block;
+  font-size: 12px;
+  color: #a0a0a4;
+  margin-top: 5px;
+
 }
 </style>
