@@ -776,11 +776,12 @@ class KpiStatisticService
     private function takeRecruiterValues(KpiItem $kpi_item, Carbon $date, array &$item, $user_id) : void
     {
         $asi = $this->asis->where('employee_id', $user_id)->first();
-        $activity_id = in_array($kpi_item->activity_id, RecruitingActivityService::$activities) ? $kpi_item->activity_id : 0;
+        $activities = (new RecruitingActivityService)->activities;
+        $activity_id = in_array($kpi_item->activity_id, $activities) ? $kpi_item->activity_id : 0;
         if($asi && $activity_id != 0) {
             $data = json_decode($asi->data, true);
 
-            $index = array_search($activity_id, RecruitingActivityService::$activities);
+            $index = array_search($activity_id, $activities);
             if($index) {
                 $sum = 0;
                 $count = 0;
