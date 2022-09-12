@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\AnalyticsSettingsIndividually;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
@@ -94,6 +95,14 @@ class KpiStatisticService
      * Daily plan from histories for kpi_items
      */
     public $dailyPlans;
+
+    /**
+     * Asis for recruiters 
+     * temp decision
+     * 
+     * after moving from asi to userstat delete
+     */
+    public $asis;
 
     /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
@@ -559,10 +568,15 @@ class KpiStatisticService
         
         $this->workdays = collect($this->userWorkdays($request));
         $this->updatedValues = UpdatedUserStat::query()
-                            ->whereMonth('date', $date->month)
-                            ->whereYear('date', $date->year)
-                            ->orderBy('created_at', 'desc')
-                            ->get();
+                        ->whereMonth('date', $date->month)
+                        ->whereYear('date', $date->year)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+        
+        $this->asis = AnalyticsSettingsIndividually::query()
+            ->whereMonth('date', $date->month)
+            ->whereYear('date', $date->year)
+            ->get();
 
         /**
          * get kpis
@@ -708,10 +722,15 @@ class KpiStatisticService
                 $this->takeCellValue(   $_item, $date, $item);
                 $this->takeRentability( $_item, $date, $item);
                 
+                // for Bpartners
+                if($kpi->targetable_type == 'App\ProfileGroup' && $kpi->targetable_id == 48) {
+                    $this->takeRecruiterValues($_item, $date, $item, $user['id']);
+                }
+                
 
                 $this->takeUpdatedValue($_item, $date, $item['fact'], $user['id']);
                 
-
+                
 
                 // plan
                 $item['full_time'] = $user['full_time'];
@@ -746,8 +765,7 @@ class KpiStatisticService
     }
 
     /**
-     * If value is from all group
-     * take common value made by group
+     * get Recruiter values
      * 
      * @param KpiItem $kpi_item
      * @param Carbon $date
@@ -755,6 +773,35 @@ class KpiStatisticService
      * 
      * @return array
      */
+    private function getRecruiterValues(KpiItem $kpi_item, Carbon $date, array &$item, $user_id) : void
+    {
+        $asi = $this->asis->where('employee_id', $user_id)->first();
+        $activity_id = in_array($kpi_item->activity_id, RecruitingActivityService::$activities) ? $kpi_item->activity_id : 0;
+        if($asi && $activity_id != 0) {
+            $data = json_decode($asi->data, true);
+
+            $index = array_search($activity_id, RecruitingActivityService::$activities);
+            if($index) {
+                $sum = 0;
+                $count = 0;
+                for($i = 1; $i <= 31; $i++) {
+                    if(isset($data[$index][$i]) && $data[$index][$i] != null && $data[$index][$i] != '') {
+                        $sum += (float) $data[$index][$i];
+                        $count++;
+                    }
+                }
+            }
+
+            $item['fact'] = round($sum, 2);
+            $item['records_count'] = $count;
+            if($count > 0) {
+                $item['avg'] = round($sum / $count, 2);
+            }
+
+        }
+        
+    }
+
     private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
     {
         if($kpi_item->common == 1) {
