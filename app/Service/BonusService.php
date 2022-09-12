@@ -74,24 +74,29 @@ class BonusService
 
     /**
      * Сохраняем новый бонус.
+     * @throws Exception
      */
-    public function save(BonusSaveRequest $request): array
+    public function save(Request $request): array
     {
         try {
-            $bonus = Bonus::create([
-                'targetable_id'     => $request->targetable_id,
-                'targetable_type'   => $request->targetable_type,
-                'title'     => $request->title,
-                'sum'     => $request->sum,
-                'group_id'     => $request->group_id,
-                'activity_id'     => $request->activity_id,
-                'unit'     => $request->unit,
-                'quantity'     => $request->quantity,
-                'daypart'     => $request->daypart,
-                'text'     => $request->text,
-                'created_by' => auth()->id(),
-                'updated_by' => auth()->id(),
-            ]);
+            $bonus = [];
+            for ($i = 0; $i < count($request->input('activity_id')); $i++)
+            {
+                $bonus[] = Bonus::query()->create([
+                    'targetable_id'     => $request->input('targetable_id'),
+                    'targetable_type'   => $this->getModel($request->input('targetable_type')),
+                    'title'             => $request->input('title')[$i],
+                    'sum'               => $request->input('sum')[$i],
+                    'group_id'          => $request->input('group_id'),
+                    'activity_id'       => $request->input('activity_id')[$i],
+                    'unit'              => $request->input('unit')[$i],
+                    'quantity'          => $request->input('quantity')[$i],
+                    'daypart'           => $request->input('daypart')[$i],
+                    'text'              => $request->input('text')[$i],
+                    'created_by'        => auth()->id() ?? 5,
+                    'updated_by'        => auth()->id() ?? 5,
+                ]);
+            }
         } catch (Exception $exception) {
             throw new Exception($exception);
         }
@@ -129,5 +134,13 @@ class BonusService
     public function delete(Request $request): void
     {
         Bonus::findOrFail($request->id)->delete();
+    }
+
+    private function getData(array $data)
+    {
+        foreach ($data as $item)
+        {
+            return $item;
+        }
     }
 }

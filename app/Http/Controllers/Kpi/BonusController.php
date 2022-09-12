@@ -39,7 +39,7 @@ class BonusController extends Controller
     /**
      * Сохранение
      */
-    public function save(BonusSaveRequest $request): JsonResponse
+    public function save(Request $request): JsonResponse
     {
         $response = $this->bonusService->save($request);
 
