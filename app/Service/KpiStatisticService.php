@@ -773,7 +773,7 @@ class KpiStatisticService
      * 
      * @return array
      */
-    private function getRecruiterValues(KpiItem $kpi_item, Carbon $date, array &$item, $user_id) : void
+    private function takeRecruiterValues(KpiItem $kpi_item, Carbon $date, array &$item, $user_id) : void
     {
         $asi = $this->asis->where('employee_id', $user_id)->first();
         $activity_id = in_array($kpi_item->activity_id, RecruitingActivityService::$activities) ? $kpi_item->activity_id : 0;
