@@ -131,7 +131,15 @@
                     <td class="first-column text-light"><center>{{ i + 1 }}</center></td>
                     <td class="px-2">{{ item.name }}</td>
                     <td class="text-center">{{ methods[item.method] }}</td>
-                    <td class="text-center">{{ item.plan }} {{ item.unit }}</td>
+                    <td class="text-center"
+                    >
+                        <div v-if="item.full_time == 1 && item.method == 1">{{ item.daily_plan + ' * ' + item.workdays + ' дней' }}</div>
+                        <div v-if="item.full_time == 0 && item.method == 1">{{ item.daily_plan + ' * ' + item.workdays + ' дней * 0.5' }}</div>
+                        <div>
+                            <b>{{ item.plan }} {{ item.unit }}</b>
+                        </div>
+                        
+                    </td>
                     <td class="text-center">{{ item.share }}</td>
                     <td class="text-center" v-if="editable">
                         <input v-if="[1,3,5].includes(item.method)" type="number" class="form-control" v-model="item.fact" min="0" @change="updateStat(i)" />
