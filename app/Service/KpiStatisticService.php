@@ -741,7 +741,7 @@ class KpiStatisticService
                     ? $has_edited_plan['plan']
                     : (float)$_item->plan;
                 
-                $item['plan'] = $item['daily_plan'];
+                
                 $item['workdays'] = $workdays[6];
 
                
@@ -752,6 +752,13 @@ class KpiStatisticService
                     if($has_workdays) $item['workdays']  = $has_workdays['user_work_days'];
                 } 
                 
+                if($item['method'] == 1) {
+
+                    $item['plan'] = $item['daily_plan'] * $item['workdays'];
+
+                    if($user['full_time'] == 0) $item['plan'] = $item['plan'] / 2; 
+                }
+
                 $kpi_items[] = $item;
             }
             
