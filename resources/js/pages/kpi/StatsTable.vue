@@ -73,6 +73,7 @@
                                             <td :colspan="fields.length + 2">
                                                 <div class="table__wrapper__second">
                                                     <kpi-items
+                                                        :my_sum="wrap_item.completed_100"
                                                         :kpi_id="user.id"
                                                         :items="user.items" 
                                                         :expanded="user.expanded"

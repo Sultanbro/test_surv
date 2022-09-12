@@ -14,6 +14,7 @@
                 <th v-if="!kpi_page">Факт</th>
                 <th v-if="!kpi_page">% выполнения</th>
                 <th>Сумма премии при выполнении плана, KZT</th>
+                <th>Заработано</th>
                 <th v-if="kpi_page"></th>
             </tr>
         </thead>
@@ -104,6 +105,9 @@
                     <td class="text-center">
                         {{ item.sum }}
                     </td>
+                    <td class="text-center">
+                        0
+                    </td>
                     <td>
                         <i class="fa fa-arrow-up btn btn-primary p-1 mx-2" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
                         <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)" v-else></i>
@@ -151,7 +155,10 @@
                         <div v-else>{{ Number(item.avg).toFixed(2) }}</div>
                     </td>
                     <td class="text-center">{{ item.percent }}</td>
-                    <td class="text-center">{{ item.sum }}</td>
+                    <td class="text-center">{{my_sum * (parseInt(item.share)/100)}}</td>
+                    <td class="text-center">
+                        {{ item.sum }}
+                    </td>
                 </tr>
 
             </template>
@@ -196,6 +203,9 @@ import {sources, methods} from "./helpers.js";
 export default {
     name: "KpiItems", 
     props: {
+        my_sum:{
+            default:0
+        },
         kpi_id: {
             default: 0
         },
@@ -289,6 +299,7 @@ export default {
 
     },
     mounted(){
+        console.log(this.items);
     },
     computed: {
     },
