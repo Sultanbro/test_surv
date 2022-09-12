@@ -54,21 +54,27 @@
                         </div>
                     </td>
                     <td class="text-left">
-                        <div v-if="all_fields[0].key == 'target'" class="mr-5">
+                        <div v-if="all_fields[0].key == 'target'" class="d-flex">
                             <superselect
                             v-if="bonus.id == 0"
-                            class="w-full" 
+                            width="80%" 
+                            class="w-full"
                             :onlytype="2"
                             :values="(new_target == null && newBonusesArray.length > 0) ? [] : [new_target]" 
                             :single="true"
                             @choose="(target) => new_target = target"
                             @remove="() => new_target = null" />
-                            <div v-else class="d-flex aic">
+                            <div v-else>
                                 <i class="fa fa-user ml-2 color-user" v-if="bonus.target.type == 1"></i> 
                                 <i class="fa fa-users ml-2 color-group" v-if="bonus.target.type == 2"></i> 
                                 <i class="fa fa-briefcase ml-2 color-position" v-if="bonus.target.type == 3"></i> 
                                 <span class="ml-2">{{ bonus.target.name }}</span>
                             </div>
+
+                            <i
+                                class="fa fa-save btn btn-success p-1 ml-1"
+                                @click="saveNewBonusArray()"
+                            />
                         </div>
                     </td>
                 </tr>
@@ -549,6 +555,7 @@ export default {
     },
     data() {
         return {
+            my_items: [],
             new_target: null,
             bonus: null,
             groupsArray: [],
@@ -607,6 +614,98 @@ export default {
 
     },
     methods: {
+        saveNewBonusArray(){  
+            let item = this.newBonusesArray[this.newBonusesArray.length - 1];     
+            item.target = this.new_target; 
+            /**
+             * validate item
+             */
+
+            let not_validated_msg = this.validateMsg(item);
+            if(not_validated_msg != '') {
+                this.$toast.error(not_validated_msg)
+                return;
+            }
+            
+            /**
+             * prepare fields
+             */
+            let loader = this.$loading.show();
+            let method = item.id == 0 ? 'save' : 'update';
+            let titles = [];
+            let sums = [];
+            let activity_ids = [];
+            let units = [];
+            let quantities = [];
+            let dayparts = [];
+            let texts = [];
+            this.newBonusesArray.forEach(bonus => {
+                titles.push(bonus.title);
+                sums.push(bonus.sum);
+                activity_ids.push(bonus.activity_id);
+                units.push(bonus.unit);
+                quantities.push(bonus.quantity);
+                dayparts.push(bonus.daypart);
+                texts.push(bonus.text);
+            });
+            let my_item = {
+                "targetable_type": item.target.type,
+                "targetable_id": parseInt(item.target.id),
+                "group_id": item.group_id,
+                "title": titles,
+                "sum": sums,
+                "activity_id": activity_ids,
+                "unit": units,
+                "quantity": quantities,
+                "daypart": dayparts,
+                "text": texts
+            };
+            let fields = {
+                targetable_id: item.target.id,
+                targetable_type: findModel(item.target.type),
+                ...item
+            };
+            let req = item.id == 0 
+                ? axios.post(this.uri + '/' + method, my_item)
+                : axios.put(this.uri + '/' + method, fields);
+            /**
+             * request
+             */
+            req.then(response => {
+    
+                if(method == 'save') {
+                    let bonus = response.data.bonus;
+                    item.id = bonus.id;
+                    // this.items.unshift(item);
+                    
+                    let i = this.all_items.findIndex(el => el.type == item.target.type && el.id == item.target.id);
+                    if(i != -1) {
+                        this.all_items[i].items.unshift(item);
+                    } else {
+                        this.all_items.unshift({
+                            id: item.target.id,
+                            type: item.target.type,
+                            name: item.target.name,
+                            items: [item],
+                            expanded: false
+                        });
+                    }
+                    this.showSidebar = false
+                }
+                this.$toast.info('Сохранено');
+                this.newBonusesArray = [];
+                loader.hide()
+            }).catch(error => {
+                let m = error;
+                if(error.message == 'Request failed with status code 409') {
+                    m = 'Выберите другую цель "Кому"';
+                }
+                
+                loader.hide()
+                alert(m)
+            });
+            return false;
+        },
         addBonus(){
             this.newBonusesArray.unshift(newBonus());
             this.newBonusesArray[this.newBonusArray.length - 1].bonus.target = this.new_target;
@@ -728,6 +827,7 @@ export default {
             /**
              * validate item
              */
+
             let not_validated_msg = this.validateMsg(item);
             if(not_validated_msg != '') {
                 this.$toast.error(not_validated_msg)
@@ -739,14 +839,25 @@ export default {
              */
             let loader = this.$loading.show();
             let method = item.id == 0 ? 'save' : 'update';
+            let my_item = {
+                "targetable_type": item.target.type,
+                "targetable_id": parseInt(item.target.id),
+                "group_id": item.group_id,
+                "title": [item.title],
+                "sum": [item.sum],
+                "activity_id": [item.activity_id],
+                "unit": [item.unit],
+                "quantity": [item.quantity],
+                "daypart": [item.daypart],
+                "text": [item.text]
+            };
             let fields = {
                 targetable_id: item.target.id,
                 targetable_type: findModel(item.target.type),
                 ...item
             };
-    
             let req = item.id == 0 
-                ? axios.post(this.uri + '/' + method, fields)
+                ? axios.post(this.uri + '/' + method, my_item)
                 : axios.put(this.uri + '/' + method, fields);
             /**
              * request
