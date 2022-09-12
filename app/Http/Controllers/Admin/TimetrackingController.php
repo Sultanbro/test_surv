@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Components\TelegramBot;
 use App\DayType;
+use App\Events\TransferUserInGroupEvent;
 use App\Fine;
 use App\GroupPlan;
 use App\Http\Controllers\Controller;
@@ -54,7 +55,7 @@ class TimetrackingController extends Controller
     {
         View::share('title', 'Табель сотрудников');
         View::share('menu', 'timetracking');
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     public function settings()
@@ -535,9 +536,13 @@ class TimetrackingController extends Controller
 
     public function deletegroup(Request $request)
     {
-        $group = ProfileGroup::where('id', $request->group)->first();
-        $group->active = 0;
-        $group->save();
+        DB::transaction(function () use ($request) {
+            $group = ProfileGroup::where('id', $request->oldGroup)->first();
+            $group->active = 0;
+            $group->save();
+
+            event(new TransferUserInGroupEvent($group, $request->newGroup));
+        });
         return 'true';
     }
 
@@ -550,9 +555,8 @@ class TimetrackingController extends Controller
           //  $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->with('dialer')->first();
             //if(!$group) $group = ProfileGroup::find($request->group);
             
-            if ($group->users != null) {
-                $users = json_decode($group->users);
-                $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
+            if ($group->users()->get()->toArray() != null) {
+                $users = $group->users()->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
            
             $kbm = \App\Models\KnowBaseModel::
