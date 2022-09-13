@@ -8,6 +8,7 @@ use App\Events\TransferUserInGroupEvent;
 use App\Fine;
 use App\GroupPlan;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GetReportsRequest;
 use App\Position;
 use App\Salary;
 use App\BPLink;
@@ -848,31 +849,14 @@ class TimetrackingController extends Controller
         return view('admin.reports', compact('groups', 'fines', 'years'));
     }
 
-    public function getReports(Request $request)
+    public function getReports(GetReportsRequest $request)
     {
-
         $year = $request['year'];
-
-        $users_ids = [];
-        $head_ids = [];
-        if ($request['group_id']) {
-            $group = ProfileGroup::find($request['group_id']);
-            if (!empty($group) && $group->users != null) {
-                // $check_users = json_decode($group->users);
-                
-                // foreach($check_users as $check_user){
-                //    $ud = UserDescription::where('user_id',$check_user)->whereDate('applied', '>=', Carbon::parse($year . '-' . $request->month . '-01')->startOfMonth())->value('user_id');
-                //    if(isset($ud)){
-                //        $users_ids[] = $ud;
-                //    }
-                // }
-                $users_ids = json_decode($group->users);
-                $head_ids = json_decode($group->head_id);
-            }
-        }
-
-       
-        $currentUser = User::bitrixUser();
+        $groupId = $request->input('group_id');
+        $group = ProfileGroup::query()->findOrFail($groupId) ?? null;
+        $users_ids = $group->users()->get(['id'])->pluck('id')->toArray();
+        $head_ids = json_decode($group->head_id);
+        $currentUser = User::bitrixUser() ?? User::findOrFail(5);
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
         if (!in_array($currentUser->id, $group_editors) && $currentUser->is_admin != 1) {
@@ -1061,8 +1045,6 @@ class TimetrackingController extends Controller
 
 
         $data['editable_time'] = $group->editable_time;
-        
-        
         return $data;
     }
 

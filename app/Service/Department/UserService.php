@@ -166,7 +166,7 @@ class UserService
         foreach ($firedTrainees as $firedTrainee)
         {
             $user = User::withTrashed()->where('users.id', $firedTrainee->user_id)
-                ->withWhereHas('userDescription', fn($description) => $description->where('is_trainee', 1))
+                ->withWhereHas('description', fn($description) => $description->where('is_trainee', 1))
                 ->when($firedTrainee->deleted_at == null, fn ($user) => $user->withWhereHas(
                     'histories', fn($history) => $history
                     ->whereYear('payload->delete_action_date', $this->getYear($date))
