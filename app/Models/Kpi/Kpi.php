@@ -29,6 +29,7 @@ class Kpi extends Model
         'colors',
         'created_by',
         'updated_by',
+        'children',
     ];
 
     protected $dates = [
@@ -39,6 +40,7 @@ class Kpi extends Model
     protected $casts = [
         'created_at'  => 'date:d.m.Y H:i',
         'updated_at'  => 'date:d.m.Y H:i',
+        'children'    => 'array',
     ];
 
     /**

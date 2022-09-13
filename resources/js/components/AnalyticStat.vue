@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div class="z-12 relative">
      
         <div class="table-header">
             <input type="text" class="cell-coords" v-model="coords">
@@ -1365,6 +1365,9 @@
     }
     </script>
     
-    <style>
+    <style scoped>
+    .z-12 {
+        z-index: 12
+    }
     </style> 
     

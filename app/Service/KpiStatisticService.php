@@ -594,6 +594,7 @@ class KpiStatisticService
 
         if($user_id != 0) {
             $user = User::with('groups')->find($user_id);
+            $position_id = $user->position_id;
             $groups = $user->groups->pluck('id')->toArray();
 
             $kpis->where(function($query) use ($user_id) {
@@ -603,6 +604,10 @@ class KpiStatisticService
                 ->orWhere(function($query) use ($groups) {
                     $query->whereIn('targetable_id', $groups)
                         ->where('targetable_type', 'App\ProfileGroup');
+                })
+                ->orWhere(function($query) use ($position_id) {
+                    $query->where('targetable_id', $position_id)
+                        ->where('targetable_type', 'App\Position');
                 });
         }
 
@@ -613,6 +618,7 @@ class KpiStatisticService
             $kpi->avg = 0; // avg percent from kpi_items' percent
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
         }
+
 
         return [
             'items' => $kpis,

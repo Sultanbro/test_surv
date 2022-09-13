@@ -18,6 +18,7 @@ use App\Models\Kpi\Traits\Expandable;
 use App\Models\Kpi\Traits\Targetable;
 use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
+use App\Service\Department\UserService;
 use DB;
 
 class Bonus extends Model
@@ -75,20 +76,28 @@ class Bonus extends Model
     public static function obtained_in_group($group_id, $date) {
         $group = ProfileGroup::find($group_id);
         
-        $user_ids = json_decode($group->users);
-        $bonuses = self::where('group_id', $group_id)->get();
-        
+        // $user_ids = json_decode($group->users);
+        $bonuses = self::query()
+            ->where('targetable_id', $group_id)
+            ->where('targetable_type', 'App\ProfileGroup')
+            ->get();
+            
+
         $awards = []; // bonuses
         $comments = []; // bonuses
         
-        $users = \DB::table('users')
-            ->whereNull('deleted_at')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->whereIn('users.id', $user_ids)
-            ->where('is_trainee', 0)
-            ->get(['users.id'])
-            ->pluck('id')
-            ->toArray();
+        // $users = \DB::table('users')
+        //     ->whereNull('deleted_at')
+        //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        //     ->whereIn('users.id', $user_ids)
+        //     ->where('is_trainee', 0)
+        //     ->get(['users.id'])
+        //     ->pluck('id')
+        //     ->toArray();
+        
+        $users = (new UserService)->getEmployees($group_id, $date);
+
+//if($group_id) $users = [15317];
 
         foreach ($users as $user_id) { //  fill $awards array
             $awards[$user_id] = 0;
@@ -97,7 +106,6 @@ class Bonus extends Model
         
   
         foreach ($bonuses as $bonus) {
-            
             if($bonus->sum == 0) continue;
             if($bonus->activity_id == 0) continue;
             
@@ -188,12 +196,12 @@ class Bonus extends Model
                         $val = self::fetch_value_from_activity_for_recruting($bonus->activity_id, $user_id, $date);
                     } else if(in_array($group_id, [53,57,79]) && in_array($bonus->activity_id, [16,37,18,38,146,147])) { // Минуты и согласия
                         $val = self::fetch_value_from_callibro($bonus, $group_id, $date, $user_id);
-                       // dump($val);
-                    } else {
+                    } else {       
                         $val = self::fetch_value_from_activity_new($bonus->activity_id, $user_id, $date);
                     }
-
+                    
                     $summy = (float)$val * $bonus->sum;
+
                     //if($summy > 0) {
                         ObtainedBonus::createOrUpdate([
                             'user_id' => $user_id,
@@ -225,8 +233,10 @@ class Bonus extends Model
                     ]);
                 }
             }
-        }
 
+
+        }
+        
         return $awards;
     }
 

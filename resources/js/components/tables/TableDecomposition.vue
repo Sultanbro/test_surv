@@ -4,7 +4,7 @@
         <div class="mr-2">Декомпозиция на месяц</div>
     </h4>
     
-    <table class="table b-table table-bordered table-sm table-responsive strt z--1">
+    <table class="table b-table table-bordered table-sm table-responsive strt">
         <tr>
             <th class="b-table-sticky-column text-left px-1 bg-white border-blue" rowspan="2">
                 <div class="wd"></div>
@@ -413,9 +413,6 @@ export default {
 </script>
 
 <style lang="scss">
-.z--1 {
-    z-index: -1;
-}
 .bg-white {background:white}
 .my-table.m2 tr .badge {
     opacity: 1;
