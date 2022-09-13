@@ -14,6 +14,7 @@
                 <th v-if="!kpi_page">Факт</th>
                 <th v-if="!kpi_page">% выполнения</th>
                 <th>Сумма премии при выполнении плана, KZT</th>
+                <th>Заработано</th>
                 <th v-if="kpi_page"></th>
             </tr>
         </thead>
@@ -104,6 +105,9 @@
                     <td class="text-center">
                         {{ item.sum }}
                     </td>
+                    <td class="text-center">
+                        0
+                    </td>
                     <td>
                         <i class="fa fa-arrow-up btn btn-primary p-1 mx-2" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
                         <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)" v-else></i>
@@ -131,15 +135,7 @@
                     <td class="first-column text-light"><center>{{ i + 1 }}</center></td>
                     <td class="px-2">{{ item.name }}</td>
                     <td class="text-center">{{ methods[item.method] }}</td>
-                    <td class="text-center"
-                    >
-                        <div v-if="item.full_time == 1 && item.method == 1">{{ item.daily_plan + ' * ' + item.workdays + ' дней' }}</div>
-                        <div v-if="item.full_time == 0 && item.method == 1">{{ item.daily_plan + ' * ' + item.workdays + ' дней * 0.5' }}</div>
-                        <div>
-                            <b>{{ item.plan }} {{ item.unit }}</b>
-                        </div>
-                        
-                    </td>
+                    <td class="text-center"><b>{{ item.plan }} {{ item.unit }}</b></td>
                     <td class="text-center">{{ item.share }}</td>
                     <td class="text-center" v-if="editable">
                         <input v-if="[1,3,5].includes(item.method)" type="number" class="form-control" v-model="item.fact" min="0" @change="updateStat(i)" />
@@ -151,7 +147,10 @@
                         <div v-else>{{ Number(item.avg).toFixed(2) }}</div>
                     </td>
                     <td class="text-center">{{ item.percent }}</td>
-                    <td class="text-center">{{ item.sum }}</td>
+                    <td class="text-center">{{my_sum * (parseInt(item.share)/100)}}</td>
+                    <td class="text-center">
+                        {{ item.sum }}
+                    </td>
                 </tr>
 
             </template>
@@ -196,6 +195,9 @@ import {sources, methods} from "./helpers.js";
 export default {
     name: "KpiItems", 
     props: {
+        my_sum:{
+            default:0
+        },
         kpi_id: {
             default: 0
         },
@@ -289,6 +291,7 @@ export default {
 
     },
     mounted(){
+        console.log(this.items);
     },
     computed: {
     },

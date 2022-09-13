@@ -12,7 +12,7 @@
         <tr>
         
         </tr>
-        <template v-for="(page_item, p) in groups">
+        <template v-for="(page_item, p) in groups" v-if="page_item.length != 0">
             <tr>
                 <td 
                     @click="expand(p)"
@@ -26,11 +26,12 @@
                     </td>
                 <td class="text-left">
                     <div class="d-flex aic p-1">
-                        <span class="ml-2" >{{ page_item.name }}</span>
+                        <span class="ml-2" v-if="page_item.name">{{ page_item.name }}</span>
+                        <span class="ml-2" v-else>{{page_item[0].name}}</span>
                     </div>
                 </td>
             </tr>
-            <template v-if="page_item.users.length > 0">
+            <template v-if="page_item[0]">
                 <tr  
                     class="collapsable"
                     :class="{'active': page_item.expanded }"
@@ -105,7 +106,6 @@ export default {
     name: "Bonuses", 
     props: {
         groups: Array,
-        items: Array,
         group_names: Object
     },
     watch: {
@@ -114,11 +114,13 @@ export default {
     data() {
         return {
             fields: [],
+            items: [],
             user_collapsed: false,
         }
     }, 
     
     created() {
+        this.generateBonuses();
     },
 
     mounted() {
@@ -134,7 +136,7 @@ export default {
         adjustFields(){
         },
         expand(p){
-            this.groups[p].expanded = !this.groups[p].expanded;
+            
         },
         bonuses(obtained_bonuses){
             var bonus_titles = [];

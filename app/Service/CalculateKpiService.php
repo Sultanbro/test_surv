@@ -63,18 +63,18 @@ class CalculateKpiService
      */
     private function sum(array $data) : float
     {
-        $daily_plan = (float) $data['daily_plan'];
-        if($data['full_time'] == 0) {
-            $daily_plan = $daily_plan / 2;
-        }
-        
+        $plan = (float) $data['daily_plan'];
+        $percent = 1;
+
         if($data['days_from_user_applied'] != 0) { // zero means user applied before this month
-            $plan = $daily_plan * $data['days_from_user_applied'];
-        } else {
-            $plan = $daily_plan * $data['workdays'];
+            $percent = $data['workdays'] > 0 ? $data['days_from_user_applied'] / $data['workdays'] : 1;
         }
 
-        return $plan != 0 ? round($data['fact'] / $plan, 2) * 100 : 0.00;
+        if($data['full_time'] == 0) {
+            $percent = $percent / 2;
+        }
+
+        return $plan != 0 ? round($data['fact'] / $plan * $percent, 2) * 100 : 0.00;
     }
 
     /**

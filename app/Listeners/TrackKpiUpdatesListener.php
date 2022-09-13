@@ -29,7 +29,7 @@ class TrackKpiUpdatesListener
     public function handle(TrackKpiUpdatesEvent $event)
     {
         $kpi = Kpi::query()->findOrFail($event->kpiId);
-
+    
         DB::table('histories')->insert([
             'reference_table'   => 'App\Models\Kpi\Kpi',
             'reference_id'      => $kpi->id,
@@ -39,10 +39,12 @@ class TrackKpiUpdatesListener
                 'completed_100' => $kpi->completed_100 ?? null,
                 'lower_limit'   => $kpi->lower_limit ?? null,
                 'upper_limit'   => $kpi->upper_limit ?? null,
-                'colors'        => $kpi->colors ?? null
+                'colors'        => $kpi->colors ?? null,
+                'children'      => $kpi->children
             ]),
             'created_at'         => now(),
-            'updated_at'         => now()
+            'updated_at'         => now(),
+            
         ]);
     }
 }

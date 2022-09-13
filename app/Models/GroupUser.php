@@ -12,14 +12,11 @@ class GroupUser extends Model
 
     protected $table = 'group_user';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'group_id',
         'user_id',
-        'created_at',
-        'updated_at',
-        'deleted_at'
     ];
 
     public function user()
