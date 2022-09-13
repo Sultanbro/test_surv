@@ -153,8 +153,6 @@ function calcCompleted(el) {
 
     if(plan <= 0) return 0;
 
-    if(el.full_time == 0) plan = plan / 2;
-
     if(el.method == 1) {
         res = (fact / plan * 100).toFixed(2); 
     }
@@ -172,9 +170,6 @@ function calcCompleted(el) {
     }
 
     if(el.method == 5) {
-        console.log('method 5')
-        console.log('fact ' + fact)
-        console.log('plan ' + plan)
         res = fact - plan > 0 ? 100 : 0;
     }
 

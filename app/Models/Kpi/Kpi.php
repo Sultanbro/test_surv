@@ -2,6 +2,7 @@
 
 namespace App\Models\Kpi;
 
+use App\Models\History;
 use App\Models\Kpi\Traits\Expandable;
 use App\Models\Kpi\Traits\Targetable;
 use App\Models\Kpi\Traits\WithActivityFields;
@@ -52,5 +53,16 @@ class Kpi extends Model
     public function items(): HasMany
     {
         return $this->hasMany('App\Models\Kpi\KpiItem');
+    }
+
+    /**
+     * История
+     * 
+     * @return MorphMany
+     */
+    public function histories()
+    {
+        return $this->morphMany(History::class, 'historable', 'reference_table', 'reference_id')
+            ->orderBy('created_at', 'desc');
     }
 }

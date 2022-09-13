@@ -586,6 +586,9 @@ class KpiStatisticService
         $kpis = Kpi::query()
             //->withTrashed()
             ->with([
+                'histories' => function($query) use ($last_date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+                },
                 'items.histories' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
                 },
@@ -596,7 +599,7 @@ class KpiStatisticService
             $user = User::with('groups')->find($user_id);
             $position_id = $user->position_id;
             $groups = $user->groups->pluck('id')->toArray();
-
+            
             $kpis->where(function($query) use ($user_id) {
                     $query->where('targetable_id', $user_id)
                         ->where('targetable_type', 'App\User');
@@ -615,6 +618,17 @@ class KpiStatisticService
         
         foreach ($kpis as $key => $kpi) {
             $kpi->kpi_items = [];
+            
+            // remove items if it's not in history
+            if($kpi->has('histories')) {
+                $payload = json_decode($kpi->histories->first()->payload, true);
+
+                if(isset($payload['children'])) {
+                    $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+                }
+            }
+
+            //  
             $kpi->avg = 0; // avg percent from kpi_items' percent
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
         }
