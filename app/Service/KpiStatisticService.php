@@ -620,7 +620,7 @@ class KpiStatisticService
             
             // remove items if it's not in history
             if($kpi->has('histories')) {
-                $payload = json_decode($kpi->histories->first()->payload, true);
+                if($kpi->histories->first()) $payload = json_decode($kpi->histories->first()->payload, true);
 
                 if(isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);

@@ -515,6 +515,7 @@ Route::middleware([
         Route::any('quartal-premiums', [KpiStatController::class, 'fetchQuartalPremiums'])->name('fetchQuartalPremiums');
         Route::any('workdays', [KpiStatController::class, 'workdays']);
         Route::post('update-stat', [KpiStatController::class, 'updateStat'])->name('updateStat');
+        Route::get('activities',[KpiStatController::class,'getActivities'])->name('getActivites');
     });
 
     /**
