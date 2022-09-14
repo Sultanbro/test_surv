@@ -81,7 +81,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     public function surv(Request $request)
@@ -1967,31 +1967,37 @@ class UserController extends Controller
         $ud->books = json_encode($books);
         $ud->save();
 
-    } 
-    
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function editPersonGroup(Request $request) {
-      //bitrix  dd('123');
+
         $group = ProfileGroup::find($request['group_id']);
-        $users = json_decode($group->users);
-        event(new TrackGroupChangingEvent($request['user_id'], $request['action'], $request['group_id']));
-      
-        if($request['action'] == 'add') {
-            array_push($users, $request['user_id']); 
-            $users = array_unique($users);
-            
-        }
+        $exist = $group->users()->where([
+            ['user_id', $request['user_id']],
+            ['status', 'active']
+        ])->whereNull('to')->exists();
 
-        if($request['action'] == 'delete') {
-            if (($key = array_search($request['user_id'], $users)) !== false) {
-                unset($users[$key]);
+        try {
+            if($request['action'] == 'add' && !$exist) {
+                $group->users()->attach($request['user_id'], [
+                    'from' => Carbon::now()->toDateString()
+                ]);
             }
-        }
 
-        $users = array_values($users);
-        $group->users = json_encode($users);
-        $group->save();
-        
-    } 
+            if($request['action'] == 'delete') {
+                event(new TrackGroupChangingEvent($request['user_id'], $request['group_id']));
+                $group->users()->where('user_id', $request['user_id'])->whereNull('to')->update([
+                    'to' => Carbon::now()->toDateString(),
+                    'status'     => 'drop'
+                ]);
+            }
+        }catch (\Exception $exception) {
+            throw new \Exception($exception);
+        }
+    }
 
     public function setUserHeadInGroups(Request $request) {
 

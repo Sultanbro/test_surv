@@ -26,22 +26,13 @@ class TrackGroupChangingEvent
     public int $userId;
 
     /**
-     * Действие:
-     * Добавить или удалить
-     *
-     * @var string
-     */
-    public string $action;
-
-    /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($userId, $action, $groupId)
+    public function __construct($userId, $groupId)
     {
         $this->userId  = $userId;
-        $this->action  = $action;
         $this->groupId = $groupId;
     }
 

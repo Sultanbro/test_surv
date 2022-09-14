@@ -75,7 +75,9 @@ class ProfileGroup extends Model
 
     public function users()
     {
-        return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id');
+        return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id')
+            ->withPivot(['from', 'to'])
+            ->withTimestamps();
     }
 
     /**

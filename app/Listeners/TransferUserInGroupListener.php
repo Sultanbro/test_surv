@@ -34,18 +34,26 @@ class TransferUserInGroupListener
         $users    = $oldGroup->users()->get();
 
         $this->saveInHistory($users, $oldGroup);
+        $this->updateUserInformation($oldGroup);
 
         foreach ($users as $user)
         {
-            GroupUser::query()->where([
-                ['user_id', $user->id],
-                ['group_id', $oldGroup->id]
-            ])->update([
+            GroupUser::query()->create([
                 'group_id' => $event->newGroup,
+                'user_id' => $user->id,
+                'from' => Carbon::now()->toDateString(),
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
         }
+    }
+
+    private function updateUserInformation($oldGroup): void
+    {
+        $oldGroup->users()->whereNull('to')->update([
+            'to' => Carbon::now()->toDateString(),
+            'status'     => 'drop'
+        ]);
     }
 
     /**
