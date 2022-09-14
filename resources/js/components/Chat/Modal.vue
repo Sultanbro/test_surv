@@ -1,7 +1,7 @@
 <template>
-  <div class="modals-backdrop">
-    <div class="modals">
-      <header class="modals-header">
+  <div class="modal-backdrop">
+    <div class="modal">
+      <header class="modal-header">
         <slot name="header">
           This is the default title!
         </slot>
@@ -14,13 +14,13 @@
         </button>
       </header>
 
-      <section class="modals-body">
+      <section class="modal-body">
         <slot name="body">
           This is the default body!
         </slot>
       </section>
 
-      <footer class="modals-footer">
+      <footer class="modal-footer">
         <slot name="footer">
           This is the default footer!
         </slot>
@@ -54,7 +54,7 @@ export default {
 </script>
 
 <style scoped>
-.modals-backdrop {
+.modal-backdrop {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -67,7 +67,7 @@ export default {
   z-index: 2;
 }
 
-.modals {
+.modal {
   background: #FFFFFF;
   box-shadow: 2px 2px 20px 1px;
   /*overflow-x: auto;*/
@@ -78,26 +78,26 @@ export default {
   max-height: calc(100vh - 100px);
 }
 
-.modals-header,
-.modals-footer {
+.modal-header,
+.modal-footer {
   padding: 15px;
   display: flex;
 }
 
-.modals-header {
+.modal-header {
   position: relative;
   border-bottom: 1px solid #eeeeee;
   color: #4AAE9B;
   justify-content: space-between;
 }
 
-.modals-footer {
+.modal-footer {
   border-top: 1px solid #eeeeee;
   flex-direction: column;
   justify-content: flex-end;
 }
 
-.modals-body {
+.modal-body {
   position: relative;
   padding: 20px 10px;
 }

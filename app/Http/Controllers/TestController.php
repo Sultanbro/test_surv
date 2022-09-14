@@ -24,33 +24,23 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\QualityRecordWeeklyStat;
 use App\Http\Controllers\IntellectController;
+use App\Models\GroupUser;
+use App\Salary;
 
 class TestController extends Controller { 
  
 	public function test() {
-
-
-		$stats = UserStat::whereDate('date', '<=', '1900-01-01')
-			->get();
-
-			foreach ($stats as $key => $stat) {
-				$date = Carbon::parse($stat->date)->year(2022)->format('Y-m-d');
-				$stat->date = $date;
-				$stat->save();
-			}
-	
-
-
-
-		dd(AnalyticStat::getRentability(
-			63, 
-			'2022-09-01'
-		));
-		dd(AnalyticStat::getCellValue(
-			42,
-			'C20',
-			'2022-08-01'
-		));
+		
+        $users    = json_decode(ProfileGroup::query()->findOrFail(53)->users, true);
+		
+		// foreach ($users as $key => $user_id) {
+		// 	GroupUser::create([
+		// 		'user_id'  => $user_id,
+		// 		'group_id' => 53,
+		// 	]);
+		// }
+		
+		
 	}  
 
 	public function test_mail_invitation()

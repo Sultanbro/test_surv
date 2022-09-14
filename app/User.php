@@ -26,6 +26,7 @@ use App\ProfileGroupUser as PGU;
 use App\Models\CourseResult;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\Access\Authorizable;
+use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable implements Authorizable
 {
@@ -1063,5 +1064,16 @@ class User extends Authenticatable implements Authorizable
 
     public function checklists(){
         return $this->belongsToMany(\App\Models\Checklist::class);
+    }
+
+    /**
+     * working employees
+     */
+    public function scopeEmployees(Builder $query)
+    {
+        $query->with('user_description')
+              ->whereHas('user_description', function ($query) {
+                   $query->where('is_trainee', 0);
+              });
     }
 }

@@ -119,6 +119,25 @@
 
 
     <sidebar
+      title="Bonus"
+      :open="showBonusSidebar"
+      @close="showBonusSidebar = false"
+      v-if="showBonusSidebar"
+      width="80%"
+    >
+     <!-- table -->
+        <t-stats-bonus 
+            :groups="bonus_groups"
+            :group_names="groups"
+            :key="bonus_groups"
+        />
+
+    <p class="text-red mt-2">
+        * сумма премии за выполнение показателей начнет меняться после достижения 80% от целевого значения на месяц
+    </p>
+
+    </sidebar>
+    <!--<sidebar
       title="Бонусы"
       :open="showBonusSidebar"
       @close="showBonusSidebar = false"
@@ -151,7 +170,7 @@
             <p style="color:red">Бонус изменен на {{ data.editedBonus.amount }} KZT <br>Комментарии: {{ data.editedBonus.comment }}</p>
         </div>
       </div>
-    </sidebar>
+    </sidebar>-->
 
 
     <sidebar
@@ -208,6 +227,7 @@ export default {
             activities: [],
             groups: {},
             kpis: [],
+            bonus_groups: [],
         };
     },
     created() {
@@ -215,6 +235,26 @@ export default {
         console.log(this.data,'imasheev')
     },
     methods: {
+        openQuartal(){
+            this.fetchData({
+                data_from: {
+                    year: new Date().getFullYear(),
+                    month: this.$moment(this.month, 'MMMM').format('M')
+                },
+                user_id: this.activeuserid
+            })
+            this.showQuartalBonusSidebar = true
+        },
+        openBonus(){
+            this.fetchBonus({
+                data_from: {
+                    year: new Date().getFullYear(),
+                    month: this.$moment(this.month, 'MMMM').format('M')
+                },
+                user_id: this.activeuserid
+            })
+            this.showBonusSidebar = true
+        },
         openKpi(){
             this.fetchData({
                 data_from: {
@@ -225,7 +265,19 @@ export default {
             })
             this.showKpiSidebar = true
         },
-
+        fetchBonus(filter){
+            let loader = this.$loading.show();
+            axios.post('/statistics/bonus', {
+                filters: filters 
+            }).then(response => {
+                // items
+                this.bonus_groups = response.data;
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
+        },
         fetchData(filters) {
             let loader = this.$loading.show();
 
@@ -235,6 +287,8 @@ export default {
                 
                 // items
                 this.kpis = response.data.items;
+                this.kpis = this.kpis.map(res=> ({...res, my_sum: 0}))
+                
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
 

@@ -31,6 +31,16 @@ class MessagesController {
         }
         $messages = MessengerFacade::fetchMessages($chatId, 0, $this->perPage);
 
+        // last message should contain readers
+        $lastMessage = $messages->first();
+        if ($lastMessage) {
+            $lastMessage->readers = $lastMessage->readers()->get();
+            // exclude current user from readers
+            $lastMessage->readers = $lastMessage->readers->filter(function ($reader) {
+                return $reader->id !== Auth::user()->id;
+            });
+        }
+
         return response()->json($messages);
     }
 

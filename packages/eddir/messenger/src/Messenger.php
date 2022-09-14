@@ -87,6 +87,7 @@ class Messenger {
         if ($chat->private) {
             // get second user in private chat
             $second_user = $chat->users->firstWhere('id', '!=', $user->id);
+
             $chat->title = $second_user ? $second_user->name . " " . $second_user->last_name : 'Уволен';
             $chat->image = $second_user ? config('messenger.user_avatar.folder') . '/' . $second_user->img_url : '';
 
@@ -95,7 +96,6 @@ class Messenger {
             }
 
         }
-
         if (empty($chat->image)) {
             $chat->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
         }
@@ -223,6 +223,15 @@ class Messenger {
         $messages->each( function ( MessengerMessage $message ) use ( $user ) {
             // add user to read users
             $message->readers()->syncWithoutDetaching( $user );
+            # get all users in chat
+            $users = $message->chat->users;
+            # send notification to all users in chat
+            $users->each(function (User $user) use ($message) {
+                $this->pusher->trigger( 'messages.' . $user->id, 'readMessage', [
+                    'message' => $message->toArray(),
+                    'user' => $user->toArray(),
+                ] );
+            });
         } );
         return $messages;
     }
@@ -237,6 +246,15 @@ class Messenger {
      */
     public function setMessageAsRead(MessengerMessage $message, User $user): MessengerMessage {
         $message->readers()->syncWithoutDetaching($user);
+        # get all users in chat
+        $users = $message->chat->users;
+        # send notification to all users in chat
+        $users->each(function (User $user) use ($message) {
+            $this->pusher->trigger( 'messages.' . $user->id, 'readMessage', [
+                'message' => $message->toArray(),
+                'user' => $user->toArray(),
+            ] );
+        });
         return $message;
     }
 

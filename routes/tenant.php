@@ -171,6 +171,7 @@ Route::middleware([
     Route::post('/my-courses/pass', [MyCourseController::class, 'pass']);
 
     Route::post('/course-results/get', [CourseResultController::class, 'get']);
+    Route::post('/course-results/nullify', [CourseResultController::class, 'nullify']);
     
     Route::get('/glossary/get', [GlossaryController::class, 'get']);
     Route::post('/glossary/save', [GlossaryController::class, 'save']);
@@ -471,6 +472,7 @@ Route::middleware([
     Route::post('/timetracking/analytics/restore_analytics', [AnalyticsController::class, 'restore_analytics']);
     Route::post('/timetracking/analytics/add-formula-1-31', [AnalyticsController::class, 'addFormula_1_31']);
     Route::post('/timetracking/analytics/add-remote-inhouse', [AnalyticsController::class, 'addRemoteInhouse']);
+    Route::post('/timetracking/analytics/add-salary', [AnalyticsController::class, 'addSalary']);
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
     /**
@@ -513,6 +515,7 @@ Route::middleware([
         Route::any('quartal-premiums', [KpiStatController::class, 'fetchQuartalPremiums'])->name('fetchQuartalPremiums');
         Route::any('workdays', [KpiStatController::class, 'workdays']);
         Route::post('update-stat', [KpiStatController::class, 'updateStat'])->name('updateStat');
+        Route::get('activities',[KpiStatController::class,'getActivities'])->name('getActivites');
     });
 
     /**

@@ -35,7 +35,6 @@
     />
 
     <t-stats-bonus
-        :items="page_items"
         :groups="bonus_groups"
         :group_names="groups"
         v-if="s_type_main == 2"
@@ -160,7 +159,9 @@ export default {
                 });
             }else if(this.s_type_main == 2){
                 axios.get('/statistics/bonuses').then(response => {
-                    this.bonus_groups = response.data.groups;
+                    console.log(response.data);
+                    this.bonus_groups = response.data;
+                    /*this.bonus_groups = response.data.groups;
                     this.bonus_groups = this.bonus_groups.map(res=> ({...res, expanded: false}));
                     for(let i = 0; i < this.bonus_groups.length; i++){
                         this.bonus_groups[i].users = this.bonus_groups[i].users.map(res=> ({...res, expanded: false, totals: {
@@ -169,7 +170,7 @@ export default {
                                 amount:0
                             }
                         }));
-                    }
+                    }*/
                     loader.hide();
                 }).catch(error => {
                     loader.hide();

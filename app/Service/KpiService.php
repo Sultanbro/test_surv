@@ -71,7 +71,7 @@ class KpiService
 
         try {
             DB::transaction(function () use ($request, &$kpi_item_ids, &$kpi_id){
-                $kpi_id = Kpi::query()->create([
+                $kpi = Kpi::query()->create([
                     'targetable_id'     => $request->input('targetable_id'),
                     'targetable_type'   => $request->targetable_type,
                     'completed_80'      => $request->input('completed_80'),
@@ -80,9 +80,13 @@ class KpiService
                     'upper_limit'       => $request->input('upper_limit'),
                     'colors'            => json_encode($request->input('colors')),
                     'created_by'        => auth()->id()
-                ])->id;
+                ]);
 
-                $kpi_item_ids = $this->saveItems($request->items, $kpi_id);
+                $kpi_item_ids = $this->saveItems($request->items, $kpi->id);
+
+                $kpi->children = $kpi_item_ids;
+                $kpi->save();
+
             });
 
             return [
@@ -118,7 +122,10 @@ class KpiService
                 $kpi_item_ids = $this->updateItems($id, $request->items);
 
                 $all = $request->all();
+
                 $all['updated_by'] = auth()->id();
+                $all['children'] = $kpi_item_ids;
+
                 unset($all['source']);
 
                 Kpi::findOrFail($id)->update($all);

@@ -44,46 +44,70 @@
             <tr>
                 
             </tr>
-            <tr v-if="addNewBonus">
-                <td colspan="2">
-                    <template>
-                        <table>
-                            <tr>
-                                <td v-for="(field, f) in all_fields.slice(0,4)">
-                                    <div v-if="field.key == 'target'" class="w-100">
-                                        <superselect
-                                            :placeholder="field.name"
-                                            v-if="activeItem.id == 0"
-                                            class="" 
-                                            :values="activeItem.target == null ? [] : [activeItem.target]" 
-                                            :single="true"
-                                            @choose="(target) => activeItem.target = target" /> 
-                                        <div v-else class="d-flex aic">
-                                            <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
-                                            <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
-                                            <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
-                                            <span class="ml-2">{{ activeItem.target.name }}</span>
-                                        </div>
-                                    </div>
+            <template v-if="bonus && newBonusesArray.length > 0">
+                <tr>
+                    <td>
+                        <div class="d-flex px-2" @click="bonus.expanded = !bonus.expanded">
+                            <i class="fa fa-minus mt-1" v-if="bonus.expanded"></i>
+                            <i class="fa fa-plus mt-1" v-else></i>
+                            <span class="ml-2"> new </span>
+                        </div>
+                    </td>
+                    <td class="text-left">
+                        <div v-if="all_fields[0].key == 'target'" class="d-flex">
+                            <superselect
+                            v-if="bonus.id == 0"
+                            width="80%" 
+                            class="w-full"
+                            :onlytype="2"
+                            :values="(new_target == null && newBonusesArray.length > 0) ? [] : [new_target]" 
+                            :single="true"
+                            @choose="(target) => new_target = target"
+                            @remove="() => new_target = null" />
+                            <div v-else>
+                                <i class="fa fa-user ml-2 color-user" v-if="bonus.target.type == 1"></i> 
+                                <i class="fa fa-users ml-2 color-group" v-if="bonus.target.type == 2"></i> 
+                                <i class="fa fa-briefcase ml-2 color-position" v-if="bonus.target.type == 3"></i> 
+                                <span class="ml-2">{{ bonus.target.name }}</span>
+                            </div>
 
-                                    <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
-                                        {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
-                                    </div>
-            
-                                    <div v-else-if="field.key == 'updated_by' && activeItem.updater != null">
-                                        {{ activeItem.updater.last_name + ' ' + activeItem.updater.name }}
-                                    </div>
-            
-                                    <div v-else-if="non_editable_fields.includes(field.key)">
-                                        {{ activeItem[field.key] }}
-                                    </div>
-            
-                                  
-            
-                                    <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
-                                        <div class="d-flex">
+                            <i
+                                class="fa fa-save btn btn-success p-1 ml-1"
+                                @click="saveNewBonusArray()"
+                            />
+                        </div>
+                    </td>
+                </tr>
+                <template v-if="bonus.expanded">
+                <tr>
+                        <td :colspan="fields.length + 2">
+                            <div class="table__wrapper">
+                                <table class="table b-table table-bordered table-sm table-responsive mb-0 table-inner">
+                                    <tr>
+                                        <th class="b-table-sticky-column text-center px-1">
+                                            
+                                        </th>
+                                        <th
+                                            class="text-left"
+                                            v-for="(field, f) in fields" 
+                                            :class="[
+                                                field.class,
+                                                {'b-table-sticky-column l-2 hidden' : field.key == 'target'
+                                            }]"
+                                            >
+                                            {{ field.name }}
+                                        </th> 
+                                        <th></th>
+                                    </tr>  
+                                    <tr  v-for="(item, i) in newBonusesArray">
+                                        <td></td> 
+                                        <td>
+                                            <input type="text" class="form-control" v-model="item.title" @change="validate(item[field.key], field.key)" /> 
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
                                             <select 
-                                                v-model="activeItem.source"
+                                                v-model="item.source"
                                                 class="form-control small mr-2"
                                                 @change="++source_key"
                                             >
@@ -94,8 +118,8 @@
                                             </select>
             
                                             <select 
-                                                v-if="Number(activeItem.source) == 1"
-                                                v-model="activeItem.group_id"
+                                                v-if="Number(item.source) == 1"
+                                                v-model="item.group_id"
                                                 class="form-control small mr-2"
                                                 :key="'a' + source_key"
                                             >
@@ -104,237 +128,64 @@
                                             </select>      
             
                                             <select 
-                                                v-model="activeItem.activity_id"
+                                                v-model="item.activity_id"
                                                 class="form-control small"
                                                 :key="'b' + source_key"
                                             >
                                                 <option value="0" selected>-</option>
-                                                <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
+                                                <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id">{{ activity.name }}</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    
-                                    <div v-else-if="field.key == 'unit'">
-                                        <select 
-                                            v-model="activeItem.unit"
-                                            class="form-control"
-                                        >
-                                            <option value="0" selected>-</option>
-                                            <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
-                                        </select>
-                                    </div>
-            
-                                    <div v-else-if="field.key == 'daypart'">
-                                        <select 
-                                            v-model="activeItem.daypart"
-                                            class="form-control"
-                                        >
-                                            <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
-                                        </select>
-                                    </div>
-            
-                                    <div v-else-if="field.key == 'text'">
-                                        <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
-                                    </div>
-            
-                                    <div v-else>
-                                        <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td v-for="(field, f) in all_fields.slice(5,9)">
-                                    <div v-if="field.key == 'target'" class="w-100">
-                                        <superselect
-                                            :placeholder="field.name"
-                                            v-if="activeItem.id == 0"
-                                            class="" 
-                                            :values="activeItem.target == null ? [] : [activeItem.target]" 
-                                            :single="true"
-                                            @choose="(target) => activeItem.target = target" /> 
-                                        <div v-else class="d-flex aic">
-                                            <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
-                                            <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
-                                            <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
-                                            <span class="ml-2">{{ activeItem.target.name }}</span>
-                                        </div>
-                                    </div>
+                                        </td>
+                                        <td>
+                                            <select 
+                                                v-model="item.unit"
+                                                class="form-control"
+                                            >
+                                                            <option value="0" selected>-</option>
+                                                            <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                                                        <select 
+                                                v-model="item.daypart"
+                                                class="form-control"
+                                            >
+                                                <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" v-model="item.sum" />
+                                        </td>
+                                        <td><input type="text" class="form-control" v-model="item.quantity" /></td>
+                                        <td><input type="textarea" class="form-control" v-model="item.text" /></td>
+                                        <td>{{item.created_at}}</td>
+                                        <td>{{item.updated_at}}</td>
+                                        <td>{{item.created_by}}</td>
+                                        <td>{{item.updated_by}}</td>
+                                        <td>
+                                            <i
+                                                class="fa fa-save btn btn-success p-1 ml-1"
+                                                @click="saveNewBonus(i)"
+                                            />
+                                            <i
+                                                class="fa fa-trash btn btn-danger p-1"
+                                                @click="deleteNewBonus(i)"
+                                            />
+                                        </td>
+                                    </tr>                             
+                                </table>
+                            </div>
+                        </td>
+                </tr>
+                <tr>
+                    <td></td> <td colspan="8" class="plus-item">
+                        <div class="px-2 py-1" @click="addBonus()"><i class="fa fa-plus mr-2"></i> <b>Добавить бонус</b></div>
+                    </td>
+                </tr>
+            </template>
+            </template>
 
-                                    <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
-                                        {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
-                                    </div>
-            
-                                    <div v-else-if="field.key == 'updated_by' && activeItem.updater != null">
-                                        {{ activeItem.updater.last_name + ' ' + activeItem.updater.name }}
-                                    </div>
-            
-                                    <div v-else-if="non_editable_fields.includes(field.key)">
-                                        {{ activeItem[field.key] }}
-                                    </div>
-            
-                                  
-            
-                                    <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
-                                        <div class="d-flex">
-                                            <select 
-                                                v-model="activeItem.source"
-                                                class="form-control small mr-2"
-                                                @change="++source_key"
-                                            >
-                                                <option v-for="key in Object.keys(sources)"
-                                                    :value="key">
-                                                    {{ sources[key] }}
-                                                </option>
-                                            </select>
-            
-                                            <select 
-                                                v-if="Number(activeItem.source) == 1"
-                                                v-model="activeItem.group_id"
-                                                class="form-control small mr-2"
-                                                :key="'a' + source_key"
-                                            >
-                                                <option value="0" selected>-</option>
-                                                <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
-                                            </select>      
-            
-                                            <select 
-                                                v-model="activeItem.activity_id"
-                                                class="form-control small"
-                                                :key="'b' + source_key"
-                                            >
-                                                <option value="0" selected>-</option>
-                                                <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div v-else-if="field.key == 'unit'">
-                                        <select 
-                                            v-model="activeItem.unit"
-                                            class="form-control"
-                                        >
-                                            <option value="0" selected>-</option>
-                                            <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
-                                        </select>
-                                    </div>
-            
-                                    <div v-else-if="field.key == 'daypart'">
-                                        <select 
-                                            v-model="activeItem.daypart"
-                                            class="form-control"
-                                        >
-                                            <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
-                                        </select>
-                                    </div>
-            
-                                    <div v-else-if="field.key == 'text'">
-                                        <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
-                                    </div>
-            
-                                    <div v-else>
-                                        <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td v-for="(field, f) in all_fields.slice(10,13)">
-                                    <div v-if="field.key == 'target'" class="w-100">
-                                        <superselect
-                                            :placeholder="field.name"
-                                            v-if="activeItem.id == 0"
-                                            class="" 
-                                            :values="activeItem.target == null ? [] : [activeItem.target]" 
-                                            :single="true"
-                                            @choose="(target) => activeItem.target = target" /> 
-                                        <div v-else class="d-flex aic">
-                                            <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
-                                            <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
-                                            <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
-                                            <span class="ml-2">{{ activeItem.target.name }}</span>
-                                        </div>
-                                    </div>
-
-                                    <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
-                                        {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
-                                    </div>
-            
-                                    <div v-else-if="field.key == 'updated_by' && activeItem.updater != null">
-                                        {{ activeItem.updater.last_name + ' ' + activeItem.updater.name }}
-                                    </div>
-            
-                                    <div v-else-if="non_editable_fields.includes(field.key)">
-                                        {{ activeItem[field.key] }}
-                                    </div>
-            
-                                  
-            
-                                    <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
-                                        <div class="d-flex">
-                                            <select 
-                                                v-model="activeItem.source"
-                                                class="form-control small mr-2"
-                                                @change="++source_key"
-                                            >
-                                                <option v-for="key in Object.keys(sources)"
-                                                    :value="key">
-                                                    {{ sources[key] }}
-                                                </option>
-                                            </select>
-            
-                                            <select 
-                                                v-if="Number(activeItem.source) == 1"
-                                                v-model="activeItem.group_id"
-                                                class="form-control small mr-2"
-                                                :key="'a' + source_key"
-                                            >
-                                                <option value="0" selected>-</option>
-                                                <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
-                                            </select>      
-            
-                                            <select 
-                                                v-model="activeItem.activity_id"
-                                                class="form-control small"
-                                                :key="'b' + source_key"
-                                            >
-                                                <option value="0" selected>-</option>
-                                                <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div v-else-if="field.key == 'unit'">
-                                        <select 
-                                            v-model="activeItem.unit"
-                                            class="form-control"
-                                        >
-                                            <option value="0" selected>-</option>
-                                            <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
-                                        </select>
-                                    </div>
-            
-                                    <div v-else-if="field.key == 'daypart'">
-                                        <select 
-                                            v-model="activeItem.daypart"
-                                            class="form-control"
-                                        >
-                                            <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
-                                        </select>
-                                    </div>
-            
-                                    <div v-else-if="field.key == 'text'">
-                                        <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
-                                    </div>
-            
-                                    <div v-else>
-                                        <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </template>
-                </td>
-            </tr>
-    
             <template v-for="(page_item, p) in page_items" v-if="page_item.name.includes(searchText) || searchText.length == 0">
                 <tr>
                     <td 
@@ -556,8 +407,8 @@
                 <div class="mb-3" v-for="(field, f) in all_fields" :class="field.alter_class">
                             
                             <div class="mb-2 mt-2 field">{{ field.name }}</div>
-    
-                            <div v-if="field.key == 'target'" class="mr-5">
+                            <div v-if="field.key == 'target'"></div>
+                            <!--<div v-if="field.key == 'target'" class="mr-5">
                                 <superselect
                                     v-if="activeItem.id == 0"
                                     class="w-full" 
@@ -570,7 +421,7 @@
                                     <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
                                     <span class="ml-2">{{ activeItem.target.name }}</span>
                                 </div>
-                            </div>
+                            </div>-->
                              
                             <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
                                 {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
@@ -586,7 +437,7 @@
     
                           
     
-                            <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
+                            <!--<div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
                                 <div class="d-flex">
                                     <select 
                                         v-model="activeItem.source"
@@ -618,9 +469,9 @@
                                         <option v-for="activity in grouped_activities(activeItem.source, activeItem.group_id)" :value="activity.id">{{ activity.name }}</option>
                                     </select>
                                 </div>
-                            </div>
+                            </div>-->
                             
-                            <div v-else-if="field.key == 'unit'">
+                            <!--<div v-else-if="field.key == 'unit'">
                                 <select 
                                     v-model="activeItem.unit"
                                     class="form-control"
@@ -628,24 +479,24 @@
                                     <option value="0" selected>-</option>
                                     <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
                                 </select>
-                            </div>
+                            </div>-->
     
-                            <div v-else-if="field.key == 'daypart'">
+                            <!--<div v-else-if="field.key == 'daypart'">
                                 <select 
                                     v-model="activeItem.daypart"
                                     class="form-control"
                                 >
                                     <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
                                 </select>
-                            </div>
+                            </div>-->
     
                             <div v-else-if="field.key == 'text'">
                                 <textarea v-model="activeItem[field.key]" class="form-control"></textarea>
                             </div>
     
-                            <div v-else>
+                            <!--<div v-else>
                                 <input :type="field.type" class="form-control" v-model="activeItem[field.key]" @change="validate(activeItem[field.key], field.key)" /> 
-                            </div>
+                            </div>-->
     
                 </div>
                 <div>
@@ -694,10 +545,23 @@ export default {
                 }
                 this.paginationKey++;
             }
+        },
+        newBonusesArray(after, before){
+            if(after.length == 0){
+                this.counter = 0;
+                this.new_target = null;
+            }
         }
     },
     data() {
         return {
+            my_items: [],
+            new_target: null,
+            bonus: null,
+            groupsArray: [],
+            counter: 0,
+            newBonusesArray: [],
+            newBonusExpanded: false,
             addNewBonus: false,
             active: 1,
             activeItem: null,
@@ -750,8 +614,110 @@ export default {
 
     },
     methods: {
+        saveNewBonusArray(){  
+            let item = this.newBonusesArray[this.newBonusesArray.length - 1];     
+            item.target = this.new_target; 
+            /**
+             * validate item
+             */
+
+            let not_validated_msg = this.validateMsg(item);
+            if(not_validated_msg != '') {
+                this.$toast.error(not_validated_msg)
+                return;
+            }
+            
+            /**
+             * prepare fields
+             */
+            let loader = this.$loading.show();
+            let method = item.id == 0 ? 'save' : 'update';
+            let titles = [];
+            let sums = [];
+            let activity_ids = [];
+            let units = [];
+            let quantities = [];
+            let dayparts = [];
+            let texts = [];
+            this.newBonusesArray.forEach(bonus => {
+                titles.push(bonus.title);
+                sums.push(bonus.sum);
+                activity_ids.push(bonus.activity_id);
+                units.push(bonus.unit);
+                quantities.push(bonus.quantity);
+                dayparts.push(bonus.daypart);
+                texts.push(bonus.text);
+            });
+            let my_item = {
+                "targetable_type": item.target.type,
+                "targetable_id": parseInt(item.target.id),
+                "group_id": item.group_id,
+                "title": titles,
+                "sum": sums,
+                "activity_id": activity_ids,
+                "unit": units,
+                "quantity": quantities,
+                "daypart": dayparts,
+                "text": texts
+            };
+            let fields = {
+                targetable_id: item.target.id,
+                targetable_type: findModel(item.target.type),
+                ...item
+            };
+            let req = item.id == 0 
+                ? axios.post(this.uri + '/' + method, my_item)
+                : axios.put(this.uri + '/' + method, fields);
+            /**
+             * request
+             */
+            req.then(response => {
+    
+                if(method == 'save') {
+                    let bonus = response.data.bonus;
+                    item.id = bonus.id;
+                    // this.items.unshift(item);
+                    
+                    let i = this.all_items.findIndex(el => el.type == item.target.type && el.id == item.target.id);
+                    if(i != -1) {
+                        this.all_items[i].items.unshift(item);
+                    } else {
+                        this.all_items.unshift({
+                            id: item.target.id,
+                            type: item.target.type,
+                            name: item.target.name,
+                            items: [item],
+                            expanded: false
+                        });
+                    }
+                    this.showSidebar = false
+                }
+                this.$toast.info('Сохранено');
+                this.newBonusesArray = [];
+                loader.hide()
+            }).catch(error => {
+                let m = error;
+                if(error.message == 'Request failed with status code 409') {
+                    m = 'Выберите другую цель "Кому"';
+                }
+                
+                loader.hide()
+                alert(m)
+            });
+            return false;
+        },
+        addBonus(){
+            this.newBonusesArray.unshift(newBonus());
+            this.newBonusesArray[this.newBonusArray.length - 1].bonus.target = this.new_target;
+            console.log(this.newBonusesArray);
+        },
         addItemRow(){
-            this.activeItem = newBonus();
+            console.log(this.counter);
+            if(this.counter == 0){
+                this.newBonusesArray.push(newBonus());
+                this.bonus = this.newBonusesArray[0];
+                this.counter++;
+            }
             this.addNewBonus = true;
         },
         swapFields(){
@@ -856,11 +822,12 @@ export default {
             
             return msg;
         },
-        save(item) {
+        save(item, index) {
             
             /**
              * validate item
              */
+
             let not_validated_msg = this.validateMsg(item);
             if(not_validated_msg != '') {
                 this.$toast.error(not_validated_msg)
@@ -872,14 +839,25 @@ export default {
              */
             let loader = this.$loading.show();
             let method = item.id == 0 ? 'save' : 'update';
+            let my_item = {
+                "targetable_type": item.target.type,
+                "targetable_id": parseInt(item.target.id),
+                "group_id": item.group_id,
+                "title": [item.title],
+                "sum": [item.sum],
+                "activity_id": [item.activity_id],
+                "unit": [item.unit],
+                "quantity": [item.quantity],
+                "daypart": [item.daypart],
+                "text": [item.text]
+            };
             let fields = {
                 targetable_id: item.target.id,
                 targetable_type: findModel(item.target.type),
                 ...item
             };
-    
             let req = item.id == 0 
-                ? axios.post(this.uri + '/' + method, fields)
+                ? axios.post(this.uri + '/' + method, my_item)
                 : axios.put(this.uri + '/' + method, fields);
             /**
              * request
@@ -906,6 +884,7 @@ export default {
                     this.showSidebar = false
                 }
                 this.$toast.info('Сохранено');
+                this.newBonusesArray.splice(index,1);
                 loader.hide()
             }).catch(error => {
                 let m = error;
@@ -916,6 +895,7 @@ export default {
                 loader.hide()
                 alert(m)
             });
+            return false;
         },
         deletee(id, p, i) {
             let loader = this.$loading.show();
@@ -1007,6 +987,19 @@ export default {
             } else {
                 group_id = 0
                 return this.activities.filter(el => el.source == source);
+            }
+        },
+        saveNewBonus(b){
+            this.newBonusesArray[b].target = this.new_target;
+            this.save(this.newBonusesArray[b], b);
+            if(this.newBonusesArray.length == 0){
+                this.counter = 0;
+            }
+        },
+        deleteNewBonus(b){
+            this.newBonusesArray.splice(b,1);
+            if(this.newBonusesArray.length == 0){
+                this.counter = 0;
             }
         }
     },

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\AnalyticsSettingsIndividually;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
@@ -94,6 +95,14 @@ class KpiStatisticService
      * Daily plan from histories for kpi_items
      */
     public $dailyPlans;
+
+    /**
+     * Asis for recruiters 
+     * temp decision
+     * 
+     * after moving from asi to userstat delete
+     */
+    public $asis;
 
     /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
@@ -331,7 +340,7 @@ class KpiStatisticService
 
         return User::with([
             'bonuses' => function ($bs) use ($bonus, $month, $year){
-                $bs->select('targetable_id', 'targetable_type', 'id', 'title', 'sum', 'activity_id', 'created_at')
+                $bs
                     ->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
                     ->where('activity_id', $bonus->activity_id);
             },
@@ -354,7 +363,7 @@ class KpiStatisticService
         $year   = $request->year ?? null;
 
         return Position::with([
-            'bonuses' => fn ($bs) => $bs->select('targetable_id', 'targetable_type', 'id', 'title', 'sum', 'activity_id', 'created_at')
+            'bonuses' => fn ($bs) => $bs
                 ->where('activity_id', $bonus->activity_id)
                 ->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month)),
             'users' => fn ($user) => $user->select('id','position_id',DB::raw('CONCAT(name,\' \',last_name) as full_name')),
@@ -381,8 +390,7 @@ class KpiStatisticService
 
         return ProfileGroup::with([
             'bonuses' => fn ($bs) =>
-                $bs->select('targetable_id', 'targetable_type', 'id', 'title', 'sum', 'activity_id', 'created_at')
-                    ->where('activity_id', $bonus->activity_id)
+                $bs->where('activity_id', $bonus->activity_id)
                     ->when($year && $month, fn ($bns) => $bns->whereYear('created_at', $year)->whereMonth('created_at', $month)),
             'users' => fn ($user) => $user->select('id', DB::raw('CONCAT(name,\' \',last_name) as full_name')),
             'users.obtainedBonuses' => fn ($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
@@ -559,10 +567,15 @@ class KpiStatisticService
         
         $this->workdays = collect($this->userWorkdays($request));
         $this->updatedValues = UpdatedUserStat::query()
-                            ->whereMonth('date', $date->month)
-                            ->whereYear('date', $date->year)
-                            ->orderBy('created_at', 'desc')
-                            ->get();
+                        ->whereMonth('date', $date->month)
+                        ->whereYear('date', $date->year)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+        
+        $this->asis = AnalyticsSettingsIndividually::query()
+            ->whereMonth('date', $date->month)
+            ->whereYear('date', $date->year)
+            ->get();
 
         /**
          * get kpis
@@ -572,6 +585,9 @@ class KpiStatisticService
         $kpis = Kpi::query()
             //->withTrashed()
             ->with([
+                'histories' => function($query) use ($last_date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+                },
                 'items.histories' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
                 },
@@ -580,8 +596,9 @@ class KpiStatisticService
 
         if($user_id != 0) {
             $user = User::with('groups')->find($user_id);
+            $position_id = $user->position_id;
             $groups = $user->groups->pluck('id')->toArray();
-
+            
             $kpis->where(function($query) use ($user_id) {
                     $query->where('targetable_id', $user_id)
                         ->where('targetable_type', 'App\User');
@@ -589,6 +606,10 @@ class KpiStatisticService
                 ->orWhere(function($query) use ($groups) {
                     $query->whereIn('targetable_id', $groups)
                         ->where('targetable_type', 'App\ProfileGroup');
+                })
+                ->orWhere(function($query) use ($position_id) {
+                    $query->where('targetable_id', $position_id)
+                        ->where('targetable_type', 'App\Position');
                 });
         }
 
@@ -596,9 +617,21 @@ class KpiStatisticService
         
         foreach ($kpis as $key => $kpi) {
             $kpi->kpi_items = [];
+            
+            // remove items if it's not in history
+            if($kpi->has('histories')) {
+                if($kpi->histories->first()) $payload = json_decode($kpi->histories->first()->payload, true);
+
+                if(isset($payload['children'])) {
+                    $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+                }
+            }
+
+            //  
             $kpi->avg = 0; // avg percent from kpi_items' percent
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
         }
+
 
         return [
             'items' => $kpis,
@@ -708,10 +741,15 @@ class KpiStatisticService
                 $this->takeCellValue(   $_item, $date, $item);
                 $this->takeRentability( $_item, $date, $item);
                 
+                // for Bpartners
+                if($kpi->targetable_type == 'App\ProfileGroup' && $kpi->targetable_id == 48) {
+                    $this->takeRecruiterValues($_item, $date, $item, $user['id']);
+                }
+                
 
                 $this->takeUpdatedValue($_item, $date, $item['fact'], $user['id']);
                 
-
+                
 
                 // plan
                 $item['full_time'] = $user['full_time'];
@@ -722,7 +760,7 @@ class KpiStatisticService
                     ? $has_edited_plan['plan']
                     : (float)$_item->plan;
                 
-                $item['plan'] = $item['daily_plan'];
+                
                 $item['workdays'] = $workdays[6];
 
                
@@ -733,6 +771,13 @@ class KpiStatisticService
                     if($has_workdays) $item['workdays']  = $has_workdays['user_work_days'];
                 } 
                 
+                if($item['method'] == 1) {
+
+                    $item['plan'] = $item['daily_plan'] * $item['workdays'];
+
+                    if($user['full_time'] == 0) $item['plan'] = $item['plan'] / 2; 
+                }
+
                 $kpi_items[] = $item;
             }
             
@@ -746,8 +791,7 @@ class KpiStatisticService
     }
 
     /**
-     * If value is from all group
-     * take common value made by group
+     * get Recruiter values
      * 
      * @param KpiItem $kpi_item
      * @param Carbon $date
@@ -755,6 +799,36 @@ class KpiStatisticService
      * 
      * @return array
      */
+    private function takeRecruiterValues(KpiItem $kpi_item, Carbon $date, array &$item, $user_id) : void
+    {
+        $asi = $this->asis->where('employee_id', $user_id)->first();
+        $activities = (new RecruitingActivityService)->activities;
+        $activity_id = in_array($kpi_item->activity_id, $activities) ? $kpi_item->activity_id : 0;
+        if($asi && $activity_id != 0) {
+            $data = json_decode($asi->data, true);
+
+            $index = array_search($activity_id, $activities);
+            if($index) {
+                $sum = 0;
+                $count = 0;
+                for($i = 1; $i <= 31; $i++) {
+                    if(isset($data[$index][$i]) && $data[$index][$i] != null && $data[$index][$i] != '') {
+                        $sum += (float) $data[$index][$i];
+                        $count++;
+                    }
+                }
+            }
+
+            $item['fact'] = round($sum, 2);
+            $item['records_count'] = $count;
+            if($count > 0) {
+                $item['avg'] = round($sum / $count, 2);
+            }
+
+        }
+        
+    }
+
     private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
     {
         if($kpi_item->common == 1) {

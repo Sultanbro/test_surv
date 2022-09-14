@@ -58,6 +58,13 @@ export default {
         this.handlePinnedMessage(e.message);
       });
 
+      // read message notification
+      window.Echo.channel(`messages.${this.user.id}`).listen('.readMessage', e => {
+        if (e.user.id !== this.user.id) {
+          this.handleReadMessage(e.message);
+        }
+      });
+
       // toggleMessenger
       // this.toggleMessenger();
 
@@ -65,6 +72,13 @@ export default {
       // this.startConversationWith(this.chats[0]);
     });
     this.setActiveStatus();
+
+    window.onfocus = (e) => {
+      // set messages as read
+      if (this.messages.length > 0) {
+        API.setMessagesAsRead([this.messages[this.messages.length - 1].id]);
+      }
+    };
   },
   methods: {
     updateChats(callback = () => {}) {
@@ -161,6 +175,11 @@ export default {
     },
     saveNewMessage(message) {
       this.messages.push(message);
+      // if tab is active
+      if (document.hasFocus()) {
+        // set message as read
+        API.setMessagesAsRead([message.id]);
+      }
     },
     handleIncomingMessage(message) {
       // update last message
@@ -175,6 +194,7 @@ export default {
         }
       );
       this.chats = this.sortChats(this.chats);
+      this.contacts = this.chats.slice();
 
       if (this.selectedChat && message['chat_id'] === this.selectedChat.id && message['sender_id'] !== this.user.id) {
         this.saveNewMessage(message);
@@ -189,6 +209,14 @@ export default {
         this.pinnedMessage = message;
       }
     },
+    handleReadMessage(message) {
+      if (this.selectedChat && message['chat_id'] === this.selectedChat.id) {
+        // fetch messages again
+        API.fetchMessages(this.selectedChat.id, messages => {
+          this.messages = messages.reverse();
+        });
+      }
+    },
     updateUnreadCount(contact_id, reset) {
       this.chats = this.chats.map(single => {
         if (single.id !== contact_id) {
@@ -200,6 +228,7 @@ export default {
 
         return single;
       });
+      this.contacts = this.chats.slice();
     },
     setActiveStatus() {
       // todo
@@ -223,6 +252,7 @@ export default {
         this.chats = this.chats.filter(
           contact => contact.id !== chat.id
         );
+        this.contacts = this.chats.slice(); // todo: переделать на vuex
         if (this.selectedChat && this.selectedChat.id === chat.id) {
           this.selectedChat = null;
         }
