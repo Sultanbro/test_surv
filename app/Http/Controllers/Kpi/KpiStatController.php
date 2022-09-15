@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use App\User;
 use App\Models\Analytics\UpdatedUserStat;
+use App\Models\Analytics\Activity;
 use Illuminate\Http\Request;
 
 class KpiStatController extends Controller
@@ -134,5 +135,15 @@ class KpiStatController extends Controller
             'kpi_item_id' => $request->kpi_item_id,
             'value' => $request->value,
         ]);
+    }
+
+        /**
+         * get all activites
+     * 
+     * @return Array
+     */
+    public function getActivities()
+    {
+        return Activity::get()->keyBy('id');
     }
 }
