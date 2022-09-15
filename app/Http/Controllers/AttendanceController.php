@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DayType;
 use App\Http\Requests\GetDayAttendanceRequest;
 use App\Models\Attendance;
 use App\Http\Requests\StoreAttendanceRequest;
@@ -20,8 +21,8 @@ class AttendanceController extends Controller
 
     public function __construct(AttendanceService $service)
     {
-        abort_if(!auth()->user()->can('hr_view'), Response::HTTP_FORBIDDEN, 'Доступ закрыт 403');
-        $this->middleware('auth');
+//        abort_if(!auth()->user()->can('hr_view'), Response::HTTP_FORBIDDEN, 'Доступ закрыт 403');
+//        $this->middleware('auth');
         $this->service = $service;
     }
 
@@ -38,10 +39,10 @@ class AttendanceController extends Controller
 
     /**
      * @param UpdateAttendanceRequest $request
-     * @param Attendance $attendance
+     * @param DayType $attendance
      * @return JsonResponse
      */
-    public function update(UpdateAttendanceRequest $request, Attendance $attendance): JsonResponse
+    public function update(UpdateAttendanceRequest $request, DayType $attendance): JsonResponse
     {
         $response = $this->service->updateAttendance($attendance, $request);
 
@@ -61,10 +62,10 @@ class AttendanceController extends Controller
     }
 
     /**
-     * @param Attendance $attendance
+     * @param DayType $attendance
      * @return void
      */
-    public function destroy(Attendance $attendance): void
+    public function destroy(DayType $attendance): void
     {
         $attendance->delete();
     }

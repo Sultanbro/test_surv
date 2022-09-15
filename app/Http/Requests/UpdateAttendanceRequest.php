@@ -24,9 +24,7 @@ class UpdateAttendanceRequest extends FormRequest
     public function rules()
     {
         return [
-            'manager_id' => 'required',
-            'group_id'   => 'nullable',
-            'comment'    => 'nullable|max:255'
+            'date' => 'string'
         ];
     }
 }

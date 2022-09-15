@@ -24,7 +24,7 @@ class GetDayAttendanceRequest extends FormRequest
     public function rules()
     {
         return [
-            'manager_id' => 'required',
+            'admin_id'   => 'required',
             'month'      => 'required',
             'year'       => 'required'
         ];

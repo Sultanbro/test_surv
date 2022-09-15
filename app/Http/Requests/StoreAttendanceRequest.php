@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\DayType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreAttendanceRequest extends FormRequest
 {
@@ -24,11 +26,9 @@ class StoreAttendanceRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_ids'      => 'required|array',
-            'manager_id'    => 'required|numeric',
-            'date'          => 'required|string',
-            'group_id'      => 'required|numeric',
-            'comment'       => 'nullable|max:255'
+            'user_id'      => 'required|numeric',
+            'date'         => 'required|string',
+            'type'         => ['required', 'numeric', Rule::in([DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']])],
         ];
     }
 }

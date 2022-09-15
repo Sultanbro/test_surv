@@ -2,8 +2,11 @@
 
 namespace App\Service;
 
+use App\DayType;
 use App\Http\Requests\GetDayAttendanceRequest;
+use App\Http\Requests\UpdateAttendanceRequest;
 use App\Models\Attendance;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -13,35 +16,39 @@ class AttendanceService
      * @param $request
      * @return void
      */
-    public function storeAttendance($request): void
+    public function storeAttendance($request): bool
     {
-        $users = $request->input('user_ids');
+        $userId = $request->input('user_id');
+        $user   = User::query()->findOrFail($userId);
 
-        foreach ($users as $user)
-        {
-            Attendance::query()->create([
-                'user_id'    => $user,
-                'manager_id' => $request->input('manager_id'),
-                'group_id'   => $request->input('group_id'),
-                'date'       => $request->input('date'),
-                'comment'    => $request->input('comment') ?? null
-            ]);
-        }
+        DayType::query()->create([
+            'user_id'    => $userId,
+            'type'       => $request->input('type'),
+            'admin_id'   => auth()->id() ?? 5263,
+            'date'       => $request->input('date'),
+            'email'      => $user->email ?? null
+        ]);
+
+        return true;
     }
 
     /**
-     * @param Attendance $attendance
+     * @param DayType $attendance
      * @param $request
      * @return bool
      */
-    public function updateAttendance(Attendance $attendance, $request): bool
+    public function updateAttendance(DayType $attendance, UpdateAttendanceRequest $request): bool
     {
-        return $attendance->update($request->all());
+        $request = $request->only('date');
+
+        return $attendance->update([
+            'date' => $request['date'],
+        ]);
     }
 
     public function getAttendance(GetDayAttendanceRequest $request): array
     {
-        $managerId = $request->input('manager_id');
+        $managerId = $request->input('admin_id');
         $month     = $request->input('month');
         $year      = $request->input('year');
 
@@ -64,11 +71,12 @@ class AttendanceService
      */
     private function getFirstDayAttendance($managerId, $dates): array
     {
-        $firstAttends = Attendance::query()
-            ->select(DB::raw('MIN(date) as date'),'user_id','manager_id', 'group_id')
-            ->where('manager_id','=', $managerId)
+        $firstAttends = DayType::query()
+            ->select(DB::raw('MIN(date) as date'),'user_id','admin_id')
+            ->where('admin_id','=', $managerId)
+            ->whereIn('type', [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']])
             ->whereIn('date', $dates)
-            ->groupBy('user_id', 'manager_id', 'group_id')
+            ->groupBy('user_id', 'admin_id')
             ->orderBy('date','ASC')
             ->get()->toArray();
 
