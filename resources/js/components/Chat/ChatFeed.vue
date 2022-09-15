@@ -31,8 +31,8 @@
           @contextmenu.prevent.stop="handleClick($event, message)"
         >
           <div class="text">
-            {{ message.body }}
-            <span class="message-time">
+            <div class="d-flex flex-column" v-html="message.body"></div>
+            <span class="message-time"> 
               {{ message.created_at | moment }}
             </span>
           </div>

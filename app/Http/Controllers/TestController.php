@@ -28,9 +28,9 @@ use App\Models\GroupUser;
 use App\Salary;
 
 class TestController extends Controller { 
- 
-	public function test() {
-		
+  
+	public function test() { 
+
         $users    = json_decode(ProfileGroup::query()->findOrFail(53)->users, true);
 		
 		// foreach ($users as $key => $user_id) {

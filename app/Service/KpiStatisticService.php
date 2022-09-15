@@ -596,10 +596,11 @@ class KpiStatisticService
             ]);
 
         if($user_id != 0) {
-            $user = User::with('groups')->find($user_id);
+            $user = User::withTrashed()->with('groups')->find($user_id);
             $position_id = $user->position_id;
+
             $groups = $user->groups->pluck('id')->toArray();
-            
+     
             $kpis->where(function($query) use ($user_id) {
                     $query->where('targetable_id', $user_id)
                         ->where('targetable_type', 'App\User');
@@ -615,19 +616,19 @@ class KpiStatisticService
         }
 
         $kpis = $kpis->get();
-        
+     
         foreach ($kpis as $key => $kpi) {
             $kpi->kpi_items = [];
             
             // remove items if it's not in history
-            if($kpi->has('histories')) {
+            if($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
 
                 if(isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
-
+          
             //  
             $kpi->avg = 0; // avg percent from kpi_items' percent
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
@@ -650,9 +651,10 @@ class KpiStatisticService
         int $user_id = 0
     ) : array
     {
+      
         // check target exists
         if(!$kpi->target) return [];
-
+       
         $type = $kpi->target['type'];
 
 
@@ -660,13 +662,14 @@ class KpiStatisticService
         if($type == 1) {
             $_user_ids = [$kpi->targetable_id];
         }
-
+  
         // ProfileGroup::class
         if($type == 2) {
             $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
-            if($user_id != 0)  $_user_ids = in_array($user_id, $_user_ids) ? [$user_id] : [];
+            //if($user_id != 0)  $_user_ids = in_array($user_id, $_user_ids) ? [$user_id] : [];
+            if($user_id != 0)  $_user_ids = [$user_id];
         }
-
+      
         // Position::class
         if($type == 3) $_user_ids = [];
 
@@ -688,6 +691,11 @@ class KpiStatisticService
 
     /**
      * Create final users array
+     * 
+     * connect user activity facts and avg values with kpi_items
+     * 
+     * find fact
+     * identify actual plan
      */
     private function connectKpiWithUserStats(
         Kpi $kpi,
@@ -704,6 +712,9 @@ class KpiStatisticService
         // fill users array
         $users = [];
 
+        /**
+         * connect user activity facts and avg values with kpi_items
+         */
         foreach ($_users as $key => $user) {
        
             $kpi_items = [];
@@ -735,10 +746,11 @@ class KpiStatisticService
                     $item['applied']       = null;
                 }   
 
-                //  take another activity values
+                /**
+                 * take another activity values
+                 */
                 $item['fact'] = $item['fact'] ?? 0;
                 $this->takeCommonValue( $_item, $date, $item);
-              
                 $this->takeCellValue(   $_item, $date, $item);
                 $this->takeRentability( $_item, $date, $item);
                 
@@ -747,44 +759,60 @@ class KpiStatisticService
                     $this->takeRecruiterValues($_item, $date, $item, $user['id']);
                 }
                 
-
                 $this->takeUpdatedValue($_item, $date, $item['fact'], $user['id']);
                 
-                
-
                 // plan
                 $item['full_time'] = $user['full_time'];
                 $history = $_item->histories->first();
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+                
 
                 $item['daily_plan'] = $has_edited_plan && array_key_exists('plan', $has_edited_plan)
                     ? $has_edited_plan['plan']
                     : (float)$_item->plan;
-                
-                
+                $item['plan'] = $item['daily_plan'];
+                /**
+                 * count workdays
+                 */
                 $item['workdays'] = $workdays[6];
+                $percent_of_plan_for_sum_method = 1;
 
-               
                 if($_item->activity) {
                     $has_workdays = $this->workdays->where('user_id', $user['id'])
-                                    ->where('activity_id', $_item->activity->id)
-                                    ->first();
-                    if($has_workdays) $item['workdays']  = $has_workdays['user_work_days'];
+                                                ->where('activity_id', $_item->activity->id)
+                                                ->first();
+                    if($has_workdays) {
+                        $percent_of_plan_for_sum_method = $has_workdays['workdays_in_month'] > 0
+                                                        ? $has_workdays['user_work_days'] / $has_workdays['workdays_in_month']
+                                                        : 1;
+                        $item['workdays'] = $has_workdays['user_work_days'];
+                    }
                 } 
                 
+                /**
+                 * sum method in kpi_item
+                 * change plan
+                 */
                 if($item['method'] == 1) {
-
-                    $item['plan'] = $item['daily_plan'] * $item['workdays'];
-
-                    if($user['full_time'] == 0) $item['plan'] = $item['plan'] / 2; 
+                    
+                    /**
+                     * for part timer reduce plan twice
+                     */
+                    if($user['full_time'] == 0) $percent_of_plan_for_sum_method /= 2;
+                    
+                    /**
+                     * final plan 
+                     */
+                    $item['plan'] = round($item['plan'] * $percent_of_plan_for_sum_method);
                 }
-
+                
                 $kpi_items[] = $item;
             }
             
+            /**
+             * add user to final array
+             */
             $user['items'] = $kpi_items;
-
-       
             $users[] = $user;
         }
 
@@ -807,7 +835,7 @@ class KpiStatisticService
         $activity_id = in_array($kpi_item->activity_id, $activities) ? $kpi_item->activity_id : 0;
         if($asi && $activity_id != 0) {
             $data = json_decode($asi->data, true);
-
+        
             $index = array_search($activity_id, $activities);
             if($index) {
                 $sum = 0;
@@ -819,6 +847,8 @@ class KpiStatisticService
                     }
                 }
             }
+
+        
 
             $item['fact'] = round($sum, 2);
             $item['records_count'] = $count;

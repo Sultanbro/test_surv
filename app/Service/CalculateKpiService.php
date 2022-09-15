@@ -74,7 +74,7 @@ class CalculateKpiService
             $percent = $percent / 2;
         }
 
-        return $plan != 0 ? round($data['fact'] / $plan * $percent, 2) * 100 : 0.00;
+        return $plan != 0 ? round($data['fact'] / $plan * $percent * 100 , 2) : 0.00;
     }
 
     /**
