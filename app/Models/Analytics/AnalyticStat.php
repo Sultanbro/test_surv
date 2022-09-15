@@ -461,7 +461,7 @@ class AnalyticStat extends Model
         return $res;
     }
 
-    public static function daysAvg($date, $row_id,$group_id) {
+    public static function daysAvg($date, $row_id, $group_id) {
         $days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
         $columns = AnalyticColumn::where('group_id', $group_id)->where('date', $date)->whereIn('name', $days)->get();
 
@@ -475,15 +475,15 @@ class AnalyticStat extends Model
 
             if($stat) {
                 $total += (float)$stat->show_value;
-
-                if((float)$stat->show_value > 0) {
+                //if($row_id == 1837) dump($stat->show_value);
+                if((float)$stat->show_value != 0) {
 
                     $count++;
                 }
             }
         }
 
-
+       // if($row_id == 1837) dd($total, $count);
         if($count > 0) {
             $total = round($total / $count, 3);
         } else {
