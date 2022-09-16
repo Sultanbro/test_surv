@@ -49,7 +49,7 @@
                                         {{ user.full_name }}
                                     </th> 
                                     <th v-for="bonus in bonuses" v-if="bonus.targetable_id == page_item.id">
-                                        {{ bonus.title}} <b> 0 тг</b>
+                                        {{ bonus.title}} <b> {{ getTotalSum(bonus.id, user.id) }} тг</b>
                                     </th>
                                 </tr>
                                 <template v-if="user.expanded">
@@ -154,7 +154,8 @@ export default {
     name: "Bonuses", 
     props: {
         groups: Array,
-        group_names: Object
+        group_names: Object,
+        month: Number
     },
     watch: {
 
@@ -182,13 +183,19 @@ export default {
 
     },
     methods: {
-        isCurrentMonth(date){
-            const d = new Date();
-            let month = d.getMonth();
-            var from = date.split("-")
-            if(from[1] == month) return true;
-            else return false;
+        getTotalSum(bonus_id, user_id){
+            let sum = 0;
+            let obtained = this.obtained_bonuses.filter(bonus => { return bonus.bonus_id == bonus_id && bonus.user_id == user_id && this.isCurrentMonth(bonus.date)});
+            obtained.forEach(bonus => {
 
+                sum += bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") ) * bonus.amount;
+            })
+            return sum;
+        },
+        isCurrentMonth(date){
+            var from = date.split("-")
+            if(from[1] == this.month) return true;
+            else return false;
         },
         getActivities(){
             axios.get('/statistics/activities').then(response => {
