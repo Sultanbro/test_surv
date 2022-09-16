@@ -37,6 +37,7 @@
     <t-stats-bonus
         :groups="bonus_groups"
         :group_names="groups"
+        :month="month"
         v-if="s_type_main == 2"
         :key="bonus_groups"
     />
@@ -99,6 +100,7 @@ export default {
         return {
             searchText: new URL(location.href).searchParams.get('target') ? new URL(location.href).searchParams.get('target') : '',
             s_type_main: 1,
+            month: new Date().getMonth(),
             active: 1,
             paginationKey: 1,
             pageSize: 20,
@@ -132,9 +134,10 @@ export default {
         },
  
         fetchData(filters) {
+            console.log(filters.data_from);
             let loader = this.$loading.show();
             this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
-            
+            this.month = filters.data_from ? filters.data_from.month : new Date().getMonth();
 
             if(this.s_type_main == 1){
                 axios.post('/statistics/kpi', {

@@ -118,14 +118,13 @@
     </sidebar>
 
 
-    <sidebar
+    <!--<sidebar
       title="Bonus"
       :open="showBonusSidebar"
       @close="showBonusSidebar = false"
       v-if="showBonusSidebar"
       width="80%"
     >
-     <!-- table -->
         <t-stats-bonus 
             :groups="bonus_groups"
             :group_names="groups"
@@ -136,8 +135,8 @@
         * сумма премии за выполнение показателей начнет меняться после достижения 80% от целевого значения на месяц
     </p>
 
-    </sidebar>
-    <!--<sidebar
+    </sidebar>-->
+    <sidebar
       title="Бонусы"
       :open="showBonusSidebar"
       @close="showBonusSidebar = false"
@@ -170,7 +169,7 @@
             <p style="color:red">Бонус изменен на {{ data.editedBonus.amount }} KZT <br>Комментарии: {{ data.editedBonus.comment }}</p>
         </div>
       </div>
-    </sidebar>-->
+    </sidebar>
 
 
     <sidebar
