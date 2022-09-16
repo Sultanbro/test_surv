@@ -597,25 +597,33 @@ class KpiStatisticService
         if($user_id != 0) {
             $user = User::withTrashed()->with('groups')->find($user_id);
             $position_id = $user->position_id;
-
+            
             $groups = $user->groups->pluck('id')->toArray();
-     
-            $kpis->where(function($query) use ($user_id) {
-                    $query->where('targetable_id', $user_id)
-                        ->where('targetable_type', 'App\User');
-                })
-                ->orWhere(function($query) use ($groups) {
-                    $query->whereIn('targetable_id', $groups)
-                        ->where('targetable_type', 'App\ProfileGroup');
-                })
-                ->orWhere(function($query) use ($position_id) {
-                    $query->where('targetable_id', $position_id)
-                        ->where('targetable_type', 'App\Position');
+   
+            $kpis->where(function($query) use ($user_id, $groups, $position_id) {
+                    $query->where(function($q) use ($user_id) {
+                            $q->where('targetable_id', $user_id)
+                              ->where('targetable_type', 'App\User');
+                        })
+                        ->orWhere(function($q) use ($groups) {
+                            $q->whereIn('targetable_id', $groups)
+                              ->where('targetable_type', 'App\ProfileGroup');
+                        })
+                        ->orWhere(function($q) use ($position_id) {
+                            $q->where('targetable_id', $position_id)
+                              ->where('targetable_type', 'App\Position');
+                        });
                 });
+              
         }
 
-        $kpis = $kpis->get();
-     
+        $kpis = $kpis
+            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+                                                    ->endOfMonth()
+                                                    ->format('Y-m-d')
+            )
+            ->get();
+
         foreach ($kpis as $key => $kpi) {
             $kpi->kpi_items = [];
             
@@ -753,13 +761,14 @@ class KpiStatisticService
                 $this->takeCellValue(   $_item, $date, $item);
                 $this->takeRentability( $_item, $date, $item);
                 
+                
                 // for Bpartners
                 if($kpi->targetable_type == 'App\ProfileGroup' && $kpi->targetable_id == 48) {
                     $this->takeRecruiterValues($_item, $date, $item, $user['id']);
                 }
+                $this->takeUpdatedValue($_item, $date, $item, $user['id']);
                 
-                $this->takeUpdatedValue($_item, $date, $item['fact'], $user['id']);
-                
+             
                 // plan
                 $item['full_time'] = $user['full_time'];
                 $history = $_item->histories->first();
@@ -978,7 +987,7 @@ class KpiStatisticService
      * 
      * @param $kpi_item
      * @param Carbon $date
-     * @param float &$fact
+     * @param array &$item
      * @param int $user_id
      * 
      * @return float
@@ -986,7 +995,7 @@ class KpiStatisticService
     private function takeUpdatedValue(
         KpiItem $kpi_item,
         Carbon $date,
-        float &$fact,
+        array &$item,
         int $user_id
     ) : void
     {
@@ -998,9 +1007,13 @@ class KpiStatisticService
 
         $has = $has->first();
 
-        if($has) $fact = (float) $has->value;
+        if($has) {
+            $item['fact'] = (float) $has->value;
+            $item['avg']  = (float) $has->value;
+        }
 
-        $fact = round($fact, 2);
+        $item['fact'] = round($item['fact'], 2);
+        $item['avg'] = round($item['avg'], 2);
     }
    
 
