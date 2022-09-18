@@ -440,7 +440,7 @@ class KpiStatisticService
                     'targetable_id' => $quartalPremium->targetable_id,
                     'targetable_type' => $quartalPremium->targetable_type,
                     'id' => $user->user_id,
-                    'name' => $user->name,
+                    'name' => $user->full_name,
                     'items' => [
                         'activity_id' => $user->activity_id,
                         'title' => $quartalPremium->title,
@@ -506,13 +506,14 @@ class KpiStatisticService
      */
     private function getUsersQp($quartalPremium)
     {
-       return User::query()->join('user_stats as us', 'us.user_id', '=', 'users.id')
-           ->select('user_id','activity_id', 'name', DB::raw('SUM(value) as fact'))
-           ->where([
-               ['users.id', $quartalPremium->targetable_id],
-               ['us.activity_id', $quartalPremium->activity_id]
-           ])->whereBetween('us.date', [$quartalPremium->from, $quartalPremium->to])
-           ->groupBy('activity_id', 'user_id', 'name')
+       return User::query()->leftJoin('user_stats as us', 'us.user_id', '=', 'users.id')
+           ->select(['users.id', 'user_id', 'activity_id', 'name', DB::raw('SUM(value) as fact'),  DB::raw("CONCAT_WS(' ', users.last_name, users.name) as full_name")])
+        //    ->where([
+        //        ['activity_id', $quartalPremium->activity_id]
+        //    ])
+           ->where('users.id', $quartalPremium->targetable_id)
+          // ->whereBetween('us.date', [$quartalPremium->from, $quartalPremium->to])
+           ->groupBy('activity_id', 'user_id', 'full_name')
            ->first();
     }
 
@@ -524,10 +525,74 @@ class KpiStatisticService
         $type = isset($request->targetable_type) ? $this->getModel($request->targetable_type) : null;
         $id   = $request->targetable_id ?? null;
 
-        return QuartalPremium::withTrashed()->when(isset($type) && isset($id), fn($kpi) => $kpi->where([
-            ['targetable_type', $type],
-            ['targetable_id', $id]
-        ]))->get();
+        /**
+         * eeeee
+         */
+
+        $filters = $request->filters;
+        
+        /**
+         * filters
+         *
+         * date_from
+         * user_id
+         */
+        if(
+            isset($filters['data_from']['year'])
+            && isset($filters['data_from']['month'])
+        ) {
+            $date = Carbon::createFromDate(
+                $filters['data_from']['year'],
+                $filters['data_from']['month'],
+                1
+            );
+        } else {
+            $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
+        }
+
+        $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
+
+        /**
+         * indiv or common
+         */
+        if($user_id != 0) {
+            $qps = QuartalPremium::withTrashed();
+
+            $user = User::withTrashed()->with('groups')->find($user_id);
+            $position_id = $user->position_id;
+            
+            $groups = $user->groups->pluck('id')->toArray();
+        
+            $qps->where(function($query) use ($user_id, $groups, $position_id) {
+                    $query->where(function($q) use ($user_id) {
+                            $q->where('targetable_id', $user_id)
+                              ->where('targetable_type', 'App\User');
+                        })
+                        ->orWhere(function($q) use ($groups) {
+                            $q->whereIn('targetable_id', $groups)
+                              ->where('targetable_type', 'App\ProfileGroup');
+                        })
+                        ->orWhere(function($q) use ($position_id) {
+                            $q->where('targetable_id', $position_id)
+                              ->where('targetable_type', 'App\Position');
+                        });
+                });
+              
+        } else {
+            $qps = QuartalPremium::withTrashed()->when(isset($type) && isset($id), fn($qp) => $qp->where([
+                ['targetable_type', $type],
+                ['targetable_id', $id]
+            ]));
+        }
+        
+        $qps = $qps
+            // ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+            //                                         ->endOfMonth()
+            //                                         ->format('Y-m-d')
+            // )
+            ->get();
+
+        return $qps;
     }
 
     /**
