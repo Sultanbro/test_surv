@@ -88,7 +88,7 @@ class SaveUserKpi extends Command
          */
 
 
-        $group = \App\ProfileGroup::find(31);
+        //$group = \App\ProfileGroup::find(42);
         $users =  \DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where(function($query) use ($date){
@@ -96,12 +96,12 @@ class SaveUserKpi extends Command
                     ->orWhereNull('deleted_at');
             })
             ->where('is_trainee', 0)
-            ->whereIn('users.id', json_decode($group->users))
-           //->where('users.id', 16530)
-            ->select(['users.id','users.last_name', 'users.name'])
+        //   ->whereIn('users.id', json_decode($group->users))
+         //  ->where('users.id', 15511)
+                       ->select(['users.id','users.last_name', 'users.name'])
             ->get(['users.id']);
         
-        dd(json_encode($users->pluck('id')->toArray()));
+       /// dd(json_encode($users->pluck('id')->toArray()));
         $this->comment($users->count());
             
         /**

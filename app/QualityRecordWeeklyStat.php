@@ -35,10 +35,11 @@ class QualityRecordWeeklyStat extends Model
 
        
         $items = [];
+        $items2 = [];
         
         // CREATE WEEKS ARRAY
         $weeks = self::weeksArray($date->month, $date->year);
-        
+      
         foreach($users as $user) {
             $item = [];
 
@@ -72,7 +73,7 @@ class QualityRecordWeeklyStat extends Model
                 }
                 
                 if($count > 0) {
-                    $result = round($avg / $count);
+                    $result = round($avg / $count, 2);
                     $item['avg'.$key] = $result;
                     $item['total'] += $result;
                     $actual_weeks++;
@@ -80,11 +81,13 @@ class QualityRecordWeeklyStat extends Model
             }
 
             if($actual_weeks > 0) {
-                $item['total'] = round($item['total'] / $actual_weeks);
+                $item['total'] = round($item['total'] / $actual_weeks, 2);
             }
+            if($item['total']) array_push($items2, $item);
             array_push($items, $item);
         }
 
+        //dd(collect($items2)->pluck('id')->toArray());
 
         return $items;
     }

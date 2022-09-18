@@ -1,5 +1,6 @@
 <template>
 <div class="mt-5 quality">
+    <div class="mb-3">Кол-во показателей: <b>{{total_count}}</b> , Среднее значение: <b>{{ total_avg }}</b></div>
     <div class="table-responsive my-table">
         <table class="table b-table table-bordered table-sm">
             <tr>
@@ -51,6 +52,8 @@ export default {
             users: [],
             fields: [],
             user_ids: {},
+            total_avg: 0,
+            total_count: 0,
             loader: null,
         };
     }, 
@@ -80,6 +83,22 @@ export default {
                 arr[1].show_cup = 2;
                 arr[2].show_cup = 3;
             } 
+
+            let total_avg = 0;
+            let total_count = 0;
+
+            arr.forEach(el => {
+                if(Number(el.total) > 0) {
+                    total_avg += Number(el.total);
+                    total_count++;
+                }
+            })
+
+            total_avg = total_count > 0 ? total_avg / total_count : 0;
+
+            this.total_avg = total_avg
+            this.total_count = total_count
+            console.log('OKK avg is ' + total_count + ' - ' + total_avg);
         },
 
         // createUserIdList() {

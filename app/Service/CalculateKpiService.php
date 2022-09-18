@@ -82,7 +82,7 @@ class CalculateKpiService
      */
     private function sum_not_more(array $data) : float
     { 
-        return (float)$data['daily_plan'] - $data['fact'] > 0 ? 100.00 : 0.00;
+        return (float)$data['daily_plan'] - $data['fact'] >= 0 ? 100.00 : 0.00;
     }
 
     /**

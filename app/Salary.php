@@ -517,7 +517,7 @@ class Salary extends Model
                     }
                 }
 
-                if($day == $last_day) $salaries[$day] += (float) $user['kpi'];
+                if($day == 1) $salaries[$day] += (float) $user['kpi'];
             }
 
         }

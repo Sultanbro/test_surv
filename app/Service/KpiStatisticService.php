@@ -744,6 +744,61 @@ class KpiStatisticService
                     $item['days']          = $exists->days;
                     $item['registered']    = $exists->registered_days;
                     $item['applied']       = $exists->applied;
+
+                    if($_item->activity
+                    && $_item->activity->view == Activity::VIEW_QUALITY) {
+                        
+                        $query = UserStat::query()
+                            ->selectRaw("
+                                value,
+                                activity_id,
+                                user_id,
+                                DAY(date) as day
+                            ")
+                            ->whereMonth('date', $date->month)
+                            ->whereYear('date', $date->year)
+                            ->where('activity_id', $_item->activity_id)
+                            ->where('user_id', $user['id'])
+                            ->get();
+            
+                        /**
+                         * if avg methods
+                         * take weeks
+                         * 
+                         */
+                        if(in_array($_item->method, [2, 4, 6])) {
+                            $weeks = $this->weeksArray($date->month, $date->year);
+            
+                            /**
+                             * count avg of every user
+                             */
+            
+                            $avg = 0;
+                            $count = 0;
+        
+                            foreach ($weeks as $key => $week) {
+                                $val = $query->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value');
+        
+                                if($val && $val > 0) {
+                                    $avg += $val;
+                                    $count++;
+                                }
+                            }
+
+                            $item['fact']          = $query->sum('value');
+                            $item['avg']           = $count > 0 ? round($avg / $count, 2) : 0;
+                            $item['records_count'] = $count;
+            
+                        } else {
+                            $item['fact']          = $query->sum('value');
+                            $item['avg']           = $query->avg('avg');
+                            $item['records_count'] = $query->count();
+                        }
+                        
+                    }
+
+
+
                 } else {
                     $item['fact']          = 0;
                     $item['avg']           = 0;
@@ -764,7 +819,7 @@ class KpiStatisticService
                 
                 // for Bpartners
                 if($kpi->targetable_type == 'App\ProfileGroup' && $kpi->targetable_id == 48) {
-                    $this->takeRecruiterValues($_item, $date, $item, $user['id']);
+                   // $this->takeRecruiterValues($_item, $date, $item, $user['id']);
                 }
                 $this->takeUpdatedValue($_item, $date, $item, $user['id']);
                 
@@ -870,26 +925,158 @@ class KpiStatisticService
 
     private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
     {
-        if($kpi_item->common == 1) {
-            $query = UserStat::selectRaw("
-                    SUM(value) as fact,
-                    AVG(value) as avg,
-                    COUNT(value) as records_count,
+        
+        /**
+         * take quality value
+         * avg goes with weeks 
+         */
+        if($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view == Activity::VIEW_QUALITY) {
+            
+            $query = UserStat::query()
+                ->selectRaw("
+                    value,
                     activity_id,
-                    date
+                    user_id,
+                    DAY(date) as day
                 ")
                 ->whereMonth('date', $date->month)
                 ->whereYear('date', $date->year)
                 ->where('activity_id', $kpi_item->activity_id)
-                ->first();
-          
-            if($query) {
-                $item['fact'] = round($query->fact, 2) ?? 0;
-                $item['avg'] = $query->avg ?? 0;
-                $item['records_count'] = $query->records_count ?? 0;
+             
+                ->get();
+
+            /**
+             * if avg methods
+             * take weeks
+             * 
+             */
+            if(in_array($kpi_item->method, [2, 4, 6])) {
+                $weeks = $this->weeksArray($date->month, $date->year);
+
+                $total_avg = 0;
+                $total_count = 0;
+ 
+                $users = $query->groupBy('user_id');
+             
+                /**
+                 * count avg of every user
+                 */
+
+               //  dd(array_keys($users));
+                foreach ($users as $id => $user) {
+
+                    $avg = 0;
+                    $count = 0;
+
+                    foreach ($weeks as $key => $week) {
+                        $val = $user->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value');
+
+                        if($val && $val > 0) {
+                            $avg += $val;
+                            $count++;
+                        }
+                    }
+                    if($count > 0) {
+
+                        
+                        $total_avg += $count > 0 ? round($avg / $count, 2) : 0;
+                        $total_count++;
+                    }
+                }
+             
+                $item['fact']          = $query->sum('value');
+                $item['avg']           = $total_count > 0 ? round($total_avg / $total_count, 2) : 0;
+                $item['records_count'] = $total_count;
+
+            } else {
+                $item['fact']          = $query->sum('value');
+                $item['avg']           = $query->avg('avg');
+                $item['records_count'] = $query->count();
             }
             
         }
+            
+        /**
+         * take another common values
+         */
+        if($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view != Activity::VIEW_QUALITY) {
+            
+            if(in_array($kpi_item->method, [2, 4, 6])) {
+            
+                $query = UserStat::selectRaw("
+                        SUM(value) as fact,
+                        AVG(value) as avg,
+                        COUNT(value) as records_count,
+                        activity_id,
+                        user_id,
+                        date
+                    ")
+                    ->whereMonth('date', $date->month)
+                    ->whereYear('date', $date->year)
+                    ->where('value', '>', 0)
+                    ->where('activity_id', $kpi_item->activity_id)
+                    ->groupBy('user_id')
+                    ->get();
+                
+              
+                $item['fact']          = $query->sum('fact');
+                $item['avg']           = $query->where('avg', '>', 0)->avg('avg');
+                $item['records_count'] = $query->count();
+
+            } else {
+
+                $query = UserStat::selectRaw("
+                        SUM(value) as fact,
+                        AVG(value) as avg,
+                        COUNT(value) as records_count,
+                        activity_id,
+                        date
+                    ")
+                    ->whereMonth('date', $date->month)
+                    ->whereYear('date', $date->year)
+                    ->where('value', '>', 0)
+                    ->where('activity_id', $kpi_item->activity_id)
+                    ->first();
+
+                if($query) {
+                    $item['fact']          = $query->fact;
+                    $item['avg']           = $query->avg;
+                    $item['records_count'] = $query->records_count;
+                }
+
+            }
+        
+        }
+        
+    }
+
+    /**
+     * Create weeks array with days 
+     * copy of method in QualityController
+     */
+    private function weeksArray($month, $year)
+    {
+        $weeks = [];
+        $week_number = 1;
+        $week = [];
+        $daysInMonth = Carbon::createFromFormat('m-Y', $month . '-' . $year)->daysInMonth;
+
+        for($d = 1; $d <= $daysInMonth; $d++) {
+            
+            array_push($week, (int)$d); 
+            
+            if(Carbon::createFromFormat('d-m-Y', $d . '-' . $month . '-' . $year)->dayOfWeek == Carbon::SUNDAY) {
+                $weeks[$week_number] = $week;
+                $week = [];
+                $week_number++;
+            }
+
+            if($d == $daysInMonth){
+                $weeks[$week_number] = $week;
+            }
+        }
+
+        return $weeks;
     }
 
     /**
@@ -909,7 +1096,8 @@ class KpiStatisticService
             $item['fact'] = AnalyticStat::getCellValue(
                 $kpi_item->activity->group_id,
                 $kpi_item->cell,
-                $date->format('Y-m-d')
+                $date->format('Y-m-d'),
+                2
             );
 
             $item['fact'] = round($item['fact'], 2);
@@ -1038,6 +1226,7 @@ class KpiStatisticService
 				date")
 			->whereMonth('date', $date->month)
 			->whereYear('date', $date->year)
+            ->where('value', '>', 0)
             ->whereIn('activity_id', $activities)
 			->groupBy('user_id', 'activity_id');
 

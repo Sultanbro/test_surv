@@ -31,8 +31,8 @@ class TestController extends Controller {
   
 	public function test() { 
 
-        $users    = json_decode(ProfileGroup::query()->findOrFail(53)->users, true);
-		
+       // $users    = json_decode(ProfileGroup::query()->findOrFail(53)->users, true);
+		dd(static::class);
 		// foreach ($users as $key => $user_id) {
 		// 	GroupUser::create([
 		// 		'user_id'  => $user_id,
