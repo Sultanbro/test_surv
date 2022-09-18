@@ -18,6 +18,7 @@ use App\Classes\Helpers\Currency;
 use App\Models\TestBonus;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
+use App\Models\QuartalPremium;
 use App\SavedKpi;
 
 class ProfileSalaryController extends Controller
@@ -41,11 +42,6 @@ class ProfileSalaryController extends Controller
          */
         $d1 = $date->format('Y-m-d');
         $kv = intval((date('m', strtotime($d1)) + 2)/3);
-
-        $quarters = QuartalBonus::on()->where('user_id',$user->id)
-            ->where('year',$date->year)
-            ->where('quartal',$kv)
-            ->get()->toArray();
 
         $quarter_bonus = QuartalBonus::on()->where('user_id',$user->id)
             ->where('year',$date->year)
@@ -161,9 +157,36 @@ class ProfileSalaryController extends Controller
             ]
         ];
 
+        /**
+         * DUPLICATED CODE
+         */
+        
+    
+        $user_id = $user->id;
+        $position_id = $user->position_id;
+        
+        $groups = $user->groups->pluck('id')->toArray();
+
+        $quarters = QuartalPremium::query()
+            ->selectRaw('count(*) as count')
+            ->where(function($query) use ($user_id, $groups, $position_id) {
+                $query->where(function($q) use ($user_id) {
+                        $q->where('targetable_id', $user_id)
+                            ->where('targetable_type', 'App\User');
+                    })
+                    ->orWhere(function($q) use ($groups) {
+                        $q->whereIn('targetable_id', $groups)
+                            ->where('targetable_type', 'App\ProfileGroup');
+                    })
+                    ->orWhere(function($q) use ($position_id) {
+                        $q->where('targetable_id', $position_id)
+                            ->where('targetable_type', 'App\Position');
+                    });
+            })->first()->count;
+           
         return [
             'user_earnings' => $user_earnings,
-            'quarters' => $quarters,
+            'has_qp' => $quarters > 0,
         ];
         
         

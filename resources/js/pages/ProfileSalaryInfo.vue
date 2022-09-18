@@ -6,7 +6,7 @@
           <user-earnings
               :data="user_earnings"
               :activeuserid="user_id"
-              :quarters="quarters"
+              :has_quartal_premiums="has_qp"
               :month="month" 
           />
       </div>
@@ -79,6 +79,7 @@ export default {
             }
       },
       quarters: [],
+      has_qp: false
     };
   },
 
@@ -100,7 +101,7 @@ export default {
               month: this.$moment(this.month, 'MMMM').format('M')
           }).then(response => {
             this.user_earnings = response.data.user_earnings
-            this.quarters = response.data.quarters
+            this.has_qp = response.data.has_qp
               loader.hide()
           }).catch(error => {
               loader.hide()

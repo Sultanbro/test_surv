@@ -1,10 +1,6 @@
 <template>
-<div class="row">
-    <!-- <div class="col-md-3">
-        <p>Оклад </p>
-        <p><b><span>{{ data.oklad }}</span></b></p>
-    </div> -->
-    <div class="flexy"  v-bind:class="[activeClass]">
+<div class="row jcsb px-5">
+    <div class="flexy col-md-3" >
         <div class="filler" @click="showSalarySidebar = true" id="hoverPulse">
             <img src="/images/money1.png"
                 alt="icon"
@@ -18,7 +14,7 @@
         <p class="mb-0 font-bold">Баланс оклада<span></span></p>
         <p class="text-center">{{ data.salary }}</p>
     </div>
-    <div class="flexy"  v-bind:class="[activeClass]">
+    <div class="flex ycol-md-3" >
         <div class="filler" @click="openKpi">
             <img src="/images/money2.png"
                 alt="icon"
@@ -29,10 +25,10 @@
                     class="img-fluid w-120">
             </div>
         </div>
-        <p class="mb-0  font-bold">KPI <span></span></p>
+        <p class="mb-0  font-bold text-center">KPI <span></span></p>
         <p class="text-center">{{ data.kpi }}</p>
     </div>
-    <div class="flexy"  v-bind:class="[activeClass]">
+    <div class="flexy col-md-3">
         <div class="filler" @click="showBonusSidebar = true" style="top:15px">
             <img src="/images/money3.png"
                 alt="icon"
@@ -47,8 +43,8 @@
         <p class="text-center">{{ data.bonus }}</p>
     </div>
 
-    <div class="flexy"   v-bind:class="[activeClass]"  v-if="this.quarters.length != 0"  v-show="visible"  style="margin-top: 11px">
-        <div class="filler" @click="showQuartalBonusSidebar = true" style="top: 10px;left: 15px;">
+    <div class="flexy col-md-3"  v-if="has_quartal_premiums" style="margin-top: 11px">
+        <div class="filler" @click="openQuartalPrems" style="top: 10px;left: 15px;">
             <img src="/images/bonus_type_2.png"
                 alt="icon"
                 class="img-fluid w-120 back">
@@ -58,7 +54,7 @@
                     class="img-fluid w-120">
             </div>
         </div>
-        <p class="mb-0  font-bold">Квартальная премия <span></span></p>
+        <p class="mb-0 font-bold">Квартальная премия <span></span></p>
         <p class="text-center">{{ data.quarter_bonus }}</p>
     </div>
 
@@ -174,30 +170,16 @@
 
     <sidebar
       title="Квартальная премия"
-      :open="showQuartalBonusSidebar"
-      @close="showQuartalBonusSidebar = false"
-      width="40%"
+      :open="showQuartalPremiumSidebar"
+      @close="showQuartalPremiumSidebar = false"
+      width="60%"
     >
 
-        <div v-if="this.quarters.length > 0">
-            <div class="mt-2"  v-for="quarter in this.quarters">
-                <p class="font-bold mb-0" v-if="quarter.quartal === 1">Квартальная премия период с 01.01.2020 до 31.03.{{quarter.year}}</p>
-                <p class="font-bold mb-0" v-if="quarter.quartal === 2">Квартальная премия период с 01.03.2020 до 31.06.{{quarter.year}}</p>
-                <p class="font-bold mb-0" v-if="quarter.quartal === 3">Квартальная премия период с 01.06.2020 до 31.09.{{quarter.year}}</p>
-                <p class="font-bold mb-0" v-if="quarter.quartal === 4">Квартальная премия период с 01.09.2020 до 31.12.{{quarter.year}}</p>
-                <table class="table table-bordered table-sm ue-table">
-                    <tr class="colspan">
-                        <td class="text-left" style="width: 30%">Сумма</td>
-                        <td>{{ quarter.sum }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-left" style="width: 30%">Комментарии</td>
-                        <td>{{ quarter.text }}</td>
-                    </tr>
-
-                </table>
-            </div>
-        </div>
+        <t-stats-quartal
+            :users="quartal_premiums"
+            :groups="quartal_groups"
+            searchText=""
+        />
 
     </sidebar>
 </div>
@@ -206,44 +188,70 @@
 <script>
 export default {
     name: "UserEarnings",
+
     props: {
         month: {},
         data: Object,
         activeuserid: Number,
-        quarters: {
-            type: Array
-        },
+        has_quartal_premiums: Boolean
     },
+
     data() {
         return {
-            visible: true,
-            activeClass:this.quarters.length == 0 ? 'col-md-4' : 'col-md-3',
-            showQuartalBonusSidebar:false,
+            visible: true, 
+            activeClass: 'col-md-4',
+            showQuartalPremiumSidebar:false, 
             showBonusSidebar: false,
             showKpiSidebar: false,
             showSalarySidebar: false,
             editedBonus: null,
             activities: [],
             groups: {},
+            quartal_premiums: [],
             kpis: [],
             bonus_groups: [],
-        };
+            quartal_groups: [],
+        }
     },
-    created() {
 
-        console.log(this.data,'imasheev')
+    created() {
+        this.activeClass = this.has_quartal_premiums ? 'col-md-3' : 'col-md-4';
     },
+
     methods: {
-        openQuartal(){
-            this.fetchData({
+        openQuartalPrems(){
+            this.fetchQP({
                 data_from: {
                     year: new Date().getFullYear(),
                     month: this.$moment(this.month, 'MMMM').format('M')
                 },
                 user_id: this.activeuserid
             })
-            this.showQuartalBonusSidebar = true
+
+            this.showQuartalPremiumSidebar = true
         },
+
+        fetchQP(filters) {
+            let loader = this.$loading.show();
+
+            axios.post('/statistics/quartal-premiums', {
+                filters: filters 
+            }).then(response => {
+                
+                // items
+                this.quartal_premiums = response.data[0].map(res=> ({...res, expanded: false}));
+                // this.quartal_premiums = this.quartal_premiums.map(res=> ({...res, my_sum: 0}))
+                
+                // this.activities = response.data.activities;
+                this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
+
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
+        },
+
         openBonus(){
             this.fetchBonus({
                 data_from: {
@@ -254,16 +262,7 @@ export default {
             })
             this.showBonusSidebar = true
         },
-        openKpi(){
-            this.fetchData({
-                data_from: {
-                    year: new Date().getFullYear(),
-                    month: this.$moment(this.month, 'MMMM').format('M')
-                },
-                user_id: this.activeuserid
-            })
-            this.showKpiSidebar = true
-        },
+
         fetchBonus(filter){
             let loader = this.$loading.show();
             axios.post('/statistics/bonus', {
@@ -277,7 +276,20 @@ export default {
                 alert(error)
             });
         },
-        fetchData(filters) {
+
+        openKpi(){
+            this.fetchKPI({
+                data_from: {
+                    year: new Date().getFullYear(),
+                    month: this.$moment(this.month, 'MMMM').format('M')
+                },
+                user_id: this.activeuserid
+            })
+            this.showKpiSidebar = true
+        },
+
+       
+        fetchKPI(filters) {
             let loader = this.$loading.show();
 
             axios.post('/statistics/kpi', {
