@@ -98,6 +98,15 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Получить всех стажеров которые ответственен.
+     * @return HasMany
+     */
+    public function trainees(): HasMany
+    {
+        return $this->hasMany('App\Models\Attendance', 'user_id', 'id');
+    }
+
+    /**
      * @return BelongsToMany
      */
     public function groups(): BelongsToMany

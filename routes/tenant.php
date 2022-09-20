@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -391,6 +392,13 @@ Route::middleware([
 
         Route::get('/check/user/{id}', [DepartmentUserController::class, 'userInGroup']);
     });
+
+    /**
+     * Отслеживаем посещение стажеров на стажировке.
+     */
+    Route::resource('attendance', AttendanceController::class);
+    Route::get('/attendance', [AttendanceController::class, 'getDayAttendance']);
+
 
     Route::get('/bitrix/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
 
