@@ -45,42 +45,49 @@
 
 <script>
 export default {
-  name: "ProfileSalaryInfo",
+    name: "ProfileSalaryInfo",
 
-  props: {
-    user_id: {
-      required: true
+    props: {
+        user_id: {
+            required: true
+        },
     },
-  },
 
-  data() {
-    return {
-      page: 1,
-      date: new Date(),
-      month: null,
-      user_earnings: {
-        'quarter_bonus' : 0,
-            'oklad' : 0,
-            'bonus' : 0,
-            'kpis' : [],
-            'bonusHistory' : [],
-            'editedBonus' : [],
-            'editedKpi' : [],
-            'potential_bonuses' : [],
-            'salary_percent' : 0,
-            'kpi_percent' : 0, 
-            'kpi' : 0,
-            'salary' : 0,
-            'salary_info' : {
-                'worked_days' :0,
-                'indexation_sum' : 0,
-                'days_before_indexation' : 0,
+    data() {
+        return {
+            page: 1,
+            date: new Date(),
+            month: null,
+            user_earnings: {
+                'quarter_bonus' : 0,
                 'oklad' : 0,
-            }
-      },
-      quarters: [],
-      has_qp: false
-    };
+                'bonus' : 0,
+                'kpis' : [],
+                'bonusHistory' : [],
+                'editedBonus' : [],
+                'editedKpi' : [],
+                'potential_bonuses' : [],
+                'salary_percent' : 0,
+                'kpi_percent' : 0, 
+                'kpi' : 0,
+                'salary' : 0,
+                'salary_info' : {
+                    'worked_days' :0,
+                    'indexation_sum' : 0,
+                    'days_before_indexation' : 0,
+                    'oklad' : 0,
+                },
+                awards: [{
+                    name: 'Сертификаты',
+                    id: 1
+                }, {
+                    name: 'Номинации',
+                    id: 2
+                }]
+            },
+            quarters: [],
+            has_qp: false
+        };
   },
 
   created() {

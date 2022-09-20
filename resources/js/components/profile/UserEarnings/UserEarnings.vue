@@ -1,12 +1,12 @@
 <template>
 <div class="row jcsb px-5">
-    <div class="flexy col-md-3" >
+    <div class="flexy" v-bind:class="[activeClass]">
         <div class="filler" @click="showSalarySidebar = true" id="hoverPulse">
-            <img src="/images/money1.png"
+            <img src="/images/user-earnings-1.svg"
                 alt="icon"
                 class="img-fluid w-120 back">
             <div class="front" :style="'height:'+ data.salary_percent +'%'">
-                <img src="/images/money1.png"
+                <img src="/images/user-earnings-1.svg"
                     alt="icon"
                     class="img-fluid w-120">
             </div>
@@ -14,13 +14,13 @@
         <p class="mb-0 font-bold">Баланс оклада<span></span></p>
         <p class="text-center">{{ data.salary }}</p>
     </div>
-    <div class="flex ycol-md-3" >
+    <div class="flexy" v-bind:class="[activeClass]">
         <div class="filler" @click="openKpi">
-            <img src="/images/money2.png"
+            <img src="/images/user-earnings-2.svg"
                 alt="icon"
                 class="img-fluid w-120 back">
             <div class="front" :style="'height:'+ data.kpi_percent +'%'">
-                <img src="/images/money2.png"
+                <img src="/images/user-earnings-2.svg"
                     alt="icon"
                     class="img-fluid w-120">
             </div>
@@ -28,13 +28,13 @@
         <p class="mb-0  font-bold text-center">KPI <span></span></p>
         <p class="text-center">{{ data.kpi }}</p>
     </div>
-    <div class="flexy col-md-3">
-        <div class="filler" @click="showBonusSidebar = true" style="top:15px">
-            <img src="/images/money3.png"
+    <div class="flexy" v-bind:class="[activeClass]">
+        <div class="filler" @click="showBonusSidebar = true">
+            <img src="/images/user-earnings-3.svg"
                 alt="icon"
                 class="img-fluid w-120 back">
             <div class="front" style="height:100%">
-                <img src="/images/money3.png"
+                <img src="/images/user-earnings-3.svg"
                     alt="icon"
                     class="img-fluid w-120">
             </div>
@@ -43,19 +43,34 @@
         <p class="text-center">{{ data.bonus }}</p>
     </div>
 
-    <div class="flexy col-md-3"  v-if="has_quartal_premiums" style="margin-top: 11px">
-        <div class="filler" @click="openQuartalPrems" style="top: 10px;left: 15px;">
-            <img src="/images/bonus_type_2.png"
+    <div class="flexy"  v-bind:class="[activeClass]" v-if="has_quartal_premiums">
+        <div class="filler" @click="openQuartalPrems">
+            <img src="/images/user-earnings-4.svg"
                 alt="icon"
                 class="img-fluid w-120 back">
             <div class="front" style="height:100%">
-                <img src="/images/bonus_type_2.png"
+                <img src="/images/user-earnings-4.svg"
                     alt="icon"
                     class="img-fluid w-120">
             </div>
         </div>
         <p class="mb-0 font-bold">Квартальная премия <span></span></p>
         <p class="text-center">{{ data.quarter_bonus }}</p>
+    </div>
+
+    <div class="flexy"  v-bind:class="[activeClass]">
+        <div class="filler" @click="showAwardSidebar = true">
+            <img src="/images/user-earnings-5.svg"
+                alt="icon"
+                class="img-fluid w-120 back">
+            <div class="front" style="height:100%">
+                <img src="/images/user-earnings-5.svg"
+                    alt="icon"
+                    class="img-fluid w-120">
+            </div>
+        </div>
+        <p class="mb-0  font-bold">Награды <span></span></p>
+        <p class="text-center">&nbsp;</p>
     </div>
 
     <sidebar
@@ -182,13 +197,22 @@
         />
 
     </sidebar>
+
+    <award-sidebar
+        v-if="showAwardSidebar"
+        :open.sync="showAwardSidebar"
+        :awards="data.awards"
+    />
+
 </div>
 </template>
     
 <script>
+import AwardSidebar from './AwardSidebar'
+
 export default {
     name: "UserEarnings",
-
+    components: { AwardSidebar },
     props: {
         month: {},
         data: Object,
@@ -198,12 +222,13 @@ export default {
 
     data() {
         return {
-            visible: true, 
-            activeClass: 'col-md-4',
-            showQuartalPremiumSidebar:false, 
+            visible: true,
+            showQuartalBonusSidebar: false,
+            showQuartalPremiumSidebar: false,
             showBonusSidebar: false,
             showKpiSidebar: false,
             showSalarySidebar: false,
+            showAwardSidebar: false,
             editedBonus: null,
             activities: [],
             groups: {},
@@ -213,11 +238,11 @@ export default {
             quartal_groups: [],
         }
     },
-
-    created() {
-        this.activeClass = this.has_quartal_premiums ? 'col-md-3' : 'col-md-4';
+    computed: {
+        activeClass () {
+            return this.has_quartal_premiums == 0 ? 'col-md-3' : 'col-md-2'
+        }
     },
-
     methods: {
         openQuartalPrems(){
             this.fetchQP({
@@ -324,6 +349,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 .filler {
     position: relative;
