@@ -2,11 +2,11 @@
 <div class="row jcsb px-5">
     <div class="flexy" v-bind:class="[activeClass]">
         <div class="filler" @click="showSalarySidebar = true" id="hoverPulse">
-            <img src="/images/user-earnings-1.svg"
+            <img src="/images/money1.png"
                 alt="icon"
                 class="img-fluid w-120 back">
             <div class="front" :style="'height:'+ data.salary_percent +'%'">
-                <img src="/images/user-earnings-1.svg"
+                <img src="/images/money1.png"
                     alt="icon"
                     class="img-fluid w-120">
             </div>
@@ -16,11 +16,11 @@
     </div>
     <div class="flexy" v-bind:class="[activeClass]">
         <div class="filler" @click="openKpi">
-            <img src="/images/user-earnings-2.svg"
+            <img src="/images/money2.png"
                 alt="icon"
                 class="img-fluid w-120 back">
             <div class="front" :style="'height:'+ data.kpi_percent +'%'">
-                <img src="/images/user-earnings-2.svg"
+                <img src="/images/money2.png"
                     alt="icon"
                     class="img-fluid w-120">
             </div>
@@ -30,11 +30,11 @@
     </div>
     <div class="flexy" v-bind:class="[activeClass]">
         <div class="filler" @click="showBonusSidebar = true">
-            <img src="/images/user-earnings-3.svg"
+            <img src="/images/money3.png"
                 alt="icon"
                 class="img-fluid w-120 back">
             <div class="front" style="height:100%">
-                <img src="/images/user-earnings-3.svg"
+                <img src="/images/money3.png"
                     alt="icon"
                     class="img-fluid w-120">
             </div>
@@ -45,11 +45,11 @@
 
     <div class="flexy"  v-bind:class="[activeClass]" v-if="has_quartal_premiums">
         <div class="filler" @click="openQuartalPrems">
-            <img src="/images/user-earnings-4.svg"
+            <img src="/images/bonus_type_2.png"
                 alt="icon"
                 class="img-fluid w-120 back">
             <div class="front" style="height:100%">
-                <img src="/images/user-earnings-4.svg"
+                <img src="/images/bonus_type_2.png"
                     alt="icon"
                     class="img-fluid w-120">
             </div>
