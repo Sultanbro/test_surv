@@ -124,11 +124,20 @@ class BonusUpdate extends Command
             $group = ProfileGroup::find($this->argument('group_id'));
 
 
-            $user_ids = $this->userService->getEmployees($this->argument('group_id'), $this->date);
+            //$user_ids = $this->userService->getEmployees($this->argument('group_id'), $this->date);
+
+            $user_ids = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->whereIn('users.id', json_decode($group->users))
+                ->where('is_trainee', 0)
+                ->get(['users.id'])
+                ->pluck('id')
+                ->toArray();
 
 
-
-
+        
+           
 
 
 

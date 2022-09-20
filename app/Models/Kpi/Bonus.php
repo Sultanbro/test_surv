@@ -76,7 +76,7 @@ class Bonus extends Model
     public static function obtained_in_group($group_id, $date) {
         $group = ProfileGroup::find($group_id);
         
-        // $user_ids = json_decode($group->users);
+         $user_ids = json_decode($group->users);
         $bonuses = self::query()
             ->where('targetable_id', $group_id)
             ->where('targetable_type', 'App\ProfileGroup')
@@ -86,16 +86,16 @@ class Bonus extends Model
         $awards = []; // bonuses
         $comments = []; // bonuses
         
-        // $users = \DB::table('users')
-        //     ->whereNull('deleted_at')
-        //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-        //     ->whereIn('users.id', $user_ids)
-        //     ->where('is_trainee', 0)
-        //     ->get(['users.id'])
-        //     ->pluck('id')
-        //     ->toArray();
+        $users = \DB::table('users')
+            ->whereNull('deleted_at')
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->whereIn('users.id', $user_ids)
+            ->where('is_trainee', 0)
+            ->get(['users.id'])
+            ->pluck('id')
+            ->toArray();
         
-        $users = (new UserService)->getEmployees($group_id, $date);
+       // $users = (new UserService)->getEmployees($group_id, $date);
 
 //if($group_id) $users = [15317];
 

@@ -94,6 +94,9 @@ class Salary extends Model
                         ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
                       
                 },
+                'testBonuses' => function ($q) use ($month) {
+                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $month->month)->whereYear('date', $month->year);
+                },
             ])
         ->whereIn('users.id', $user_ids)
         ->oldest('users.last_name')
@@ -114,8 +117,26 @@ class Salary extends Model
             
         if($user_types == 1 && $pgu) {
             $user_ids = $pgu->assigned;
-        } else if($user_types == 2 && $pgu) {
-            $user_ids = $pgu->fired;
+        } else if($user_types == 2) {
+            
+            $x_users = User::withTrashed()
+                ->whereDate('deleted_at', '>=', Carbon::createFromDate($month->year, $month->month, 1)->format('Y-m-d'))
+                ->get(['id','last_group']);
+
+            $fired_users = [];
+            foreach($x_users as $d_user) {
+                if($d_user->last_group) {
+                    $lg = json_decode($d_user->last_group);
+                    if(in_array($group_id, $lg)) {
+                        array_push($fired_users, $d_user->id);
+                    }
+                } 
+            }
+
+            $user_ids = array_unique(array_values($fired_users));
+
+           
+            //$user_ids = $pgu->fired;
         } 
       
         foreach ($users as $key => $user) {
@@ -288,8 +309,6 @@ class Salary extends Model
                 }
             }
         
-            
-
                 $user->edited_salary = EditedSalary::where('user_id', $user->id)->where('date', $month->format('Y-m-d'))->first();
 
                 //
@@ -316,10 +335,16 @@ class Salary extends Model
             $user_total = 0;
             $total_bonuses = 0;
             $total_salary = 0;
+
+
+         //   if($user->id == 18392) dd($earnings);
+
             for($i=1;$i<=$month->daysInMonth;$i++) {
                 $total_bonuses += (float)$bonuses[$i] + (float)$awards[$i];
                 $total_salary += (float)$earnings[$i];
             }   
+
+            $total_bonuses += $user->testBonuses->sum('amount');
 
             $user_total += $total_salary;
 
@@ -339,6 +364,8 @@ class Salary extends Model
             $text .= self::addSpace($total_bonuses, 7);
             $text .= ' • K ' ;
             $text .= self::addSpace($kpi, 7);
+            $text .= ' • T ' ;
+            $text .= self::addSpace($kpi + $total_bonuses + $total_salary, 10);
             $text .= '      '. $user->last_name . ' '. $user->name;
             
 
@@ -372,9 +399,13 @@ class Salary extends Model
                 $osal += $total_salary;
                 dump($text);
             }
+
+
+
+           
             
         }
-
+        
         if($pgu) {
             $user_ids = array_unique($user_ids);
             $user_ids = array_values($user_ids);
@@ -425,13 +456,45 @@ class Salary extends Model
 
         $salaries = [];
 
+       // $group_users = $group->users()->pluck('id')->toArray();
+        $group_users = json_decode($group->users, true);
+
+       
+         $x_users = User::withTrashed()
+                ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
+                ->get(['id','last_group']);
+
+        $fired_users = [];
+        foreach($x_users as $d_user) {
+            if($d_user->last_group) {
+                $lg = json_decode($d_user->last_group);
+                if(in_array($group_id, $lg)) {
+                    array_push($fired_users, $d_user->id);
+                }
+            } 
+        }
+
+        
+        $user_ids = array_unique(array_values($fired_users));
+        
+        $group_users = array_merge($group_users, $fired_users);
+
+            ////
+            /**
+             * 
+             * 
+             * 
+             * 
+             * 
+             */
         $arr = Salary::salariesTable(
-            0, // user_type
+            3, // user_type
             $date->format('Y-m-d'),
-            $group->users()->pluck('id')->toArray(), 
+            $group_users,
             $group_id
         );
 
+      //  if(auth()->id() == 5) dd(collect($arr['users'])->pluck('id', 'full_name'));
         foreach ($days as $day) {
            
             $salaries[$day] = 0;
@@ -442,16 +505,23 @@ class Salary extends Model
                 if(isset($user['awards'][$day]))     $salaries[$day] += (float) $user['awards'][$day];
                 if(isset($user['earnings'][$day]))   $salaries[$day] += (float) $user['earnings'][$day];
                 
-                if(isset($user['fine'][$day])) { 
-                    foreach($user['fine'][$day] as $fine) {
-                        $salaries[$day] -= (float) $fine;
+                if(isset($user['fine'][$day])) {
+                         
+           
+                    foreach($user['fine'][$day] as $fines) {
+                        foreach($fines as $fine) {
+                            $salaries[$day] -= (float) $fine;
+                        }
+                     
+                        
                     }
                 }
 
-                if($day == $last_day) $salaries[$day] += (float) $user['kpi'];
+                if($day == 1) $salaries[$day] += (float) $user['kpi'];
             }
-        }
 
+        }
+       
         return $salaries;
     }
 
@@ -465,6 +535,7 @@ class Salary extends Model
         if($user_types == 0) {// Действующие
             $users->whereNull('deleted_at');
         } 
+
 
         if($user_types == 1) {// Уволенные
             $users->onlyTrashed();
@@ -499,7 +570,7 @@ class Salary extends Model
             
         }
 
-        if($user_types == -1) {// one person
+        if($user_types == -1 || $user_types == 3) {// one person
 
             $users->withTrashed();
         }
@@ -590,13 +661,13 @@ class Salary extends Model
         //me($users);
         foreach ($users as $key => $user) {
             
-            $ugroups = $user->inGroups();
+            // $ugroups = $user->inGroups();
 
-            if(count($ugroups) > 0) {
-                if($ugroups[0]->id != $group_id && $user_types != -1) {
-                    continue;
-                }
-            }
+            // if(count($ugroups) > 0) {
+            //     if($ugroups[0]->id != $group_id && $user_types != -1) {
+            //         continue;
+            //     }
+            // }
           
             $internshipPayRate = $user->internshipPayRate();
             

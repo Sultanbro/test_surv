@@ -615,7 +615,7 @@ Route::middleware([
     ], function() {
 
       
-/**
+        /**
          * Get chats list
          */
         Route::get('/v2/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');

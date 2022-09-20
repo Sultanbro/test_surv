@@ -74,7 +74,7 @@ class CalculateKpiService
             $percent = $percent / 2;
         }
 
-        return $plan != 0 ? round($data['fact'] / $plan * $percent, 2) * 100 : 0.00;
+        return $plan != 0 ? round($data['fact'] / $plan * $percent * 100 , 2) : 0.00;
     }
 
     /**
@@ -82,7 +82,7 @@ class CalculateKpiService
      */
     private function sum_not_more(array $data) : float
     { 
-        return (float)$data['daily_plan'] - $data['fact'] > 0 ? 100.00 : 0.00;
+        return (float)$data['daily_plan'] - $data['fact'] >= 0 ? 100.00 : 0.00;
     }
 
     /**
@@ -98,14 +98,7 @@ class CalculateKpiService
      */
     private function avg(array $data) : float
     {
-        if($data['records_count'] > 0) {
-            $avg    = $data['fact'] / $data['records_count'];
-            $result = $data['avg'] / ((float)$data['daily_plan']) * 100;
-        } else {
-            $result = 0.00;
-        }
-
-        return $result;
+        return $data['avg'] / ((float)$data['daily_plan']) * 100;
     }
 
     /**
@@ -113,14 +106,7 @@ class CalculateKpiService
      */
     private function avg_not_more(array $data) : float
     { 
-        if($data['records_count'] > 0 ) {
-            //$avg = $data['fact'] / $data['records_count'];
-            $result =  ((float)$data['daily_plan']) / $data['fact'] * 100;
-        } else {
-            $result = 0.00;
-        }
-
-        return $result;
+        return (float)$data['daily_plan'] - (float)$data['avg'] >= 0 ? 100.00 : 0.00;
     }
 
     /**
@@ -128,14 +114,7 @@ class CalculateKpiService
      */
     private function avg_not_less(array $data) : float
     { 
-        if($data['records_count'] > 0) {
-            //$avg = $data['fact'] / $data['records_count'];
-            $result =  $data['fact']/ ((float)$data['daily_plan']) * 100;
-        } else {
-            $result = 0.00;
-        }
-
-        return $result;
+        return (float)$data['avg'] - (float)$data['daily_plan'] >= 0 ? 100.00 : 0.00;
     }
 
    

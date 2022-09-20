@@ -18,6 +18,8 @@ class Kpi extends Model
 
     protected $table = 'kpis';
 
+    public $timestamps = true;
+
     protected $appends = ['target', 'expanded'];
     
     protected $fillable = [

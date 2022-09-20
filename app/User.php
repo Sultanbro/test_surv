@@ -213,15 +213,15 @@ class User extends Authenticatable implements Authorizable
     public function workdays_from_applied($date, $workdays = 6) {
         $date = Carbon::parse($date);
         $applied_from = 0;
-        if($this->user_description && $this->user_description->applied) {
+        if($this->user_description && $this->user_description->applied) { 
             $applied = Carbon::parse($this->user_description->applied);
-            $applied->addDay();
+         
             $year = $applied->year;
             $month = $applied->month;
             
             if($year == $date->year && $month == $date->month) {
-                $exclude = $workdays == 5 ? 2 : 1;
-                $applied_from = workdays_diff($applied->format('Y-m-d'), Carbon::parse($date)->endOfMonth()->format('Y-m-d'), $exclude);
+                $exclude = $workdays == 5 ? 2 : 1; 
+                $applied_from = workdays_diff($applied->format('Y-m-d'), Carbon::parse($date)->endOfMonth()->format('Y-m-d'), $exclude) + 1;
                 //$applied_from = $applied_from - 1;
                 $applied_from = $applied_from < 0 ? 0 : $applied_from;
             }

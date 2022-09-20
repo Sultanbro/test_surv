@@ -1,5 +1,5 @@
 <template>
-<div class="bonuses px-3 py-1">
+<div class="bonuses">
     <table class="table j-table table-bordered table-sm mb-3 collapse-table">
         <tr>
             <th class="b-table-sticky-column text-center px-1">

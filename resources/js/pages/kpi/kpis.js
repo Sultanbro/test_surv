@@ -162,19 +162,19 @@ function calcCompleted(el) {
     }
 
     if(el.method == 3) {
-        res = plan - fact > 0 ? 100 : 0;
+        res = plan - fact >= 0 ? 100 : 0;
     }
 
     if(el.method == 4) {
-        res = plan - avg > 0 ? 100 : 0;
+        res = plan - avg >= 0 ? 100 : 0;
     }
 
     if(el.method == 5) {
-        res = fact - plan > 0 ? 100 : 0;
+        res = fact - plan >= 0 ? 100 : 0;
     }
 
     if(el.method == 6) {
-        res = avg - plan > 0 ? 100 : 0;
+        res = avg - plan >= 0 ? 100 : 0;
     }
 
     return Number(res);

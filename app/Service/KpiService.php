@@ -45,10 +45,31 @@ class KpiService
     {   
         if($filters !== null) {} 
         
-        $kpis = Kpi::with('items', 'creator', 'updater')->get();
+        $kpis = Kpi::with(['items', 'creator', 'updater', 'histories' => function($query) {
+            //$query->whereDate('created_at', '<=', $last_date);
+        }])->get();
+        
+        $kpis_final = [];
+
+        foreach ($kpis as $key => $kpi) {
+
+            $item = $kpi->toArray();
+
+            // remove items if it's not in history
+            if($kpi->histories->first()) {
+                $payload = json_decode($kpi->histories->first()->payload, true);
+             
+                if(isset($payload['children'])) {
+                    $item['items'] = $kpi->items->whereIn('id', $payload['children']);
+                } 
+            }
+
+            array_push($kpis_final, $item);
+        }
+        
 
         return [
-            'kpis'       => $kpis,
+            'kpis'       => $kpis_final,
             'activities' => Activity::get(),
             'groups' => \App\ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
