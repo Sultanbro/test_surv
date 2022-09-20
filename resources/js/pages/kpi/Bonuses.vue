@@ -623,7 +623,7 @@ export default {
             page.items.push(newBonus());
             page.items[page.items.length - 1].target = {
                 id: page.id,
-                type: 2
+                type: page.type
             };
             
         },
