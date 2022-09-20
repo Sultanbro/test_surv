@@ -348,11 +348,16 @@
                                             />
                                         </td>
                                     </tr>
-                                    
+                                    <tr>
+                                        <td></td> <td colspan="8" class="plus-item">
+                                            <div class="px-2 py-1" @click="addBonusGroup(page_item)"><i class="fa fa-plus mr-2"></i> <b>Добавить бонус</b></div>
+                                        </td>
+                                    </tr>    
                                 </table>
                             </div>
                         </td>
-                    </tr>                
+                    </tr> 
+
                 </template>
     
             </template>
@@ -614,6 +619,14 @@ export default {
 
     },
     methods: {
+        addBonusGroup(page){
+            page.items.push(newBonus());
+            page.items[page.items.length - 1].target = {
+                id: page.id,
+                type: 2
+            };
+            
+        },
         saveNewBonusArray(){  
             let item = this.newBonusesArray[this.newBonusesArray.length - 1];     
             item.target = this.new_target; 
