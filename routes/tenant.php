@@ -534,6 +534,12 @@ Route::middleware([
     });
    
 
+    Route::group([
+        'prefix' => 'awards',
+        'as'     => 'awards.',
+    ], function () {
+
+    });
   
 
     Route::get('/books/{id?}', [BpartnersController::class, 'books']);
