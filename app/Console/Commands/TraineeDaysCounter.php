@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use App\Models\Analytics\UserStat;
 use App\ProfileGroup;
 use App\DayType;
+use App\UserDescription;
+use App\Timetracking;
 
 class TraineeDaysCounter extends Command
 {
@@ -40,15 +42,41 @@ class TraineeDaysCounter extends Command
 
     	$users = json_decode(ProfileGroup::find(48)->users);
     	foreach($users as $user){
-    		$value = DayType::where('date',$this->date)->where('admin_id',$user)->where('type','>', 1)->get()->count();
+    		$day_data = DayType::where('date',$this->date)->where('admin_id',$user)->whereIn('type', [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']])->get();
+            $value = $this->getFirsts($day_data);
+
     		$this->saveASI([
 	            'date' => $this->date,//$this->startOfMonth,
 	            'employee_id' => $user,
 	            'group_id' => 48,
-	            'type' => 207 // 2й день
-	        ], $value);
+	            'type' => 207 // 2й+ день
+	        ], $value[1]);
+
+
+            $this->saveASI([
+                'date' => $this->date,//$this->startOfMonth,
+                'employee_id' => $user,
+                'group_id' => 48,
+                'type' => 204 // 1й день
+            ], $value[0]);
+
     	}
 
+    }
+
+    public function getFirsts($day_data){
+        $first_day = 0;
+        $second_day = 0;
+        foreach($day_data as $data){
+            $value = Timetracking::where('user_id',$data->user_id)->get();
+            if($value->count() > 1){
+                $second_day++;
+            }else{
+                $first_day++;
+            }
+        }
+        $value = [$first_day, $second_day];
+        return $value;
     }
 
     public function saveASI(array $fields, $value) {	        
