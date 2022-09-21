@@ -236,7 +236,7 @@ Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').defau
 // temp
 Vue.component('profile-salary-info', require('./pages/ProfileSalaryInfo.vue').default); 
 
-Vue.component('award-user-sidebar', require('./components/AwardUserSidebar.vue').default); // сайдбар для награждения пользователя
+Vue.component('award-user-sidebar', require('./components/sidebars/AwardUserSidebar.vue').default); // сайдбар для награждения пользователя
  
 Vue.directive("click-outside", {
   bind(el, binding, vnode) {
