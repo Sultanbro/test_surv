@@ -777,7 +777,7 @@ class UserController extends Controller
             ob_end_clean();
             if (ob_get_length() > 0) ob_clean();
             
-            return Excel::create('Сотрудники '. date('Y-m-d'), function ($excel) use ($data, $headings) {
+            return Excel::store('Сотрудники '. date('Y-m-d'), function ($excel) use ($data, $headings) {
                 $excel->setTitle('Отчет');
                 $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
                 $excel->setDescription('Экспорт данных в Excel файл');
