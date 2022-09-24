@@ -14,6 +14,7 @@ use App\Mail as Mailable;
 use Illuminate\Mail\Mailer;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\Activity;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Swift_Mailer;
 use Swift_SmtpTransport;
 use Swift_TransportException;

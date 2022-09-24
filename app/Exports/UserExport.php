@@ -25,9 +25,7 @@ class UserExport implements FromCollection, WithTitle, WithHeadings, ShouldAutoS
 
     public function collection()
     {
-        $data['records'] = $this->headings();
-
-
+        $data['records'] = [];
 
 
         $segments = Segment::get();
