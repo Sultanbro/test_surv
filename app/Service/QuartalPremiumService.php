@@ -90,7 +90,8 @@ class QuartalPremiumService
                 'text'              => $request->input('text'),
                 'plan'              => $request->input('plan'),
                 'from'              => $request->input('from'),
-                'to'                => $request->input('to')
+                'to'                => $request->input('to'),
+                'sum'               => $request->input('sum'),
             ]);
 
             return [

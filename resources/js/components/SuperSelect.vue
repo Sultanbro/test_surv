@@ -27,7 +27,7 @@
         
         <div class="options-window">
             <div class="types"> 
-                <div class="type" :class="{'active': type == 1}" @click="changeType(1)" v-if="onlytype != 2">
+                <div class="type" :class="{'active': type == 1}" @click="changeType(1)" >
                     <div class="text">Сотрудники</div>
                     <i class="fa fa-user"></i>
                 </div>
@@ -35,7 +35,7 @@
                     <div class="text" >Отделы</div>
                     <i class="fa fa-users"></i>
                 </div>
-                <div class="type" :class="{'active': type == 3}" @click="changeType(3)" v-if="onlytype != 2">
+                <div class="type" :class="{'active': type == 3}" @click="changeType(3)" >
                     <div class="text">Должности</div>
                     <i class="fa fa-briefcase"></i>
                 </div>
