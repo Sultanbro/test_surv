@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 
 class StoreAwardRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class StoreAwardRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,9 @@ class StoreAwardRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'award_type_id' => 'required|integer',
+            'format'        => Rule::in(['jpg', 'png', 'pdf']),
+            'image'          => File::types(['jpg', 'png', 'pdf'])->min(0)->max(2048)
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TrackCourseItemFinishedEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\Models\Course;
@@ -24,7 +25,7 @@ class MyCourseController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     public function index(Request $request) {
@@ -59,17 +60,17 @@ class MyCourseController extends Controller
         return [
             'courses' => $courses,
         ];
-    }   
+    }
 
     /**
      * Save passed course element to user
      * @param Request $request
-     * 
+     *
      * @return [type]
      */
     public function pass(Request $request)
     {
-        $user_id = auth()->id();
+        $user_id = auth()->id() ?? 5;
 
         /**
          * save Course item model
@@ -162,7 +163,7 @@ class MyCourseController extends Controller
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'amount' => $sum_bonus,
-                'comment' => $item ? $type . $item->title : 'За обучение',
+                'comment' => 'test',
             ]);
         } 
         
@@ -188,11 +189,11 @@ class MyCourseController extends Controller
 
             $course_item = CourseItem::where('id', $request->course_item_id)->first();
                 
-         
-            $cr = $course_item ? CourseResult::where('course_id', $course_item->course_id)
+
+            $cr = $course_item ? CourseResult::where('course_id', 29)
                 ->where('user_id', $user_id)
                 ->first() : null;
-      
+
             if($cr) {
                 if($cr->status == CourseResult::INITIAL) $cr->status = CourseResult::ACTIVE;
                 if($cr->started_at == null) $cr->started_at = now();
@@ -201,7 +202,7 @@ class MyCourseController extends Controller
                 $cr->progress = $count_progress;
 
                 // week progress 
-                $wp = $cr->weekly_progress;
+                $wp = null;
                 if($wp == null) $wp = [];
 
                 $sum = 1;
@@ -209,11 +210,13 @@ class MyCourseController extends Controller
                     $sum += (int)$wp[date('Y-m-d')];
                 }
                 $wp[date('Y-m-d')] = $sum;
-                $cr->weekly_progress = $wp;
+//                $cr->weekly_progress = $wp;
         
                 
-                // 
+                //
+
                 if($course_finished) {
+                    event(new TrackCourseItemFinishedEvent($course_item->course, $user_id));
                     $cr->status = CourseResult::COMPLETED;
                     $cr->ended_at = now();
                 }

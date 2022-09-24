@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\TrackCourseItemFinishedEvent;
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
+use App\Listeners\TrackCourseItemFinishedListener;
 use App\Listeners\TrackGroupChangingListener;
 use App\Listeners\TrackUserFiredListener;
 use Illuminate\Support\Facades\Event;
@@ -40,6 +42,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         TrackGroupChangingEvent::class => [
             TrackGroupChangingListener::class
+        ],
+        TrackCourseItemFinishedEvent::class => [
+            TrackCourseItemFinishedListener::class
         ]
     ];
 

@@ -7,6 +7,7 @@ use App\Events\TrackUserFiredEvent;
 use App\Http\Controllers\Controller;
 use App\KnowBase;
 use App\Models\QuartalBonus;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\Mail as Mailable;
@@ -17,7 +18,6 @@ use Swift_Mailer;
 use Swift_SmtpTransport;
 use Swift_TransportException;
 use Illuminate\Http\Request;
-use Auth;
 use App\Kpi;
 use App\Salary;
 use Carbon\Carbon;
@@ -81,7 +81,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     public function surv(Request $request)
@@ -2260,11 +2260,6 @@ class UserController extends Controller
     /////загрузка аватарки через настроки ( в шаблоне blade )
     public function uploadPhoto(Request $request)
     {
-
-
-
-
-
         $data = $request["image"];
 
 
@@ -2346,9 +2341,7 @@ class UserController extends Controller
     /// загрузка аватарки через профиль в компоненте ( vue.js )
     public function uploadImageProfile(Request $request){
 
-
-        $user = User::withTrashed()->find(auth()->user()->getAuthIdentifier());
-
+        $user = Auth::user() ?? User::findOrFail(5);
 
 
         if ($user->img_url){
@@ -2374,7 +2367,6 @@ class UserController extends Controller
             $request->validate([
                 'file' => 'required|mimes:jpg,jpeg,png'
             ]);
-
 
 
             $upload_path = public_path('users_img/');

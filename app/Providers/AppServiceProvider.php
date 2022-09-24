@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Response;
+use \Symfony\Component\HttpFoundation\Response as HttpFoundation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
@@ -137,10 +138,17 @@ class AppServiceProvider extends ServiceProvider
             }
 
         });
+        Response::macro('success', function ($data, $statusCode = HttpFoundation::HTTP_OK, $message = 'success',) {
+            return response()->json([
+                'status'  => $statusCode,
+                'message' => $message,
+                'data' => $data
+            ]);
+        });
 
         Response::macro('error', function ($message, $status_code) {
-            return \response()->json([
-                'status' => $status_code,
+            return response()->json([
+                'status'  => $status_code,
                 'message' => $message
             ]);
         });

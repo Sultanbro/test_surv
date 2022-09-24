@@ -5,88 +5,70 @@ namespace App\Http\Controllers;
 use App\Models\AwardType;
 use App\Http\Requests\StoreAwardTypeRequest;
 use App\Http\Requests\UpdateAwardTypeRequest;
+use App\Service\Award\AwardService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class AwardTypeController extends Controller
 {
     /**
+     * @var AwardService
+     */
+    private AwardService $awardService;
+
+    public function __construct(AwardService $awardService)
+    {
+        $this->awardService = $awardService;
+    }
+
+    /**
+     * Все типы награды.
      * @return JsonResponse
      */
     public function index(): JsonResponse
     {
         try {
             $awardTypes = AwardType::all();
-
-            return response()->json($awardTypes);
+            return response()->success($awardTypes);
         } catch (\Exception $exception) {
             return response()->error($exception->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @param StoreAwardTypeRequest $request
+     * @return mixed
      */
-    public function create()
+    public function store(StoreAwardTypeRequest $request): mixed
     {
-        //
+        return $this->awardService->storeAwardType($request);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreAwardTypeRequest  $request
-     * @return \Illuminate\Http\Response
+     * @param UpdateAwardTypeRequest $request
+     * @param AwardType $awardType
+     * @return mixed
+     * @throws Exception
      */
-    public function store(StoreAwardTypeRequest $request)
+    public function update(UpdateAwardTypeRequest $request, AwardType $awardType): mixed
     {
-        //
+        $response = $this->awardService->updateAwardType($request, $awardType);
+
+        return response()->success($response);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\AwardType  $awardType
-     * @return \Illuminate\Http\Response
+     * @param AwardType $awardType
+     * @return mixed
+     * @throws Exception
      */
-    public function show(AwardType $awardType)
+    public function destroy(AwardType $awardType): mixed
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\AwardType  $awardType
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(AwardType $awardType)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateAwardTypeRequest  $request
-     * @param  \App\Models\AwardType  $awardType
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateAwardTypeRequest $request, AwardType $awardType)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\AwardType  $awardType
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(AwardType $awardType)
-    {
-        //
+        try {
+            return response()->success($awardType->delete());
+        }catch (Exception $exception) {
+            throw new Exception($exception->getMessage());
+        }
     }
 }

@@ -5,82 +5,80 @@ namespace App\Http\Controllers;
 use App\Models\Award;
 use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
+use App\Service\Award\AwardService;
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
 
 class AwardController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @var AwardService
+     */
+    private AwardService $awardService;
+
+    public function __construct(AwardService $awardService)
+    {
+        $this->awardService = $awardService;
+    }
+
+    /**
+     * @return mixed
+     * @throws Exception
      */
     public function index()
     {
-        //
+        try {
+            $awardTypes = Award::all();
+            return response()->success($awardTypes);
+        } catch (Exception $exception) {
+            throw new Exception($exception->getMessage());
+        }
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreAwardRequest  $request
-     * @return \Illuminate\Http\Response
+     * @param StoreAwardRequest $request
+     * @return mixed
+     * @throws Exception
      */
     public function store(StoreAwardRequest $request)
     {
-        //
+        return $this->awardService->storeAward($request);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Award  $award
-     * @return \Illuminate\Http\Response
+     * @throws Exception
      */
     public function show(Award $award)
     {
-        //
+        try {
+            return response()->success($award);
+        } catch (Exception $exception) {
+            throw new Exception($exception->getMessage());
+        }
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Award  $award
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Award $award)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateAwardRequest  $request
-     * @param  \App\Models\Award  $award
-     * @return \Illuminate\Http\Response
+     * @param UpdateAwardRequest $request
+     * @param Award $award
+     * @return mixed
+     * @throws Exception
      */
     public function update(UpdateAwardRequest $request, Award $award)
     {
-        //
+        $response = $this->awardService->updateAward($request, $award);
+
+        return response()->success($response);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Award  $award
-     * @return \Illuminate\Http\Response
+     * @throws Exception
      */
     public function destroy(Award $award)
     {
-        //
+        try {
+            return response()->success($award->delete());
+        }catch (Exception $exception) {
+            throw new Exception($exception->getMessage());
+        }
     }
 }
