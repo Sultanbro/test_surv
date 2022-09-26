@@ -247,7 +247,7 @@ class User extends Authenticatable implements Authorizable
        return $this->hasOne('App\UserDescription', 'user_id', 'id');
     } 
 
-    public function user_description()
+    public function user_description(): HasOne
     {
        return $this->hasOne('App\UserDescription', 'user_id', 'id');
     } 
