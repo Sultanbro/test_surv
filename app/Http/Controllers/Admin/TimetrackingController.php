@@ -851,11 +851,25 @@ class TimetrackingController extends Controller
 
     public function getReports(GetReportsRequest $request)
     {
+
+        
         $year = $request['year'];
         $groupId = $request->input('group_id');
         $group = ProfileGroup::query()->findOrFail($groupId) ?? null;
-        $users_ids = $group->users()->get(['id'])->pluck('id')->toArray();
-        $head_ids = json_decode($group->head_id);
+
+
+
+        $users_ids = [];
+        $head_ids = [];
+        if ($group && $group->users != null) {
+            $users_ids = json_decode($group->users);
+            $head_ids = json_decode($group->head_id);
+        }
+
+
+
+        //$users_ids = $group->users()->get(['id'])->pluck('id')->toArray();
+       // $head_ids = json_decode($group->head_id);
         $currentUser = User::bitrixUser() ?? User::findOrFail(5);
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
