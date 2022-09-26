@@ -30,7 +30,7 @@ use App\Salary;
 class TestController extends Controller { 
   
 	public function test() { 
-
+		dd(tenant());
        // $users    = json_decode(ProfileGroup::query()->findOrFail(53)->users, true);
 		dd(static::class);
 		// foreach ($users as $key => $user_id) {
