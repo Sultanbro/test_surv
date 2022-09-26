@@ -380,6 +380,11 @@ Route::middleware([
         Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
     });
 
+    Route::group(['prefix' => 'bitrix'], function (){
+        Route::get('/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
+        Route::get('/leads/list', [\App\Http\Controllers\IntegrationController::class, 'getLeads']);
+    });
+    
     Route::group([
         'prefix' => 'department',
         'as'     => 'department.'
