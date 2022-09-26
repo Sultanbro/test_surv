@@ -83,7 +83,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function surv(Request $request)
