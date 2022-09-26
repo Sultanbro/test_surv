@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
+use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\KnowBase;
 use App\Models\QuartalBonus;
@@ -13,6 +14,7 @@ use App\Mail as Mailable;
 use Illuminate\Mail\Mailer;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\Activity;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Swift_Mailer;
 use Swift_SmtpTransport;
 use Swift_TransportException;
@@ -691,101 +693,9 @@ class UserController extends Controller
         $groups = $groups->pluck('name', 'id')->toArray();
 
         if($request->excel) {
-            $data['records'] = [];
-
-            $headings = [
-                'id',
-                'ФИО',
-                'Email',
-                'Группы',
-                'Тип',
-                'Full/Part',
-                'Сегмент',
-                'Должность',
-                'Дата регистрации',
-                'Дата принятия',
-                'Дата увольнения',
-                'Причина увольнения',
-                'Телефон',
-                'Тел. 2',
-                'Тел. 3',
-                'День рождения',
-                'Доп.',
-                'Программа',
-                'График',
-                'Часы работы',
-                'Начало',
-                'Конец',
-            ];
-
-            
-            
-            $segments = Segment::get();
-            $positions = Position::get()->pluck('position', 'id')->toArray();
-            foreach($users as $user) {
-                $seg = $segments->where('id', $user->segment)->first();
-                $segment = $seg ? $seg->name : $user->segment;
-               // dump($user->segment);
-                
-                $grs = '';
-                foreach($user->groups as $gr) {
-                    try {
-                        $grs .= $groups[$gr] . '  ';
-                    } catch(\Exception $e) {
-                        $grs .= $gr . '  ';
-                    }   
-                }
-
-                if($user->last_group) {
-                    foreach(json_decode($user->last_group) as $gr) {
-                        try {
-                            $grs .= $groups[$gr] . '  ';
-                        } catch(\Exception $e) {
-                            $grs .= $gr . '  ';
-                        }   
-                    }
-                }
-                
-                
-                $data['records'][] = [
-                    0 => $user->id,
-                    1 => $user->last_name . ' ' . $user->name, 
-                    2 => $user->email, 
-                    3 => $grs, 
-                    4 => $user->user_type == 'office' ? 'Офисный' : 'Удаленный', 
-                    5 => $user->full_time == 1 ? 'Full-time' : 'Part-time', 
-                    6 => $segment, 
-                    7 => array_key_exists($user->position_id, $positions) ? $positions[$user->position_id] : $user->position_id, 
-                    8 => $user->created_at, 
-                    9 => $user->applied, 
-                    10 => $user->deleted_at, 
-                    11 => $user->fire_cause, 
-                    12 => $user->phone, 
-                    13 => $user->phone, 
-                    14 => $user->phone, 
-                    15 => $user->birthday, 
-                    16 => $user->description, 
-                    17 => $user->program_id == 1 ? "U-Calls" : 'Другое', 
-                    18 => $user->working_day_id == 1 ? '5-2' : '6-1', 
-                    19 => $user->working_time_id == 1 ? 8 : 9, 
-                    20 => $user->work_start, 
-                    21 => $user->work_end, 
-                ];    
-            }
-
-           //dd(1);
-            ob_end_clean();
-            if (ob_get_length() > 0) ob_clean();
-            
-            return Excel::create('Сотрудники '. date('Y-m-d'), function ($excel) use ($data, $headings) {
-                $excel->setTitle('Отчет');
-                $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
-                $excel->setDescription('Экспорт данных в Excel файл');
-                $excel->sheet('Сотрудники', function ($sheet) use ($data, $headings) {
-                    $sheet->fromArray($data['records'], null, 'A1', false, false);
-                    $sheet->prependRow(1, $headings);
-                });
-            })->export('xls');
+            $export = new UserExport($users, $groups);
+            $title = 'Сотрудники: ' . date('Y-m-d') . '.xlsx';
+            return Excel::download($export, $title);
         }   
             
         

@@ -5,29 +5,66 @@
         title="Награды"
         :open="open"
         @close="$emit('update:open', false)"
-        width="40%"
+        width="60%"
     >
         <div id="left-panel" class="rounded-left">
             <b-card class="rounded-0 py-2" bg-variant="light">
-                <b-button block v-b-toggle.accordion-1 variant="info"
+
+                <b-button block variant="info"
                     v-for="(award, index) in awardsLocal"
                     :key="index"
                     :pressed="award.pressed"
-                    @click="awardClickHandler(index)">
+                    @click="awardsClickHandler(index)">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="mr-3">{{ award.name }}</span>
                         </div>
                 </b-button>
+
+                <b-button block variant="info"
+                    @click="nominationsClickHandler()"
+                    :pressed="nominationsSelected">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="mr-3">Номинации</span>
+                        </div>
+                </b-button>
+
             </b-card>
         </div>
 
         <div id="body">
-            <b-card class="awards-card" header="Мои" header-class="p-2 font-weight-bold">
-                <div v-for="award in processedFetchedAwards.my">{{ award.imgSrc }}</div>
-            </b-card>
-            <b-card class="awards-card" header="Других сотрудников" header-class="p-2 font-weight-bold">
-                <div v-for="award in processedFetchedAwards.notMy">{{ award.imgSrc }}</div>
-            </b-card>
+            <template v-if="nominationsSelected">
+                <b-card class="nominations-card" body-class="text-center px-2" header-class="p-2 bg-secondary text-white">
+                    <template #header>
+                        <b>Заработали больше всех</b>
+                    </template>
+                    <b-card-group>
+                        <b-card 
+                            :class="index === 1 && 'mx-sm-2'"
+                            header-class="p-2 text-center"
+                            v-for="(item, index) in featuredUsers"
+                            :key="index">
+                                <template #header>
+                                    <b>{{ index + 1 }} место</b>
+                                </template>
+
+                                <img class="user-image" src="/images/avatar.png">                                
+                                <b-card-text>{{ item.name }}</b-card-text>
+
+                                <template #footer>
+                                    <em>{{ item.value }}</em>
+                                </template>
+                        </b-card>
+                    </b-card-group>
+                </b-card>
+            </template>
+
+            <template v-else>
+                <awards-card
+                    v-for="(card, index) in awardCards"
+                    :key="index"
+                    v-bind="card"
+                />
+            </template>
         </div>
 
     </sidebar>
@@ -35,8 +72,11 @@
 </template>
 
 <script>
+    import AwardsCard from './AwardsCard'
+
     export default {
         name: 'AwardSidebar',
+        components: { AwardsCard },
         props: {
             open: Boolean,
             awards: Array
@@ -44,39 +84,74 @@
         data() {
             return {
                 awardsLocal: this.createAwardsLocal(this.awards),
-                processedFetchedAwards: {
-                    my: [],
-                    notMy: []
-                }
+                featuredUsers: [
+                    { name: 'Фамилия Имя Отчество', value: '100 000 тнг.' },
+                    { name: 'Фамилия Имя Отчество', value: '80 000 тнг.' },
+                    { name: 'Фамилия Имя Отчество', value: '69 000 тнг.' }
+                ],
+                awardCards: [
+                    { type: 'all', header: 'Все', values: [] },
+                    { type: 'my', header: 'Мои', values: [] },
+                    { type: 'notMy', header: 'Других сотрудников', values: [] }
+                ],
+                nominationsSelected: false
             }
         },
         methods: {
+
             // EVENT HANDLERS
 
-            async awardClickHandler (index) {
+            async awardsClickHandler (index) {
                 try {
+                    this.nominationsSelected = false
+                    this.clearAwardCards()
                     this.selectAwardByIndex(index)
                     const fetchedAwards = await this.fetchAwardsById(this.awardsLocal[index].id)
-                    this.processedFetchedAwards = this.processFetchedAwards(fetchedAwards)
+                    this.updateAwardCards(fetchedAwards)
                 } catch (error) {
                     console.error(error)
                 }
             },
-            
+            async nominationsClickHandler () {
+                try {
+                    this.nominationsSelected = true
+                    this.unpressAwards()
+                } catch (error) {
+                    console.error(error)
+                }
+            },
+
             // HELPERS
 
             selectAwardByIndex (index) {
-                this.awardsLocal.forEach(item => { item.pressed = false })
+                this.unpressAwards()
                 this.awardsLocal[index].pressed = true
+            },
+            unpressAwards () {
+                this.awardsLocal.forEach(item => { item.pressed = false })
             },
             createAwardsLocal (awards) {
                 return awards.map((item) => ({ ...item, pressed: false }))
             },
             async fetchAwardsById (id) {
+                // ЗДЕСЬ БУДЕТ ЗАПРОС К API
                 return new Promise(resolve => {
                     const out = {
-                        my: [{ imgSrc: 'myAward1.png' }],
-                        notMy: [{ imgSrc: 'notMyAward1.png' }]
+                        all: [
+                                { imgSrc: 'all1.png' },
+                                { imgSrc: 'all1.png' },
+                                { imgSrc: 'all1.png' },
+                                { imgSrc: 'all1.png' },
+                                { imgSrc: 'all1.png' }
+                            ],
+                        my: [
+                                { imgSrc: 'myAward1.png' },
+                                { imgSrc: 'myAward1.png' },
+                                { imgSrc: 'myAward1.png' },
+                                { imgSrc: 'myAward1.png' },
+                                { imgSrc: 'myAward1.png' }
+                            ],
+                        notMy: []
                     }
                     const loader = this.$loading.show()
                     setTimeout(() => {
@@ -86,12 +161,19 @@
                 })
 
             },
-            processFetchedAwards (awards) {
-                return awards
+            updateAwardCards (awards) {
+                this.awardCards[0].values = awards.all
+                this.awardCards[1].values = awards.my
+                this.awardCards[2].values = awards.notMy
+            },
+            clearAwardCards () {
+                this.updateAwardCards({ all: [], my: [], notMy: [] })
             }
         },
         mounted () {
-            this.awardClickHandler(0)
+            if (this.awards.length) {
+                this.awardsClickHandler(0)
+            }
         }
     }
 </script>
@@ -114,8 +196,14 @@
         transform: translateX(-100%);
         overflow: hidden;
     }
-    .awards-card {
-
+    .nominations-card {
+        .user-image {
+            width: 64px;
+            height: 64px;
+        }
+    }
+    .card {
+        border: 1px solid #e9ecef;
     }
 }
 </style>

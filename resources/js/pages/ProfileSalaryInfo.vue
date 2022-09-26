@@ -80,9 +80,6 @@ export default {
                 awards: [{
                     name: 'Сертификаты',
                     id: 1
-                }, {
-                    name: 'Номинации',
-                    id: 2
                 }]
             },
             quarters: [],
