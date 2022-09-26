@@ -119,7 +119,7 @@ class Kernel extends ConsoleKernel
         
         $schedule->command("check:timetrackers")->dailyAt('20:00'); // Автоматически завершать день в 2 часа ночи, тем кто забыл завершить
         $schedule->command("checklist:update")->dailyAt('00:00'); //Ставить чек листы каждый день для сотрудников
-        $schedule->command("trainee:count_days")->dailyAt('00:00'); //Запись дней в аналитику по стажерам 1й день 2й+ день
+        //$schedule->command("trainee:count_days")->dailyAt('00:00'); //Запись дней в аналитику по стажерам 1й день 2й+ день
     
         /**
          * РАЗ В НЕДЕЛЮ
