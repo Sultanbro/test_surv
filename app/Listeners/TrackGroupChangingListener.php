@@ -35,61 +35,22 @@ class TrackGroupChangingListener
      */
     public function handle(TrackGroupChangingEvent $event)
     {
-        $this->updateOrCreate($event);
-    }
+        $group = ProfileGroup::query()->findOrFail($event->groupId);
+        $user  = User::query()->findOrFail($event->userId);
 
-    private function updateOrCreate($event)
-    {
-        switch ($event) {
-            case $event->action == self::ACTION_ADD:
-                return $this->creating($event);
-            case $event->action == self::ACTION_DELETE:
-                return $this->updating($event);
-        }
-    }
-
-    private function creating(TrackGroupChangingEvent $event)
-    {
-        $user = User::query()->findOrFail($event->userId);
-        $this->updateDeletedAt($event);
-
-        return History::query()->create([
+        History::query()->create([
             'reference_table'   => 'App\User',
             'reference_id'      => $event->userId,
-            'actor_id'          => 1,
+            'actor_id'          => auth()->id() ?? 1,
             'payload'           => json_encode([
-                'add_action_date'       => Carbon::now()->toDateString(),
-                'delete_action_date'    => null,
+                'date'                  => Carbon::now()->toDateString(),
+                'action'                => 'delete',
+                'working_hours'         => $group->work_start . '-' . $group->work_end,
+                'workdays'              => $group->workdays,
                 'group_id'              => $event->groupId,
-                'salary'                => $user->zarplata->zarplata
+                'salary'                => $user->zarplata->zarplata,
+                'operating-mode'        => $user->full_time == 1 ? 'Full time' : 'Part time'
             ])
         ]);
-    }
-
-    private function updating($event)
-    {
-        $original = History::query()->where([
-            ['reference_table', 'App\User'],
-            ['reference_id', $event->userId],
-        ])->where([
-            ['payload->group_id', $event->groupId]
-        ]);
-
-        $payload = json_decode($original->first()->getOriginal()['payload'], true);
-        $payload['delete_action_date'] = '2022-09-23';
-
-        return $original->latest()->update([
-            'payload' => $payload
-        ]);
-    }
-
-    private function updateDeletedAt($event)
-    {
-        GroupUser::withTrashed()->where([
-            ['user_id', '=', $event->userId],
-            ['group_id', '=', $event->groupId]
-        ])->whereNotNull('deleted_at')->update([
-            'deleted_at' => null
-        ]);;
     }
 }

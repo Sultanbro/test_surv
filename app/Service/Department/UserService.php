@@ -39,13 +39,13 @@ class UserService
             $groupUser = GroupUser::withTrashed()->where([
                 ['group_id', $group->id],
             ])
-                ->where('created_at', '<', $this->getFullDate($date))
+                ->where('from', '<', $this->getFullDate($date))
                 ->where(fn ($query) =>  $query
-                    ->whereNull('deleted_at')
-                    ->orWhere('deleted_at', '>', $this->getFullDate($date))
+                    ->whereNull('to')
+                    ->orWhere('to', '>', $this->getFullDate($date))
             );
 
-            $data[] = $this->getGroupUsersFromHistories($groupUser->get(), $date);
+            $data[] = $this->getGroupUsers($groupUser->get(), $date);
         }
 
         return $data;
@@ -66,10 +66,10 @@ class UserService
             $groupUser = GroupUser::withTrashed()->where([
                 ['group_id', $group->id],
             ])
-                ->where('created_at', '<', $this->getFullDate($date))
+                ->where('from', '<', $this->getFullDate($date))
                 ->where(fn ($query) =>  $query
-                    ->whereNull('deleted_at')
-                    ->orWhere('deleted_at', '>', $this->getFullDate($date))
+                    ->whereNull('to')
+                    ->orWhere('to', '>', $this->getFullDate($date))
                 );
 
             $data[] = $this->getGroupEmployees($groupUser->get(), $date);
@@ -92,10 +92,10 @@ class UserService
         {
             $groupUser = GroupUser::withTrashed()->where([
                 ['group_id', $group->id],
-            ])->where('created_at', '<', $this->getFullDate($date))
+            ])->where('from', '<', $this->getFullDate($date))
                 ->where(fn ($query) =>  $query
-                    ->whereNull('deleted_at')
-                    ->orWhere('deleted_at', '>', $this->getFullDate($date))
+                    ->whereNull('to')
+                    ->orWhere('to', '>', $this->getFullDate($date))
                 );
 
             $data[] = $this->getGroupsTrainees($groupUser->get(), $date);
@@ -112,15 +112,11 @@ class UserService
     public function getFiredUsers(int $groupId, string $date): array
     {
         $groups = $this->getGroups($groupId);
-        $data = [];
+        $data   = [];
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
-                ->where(fn ($query) => $query->whereYear('deleted_at', $this->getYear($date))
-                        ->whereMonth('deleted_at', $this->getMonth($date))
-                        ->orWhereNull('deleted_at')
-                );
-
+                ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
             $firedUsers = $this->getGroupFiredUsers($groupUser->get(), $date);
 
             if (!empty($firedUsers)) {
@@ -143,12 +139,7 @@ class UserService
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
-                ->where(function ($query) use ($date) {
-                    $query
-                        ->whereYear('deleted_at', $this->getYear($date))
-                        ->whereMonth('deleted_at', $this->getMonth($date))
-                        ->orWhereNull('deleted_at');
-                });
+                ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
 
             $firedUsers = $this->getGroupFiredTrainees($groupUser->get(), $date);
 
@@ -160,18 +151,13 @@ class UserService
         return $data;
     }
 
-    private function getGroupFiredTrainees($firedTrainees, $date)
+    private function getGroupFiredTrainees($firedTrainees, $date): array
     {
         $firedTraineeData = [];
         foreach ($firedTrainees as $firedTrainee)
         {
             $user = User::withTrashed()->where('users.id', $firedTrainee->user_id)
-                ->withWhereHas('userDescription', fn($description) => $description->where('is_trainee', 1))
-                ->when($firedTrainee->deleted_at == null, fn ($user) => $user->withWhereHas(
-                    'histories', fn($history) => $history
-                    ->whereYear('payload->delete_action_date', $this->getYear($date))
-                    ->whereMonth('payload->delete_action_date', $this->getMonth($date))
-                    ))->first();
+                ->withWhereHas('description', fn($description) => $description->where('is_trainee', 1))->first();
 
             if (empty($user)){
                 continue;
@@ -193,13 +179,7 @@ class UserService
         $firedUserData = [];
         foreach ($firedUsers as $firedUser)
         {
-            $user = User::withTrashed()->where('users.id', $firedUser->user_id)
-                ->when($firedUser->deleted_at == null, fn ($user) =>
-                    $user->withWhereHas(
-                    'histories', fn($history) => $history
-                        ->whereYear('payload->delete_action_date', $this->getYear($date))
-                        ->whereMonth('payload->delete_action_date', $this->getMonth($date))
-                ))->first();
+            $user = User::withTrashed()->where('users.id', $firedUser->user_id)->first();
 
             if (empty($user)){
                 continue;
@@ -222,15 +202,7 @@ class UserService
         foreach ($groupUsers as $groupUser)
         {
             $user = User::withTrashed()->where('users.id', $groupUser->user_id)
-                ->with(
-                    [
-                        'histories' => fn($history) => $history
-                            ->where('payload->add_action_date', '<', $this->getFullDate($date))
-                            ->where('payload->delete_action_date', '>', $this->getFullDate($date))
-                            ->where('payload->group_id', $groupUser->group_id),
-                        'userDescription' => fn($description) => $description->where('is_trainee', 1)
-                    ]
-                )->whereHas('userDescription', fn($description) => $description->where('is_trainee', 1))
+                ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 1))
                 ->first();
 
             if ($user == null){
@@ -254,15 +226,7 @@ class UserService
         foreach ($groupUsers as $groupUser)
         {
             $user = User::withTrashed()->where('users.id', $groupUser->user_id)
-                ->with(
-                    [
-                        'histories' => fn($history) => $history
-                            ->where('payload->add_action_date', '<', $this->getFullDate($date))
-                            ->where('payload->delete_action_date', '>', $this->getFullDate($date))
-                            ->where('payload->group_id', $groupUser->group_id),
-                        'userDescription' => fn($description) => $description->where('is_trainee', 0)
-                    ]
-                )->whereHas('userDescription', fn($description) => $description->where('is_trainee', 0))
+                ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
                 ->first();
 
             if ($user == null) {
@@ -280,21 +244,12 @@ class UserService
      * @param $date
      * @return array
      */
-    private function getGroupUsersFromHistories($groups, $date): array
+    private function getGroupUsers($groups, $date): array
     {
         $userData = [];
         foreach ($groups as $group)
         {
-            $user = User::withTrashed()->where('users.id', $group->user_id)
-                ->with(
-                    [
-                        'histories' => fn($history) => $history
-                            ->where('payload->add_action_date', '<', $this->getFullDate($date))
-                            ->where('payload->delete_action_date', '>', $this->getFullDate($date))
-                            ->where('payload->group_id', $group->group_id),
-                    ]
-                )
-                ->first();
+            $user = User::withTrashed()->where('users.id', $group->user_id)->first();
 
             if ($user){
                 $userData[] = $user;
