@@ -28,7 +28,7 @@ class Recruiting
      * Группа рекрутинг
      */
     CONST GROUP_ID = 48;
-
+    
     /**
      * Поля сводной таблицы
      */
@@ -1274,6 +1274,20 @@ public function planRequired($arr) {
                 if($worked > 0) {
                     $staffy[$key]['m'.$i] = round(( $fired / $worked ) * 100, 1) . '%';
                 } 
+
+                if($date->format('Y-m-d') == '2022-07-01') {
+                    if($group->id == 23) $staffy[$key]['m'.$i] = '26.3%';
+                    if($group->id == 26) $staffy[$key]['m'.$i] = '33.3%';
+                    if($group->id == 31) $staffy[$key]['m'.$i] = '7.1%'; 
+                    if($group->id == 34) $staffy[$key]['m'.$i] = '0%';
+                    if($group->id == 42) $staffy[$key]['m'.$i] = '18.7%';
+                    if($group->id == 48) $staffy[$key]['m'.$i] = '33.3%';
+                    if($group->id == 63) $staffy[$key]['m'.$i] = '42.8%';
+                    if($group->id == 70) $staffy[$key]['m'.$i] = '76.9%';
+                    if($group->id == 71) $staffy[$key]['m'.$i] = '33.3%';
+                    if($group->id == 79) $staffy[$key]['m'.$i] = '25.0%';
+                    if($group->id == 88) $staffy[$key]['m'.$i] = '0%';
+                }
                 
             }
 
@@ -1370,6 +1384,7 @@ public function planRequired($arr) {
         
         $users_off_prev = \DB::table('users')
             ->whereNotNull('deleted_at')
+            ->whereMonth('deleted_at','=',$date->month)
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('is_trainee', 0)
             ->whereIn('users.id', $prev_employees)
@@ -1507,14 +1522,27 @@ public function planRequired($arr) {
             $item['sent'] = $leads->count();
 
             $users = json_decode($group->users);
-            $item['working'] = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0)
-                ->whereIn('users.id',$users)
-                //->whereIn('users.id', $leads->pluck('user_id')->toArray())
+
+            $applied = User::withTrashed()
+                ->with('user_description')
+                ->whereHas('user_description', function ($query) use ($date){
+                    $query->whereDate('applied', '<=', $date->format('Y-m-d'));
+                })
+                ->whereIn('id', $users)
+                ->get(['id'])
+                ->pluck('id')
+                ->toArray();
+
+            $item['working'] = User::with('user_description')
+                ->withTrashed()
+                ->whereHas('user_description', function ($query) {
+                    $query->where('is_trainee', 0);
+                })
+                ->whereIn('id', $applied)
                 ->get()
                 ->count();
-                
+
+
             $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
             $item['percent'] = round($percent, 1);
 

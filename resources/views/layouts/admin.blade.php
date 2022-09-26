@@ -38,7 +38,7 @@
     ])    
     <div class="page">
 
-      
+
 
         <div class="content-wrap">
              
@@ -51,9 +51,11 @@
                  
           
         </div>
+            
     </div>
     <notifications group="foo" />
-        
+    
+   
     
 </div>
 
@@ -104,89 +106,6 @@ $(document).ready(function(){
 @endif
     
 
-@if(auth()->id() == 13865)
-<img src="/users_img/homer.gif" id="homer">
-<img src="/users_img/pikachu-running.gif" id="pikachu">
-<img src="/users_img/mouse.gif" id="mouse" style="display:none;">
-<audio id="myAudio">
-  <source src="/users_img/elevator.mp3" type="audio/mpeg">
-</audio>
-<script>
-let show = true;
-document.getElementById("app").addEventListener("click",() => {
-    let time = 20;
-    let num = Math.floor((Math.random() * time) + 1);
-    if(show &&  num == time) {
-        document.getElementById("myAudio").play()
-        document.getElementById("homer").classList.add("show");
-        
-        document.getElementById("dance").style.display = 'block';
-        setTimeout(() => {
-            document.getElementById("homer").classList.remove("show");
-            document.getElementById("pikachu").classList.add("show");
-        }, 2700);
-        setTimeout(() => {
-            document.getElementById("pikachu").classList.remove("show");
-            document.getElementById("mouse").classList.add("show");
-        }, 6000);
-        setTimeout(() => {
-            document.getElementById("myAudio").pause()
-            document.getElementById("mouse").classList.remove("show");
-            document.getElementById("dance").style.display = 'none';
-        }, 10000);
-        show = false;
-    }   
-  
-
-})
-
-</script>
-
-<style>
-#homer {
-    width: 300px;
-    display: none;
-    position: absolute;
-    bottom: 0;
-    right: -30px;
-    z-index: 99999;
-}
-#homer.show{
-    display: block;
-}
-#pikachu {
-    width: 200px;
-    position: absolute;
-    bottom: 0;
-    left: -200px;
-    z-index: 99999;
-    
-}
-#pikachu.show{
-    animation: 3s pikachu ease;
-}
-#mouse {
-    width: 200px;
-    display: none;
-    position: absolute;
-    bottom: 50%;
-    left: -26px;
-    z-index: 99999;
-}
-#mouse.show{
-    display: block !important;
-}
-@keyframes pikachu {
-    from {
-        left: -200px;
-    }
-    to {
-        left:100%;
-    }
-}
-</style>
-@endif
-
 <style>
 .corpbook a {
     word-break: break-word;
@@ -196,5 +115,10 @@ document.getElementById("app").addEventListener("click",() => {
     max-width:100%;
 }
 </style>
+
+
+
+
+
 </body>
 </html>

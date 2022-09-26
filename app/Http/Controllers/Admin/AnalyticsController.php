@@ -50,7 +50,7 @@ use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\DecompositionItem;
 use App\Models\Analytics\TopValue;
 use App\QualityRecordWeeklyStat;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
@@ -63,7 +63,6 @@ use App\Exports\AnalyticsExport;
 
 class AnalyticsController extends Controller
 {
-    
     public function __construct()
     {
         View::share('title', 'Аналитика групп');
@@ -79,13 +78,14 @@ class AnalyticsController extends Controller
         }
     }
 
+    /**
+     * index page
+     */
     public function index()
     {
         $this->redirect_if_has_not_permission();
 
-        
         $groups = ProfileGroup::whereIn('has_analytics', [0,1]);
-
 
         $_groups = [];
     
@@ -93,7 +93,6 @@ class AnalyticsController extends Controller
             
         $groups = $groups->where('active', 1)->get();
     
-        //if(auth()->id() == 18) dd($groups);
         if(auth()->user()->is_admin != 1) {
             foreach ($groups as $key => $group) {
                 $editors_id = $group->editors_id == null ? [] : json_decode($group->editors_id);
@@ -103,7 +102,6 @@ class AnalyticsController extends Controller
             $groups = $_groups;
         }
        
-      
         View::share('menu', 'timetrackinganalytics');
         return view('admin.analytics-page', compact('groups'));
     }
@@ -123,7 +121,7 @@ class AnalyticsController extends Controller
 
         $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
 
-        if(!in_array(Auth::user()->id, $superusers)) {
+        if(!in_array(auth()->id(), $superusers)) {
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
             // Доступ к группе
@@ -134,7 +132,6 @@ class AnalyticsController extends Controller
             }
         }
  
-
         $ac = AnalyticColumn::where('group_id', $group_id)->first();
         $ar = AnalyticRow::where('group_id', $group_id)->first();
         if(!$ac || !$ar) return [
@@ -143,7 +140,6 @@ class AnalyticsController extends Controller
             'groups' => ProfileGroup::whereIn('has_analytics', [0,1])->where('active', 1)->get(),
         ];
 
-        
         // utility and rentability
         $util = TopValue::getUtilityGauges($date->format('Y-m-d'), [$group_id]);
         $rent = TopValue::getRentabilityGauges($date->format('Y-m-d'), [$group_id], 'Рентабельность');
@@ -151,15 +147,12 @@ class AnalyticsController extends Controller
             $util[0]['gauges'] = array_merge($util[0]['gauges'], $rent);
         }   
         
-        
         $call_bases = [];
         if($group_id == 53) {
             $call_bases = CallBase::formTable($date->format('Y-m-d'));
         }
 
-
         // Ed 
-
         $ffp = Recruiting::getFiredInfo($date->subMonth()->format('Y-m-d'), $group_id);
         $ff = Recruiting::getFiredInfo($date->addMonth()->format('Y-m-d'), $group_id);
         $fired_percent_prev = $ffp['percent'];
@@ -167,12 +160,8 @@ class AnalyticsController extends Controller
         $fired_number_prev = $ffp['fired'];
         $fired_number = $ff['fired'];
        
-        //dd(AnalyticStat::form($group_id, $date->format('Y-m-d')));
-
-
         $groups = ProfileGroup::whereIn('has_analytics', [0,1])->where('active', 1)->get();
 
-      
         if(auth()->user()->is_admin != 1) {
             $_groups = [];
             foreach ($groups as $key => $group) {
@@ -204,9 +193,8 @@ class AnalyticsController extends Controller
     /**
      * saveCellActivity
      */
-    public function saveCellActivity(Request $request) {
-        //dd($request->all());
-
+    public function saveCellActivity(Request $request)
+    {
         $start = Carbon::createFromDate($request->year,$request->month, 1)->format('Y-m-d');
         $columns = AnalyticColumn::where('date', $start)
             ->where('group_id', $request->group_id)
@@ -241,57 +229,58 @@ class AnalyticsController extends Controller
     /**
      * saveCellTime
      */
-
-    public function saveCellTime(Request $request) {
-      
+    public function saveCellTime(Request $request)
+    {
         $start = Carbon::createFromDate($request->year,$request->month, 1)->format('Y-m-d');
-        $columns = AnalyticColumn::where('date', $start)
-            ->where('group_id', $request->group_id)
-            ->whereNotIn('name', ['name','sum','avg', 'plan'])
-            ->get();
+        $columns = AnalyticColumn::query()
+                        ->where('date', $start)
+                        ->where('group_id', $request->group_id)
+                        ->whereNotIn('name', ['name','sum','avg', 'plan'])
+                        ->get();
         
         foreach ($columns as $key => $column) {
-            $date = Carbon::createFromDate($request->year,$request->month, $column->name)->format('Y-m-d');
+            $date = Carbon::createFromDate($request->year, $request->month, $column->name)->format('Y-m-d');
 
-            $stat = AnalyticStat::where('date', $start)
-                ->where('row_id', $request->row_id)
-                ->where('column_id', $column->id)
-                ->first();
+            $stat = AnalyticStat::query()
+                            ->where('date', $start)
+                            ->where('row_id', $request->row_id)
+                            ->where('column_id', $column->id)
+                            ->first();
 
             if($stat) {
                 $total_for_day = Timetracking::totalHours($date, $request->group_id);
-                
                 $total_for_day = floor($total_for_day / 9 * 10) / 10;
 
-                $stat->value = $total_for_day;
+                $stat->value      = $total_for_day;
                 $stat->show_value = $total_for_day;
-                $stat->type = 'time';
-                $stat->class = $request->class;
+                $stat->type       = 'time';
+                $stat->class      = $request->class;
                 $stat->save(); 
             } 
         }
     }
 
     /**
-     * saveCellActivity
+     * saveCellSum
      */
-    public function saveCellSum(Request $request) {
-
+    public function saveCellSum(Request $request)
+    {
         $date = Carbon::createFromDate($request->year,$request->month, 1)->format('Y-m-d');
 
-        $stat = AnalyticStat::where('date', $date)
-            ->where('row_id', $request->row_id)
-            ->where('column_id', $request->column_id)
-            ->first();
+        $stat = AnalyticStat::query()
+                            ->where('date', $date)
+                            ->where('row_id', $request->row_id)
+                            ->where('column_id', $request->column_id)
+                            ->first();
 
         $total_for_day = 0;
         if($stat) {
             $total_for_day = AnalyticStat::daysSum($date, $request->row_id, $request->group_id);
            
-            $stat->value = $total_for_day;
+            $stat->value      = $total_for_day;
             $stat->show_value = $total_for_day;
-            $stat->type = 'sum';
-            $stat->class = $request->class;
+            $stat->type       = 'sum';
+            $stat->class      = $request->class;
             $stat->save(); 
         }
 
@@ -299,25 +288,26 @@ class AnalyticsController extends Controller
     }
 
     /**
-     * saveCellActivity
+     * saveCellAvg
      */
-    public function saveCellAvg(Request $request) {
-
+    public function saveCellAvg(Request $request)
+    {
         $date = Carbon::createFromDate($request->year,$request->month, 1)->format('Y-m-d');
 
-        $stat = AnalyticStat::where('date', $date)
-            ->where('row_id', $request->row_id)
-            ->where('column_id', $request->column_id)
-            ->first();
+        $stat = AnalyticStat::query()
+                        ->where('date', $date)
+                        ->where('row_id', $request->row_id)
+                        ->where('column_id', $request->column_id)
+                        ->first();
 
         $total_for_day = 0;
         if($stat) {
             $total_for_day = AnalyticStat::daysAvg($date, $request->row_id, $request->group_id);
            
-            $stat->value = $total_for_day;
+            $stat->value      = $total_for_day;
             $stat->show_value = $total_for_day;
-            $stat->type = 'avg';
-            $stat->class = $request->class;
+            $stat->type       = 'avg';
+            $stat->class      = $request->class;
             $stat->save(); 
         }
 
@@ -327,15 +317,20 @@ class AnalyticsController extends Controller
     /**
      * Add row to group
      */
-    public function addRow(Request $request) {
+    public function addRow(Request $request)
+    {
         $date = $request->date;
         $group_id = $request->group_id;
         
         return AnalyticStat::new_row($group_id, $request->after_row_id, $date);
     }
 
-    public function removeDependency(Request $request) {
-        $row = AnalyticRow::where('id', $request->id)->first();
+    /**
+     * Remove dependency
+     */
+    public function removeDependency(Request $request)
+    {
+        $row = AnalyticRow::find($request->id);
 
         if($row) {
             $row->depend_id = null;
@@ -343,11 +338,11 @@ class AnalyticsController extends Controller
         }
     }
 
-    
     /**
      * Delete row from group
      */
-    public function deleteRow(Request $request) {
+    public function deleteRow(Request $request)
+    {
         $date = $request->date;
         $group_id = $request->group_id;
         $item = $request->item;
@@ -361,17 +356,18 @@ class AnalyticsController extends Controller
     /**
      * Edit stat
      */
-    public function editStat(Request $request) {
+    public function editStat(Request $request)
+    {
 
-        $stat = AnalyticStat::where('date', $request->date)
-            ->where('row_id', $request->row_id)
-            ->where('column_id', $request->column_id)
-            ->first();
+        $stat = AnalyticStat::query()
+                    ->where('date', $request->date)
+                    ->where('row_id', $request->row_id)
+                    ->where('column_id', $request->column_id)
+                    ->first();
 
-        
         if($stat) {
-            $old_value =  $stat->value;
-            $stat->value = $request->value;
+            $old_value        =  $stat->value;
+            $stat->value      = $request->value;
             $stat->show_value = $request->show_value;
 
             if($request->type == 'formula') {
@@ -380,127 +376,125 @@ class AnalyticsController extends Controller
 
             if($request->type == 'remote' || $request->type == 'inhouse') {
 
-                if($request->type == 'remote') {
-                    $type = 'remote';
-                } else {
-                    $type = 'office';
-                }
+                $type = $request->type == 'remote' ? 'remote' : 'office';
 
                 $day = AnalyticColumn::withTrashed()->find($request->column_id);
                 if($day) {
-                    $date = Carbon::parse($request->date)->day($day->name)->format('Y-m-d');
+                    $date = Carbon::parse($request->date)
+                                    ->day($day->name)
+                                    ->format('Y-m-d');
+
                     $this->addHours($request->group_id, $type, $request->value, $old_value, $date);
                 }
 
                 $stat->comment = $request->comment;
-
             }
 
-            $stat->type = $request->type;
-            // if($request->value == 0 || isset($request->value)){
-            //    $stat->class = 'text-center text-center'; 
-            // }
-            // else{
-                
-            // }
+            $stat->type  = $request->type;
             $stat->class = $request->class;
             $stat->save(); 
         }
     }
 
-    public function addHours($group_id, $user_type, $value, $old_value, $date) {
-            $group_users = json_decode(ProfileGroup::find($group_id)->users);
-            $tts = Timetracking::whereIn('user_id', $group_users)
-                ->whereDate('enter', $date)
-                ->orderBy('enter', 'desc')
-                ->get();
+    /**
+     * Add hours for remote and inhouse users
+     */
+    public function addHours($group_id, $user_type, $value, $old_value, $date)
+    {
+        $group_users = json_decode(ProfileGroup::find($group_id)->users);
+        $tts = Timetracking::whereIn('user_id', $group_users)
+            ->whereDate('enter', $date)
+            ->orderBy('enter', 'desc')
+            ->get();
 
-            
-            $marked_users = [];
+        $marked_users = [];
 
+        foreach($tts as $tt) {
+            $user = User::find($tt->user_id);
+            if(!$user)continue;
+            if(!$user->user_type)continue;
+            if($user->user_type != $user_type) continue;
 
-            foreach($tts as $tt) {
-                $user = User::find($tt->user_id);
-                if(!$user)continue;
-                if(!$user->user_type)continue;
-                if($user->user_type != $user_type) continue;
+            if(!in_array($tt->user_id, $marked_users)) {
 
-                if(!in_array($tt->user_id, $marked_users)) {
+                $new_value = $tt->total_hours + $value - $old_value;
+                if($new_value < 0) $new_value = 0;
+                $tt->total_hours = $new_value; 
 
-                    $new_value = $tt->total_hours + $value - $old_value;
-                    if($new_value < 0) $new_value = 0;
-                    $tt->total_hours = $new_value; 
+                $tt->updated =  1;
+                $tt->save();
+                
+                array_push($marked_users, $tt->user_id);
 
-                    $tt->updated =  1;
-                    $tt->save();
-                    
-                    array_push($marked_users, $tt->user_id);
-
-                    if($value == 0) {
-                        $desc = 'Отмена: Минуты за "Отсутствие связи"';
-                    } else {
-                        $old_text = $old_value != 0 ? ', минус предыдущие добавленные ' . $old_value . ' минут' : '';
-                        $desc = 'Отсутствие связи. <br> Добавлено '. $value . ' минут ' . $old_text;
-                    }
-
-                    TimetrackingHistory::create([
-                        'user_id' => $tt->user_id,
-                        'author_id' => Auth::user()->id,
-                        'author' => Auth::user()->last_name . ' ' . Auth::user()->name,
-                        'date' => $date,
-                        'description' => $desc,
-                    ]);
-                        
-                    
+                if($value == 0) {
+                    $desc = 'Отмена: Минуты за "Отсутствие связи"';
+                } else {
+                    $old_text = $old_value != 0 ? ', минус предыдущие добавленные ' . $old_value . ' минут' : '';
+                    $desc = 'Отсутствие связи. <br> Добавлено '. $value . ' минут ' . $old_text;
                 }
+
+                TimetrackingHistory::create([
+                    'user_id'     => $tt->user_id,
+                    'author_id'   => auth()->id(),
+                    'author'      => auth()->user()->last_name . ' ' . auth()->user()->name,
+                    'date'        => $date,
+                    'description' => $desc,
+                ]);
             }
-       
+        }
     }
 
-     /**
-     * new group analtyics
+    /**
+     * New group analytics
      */
-    public function newGroup(Request $request) {
-        
+    public function newGroup(Request $request)
+    {
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
         AnalyticColumn::defaults($request->group_id, $date);
         AnalyticRow::defaults($request->group_id, $date);
+
         $group = ProfileGroup::find($request->group_id);
         if($group) {
             $group->has_analytics = 1;
             $group->save();
         }
 
-       
         Activity::createQuality($request->group_id);
-
     }
     
-    public function createActivity(Request $request) {
+    /**
+     * Create new activity for group in Analytics page
+     */
+    public function createActivity(Request $request)
+    {
 
         $act = Activity::create([
-            'name' => $request->activity['name'], 
-            'group_id' => $request->group_id,
+            'name'       => $request->activity['name'], 
+            'group_id'   => $request->group_id,
             'daily_plan' => $request->activity['daily_plan'], 
-            'plan_unit' => $request->activity['plan_unit'], 
-            'unit' => $request->activity['unit'], 
-            'weekdays' => $request->activity['weekdays'], 
-            'ud_ves' => 0
+            'plan_unit'  => $request->activity['plan_unit'], 
+            'unit'       => $request->activity['unit'], 
+            'weekdays'   => $request->activity['weekdays'], 
+            'ud_ves'     => 0
         ]);
 
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
         return UserStat::activities($request->group_id, $date);
     }
 
-    public function editActivity(Request $request) {
+    /**
+     * Edit activity in group
+     */
+    public function editActivity(Request $request)
+    {
         $act = Activity::find($request->activity['id']);
         if($act) {
             $act->update([
-                'name' => $request->activity['name'], 
+                'name'       => $request->activity['name'], 
                 'daily_plan' => $request->activity['daily_plan'], 
-                'plan_unit' => $request->activity['plan_unit'], 
-                'unit' => $request->activity['unit'], 
-                'weekdays' => $request->activity['weekdays'], 
+                'plan_unit'  => $request->activity['plan_unit'], 
+                'unit'       => $request->activity['unit'], 
+                'weekdays'   => $request->activity['weekdays'], 
             ]);
         }
     }
@@ -508,7 +502,8 @@ class AnalyticsController extends Controller
     /**
      * Edit User Stat value
      */
-    public function updateUserStat(Request $request) {
+    public function updateUserStat(Request $request)
+    {
 
         $group = ProfileGroup::find($request->group_id);
         $date = Carbon::createFromDate($request->year, $request->month, $request->day)->format('Y-m-d');
@@ -543,37 +538,47 @@ class AnalyticsController extends Controller
         }
     }
     
-    public function change_order(Request $request) {
-        $count = count($request->activities);
-        foreach ($request->activities as $index => $activity) {
+    /**
+     * Change order of activities in group
+     */
+    public function change_order(Request $request)
+    {
+        foreach ($request->activities as $activity) {
             $act = Activity::find($activity['id']);
-            $act->order = $count--;  
+            $act->order = count($request->activities) - 1;  
             $act->save();
         }
     }
 
-    public function delete_activity(Request $request) {
-
-            $act = Activity::find($request['id']);
-            $act->delete();
-        
+    /**
+     * Delete activity
+     */
+    public function delete_activity(Request $request)
+    {
+        $act = Activity::find($request['id']);
+        $act->delete();
     }
 
-    public function setDecimals(Request $request) {
+    /**
+     * Set decimals to cell
+     */
+    public function setDecimals(Request $request)
+    {
         $stat = AnalyticStat::where('column_id', $request->column_id)
-            ->where('row_id', $request->row_id)
-            ->first();
+                            ->where('row_id', $request->row_id)
+                            ->first();
 
-        
-            if($stat) {
-                $stat->decimals = $request->decimals;
-                $stat->save();
-            }
-    
+        if($stat) {
+            $stat->decimals = $request->decimals;
+            $stat->save();
+        }
     }
     
-
-    public function add_depend(Request $request) {
+    /**
+     * Add comparing row  
+     */
+    public function add_depend(Request $request)
+    {
         $row = AnalyticRow::find($request->id);
         if($row) {
             $row->depend_id = $request->depend_id;
@@ -581,7 +586,11 @@ class AnalyticsController extends Controller
         }
     }
 
-    public function archive_analytics(Request $request) {
+    /**
+     * Archive analytics for group
+     */
+    public function archive_analytics(Request $request)
+    {
         $group = ProfileGroup::find($request->id);
         if($group) {
             $group->has_analytics = -1;
@@ -589,7 +598,11 @@ class AnalyticsController extends Controller
         }
     }
 
-    public function restore_analytics(Request $request) {
+    /**
+     * Restore analytics for group from archive
+     */
+    public function restore_analytics(Request $request)
+    {
         $group = ProfileGroup::find($request->id);
         if($group) {
             $group->has_analytics = 1;
@@ -597,51 +610,94 @@ class AnalyticsController extends Controller
         }
     }
 
-    public function addRemoteInhouse(Request $request) {
+    /**
+     * Add remote or inhouse row to сводная
+     */
+    public function addRemoteInhouse(Request $request)
+    {
         $date = $request->date;
         $formula_row = AnalyticRow::find($request->row_id);
 
-        $rows = AnalyticRow::where('group_id', $formula_row->group_id)->get();
         $days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
         $columns = AnalyticColumn::where('group_id', $formula_row->group_id)
-            ->where('date', $date)
-            ->whereIn('name', $days)
-            ->get();
+                                ->where('date', $date)
+                                ->whereIn('name', $days)
+                                ->get();
 
-        foreach ($columns as $key => $column) {
-            $stat = AnalyticStat::where('row_id', $formula_row->id)
-                ->where('column_id', $column->id)
-                ->first();
-            
+        foreach ($columns as $column) {
+            $stat = AnalyticStat::query()
+                                ->where('row_id', $formula_row->id)
+                                ->where('column_id', $column->id)
+                                ->first();
+            $fields = [
+                'group_id'   => $formula_row->group_id,
+                'date'       => $date,
+                'row_id'     => $formula_row->id,
+                'column_id'  => $column->id,
+                'value'      => 0,
+                'show_value' => 0,
+                'type'       => $request->type,
+                'class'      => 'text-center',
+                'editable'   => 1,
+            ];
+                            
             if($stat) {
-                $stat->update([
-                    'row_id' => $formula_row->id,
-                    'column_id' => $column->id,
-                    'value' => 0,
-                    'show_value' => 0,
-                    'type' => $request->type,
-                    'class' => 'text-center',
-                    'editable' => 1,
-                ]);
+                $stat->update($fields);
             } else {
-                self::create([
-                    'group_id' => $formula_row->group_id,
-                    'date' => $date,
-                    'row_id' => $formula_row->id,
-                    'column_id' => $column->id,
-                    'value' => 0,
-                    'show_value' => 0,
-                    'type' => $request->type,
-                    'class' => 'text-center',
-                    'editable' => 1,
-                ]);
+                AnalyticStat::create($fields);
             }
         }
 
     }
 
-    public function addFormula_1_31(Request $request) {
-        
+    /**
+     * add salary row to сводная
+     */
+    public function addSalary(Request $request)
+    {
+        $date = $request->date;
+        $type = 'salary_day'; // no comment please. Just salary is not free
+
+        $formula_row = AnalyticRow::find($request->row_id);
+
+        $days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+        $columns = AnalyticColumn::query()
+                        ->where('group_id', $formula_row->group_id)
+                        ->where('date', $date)
+                        ->whereIn('name', $days)
+                        ->get();
+
+        foreach ($columns as $column) {
+            $stat = AnalyticStat::query()
+                    ->where('row_id', $formula_row->id)
+                    ->where('column_id', $column->id)
+                    ->first();
+                        
+            $fields = [
+                'group_id'   => $formula_row->group_id,
+                'date'       => $date,
+                'row_id'     => $formula_row->id,
+                'column_id'  => $column->id,
+                'value'      => 0,
+                'show_value' => 0,
+                'type'       => $type,
+                'class'      => 'text-center',
+                'editable'   => 1,
+            ];
+
+            if($stat) {
+                $stat->update($fields);
+            } else {
+                AnalyticStat::create($fields);
+            }
+        }
+    }
+
+    /**
+     * Add formula to row to сводная
+     */
+    public function addFormula_1_31(Request $request)
+    {
         $date = $request->date;
 
         $formula_row = AnalyticRow::find($request->row_id);
@@ -649,45 +705,45 @@ class AnalyticsController extends Controller
         
         $days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 
-        $columns = AnalyticColumn::where('group_id', $formula_row->group_id)
-            ->where('date', $date)
-            ->whereIn('name', $days)
-            ->get();
+        $columns = AnalyticColumn::query()
+                    ->where('group_id', $formula_row->group_id)
+                    ->where('date', $date)
+                    ->whereIn('name', $days)
+                    ->get();
 
         foreach ($columns as $key => $column) {
-            $stat = AnalyticStat::where('row_id', $formula_row->id)
-                ->where('column_id', $column->id)
-                ->first();
+            $stat = AnalyticStat::query()
+                    ->where('row_id', $formula_row->id)
+                    ->where('column_id', $column->id)
+                    ->first();
             
             $formula = $request->formula;
             foreach ($rows as $key => $row) { 
                 $formula = str_replace("{". $row->id ."}", "[". $column->id .":". $row->id ."]", $formula);
             }
             
+            // replace text
+            $pattern = '/[a-zA-Z]+[0-9]+/i';
+            $formula = preg_replace($pattern, 1, $formula);
+
+            $fields = [
+                'group_id' => $formula_row->group_id,
+                'date' => $date,
+                'row_id' => $formula_row->id,
+                'column_id' => $column->id,
+                'value' => $formula,
+                'show_value' => 0,
+                'type' => 'formula',
+                'class' => 'text-center',
+                'decimals' => $request->decimals,
+                'editable' => 1,
+            ];
+
+            //save update service
             if($stat) {
-                $stat->update([
-                    'row_id' => $formula_row->id,
-                    'column_id' => $column->id,
-                    'value' => $formula,
-                    'show_value' => 0,
-                    'type' => 'formula',
-                    'class' => 'text-center',
-                    'decimals' => $request->decimals,
-                    'editable' => 1,
-                ]);
+                $stat->update($fields);
             } else {
-                self::create([
-                    'group_id' => $formula_row->group_id,
-                    'date' => $date,
-                    'row_id' => $formula_row->id,
-                    'column_id' => $column->id,
-                    'value' => $formula,
-                    'show_value' => 0,
-                    'type' => 'formula',
-                    'class' => 'text-center',
-                    'decimals' => $request->decimals,
-                    'editable' => 1,
-                ]);
+                AnalyticStat::create($fields);
             }
         }
 
@@ -697,7 +753,8 @@ class AnalyticsController extends Controller
     /**
      * Экспорт активностей (Подробная аналитика) группы в Excel
      */
-    public function exportActivityExcel(Request $request){
+    public function exportActivityExcel(Request $request)
+    {
         
         $group = ProfileGroup::find($request->group_id);
         
@@ -760,6 +817,6 @@ class AnalyticsController extends Controller
         return Excel::download(new AnalyticsImport($sheets,$group), $title .' "'.$group->name . '".xls');
         
     }
-    
+
 }
 

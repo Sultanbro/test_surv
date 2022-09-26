@@ -34,13 +34,13 @@ class VideoPlaylistController extends Controller {
 	public function index() {
 		View::share('menu', 'video_edit');
         View::share('link', 'video_edit');
-		return view('videolearning.playlists.index'); 
+		return view('admin.playlists.index'); 
 	}
 
 	public function saveIndex(Request $request){
 		View::share('menu', 'video_edit');
         View::share('link', 'video_edit');
-		return view('videolearning.playlists.index',[ 
+		return view('admin.playlists.index',[ 
 			'category' => $request->category,
 			'playlist' => $request->playlist
 		]); 
@@ -50,7 +50,7 @@ class VideoPlaylistController extends Controller {
 	public function saveIndexVideo(Request $request){
 		View::share('menu', 'video_edit');
         View::share('link', 'video_edit');
-		return view('videolearning.playlists.index',[ 
+		return view('admin.playlists.index',[ 
 			'category' => $request->category,
 			'playlist' => $request->playlist,
 			'video' => $request->video
@@ -282,9 +282,16 @@ class VideoPlaylistController extends Controller {
 				'visibility' => 'public'
 			]);
 
-			if($disk->exists($video->links)){
-				$disk->delete($video->links);
+			
+
+			try {
+				if($disk->exists($video->links)){
+					$disk->delete($video->links);
+				}
+			} catch (\Throwable $e) {
+				// League \ Flysystem \ UnableToCheckDirectoryExistence
 			}
+
 			
 			$video->delete();
 		}
@@ -315,9 +322,15 @@ class VideoPlaylistController extends Controller {
 
 		if($request->file('file')) {
 
-			if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
-                $disk->delete($playlist->img);
-            }
+			
+
+			try {
+				if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
+					$disk->delete($playlist->img);
+				}
+			} catch (\Throwable $e) {
+				// League \ Flysystem \ UnableToCheckDirectoryExistence
+			}
 			
 			$links = $this->uploadFile('/pl', $request->file('file')); 
 			$link = $links['temp'];
@@ -354,9 +367,15 @@ class VideoPlaylistController extends Controller {
 
 		if($request->file('file')) {
 
-			if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
-                $disk->delete($playlist->img);
-            }
+			
+
+			try {
+				if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
+					$disk->delete($playlist->img);
+				}
+			} catch (\Throwable $e) {
+				// League \ Flysystem \ UnableToCheckDirectoryExistence
+			}
 			
 			$links = $this->uploadFile('/pl', $request->file('file')); 
 			$link = $links['temp'];
@@ -417,13 +436,13 @@ class VideoPlaylistController extends Controller {
 
 	public function create() {
 		$categories = Category::all();
-		return view('videolearning.playlists.create', compact('categories')); 
+		return view('admin.playlists.create', compact('categories')); 
 	}
 
 	public function edit($id) {
 		$playlist = Playlist::find($id);
 		
-		return view('videolearning.playlists.edit')->with([
+		return view('admin.playlists.edit')->with([
 			'playlist_id' => $id
 		]); 
 	}

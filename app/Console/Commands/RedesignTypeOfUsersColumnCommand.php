@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -48,12 +49,18 @@ class RedesignTypeOfUsersColumnCommand extends Command
     {
         foreach ($this->getUsersData() as $departmentId => $users)
         {
-            array_map(function ($userId) use ($departmentId){
+            $users = User::query()->whereIn('id', json_decode($users))->whereNull('deleted_at')->get();
+
+            foreach ($users as $user)
+            {
                 DB::table('group_user')->insert([
-                    'group_id'  => $departmentId,
-                    'user_id' => $userId
+                    'group_id'   => $departmentId,
+                    'user_id'    => $user->id,
+                    'from'       => $user->user_description->applied ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
-            }, json_decode($users));
+            }
         }
     }
 }

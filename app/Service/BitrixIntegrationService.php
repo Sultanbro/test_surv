@@ -36,7 +36,7 @@ class BitrixIntegrationService
         try {
             $bitrixUser  = $this->checkCurrentUserBitrix();
 
-            $link        = $this->host . $this->token . '/tasks.task.list';
+            $link        = $this->host . $this->token . '/' . 'tasks.task.list';
             $apiResponse = $this->client::get($link, [
                 'filter' => [
                     'RESPONSIBLE_ID' => (int) $bitrixUser['ID'],
@@ -92,7 +92,7 @@ class BitrixIntegrationService
 
             $user = Auth::user();
 
-            $link = $this->host . $this->token . 'user.get';
+            $link = $this->host . $this->token . '/' . 'user.get';
 
             $bitrixUserResponse = $this->client::get($link, [
                 'email' => $user->email
@@ -116,7 +116,8 @@ class BitrixIntegrationService
      */
     private function checkPositionOfUser(array $positionsId, string $message, bool $expression = true): void
     {
-        $position = User::query()->findOrFail(5263)->positions()->first();
+        // $position = User::query()->findOrFail(5263)->positions()->first();
+        $position = Auth::user()->position();
 
         if (in_array($position->id, $positionsId) == $expression)
         {

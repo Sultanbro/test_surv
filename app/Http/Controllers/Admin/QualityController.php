@@ -25,8 +25,10 @@ use DB;
 use Illuminate\Http\Request;
 use View;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\UserStat;
 use Auth;
 use App\Models\CallibroDialer;
+use App\UserNotification;
 
 class QualityController extends Controller
 {
@@ -40,17 +42,8 @@ class QualityController extends Controller
     }
 
     public function index(Request $request)
-    {
-        if ($request->has('type') && $request->has('id') ) {
-            $individual_type = $request['type'];
-            $individual_type_id = $request['id'];
-        }else{
-            $individual_type = null;
-            $individual_type_id = null;
-        }
-
-
-
+    {  
+        $check = isset($request['check']) ? $request['check'] : 1;
         if(!auth()->user()->can('quality_view')) {
             return redirect('/');
         }
@@ -63,8 +56,9 @@ class QualityController extends Controller
             $user = User::find($request['user_id']);
             $group_id = $user->inGroups()[0]->id;
         }
+
         return view('admin.quality_control',
-            compact('groups','group_id'));
+            compact('groups','group_id','check'));
     }
 
     public function getRecords(Request $request) {
@@ -349,7 +343,6 @@ class QualityController extends Controller
     public function saveRecord(Request $request) {
     
         $user_id = User::bitrixUser()->id;
-
         
 
         
@@ -455,7 +448,17 @@ class QualityController extends Controller
                 ]);
                 $id = $record->id;
             }
-
+            $color = '#ff1a00';
+            if($total >= 20 && $total < 40){$color = '#ff8d00';}
+            else if($total >= 40 && $total < 60){$color = '#e3ff00';}
+            else if($total >= 60 && $total < 80){$color = '#00ff04';}
+            else if($total >= 80 && $total <= 100){$color = '#0051ff';}
+            UserNotification::create([
+                                'user_id' => $request->employee_id,
+                                'about_id' => 0,
+                                'title' => 'Оценка переговоров',
+                                'message' => $request->comments.' Общая оценка: '.$total.' <div style="background-color:'.$color.';width:20px;height:20px;display: inline-block;"></div>'
+                            ]);
 
             return response()->json([
                 'method' => 'update',
@@ -491,7 +494,7 @@ class QualityController extends Controller
             array_push($headings, $crit->name);
         }
         
-        array_push($headings, 'Комментарии');
+        array_push($headings, 'Совет');
         $data['records'] = [];
         
         $records = QualityRecord::whereYear('listened_on', $request->year)
@@ -576,6 +579,10 @@ class QualityController extends Controller
 
     /**
      * Save weekly, where not have daily records
+     * 
+     * @TODO
+     * there is mistake 
+     * not have group-id 
      */
     public function saveWeeklyRecord(Request $request){
         $rec = QualityRecordWeeklyStat::where([
@@ -583,6 +590,7 @@ class QualityController extends Controller
             'month' => $request->month,
             'year' => $request->year,
             'user_id' => $request->user_id,
+            'group_id' => $request->group_id,
         ])->first();
 
         if($rec) {
@@ -590,6 +598,14 @@ class QualityController extends Controller
         } else {
             $rec = QualityRecordWeeklyStat::create($request->all());
         }
+
+        // save user_stats
+        UserStat::saveQuality([
+            'date'     => Carbon::createFromDate($request->year, $request->month, $request->day)->format('Y-m-d'),
+            'user_id'  => $request->user_id,
+            'value'    => $request->total,
+            'group_id' => $request->group_id,
+        ]);
         
         return $rec;
     }

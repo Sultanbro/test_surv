@@ -38,14 +38,14 @@
                             </a>
                         </td>
                         <td  >
-                            {{arrCheckList.count_view}}
+                            {{arrCheckList.show_count}}
                         </td>
                         <td>
-                            {{arrCheckList.auth_last_name}}         {{arrCheckList.auth_name}}
+                           {{arrCheckList.creator.name}}  {{arrCheckList.creator.last_name}}
                         </td>
                         <td class=" position-relative" >
 
-                            <a  v-bind:href="'/timetracking/quality-control?type='+arrCheckList.item_type+'&id='+arrCheckList.item_id" target="_blank">
+                            <a  v-bind:href="'/timetracking/quality-control'" target="_blank">
                                 <i class="pl-4 fa fa-signal" aria-hidden="true" style="font-size: 20px"></i>
                             </a>
 
@@ -65,7 +65,7 @@
         <sidebar
                 title="Создать чек лист"
                 :open="showCheckSideBar"
-                @close="showCheckSideBar = false"
+                @close="closeSideBar()"
                 width="65%">
             <div class="col-md-12 p-0">
                 <div class="col-12 p-0 mt-5">
@@ -81,7 +81,7 @@
 
                           <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
 
-                            <a v-if="placeholderSelect">Отделы/Сотрудники</a>
+                            <a v-if="!(values.length > 0)">Отделы/Сотрудники</a>
 
 
                             <div
@@ -174,13 +174,13 @@
                     </div>
                 </div>
                 <div class="row mt-4 pl-3">
-                    <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in arrCheckInput">
+                    <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in arrCheckInput.tasks">
                       <div class="row">
                           <div class="col-md-6 pr-0 mr-2">
 <!--                              <div class="position-absolute" style="margin-left: -15px;top: 2px">-->
 <!--                                  <b-form-checkbox v-model="item.checked"  ></b-form-checkbox>-->
 <!--                              </div>-->
-                              <input style="width: 110%"  v-model="item.text"  type="text" placeholder="Впишите активность чек листа" class="form-control btn-block ">
+                              <input style="width: 110%"  v-model="item.task"  type="text" placeholder="Впишите активность чек листа" class="form-control btn-block ">
                           </div>
 <!--                          <div class="col-md-3 p-0 mr-3 ml-1">-->
 <!--                              <input v-model="item.https"  type="text" placeholder="https:" class="form-control btn-block ">-->
@@ -188,14 +188,13 @@
 
                         <div class="col-1" style="position: relative">
 
-                          <button style="position: absolute;right: 11px" v-if="index == '0'"  @click="deleteCheckList(index)"
+                          <button style="position: absolute;right: 11px" v-if="index == '0'"  @click="deleteCheckList(index, item.id)"
                                   type="button"  title="Удалить чек-лист"
                                   class="btn btn-secondary btn-sm">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                           </button>
 
-
-                          <button style="position: absolute;right: 11px" v-else  @click="deleteCheckList(index)"
+                          <button style="position: absolute;right: 11px" v-else  @click="deleteCheckList(index, item.id)"
                                   type="button"  title="Удалить чек-лист"
                                   class="btn btn-primary btn-sm">
                             <i class="fa fa-trash" aria-hidden="true"></i>
@@ -228,7 +227,7 @@
                                 Cохранить
                             </button>
 
-                            <button v-if="editButton" type="button" @click.prevent="saveEditCheckList(arrCheckInput)" title="Сохранить" class="btn btn-primary">
+                            <button v-if="editButton" type="button" @click.prevent="saveEditCheckList(arrCheckInput.tasks)" title="Сохранить" class="btn btn-primary">
                                 Изменить Сохранение
                             </button>
                         </div>
@@ -261,10 +260,13 @@
         },
         data() {
             return{
-
-
+                deleted_tasks:[],
+                editValuesChanged: false,
+                editMode: false,
                 valueFindGr:[],
-                arrCheckInput:[],
+                arrCheckInput:{
+                    tasks:[],
+                },                
                 arrCheckLists:[],
                 filter:'',
                 countView:'1',
@@ -322,30 +324,73 @@
         },
         computed: {
 
-          filteredRows () {
+            filteredRows () {
 
 
-            return this.arrCheckLists.filter(row => {
+                return this.arrCheckLists;
 
-              const title = row.title.toString().toLowerCase();
-              const authLastName = row.auth_last_name.toLowerCase();
-              const searchTerm = this.filter.toLowerCase();
+            },
+        },
+        watch:{
+            arrCheckInput:{
+                handler(after, before){
+                    this.editValuesChanged = true;
+                },
+                deep: true,
+            },
+            countView(after,before){
+                    this.editValuesChanged = true;
+            },
+            'values.length'(after,before){
+                    this.editValuesChanged = true;
+                
+            },
 
-              return ( title.includes(searchTerm) || authLastName.includes(searchTerm) )
-            });
-
-          }
         },
         created(){
 
             this.checkSelectedAll();
-            this.viewCheckList()
-            this.addCheckList()
-
+            this.viewCheckList();
+            this.addCheckList();
 
         },
 
         methods:{
+            closeSideBar(){
+                console.log(this.editValuesChanged);
+                this.deleted_tasks = [];
+                if(this.editValuesChanged && !this.editMode){
+                    this.showCheckSideBar = false;
+
+                    /*
+                    if (confirm('Сохранить изменения?') == true) {
+                        console.log('save');
+                        this.showCheckSideBar = false;
+                    }
+                    else{
+                        console.log('do not save');
+                        this.showCheckSideBar = false;
+                        this.clearSideBar();
+                    }*/
+                }else{
+                    //this.clearSideBar();
+                    this.editMode = false;
+                }
+                this.showCheckSideBar = false;
+                this.editValuesChanged = false;
+                
+            },
+            clearSideBar(){
+                this.values = [];
+                this.countView = 1;
+                this.arrCheckInput.tasks = [];
+                this.arrCheckInput.tasks.push({
+                    checked: false,
+                    task:"",
+                    text: "",
+                    https: '',
+                });
+            },
             obrabotkaArray(groups,positions,allusers){
 
 
@@ -409,7 +454,8 @@
             viewCheckList(){
               axios.get('/timetracking/settings/list/check', {
               }).then(response => {
-                this.arrCheckLists = response.data
+                console.log(response.data);
+                this.arrCheckLists = response.data;
               })
             },
             fetchResponsibility() {
@@ -442,38 +488,34 @@
           },
             addNewCheckModalShow(){
 
-                if (this.values.length == 0){
-                  this.placeholderSelect = true
-                }else {
-                  this.placeholderSelect = false
-                }
-
                 this.showModalCheck = false,
                 this.showCheckSideBar = true
                 this.addButton = true
                 this.editButton = false
                 this.allValueArray = [];
+                this.editValuesChanged = false;
+                // this.refreshArray()
             },
-            saveEditCheckList(arrCheckInput,){
+            saveEditCheckList(arrCheckInput){
 
-                this.validateInput(arrCheckInput,this.countView)
-                // console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
-
-
+                //this.validateInput(arrCheckInput,this.countView)
+                 console.log(arrCheckInput,'arr',this.check_id,this.valueGroups,this.countView,'www');
 
 
 
 
               if (this.values.length > 0){
 
-                if (this.errors.save){
+                if (true){
                   let loader = this.$loading.show();
+                  console.log(this.values);
                   axios.post('/timetracking/settings/edit/check/save/', {
                     check_id:this.check_id,
                     allValueArray:this.values,
                     countView:this.countView,
                     arr_check_input:arrCheckInput,
-                    valueFindGr:this.valueFindGr
+                    valueFindGr:this.valueFindGr,
+                    deleted_tasks: this.deleted_tasks
                   }).then(response => {
                     loader.hide();
 
@@ -515,9 +557,7 @@
                 }
               }else{
                 this.errors.show = true
-                this.errors.message = 'Выбрать Кому будем чик листы добавлять'
-
-
+                this.errors.message = 'Выберите кому вы ставите задачу!'
               }
 
 
@@ -526,7 +566,7 @@
 
             editCheck(check_id,type){
 
-
+                this.editValuesChanged = false;
                 this.addButton = false
                 this.editButton = true
                 this.showCheckSideBar = true
@@ -539,7 +579,6 @@
                     type:type,
                 }).then(response => {
 
-
                     this.values = []
                     this.placeholderSelect = false
 
@@ -548,10 +587,12 @@
 
                     this.editValueThis = response.data;
                     this.valueFindGr = response.data.item_id;
-                    this.countView = response.data.count_view;
-                    this.arrCheckInput = JSON.parse(response.data['active_check_text'])
+                    this.countView = response.data.show_count;
+                    
+                    this.arrCheckInput = response.data;
+                    console.log(this.arrCheckInput)
                     this.editValueThis.view = true
-                    this.editValueThis.arr= response.data
+                    this.editValueThis.arr = response.data
 
 
                     this.showModalCheck = true
@@ -586,10 +627,10 @@
                     //
                     //     this.click_show.us = true
                     // };
+                    this.editValuesChanged = false;
 
                 })
-
-
+                this.editMode = true;
 
             },
             arrCheckDelete(id){
@@ -612,11 +653,10 @@
 
                 this.saveButton = true
                 this.errors.save_checkbox = false
-                this.validateInput(this.arrCheckInput,this.countView)
-
-
+                //this.validateInput(this.arrCheckInput.tasks,this.countView)
+                console.log(this.arrCheckInput.tasks);
               if (this.values.length > 0 || this.values.length > 1){
-                if (this.errors.save){
+                if (true){
                   let loader = this.$loading.show();
                   axios.post('/timetracking/settings/add/check', {
                     allValueArray:this.values,
@@ -660,7 +700,7 @@
                       this.showCheckSideBar = false;
                       this.viewCheckList()
                     }
-
+                    this.clearSideBar();
                   })
                 }
               }else{
@@ -673,18 +713,23 @@
             },
             addCheckList() {
                 // this.buttonClass = 'primary',
-                this.arrCheckInput.push({
-                    checked: false,
-                    text: "",
-                    https: '',
-                });
+                this.arrCheckInput.tasks.push(
+                        {
+                            checked: false,
+                            text: "",
+                            task: "",
+                            https: '',
+                        }
+                    );
             },
-            deleteCheckList(index){
+            deleteCheckList(index, item){
 
                 // console.log(this.valueGroups ,'07777')
-
+                console.log(item.id);
                 if (index != 0){
-                    this.arrCheckInput.splice(index, 1)
+
+                    this.arrCheckInput.tasks.splice(index, 1)
+                    this.deleted_tasks.push(item);
                 }else {
                     alert('К сожалению последний позиция не удаляется');
                 }
@@ -694,12 +739,10 @@
                 this.countView = count_view,
                     this.arrCheckInput = array_check_input,
                     this.errors.save = false
-
                 for (let i = 0; i < this.arrCheckInput.length;i++){
                     // if (this.arrCheckInput[i]['checked'] === true){
-
-                    if (this.arrCheckInput[i]['text'] != null){
-                        if (this.arrCheckInput[i]['text'].length < 1){
+                    if (this.arrCheckInput[i]['task'] != null){
+                        if (this.arrCheckInput[i]['task'].length < 1){
                             this.errors.text.push('errorText');
                         }
                     }else {
@@ -708,7 +751,7 @@
                 }
 
 
-                if (this.errors.text.length == 0 && this.countView < 11 && this.countView != 0){
+                if (this.countView < 11 && this.countView != 0){
                     this.errors.save = true
                 }else{
                     this.errors.message = 'заполните текст'
@@ -984,7 +1027,6 @@
 
           removeValue(i,type) {
 
-              if (type == 1){
                 let v = this.values[i];
                 if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
@@ -996,10 +1038,6 @@
                 if (this.values.length == 0){
                   this.placeholderSelect = true
                 }
-              }else if (type == 2){
-                this.errors.show = true
-                this.errors.message = 'Невозможно удалить '
-              }
 
 
 

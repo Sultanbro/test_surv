@@ -25,27 +25,9 @@ class HomeController extends Controller
     {
         
     }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return view('surv');
-    }
-
-    public function test()
-    {
-       
-        return view('surv');
-    }
-
-    public function test1()
-    {
-       
-        return response();
+    
+    public function index(){
+        return view('home');
     }
 
     public function loginAs(Request $request, $id) {
@@ -78,19 +60,9 @@ class HomeController extends Controller
         return redirect('/');
     }
 
-    public function manual()
-    {
-        if(Auth::user() && Auth::user()->id == 5) {
-            return view('manual');
-        } else { 
-            abort(404);
-        }
-        
-    }
-
     public function quiz_after_fire(Request $request)
     {
-        return view('quiz_after_fire')->with([
+        return view('specific.quiz_after_fire')->with([
             'phone' => $request->phone,
             'quiz' => LayoffQuiz::getQuestions(),
         ]);
@@ -100,7 +72,7 @@ class HomeController extends Controller
     {
 
         if ($request->isMethod('get')) {
-            return view('estimate_first_day')->with([
+            return view('specific.estimate_first_day')->with([
                 'phone'  => $request->phone,
              ]);
         }
@@ -152,7 +124,7 @@ class HomeController extends Controller
 
     public function estimate_trainer(Request $request)
     {
-        return view('estimate_trainer')->with([
+        return view('specific.estimate_trainer')->with([
             'phone' => $request->phone,
             'quiz' => [
                 '1' => [

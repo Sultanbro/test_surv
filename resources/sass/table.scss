@@ -18,6 +18,7 @@ $grey: #ece8e8;
 .as-table {
     min-width: 100%;
     margin-bottom: 0;
+    z-index: 1;
 
     &.mr150 {
         margin-right: 150px;
@@ -34,7 +35,7 @@ $grey: #ece8e8;
     .header {
 
     }
- 
+
 
     .ruler-cells {
         font-weight: 500;
@@ -338,6 +339,7 @@ $grey: #ece8e8;
 .left-side .contextor {
     right: 20%;
     left: unset;
+    border: 1px solid;
 }
 .contextor {
     position: absolute;

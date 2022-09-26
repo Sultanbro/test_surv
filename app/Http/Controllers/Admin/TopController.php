@@ -123,7 +123,7 @@ class TopController extends Controller
             
         }
 
-       
+      
 
             $week_proceeds = [
                 'fields' => $this->getProceedFields($days),
@@ -198,6 +198,7 @@ class TopController extends Controller
                         $total_row['w'. $key] += round($xsum);
                     }
 
+                
                     $row['Итого'] = (int)$sum;
                     $total_row['Итого'] += $sum;
     
@@ -352,23 +353,33 @@ class TopController extends Controller
 
         // get weeks  
         $start_week = 1;
+        $last_week = null;
 
         foreach($days as $key => $date) {
-            if($date->dayOfWeek == '1') {
-                array_push($fields, 'w' . $start_week);
+            
+            // define first week field
+            if(
+                $date->dayOfWeek == '1'
+                || ($key == 0 && $date->dayOfWeek != '1')
+            ) {
+                if($last_week != null) {
+                    array_push($fields, $last_week);
+                    $last_week = null;
+                }
+                $last_week = 'w' . $start_week;
                 $start_week++;
             }
             
-            
+            // push day
             array_push($fields, $date->format('d.m'));
-            if($key == count($days) - 1 && $date->dayOfWeek != '1') {
-                array_push($fields, 'w' . $start_week);
+
+            // push last week field because we didn't reach monday
+            if(count($days) - 1 == $key && $date->dayOfWeek != '1') {
+                array_push($fields, $last_week);
             }
         }
 
-       
-       
-
+    
         return $fields;
     }
     /**

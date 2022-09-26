@@ -25,6 +25,9 @@ class RecruiterStats extends Command
     /**
      * The name and signature of the console command.
      *
+     * ex: php artisan recruiter:stats 0 14 2022-08-15 13429 
+     * //$a = (new \App\External\Bitrix\Bitrix())->getDeals(99356, '', 'ASC', '2022-08-15T15:00:00+06:00', '2022-08-15T18:59:00+06:00', 'DATE_CREATE');
+     * 
      * @var string 
      */
     protected $signature = 'recruiter:stats {count_last_hour?} {hour?} {date?} {user?}'; 
@@ -69,9 +72,12 @@ class RecruiterStats extends Command
     {
         if($this->argument('date')) $this->date = $this->argument('date');
         $this->hour = $this->argument('hour') ?? Carbon::now()->setTimezone('Asia/Almaty')->format('H');
+
         if((int)$this->hour != 0) {
             if($this->argument('count_last_hour') && $this->argument('count_last_hour') == 1) $this->hour = Carbon::now()->setTimezone('Asia/Almaty')->subHour()->format('H');
         } 
+
+        if($this->hour >= 0 && $this->hour <= 9) $this->hour = '0' . $this->hour;
 
         $datex = explode("-", date("Y-m-d", strtotime($this->date)));
         $this->year = $datex[0];
@@ -235,6 +241,7 @@ class RecruiterStats extends Command
 			$dials = (int)$hourly_dials['total']; 
 		} 
 
+        //if($admin_user->id == 14989) dd($hourly_converted);
         $converted = 0;
 		if(array_key_exists('result', $hourly_converted)) {
 			$converted = (int)$hourly_converted['total']; 

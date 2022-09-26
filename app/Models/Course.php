@@ -8,9 +8,12 @@ use App\Models\CourseModel;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\Models\Videos\Video;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
 {
+    use SoftDeletes;
+    
     protected $table = 'courses';
 
     public $timestamps = true;
@@ -21,7 +24,8 @@ class Course extends Model
         'img',
         'text',
         'order',
-        'stages'
+        'points', // amount of bonuses in course
+        'stages' // all stages in course
     ];
 
     public function items()

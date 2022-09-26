@@ -15,7 +15,8 @@ use App\QualityRecordMonthlyStat;
 use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Analytics\IndividualKpi;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserStat extends Model
 {
@@ -25,7 +26,12 @@ class UserStat extends Model
         'activity_id',
         'value',
     ];
- 
+
+    public function users(): BelongsTo
+    {
+        return $this->belongsTo('App\User', 'user_id');
+    }
+
     /**
      * get activities
      */
@@ -577,5 +583,36 @@ class UserStat extends Model
             $counter = strtotime("+1 day", $counter);
         }
         return $count;
+    }
+
+    /**
+     * Сохранить UserStat по quality
+     * 
+     * date
+     * user_id
+     * value
+     * group_id
+     */
+    public static function saveQuality(array $data) : void
+    {
+        $data['activity_id'] = Activity::qualityId($data['group_id']);
+        
+        $us = UserStat::where([
+            'date'        => $data['date'],
+            'user_id'     => $data['user_id'],
+            'activity_id' => $data['activity_id'],
+        ])->first();
+
+        if($us) {
+            $us->value = $data['value'];
+            $us->save();
+        } else {
+            UserStat::create([
+                'date'        => $data['date'],
+                'user_id'     => $data['user_id'],
+                'activity_id' => $data['activity_id'],
+                'value'       => $data['value'],
+            ]);
+        }
     }
 }

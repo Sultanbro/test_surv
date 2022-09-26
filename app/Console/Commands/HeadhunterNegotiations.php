@@ -75,7 +75,7 @@ class HeadhunterNegotiations extends Command
 
         if($stage == 1) {
             $vacancies = Vacancy::where('status', Vacancy::OPEN)
-                ->whereIn('manager_id', [HeadHunter::MANAGER_ID, HeadHunter::MANAGER_ID_2])
+                ->whereIn('manager_id', HeadHunter::MANAGERS)
                 ->get();
 
             foreach($vacancies as $key => $vacancy) {
@@ -218,7 +218,8 @@ class HeadhunterNegotiations extends Command
                 "UF_CRM_1635487718862" => 'https://wa.me/+' . Phone::normalize($negotiation->phone), // Ватсап линк 
                 'UF_CRM_1624530685082' => $ic->time_link . $hash, // Ссылка для офисных кандидатов
                 'UF_CRM_1624530730434' => $ic->contract_link . $hash, // Ссылка для удаленных кандидатов
-                "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]]
+                "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]],
+                "UF_CRM_1658397129" => $vac ? $vac->city : '' // город
             ]);
             
 

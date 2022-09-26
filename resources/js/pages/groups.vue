@@ -477,7 +477,7 @@
         <div class="col-7">
           <select v-model="restore_group" class="form-control form-control-sm">
             <option
-              :value="archived_group.name"
+              :value="archived_group.id"
               v-for="(archived_group, key) in archived_groups"
               :key="key"
             >

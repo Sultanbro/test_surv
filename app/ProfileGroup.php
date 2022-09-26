@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\Permission\Traits\HasRoles;
 
 class ProfileGroup extends Model
@@ -22,11 +23,6 @@ class ProfileGroup extends Model
         'checktime_users' => 'array',
         'time_exceptions' => 'array'
     ];
-    
-    public function users()
-    {
-        return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id');
-    }
 
     protected $fillable = [
         'name', // Название группы
@@ -60,6 +56,37 @@ class ProfileGroup extends Model
     // time_address
     CONST FROM_UCALLS = -1;
     CONST NOWHERE = 0;
+
+    /**
+     * @return MorphMany
+     */
+    public function qpremium(): MorphMany
+    {
+        return $this->morphMany('App\Models\QuartalPremium', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    /**
+     * @return MorphMany
+     */
+    public function bonuses(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id')
+            ->withPivot(['from', 'to'])
+            ->withTimestamps();
+    }
+
+    /**
+     * @return MorphMany
+     */
+    public function kpis(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Kpi', 'targetable', 'targetable_type');
+    }
 
     public function dialer()
     {

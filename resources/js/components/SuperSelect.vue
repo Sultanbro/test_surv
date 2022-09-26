@@ -1,6 +1,5 @@
 <template>
 <div class="super-select" ref="select" :class="posClass" v-click-outside="close">
-
     <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
         <div 
             v-for="(value, i) in values"
@@ -8,10 +7,14 @@
             class="selected-item"
             :class="'value' + value.type">
             {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i)"></i>
+            <i class="fa fa-times" @click.stop="removeValue(i)" v-if="!one_choice_made"></i>
+        </div>
+        <div 
+            id="placeholder"
+            class="selected-item placeholder">
+            {{ placeholder }}
         </div>
     </div>
-    
     <div class="show" v-if="show">
         <div class="search">
             <input 
@@ -24,7 +27,7 @@
         
         <div class="options-window">
             <div class="types"> 
-                <div class="type" :class="{'active': type == 1}" @click="changeType(1)">
+                <div class="type" :class="{'active': type == 1}" @click="changeType(1)" >
                     <div class="text">Сотрудники</div>
                     <i class="fa fa-user"></i>
                 </div>
@@ -32,7 +35,7 @@
                     <div class="text" >Отделы</div>
                     <i class="fa fa-users"></i>
                 </div>
-                <div class="type" :class="{'active': type == 3}" @click="changeType(3)">
+                <div class="type" :class="{'active': type == 3}" @click="changeType(3)" >
                     <div class="text">Должности</div>
                     <i class="fa fa-briefcase"></i>
                 </div>
@@ -72,6 +75,14 @@
 export default {
     name: 'Superselect',
     props: {
+        onlytype:{
+            type: Number,
+            default: 0
+        },
+        placeholder:{
+            type: String,
+            default: '',
+        },
         values: {
             type: Array,
             default: []
@@ -84,9 +95,18 @@ export default {
             type: Boolean,
             default: false
         },
+        ask_before_delete: {
+            type: String,
+            default: ''
+        },
+        one_choice: {
+            type: Boolean,
+            default: false
+        },
     },
     data() {
         return {
+            show_placeholder: true,
             options: [],
             filtered_options: [],
             type: 1,
@@ -94,16 +114,23 @@ export default {
             posClass: 'top',
             searchText: '',
             first_time: true,
-            selected_all: false
+            selected_all: false,
+            one_choice_made: false
         };
     },
     created() {
-
-      console.log(this.values,'019995');
-
-        this.checkSelectedAll();  
+        console.log(this.values)
+        console.log(this.values.length)
+        if(this.one_choice && this.values.length > 0) this.one_choice_made = true; 
+        this.checkSelectedAll(); 
+        if(this.onlytype > 0){
+            this.changeType(2);
+        } 
     },
     methods: {
+        hidePlaceholder(){
+            this.show_placeholder = !this.show_placeholder;
+        },
         checkSelectedAll() {
             if(this.values.length == 1
                 && this.values[0]['id']== 0
@@ -128,10 +155,21 @@ export default {
         },
 
         toggleShow() {
+            if(this.one_choice_made) {
+                return;
+            }
+             
             this.show = !this.show;
+            if(this.show){
+                document.getElementById('placeholder').style.display = "none";
+            }else{
+                document.getElementById('placeholder').style.display = "block";
+            }
+
             if(this.first_time) {
                 this.fetch();
             }
+            
             
             this.$nextTick(() => {
                 if(this.$refs.search !== undefined) this.$refs.search.focus();
@@ -156,31 +194,44 @@ export default {
             if(this.single) this.show = false;
             if(this.single && this.values.length > 0) {
                 return;
-            };
+            }; 
+
+            
             if(this.selected_all) return;
 
             let item = this.filtered_options[index];
 
             if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
 
-                this.values.push({
+                let value = {
                     name: item.name,
                     id: item.id,
                     type: item.type
-                });
+                };
+
+                this.$emit('choose', value);
+                this.values.push(value);
 
                 item.selected = true
             }
         },
 
         removeValue(i) {
+            if(this.ask_before_delete != '') {
+                if(!confirm(this.ask_before_delete)) return;
+            }
+            
             let v = this.values[i];
+            console.log(v);
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
             this.values.splice(i, 1);
 
             let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
-            if(index != -1) this.filtered_options.splice(index, 1);
+            if(index != -1) {
+                this.filtered_options.splice(index, 1);
+                this.$emit('remove');
+            }
         },
 
         removeValueFromList(i) {
@@ -215,7 +266,7 @@ export default {
                 .then((response) => {
 
                     this.options = response.data.options;
-
+                    this.first_time = false;
                     this.filterType();
                     this.addSelectedAttr();
                 })
@@ -240,3 +291,8 @@ export default {
 
 }
 </script>
+<style scoped lang="scss">
+    .placeholder{
+        background: #fff !important;
+    }
+</style>

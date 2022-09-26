@@ -19,49 +19,46 @@ use App\KnowBase;
 use App\Models\TestQuestion;
 use App\Models\Books\Book;
 use App\Models\Books\BookSegment;
+use App\Models\Kpi\Bonus;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\QualityRecordWeeklyStat;
+use App\Http\Controllers\IntellectController;
+use App\Models\GroupUser;
+use App\Salary;
 
 class TestController extends Controller { 
- 
-	public function test() {
-	
-		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
-		$g = \App\Kpi::userKpi(15291, '2022-07-01', 1);
-		// 15030
-		dd($g);
-		// $books = Book::get();
-		// foreach($books as $book) {
-		// 	$tests = TestQuestion::where([
-		// 		'testable_type' => 'App\\Models\\Books\\BookSegment',
-		// 		'testable_id' => $book->id
-		// 	])->get();
+  
+	public function test() { 
 
-		// 	$groups = $tests->groupBy('page');
-
-		// 	foreach ($groups as $page => $els) {
-				
-		// 		$segment = BookSegment::create([
-		// 			'title' => 'test',
-		// 			'book_id' => $book->id,
-		// 			'page_start' => $page,
-		// 			'page_end' => $page,
-		// 			'pass_grade' => 100
-		// 		]);
-
-		// 		foreach ($els as $key => $q) {
-		// 			$q->testable_id = $segment->id;
-		// 			$q->save();
-		// 		}
-		// 	}
+       // $users    = json_decode(ProfileGroup::query()->findOrFail(53)->users, true);
+		dd(static::class);
+		// foreach ($users as $key => $user_id) {
+		// 	GroupUser::create([
+		// 		'user_id'  => $user_id,
+		// 		'group_id' => 53,
+		// 	]);
 		// }
+		
+		
+	}  
 
+	public function test_mail_invitation()
+	{
+		\Mail::to('abik50000@gmail.com')->send(new \App\Mail\SendInvitation([
+			'name' => 'asdasd',
+			'email' => 'asdasd',
+			'password' => 'asdasd',
+			'subdomain' => 'asdasd',
+		]));
+
+		return true;
 	}  
 
 	public function hhRefresher() {
 		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
 		$hh = new HeadHunter();
-		$hh->auth_code = 'U21A3DAHQTBPGFFPF05KQAM2VPS1D66ON99FIELH69F2GTUEU7DA70I5P4G54JII';
+		$hh->auth_code = 'KQO11PIM867V8R3MDUF95O1RGRKQJKKUE8LIK4L96OAM28QTFUO39APUGCUPRVNI';
 		dd($hh->refreshAccessToken());
 
 	}

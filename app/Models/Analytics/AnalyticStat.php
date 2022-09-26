@@ -71,14 +71,16 @@ class AnalyticStat extends Model
             }
         }
 
-
-
         $all_activities = Activity::withTrashed()->where('group_id', $group_id)->get();
         $all_stats = self::where('group_id', $group_id)
             ->where('date', $date)
             ->get();
 
-      
+        $day_salaries = Salary::getSalaryForDays([
+            'date'     => $date,
+            'group_id' => $group_id,
+        ]);
+
         // returning items 
         foreach($rows as $r_index => $row) {
 
@@ -128,16 +130,16 @@ class AnalyticStat extends Model
                         'column_id' => $column->id,
                         'cell' => $cell_letter . $cell_number,
                         'class' => $stat->class . $add_class,
-                        'editable' => $stat->editable,
+                        'editable' => $r_index == 0 ? 0 : $stat->editable,
                         'depend_id' => $row->depend_id,
                         'decimals' => $stat->decimals,
                         'comment' => $stat->comment,
                         'sign' => ''
                     ];
 
-                    if(($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) { // cant edit prcsll and impl line
-                        $arr['editable'] = 0;
-                    }
+                    // if(($r_index == 2 || $r_index == 3) && in_array($column->name, ['plan', 'sum','name'])) { // cant edit prcsll and impl line
+                    //     $arr['editable'] = 0;
+                    // }
 
                     if($stat->activity_id != null) {
                         $act = $all_activities->where('id',$stat->activity_id)->first();
@@ -192,6 +194,16 @@ class AnalyticStat extends Model
                         $arr['show_value'] = $val;
                     }
 
+                    if($stat->type == 'salary_day' && !in_array($column->name, ['plan', 'sum', 'avg', 'name'])) {
+                        $gsalary = array_key_exists($column->name, $day_salaries) ? $day_salaries[$column->name] : 0;
+
+                        $val = floor($gsalary);
+                        $stat->show_value = $val;
+                        $stat->save();
+                        $arr['value'] = $val;
+                        $arr['show_value'] = $val;
+                    }
+
                     if($stat->type == 'time') {
 
                         $column = AnalyticColumn::find($column->id);
@@ -225,7 +237,8 @@ class AnalyticStat extends Model
                         'decimals' => 0,
                         'type' => $type,
                         'class' => 'text-center' . $add_class,
-                        'editable' => ($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name']) ? 0 : 1,
+                        // 'editable' => (($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) || $r_index == 0 ? 0 : 1,
+                        'editable' =>  $r_index == 0 ? 0 : 1,
                     ]);
 
                     $arr = [
@@ -238,7 +251,8 @@ class AnalyticStat extends Model
                         'type' => $type,
                         'cell' => $cell_letter . $cell_number,
                         'class' => 'text-center' . $add_class,
-                        'editable' => ($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name']) ? 0 : 1,
+                        //'editable' => (($r_index == 2 || $r_index == 3) && !in_array($column->name, ['plan', 'sum','name'])) || $r_index == 0 ? 0 : 1,
+                        'editable' =>  $r_index == 0 ? 0 : 1,
                         'depend_id' => $row->depend_id,
                         'comment' => '',
                         'sign' => '',
@@ -447,7 +461,7 @@ class AnalyticStat extends Model
         return $res;
     }
 
-    public static function daysAvg($date, $row_id,$group_id) {
+    public static function daysAvg($date, $row_id, $group_id) {
         $days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
         $columns = AnalyticColumn::where('group_id', $group_id)->where('date', $date)->whereIn('name', $days)->get();
 
@@ -461,15 +475,15 @@ class AnalyticStat extends Model
 
             if($stat) {
                 $total += (float)$stat->show_value;
-
-                if((float)$stat->show_value > 0) {
+                //if($row_id == 1837) dump($stat->show_value);
+                if((float)$stat->show_value != 0) {
 
                     $count++;
                 }
             }
         }
 
-
+       // if($row_id == 1837) dd($total, $count);
         if($count > 0) {
             $total = round($total / $count, 3);
         } else {
@@ -570,19 +584,32 @@ class AnalyticStat extends Model
 
 
             if($text == '') $text = '0';
-            $math_string ="return (".$text.");";
+            
+            //$math_string ="return (".$text.");";
+            $math_string ="return ".$text.";";
+
             if(str_contains($math_string,'{')){
                 $math_string = str_replace("{","",$math_string);
                 $math_string = str_replace("}","",$math_string);
             }
             $math_string = str_replace("%","",$math_string);
+            $word = "E14";
+
+        // Test if string contains the word 
+
+ 
             $res = eval($math_string);
+            
+
           
         } catch(\DivisionByZeroError $e) {
           
             $res = 0;
         } catch( \ParseError $p) {
-            dd($math_string);
+            $res = 0;
+           // dd($math_string);
+        } catch(\Throwable $e) {
+            $res = 0;
         }
 
         return round($res, $round);

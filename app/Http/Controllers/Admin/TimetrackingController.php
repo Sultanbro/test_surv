@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Components\TelegramBot;
 use App\DayType;
+use App\Events\TransferUserInGroupEvent;
 use App\Fine;
 use App\GroupPlan;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GetReportsRequest;
 use App\Position;
 use App\Salary;
 use App\BPLink;
@@ -35,7 +37,7 @@ use App\AnalyticsSettingsIndividually;
 use App\Downloads;
 use App\Http\Controllers\IntellectController as IC;
 use App\Classes\Helpers\Phone;
-use App\Models\Admin\Bonus;
+use App\Models\Kpi\Bonus;
 use App\Classes\Helpers\Currency;
 use App\Models\User\NotificationTemplate;
 use App\Models\Analytics\Activity;
@@ -535,9 +537,13 @@ class TimetrackingController extends Controller
 
     public function deletegroup(Request $request)
     {
-        $group = ProfileGroup::where('id', $request->group)->first();
-        $group->active = 0;
-        $group->save();
+        DB::transaction(function () use ($request) {
+            $group = ProfileGroup::where('id', $request->oldGroup)->first();
+            $group->active = 0;
+            $group->save();
+
+            event(new TransferUserInGroupEvent($group, $request->newGroup));
+        });
         return 'true';
     }
 
@@ -550,9 +556,8 @@ class TimetrackingController extends Controller
           //  $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->with('dialer')->first();
             //if(!$group) $group = ProfileGroup::find($request->group);
             
-            if ($group->users != null) {
-                $users = json_decode($group->users);
-                $users = User::whereIn('id', $users)->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
+            if ($group->users()->get()->toArray() != null) {
+                $users = $group->users()->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
             }
            
             $kbm = \App\Models\KnowBaseModel::
@@ -844,31 +849,14 @@ class TimetrackingController extends Controller
         return view('admin.reports', compact('groups', 'fines', 'years'));
     }
 
-    public function getReports(Request $request)
+    public function getReports(GetReportsRequest $request)
     {
-
         $year = $request['year'];
-
-        $users_ids = [];
-        $head_ids = [];
-        if ($request['group_id']) {
-            $group = ProfileGroup::find($request['group_id']);
-            if (!empty($group) && $group->users != null) {
-                // $check_users = json_decode($group->users);
-                
-                // foreach($check_users as $check_user){
-                //    $ud = UserDescription::where('user_id',$check_user)->whereDate('applied', '>=', Carbon::parse($year . '-' . $request->month . '-01')->startOfMonth())->value('user_id');
-                //    if(isset($ud)){
-                //        $users_ids[] = $ud;
-                //    }
-                // }
-                $users_ids = json_decode($group->users);
-                $head_ids = json_decode($group->head_id);
-            }
-        }
-
-       
-        $currentUser = User::bitrixUser();
+        $groupId = $request->input('group_id');
+        $group = ProfileGroup::query()->findOrFail($groupId) ?? null;
+        $users_ids = $group->users()->get(['id'])->pluck('id')->toArray();
+        $head_ids = json_decode($group->head_id);
+        $currentUser = User::bitrixUser() ?? User::findOrFail(5);
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
         if (!in_array($currentUser->id, $group_editors) && $currentUser->is_admin != 1) {
@@ -892,15 +880,20 @@ class TimetrackingController extends Controller
             $end_month = Carbon::parse($year . '-' . $request->month . '-01')->endOfMonth();
             foreach($my_ids as $ids){
                 $hire_date = Carbon::parse($ids->applied);
-                if($hire_date->lt($end_month) || !isset($ids->applied)){
-                    $_user_ids[] = $ids->id;
-                }
+                $_user_ids[] = $ids->id;
+                // if($hire_date->lt($end_month) || !isset($ids->applied)){
+                //     $_user_ids[] = $ids->id;
+                // }
             }
         }
         
         if($request->user_types == 1) { // Уволенныне
-            $_user_ids = User::onlyTrashed()->whereIn('id', $users_ids)->pluck('id')->toArray();
+        //     $_user_ids = User::onlyTrashed()
+        //    // ->whereIn('id', $users_ids)
+        //     ->pluck('id')
+        //     ->toArray();
             //////////////////////
+            $_user_ids = [];
             $date = $year . '-' . $request->month . '-01';
             $date_for_register = Carbon::parse($date); 
             $date_for_fire = Carbon::parse($date)->startOfMonth();
@@ -920,6 +913,7 @@ class TimetrackingController extends Controller
             
             $_user_ids = DB::table('users')
                 ->whereNotNull('deleted_at')
+                ->whereDate('deleted_at', '>=', $date_for_fire)
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $_user_ids)
                 ->where('ud.is_trainee', 0) 
@@ -1051,8 +1045,6 @@ class TimetrackingController extends Controller
 
 
         $data['editable_time'] = $group->editable_time;
-        
-        
         return $data;
     }
 
@@ -1462,10 +1454,11 @@ class TimetrackingController extends Controller
             $end_month = Carbon::parse($request->year . '-' . $request->month . '-01')->endOfMonth();
             foreach($my_ids as $ids){
                 $hire_date = Carbon::parse($ids->applied);
-                if($hire_date->lt($end_month) || !isset($ids->applied)){
-                    //dump($hire_date->toDateString());
-                    $user_ids[] = $ids->id;
-                }
+                $user_ids[] = $ids->id;
+                // if($hire_date->lt($end_month) || !isset($ids->applied)){
+                //     //dump($hire_date->toDateString());
+                //     $user_ids[] = $ids->id;
+                // }
             } 
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];

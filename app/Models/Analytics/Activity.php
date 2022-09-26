@@ -2,40 +2,99 @@
 
 namespace App\Models\Analytics;
 
+use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
 class Activity extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, WithCreatorAndUpdater;
+
     protected $table = 'activities';
 
     public $timestamps = true;
 
     protected $casts = [
         'data' => 'array',
+        'created_at'  => 'date:d.m.Y H:i',
+        'updated_at'  => 'date:d.m.Y H:i',
     ];
+
     
     protected $fillable = [
         'name',
         'group_id',
-        'daily_plan',
+        'daily_plan', // plan , потом переименовать
         'plan_unit', // метод расчета
         'unit', // ед изм 
         'ud_ves',
+        'share',
+        'method',
+        'view',
+        'source',
         'editable',
         'order',
         'type',
         'weekdays', // рабочие дни в неделе, для выставления плана на месяц
-        'data' // дополнительно
+        'data', // дополнительно
+        'created_by', // 
+        'updated_by', // 
+        'common' // показатели всей группы  = 1 или идивидуальный = 0
     ];
     
-    const UNIT_MINUTES = 1;
-    const UNIT_PERCENTS = 2;
-    const UNIT_LESS_SUM = 3;
-    const UNIT_LESS_AVG = 4;
+    // old consts for plan_units
+    const UNIT_MINUTES = 1;  // сумма минут
+    const UNIT_PERCENTS = 2; // сред значение
+    const UNIT_LESS_SUM = 3; // сумма не более
+    const UNIT_LESS_AVG = 4; // среднее не более. обратное для UNIT_PERCENTS
+    const UNIT_MORE_SUM = 5; // сумма не менее
 
+    /**
+     * Methods
+     */
+    const METHOD_SUM = 1;  // сумма минут
+    const METHOD_AVG = 2; // сред значение
+    const METHOD_SUM_NOT_MORE = 3; // сумма не более
+    const METHOD_AVG_NOT_MORE = 4; // среднее не более. обратное для UNIT_PERCENTS
+    const METHOD_SUM_NOT_LESS = 5; // сумма не менее
+    const METHOD_AVG_NOT_LESS = 6; // сумма не более
+
+    /**
+     * Views
+     */
+    const VIEW_DEFAULT = 0;
+    const VIEW_COLLECTION = 1;
+    const VIEW_QUALITY = 2;
+    const VIEW_RENTAB = 3;
+    const VIEW_TURNOVER = 4;
+    const VIEW_STAFF = 5;
+    const VIEW_CONVERSION = 6;
+    const VIEW_CELL = 7;
+
+    /**
+     * Sources
+     */
+    const SOURCE_GROUP     = 1; // из показателей группы
+    const SOURCE_BITRIX    = 2; // из битрикса
+    const SOURCE_AMOCRM    = 3; // из амо
+    const SOURCE_LOCAL     = 4; // другие
+    const SOURCE_TIMEBOARD = 5; // вкладка табель
+    const SOURCE_HR        = 6; // вкладка HR
+
+    public static function getMethod(int $method_id) {
+        $methods = [
+            1 => 'sum', 
+            2 => 'avg', 
+            3 => 'sum_not_more', 
+            4 => 'avg_not_more', 
+            5 => 'sum_not_less', 
+            6 => 'avg_not_less', 
+        ];
+
+        return array_key_exists($method_id, $methods) ? $methods[$method_id] : 'not_found';
+    }
+    
     /**
      * Получить заголовки для эксель
      */
@@ -145,14 +204,46 @@ class Activity extends Model
                 'name' => 'OKK',
                 'group_id' => $group_id,
                 'daily_plan' => 100,
-                'plan_unit' => 'percent', // метод расчета
-                'unit' => '', // ед изм 
+                'plan_unit' => 'percent', 
+                'method' => self::METHOD_SUM,
+                'unit' => '',
+                'ud_ves' => 0,
+                'editable' => true,
+                'order' => 0,
+                'source' => self::SOURCE_GROUP,
+                'type' => 'quality',
+                'view' => self::VIEW_QUALITY,
+            ]);
+        }
+    }
+
+    /**
+     * get Quality table id
+     */
+    public static function qualityId(int $group_id) {
+        $act = Activity::withTrashed()
+            ->where('group_id', $group_id)
+            ->where('view', self::VIEW_QUALITY)
+            ->first();
+        
+        if(!$act) {
+            $act = Activity::create([
+                'name' => 'OKK',
+                'group_id' => $group_id,
+                'daily_plan' => 100,
+                'source' => self::SOURCE_GROUP,
+                'plan_unit' => 'percent', 
+                'method' => self::METHOD_SUM,
+                'unit' => '',
                 'ud_ves' => 0,
                 'editable' => true,
                 'order' => 0,
                 'type' => 'quality',
+                'view' => self::VIEW_QUALITY,
             ]);
         }
+
+        return $act->id;
     }
 
 }

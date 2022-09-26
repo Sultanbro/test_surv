@@ -11,18 +11,46 @@
         height: 100%;
         position: absolute;
         z-index: 999;
-        background: rgba(255,255,255,0.7);
+        background: rgba(255,255,255, .7);
         display: flex;
         justify-content: center;
-        align-items: center;
 
-        div {
-            width: 330px;
+        .d-left {
+            flex: 0 0 40%;
             padding: 20px;
-            background: aliceblue;
-            border-radius: 5px;
-            box-shadow: 0 0 10px 10px #eee;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+
+            &::-webkit-scrollbar {
+                width: 0;
+                height: 0;
+                cursor: pointer;
+            }
+
+            img.course-img {
+                width: 250px;
+                border-radius: 8px;
+                height: 250px;
+                float:left;
+            }
         }
+
+        .d-right {
+            flex: 0 0 30%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            
+            
+            div {
+                width: 330px;
+                padding: 20px;
+                background: aliceblue;
+                border-radius: 5px;
+            }
+        }
+       
     }
 
     .next-btn {
@@ -166,6 +194,7 @@
     .questions {
       height: 100vh;
       max-width: 1000px;
+      max-width: 100%;
       margin: 0 auto;
       overflow: auto;
       border: 0;

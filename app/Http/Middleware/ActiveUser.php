@@ -118,9 +118,9 @@ class ActiveUser
 
             auth()->user()->show_checklist = 0;
             $user = auth()->user();
-
-              if (!empty(auth()->user()->getCheckList->toArray())){
-                  foreach (auth()->user()->getCheckList->toArray() as $user_check_list){
+            /*
+              if (!empty(auth()->user()->checklists->toArray())){
+                  foreach (auth()->user()->checklists->toArray() as $user_check_list){
                       $editUser_check_list = CheckUsers::find($user_check_list['id']);
 
 
@@ -141,7 +141,7 @@ class ActiveUser
                           $dtStart= Carbon::createFromTime($work_start_h,$work_start_m,$work_start_s);
                           $dtEnd =  Carbon::createFromTime('19','00','00');
                           $minut = $dtStart->diffInMinutes($dtEnd);
-                          $share_minut = $minut / $editUser_check_list['count_view'];
+                          $share_minut = $minut / $user_check_list['show_count'];
 
 //                          dd($work_end_h,$work_end_m,$work_end_s);
                       }else{
@@ -149,7 +149,7 @@ class ActiveUser
                           $dtEnd =  Carbon::createFromTime('19','00','00');
 
                           $minut = $dtStart->diffInMinutes($dtEnd);
-                          $share_minut = $minut / $editUser_check_list['count_view'];
+                          $share_minut = $minut / $user_check_list['show_count'];
                       }
 
 
@@ -194,7 +194,7 @@ class ActiveUser
                       }
                   }else{
                 auth()->user()->show_checklist = 0;
-             }
+             }*/
         }
 
         return $next($request);

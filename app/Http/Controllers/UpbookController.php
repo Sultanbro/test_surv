@@ -16,6 +16,11 @@ use App\Models\CourseItemModel;
 class UpbookController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(Request $request)
     {   
         View::share('menu', 'upbook');
@@ -120,62 +125,68 @@ class UpbookController extends Controller
             ->with('segments')
             ->first();
 
-        // @TODO
-        // get test results
 
-        foreach ($book->segments as $key => $segment) {
-            $segment->page = $segment->page_start;
-            $segment->pages = $segment->page_start;
+        if($book) {
 
-            $course_item_model_id = 0;
-
-            $segment->questions = TestQuestion::where('testable_type', 'App\Models\Books\BookSegment')
-                ->where('testable_id', $segment->id)
-                ->with('result', function ($query) use ($course_item_model_id, $user_id) {
-                    $query->where('course_item_model_id', $course_item_model_id)
-                        ->where('user_id', $user_id);
-                })
-                ->get();
-
-            $segment->item_model = CourseItemModel::where('user_id', $user_id)
-                ->where('type', 1)
-                ->where('item_id', $segment->id)
-                ->where('course_item_id', $request->course_item_id ?? 0)
-                ->first();
-        }
-
-        // get link storage
-        $disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
-        
-        if($book->domain == 'storage.oblako.kz') {
-          
             
-            if($book->link != '' && $book->link != null) {
-                $book->link = $disk->temporaryUrl(
-                    $book->link, now()->addMinutes(360)
-                );
-            }   
+            // @TODO
+            // get test results
+
+            foreach ($book->segments as $key => $segment) {
+                $segment->page = $segment->page_start;
+                $segment->pages = $segment->page_start;
+
+                $course_item_model_id = 0;
+
+                $segment->questions = TestQuestion::where('testable_type', 'App\Models\Books\BookSegment')
+                    ->where('testable_id', $segment->id)
+                    ->with('result', function ($query) use ($course_item_model_id, $user_id) {
+                        $query->where('course_item_model_id', $course_item_model_id)
+                            ->where('user_id', $user_id);
+                    })
+                    ->get();
+
+                $segment->item_model = CourseItemModel::where('user_id', $user_id)
+                    ->where('type', 1)
+                    ->where('item_id', $segment->id)
+                    ->where('course_item_id', $request->course_item_id ?? 0)
+                    ->first();
+            }
+
+            // get link storage
+            $disk = \Storage::build([
+                'driver' => 's3',
+                'key' => 'O4493_admin',
+                'secret' => 'nzxk4iNukQWx',
+                'region' => 'us-east-1',
+                'bucket' => 'tenantbp',
+                'endpoint' => 'https://storage.oblako.kz:443',
+                'use_path_style_endpoint' => true,
+                'throw' => false,
+                'visibility' => 'public'
+            ]);
             
+            if($book->domain == 'storage.oblako.kz') {
+            
+                
+                if($book->link != '' && $book->link != null) {
+                    $book->link = $disk->temporaryUrl(
+                        $book->link, now()->addMinutes(360)
+                    );
+                }   
+                
+            }
+
+            if($book->img != '' && $book->img != null) {
+                $book->img = $disk->temporaryUrl(
+                    $book->img, now()->addMinutes(360)
+                ); 
+            }
         }
 
-        if($book->img != '' && $book->img != null) {
-            $book->img = $disk->temporaryUrl(
-                $book->img, now()->addMinutes(360)
-            ); 
-        }
-       
+
         return [
-            'segments' => $book->segments,
+            'segments' => $book ? $book->segments : [],
             'activeBook' => $book,
         ];
     }
@@ -269,13 +280,25 @@ class UpbookController extends Controller
                 'visibility' => 'public'
             ]);
 
-            if($book->link && $book->link != '' && $disk->exists($book->link)) {
-                $disk->delete($book->link);
+            
+
+            try {
+                if($book->link && $book->link != '' && $disk->exists($book->link)) {
+                    $disk->delete($book->link);
+                }
+            } catch (\Throwable $e) {
+                // League \ Flysystem \ UnableToCheckDirectoryExistence
             }
 
-            if($book->img && $book->img != '' && $disk->exists($book->img)) {
-                $disk->delete($book->img);
+            try {
+                if($book->img && $book->img != '' && $disk->exists($book->img)) {
+                    $disk->delete($book->img);
+                }
+            } catch (\Throwable $e) {
+                // League \ Flysystem \ UnableToCheckDirectoryExistence
             }
+
+            
            
             $book->delete();
         }
@@ -313,9 +336,15 @@ class UpbookController extends Controller
                         'visibility' => 'public'
                     ]);
                     
-                    if($disk->exists($b->img)) {
-                        $disk->delete($b->img);
+                   
+                    try {
+                        if($disk->exists($b->img)) {
+                            $disk->delete($b->img);
+                        }
+                    } catch (\Throwable $e) {
+                        // League \ Flysystem \ UnableToCheckDirectoryExistence
                     }
+        
                 }
 
                 $links = $this->uploadFile('/bookcovers', $request->file('file')); 

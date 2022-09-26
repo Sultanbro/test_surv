@@ -1,0 +1,47 @@
+<template>
+	<b-card
+		class="awards-card mb-2"
+		:header="header"
+		body-class="p-1"
+		header-class="p-2 bg-secondary text-white font-weight-bold">
+			<div class="temp-placeholder m-1" v-for="(award, index) in values">
+				{{ award.imgSrc }}
+			</div>
+			<div class="text-center w-100" v-if="values.length === 0">Ничего нет</div>
+	</b-card>
+</template>
+
+<script>
+export default {
+	name: 'AwardsCard',
+	props: {
+		header: String,
+		values: Array
+		/*
+			values: [{
+				imgSrc: string
+			}]
+		*/
+	}
+}
+</script>
+
+<style lang="scss">
+    .awards-card {
+        .card-body {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+        }
+        .temp-placeholder {
+            border: 1px solid #e9ecef;
+            width: 150px;
+            height: 150px;
+            flex-grow: 0;
+            background-color: aliceblue;
+        }
+		.card {
+			border: 1px solid #e9ecef;
+		}
+    }
+</style>

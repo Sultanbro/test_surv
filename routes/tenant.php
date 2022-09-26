@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\IndicatorController;
+
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 
+use App\Http\Controllers\Kpi\KpiController as KpisController;
+use App\Http\Controllers\Kpi\BonusController;
+use App\Http\Controllers\Kpi\QuartalPremiumController;
+use App\Http\Controllers\Kpi\KpiStatController;
+use App\Http\Controllers\Kpi\IndicatorController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\UserController;
@@ -15,7 +21,7 @@ use App\Http\Controllers\Admin\TraineeController;
 use App\Http\Controllers\Admin\QuartalBonusController;
 use App\Http\Controllers\Admin\IndexController;
 use App\Http\Controllers\Admin\TimetrackingController;
-use App\Http\Controllers\Admin\KpiController;
+use App\Http\Controllers\Admin\KpiController as OldKpiController;
 use App\Http\Controllers\Admin\BpartnersController;
 use App\Http\Controllers\Admin\NpsController;
 use App\Http\Controllers\Admin\QualityController;
@@ -55,9 +61,14 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\IntellectController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\GroupsController;
+use App\Http\Controllers\ProfileSalaryController;
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\CallibroController;
+use Eddir\Messenger\Http\Controllers\ChatsController;
+use Eddir\Messenger\Http\Controllers\MessagesController;
+use Eddir\Messenger\Http\Controllers\Api\MessagesController as ApiMessagesController;
+use \App\Http\Controllers\Department\UserController as DepartmentUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -161,6 +172,7 @@ Route::middleware([
     Route::post('/my-courses/pass', [MyCourseController::class, 'pass']);
 
     Route::post('/course-results/get', [CourseResultController::class, 'get']);
+    Route::post('/course-results/nullify', [CourseResultController::class, 'nullify']);
     
     Route::get('/glossary/get', [GlossaryController::class, 'get']);
     Route::post('/glossary/save', [GlossaryController::class, 'save']);
@@ -211,7 +223,8 @@ Route::middleware([
     Route::post('/cabinet/save', [CabinetController::class, 'save']);
 
     ///Настройка профайл
-    Route::post('/profile/upload/image/profile/', [UserController::class, 'uploadImageProfile']); /// загрузка аватарки vue внутри profile
+    Route::post('/profile/save-cropped-image', [UserController::class, 'uploadCroppedImageProfile']); /// загрузка аватарки vue внутри profile
+    Route::post('/profile/upload/image/profile/', [UserController::class, 'uploadImageProfile']); /// загрузка обрезаной аватарки vue внутри profile
     Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
     Route::any('/profile/edit/user/cart/', [UserController::class, 'editUserProfile']); ///profile save name,last_name,date ///profile save name,last_name,date
     Route::post('/profile/remove/card/', [UserController::class, 'removeCardProfile']); ///удаление карты индивидуально
@@ -288,22 +301,7 @@ Route::middleware([
     Route::get('/wami', [TestController::class, 'send_whatsapp']);
 
 
-    Route::get('/bonus', [IndexController::class, 'bonus']);
-    Route::any('/bonus/update/{id}', [IndexController::class, 'bonusUpdate']);
-    Route::any('/max-session', [IndexController::class, 'maxSession']);
-
     Route::get('/user/delete/{id}', [IndexController::class, 'deleteUser']);
-
-
-    Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
-    Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
-    Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
-    Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
-    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
-    Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
-    Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
-
-
 
 
     Route::post('/timetracking/settings/groups/importexcel', [GroupsController::class, 'import']);
@@ -323,10 +321,10 @@ Route::middleware([
     Route::post('/timetracking/exam', [ExamController::class, 'getexams']);
     Route::post('/timetracking/exam/update', [ExamController::class, 'update']);
 
-    Route::post('/timetracking/kpi_save', [KpiController::class, 'saveKPI']);
-    Route::post('/timetracking/kpi_get', [KpiController::class, 'getKPI']);
-    Route::post('/timetracking/kpi_save_individual', [KpiController::class, 'saveKpiIndividual']);
-    Route::post('/timetracking/kpi_get_individual', [KpiController::class, 'getKpiIndividual']);
+    Route::post('/timetracking/kpi_save', [OldKpiController::class, 'saveKPI']);
+    Route::post('/timetracking/kpi_get', [OldKpiController::class, 'getKPI']);
+    Route::post('/timetracking/kpi_save_individual', [OldKpiController::class, 'saveKpiIndividual']);
+    Route::post('/timetracking/kpi_get_individual', [OldKpiController::class, 'getKpiIndividual']);
 
     Route::any('/estimate_your_trainer', [NpsController::class, 'estimate_your_trainer']); // анкета
     Route::get('/timetracking/nps', [NpsController::class, 'index']);
@@ -386,6 +384,28 @@ Route::middleware([
         Route::get('/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
         Route::get('/leads/list', [\App\Http\Controllers\IntegrationController::class, 'getLeads']);
     });
+    
+    Route::group([
+        'prefix' => 'department',
+        'as'     => 'department.'
+    ], function () {
+        Route::get('/users/{id?}/{date?}', [DepartmentUserController::class, 'getUsers'])->name('users');
+        Route::get('/employees/{id?}/{date?}', [DepartmentUserController::class, 'getEmployees'])->name('employees');
+        Route::get('/trainees/{id?}/{date?}', [DepartmentUserController::class, 'getTrainees'])->name('trainees');
+        Route::get('/fired-users/{id?}/{date?}', [DepartmentUserController::class, 'getFiredUsers'])->name('fired-users');
+        Route::get('/fired-trainees/{id?}/{date?}', [DepartmentUserController::class, 'getFiredTrainees'])->name('fired-trainees');
+
+        Route::get('/check/user/{id}', [DepartmentUserController::class, 'userInGroup']);
+    });
+
+    /**
+     * Отслеживаем посещение стажеров на стажировке.
+     */
+    Route::resource('attendance', AttendanceController::class);
+    Route::get('/attendance', [AttendanceController::class, 'getDayAttendance']);
+
+
+    Route::get('/bitrix/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
 
     Route::get('/timetracking/top', [TopController::class, 'index']);
     Route::post('/timetracking/top', [TopController::class, 'fetch']);
@@ -465,8 +485,69 @@ Route::middleware([
     Route::post('/timetracking/analytics/restore_analytics', [AnalyticsController::class, 'restore_analytics']);
     Route::post('/timetracking/analytics/add-formula-1-31', [AnalyticsController::class, 'addFormula_1_31']);
     Route::post('/timetracking/analytics/add-remote-inhouse', [AnalyticsController::class, 'addRemoteInhouse']);
+    Route::post('/timetracking/analytics/add-salary', [AnalyticsController::class, 'addSalary']);
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
+    /**
+     * Редактирование бонусов
+     */
+    Route::group([
+        'prefix'     => 'bonus',
+        'middleware' => 'auth'
+    ], function(){
+        Route::post('get',[BonusController::class,'get']);
+        Route::post('save',[BonusController::class,'save']);
+        Route::put('update',[BonusController::class,'update']);
+        Route::delete('delete/{id}',[BonusController::class,'delete']);
+    });
+
+    /**
+     * Редактирование квартальной премии
+     */
+    Route::group([
+        'prefix'     => 'quartal-premiums',
+//        'middleware' => 'auth'
+    ], function(){
+        Route::post('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
+        Route::post('save',[QuartalPremiumController::class,'save'])->name('quartal-premium.save');
+        Route::put('update',[QuartalPremiumController::class,'update'])->name('quartal-premium.update');
+        Route::delete('delete/{id}',[QuartalPremiumController::class,'destroy']);
+    });
+
+    /**
+     * Статистика для KPI.
+     */
+    Route::group([
+        'prefix' => 'statistics',
+        'as'     => 'kpi-statistic.'
+    ], function (){
+        Route::get('kpi/user/{id}', [KpiStatController::class, 'show'])->name('index');
+        Route::get('kpi/users/', [KpiStatController::class, 'fetchGroups'])->name('fetch');
+        Route::any('kpi', [KpiStatController::class, 'fetchKpis'])->name('fetchKpis');
+        Route::any('bonuses', [KpiStatController::class, 'fetchBonuses'])->name('fetchBonuses');
+        Route::any('quartal-premiums', [KpiStatController::class, 'fetchQuartalPremiums'])->name('fetchQuartalPremiums');
+        Route::any('workdays', [KpiStatController::class, 'workdays']);
+        Route::post('update-stat', [KpiStatController::class, 'updateStat'])->name('updateStat');
+        Route::get('activities',[KpiStatController::class,'getActivities'])->name('getActivites');
+    });
+
+    /**
+     * Редактирование показателей
+     */
+    Route::group([
+        'prefix'     => 'activities',
+        'as'         => 'activities.',
+        'middleware' => 'superuser'
+    ], function(){
+        Route::post('/get', [IndicatorController::class, 'fetch'])->name('all');
+        Route::get('/{id}', [IndicatorController::class, 'get'])->name('one');
+        Route::post('save',[IndicatorController::class,'save'])->name('save');
+        Route::put('update',[IndicatorController::class,'update'])->name('update');
+        Route::delete('delete/{id}',[IndicatorController::class,'delete'])->name('delete');
+    });
+   
+
+  
 
     Route::get('/books/{id?}', [BpartnersController::class, 'books']);
     Route::any('/pages/update/', [BpartnersController::class, 'pagesupdate']);
@@ -497,15 +578,24 @@ Route::middleware([
     Route::get('/maps', [MapsController::class, 'index'])->name('maps');
     Route::post('/selected-country/search/', [MapsController::class, 'selectedCountryAjaxSearch']);
 
+
+    Route::post('/checklist/tasks', [ChecklistController::class, 'getTasks']);
+    Route::post('/checklist/save', [ChecklistController::class, 'saveTasks']);
+    Route::post('/checklist/get-checklist-by-user',[ChecklistController::class,'getChecklistByUser']);
+    Route::post('/checklist/save-checklist',[ChecklistController::class, 'saveChecklist']);
+
     Route::post('/timetracking/settings/add/check', [CheckListController::class, 'store']); /// добавление Чек листа
     Route::get('/timetracking/settings/list/check', [CheckListController::class, 'listViewCheck']); /// список Чек листов
     Route::post('/timetracking/settings/delete/check', [CheckListController::class, 'deleteCheck']); /// удаление Чек листа по ИД
     Route::post('/timetracking/settings/edit/check', [CheckListController::class, 'editCheck']); /// Открыть  Чек лист по ИД
-    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
-    Route::post('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
+
+    Route::get('/timetracking/settings/auth/check/user', [CheckListController::class, 'viewAuthCheck']); /// со стораны пользователя если есть будет показывать
     Route::post('/timetracking/settings/auth/check/user/send', [CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
     Route::post('/timetracking/settings/auth/check/user/responsibility', [CheckListController::class, 'responsibility']); ///   Добавить ответственного лица
     Route::post('/timetracking/settings/get/modal/', [CheckListController::class, 'getModal']); ///   Получить пользователей
+    Route::post('/timetracking/settings/auth/check/search/selected', [CheckListController::class, 'searchSelected']); 
+
+    Route::post('/timetracking/settings/edit/check/save/', [CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
 
 
 
@@ -514,48 +604,166 @@ Route::middleware([
     Route::get('/superselect/get-alt', [PermissionController::class, 'superselectAlt']);
     Route::get('/callibro/login', [CallibroController::class, 'login']);
 
-    /**
-     * Страницы для показателей
-     */
-    Route::group([
-        'prefix'     => 'indicators',
-        'middleware' => 'superuser'
-    ], function(){
-        Route::get('/', [IndicatorController::class, 'getAllIndicators'])->name('indicator.all');
-        Route::get('/{id}', [IndicatorController::class, 'showIndicator'])->name('indicator.one');
-    });
-    
-    Route::group([
-        'middleware' => ['api'],
-        'prefix' => 'api',
-    ], function () {
+    Route::post('/profile/salary/get', [ProfileSalaryController::class, 'get']);
 
-        // Route::any('/apix', 'AmoController@get_token');
-    
-    
-        Route::any('/intellect/start', [IntellectController::class, 'start']); // Bitrix -> Admin -> Intellect
-        Route::any('/intellect/save', [IntellectController::class, 'save']);   // Intellect -> Admin -> Bitrix
-        Route::any('/intellect/get_name', [IntellectController::class, 'get_name']);   // Intellect -> Admin 
-        Route::any('/intellect/get_link', [IntellectController::class, 'get_link']);   // Intellect -> Admin 
-        Route::any('/intellect/get_time', [IntellectController::class, 'get_time']);   // Intellect -> Admin 
-        Route::any('/intellect/change_status', [IntellectController::class, 'change_status']);   // Intellect -> Admin 
-        Route::any('/intellect/send_message', [IntellectController::class, 'send_message']);   // Admin -> Intellect 
-        Route::any('/intellect/create_lead', [IntellectController::class, 'create_lead']);   // Admin -> Intellect 
-        Route::any('/intellect/test', [IntellectController::class, 'test']);   // Admin -> Intellect 
-        Route::any('/intellect/save_quiz_after_fire', [IntellectController::class, 'quiz_after_fire']);   // Intellect -> Admin 
-        Route::any('/intellect/save_estimate_trainer', [IntellectController::class, 'save_estimate_trainer']);  
-    
-    
-        Route::any('/bitrix/new-lead', [IntellectController::class, 'newLead']);   // Bitrix -> Admin 
-        Route::any('/bitrix/edit-lead', [IntellectController::class, 'editLead']);   // Bitrix -> Admin 
-        Route::any('/bitrix/edit-deal', [IntellectController::class, 'editDeal']);   // Bitrix -> Admin 
-        Route::any('/bitrix/lose-deal', [IntellectController::class, 'loseDeal']);   // Bitrix -> Admin 
-        Route::any('/bitrix/create-link',  [IntellectController::class, 'bitrixCreateLead']);   // Bitrix -> Admin 
-        Route::any('/bitrix/change-resp', [IntellectController::class, 'changeResp']);   // Bitrix -> Admin 
-        Route::any('/bitrix/inhouse',  [IntellectController::class, 'inhouse']);   // Bitrix -> Admin 
-    
+   
+
+    Route::group([
+        'prefix'    => 'kpi',
+        'as'        => 'kpi.',
+        'middleware' => 'auth'
+    ], function (){
+        Route::get('/', [KpisController::class, 'index'])->name('index');
+        Route::post('/get', [KpisController::class, 'getKpis'])->name('get');
+        Route::post('/save', [KpisController::class, 'save'])->name('save');
+        Route::put('/update', [KpisController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [KpisController::class, 'delete'])->name('delete');
+    });
+
+
+    Route::any('/getnewimage',[UserController::class,'getProfileImage']);
+
+    Route::group([
+        'prefix'   => 'messenger/api',
+    ], function() {
+
+      
+        /**
+         * Get chats list
+         */
+        Route::get('/v2/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');
+
+        /**
+         * Get users list
+         */
+        Route::get('/v2/users', 'ChatsController@fetchUsers')->name('api.users.fetch');
+
+        /**
+         * Search chat by name
+         */
+        Route::get('/v2/search', 'ChatsController@search')->name('api.chats.search');
+
+        /**
+         * Get chat messages
+         */
+        Route::get('/v2/chat/{chat_id}/messages', 'MessagesController@fetchMessages')->name('api.messages.fetch');
+
+        /**
+         * Get private chat info
+         */
+        Route::get('/v2/private/{user_id}', 'ChatsController@getPrivateChat')->name('api.v2.getPrivateChat');
+
+        /**
+         * Get chat info
+         */
+        Route::get('/v2/chat/{chat_id}', 'ChatsController@getChat')->name('api.v2.getChat');
+
+        /**
+         * Send message
+         */
+        Route::post('/v2/chat/{chat_id}/messages', 'MessagesController@sendMessage')->name('api.v2.sendMessage');
+
+        /**
+         * Edit message. Message id should be integer
+         */
+        Route::post('/v2/message/{message_id}', 'MessagesController@editMessage')->name('api.v2.editMessage')->whereNumber('message_id');
+
+        /**
+         * Delete message
+         */
+        Route::delete('/v2/message/{message_id}', 'MessagesController@deleteMessage')->name('api.v2.deleteMessage');
+
+        /**
+         * Pin message
+         */
+        Route::post('/v2/message/{message_id}/pin', 'MessagesController@pinMessage')->name('api.v2.pinMessage');
+
+        /**
+         * Unpin message
+         */
+        Route::delete('/v2/message/{message_id}/pin', 'MessagesController@unpinMessage')->name('api.v2.unpinMessage');
+
+        /**
+         * Create chat
+         */
+        Route::post('/v2/chat', 'ChatsController@createChat')->name('api.v2.createChat');
+
+        /**
+         * Remove chat
+         */
+        Route::delete('/v2/chat/{chat_id}', 'ChatsController@removeChat')->name('api.v2.removeChat');
+
+        /**
+         * Leave chat
+         */
+        Route::post('/v2/chat/{chat_id}/leave', 'ChatsController@leaveChat')->name('api.v2.leaveChat');
+
+        /**
+         * Add user to chat
+         */
+        Route::post('/v2/chat/{chat_id}/addUser', 'ChatsController@addUser')->name('api.v2.addUser');
+
+        /**
+         * Remove user from chat
+         */
+        Route::post('/v2/chat/{chat_id}/removeUser/{user_id}', 'ChatsController@removeUser')->name('api.v2.removeUser');
+
+        /**
+         * Set messages as read
+         */
+        Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
+                
     });
 });
 
 
+/**
+ * 
+ * API routes
+ * instead of api.php
+ * 
+ */
+Route::middleware([
+    'api',
+    InitializeTenancyBySubdomain::class,
+    PreventAccessFromCentralDomains::class,
+])->group(function () {
 
+    Route::group([
+        'prefix'   => 'api',
+    ], function() {
+
+        Route::any('/intellect/start',                 [IntellectController::class, 'start']); // Bitrix -> Admin -> Intellect
+        Route::any('/intellect/save',                  [IntellectController::class, 'save']);   // Intellect -> Admin -> Bitrix
+        Route::any('/intellect/get_name',              [IntellectController::class, 'get_name']);   // Intellect -> Admin 
+        Route::any('/intellect/get_link',              [IntellectController::class, 'get_link']);   // Intellect -> Admin 
+        Route::any('/intellect/get_time',              [IntellectController::class, 'get_time']);   // Intellect -> Admin 
+        Route::any('/intellect/change_status',         [IntellectController::class, 'change_status']);   // Intellect -> Admin 
+        Route::any('/intellect/send_message',          [IntellectController::class, 'send_message']);   // Admin -> Intellect 
+        Route::any('/intellect/create_lead',           [IntellectController::class, 'create_lead']);   // Admin -> Intellect 
+        Route::any('/intellect/test',                  [IntellectController::class, 'test']);   // Admin -> Intellect 
+        Route::any('/intellect/save_quiz_after_fire',  [IntellectController::class, 'quiz_after_fire']);   // Intellect -> Admin 
+        Route::any('/intellect/save_estimate_trainer', [IntellectController::class, 'save_estimate_trainer']);  
+
+
+        // Bitrix -> Admin 
+        Route::any('/bitrix/new-lead',     [IntellectController::class, 'newLead']);   
+        Route::any('/bitrix/edit-lead',    [IntellectController::class, 'editLead']); 
+        Route::any('/bitrix/edit-deal',    [IntellectController::class, 'editDeal']);  
+        Route::any('/bitrix/lose-deal',    [IntellectController::class, 'loseDeal']);   
+        Route::any('/bitrix/create-link',  [IntellectController::class, 'bitrixCreateLead']);  
+        Route::any('/bitrix/change-resp',  [IntellectController::class, 'changeResp']);   
+        Route::any('/bitrix/inhouse',      [IntellectController::class, 'inhouse']); 
+        
+        
+        Route::group([
+            'prefix' => 'statistics',
+        ], function (){
+            Route::any('/workdays', [KpiStatController::class, 'workdays']);
+        });
+
+    });
+
+    
+
+});

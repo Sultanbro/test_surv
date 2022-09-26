@@ -1,0 +1,159 @@
+.j-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #ced4da;
+  table-layout: fixed;
+  font-size: 14px;
+  transition: 0.3s all ease;
+  //max-height: 1px;
+
+  tr th {
+    border: 1px solid #ced4da;
+    text-align: left;
+    padding: 10px;
+
+    &.w-230 {
+      width: 230px;
+    }
+  }
+  
+  tr td {
+    border: 1px solid #ced4da;
+    text-align: left;
+    padding: 3px 10px;
+    border: 0;
+
+    &.w-230 {
+      width: 230px;
+    }
+
+    &:hover {
+      background: aliceblue;
+    }
+
+    span {
+   
+    }
+  }
+
+  .table-heading {
+    background: #3f454d;
+    color: #fff;
+  }
+  
+  .collapsable {
+
+    td {
+      padding: 0;
+    }
+
+    span {
+      cursor: pointer;
+      background: #2cc16a;
+      transition: background .5s;
+    }
+
+    .table__wrapper {
+      max-height: 0px;
+      overflow: hidden;
+      transition: max-height .5s;
+    }
+
+  }
+  
+
+  .active {
+
+    span {
+      background: #fff;
+    }
+
+    .table__wrapper {
+      max-height: 10000px;
+      transition: max-height .5s;
+    }
+  }
+
+  .plus-item {
+    &:hover {
+      background: #0eeb88;
+      cursor: pointer;
+    }
+  }
+
+  tr td {
+    padding: 0;
+    border: 1px solid #ced4da;
+  }
+
+  input,
+  textarea,
+  select {
+    border: none !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+  }
+  
+  select.form-control:not([size]):not([multiple]) {
+      height: unset;
+      border-right: 1px solid #ced4da !important;
+
+      &:last-child {
+        border: 0  !important;
+      }
+  }
+
+  .table-inner {
+    width: 100%;
+    margin-bottom: 0;
+    background: #c2d0dc;
+    border-bottom: 5px solid #44658d;
+    
+
+    th:first-child,
+    td:first-child {
+        background: #3f454e;
+    }
+
+    tr td {
+      padding: 0;
+      border: 1px solid #ced4da;
+    }
+
+    input,
+    textarea,
+    select {
+      border: none !important;
+      outline: 0 !important;
+      border-radius: 0 !important;
+    }
+
+    select.form-control:not([size]):not([multiple]) {
+        height: unset;
+    }
+  }
+
+  .text-center {
+    input,
+    textarea,
+    select {
+      text-align: center !important;
+    }
+  }
+
+}
+
+
+.aifs {
+  align-items: flex-start;
+}
+
+
+.j-deleted {
+  background: rgb(255, 151, 151);
+
+  input,
+  select {
+    background: rgb(255, 151, 151);
+  }
+}

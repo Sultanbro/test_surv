@@ -1,5 +1,6 @@
 <template>
   <div class="mt-2 px-3 quality quality-page">
+    
     <div class="row">
 
       <div class="col-3" v-if="individual_request">
@@ -35,8 +36,8 @@
       <div
         class="col-2"
         v-if="
-          Number(activeuserid) == 18 ||
-          Number(activeuserid) == 5
+          Number(auth_user.id) == 18 ||
+          Number(auth_user.id) == 5
         "
       >
         <button class="btn btn-primary d-block ml-auto" @click="showSettings = true">
@@ -52,7 +53,7 @@
       <div class="mr-2 mt-2">{{ groupName }}</div>
     </h4>
     <div v-if="this.hasPermission">
-      <b-tabs type="card" :defaultActiveKey="active">
+      <b-tabs type="card" :defaultActiveKey="3">
         <b-tab title="Оценка диалогов" :key="1" card>
           <b-tabs type="card" v-if="dataLoaded" >
             <b-tab title="Неделя" :key="1" card>
@@ -529,17 +530,18 @@
             
 
             </div>
-            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" :key="course_key" />
+            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
 
         </b-tab>
 
-        <b-tab title="Чек Лист" :key="3" type="card" card>
+        <b-tab title="Чек Лист" :key="3" type="card" card :active="check == 3">
                     <b-tabs type="card">
             <b-tab title="Неделя" :key="1" >
                             <table class="table b-table table-bordered table-sm">
                 <tr>
                   <th class="b-table-sticky-column text-left t-name wd">
-                    <div>Сотрудник</div>
+                    <div>
+      Сотрудник</div>
                   </th>
                   <template v-for="(field, key) in checklist_fields">
                     <th >
@@ -567,7 +569,8 @@
 
                          <template v-for="(checked_day,index) in check_r.day">
                            <template v-if="index == field.name">
-                             {{checked_day}}
+                             <div  v-on:click="showSidebar(check_r.user_id, index)" >{{checked_day}}</div>
+                            
                            </template>
                          </template>
 
@@ -743,6 +746,33 @@
         </div>
       </div>
     </b-modal>
+    <sidebar
+        title="Индивидуальный чек лист"
+        :open="showChecklist"
+        @close="toggle()"
+        width="70%"
+    >
+        <div class="col-10 p-0 mt-2" v-for="(val,ind) in checklists">
+          <div class="mr-5">
+            <b-form-checkbox v-model="val.checked" size="sm" >
+              <span style="cursor: pointer">{{val.task.task}}</span>
+              </b-form-checkbox>
+            </div>
+
+          <div style="position: absolute;right: 0px;top: 0px">
+            <a v-if="val.url" :href="val.url" target="_blank">{{val.url}}</a>
+            <p v-else>нет ссылки</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 mt-3">
+            <div class="col-md-6 p-0">
+                <button @click.prevent="saveChecklist"   title="Сохранить" class="btn btn-primary">
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </sidebar>
   </div>
 </template>
 
@@ -752,7 +782,6 @@ export default {
   name: "TableQuality",
   components: {Template},
   props: {
-    activeuserid: String,
     groups: Array,
     individual_type:{
       default:null
@@ -761,9 +790,14 @@ export default {
       default:null
     },
     active_group: String,
+    check: String,
+    user: String
   },
   data() {
     return {
+      auth_user: JSON.parse(this.user),
+      showChecklist: false,
+      checklists:{},
       fields: [],
       checklist_fields: [],
       monthFields: [],
@@ -801,7 +835,6 @@ export default {
         comments: "",
         changed: true,
       },
-      course_key: 1,
       records_unique: 0,
       records: {
         data: [],
@@ -857,24 +890,33 @@ export default {
   },
 
   created() {
-
-
-    if (this.individual_type != null  &&  this.individual_type_id != null){
-
-      this.active = 3;
-
-      if(this.individual_type === 1 || this.individual_type === 3){
-        this.individual_request = false
-      }
-    }
-
-
     this.fetchData();
 
 
   },
   methods: {
-
+    saveChecklist(){
+      axios.post("/checklist/save-checklist",{
+        checklists: this.checklists
+      }).then(response => {
+        this.toggle();
+        this.$toast.success('Сохранено');
+      });
+    },
+    showSidebar(user_id, day){
+      this.toggle();
+      var date = this.currentYear + '-' + this.monthInfo.month.padStart(2, "0") + '-' + day.padStart(2, "0");
+      
+      axios.post("/checklist/get-checklist-by-user",{
+        user_id:user_id,
+        created_date: date
+      }).then(response => {
+        this.checklists = response.data;
+      });
+    },
+    toggle(){
+      this.showChecklist = !this.showChecklist;
+    },
     viewStaticCheck(type){
         if (type == 'w'){
             this.viewStaticButton.weekCheck = true
@@ -900,8 +942,8 @@ export default {
 
     fetchData(flag = null) {
 
-      this.course_key++;
-      
+
+
       if (flag == 'selected_group'){
         this.flagGroup = 'selected_group'
       }
@@ -909,7 +951,7 @@ export default {
       let loader = this.$loading.show();
       this.setDates();
       this.fetchItems();
-      loader.hide(); 
+      loader.hide();
 
 
     },
@@ -1329,7 +1371,7 @@ export default {
 
       fieldsArray.push({
         key: "comments",
-        name: "Комментарии",
+        name: "Совет",
         type: "text",
         order: order++,
         klass: " text-center px-1 comments",
@@ -1420,7 +1462,7 @@ export default {
 
         fieldsArray.push({
           key: i,
-          name: day % 8,
+          name: i,
           order: order++,
           klass: "text-center px-1",
           type: "day",

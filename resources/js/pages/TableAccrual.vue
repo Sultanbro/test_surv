@@ -1,9 +1,10 @@
 <template>
 <div class="mt-2 px-3">
     <div class="mb-0">
+
+        <!-- filters -->
         <div class="row mb-3">
             <div class="col-3">
-       
                 <v-select :options="groups" label="name" v-model="selectedGroup" class="group-select">
                     <template #option="{ name, salary_approved, id }">
                         <div class="selector">
@@ -40,7 +41,8 @@
             </div>
            <div class="col-2"></div>
         </div>
- 
+        
+        <!-- filters -->
         <div class="row" v-if="hasPermission">
             <div class="col-4">
                 <div>
@@ -99,11 +101,12 @@
             </div>
         </div>
         
-
+        <!-- table -->
         <div v-if="hasPermission">
         
 
-            <b-table responsive 
+            <b-table
+                responsive 
                 striped 
                 :sticky-header="true" 
                 class="text-nowrap text-right my-table salar accrual-table" 
@@ -126,31 +129,38 @@
                         <b-badge pill variant="success">{{data.item.user_type}}</b-badge>
                     </div>
                 </template>
+
                 <template slot="cell(bonus)" slot-scope="data">
                     <div @click="defineClickNumber('bonus', data)" class="pointer">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_bonus !== null && data.index != 0"></div>
                     </div>
                 </template> 
+
                 <template slot="cell(kpi)" slot-scope="data">
                     <div @click="defineClickNumber('kpi', data)" class="pointer">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_kpi !== null && data.index != 0"></div>
                     </div>
                 </template> 
+
                 <template slot="cell(total)" slot-scope="data">
                     <div>{{ data.value }}</div>
                 </template>
+
                 <template slot="cell(fines)" slot-scope="data">
                     <div>{{ data.value }}</div>
                 </template>
+
                 <template slot="cell(avans)" slot-scope="data">
                     <div>{{ data.value }}</div>
                 </template>
+
                 <template slot="cell(final)" slot-scope="data">
                     <div @click="defineClickNumber('final', data)" class="pointer" v-if="user_types == '1'">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_salary !== null && data.index != 0"></div>
                     </div>
                     <div v-else>{{ data.value }}</div>
                 </template>
+
                 <template slot="cell()" slot-scope="data">
                     <div @click="detectClick(data)" 
                         :class="{
@@ -159,10 +169,9 @@
                             'bonus': (data.item.bonuses !== undefined && data.item.bonuses[data.field.key.toString()] !== null) || data.item.awards !== undefined && data.item.awards[data.field.key.toString()] !== null,
                             'training': data.item.trainings !== undefined && data.item.trainings[data.field.key.toString()] !== null,
                         }"
-                        >{{ data.value }}
+                    >
+                        {{ data.value }}
                     </div>
-
-                    
                 </template>
 
                 
@@ -175,10 +184,15 @@
     </div>
 
     
-
-    <sidebar :title="sidebarTitle" :open="editPremiumSidebar" @close="editPremiumSidebar=false" v-if="editPremiumSidebar" width="400px">
+    <!-- Premium -->
+    <sidebar
+        v-if="editPremiumSidebar"
+        :title="sidebarTitle"
+        width="400px"
+        :open="editPremiumSidebar"
+        @close="editPremiumSidebar=false"
+    >
         <div class="px-2">
-
             <div>
                 <div v-if="editedField.item.edited_kpi !== null">
                      <p class="mt-3"><b>Kpi  </b>
@@ -200,17 +214,19 @@
                         <b>Комментарии:</b>
                         <span>{{ editedField.item.edited_kpi.comment }}</span>
                     </div>
-                        <hr>
+                    <hr>
                 </div>
             </div>
 
             <div>
                 <div v-if="editedField.item.edited_bonus !== null">
-                    <p class="mt-3"><b>Бонусы  </b>
-                        <i class="fa fa-info-circle" 
+                    <p class="mt-3">
+                        <b>Бонусы</b>
+                        <i 
+                            class="fa fa-info-circle" 
                             v-b-popover.hover.right.html="'Сумма Бонусов, утвержденная к выдаче'" 
-                            title="Бонусы на этот меся ц">
-                        </i> 
+                            title="Бонусы на этот месяц">
+                        ></i> 
                     </p>
                     <div>
                         <b>Автор:</b>
@@ -224,14 +240,15 @@
                         <b>Комментарии:</b>
                         <span>{{ editedField.item.edited_bonus.comment }}</span>
                     </div>
-                        <hr>
+                    <hr>
                 </div>
             </div>
 
             <div>
                 <div v-if="editedField.item.edited_salary !== null">
                     
-                     <p class="mt-3"><b>К выдаче</b>
+                     <p class="mt-3">
+                        <b>К выдаче</b>
                         <i class="fa fa-info-circle" 
                             v-b-popover.hover.right.html="'Окончательная суммма утвержденная к выдаче'" 
                             title="К выдаче на этот месяц">
@@ -249,7 +266,7 @@
                         <b>Комментарии:</b>
                         <span>{{ editedField.item.edited_salary.comment }}</span>
                     </div>
-                      <hr>
+                    <hr>
                 </div>
             </div>
   
@@ -257,34 +274,57 @@
 
             <div class="mt-3">
                 
-                <p class="mt-3"><b>Бонусы локальные </b></p>
-                 <div v-for="(item,index) in Object.keys(editedField.item.bonuses)" >
-                    <p class="fz12" v-if=" editedField.item.bonuses[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.bonuses[item] }}</p>
-                </div>   
+                <p class="mt-3">
+                    <b>Бонусы локальные</b></p>
+                    <div v-for="(item,index) in Object.keys(editedField.item.bonuses)" >
+                        <p
+                            class="fz12"
+                            v-if=" editedField.item.bonuses[item] != null"
+                        >
+                            <b class="text-black">{{ item  }}:</b>
+                            {{   editedField.item.bonuses[item] }}
+                        </p>
+                    </div>   
                 <hr>
                 
-                <p class="mt-3"><b>Бонусы за активности</b></p>
-                 <div v-for="(item,index) in Object.keys(editedField.item.awards)" >
-                    <p class="fz12" v-if=" editedField.item.awards[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.awards[item] }}</p>
+                <p class="mt-3">
+                    <b>Бонусы за активности</b>
+                </p>
+                <div v-for="(item,index) in Object.keys(editedField.item.awards)" >
+                    <p class="fz12" v-if=" editedField.item.awards[item] != null">
+                        <b class="text-black">{{ item  }}:</b> {{   editedField.item.awards[item] }}
+                    </p>
                 </div> 
                 
                 <p class="mt-3"><b>Бонусы за обучение</b></p>
-                 <div v-for="(item,index) in Object.keys(editedField.item.test_bonus)" >
-                    <p class="fz12" v-if=" editedField.item.test_bonus[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.test_bonus[item] }}</p>
+                <div v-for="(item,index) in Object.keys(editedField.item.test_bonus)">
+                    <p class="fz12" v-if=" editedField.item.test_bonus[item] != null">
+                        <b class="text-black">{{ item  }}:</b> {{   editedField.item.test_bonus[item] }}
+                    </p>
                 </div>  
 
                     <hr>
                 <p class="mt-3"><b>Авансы </b></p>
-                 <div v-for="(item,index) in Object.keys(editedField.item.avanses)" >
-                    <p class="fz12" v-if=" editedField.item.avanses[item] != null"><b class="text-black">{{ item  }}:</b> {{   editedField.item.avanses[item] }}</p>
+                <div v-for="(item,index) in Object.keys(editedField.item.avanses)" >
+                    <p
+                        class="fz12"
+                        v-if=" editedField.item.avanses[item] != null"
+                    >
+                        <b class="text-black">{{ item  }}:</b> {{   editedField.item.avanses[item] }}
+                    </p>
                 </div>   
                 <hr>
 
                 <p class="mt-3"><b>История {{ bonus_history.length}}</b></p>
                 <div v-for="(item,index) in bonus_history"  class="mb-3">
-                    <p class="fz12"><b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}</p>
-                    <p class="fz12"><b class="text-black">Автор:</b> {{ item.author }} <br></p>
-                    <p class="fz14 mb-0" v-html="item.description"> </p><br>
+                    <p class="fz12">
+                        <b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
+                    </p>
+                    <p class="fz12">
+                        <b class="text-black">Автор:</b> {{ item.author }} <br>
+                    </p>
+                    <p class="fz14 mb-0" v-html="item.description"></p>
+                    <br>
                     <hr>
                 </div>   
                  
@@ -292,34 +332,53 @@
         </div>
     </sidebar>  
 
-     <sidebar :title="sidebarTitle" :open="openSidebar" @close="openSidebar=false" v-if="openSidebar" width="400px" :link="profile_link">
+    <!-- info -->
+    <sidebar
+        v-if="openSidebar"
+        width="400px"
+        :title="sidebarTitle"
+        :open="openSidebar"
+        :link="profile_link"
+        @close="openSidebar=false"
+    >
 
         <div class="px-2">
-            <div class="mb-2">
+            <div class="mb-2" v-if="sidebarContent.item !== undefined">
                 <p class="text-black"
-                    v-if="sidebarContent.item !== undefined && sidebarContent.item.hours !== undefined">
-                    <b>Отработано:</b>  {{ sidebarContent.item.hours[sidebarContent.field.key]  }}
-                </p>
-                <p class="text-black"
-                    v-if="sidebarContent.item !== undefined && sidebarContent.item.hourly_pays !== undefined">
-                    <b>Оплата за час:</b>  {{ sidebarContent.item.hourly_pays[sidebarContent.field.key]  }}
-                </p>
-                <p class="text-black mb-0"
-                    v-if="sidebarContent.item !== undefined">
-                    <b>Начис:</b>  {{ sidebarContent.item[sidebarContent.field.key]  }} 
-                </p>
-                <p class="text-black mb-0"
-                    v-if="sidebarContent.item !== undefined && sidebarContent.item.avanses !== undefined && selectedCell.field.editable">
-                    <b>Аванс:</b>  {{ sidebarContent.item.avanses[sidebarContent.field.key]  }}
+                    v-if="sidebarContent.item.hours !== undefined">
+                    <b>Отработано:</b>  {{ sidebarContent.item.hours[sidebarContent.field.key] }}
                 </p>
                 <p class="text-black"
-                    v-if="sidebarContent.item !== undefined && sidebarContent.item.bonuses !== undefined && selectedCell.field.editable">
-                    <b>Бонус:</b>  {{ sidebarContent.item.bonuses[sidebarContent.field.key]  }}
+                    v-if="sidebarContent.item.hourly_pays !== undefined">
+                    <b>Оплата за час:</b>  {{ sidebarContent.item.hourly_pays[sidebarContent.field.key] }}
                 </p>
-                <p class="text-black"
-                    v-if="sidebarContent.item !== undefined && sidebarContent.item.awards !== undefined && selectedCell.field.editable">
-                    <b>Бонус (авто):</b>  {{ sidebarContent.item.awards[sidebarContent.field.key]  }}
+                <p class="text-black mb-0">
+                    <b>Начис:</b>  {{ sidebarContent.item.salaries[sidebarContent.field.key] }} 
                 </p>
+
+                <template v-if="selectedCell.field.editable">
+                    <p class="text-black mb-0"
+                        v-if="sidebarContent.item.avanses !== undefined">
+                        <b>Аванс:</b> 
+                        {{ sidebarContent.item.avanses[sidebarContent.field.key] }}
+                    </p>
+                    <p class="text-black" 
+                        v-if="sidebarContent.item.bonuses !== undefined">
+                        <b>Бонус:</b>
+                        {{ sidebarContent.item.bonuses[sidebarContent.field.key] }}
+                    </p>
+                    <p class="text-black"
+                        v-if="sidebarContent.item.awards !== undefined">
+                        <b>Бонус (авто):</b>
+                        {{ sidebarContent.item.awards[sidebarContent.field.key] }}
+                    </p> 
+                    <p class="text-black"
+                        v-if="sidebarContent.item.test_bonus !== undefined">
+                        <b>Бонус (тесты):</b>
+                        {{ sidebarContent.item.test_bonus[sidebarContent.field.key] }}
+                    </p> 
+                </template>
+                
                 
             </div>
             <div class="mb-2" v-if="(user_types == '0' || user_types == '1') && can_edit">
@@ -375,23 +434,52 @@
             </div>
         </div>
         
-     </sidebar>
+    </sidebar>
 
+    <!-- premium -->
+    <b-modal
+        v-model="editPremiunWindow"
+        ok-text="Да"
+        cancel-text="Нет"
+        :title="editedField.name + ': ' + editedField.type"
+        @ok="editPremium"
+        size="md"
+    >
+        <b-form-input 
+            type="number"
+            v-model="amountEdit"
+            placeholder="Сумма"
+            :required="true"
+            class="mb-2"
+        ></b-form-input>
 
-    <b-modal v-model="editPremiunWindow" ok-text="Да" cancel-text="Нет" :title="editedField.name + ': ' + editedField.type" @ok="editPremium" size="md">
-       
-        
-        <b-form-input type="number"
-            v-model="amountEdit" placeholder="Сумма" :required="true" class="mb-2"></b-form-input>
-        <b-form-input  type="text"
-            v-model="commentEdit" placeholder="Комментарий" :required="true" class="mb-2"></b-form-input>
+        <b-form-input
+            type="text"
+            v-model="commentEdit"
+            placeholder="Комментарий"
+            :required="true"
+            class="mb-2"
+        ></b-form-input>
 
         <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
+            <b-alert show
+                variant="danger"
+                :key="error"
+            >
+                {{ error }}
+            </b-alert>
         </template>
     </b-modal>
 
-    <b-modal v-model="showBeforeApprove" ok-text="Да" cancel-text="Нет" title="Утверждение зарплаты" @ok="approveSalary" size="md">
+    <!-- approve salary -->
+    <b-modal
+        v-model="showBeforeApprove"
+        ok-text="Да"
+        cancel-text="Нет"
+        title="Утверждение зарплаты"
+        @ok="approveSalary"
+        size="md"
+    >
         <p>Вы подтверждаете, что вы проверили начисления и уверены, в том что они верные?</p>
     </b-modal>
 
@@ -498,7 +586,7 @@ export default {
         };
     },
     created() {
-        console.log(this.can_edit)
+     
         this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
             this.dateInfo.currentMonth :
             this.$moment().format("MMMM");
@@ -626,56 +714,54 @@ export default {
         //Загрузка данных для таблицы
         fetchData() {
             if(this.selectedGroup == null) return '';
-            //this.allTotal = 0;
+
             let loader = this.$loading.show();
             this.dateInfo.month = this.$moment(
                 this.dateInfo.currentMonth,
                 "MMMM"
             ).format("M");
 
-            axios
-                .post("/timetracking/salaries", {
+            axios.post("/timetracking/salaries", {
                     month: this.$moment(this.dateInfo.currentMonth, "MMMM").format("M"),
                     year: this.dateInfo.currentYear,
                     group_id: this.selectedGroup.id,
                     user_types: this.user_types,
                 })
                 .then((response) => {
-                    if (response.data.error && response.data.error == "access") {
-                        console.log(response.data.error);
+                    let data = response.data;
+                    if (data.error && data.error == "access") {
+                        console.log(data.error);
                         this.hasPermission = false;
                         loader.hide();
                         return;
                     }
+
                     this.hasPermission = true;
-                  // console.log(response.data);
-                    this.data = response.data;
+                    
+                    this.data = data;
+                    this.group_fired = data.group_fired;
+                    this.allTotal = data.all_total;
+                    this.allTotalFired = data.all_total_fired;
+                    this.group_total = data.group_total;
+                    this.total_resources = data.total_resources;
+                    this.users_count = data.users.length;
+                    this.groups = data.groups;
+                    this.accruals = data.accruals;
+                    this.auth_token = data.auth_token
 
-                    this.group_fired = response.data.group_fired;
-                    this.allTotal = response.data.all_total;
-                    this.allTotalFired = response.data.all_total_fired;
-                    this.group_total = response.data.group_total;
-
-                    this.total_resources = response.data.total_resources;
-                    this.users_count = this.data.users.length;
-
-                    this.groups = response.data.groups;
-                  
-                    if(response.data.currentGroup) {
-                         this.selectedGroup.salary_approved = response.data.currentGroup.salary_approved;
-                    this.selectedGroup.salary_approved_by = response.data.currentGroup.salary_approved_by;
-                    this.selectedGroup.salary_approved_date = response.data.currentGroup.salary_approved_date;
+                    if(data.currentGroup) {
+                        this.selectedGroup.salary_approved = data.currentGroup.salary_approved;
+                        this.selectedGroup.salary_approved_by = data.currentGroup.salary_approved_by;
+                        this.selectedGroup.salary_approved_date = data.currentGroup.salary_approved_date;
                     }
                    
-
-                    this.accruals = response.data.accruals;
-                    this.auth_token = response.data.auth_token
-
                     this.setYear();
                     this.setMonth();
                     this.setFields();
                     this.loadItems();
                     this.dataLoaded = true;
+
+                    // maybe scroll table to right
                     setTimeout(() => {
                         var container = document.querySelector(".table-responsive");
                         this.maxScrollWidth = container.scrollWidth - container.offsetWidth;
@@ -686,8 +772,8 @@ export default {
                         }
                     
                     }, 1000);
-                    loader
-                    .hide();
+
+                    loader.hide();
                 }).catch(error => {
                     this.$toast.error('Ошибка');
                     console.log(error)
@@ -702,7 +788,6 @@ export default {
                     year: this.dateInfo.currentYear,
                 })
                 .then((response) => {
-                   // this.allTotal = response.data.totalMonth;
                     loader.hide();
                 }).catch((e) => {
                     console.log(e);
@@ -737,35 +822,64 @@ export default {
             let total_avanses = 0; // Avans total
             let total_total = 0; // Начислено total
 
-            //this.group_total = 0;
             this.data.users.forEach((item, index) => {
                 var daySalaries = [];
+                var daySalariesOnly = [];
                 var personalTotal = 0;
                 var personalFinal = 0;
                 var personalAvanses = 0;
                 var personalFines = 0;
                 var personalBonuses = 0;
 
-                //daySalaries = item.earnings;
+    
                 item.salaries.forEach((tt, key) => {
-                    // if (typeof daySalaries[tt.date] === "undefined") {
-                    //     daySalaries[tt.day] = 0;
-                    // }
-                    
-                    //daySalaries[tt.day] = Number(tt.amount).toFixed(0);
-
+                
                     let salary = 0;
-                    if(item.earnings[tt.day] !== null) salary = Number(item.earnings[tt.day]);
-                    daySalaries[tt.day] = Number(salary) != 0 ? Number(salary).toFixed(0) : '';
-                    
-                    if(Number(salary) != 0) {
-                        personalTotal += parseInt(salary);
+                    let total = 0;
+
+                    if(item.earnings[tt.day] !== null) {
+                        salary = Number(item.earnings[tt.day]);
+                        total = salary;
                     }
-                    if(tt.paid !== null) personalAvanses += parseInt(tt.paid, 0);
-                    //if(tt.bonus !== null) personalBonuses += isNaN(Number(tt.bonus)) ? 0 : Number(tt.bonus);
-                    if(item.bonuses[tt.day] !== null) personalBonuses += Number(item.bonuses[tt.day]);
-                    if(item.awards[tt.day] !== null) personalBonuses += Number(item.awards[tt.day]);
-                    if(item.test_bonus[tt.day] !== null) personalBonuses += Number(item.test_bonus[tt.day]);
+                    
+                    // salary earned to total
+                    if(Number(salary) != 0) personalTotal += parseInt(salary);
+
+                    if(tt.paid !== null) {
+                        personalAvanses += parseInt(tt.paid, 0);
+                    }
+
+                    if(item.bonuses[tt.day] !== null) {
+                        personalBonuses += Number(item.bonuses[tt.day]);
+                        total += Number(item.bonuses[tt.day]);
+                    }
+
+                    if(item.awards[tt.day] !== null) {
+                        personalBonuses += Number(item.awards[tt.day]);
+                        total += Number(item.awards[tt.day]);
+                    }
+
+                    if(item.test_bonus[tt.day] !== null) {
+                        personalBonuses += Number(item.test_bonus[tt.day]);
+                        total += Number(item.test_bonus[tt.day]);
+                    }
+
+                    if(item.fine[tt.day] !== null) {
+                        let fine_for_day = 0;
+                        item.fine[tt.day].forEach(el => {
+                            Object.values(el).forEach(fine_sum => fine_for_day += Number(fine_sum));
+                        })
+
+                        total -= Number(fine_for_day);
+                    }
+  
+                    daySalaries[tt.day] = Number(total) != 0
+                        ? Number(total).toFixed(0)
+                        : '';
+
+                    daySalariesOnly[tt.day] = Number(salary) != 0
+                        ? Number(salary).toFixed(0)
+                        : '';
                 });
                 
                 let personalKpi =  Number(item.kpi);
@@ -779,70 +893,63 @@ export default {
 
                 personalFines = Number(item.fines_total);
 
-                personalFinal = personalTotal - personalAvanses  + personalBonuses - personalFines + personalKpi;
-                
-
+                personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi;
                 
                 if(item.edited_salary) {
                     personalFinal = item.edited_salary.amount
                 }   
 
-                let a = personalTotal  + personalBonuses + personalKpi;
-                //this.group_total += Number(a) >= 0 ? Number(a) : 0;
+                let a = personalTotal + personalBonuses + personalKpi;
 
-                daySalaries["total"] = Number(personalTotal).toFixed(0);   
                 daySalaries["bonus"] = Number(personalBonuses).toFixed(0);   
-                daySalaries["fines"] = Number(personalFines).toFixed(0);   
                 daySalaries["avans"] = Number(personalAvanses).toFixed(0);   
+                daySalaries["fines"] = Number(personalFines).toFixed(0);   
+                daySalaries["total"] = Number(personalTotal).toFixed(0);   
                 daySalaries["final"] = Number(personalFinal).toFixed(0);    
 
                 total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
-
                 total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
-
-                total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
-                total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
-                total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
                 total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
+                total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
+                total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
+                total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
 
                 daySalaries.forEach((amount, day) => {
-                    if(isNaN(amount)) {
+                    if(isNaN(amount) || isNaN(Number(amount))) {
                         amount = 0;
                     } 
-                    if(isNaN(Number(amount))) {
-                        amount = 0;
-                    } 
+                    
                     if (typeof daySalariesSum[day] === "undefined") {
                         daySalariesSum[day] = 0;
                     }
+
                     daySalariesSum[day] = parseInt(daySalariesSum[day]) + Number(amount);
-                    // daySalariesSum["total"] = daySalariesSum.reduce(function (a, b) {
-                    //     return a + b;
-                    // }, 0);
+                 
                     if(daySalariesSum[day] > 0){
                         hasMoney = 1;
                     }
                 });
 
                 let obj = {
-                        name: item.full_name,
-                        user_id: item.id,
-                        kpi: item.kpi,
-                        fine: item.fine,
-                        avanses: item.avanses,
-                        trainings: item.trainings,
-                        bonuses: item.bonuses,
-                        awards: item.awards,
-                        test_bonus: item.test_bonus,
-                        edited_bonus: item.edited_bonus,
-                        edited_kpi: item.edited_kpi,
-                        edited_salary: item.edited_salary,
-                        hourly_pays: item.hourly_pays,
-                        hours: item.hours,
-                        history: item.track_history,
-                        user_type: item.user_type,
-                        ...daySalaries,
-                    };
+                    kpi: item.kpi,
+                    fine: item.fine,
+                    user_id: item.id,
+                    hours: item.hours,
+                    awards: item.awards,
+                    name: item.full_name,
+                    avanses: item.avanses,
+                    bonuses: item.bonuses,
+                    user_type: item.user_type,
+                    trainings: item.trainings,
+                    history: item.track_history,
+                    edited_kpi: item.edited_kpi,
+                    test_bonus: item.test_bonus,
+                    hourly_pays: item.hourly_pays,
+                    edited_bonus: item.edited_bonus,
+                    edited_salary: item.edited_salary,
+                    salaries: daySalariesOnly,
+                    ...daySalaries,
+                };
 
                 if(this.show_user == 0) {
                     items.push(obj);
@@ -851,9 +958,9 @@ export default {
                     hasMoney = 0
                 }
 
-               
-                
             });
+
+
             let total = 0;
 
             if(this.user_types != '2') { // стажеры
@@ -874,6 +981,7 @@ export default {
                 total: total_total,
                 ...daySalariesSum,
             };
+
             this.total = total_final;
             this.items = items;
         },
@@ -931,9 +1039,11 @@ export default {
                     type: this.editedField.type
                 })
             .then((response) => {
+
                 if(this.editedField.type == 'kpi') {
                     this.items[this.editedField.index].kpi = this.amountEdit
                 }
+
                 if(this.editedField.type == 'bonus') {
                     this.items[this.editedField.index].bonus = this.amountEdit
                 }
@@ -944,7 +1054,6 @@ export default {
                 this.editedField = {name:'', type:'kpi'}
                 this.editPremiunWindow = false
 
-                
             }).catch(error => {
                 this.$toast.error('Не сохранилось');
                 console.log(error)
@@ -959,7 +1068,6 @@ export default {
                 year: this.dateInfo.currentYear,
             })
             .then((response) => {
-                
                 this.$toast.success('Сохранено');
                 this.showBeforeApprove = false
                 this.selectedGroup.salary_approved = 1;
@@ -1005,7 +1113,6 @@ export default {
                 amount = this.bonus.sum;
             }
 
-            console.log(this.selectedCell)
             axios.post("/timetracking/salaries/update", {
                     month: this.$moment(this.dateInfo.currentMonth, "MMMM").format("M"),
                     year: this.dateInfo.currentYear,
