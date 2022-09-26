@@ -24,11 +24,6 @@ class JsonApiResponse implements Response
         return $this->data->status() == 200;
     }
 
-    public function getResult()
-    {
-        return $this->getData();
-    }
-
     public function first()
     {
         return $this->getData()[0];

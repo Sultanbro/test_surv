@@ -2,38 +2,32 @@
 
 namespace App\Events;
 
+use App\ProfileGroup;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Http\Request;
 use Illuminate\Queue\SerializesModels;
 
-class TrackGroupChangingEvent
+class TransferUserInGroupEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @var int
-     */
-    public int $groupId;
+    public int $newGroup;
 
-    /**
-     * ID сотрудника.
-     * @var int
-     */
-    public int $userId;
-
+    public ProfileGroup $oldGroup;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($userId, $groupId)
+    public function __construct($oldGroup, $newGroup)
     {
-        $this->userId  = $userId;
-        $this->groupId = $groupId;
+        $this->oldGroup = $oldGroup;
+        $this->newGroup = $newGroup;
     }
 
     /**
