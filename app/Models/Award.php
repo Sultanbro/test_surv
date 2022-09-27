@@ -15,6 +15,7 @@ class Award extends Model
 
     protected $fillable = [
         'award_type_id',
+        'course_id',
         'format',
         'path'
     ];

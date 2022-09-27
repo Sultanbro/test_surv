@@ -6,7 +6,9 @@ use App\Models\Award;
 use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
 use App\Service\Award\AwardService;
+use App\User;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AwardController extends Controller
@@ -19,6 +21,17 @@ class AwardController extends Controller
     public function __construct(AwardService $awardService)
     {
         $this->awardService = $awardService;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getAwards()
+    {
+        $authUser = Auth::user() ?? User::find(5);
+        $response = $this->awardService->myAwards($authUser);
+
+        return \response()->success($response);
     }
 
     /**
@@ -58,6 +71,12 @@ class AwardController extends Controller
     }
 
     /**
+     * form-data: {
+     * "award_type_id": 1,
+     * "course_id":1,
+     * "award_id":1,
+     * "image": file
+     * }
      * @param UpdateAwardRequest $request
      * @param Award $award
      * @return mixed
@@ -77,7 +96,7 @@ class AwardController extends Controller
     {
         try {
             return response()->success($award->delete());
-        }catch (Exception $exception) {
+        } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
     }

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 
 class UpdateAwardRequest extends FormRequest
 {
@@ -25,11 +26,9 @@ class UpdateAwardRequest extends FormRequest
     public function rules()
     {
         return [
-            'award_type_id' => 'integer',
-            'format'        => Rule::in([
-                'jpg', 'png', 'pdf'
-            ]),
-            'path' => 'string'
+            'award_type_id'  => 'integer',
+            'course_id'      => 'integer',
+            'file'           => File::types(['jpg', 'png', 'pdf'])->max(2048)
         ];
     }
 }

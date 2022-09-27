@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 
-class StoreAwardRequest extends FormRequest
+class GetGeneratedPdfCertificateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +24,8 @@ class StoreAwardRequest extends FormRequest
     public function rules()
     {
         return [
-            'award_type_id'  => 'required|integer',
-            'course_id'      => 'required|integer',
-            'image'          => ['required', File::types(['jpg', 'png', 'pdf'])->max(2048)]
+            'userId' => 'required',
+            'courseId' => 'requried|uniq'
         ];
     }
 }

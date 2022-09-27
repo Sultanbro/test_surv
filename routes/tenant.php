@@ -568,6 +568,7 @@ Route::middleware([
         'prefix' => 'awards',
         'as'     => 'awards.',
     ], function () {
+        Route::get('/my', [AwardController::class, 'getAwards'])->name('auth-user');
         Route::get('/get', [AwardController::class, 'index'])->name('get');
         Route::get('/get/{award}', [AwardController::class, 'show'])->name('show');
         Route::post('/store', [AwardController::class, 'store'])->name('store');

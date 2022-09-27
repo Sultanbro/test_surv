@@ -3,13 +3,39 @@
 namespace App\Service\Award;
 
 use App\Http\Requests\StoreAwardRequest;
+use App\Http\Requests\UpdateAwardRequest;
 use App\Models\Award;
 use App\Models\AwardType;
+use App\Repositories\AwardRepository;
+use App\Repositories\CoreRepository;
+use App\User;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Storage;
 
 class AwardService
 {
+    /**
+     * Место хранение в диске.
+     * S3
+     */
+    public $disk;
+
+    /**
+     * Путь до файла.
+     * Формат: jpg, png, pdf.
+     */
+    public $path;
+
+
+    public function __construct()
+    {
+        $this->disk = Storage::disk('s3');
+        $this->path = 'awards/';
+    }
+
     /**
      * Сохраняем тип награды.
      * @param $request
@@ -51,8 +77,10 @@ class AwardService
         try {
             $success = Award::query()->create([
                 'award_type_id' => $request->input('award_type_id'),
+                'course_id' => $request->input('course_id'),
                 'format'    => $request->file('image')->extension(),
-                'path'      => $this->saveAwardFile($request)
+                'icon'      => $request->input('icon'),
+                'path'      => $this->saveAwardFile($request)['relative']
             ]);
 
             return response()->success($success);
@@ -64,26 +92,81 @@ class AwardService
     /**
      * @throws Exception
      */
-    public function updateAward($request, Award $award): bool
+    public function updateAward(UpdateAwardRequest $request, Award $award): bool
     {
         try {
-            return $award->update($request->all());
+            $parameters = $request->except('_method');
+            if ($request->hasFile('file')) {
+                if ($award->path != '') {
+                    if($this->disk->exists($award->path)) {
+                        $this->disk->delete($award->path);
+                    }
+                }
+
+                $parameters['format'] = $request->file('file')->extension();
+                $parameters['path']   = $this->saveAwardFile($request)['relative'];
+
+                unset($parameters['file']);
+            }
+            return $award->update($parameters);
+
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
     }
 
     /**
-     * @param $request
-     * @return string
+     * @throws Exception
      */
-    private function saveAwardFile($request): string
+    public function myAwards($user): array
     {
-        $extension  = $request->file('image')->extension();
-        $path       = public_path('awards/');
-        $awardFileName = time() . '.' . $extension;
-        $request->file('image')->move($path, $awardFileName);
+        try {
+            $awardRepository = app(AwardRepository::class);
+            $awards = [];
+            $access = $this->showOtherAwards($user);
+            $awards['myAwards']   = $awardRepository->relationAwardUser($user);
+            $awards['nomination'] = $awardRepository->getNomination();
+            if ($access) {
+                $awards['otherAwards'] = $awardRepository->relationAwardUser($user, '!=');
+            }
 
-        return $awardFileName;
+            return $awards;
+
+        } catch (\Throwable $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
+    /**
+     * Проверяем есть ли у сотрудника доступ, чтоб смотреть награды других.
+     * @param $user
+     * @return bool
+     */
+    private function showOtherAwards($user): bool
+    {
+        return $user->user_description->view_other_awards == 1;
+    }
+
+    /**
+     * @param $request
+     * @return array
+     */
+    private function saveAwardFile($request): array
+    {
+        $disk       = Storage::disk('s3');
+        $extension  = $request->file('file')->extension();
+        $path       = 'awards/';
+        $awardFileName = uniqid() . '_' . md5(time()) . '.' . $extension;
+
+        $disk->putFileAs($path , $request->file('file'), $awardFileName);
+
+        $xpath = $path . $awardFileName;
+
+        return [
+            'relative'  => $xpath,
+            'temp'      => $disk->temporaryUrl(
+                $xpath, now()->addMinutes(360)
+            )
+        ];
     }
 }
