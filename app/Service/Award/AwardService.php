@@ -153,18 +153,15 @@ class AwardService
      */
     private function saveAwardFile($request): array
     {
-        $disk       = Storage::disk('s3');
         $extension  = $request->file('file')->extension();
-        $path       = 'awards/';
         $awardFileName = uniqid() . '_' . md5(time()) . '.' . $extension;
 
-        $disk->putFileAs($path , $request->file('file'), $awardFileName);
-
-        $xpath = $path . $awardFileName;
+        $this->disk->putFileAs($this->path , $request->file('file'), $awardFileName);
+        $xpath = $this->path . $awardFileName;
 
         return [
             'relative'  => $xpath,
-            'temp'      => $disk->temporaryUrl(
+            'temp'      => $this->disk->temporaryUrl(
                 $xpath, now()->addMinutes(360)
             )
         ];
