@@ -491,19 +491,8 @@ class CourseResult extends Model
             $course = Course::with('items')->find($active_course->course_id);
 
             if($course && $course->img != '' && $course->img != null) {
-                $disk = \Storage::build([
-                    'driver' => 's3',
-                    'key' => 'O4493_admin',
-                    'secret' => 'nzxk4iNukQWx',
-                    'region' => 'us-east-1',
-                    'bucket' => 'tenantbp',
-                    'endpoint' => 'https://storage.oblako.kz:443',
-                    'use_path_style_endpoint' => true,
-                    'throw' => false,
-                    'visibility' => 'public'
-                ]);
-
-
+                $disk = \Storage::disk('s3');
+                
                 try {
                     if($course->img != null && $disk->exists($course->img)) {
                         $course->img = $disk->temporaryUrl(
@@ -595,19 +584,9 @@ class CourseResult extends Model
 
         if(count($diff) > 0) {
             $active_courses = Course::whereIn('id', $diff)->orderBy('order', 'asc')->get();
-
-            $disk = \Storage::build([
-                'driver' => 's3',
-                'key' => 'O4493_admin',
-                'secret' => 'nzxk4iNukQWx',
-                'region' => 'us-east-1',
-                'bucket' => 'tenantbp',
-                'endpoint' => 'https://storage.oblako.kz:443',
-                'use_path_style_endpoint' => true,
-                'throw' => false,
-                'visibility' => 'public'
-            ]);
             
+            $disk = \Storage::disk('s3');
+
             foreach ($active_courses as $key => $course) {
 
                 $text = trim($course->text);

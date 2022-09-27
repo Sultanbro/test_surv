@@ -435,9 +435,11 @@ export default {
 <style lang="scss">
 .d3-funnel-tooltip{
     left: 0 !important;
-    top: unset !important;
     bottom: 0 !important;
 
+}
+#example-datepicker__dialog_ {
+    bottom: -300px !important;
 }
 </style>
 <style lang="scss" scoped>

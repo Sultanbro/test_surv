@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
+use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\KnowBase;
 use App\Models\QuartalBonus;
@@ -14,6 +15,7 @@ use App\Mail as Mailable;
 use Illuminate\Mail\Mailer;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\Activity;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Swift_Mailer;
 use Swift_SmtpTransport;
 use Swift_TransportException;
@@ -691,101 +693,9 @@ class UserController extends Controller
         $groups = $groups->pluck('name', 'id')->toArray();
 
         if($request->excel) {
-            $data['records'] = [];
-
-            $headings = [
-                'id',
-                'ФИО',
-                'Email',
-                'Группы',
-                'Тип',
-                'Full/Part',
-                'Сегмент',
-                'Должность',
-                'Дата регистрации',
-                'Дата принятия',
-                'Дата увольнения',
-                'Причина увольнения',
-                'Телефон',
-                'Тел. 2',
-                'Тел. 3',
-                'День рождения',
-                'Доп.',
-                'Программа',
-                'График',
-                'Часы работы',
-                'Начало',
-                'Конец',
-            ];
-
-            
-            
-            $segments = Segment::get();
-            $positions = Position::get()->pluck('position', 'id')->toArray();
-            foreach($users as $user) {
-                $seg = $segments->where('id', $user->segment)->first();
-                $segment = $seg ? $seg->name : $user->segment;
-               // dump($user->segment);
-                
-                $grs = '';
-                foreach($user->groups as $gr) {
-                    try {
-                        $grs .= $groups[$gr] . '  ';
-                    } catch(\Exception $e) {
-                        $grs .= $gr . '  ';
-                    }   
-                }
-
-                if($user->last_group) {
-                    foreach(json_decode($user->last_group) as $gr) {
-                        try {
-                            $grs .= $groups[$gr] . '  ';
-                        } catch(\Exception $e) {
-                            $grs .= $gr . '  ';
-                        }   
-                    }
-                }
-                
-                
-                $data['records'][] = [
-                    0 => $user->id,
-                    1 => $user->last_name . ' ' . $user->name, 
-                    2 => $user->email, 
-                    3 => $grs, 
-                    4 => $user->user_type == 'office' ? 'Офисный' : 'Удаленный', 
-                    5 => $user->full_time == 1 ? 'Full-time' : 'Part-time', 
-                    6 => $segment, 
-                    7 => array_key_exists($user->position_id, $positions) ? $positions[$user->position_id] : $user->position_id, 
-                    8 => $user->created_at, 
-                    9 => $user->applied, 
-                    10 => $user->deleted_at, 
-                    11 => $user->fire_cause, 
-                    12 => $user->phone, 
-                    13 => $user->phone, 
-                    14 => $user->phone, 
-                    15 => $user->birthday, 
-                    16 => $user->description, 
-                    17 => $user->program_id == 1 ? "U-Calls" : 'Другое', 
-                    18 => $user->working_day_id == 1 ? '5-2' : '6-1', 
-                    19 => $user->working_time_id == 1 ? 8 : 9, 
-                    20 => $user->work_start, 
-                    21 => $user->work_end, 
-                ];    
-            }
-
-           //dd(1);
-            ob_end_clean();
-            if (ob_get_length() > 0) ob_clean();
-            
-            return Excel::create('Сотрудники '. date('Y-m-d'), function ($excel) use ($data, $headings) {
-                $excel->setTitle('Отчет');
-                $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
-                $excel->setDescription('Экспорт данных в Excel файл');
-                $excel->sheet('Сотрудники', function ($sheet) use ($data, $headings) {
-                    $sheet->fromArray($data['records'], null, 'A1', false, false);
-                    $sheet->prependRow(1, $headings);
-                });
-            })->export('xls');
+            $export = new UserExport($users, $groups);
+            $title = 'Сотрудники: ' . date('Y-m-d') . '.xlsx';
+            return Excel::download($export, $title);
         }   
             
         
@@ -1967,31 +1877,37 @@ class UserController extends Controller
         $ud->books = json_encode($books);
         $ud->save();
 
-    } 
-    
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function editPersonGroup(Request $request) {
-      //bitrix  dd('123');
+
         $group = ProfileGroup::find($request['group_id']);
-        $users = json_decode($group->users);
-        event(new TrackGroupChangingEvent($request['user_id'], $request['action'], $request['group_id']));
-      
-        if($request['action'] == 'add') {
-            array_push($users, $request['user_id']); 
-            $users = array_unique($users);
-            
-        }
+        $exist = $group->users()->where([
+            ['user_id', $request['user_id']],
+            ['status', 'active']
+        ])->whereNull('to')->exists();
 
-        if($request['action'] == 'delete') {
-            if (($key = array_search($request['user_id'], $users)) !== false) {
-                unset($users[$key]);
+        try {
+            if($request['action'] == 'add' && !$exist) {
+                $group->users()->attach($request['user_id'], [
+                    'from' => Carbon::now()->toDateString()
+                ]);
             }
-        }
 
-        $users = array_values($users);
-        $group->users = json_encode($users);
-        $group->save();
-        
-    } 
+            if($request['action'] == 'delete') {
+                event(new TrackGroupChangingEvent($request['user_id'], $request['group_id']));
+                $group->users()->where('user_id', $request['user_id'])->whereNull('to')->update([
+                    'to' => Carbon::now()->toDateString(),
+                    'status'     => 'drop'
+                ]);
+            }
+        }catch (\Exception $exception) {
+            throw new \Exception($exception);
+        }
+    }
 
     public function setUserHeadInGroups(Request $request) {
 

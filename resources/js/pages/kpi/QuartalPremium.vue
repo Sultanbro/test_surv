@@ -355,7 +355,11 @@
                                         />
                                     </td>
                                 </tr>
-                                
+                                <tr>
+                                    <td></td> <td colspan="8" class="plus-item">
+                                        <div class="px-2 py-1" @click="addPremiumGroup(page_item)"><i class="fa fa-plus mr-2"></i> <b>Добавить премию</b></div>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                     </td>
@@ -611,6 +615,13 @@ export default {
     },
 
     methods: {
+        addPremiumGroup(page){
+            page.items.push(newQuartalPremium());
+            page.items[page.items.length - 1].target = {
+                id: page.id,
+                type: page.type
+            };
+        },
         addPremium(){
             this.newPremiumArray.push(newQuartalPremium());
         },

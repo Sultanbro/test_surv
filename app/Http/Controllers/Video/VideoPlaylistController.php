@@ -61,17 +61,7 @@ class VideoPlaylistController extends Controller {
 
 		$categories = Category::with('playlists')->get();
 
-		$disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
+		$disk = \Storage::disk('s3');
 
 		foreach ($categories as $key => $cat) {
 			foreach ($cat->playlists as  $playlist) {
@@ -120,17 +110,7 @@ class VideoPlaylistController extends Controller {
 		// get test results
 
 		// cloud
-		$disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
+		$disk = \Storage::disk('s3');
 
 		if($pl->img != '' && $pl->img != null) {
 			$pl->img = $disk->temporaryUrl(
@@ -173,17 +153,7 @@ class VideoPlaylistController extends Controller {
 		if($video->domain != 'storage.oblako.kz') {
 			$url = $video->links;
 		} else {
-			$disk = \Storage::build([
-				'driver' => 's3',
-				'key' => 'O4493_admin',
-				'secret' => 'nzxk4iNukQWx',
-				'region' => 'us-east-1',
-				'bucket' => 'tenantbp',
-				'endpoint' => 'https://storage.oblako.kz:443',
-				'use_path_style_endpoint' => true,
-				'throw' => false,
-				'visibility' => 'public'
-			]);
+			$disk = \Storage::disk('s3');
 
 			$url = $disk->temporaryUrl(
 				$video->links, now()->addMinutes(360)
@@ -270,19 +240,7 @@ class VideoPlaylistController extends Controller {
 
 			$video->playlist_id = 0;
 
-			$disk = \Storage::build([
-				'driver' => 's3',
-				'key' => 'O4493_admin',
-				'secret' => 'nzxk4iNukQWx',
-				'region' => 'us-east-1',
-				'bucket' => 'tenantbp',
-				'endpoint' => 'https://storage.oblako.kz:443',
-				'use_path_style_endpoint' => true,
-				'throw' => false,
-				'visibility' => 'public'
-			]);
-
-			
+			$disk = \Storage::disk('s3');
 
 			try {
 				if($disk->exists($video->links)){
@@ -308,17 +266,7 @@ class VideoPlaylistController extends Controller {
 		// img of playlist
 		$link = '';
 
-		$disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
+		$disk = \Storage::disk('s3');
 
 		if($request->file('file')) {
 
@@ -353,21 +301,9 @@ class VideoPlaylistController extends Controller {
 
 		$link = '';
 
-		$disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
+		$disk = \Storage::disk('s3');
 
 		if($request->file('file')) {
-
-			
 
 			try {
 				if($playlist->img && $playlist->img != '' && $disk->exists($playlist->img)) {
@@ -406,17 +342,7 @@ class VideoPlaylistController extends Controller {
      */
     private function uploadFile(String $path, $file)
     {
-        $disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
+        $disk = \Storage::disk('s3');
 
         $extension = $file->getClientOriginalExtension();
         $originalFileName = $file->getClientOriginalName();

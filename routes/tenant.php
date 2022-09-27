@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\AwardTypeController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -381,6 +382,11 @@ Route::middleware([
         Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
     });
 
+    Route::group(['prefix' => 'bitrix'], function (){
+        Route::get('/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
+        Route::get('/leads/list', [\App\Http\Controllers\IntegrationController::class, 'getLeads']);
+    });
+
     Route::group([
         'prefix' => 'department',
         'as'     => 'department.'
@@ -393,6 +399,13 @@ Route::middleware([
 
         Route::get('/check/user/{id}', [DepartmentUserController::class, 'userInGroup']);
     });
+
+    /**
+     * Отслеживаем посещение стажеров на стажировке.
+     */
+    Route::resource('attendance', AttendanceController::class);
+    Route::get('/attendance', [AttendanceController::class, 'getDayAttendance']);
+
 
     Route::get('/bitrix/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
 
@@ -495,7 +508,7 @@ Route::middleware([
      */
     Route::group([
         'prefix'     => 'quartal-premiums',
-        'middleware' => 'auth'
+//        'middleware' => 'auth'
     ], function(){
         Route::post('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
         Route::post('save',[QuartalPremiumController::class,'save'])->name('quartal-premium.save');
@@ -561,7 +574,7 @@ Route::middleware([
         Route::put('/update/{award}', [AwardController::class, 'update'])->name('update');
         Route::delete('/delete/{award}', [AwardController::class, 'destroy'])->name('destroy');
     });
-  
+
 
     Route::get('/books/{id?}', [BpartnersController::class, 'books']);
     Route::any('/pages/update/', [BpartnersController::class, 'pagesupdate']);

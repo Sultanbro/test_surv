@@ -8,7 +8,5 @@ interface Response
 
     public function getStatus();
 
-    public function getResult();
-
     public function first();
 }

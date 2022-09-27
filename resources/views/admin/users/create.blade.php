@@ -122,9 +122,16 @@
                                         <img style="width: 200px;height: 200px" src="/users_img/noavatar.png" alt="img">
                                         @endif
 
+                                        @if(isset($user))
+                                        <b-badge
+                                            href="#"
+                                            onclick="document.dispatchEvent(new CustomEvent('award-user-sidebar', { detail: '{{$user->id}}' }))"
+                                            variant="success"
+                                            class="position-absolute mt-1">
+                                                Наградить
+                                        </b-badge>
+                                        @endif
                                     </label>
-
-
 
                                     <div class="mt-2 font-weight-bold font-sm text-center " style="width:100%">
                                         
@@ -1228,7 +1235,7 @@
 
 
 
-
+modal-deactivate
 @if(isset($user))
 @if (is_null($user->deleted_at))
 <b-modal id="modal-deactivate" hide-footer hide-header>
@@ -1340,6 +1347,9 @@
         </div>
     </div>
 </div>
+
+<award-user-sidebar />
+
 @include('admin.svg.icons')
 
 @endsection
@@ -1364,6 +1374,7 @@
             </div>
         </div>
     </div>
+
 <script>
 
  $(".phone_mask").mask("+7(999)999-99-99");
