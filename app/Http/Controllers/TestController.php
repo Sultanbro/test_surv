@@ -24,12 +24,21 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\QualityRecordWeeklyStat;
 use App\Http\Controllers\IntellectController;
+use App\Models\Bitrix\Lead;
 use App\Models\GroupUser;
 use App\Salary;
 
 class TestController extends Controller { 
   
 	public function test() { 
+
+
+		$test = '{"document_id":["crm","CCrmDocumentLead","LEAD_549148"],"auth":{"domain":"infinitys.bitrix24.kz","client_endpoint":"https:\/\/infinitys.bitrix24.kz\/rest\/","server_endpoint":"https:\/\/oauth.bitrix.info\/rest\/","member_id":"f1b4c78d4509008a30bd8a97f967759f"},"lead_id":"549148","phone":"87711486535","namex":"\u0422\u0435\u0441\u0442 \u0420\u0443\u0441\u043b\u0430\u043d","email":null,"segment":"\u041a\u0430\u043d\u0434\u0438\u0434\u0430\u0442\u044b (hh, nur \u0438 \u0434\u0440.)","resp_email":"ekudaibergen7@gmail.com"}';
+		$test = json_decode($test);
+
+		//dd($test['segment']);
+		dd(Lead::getSegment($test->segment));
+
 		dd(tenant());
        // $users    = json_decode(ProfileGroup::query()->findOrFail(53)->users, true);
 		dd(static::class);
