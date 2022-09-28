@@ -75,7 +75,7 @@ class HeadhunterNegotiations extends Command
 
         if($stage == 1) {
             $vacancies = Vacancy::where('status', Vacancy::OPEN)
-                ->whereIn('manager_id', [HeadHunter::MANAGER_ID, HeadHunter::MANAGER_ID_2])
+                ->whereIn('manager_id', HeadHunter::MANAGERS)
                 ->get();
 
             foreach($vacancies as $key => $vacancy) {

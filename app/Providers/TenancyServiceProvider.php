@@ -94,13 +94,16 @@ class TenancyServiceProvider extends ServiceProvider
 
     public function register()
     {
-        //
+     
     }
 
     public function boot()
     {
         $this->bootEvents();
         $this->mapRoutes();
+        
+        // set S3 disk dynamically TEMP
+        config(['filesystems.disks.s3.bucket' => 'tenantbp']);
 
         $this->makeTenancyMiddlewareHighestPriority();
     }

@@ -16,6 +16,11 @@ use App\Models\CourseItemModel;
 class UpbookController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(Request $request)
     {   
         View::share('menu', 'upbook');
@@ -43,19 +48,8 @@ class UpbookController extends Controller
         
         // get links
 
-        $disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
+        $disk = \Storage::disk('s3');
         
-
         foreach ($cats as $xkey => $cat) {
             foreach ($cat->books as $key => $book) {
                 if($book->domain == 'storage.oblako.kz') {
@@ -149,17 +143,7 @@ class UpbookController extends Controller
             }
 
             // get link storage
-            $disk = \Storage::build([
-                'driver' => 's3',
-                'key' => 'O4493_admin',
-                'secret' => 'nzxk4iNukQWx',
-                'region' => 'us-east-1',
-                'bucket' => 'tenantbp',
-                'endpoint' => 'https://storage.oblako.kz:443',
-                'use_path_style_endpoint' => true,
-                'throw' => false,
-                'visibility' => 'public'
-            ]);
+            $disk = \Storage::disk('s3');
             
             if($book->domain == 'storage.oblako.kz') {
             
@@ -223,17 +207,7 @@ class UpbookController extends Controller
      */
     private function uploadFile(String $path, $file)
     {
-        $disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
+        $disk = \Storage::disk('s3');
 
         $extension = $file->getClientOriginalExtension();
         $originalFileName = $file->getClientOriginalName();
@@ -263,19 +237,7 @@ class UpbookController extends Controller
 
        
         if($book) {
-            $disk = \Storage::build([
-                'driver' => 's3',
-                'key' => 'O4493_admin',
-                'secret' => 'nzxk4iNukQWx',
-                'region' => 'us-east-1',
-                'bucket' => 'tenantbp',
-                'endpoint' => 'https://storage.oblako.kz:443',
-                'use_path_style_endpoint' => true,
-                'throw' => false,
-                'visibility' => 'public'
-            ]);
-
-            
+            $disk = \Storage::disk('s3');
 
             try {
                 if($book->link && $book->link != '' && $disk->exists($book->link)) {
@@ -319,19 +281,8 @@ class UpbookController extends Controller
             if($request->file('file')) {
 
                 if($b->img != '' && $b->img != null) {
-                    $disk = \Storage::build([
-                        'driver' => 's3',
-                        'key' => 'O4493_admin',
-                        'secret' => 'nzxk4iNukQWx',
-                        'region' => 'us-east-1',
-                        'bucket' => 'tenantbp',
-                        'endpoint' => 'https://storage.oblako.kz:443',
-                        'use_path_style_endpoint' => true,
-                        'throw' => false,
-                        'visibility' => 'public'
-                    ]);
+                    $disk = \Storage::disk('s3');
                     
-                   
                     try {
                         if($disk->exists($b->img)) {
                             $disk->delete($b->img);

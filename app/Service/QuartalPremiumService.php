@@ -26,11 +26,10 @@ class QuartalPremiumService
     public function get(Request $request):array
     {
         try {
-            $id = $request->input('id');
 
-            return QuartalPremium::query()->find($id)->toArray();
+            return QuartalPremium::find($request->id)->toArray();
 
-        }catch (\DomainException $exception){
+        } catch (\DomainException $exception){
             throw new \DomainException($exception);
         }
     }
@@ -42,11 +41,37 @@ class QuartalPremiumService
     {   
         if($filters !== null) {} 
         
+        $items = QuartalPremium::with('creator', 'updater')->get();
+
         return [
-            'items'       => QuartalPremium::get(),
+            'items'      =>  $this->groupItems($items), 
             'activities' => Activity::get(),
-            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups'     => ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
+    }
+
+    /**
+     * Группировать премии
+     * Копия метода с бонусов
+     */
+    private function groupItems($items) {
+        $arr = [];
+
+        $types = $items->where('target', '!=', null)->groupBy('target.type');
+ 
+        foreach ($types as $type => $type_items) {
+            foreach ($type_items->groupBy('target.name') as $name => $name_items) {
+                $arr[] = [
+                    'type'     => $type,
+                    'name'     => $name,
+                    'id'       => $name_items[0]->target['id'],
+                    'items'    => $name_items,
+                    'expanded' => false
+                ];
+            }
+        }
+        
+        return $arr;
     }
 
     /**
@@ -56,25 +81,24 @@ class QuartalPremiumService
     public function save(QuartalPremiumSaveRequest $request): array
     {
         try {
-            $model = $this->getModel($request->input('targetable_type'));
 
-            QuartalPremium::query()->create([
-                'targetable_id'     => $request->input('targetable_id'),
-                'targetable_type'   => $model,
+            $quartal_premium = QuartalPremium::query()->create([
+                'targetable_id'     => $request->targetable_id,
+                'targetable_type'   => $request->targetable_type,
                 'activity_id'       => $request->input('activity_id'),
                 'title'             => $request->input('title'),
                 'text'              => $request->input('text'),
                 'plan'              => $request->input('plan'),
                 'from'              => $request->input('from'),
-                'to'                => $request->input('to')
+                'to'                => $request->input('to'),
+                'sum'               => $request->input('sum'),
             ]);
 
             return [
-                'status' => ResponseAlias::HTTP_OK,
-                'message' => 'success'
+                'quartal_premium' => $quartal_premium
             ];
 
-        }catch (\DomainException $exception){
+        } catch (\DomainException $exception){
             throw new \DomainException($exception);
         }
     }
@@ -86,17 +110,20 @@ class QuartalPremiumService
     public function update(QuartalPremiumUpdateRequest $request): array
     {
         try {
-            $quartalPremiumId = $request->input('quartal_premium_id');
 
-            event(new TrackQuartalPremiumEvent($quartalPremiumId));
+            $all = $request->all();
+            $all['updated_by'] = auth()->id();
 
-            QuartalPremium::query()->findOrFail($quartalPremiumId)->update($request->all());
+            $id = $request->id;
+            event(new TrackQuartalPremiumEvent($id));
+
+            QuartalPremium::findOrFail($id)->update($all);
 
             return [
-                'status' => ResponseAlias::HTTP_OK,
+                'status'  => ResponseAlias::HTTP_OK,
                 'message' => 'success'
             ];
-        }catch (\DomainException $exception){
+        } catch (\DomainException $exception){
             throw new \DomainException($exception);
         }
     }
@@ -105,21 +132,8 @@ class QuartalPremiumService
      * @param Request $request
      * @return array
      */
-    public function delete(Request $request): array
+    public function delete(Request $request): void
     {
-        try {
-            $request->only(['id']);
-
-            $id = $request->input('id');
-
-            QuartalPremium::query()->find($id)->delete();
-
-            return [
-                'status' => ResponseAlias::HTTP_OK,
-                'message' => 'success'
-            ];
-        }catch (\DomainException $exception){
-
-        }
+        QuartalPremium::findOrFail($request->id)->delete();
     }
 }

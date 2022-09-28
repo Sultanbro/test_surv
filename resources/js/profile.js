@@ -57,7 +57,7 @@ Date.prototype.addHours = function(h) {
   */
 Vue.component('profile', require('./components/profile/Profile.vue')); 
 Vue.component('timetracking', require('./components/timetracking.vue'));
-Vue.component('user-earnings', require('./components/profile/UserEarnings.vue'));
+Vue.component('user-earnings', require('./components/profile/UserEarnings/UserEarnings.vue'));
 Vue.component('trainee-report', require('./components/TraineeReport.vue'));
 
 Vue.component('t-usersalary', require('./components/tables/TableUserSalary.vue')); // b table

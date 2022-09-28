@@ -19,6 +19,7 @@ use App\Trainee;
 use App\DayType;
 use App\Classes\Helpers\Phone;
 use App\Models\Analytics\RecruiterStat;
+use App\Service\RecruitingActivityService;
 
 class BitrixStats extends Command
 {
@@ -37,6 +38,11 @@ class BitrixStats extends Command
     protected $description = 'Данные с битикс на рекрутинг';
 
     /**
+     * helper service for recruiting
+     */
+    protected $recruiting_activity;
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -49,6 +55,7 @@ class BitrixStats extends Command
         $this->month = date('m');
         $this->day = date('d');
         $this->bitrix = new Bitrix();
+        $this->recruiting_activity = new RecruitingActivityService();
     }
 
     /**
@@ -105,6 +112,9 @@ class BitrixStats extends Command
                     continue;
                 }
             }
+
+            $this->recruiting_activity->setDate($this->date);
+            $this->recruiting_activity->setUser($user_id);
 
             $ud = UserDescription::where('bitrix_id', '!=', 0)->where('user_id', $user_id)->first();
             if($ud) {
@@ -202,9 +212,10 @@ class BitrixStats extends Command
                 $data[Recruiting::I_CALLS_MISSED][(int)$this->day] = $total_passed != 0 ? $total_passed : ""; // Пропущенные
                 $data[Recruiting::I_CONVERTED][(int)$this->day] = $converted != 0 ? $converted : ""; // Сконвертированные лиды
                 $data[Recruiting::I_APPLIED][(int)$this->day] = $applied != 0 ? $applied : ""; // Приняты на работу
-
+                
                 $asi->data = json_encode($data);
                 $asi->save(); 
+                
             } else {
 
                 $default = $helper->defaultUserTable($user_id);
@@ -243,6 +254,17 @@ class BitrixStats extends Command
                 
             }
 
+            /** 
+             * save 8 activities
+             */
+            $this->recruiting_activity->save(Recruiting::I_CALL_PLAN,    $total_out != 0         ? $total_out : '');
+            $this->recruiting_activity->save(Recruiting::I_CALLS_OUT,    $total_out_success != 0 ? $total_out_success : '');
+            $this->recruiting_activity->save(Recruiting::I_FIRST_CALL,   $time_f != '00:00'      ? $time_f : '');
+            $this->recruiting_activity->save(Recruiting::I_LAST_CALL,    $time_l != '00:00'      ? $time_l : '');
+            $this->recruiting_activity->save(Recruiting::I_CALLS_IN,     $total_in != 0          ? $total_in : '');
+            $this->recruiting_activity->save(Recruiting::I_CALLS_MISSED, $total_passed != 0      ? $total_passed : '');
+            $this->recruiting_activity->save(Recruiting::I_CONVERTED,    $converted != 0         ? $converted : '');
+            $this->recruiting_activity->save(Recruiting::I_APPLIED,      $applied != 0           ? $applied : '');
 
 
             $this->line('------' . $user->last_name . ' ' . $user->name . ' ' . $user->email);

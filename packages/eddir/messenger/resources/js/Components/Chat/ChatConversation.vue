@@ -22,7 +22,7 @@ import ChatFeed from './ChatFeed.vue';
 import MessageInput from './MessageInput.vue';
 
 import axios from 'axios';
-import API from "./API.vue";
+import API from "./Store/API.vue";
 
 export default {
   components: {ChatHeader, ChatFeed, MessageInput},
@@ -77,8 +77,8 @@ export default {
 
 <style>
 .conversation {
+  display: flex;
   flex: 5;
-  display: flex-start;
   flex-direction: column;
   justify-content: space-between;
   background-color: white;

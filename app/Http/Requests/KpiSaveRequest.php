@@ -25,7 +25,7 @@ class KpiSaveRequest extends FormRequest
     {
         return [
             'targetable_id'         => 'integer|required',
-            'targetable_type'       => 'integer|required',
+            'targetable_type'       => 'required',
             'completed_80'          => 'required',
             'completed_100'         => 'required',
             'lower_limit'           => 'required',

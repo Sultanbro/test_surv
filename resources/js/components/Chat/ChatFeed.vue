@@ -31,11 +31,18 @@
           @contextmenu.prevent.stop="handleClick($event, message)"
         >
           <div class="text">
-            {{ message.body }}
-            <span class="message-time">
+            <div class="d-flex flex-column" v-html="message.body"></div>
+            <span class="message-time"> 
               {{ message.created_at | moment }}
             </span>
           </div>
+          <div class="readers-badge" v-if="message.sender_id === user.id && message.readers && message.readers.length > 0">
+            ✔ Cообщение прочитано: {{ message.readers[0].name }}
+            <template v-if="message.readers.length > 1">
+              и еще {{ message.readers.length - 1 }} человек
+            </template>
+          </div>
+
         </li>
       </ul>
       <vue-simple-context-menu
@@ -53,7 +60,7 @@
 import VueSimpleContextMenu from 'vue-simple-context-menu';
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import moment from "moment";
-import API from "./API.vue";
+import API from "./Store/API.vue";
 
 export default {
   props: {
@@ -170,8 +177,6 @@ export default {
 <style>
 .feed {
   background: #FFFFFF;
-  height: 100%;
-  max-height: 470px;
   overflow: auto;
 }
 
@@ -373,5 +378,13 @@ export default {
   display: block;
   font-size: 12px;
   color: #babac0;
+}
+
+.readers-badge {
+  display: block;
+  font-size: 12px;
+  color: #a0a0a4;
+  margin-top: 5px;
+
 }
 </style>

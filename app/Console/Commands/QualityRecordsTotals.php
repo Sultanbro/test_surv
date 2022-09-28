@@ -9,6 +9,8 @@ use App\QualityRecord;
 use App\QualityRecordWeeklyStat;
 use App\QualityRecordMonthlyStat;
 use Illuminate\Console\Command;
+use App\Models\Analytics\Activity;
+use App\Models\Analytics\UserStat;
 
 class QualityRecordsTotals extends Command
 {
@@ -123,6 +125,13 @@ class QualityRecordsTotals extends Command
                             ]);
                         }
                         
+                        /** */
+                        UserStat::saveQuality([
+                            'date'     => Carbon::createFromDate($year, $month, $d)->format('Y-m-d'),
+                            'user_id'  => $key,
+                            'value'    => $avg,
+                            'group_id' => $dgroup_id,
+                        ]);
                     }
                     
                 }
@@ -131,7 +140,11 @@ class QualityRecordsTotals extends Command
         
     }
 
-    private function monthly(int $year) {
+    /**
+     * count monthly stats
+     */
+    private function monthly(int $year)
+    {
 
         for($m=1;$m<=12;$m++) {
 

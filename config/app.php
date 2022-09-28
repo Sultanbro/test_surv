@@ -190,10 +190,11 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
         App\Providers\TenancyServiceProvider::class, // <-- here
-//        Eddir\Messenger\MessengerServiceProvider::class,
+        Eddir\Messenger\MessengerServiceProvider::class,
        // Spatie\Permission\PermissionServiceProvider::class,
 
     ],

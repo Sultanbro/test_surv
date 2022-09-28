@@ -2,20 +2,25 @@
 
 namespace App\Models\Analytics;
 
+use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
 class Activity extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, WithCreatorAndUpdater;
+
     protected $table = 'activities';
 
     public $timestamps = true;
 
     protected $casts = [
         'data' => 'array',
+        'created_at'  => 'date:d.m.Y H:i',
+        'updated_at'  => 'date:d.m.Y H:i',
     ];
+
     
     protected $fillable = [
         'name',
@@ -32,7 +37,10 @@ class Activity extends Model
         'order',
         'type',
         'weekdays', // рабочие дни в неделе, для выставления плана на месяц
-        'data' // дополнительно
+        'data', // дополнительно
+        'created_by', // 
+        'updated_by', // 
+        'common' // показатели всей группы  = 1 или идивидуальный = 0
     ];
     
     // old consts for plan_units
@@ -62,14 +70,17 @@ class Activity extends Model
     const VIEW_TURNOVER = 4;
     const VIEW_STAFF = 5;
     const VIEW_CONVERSION = 6;
+    const VIEW_CELL = 7;
 
     /**
      * Sources
      */
-    const SOURCE_NO = 0; // без источника
-    const SOURCE_GROUP = 1; // из показателей группы
-    const SOURCE_BITRIX = 2; // из битрикса
-    const SOURCE_AMOCRM = 3; // из амо
+    const SOURCE_GROUP     = 1; // из показателей группы
+    const SOURCE_BITRIX    = 2; // из битрикса
+    const SOURCE_AMOCRM    = 3; // из амо
+    const SOURCE_LOCAL     = 4; // другие
+    const SOURCE_TIMEBOARD = 5; // вкладка табель
+    const SOURCE_HR        = 6; // вкладка HR
 
     public static function getMethod(int $method_id) {
         $methods = [
@@ -193,14 +204,46 @@ class Activity extends Model
                 'name' => 'OKK',
                 'group_id' => $group_id,
                 'daily_plan' => 100,
-                'plan_unit' => 'percent', // метод расчета
-                'unit' => '', // ед изм 
+                'plan_unit' => 'percent', 
+                'method' => self::METHOD_SUM,
+                'unit' => '',
+                'ud_ves' => 0,
+                'editable' => true,
+                'order' => 0,
+                'source' => self::SOURCE_GROUP,
+                'type' => 'quality',
+                'view' => self::VIEW_QUALITY,
+            ]);
+        }
+    }
+
+    /**
+     * get Quality table id
+     */
+    public static function qualityId(int $group_id) {
+        $act = Activity::withTrashed()
+            ->where('group_id', $group_id)
+            ->where('view', self::VIEW_QUALITY)
+            ->first();
+        
+        if(!$act) {
+            $act = Activity::create([
+                'name' => 'OKK',
+                'group_id' => $group_id,
+                'daily_plan' => 100,
+                'source' => self::SOURCE_GROUP,
+                'plan_unit' => 'percent', 
+                'method' => self::METHOD_SUM,
+                'unit' => '',
                 'ud_ves' => 0,
                 'editable' => true,
                 'order' => 0,
                 'type' => 'quality',
+                'view' => self::VIEW_QUALITY,
             ]);
         }
+
+        return $act->id;
     }
 
 }

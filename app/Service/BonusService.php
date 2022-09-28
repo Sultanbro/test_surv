@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\ProfileGroup;
+use App\Exceptions\Kpi\TargetDuplicateException;
 
 class BonusService
 {
@@ -25,9 +26,9 @@ class BonusService
     public function get(int $id): array
     {
         return [
-            'bonuses'       => Bonus::query()->findOrFail($id),
+            'bonuses'    => Bonus::query()->findOrFail($id),
             'activities' => Activity::get(),
-            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups'     => ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
@@ -39,36 +40,70 @@ class BonusService
     {   
         if($filters !== null) {} 
         
+        $bonuses = Bonus::with('creator', 'updater')->get();
+ 
         return [
-            'bonuses'       => Bonus::with('kpi_items')->get(),
+            'bonuses'    => $this->groupItems($bonuses),
             'activities' => Activity::get(),
-            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups'     => ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
     /**
-     * Сохраняем новый бонус.
+     * Группировать бонусы
      */
-    public function save(BonusSaveRequest $request): void
+    private function groupItems($items) {
+        $arr = [];
+
+        $types = $items->where('target', '!=', null)->groupBy('target.type');
+ 
+        foreach ($types as $type => $type_items) {
+            foreach ($type_items->groupBy('target.name') as $name => $name_items) {
+                $arr[] = [
+                    'type'     => $type,
+                    'name'     => $name,
+                    'id'       => $name_items[0]->target['id'],
+                    'items'    => $name_items,
+                    'expanded' => false
+                ];
+            }
+        }
+        
+        return $arr;
+    }
+
+    /**
+     * Сохраняем новый бонус.
+     * @throws Exception
+     */
+    public function save(Request $request): array
     {
         try {
-            $model = $this->getModel($request->input('targetable_type'));
-
-            Bonus::query()->create([
-                'targetable_id'     => $request->targetable_id,
-                'targetable_type'   => $model,
-                'title'     => $request->title,
-                'sum'     => $request->sum,
-                'group_id'     => $request->group_id,
-                'activity_id'     => $request->activity_id,
-                'unit'     => $request->unit,
-                'quantity'     => $request->quantity,
-                'daypart'     => $request->daypart,
-                'text'     => $request->text,
-            ]);
+            $bonus = [];
+            for ($i = 0; $i < count($request->input('activity_id')); $i++)
+            {
+                $bonus[] = Bonus::query()->create([
+                    'targetable_id'     => $request->input('targetable_id'),
+                    'targetable_type'   => $this->getModel($request->input('targetable_type')),
+                    'title'             => $request->input('title')[$i],
+                    'sum'               => $request->input('sum')[$i],
+                    'group_id'          => $request->input('group_id'),
+                    'activity_id'       => $request->input('activity_id')[$i],
+                    'unit'              => $request->input('unit')[$i],
+                    'quantity'          => $request->input('quantity')[$i],
+                    'daypart'           => $request->input('daypart')[$i],
+                    'text'              => $request->input('text')[$i],
+                    'created_by'        => auth()->id() ?? 5,
+                    'updated_by'        => auth()->id() ?? 5,
+                ]);
+            }
         } catch (Exception $exception) {
             throw new Exception($exception);
         }
+
+        return [
+            'bonus' => $bonus
+        ];
     }
 
     /**
@@ -78,14 +113,17 @@ class BonusService
     {
         try {
 
-            $id = $request->input('id');
-
+            $id = $request->id;
             event(new BonusUpdated($id));
+          
+            $all = $request->all();
+            $all['updated_by'] = auth()->id();
 
-            Bonus::query()->findOrFail($id)->update($request->all());
+            Bonus::query()->findOrFail($id)->update($all);
 
         } catch (Exception $exception){
             Log::error($exception);
+            
             throw new Exception($exception);
         }
     }
@@ -95,6 +133,14 @@ class BonusService
      */
     public function delete(Request $request): void
     {
-        Bonus::find($request->id)->delete();
+        Bonus::findOrFail($request->id)->delete();
+    }
+
+    private function getData(array $data)
+    {
+        foreach ($data as $item)
+        {
+            return $item;
+        }
     }
 }

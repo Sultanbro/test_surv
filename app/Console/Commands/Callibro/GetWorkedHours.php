@@ -81,7 +81,7 @@ class GetWorkedHours extends Command
         $this->day = $date->day;
         $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
 
-        $groups = [79,70];
+        $groups = [79,70,53];
         foreach($groups as $group_id) {
             $this->group = ProfileGroup::find($group_id);
             $this->dialer = CallibroDialer::where('group_id', $group_id)->first();

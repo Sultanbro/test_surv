@@ -22,6 +22,7 @@ class MessengerChat extends Model
         'title',
         'description',
         'image',
+        'private'
     ];
 
     public function owner(): BelongsTo
@@ -46,14 +47,13 @@ class MessengerChat extends Model
 
     public function getLastMessage(): Model|HasMany|null
     {
-        return $this->messages()->latest()->first();
+        return $this->messages()->where('deleted', false)->latest()->first();
     }
 
     /**
      * @param User $user
      *
      * @return int
-     * @deprecated
      */
     public function getUnreadMessagesCount(User $user): int
     {
@@ -65,4 +65,5 @@ class MessengerChat extends Model
     public function getPinnedMessages(): Collection {
         return $this->messages()->where('pinned', true)->get();
     }
+
 }

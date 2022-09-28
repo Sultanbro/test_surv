@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class QuartalPremiumUpdateRequest extends FormRequest
 {
@@ -24,7 +25,15 @@ class QuartalPremiumUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'activity_id'       => 'nullable|integer',
+            'activity_id'       => 'integer',
+            'targetable_type'    => [
+                'required',
+                Rule::in([
+                    'App\User',
+                    'App\ProfileGroup',
+                    'App\Position'
+                ]),
+            ],
             'title'             => 'nullable|max:100',
             'text'              => 'nullable|max:255',
             'plan'              => 'nullable',

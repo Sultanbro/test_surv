@@ -11,6 +11,7 @@ use App\User;
 use App\Salary;
 use App\UserNotification;
 use App\Models\User\NotificationTemplate;
+use App\Service\Department\UserService;
 use Carbon\Carbon;
 
 class BonusUpdate extends Command
@@ -35,6 +36,13 @@ class BonusUpdate extends Command
      */
     protected $date;
 
+
+
+    /**
+     * 
+     */
+    protected $userService;
+
     /**
      * Create a new command instance.
      *
@@ -43,6 +51,7 @@ class BonusUpdate extends Command
     public function __construct()
     {
         parent::__construct();
+        $this->userService = new UserService;
     }
 
 
@@ -106,18 +115,45 @@ class BonusUpdate extends Command
             $this->line('Найдено ' . $groups->count());
         }
 
+
+    
         if($this->argument('group_id')) {
             /**
              * Выбрать пользователей
              */
             $group = ProfileGroup::find($this->argument('group_id'));
-            $user_ids = json_decode($group->users);
+
+
+            //$user_ids = $this->userService->getEmployees($this->argument('group_id'), $this->date);
+
             $user_ids = \DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', $user_ids)
+                ->whereIn('users.id', json_decode($group->users))
                 ->where('is_trainee', 0)
-                ->get(['users.id'])->pluck('id')->toArray();
+                ->get(['users.id'])
+                ->pluck('id')
+                ->toArray();
+
+
+        
+           
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            $this->userService->getEmployees(88, '2022-08-20');
 
             // Обнулить award
             $salaries = Salary::where('date', $this->date)
@@ -141,7 +177,7 @@ class BonusUpdate extends Command
 
             /** Пересчет бонусов */
             $awards = Bonus::obtained_in_group($group->id, $this->date);
-
+        
             //dump($awards);
         }
 

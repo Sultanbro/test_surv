@@ -14,6 +14,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Exceptions\Kpi\TargetDuplicateException;
 
 class KpiService
 {
@@ -31,7 +32,7 @@ class KpiService
         return [
             'kpis'       => $kpi->get(),
             'activities' => Activity::get(),
-            'groups' => \App\ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups' => \App\ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
@@ -44,10 +45,33 @@ class KpiService
     {   
         if($filters !== null) {} 
         
+        $kpis = Kpi::with(['items', 'creator', 'updater', 'histories' => function($query) {
+            //$query->whereDate('created_at', '<=', $last_date);
+        }])->get();
+        
+        $kpis_final = [];
+
+        foreach ($kpis as $key => $kpi) {
+
+            $item = $kpi->toArray();
+
+            // remove items if it's not in history
+            if($kpi->histories->first()) {
+                $payload = json_decode($kpi->histories->first()->payload, true);
+             
+                if(isset($payload['children'])) {
+                    $item['items'] = $kpi->items->whereIn('id', $payload['children']);
+                } 
+            }
+
+            array_push($kpis_final, $item);
+        }
+        
+
         return [
-            'kpis'       => Kpi::with('kpi_items')->get(),
+            'kpis'       => $kpis_final,
             'activities' => Activity::get(),
-            'groups' => \App\ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'groups' => \App\ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
@@ -57,25 +81,40 @@ class KpiService
      * @return void
      * @throws Exception
      */
-    public function save(KpiSaveRequest $request): void
+    public function save(KpiSaveRequest $request): array
     {
-        try {
-            $model = $this->getModel($request->input('targetable_type'));
+        if($this->hasDuplicate($request)) {
+            throw new TargetDuplicateException();
+        }
 
-            DB::transaction(function () use ($request, $model){
+        $kpi_id = 0;
+        $kpi_item_ids = [];
+
+        try {
+            DB::transaction(function () use ($request, &$kpi_item_ids, &$kpi_id){
                 $kpi = Kpi::query()->create([
                     'targetable_id'     => $request->input('targetable_id'),
-                    'targetable_type'   => $model,
+                    'targetable_type'   => $request->targetable_type,
                     'completed_80'      => $request->input('completed_80'),
                     'completed_100'     => $request->input('completed_100'),
                     'lower_limit'       => $request->input('lower_limit'),
                     'upper_limit'       => $request->input('upper_limit'),
-                    'colors'            => json_encode($request->input('colors'))
+                    'colors'            => json_encode($request->input('colors')),
+                    'created_by'        => auth()->id()
                 ]);
 
-                $this->saveItems((array) $request->input('items'), (int) $kpi->id);
+                $kpi_item_ids = $this->saveItems($request->items, $kpi->id);
+
+                $kpi->children = $kpi_item_ids;
+                $kpi->save();
+
             });
-        }catch (Exception $exception) {
+
+            return [
+                'id' => $kpi_id,
+                'items' => $kpi_item_ids
+            ];
+        } catch (Exception $exception) {
             throw new Exception($exception);
         }
     }
@@ -86,26 +125,39 @@ class KpiService
      * @return void
      * @throws Exception
      */
-    public function update(KpiUpdateRequest $request): void
+    public function update(KpiUpdateRequest $request): array
     {
-        try {
+     
 
-            $id = $request->input('kpi_id');
+            $id = $request->id;
 
             event(new TrackKpiUpdatesEvent($id));
+            $kpi_item_ids = [];
 
-            DB::transaction(function () use ($request, $id){
-                $items = $request->input('items');
+      
+            
+            $user_id = auth()->id();
 
-                $this->updateItems($id, $items);
+            DB::transaction(function () use ($request, $id, &$kpi_item_ids, $user_id) {
 
-                Kpi::query()->findOrFail($id)->update($request->all());
+                $kpi_item_ids = $this->updateItems($id, $request->items);
+
+                $all = $request->all();
+
+                $all['updated_by'] = auth()->id();
+                $all['children'] = $kpi_item_ids;
+
+                unset($all['source']);
+
+                Kpi::findOrFail($id)->update($all);
             });
 
-        }catch (Exception $exception){
-            Log::error($exception);
-            throw new Exception($exception);
-        }
+
+        return [
+            'id' => $id,
+            'items' => $kpi_item_ids
+        ];
+       
     }
 
     /**
@@ -114,54 +166,108 @@ class KpiService
      */
     public function delete(Request $request): void
     {
-        $request->only([
-            'kpi_id'
-        ]);
+        $kpi = Kpi::find($request->id);
 
-        $id = $request->input('kpi_id');
-        Kpi::query()->find($id)->delete();
+        if($kpi) {
+            $kpi->updated_by = auth()->id();
+            $kpi->save();
+            $kpi->delete();
+        }
     }
 
     /**
-     * @param array $items
-     * @param int $kpiId
-     * @return void
+     * Сохраняем kpi_items и возвращаем массив с id
      */
-    private function saveItems(array $items, int $kpiId): void
+    private function saveItems(array $items, int $kpiId): array 
     {
+        $ids = [];
         foreach ($items as $item)
         {
-            KpiItem::query()->create([
+            // if source is no_source 
+            // then activity also zero
+            if($item['source'] == 0) $item['activity_id'] = 0;
+
+
+            // create
+            $kpi_item = KpiItem::create([
                 'kpi_id'        => $kpiId,
                 'name'          => $item['name'],
+                'method'        => $item['method'],
+                'unit'          => isset($item['unit']) ? $item['unit'] : '',
                 'plan'          => $item['plan'],
+                'cell'          => $item['cell'],
                 'share'         => $item['share'],
-                'activity_id'   => $item['activity_id']
+                'activity_id'   => $item['activity_id'],
+                'common'        => $item['common']
             ]);
+
+            $ids[] = $kpi_item->id;
         }
+
+        return $ids;
     }
 
     /**
-     * @param int $id
-     * @param array $items
-     * @return void
+     * Сохраняем или редактируем kpi_items и возвращаем массив с id
      */
-    private function updateItems(int $id, array $items): void
+    private function updateItems(int $id, array $items): array
     {
-        $kpi = Kpi::query()->findOrFail($id);
+        $item_ids = [];
+
+        $kpi = Kpi::findOrFail($id);
 
         foreach ($items as $item)
         {
-            /*
-             * Записываем в таблицу histories
-             */
-            event(new TrackKpiItemEvent($item['id']));
+            $item['kpi_id'] = $id;
+            
+           
+            unset($item['group_id']);
+            unset($item['sum']);
+            unset($item['percent']);
+            
+            // if source is no_source 
+            // then activity also zero
+            if($item['source'] == 0) $item['activity_id'] = 0;
 
-            if (isset($item['deleted'])) {
-                $kpi->items()->where('id', $item['id'])->delete();
-            }else{
-                $kpi->items()->where('id', $item['id'])->update($item);
+            unset($item['source']);
+
+            if($item['id'] == 0) {
+
+                /**
+                 * Создаем новый kpi item, потому что id == 0
+                 */
+                $item_ids[] = KpiItem::create($item)->id;
+
+            } else {
+
+                $item_ids[] = $item['id'];
+
+                /**
+                 * Обновляем kpi_item
+                 */
+
+                event(new TrackKpiItemEvent($item['id']));
+
+                if (isset($item['deleted'])) {
+                    $kpi->items()->where('id', $item['id'])->delete();
+                }else{
+                    $kpi->items()->where('id', $item['id'])->update($item);
+                }
             }
         }
+
+        return $item_ids;
+    }
+
+    /**
+     *  Уже назначен на эту цель kpi
+     * @param array $filters
+     */
+    private function hasDuplicate(Request $request): bool
+    {   
+        return Kpi::where([
+            'targetable_id' => $request->targetable_id,
+            'targetable_type' => $request->targetable_type,
+        ])->exists();
     }
 }

@@ -10,9 +10,37 @@ class CalculateKpiService
 {
 
     /**
+     * Расчет суммы К выдаче по результатам KPI
+     */
+    public function earned(
+        int $lower_limit,
+        int $upper_limit,
+        float $completed_percent,
+        int $share,
+        float $completed_80,
+        float $completed_100,
+    ) : float|int {
+
+        $result = 0;
+        $lower_limit = $lower_limit / 100;
+        $upper_limit = $upper_limit / 100;
+        $completed_percent = $completed_percent / 100;
+        $share = $share / 100;
+        if($completed_percent > $lower_limit) {
+     
+     
+            if ($completed_percent < $upper_limit) {
+                $result = $completed_80 * $share * ($completed_percent - $lower_limit) * $upper_limit / ($upper_limit - $lower_limit);
+            } else {
+                $result = $completed_100 * $share * $completed_percent;
+            }
+        } 
+
+        return $result < 0 ? 0 : $result;
+    }
+
+    /**
      * Получить процент выполнения по показателю
-     * @param int $id
-     * @return array
      */
     public function getCompletePercent(array $data, $method_id = Activity::METHOD_SUM): float
     {
@@ -35,18 +63,18 @@ class CalculateKpiService
      */
     private function sum(array $data) : float
     {
-        $daily_plan = (float) $data['daily_plan'];
-        if($data['is_user_full_time'] == 0) {
-            $daily_plan = $daily_plan / 2;
-        }
-        
+        $plan = (float) $data['daily_plan'];
+        $percent = 1;
+
         if($data['days_from_user_applied'] != 0) { // zero means user applied before this month
-            $plan = $daily_plan * $data['days_from_user_applied'];
-        } else {
-            $plan = $daily_plan * $data['workdays'];
+            $percent = $data['workdays'] > 0 ? $data['days_from_user_applied'] / $data['workdays'] : 1;
         }
 
-        return $plan != 0 ? round($data['total_fact'] / $plan, 2) * 100 : 0.00;
+        if($data['full_time'] == 0) {
+            $percent = $percent / 2;
+        }
+
+        return $plan != 0 ? round($data['fact'] / $plan * $percent * 100 , 2) : 0.00;
     }
 
     /**
@@ -54,7 +82,7 @@ class CalculateKpiService
      */
     private function sum_not_more(array $data) : float
     { 
-        return (float)$data['daily_plan'] - $data['total_fact'] > 0 ? 100.00 : 0.00;
+        return (float)$data['daily_plan'] - $data['fact'] >= 0 ? 100.00 : 0.00;
     }
 
     /**
@@ -62,7 +90,7 @@ class CalculateKpiService
      */
     private function sum_not_less(array $data) : float
     {   
-        return (float)$data['total_fact'] - $data['daily_plan'] >= 0 ? 100.00 : 0.00;
+        return (float)$data['fact'] - $data['daily_plan'] >= 0 ? 100.00 : 0.00;
     }
 
     /**
@@ -70,14 +98,7 @@ class CalculateKpiService
      */
     private function avg(array $data) : float
     {
-        if($data['records_count'] > 0) {
-            $avg = $data['total_fact'] / $data['records_count'];
-            $result =  $avg / ((float)$data['daily_plan']) * 100;
-        } else {
-            $result = 0.00;
-        }
-
-        return $result;
+        return $data['avg'] / ((float)$data['daily_plan']) * 100;
     }
 
     /**
@@ -85,14 +106,7 @@ class CalculateKpiService
      */
     private function avg_not_more(array $data) : float
     { 
-        if($data['records_count'] > 0 ) {
-            $avg = $data['total_fact'] / $data['records_count'];
-            $result =  ((float)$data['daily_plan']) / $avg * 100;
-        } else {
-            $result = 0.00;
-        }
-
-        return $result;
+        return (float)$data['daily_plan'] - (float)$data['avg'] >= 0 ? 100.00 : 0.00;
     }
 
     /**
@@ -100,13 +114,8 @@ class CalculateKpiService
      */
     private function avg_not_less(array $data) : float
     { 
-        if($data['records_count'] > 0) {
-            $avg = $data['total_fact'] / $data['records_count'];
-            $result =  $avg / ((float)$data['daily_plan']) * 100;
-        } else {
-            $result = 0.00;
-        }
-
-        return $result;
+        return (float)$data['avg'] - (float)$data['daily_plan'] >= 0 ? 100.00 : 0.00;
     }
+
+   
 }

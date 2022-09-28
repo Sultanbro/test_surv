@@ -8,9 +8,9 @@
         @click="selectContact(contact)"
       >
         <div class="avatar">
-          <img src="https://i.pravatar.cc/" :alt="contact.title"/>
+          <img :src="contact.image" :alt="contact.title"/>
         </div>
-        <span v-if="contact.unseen" class="unread">{{ contact.unseen }}</span>
+        <span v-if="contact.unread_messages_count" class="red-indicator">&nbsp;</span>
       </li>
     </ul>
   </div>
@@ -79,6 +79,17 @@ export default {
   font-size: 12px;
   padding: 0 4px;
   border-radius: 3px;
+}
+
+.red-indicator {
+  background: #f00;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  right: 11px;
+  top: 20px;
+  display: flex;
+  border-radius: 50%;
 }
 
 .side-contacts-list ul li .avatar {

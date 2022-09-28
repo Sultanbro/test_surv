@@ -1,18 +1,8 @@
 <template>
 <div class="mt-3">
     <div class="mb-0">
-        <div class="row mb-3">
-            <div class="col-9">
-                <h5>Начисления</h5>
-            </div>
-            <div class="col-3">
-                <select class="form-control" v-model="dateInfo.currentMonth" @change="fetchData()">
-                    <option v-for="month in $moment.months()" :value="month" :key="month">{{month}}</option>
-                </select>
-            </div>
-        </div> 
+      
 
-        
         <b-table v-if="dataLoaded" responsive striped :sticky-header="true" class="text-nowrap text-right my-table mb-0" id="tabelTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
           <template #head(avanses)="data">
 
@@ -149,8 +139,22 @@
 export default {
     name: "TableUserSalary",
     props: { 
-        activeuserid: String
+        activeuserid: {
+            type: Number,
+        },
+        date: {},
+        month: {}
     },
+
+
+    watch: {
+        month: {
+            handler: function (val) {
+                this.fetchData()
+            },
+        },
+    },
+
     data() {
         return {
             data: {},
@@ -179,34 +183,13 @@ export default {
     },
 
     created() {
-        this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-        let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
-
-        //Расчет выходных дней
-        this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-        this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-        this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-
-        //Текущая группа
-
+        // //Текущая группа
+        this.setMonth()
+        this.setFields()
         this.fetchData()
     },
     methods: {
-        //Установка выбранного месяца
-        setMonth() {
-            let year = moment().format('YYYY')
-            this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-
-            this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
-
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
-            //Расчет выходных дней
-            this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-            this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-        },
+     
         //Установка заголовока таблицы
         setFields() {
             let fields = []
@@ -257,20 +240,35 @@ export default {
             let loader = this.$loading.show();
 
             axios.post('/timetracking/zarplata-table', {
-                month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+                month: this.$moment(this.month, 'MMMM').format('M'),
             }).then(response => {
 
                 this.data = response.data.data
                 this.totalFines = response.data.totalFines
                 this.total_avanses = response.data.total_avanses
+                
                 this.setMonth()
-                this.setFields()
                 this.loadItems()
                 this.dataLoaded = true
                 
                 loader.hide()
             })
         },
+
+        setMonth() {
+            let year = moment().format('YYYY')
+            this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
+
+            this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
+
+            let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
+            //Расчет выходных дней
+            this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
+            this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
+            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
+        },
+
         //Добавление загруженных данных в таблицу
         loadItems() {
             let items = [];

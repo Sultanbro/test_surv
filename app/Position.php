@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\Permission\Traits\HasRoles;
 
 class Position extends Model
@@ -22,7 +24,38 @@ class Position extends Model
         'sum', // Сумма
     ];
 
+    /**
+     * ID оператора по должности
+     */
     const OPERATOR_ID = 32;
+    /**
+     * ID стажера по должности
+     */
     const INTERN_ID = 47;
+
+    /**
+     * ID старшего рекрутера по должности
+     */
+    const HEAD_RECRUITER_ID = 46;
+
+    /**
+     * ID рекрутера по должности
+     */
+    const RECRUITER_ID = 48;
     
+    /**
+     * @return MorphMany
+     */
+    public function bonuses(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany('App\User', 'position_id', 'id');
+    }
 }

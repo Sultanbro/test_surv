@@ -47,19 +47,7 @@ class CourseController extends Controller
         $course = Course::find($request->course_id);
         if($course) {
 
-            $disk = \Storage::build([
-                'driver' => 's3',
-                'key' => 'O4493_admin',
-                'secret' => 'nzxk4iNukQWx',
-                'region' => 'us-east-1',
-                'bucket' => 'tenantbp',
-                'endpoint' => 'https://storage.oblako.kz:443',
-                'use_path_style_endpoint' => true,
-                'throw' => false,
-                'visibility' => 'public'
-            ]);
-
-            
+            $disk = \Storage::disk('s3');
 
             try {
                 if($course->img != '' && $course->img != null) {
@@ -121,17 +109,7 @@ class CourseController extends Controller
      */
     private function uploadFile(String $path, $file) : array
     {
-        $disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
+        $disk = \Storage::disk('s3');
 
         $extension = $file->getClientOriginalExtension();
         $originalFileName = $file->getClientOriginalName();
@@ -277,20 +255,8 @@ class CourseController extends Controller
         $course = Course::with('items', 'models')->find($request->id);
         
         // img poster
-        $disk = \Storage::build([
-            'driver' => 's3',
-            'key' => 'O4493_admin',
-            'secret' => 'nzxk4iNukQWx',
-            'region' => 'us-east-1',
-            'bucket' => 'tenantbp',
-            'endpoint' => 'https://storage.oblako.kz:443',
-            'use_path_style_endpoint' => true,
-            'throw' => false,
-            'visibility' => 'public'
-        ]);
-
+        $disk = \Storage::disk('s3');
         
-
         try {
             if($course->img != '' && $course->img != null) {
                 if($disk->exists($course->img)) {

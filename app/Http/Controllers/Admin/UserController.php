@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\TrackGroupChangingEvent;
+use App\Events\TrackUserFiredEvent;
+use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\KnowBase;
 use App\Models\QuartalBonus;
@@ -11,6 +14,7 @@ use App\Mail as Mailable;
 use Illuminate\Mail\Mailer;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\Activity;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Swift_Mailer;
 use Swift_SmtpTransport;
 use Swift_TransportException;
@@ -94,33 +98,12 @@ class UserController extends Controller
 
     public function profile(Request $request)
     {
-
-
-       
         $user = User::find(auth()->id());
 
-
-        $d1 = date('Y-m-d');
-        $kv = intval((date('m', strtotime($d1)) + 2)/3);
-
-        $quartal = QuartalBonus::on()->where('user_id',$user->id)
-            ->where('year',date('Y'))
-            ->where('quartal',$kv)
-            ->get()->toArray();
-
-        $quarter_bonus = QuartalBonus::on()->where('user_id',$user->id)
-            ->where('year',date('Y'))
-            ->where('quartal',$kv)
-            ->sum('sum');
-
-
-
-
-        $new_email = trim(strtolower($request->email));
-
+    
         /******* Смена пароля */
         if($request->isMethod('post')) {
-
+            $new_email = trim(strtolower($request->email));
            
             if($user->email != $new_email) {  // Введен новый email
                 
@@ -160,6 +143,9 @@ class UserController extends Controller
             
         } else { // GET запрос
 
+            // rate
+            $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
+
             $positions = Position::all();
             $photo = Photo::where('user_id', $user->id)->first();
             $downloads = Downloads::where('user_id', $user->id)->first();
@@ -183,7 +169,6 @@ class UserController extends Controller
             }
 
             /*** Текущая книга для прочтения */
-            //$book = app('App\Http\Controllers\Admin\ExamController')->currentBook($user->id, date('m'), date('Y'));
             $book = null;
 
             /* recruiter */
@@ -197,18 +182,10 @@ class UserController extends Controller
                     $rg_users = $rec_group->users == null ? [] : json_decode($rec_group->users);
                 }
 
-             
-
             }
 
             
 
-
-
-
-            
-
-           
                 $recruiter_stats = json_encode([]);
                 $recruiter_records = json_encode([]);
 
@@ -271,13 +248,11 @@ class UserController extends Controller
             }
             ///////////////////////////////////////
    
-            Carbon::setLocale('ru');
             $month = [
                 'daysInMonth' => Carbon::now()->daysInMonth,
                 'currentMonth' => Carbon::now()->format('F')
             ];
 
-            ////
             $recruiter_stats_rates = [];
 
             for ($i = 1; $i <= Carbon::now()->daysInMonth; $i++) {
@@ -288,120 +263,13 @@ class UserController extends Controller
             $recruiter_stats_rates = json_encode($recruiter_stats_rates);
 
             $zarplata = Zarplata::where('user_id', $user->id)->first();
+
             $oklad = 0;
             if($zarplata) $oklad = $zarplata->zarplata;
-
-            try {
-                $currency_rate = (float)Currency::rates()[$user->currency];
-            } catch(\Exception $e) {
-                $currency_rate = 0.00001;
-            }
             $oklad = round($oklad * $currency_rate, 0);
-
-            // rate
-            
-            $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
-
-            //bonuses
-            $bonuses = Salary::where('user_id', $user->id)
-                ->whereYear('date',  date('Y'))
-                ->whereMonth('date', date('m'))
-                ->where(function($query) {
-                    $query->where('award', '!=', 0)
-                        ->orWhere('bonus', '!=', 0);
-                })
-                ->orderBy('id','desc')
-                ->get();
-            
-            $bonus = $bonuses->sum('bonus');
-            $bonus += ObtainedBonus::onMonth($user->id, date('Y-m-d'));
-            $bonus += TestBonus::where('user_id', $user->id)
-                ->whereYear('date', date('Y'))
-                ->whereMonth('date', date('m'))
-                ->get()
-                ->sum('amount');
-
-            $bonusHistory = ObtainedBonus::getHistory($user->id, date('Y-m-d'), $currency_rate);
-
-            
-            // Бонусы 
-
-            $editedBonus = EditedBonus::where('user_id', $user->id)
-                ->whereYear('date',  date('Y'))
-                ->whereMonth('date',  date('m'))
-                ->first();
-            $bonus = $editedBonus ? $editedBonus->amount : $bonus;
-
-            /**
-             * EARNINGS COMPONENT
-             */
-            $editedKpi = EditedKpi::where('user_id', $user->id)
-                ->whereYear('date', date('Y'))
-                ->whereMonth('date', date('m'))
-                ->first();
-
-            if($editedKpi) {
-                $kpi = $editedKpi->amount;
-            } else {
-                $kpi = Kpi::userKpi($user->id);
-            }   
-
-            $salary = $user->getCurrentSalary();
-            
-            $potential_bonuses = '';
-            if(count($gs) > 0) {
-                foreach ($gs as $key => $g) {
-                    $potential_bonuses .= Bonus::getPotentialBonusesHtml($g->id);
-                    $potential_bonuses .= '<br>';
-                }
-            }
-            
-            // check exists ind kpi
-            $kpis = $user->inGroups();
-            $ind_kpi = IndividualKpi::where('user_id', $user->id)->first();
-            if($ind_kpi) {
-                $kpis = [[
-                    'name' => 'Условия расчета KPI',
-                    'type' => 'individual',
-                    'id' => 0,
-                ]];
-            } else {
-                foreach ($kpis as $key => $kp) {
-                    $kp->type = 'common';
-                }
-            }
-
-
-            // prepare user_earnigs 
-            $oklads = number_format(round((float)$oklad * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency);
-            $user_earnings = [
-                'quarter_bonus' => $quarter_bonus.' '. strtoupper($user->currency),
-                'oklad' => round((float)$oklad * $currency_rate, 0),
-                'bonus' => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
-                'kpis' => $kpis,
-                'bonusHistory' => $bonusHistory,
-                'editedBonus' => $editedBonus,
-                'editedKpi' => $editedKpi,
-                'potential_bonuses' => $potential_bonuses,
-                'salary_percent' => $oklad > 0 ? $salary / $oklad * 100 : 0,
-                'kpi_percent' => $kpi / 400, // kpi / 40000 * 100
-                'kpi' => number_format((float)$kpi * $currency_rate,  0, '.', '\''). ' ' . strtoupper($user->currency),
-                'salary' => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
-                'salary_info' => [
-                    'worked_days' => $user->worked_days(),
-                    'indexation_sum' => $user_position ? $user_position->sum : 0,
-                    'days_before_indexation' => $user->days_before_indexation(),
-                    'oklad' => $oklads
-                ]
-            ];
-
             $oklad = number_format($oklad, 0, '.', ' ');
 
-            // 
-            $request = new Request();
-            $request->year = date('Y');
-            $request->month = date('m');
-
+            // arc
             $activities = '[]';
             $quality = [];
             if(count($gs) > 0) {
@@ -414,7 +282,6 @@ class UserController extends Controller
                 $users_ids = json_decode($gs[0]->users);
 
                 $quality = $_activities ? QualityRecordWeeklyStat::table($users_ids, date('Y-m-d')) : [];
-                
                 
             }   
             
@@ -438,10 +305,23 @@ class UserController extends Controller
 
 
          
-            return view('admin.timetracking', compact('user', 'oklad','positions', 'user_position', 'photo', 
-                'downloads', 'groups', 'book', 'is_recruiter', 'indicators', 'month', 
-                'recruiter_stats', 'recruiter_stats_rates', 'recruiter_records', 'head_in_groups',
-                'user_earnings','quartal'))->with([
+            return view('admin.timetracking', compact(
+                'user',
+                'oklad',
+                'positions',
+                'user_position',
+                'photo', 
+                'downloads',
+                'groups',
+                'book',
+                'is_recruiter',
+                'indicators',
+                'month', 
+                'recruiter_stats',
+                'recruiter_stats_rates',
+                'recruiter_records',
+                'head_in_groups'
+                ))->with([
                     'answers' => UserExperience::getAnswers($user->id),
                     'position_desc' => $position_desc,
                     'groups_pt' => $gs,
@@ -813,101 +693,9 @@ class UserController extends Controller
         $groups = $groups->pluck('name', 'id')->toArray();
 
         if($request->excel) {
-            $data['records'] = [];
-
-            $headings = [
-                'id',
-                'ФИО',
-                'Email',
-                'Группы',
-                'Тип',
-                'Full/Part',
-                'Сегмент',
-                'Должность',
-                'Дата регистрации',
-                'Дата принятия',
-                'Дата увольнения',
-                'Причина увольнения',
-                'Телефон',
-                'Тел. 2',
-                'Тел. 3',
-                'День рождения',
-                'Доп.',
-                'Программа',
-                'График',
-                'Часы работы',
-                'Начало',
-                'Конец',
-            ];
-
-            
-            
-            $segments = Segment::get();
-            $positions = Position::get()->pluck('position', 'id')->toArray();
-            foreach($users as $user) {
-                $seg = $segments->where('id', $user->segment)->first();
-                $segment = $seg ? $seg->name : $user->segment;
-               // dump($user->segment);
-                
-                $grs = '';
-                foreach($user->groups as $gr) {
-                    try {
-                        $grs .= $groups[$gr] . '  ';
-                    } catch(\Exception $e) {
-                        $grs .= $gr . '  ';
-                    }   
-                }
-
-                if($user->last_group) {
-                    foreach(json_decode($user->last_group) as $gr) {
-                        try {
-                            $grs .= $groups[$gr] . '  ';
-                        } catch(\Exception $e) {
-                            $grs .= $gr . '  ';
-                        }   
-                    }
-                }
-                
-                
-                $data['records'][] = [
-                    0 => $user->id,
-                    1 => $user->last_name . ' ' . $user->name, 
-                    2 => $user->email, 
-                    3 => $grs, 
-                    4 => $user->user_type == 'office' ? 'Офисный' : 'Удаленный', 
-                    5 => $user->full_time == 1 ? 'Full-time' : 'Part-time', 
-                    6 => $segment, 
-                    7 => array_key_exists($user->position_id, $positions) ? $positions[$user->position_id] : $user->position_id, 
-                    8 => $user->created_at, 
-                    9 => $user->applied, 
-                    10 => $user->deleted_at, 
-                    11 => $user->fire_cause, 
-                    12 => $user->phone, 
-                    13 => $user->phone, 
-                    14 => $user->phone, 
-                    15 => $user->birthday, 
-                    16 => $user->description, 
-                    17 => $user->program_id == 1 ? "U-Calls" : 'Другое', 
-                    18 => $user->working_day_id == 1 ? '5-2' : '6-1', 
-                    19 => $user->working_time_id == 1 ? 8 : 9, 
-                    20 => $user->work_start, 
-                    21 => $user->work_end, 
-                ];    
-            }
-
-           //dd(1);
-            ob_end_clean();
-            if (ob_get_length() > 0) ob_clean();
-            
-            return Excel::create('Сотрудники '. date('Y-m-d'), function ($excel) use ($data, $headings) {
-                $excel->setTitle('Отчет');
-                $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
-                $excel->setDescription('Экспорт данных в Excel файл');
-                $excel->sheet('Сотрудники', function ($sheet) use ($data, $headings) {
-                    $sheet->fromArray($data['records'], null, 'A1', false, false);
-                    $sheet->prependRow(1, $headings);
-                });
-            })->export('xls');
+            $export = new UserExport($users, $groups);
+            $title = 'Сотрудники: ' . date('Y-m-d') . '.xlsx';
+            return Excel::download($export, $title);
         }   
             
         
@@ -2089,31 +1877,37 @@ class UserController extends Controller
         $ud->books = json_encode($books);
         $ud->save();
 
-    } 
-    
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function editPersonGroup(Request $request) {
-      //bitrix  dd('123');
+
         $group = ProfileGroup::find($request['group_id']);
-        $users = json_decode($group->users);
- 
-      
-        if($request['action'] == 'add') {
-            array_push($users, $request['user_id']); 
-            $users = array_unique($users);
-            
-        }
+        $exist = $group->users()->where([
+            ['user_id', $request['user_id']],
+            ['status', 'active']
+        ])->whereNull('to')->exists();
 
-        if($request['action'] == 'delete') {
-            if (($key = array_search($request['user_id'], $users)) !== false) {
-                unset($users[$key]);
+        try {
+            if($request['action'] == 'add' && !$exist) {
+                $group->users()->attach($request['user_id'], [
+                    'from' => Carbon::now()->toDateString()
+                ]);
             }
-        }
 
-        $users = array_values($users);
-        $group->users = json_encode($users);
-        $group->save();
-        
-    } 
+            if($request['action'] == 'delete') {
+                event(new TrackGroupChangingEvent($request['user_id'], $request['group_id']));
+                $group->users()->where('user_id', $request['user_id'])->whereNull('to')->update([
+                    'to' => Carbon::now()->toDateString(),
+                    'status'     => 'drop'
+                ]);
+            }
+        }catch (\Exception $exception) {
+            throw new \Exception($exception);
+        }
+    }
 
     public function setUserHeadInGroups(Request $request) {
 
@@ -2161,111 +1955,114 @@ class UserController extends Controller
 
     public function deleteUser(Request $request)
     {
-        $user = User::where([
-            'id' => $request->id,
-        ])->first();
-        
-        
-        // Есть заявление об увольнении
-        if ($request->hasFile('file8')) { // Заявление об увольнении
-            $file = $request->file('file8');
-            $resignation = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->move("static/profiles/" . $user->id . "/resignation", $resignation);
+        DB::transaction(function () use ($request){
+            $user = User::where([
+                'id' => $request->id,
+            ])->first();
 
-            $downloads = Downloads::where('user_id', $user->id)->first();
-            if ($downloads) {
-                $downloads->resignation = $resignation;
-                $downloads->save();
-            } else {
-                $downloads = Downloads::create([
+            event(new TrackUserFiredEvent($user));
+
+            // Есть заявление об увольнении
+            if ($request->hasFile('file8')) { // Заявление об увольнении
+                $file = $request->file('file8');
+                $resignation = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->move("static/profiles/" . $user->id . "/resignation", $resignation);
+
+                $downloads = Downloads::where('user_id', $user->id)->first();
+                if ($downloads) {
+                    $downloads->resignation = $resignation;
+                    $downloads->save();
+                } else {
+                    $downloads = Downloads::create([
+                        'user_id' => $user->id,
+                        'ud_lich' => null,
+                        'dog_okaz_usl' => null,
+                        'sohr_kom_tainy' => null,
+                        'dog_o_nekonk' => null,
+                        'trud_dog' => null,
+                        'archive' => null,
+                        'resignation' => $resignation,
+                    ]);
+                }
+            }
+
+
+            ///////  УВолить с отработкой или без
+
+            if($request->delay == 1) { // Удалить через 2 недели
+
+                $delete_plan = UserDeletePlan::where('user_id', $request->id)->orderBy('id', 'desc')->first();
+
+                if($delete_plan) $delete_plan->delete();
+
+                $fire_date = Carbon::now()->addHours(24 * 14);
+
+                UserDeletePlan::create([
                     'user_id' => $user->id,
-                    'ud_lich' => null,
-                    'dog_okaz_usl' => null,
-                    'sohr_kom_tainy' => null,
-                    'dog_o_nekonk' => null,
-                    'trud_dog' => null,
-                    'archive' => null,
-                    'resignation' => $resignation,
+                    'executed' => 0,
+                    'delete_time' => $fire_date,
+                ]);
+
+            } else { // Сразу удалить
+
+
+
+                /////////// Удалить связанные уведомления
+                $notis = UserNotification::where('about_id', $user->id)->get();
+                if($notis->count() > 0) {
+                    foreach($notis as $noti) {
+                        $noti->read_at = now();
+                        $noti->save();
+                    }
+                }
+
+                //////////////////////////////
+
+                $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->id)->first();
+
+                if($trainee) {
+                    if($trainee->lead_id != 0 && $trainee->lead_id) {
+                        $lead = Lead::where('lead_id', $trainee->lead_id)->orderBy('id', 'desc')->first();
+                    } else {
+                        $lead = Lead::where('phone', $user->phone)->orderBy('id', 'desc')->first();
+                    }
+
+                    if($lead) {
+                        $bitrix = new Bitrix();
+                        $deal_id = $bitrix->findDeal($lead->lead_id, false);
+
+                        if($deal_id != 0) {
+                            $bitrix->changeDeal($deal_id, [
+                                'STAGE_ID' => 'C4:12' // не присутствовал на обучении
+                            ]);
+                        }
+
+                    }
+                }
+
+                $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
+                if($delete_plan) $delete_plan->delete();
+
+                $fire_date = now();
+                User::deleteUser($request);
+            }
+
+            // Причина увольенения
+            $cause = $request->cause2 == '' ? $request->cause : $request->cause2;
+            $ud = UserDescription::where('user_id', $request->id)->first();
+
+            if($ud) {
+                $ud->fire_cause = $cause;
+                $ud->fire_date = $fire_date;
+                $ud->save();
+            } else {
+                UserDescription::create([
+                    'user_id' => $request->id,
+                    'fire_cause' => $cause,
+                    'fire_date' => $fire_date
                 ]);
             }
-        }
-
-
-        ///////  УВолить с отработкой или без 
-
-        if($request->delay == 1) { // Удалить через 2 недели
-
-            $delete_plan = UserDeletePlan::where('user_id', $request->id)->orderBy('id', 'desc')->first();
-
-            if($delete_plan) $delete_plan->delete();
-
-            $fire_date = Carbon::now()->addHours(24 * 14);
-
-            UserDeletePlan::create([
-                'user_id' => $user->id,
-                'executed' => 0,
-                'delete_time' => $fire_date,
-            ]);
-            
-        } else { // Сразу удалить
-
-            
-            
-            /////////// Удалить связанные уведомления 
-            $notis = UserNotification::where('about_id', $user->id)->get();
-            if($notis->count() > 0) {
-                foreach($notis as $noti) {
-                    $noti->read_at = now();
-                    $noti->save();
-                }
-            }
-            
-            //////////////////////////////
-
-            $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->id)->first();
-
-            if($trainee) {
-                if($trainee->lead_id != 0 && $trainee->lead_id) {
-                    $lead = Lead::where('lead_id', $trainee->lead_id)->orderBy('id', 'desc')->first();
-                } else {
-                    $lead = Lead::where('phone', $user->phone)->orderBy('id', 'desc')->first();
-                }
-                
-                if($lead) {
-                    $bitrix = new Bitrix();
-                    $deal_id = $bitrix->findDeal($lead->lead_id, false);
-                   
-                    if($deal_id != 0) {
-                        $bitrix->changeDeal($deal_id, [
-                            'STAGE_ID' => 'C4:12' // не присутствовал на обучении
-                        ]);
-                    }
-                    
-                }
-            }
-
-            $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
-            if($delete_plan) $delete_plan->delete();
-            
-            $fire_date = now();
-            User::deleteUser($request); 
-        }
-        
-        // Причина увольенения
-        $cause = $request->cause2 == '' ? $request->cause : $request->cause2; 
-        $ud = UserDescription::where('user_id', $request->id)->first();
-
-        if($ud) { 
-            $ud->fire_cause = $cause;
-            $ud->fire_date = $fire_date;
-            $ud->save();
-        } else {
-            UserDescription::create([
-                'user_id' => $request->id,
-                'fire_cause' => $cause,
-                'fire_date' => $fire_date
-            ]);
-        }
+        });
 
         View::share('title', 'Сотрудник уволен');
         View::share('menu', 'timetrackinguser');

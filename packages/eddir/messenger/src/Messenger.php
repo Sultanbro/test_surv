@@ -1,8 +1,5 @@
 <?php
 
-/** @noinspection PhpDeprecationInspection */
-// todo: remove this line after removing the above line
-
 /**
  * MessengerFacade
  *
@@ -16,12 +13,9 @@ use Eddir\Messenger\Models\MessengerChat;
 use Eddir\Messenger\Models\MessengerMessage;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Pusher\ApiErrorException;
 use Pusher\Pusher;
 use Pusher\PusherException;
@@ -68,15 +62,46 @@ class Messenger {
                               } )
                               ->get();
         $chats->each( function ( MessengerChat $chat ) use ( $user ) {
-            $chat->unread_messages_count = $chat->getUnreadMessagesCount($user);
-            // last message with sender
-            $chat->last_message = $chat->getLastMessage();
-            if ( $chat->last_message ) {
-                $chat->last_message->sender = $chat->last_message->sender;
-            }
+            $this->getChatAttributesForUser( $chat, $user );
         } );
 
         return $chats;
+    }
+
+    /**
+     * Get chat attributes.
+     *
+     * @param MessengerChat $chat
+     * @param User $user
+     * @return MessengerChat
+     */
+    public function getChatAttributesForUser(MessengerChat $chat, User $user): MessengerChat
+    {
+        $chat->unread_messages_count = $chat->getUnreadMessagesCount( $user );
+        // last message with sender
+        $chat->last_message = $chat->getLastMessage();
+        if ( $chat->last_message ) {
+            $chat->last_message->sender = $chat->last_message->sender;
+        }
+
+        if ($chat->private) {
+            // get second user in private chat
+            $second_user = $chat->users->firstWhere('id', '!=', $user->id);
+
+            $chat->title = $second_user ? $second_user->name . " " . $second_user->last_name : 'Уволен';
+            $chat->image = $second_user ? config('messenger.user_avatar.folder') . '/' . $second_user->img_url : '';
+
+            if($second_user && ($second_user->img_url == '' || $second_user->img_url == 'avatar.png')) {
+                $chat->image = '/images/avatar.png';
+            }
+
+        }
+        if (empty($chat->image)) {
+            $chat->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
+        }
+
+
+        return $chat;
     }
 
     /**
@@ -84,15 +109,18 @@ class Messenger {
      *
      * @param string $name
      * @param int $userId
+     * @param int $limit
      *
      * @return Collection
      */
-    public function searchChats( string $name, int $userId ): Collection {
+    public function searchChats( string $name, int $userId, int $limit = 100 ): Collection {
         return MessengerChat::query()
                             ->whereHas( 'users', function ( Builder $query ) use ( $userId ) {
                                 $query->where( 'user_id', $userId );
                             } )
                             ->where( 'title', 'like', "%$name%" )
+                            ->where( 'private', false )
+                            ->limit( $limit )
                             ->get();
     }
 
@@ -100,12 +128,16 @@ class Messenger {
      * Search users by name.
      *
      * @param string $name
+     * @param int $limit
      *
      * @return Collection
      */
-    public function searchUsers( string $name ): Collection {
+    public function searchUsers( string $name, int $limit = 100 ): Collection {
         return User::query()
                    ->where( 'name', 'like', "%$name%" )
+                   ->orWhere( 'last_name', 'like', "%$name%" )
+                   ->limit( $limit )
+                   ->select('name', 'id', 'last_name', 'img_url') 
                    ->get();
     }
 
@@ -123,6 +155,44 @@ class Messenger {
     }
 
     /**
+     * Get private chat by user id or create new one if it doesn't exist.
+     *
+     * @param int $userId
+     * @param int $otherUserId
+     *
+     * @return Builder|Model
+     */
+    public function getPrivateChat( int $userId, int $otherUserId ): Builder|Model {
+        // get chat when has user userId
+        $chat = MessengerChat::query()
+                             ->whereHas( 'users', function ( Builder $query ) use ( $userId ) {
+                                 $query->where( 'user_id', $userId );
+                             } )
+                             ->whereHas( 'users', function ( Builder $query ) use ( $otherUserId ) {
+                                 $query->where( 'user_id', $otherUserId );
+                             } )
+                             ->first();
+        if ( $chat ) {
+            return $chat;
+        }
+        // create new chat if it doesn't exist
+        $chat = MessengerChat::query()
+                            ->create( [
+                                'owner_id' => $userId,
+                                'title' => '',
+                                'private' => true,
+                            ] );
+
+        // attach each user
+        $chat->users()->attach( $userId );
+        $chat->users()->attach( $otherUserId );
+        $chat->save();
+
+        return $chat;
+    }
+
+
+    /**
      * Fetch chat messages with pagination.
      *
      * @param int $chatId
@@ -134,6 +204,7 @@ class Messenger {
     public function fetchMessages( int $chatId, int $page = 0, int $perPage = 10 ): Collection {
         return MessengerMessage::query()
                                ->where( 'chat_id', $chatId )
+                               ->where( 'deleted' , false)
                                ->orderBy( 'created_at', 'desc' )
                                ->skip( $page * $perPage )
                                ->take( $perPage )
@@ -152,8 +223,39 @@ class Messenger {
         $messages->each( function ( MessengerMessage $message ) use ( $user ) {
             // add user to read users
             $message->readers()->syncWithoutDetaching( $user );
+            # get all users in chat
+            $users = $message->chat->users;
+            # send notification to all users in chat
+            $users->each(function (User $user) use ($message) {
+                $this->pusher->trigger( 'messages.' . $user->id, 'readMessage', [
+                    'message' => $message->toArray(),
+                    'user' => $user->toArray(),
+                ] );
+            });
         } );
         return $messages;
+    }
+
+    /**
+     * Set message as read.
+     *
+     * @param MessengerMessage $message
+     * @param User $user
+     *
+     * @return MessengerMessage
+     */
+    public function setMessageAsRead(MessengerMessage $message, User $user): MessengerMessage {
+        $message->readers()->syncWithoutDetaching($user);
+        # get all users in chat
+        $users = $message->chat->users;
+        # send notification to all users in chat
+        $users->each(function (User $user) use ($message) {
+            $this->pusher->trigger( 'messages.' . $user->id, 'readMessage', [
+                'message' => $message->toArray(),
+                'user' => $user->toArray(),
+            ] );
+        });
+        return $message;
     }
 
     /**
@@ -181,7 +283,7 @@ class Messenger {
      * @return Collection
      */
     public function getMessages( int $chat_id ): Collection {
-        return MessengerMessage::where( 'chat_id', $chat_id )->get();
+        return MessengerMessage::where( 'chat_id', $chat_id )->where('deleted', false)->get();
     }
 
     /**
@@ -206,7 +308,6 @@ class Messenger {
      *
      * @return MessengerMessage
      * @throws ApiErrorException
-     * @throws GuzzleException
      * @throws PusherException
      * @throws Exception
      */
@@ -266,14 +367,18 @@ class Messenger {
     }
 
     /**
-     * Delete message.
+     * Set message as deleted.
      *
      * @param int $messageId
      *
      * @return bool
      */
     public function deleteMessage( int $messageId ): bool {
-        return MessengerMessage::destroy( $messageId );
+        /** @var MessengerMessage $message */
+        $message = MessengerMessage::find( $messageId );
+        $message->deleted = true;
+        $message->save();
+        return true;
     }
 
     /**
@@ -282,6 +387,9 @@ class Messenger {
      * @param int $messageId
      *
      * @return MessengerMessage
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function pinMessage( int $messageId ): MessengerMessage {
         /** @var MessengerMessage $message */
@@ -315,6 +423,9 @@ class Messenger {
      * @param int $messageId
      *
      * @return MessengerMessage
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function unpinMessage( int $messageId ): MessengerMessage {
         /** @var MessengerMessage $message */
@@ -425,40 +536,6 @@ class Messenger {
         $chat->description = $description;
         $chat->save();
         return $chat;
-    }
-
-    // API v1 (deprecated)
-
-    /**
-     * This method returns the allowed image extensions
-     * to attach with the message.
-     *
-     * @return array
-     * @deprecated since version 1.0.0
-     */
-    public function getAllowedImages(): array {
-        return config( 'messenger.attachments.allowed_images' );
-    }
-
-    /**
-     * This method returns the allowed file extensions
-     * to attach with the message.
-     *
-     * @return array
-     * @deprecated since version 1.0.0
-     */
-    public function getAllowedFiles(): array {
-        return config( 'messenger.attachments.allowed_files' );
-    }
-
-    /**
-     * Returns an array contains messenger's colors
-     *
-     * @return array
-     * @deprecated since version 1.0.0
-     */
-    public function getMessengerColors(): array {
-        return config( 'messenger.colors' );
     }
 
     /**

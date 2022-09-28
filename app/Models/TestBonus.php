@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TestBonus extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'test_bonuses';
 
@@ -18,6 +19,7 @@ class TestBonus extends Model
         'date', // Y-m-d
         'amount', // int
         'comment', // int
+        'course_item_id', // int
     ];
 
 }

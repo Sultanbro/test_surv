@@ -1,24 +1,28 @@
 <template>
-<div class="kpi p-3">
+<div class="kpi px-3 py-1">
 
     <!-- top line -->
     <div class="d-flex mb-2 mt-2 jcsb aifs">
         
-        <div class="d-flex mr-2">
-            <div class="d-flex aifs mr-2">
+         <div class="d-flex aic mr-2">
+            <div class="d-flex aic mr-2">
                 <span>Показывать:</span>
-                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2" />
+                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
-            <super-filter 
-                :ref="'filter'"
+            <super-filter
+                ref="child"
                 :groups="groups"
-                @apply="fetchKPI"
-                @search-text-changed="onSearch"
-            >
-            </super-filter>
-            <div class="ml-2"> 
+            />
+            <!--<input 
+                class="searcher mr-2 input-sm"
+                v-model="searchText"
+                type="text"
+                placeholder="Поиск по совпадениям..."
+                @keyup="onSearch"
+            >-->
+            <span class="ml-2"> 
                 Найдено: {{ items.length }}
-            </div>
+            </span>
         </div>
 
         <button class="btn rounded btn-outline-success" @click="addKpi">
@@ -49,24 +53,26 @@
 
         <tbody>
 
-            <template v-for="(item, i) in page_items">
-                <tr :key="i">
-                    <td  @click="item.expanded = !item.expanded" class="pointer">
+            <template v-for="(item, i) in page_items" v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0">
+                <!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
+                <tr :key="i" > 
+                    <td  @click="expand(i)" class="pointer">
                         <div class="d-flex px-2">
                             <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
                             <i class="fa fa-plus mt-1" v-else></i>
                             <span class="ml-2">{{ i + 1 }}</span>
                         </div>
                     </td>
-                    <td  v-for="(field, f) in fields" :key="f">
+                    <td  v-for="(field, f) in fields" :key="f" :class="field.class"> 
 
-                        <div v-if="field.key == 'target'" :class="field.class">
+                        <div v-if="field.key == 'target'" >
                             <superselect
-                                v-if="item.target == null"
+                                v-if="item.target == null || item.id == 0"
                                 class="w-full" 
-                                :values="[]" 
+                                :values="item.target == null ? [] : [item.target]" 
                                 :single="true"
                                 @choose="(target) => item.target = target"
+                                @remove="() => item.target = null"
                                 :key="i" /> 
                             <div v-else class="d-flex aic">
                                 <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i> 
@@ -78,7 +84,18 @@
                         </div>
 
                         <div v-else-if="field.key == 'stats'" :class="field.class">
-                            <i class="fa fa-chart-bar btn btn-primary p-1" @click="showKpiStats(i)"></i>
+                            
+                            <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank">   
+                                <i class="fa fa-chart-bar btn btn-primary p-1"></i>
+                            </a>
+                        </div>
+
+                        <div v-else-if="field.key == 'created_by' && item.creator != null">
+                            {{ item.creator.last_name + ' ' + item.creator.name }}
+                        </div>
+
+                        <div v-else-if="field.key == 'updated_by' && item.updater != null">
+                            {{ item.updater.last_name + ' ' + item.updater.name }}
                         </div>
 
                         <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
@@ -96,12 +113,13 @@
                     </td>
                 </tr>
 
-                <template v-if="item.elements !== undefined && item.elements.length > 0">
+                <template v-if="item.items !== undefined">
                     <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
                         <td :colspan="fields.length + 2">
                             <div class="table__wrapper">
                                 <kpi-items
-                                    :items="item.elements"
+                                    :kpi_id="item.id"
+                                    :items="item.items" 
                                     :expanded="item.expanded"
                                     :activities="activities"
                                     :groups="groups"
@@ -109,8 +127,9 @@
                                     :completed_100="item.completed_100"
                                     :lower_limit="item.lower_limit"
                                     :upper_limit="item.upper_limit"
-                                >
-                                </kpi-items>
+                                    :editable="true"
+                                    :kpi_page="true"
+                                />
                             </div>
                         </td>
                     </tr>                
@@ -149,38 +168,16 @@
      
       <div class="row">
 
-        <div class="col-md-4 mb-2">
-           <b-form-checkbox
-              v-model="show_fields.updated_at"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Дата изменения
-          </b-form-checkbox>
-        
-        </div> 
-        <div class="col-md-4 mb-2">
-           <b-form-checkbox
-              v-model="show_fields.created_by"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Постановщик
-          </b-form-checkbox>
-        
-          
-        </div>  
-
-        <div class="col-md-4 mb-2">
-          <b-form-checkbox
-              v-model="show_fields.updated_by"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Изменил
-          </b-form-checkbox>
-       
+         <div class="col-md-4 mb-2" v-for="(field, f) in all_fields">
+            <b-form-checkbox
+                v-model="show_fields[field.key]"
+                :value="true"
+                :unchecked-value="false"
+            >
+                {{ field.name }}
+            </b-form-checkbox>
         </div>
+
       </div>  
     </b-modal>
 
@@ -188,6 +185,9 @@
 </template>
 
 <script>
+import {kpi_fields, newKpi} from "./kpis.js";
+import {findModel, groupBy} from "./helpers.js";
+
 export default {
     name: "KPI", 
     props: {
@@ -221,14 +221,17 @@ export default {
         return {
             active: 1,
             show_fields: [],
+            all_fields: kpi_fields,
             fields: [],
+            uri: 'kpi',
             groups: [],
             searchText: '',
             modalAdjustVisibleFields: false,
             page_items: [],
-            pageSize: 10,
+            pageSize: 100,
             paginationKey: 1,
             items: [],
+            all_items: [],
             activities: [],
             non_editable_fields: [
                 'created_at',
@@ -241,43 +244,23 @@ export default {
 
     created() {
         this.fetchKPI()
-        // this.fetchActivities()
     
         this.setDefaultShowFields()
         this.prepareFields(); 
         this.addStatusToItems(); 
-
-    //     this.items.forEach(el => {
-    //     let a = Math.floor(Math.random() * 3) + 1
-
-    //     for(let i=1;i<=a;i++) {
-    //         el.elements.push({
-    //             name: 'Активность',
-    //             activity_id: 0,
-    //             unit: '%',
-    //             method: 1,
-    //             source: 0,
-    //             plan: '90%',
-    //             share: '40%',
-    //             sum: '10000',
-    //             fact: 100,
-    //             source: 1,
-    //             group_id: 0
-    //         });
-    //     }
-
-    //     this.groups = {
-    //         23: 'Адм сотрудники',
-    //         26: 'It отдел',
-    //         42: 'Каспи',
-    //     };
-     
-    //    })
+    },
+    mounted() {
+        this.$watch(
+          "$refs.child.searchText",
+          (new_value, old_value) => (this.searchText = new_value)
+        );
     },
     methods: {
-        
-        setTarget(item) {
-
+        showKpiStats(i){
+            alert(i);
+        },
+        expand(i) {
+            this.page_items[i].expanded = !this.page_items[i].expanded
         },
 
         onChangePage(page_items) {
@@ -287,15 +270,15 @@ export default {
         fetchKPI(filter = null) {
             let loader = this.$loading.show();
 
-            axios.post('/kpi/get', {
+            axios.post(this.uri + '/' + 'get', {
                 filters: filter 
             }).then(response => {
                 
                 this.items = response.data.kpis;
+                this.all_items = response.data.kpis;
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
 
-                this.items.forEach(el => el.expanded = false);
                 this.page_items = this.items.slice(0, this.pageSize);
 
                 loader.hide()
@@ -306,24 +289,15 @@ export default {
         },
 
         setDefaultShowFields() {
-        
+            let obj = {}; // Какие поля показывать
+            kpi_fields.forEach(field => obj[field.key] = true); 
+
             if(localStorage.kpi_show_fields) {
                 this.show_fields = JSON.parse(localStorage.getItem('kpi_show_fields'));
+                if(this.show_fields == null) this.show_fields = obj
             } else {
-                this.show_fields = { // Какие поля показывать
-                    target: true,
-                    completed_80: true,
-                    completed_100: true,
-                    lower_limit: true,
-                    upper_limit: true,
-                    stats: true,
-                    created_at: true,
-                    updated_at: true,
-                    created_by: true,
-                    updated_by: true,
-                };
+                this.show_fields = obj
             }
-
         },
 
         adjustFields() {
@@ -333,7 +307,7 @@ export default {
         addStatusToItems() {
             this.items.forEach(el => {
 
-                this.elements.forEach(a => {
+                el.items.forEach(a => {
                     a.source = 0
                     a.group_id = 0
                 });
@@ -344,194 +318,169 @@ export default {
         },
 
         prepareFields() {
-            let fields = [];
+            let visible_fields = [],
+                show_fields = this.show_fields;
             
-            if(this.show_fields['target']) {
-                fields.push({
-                    name: 'Кому',
-                    key: 'target',
-                    visible: true,
-                    type: 'superselect',
-                    class: 'text-left w-230 '
-                });
-            }
-            
-            if(this.show_fields['completed_80']) {
-                fields.push({
-                    name: 'Выполнение KPI от 80-99%',
-                    key: 'completed_80',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
+            kpi_fields.forEach((field, i) => {
+                if(this.show_fields[field.key] != undefined
+                    && this.show_fields[field.key]
+                ) {
+                    visible_fields.push(field)
+                }
+            });
 
-            if(this.show_fields['completed_100']) {
-                fields.push({
-                    name: 'Выполнение KPI от 100%',
-                    key: 'completed_100',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['lower_limit']) {
-                fields.push({
-                    name: 'Нижний порог отсечения премии, %',
-                    key: 'lower_limit',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['upper_limit']) {
-                fields.push({
-                    name: 'Верхний порог отсечения премии, %',
-                    key: 'upper_limit',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['stats']) {
-                fields.push({
-                    name: 'Статистика',
-                    key: 'stats',
-                    visible: true,
-                    type: 'number',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['created_at']) {
-                fields.push({
-                    name: 'Дата создания',
-                    key: 'created_at',
-                    visible: true,
-                    type: 'date',
-                    class: 'text-center'
-                });
-            }
-
-            if(this.show_fields['updated_at']) {
-                fields.push({
-                    name: 'Дата изменения',
-                    key: 'updated_at',
-                    visible: true,
-                    type: 'date',
-                    class: 'text-center'
-                });
-            }
-            if(this.show_fields['created_by']) {
-                fields.push({
-                    name: 'Постановщик',
-                    key: 'created_by',
-                    visible: true,
-                    type: 'text',
-                    class: 'text-center'
-                });
-            }
-
-            if(this.show_fields['updated_by']) {
-                fields.push({
-                    name: 'Изменил',
-                    key: 'updated_by',
-                    visible: true,
-                    type: 'text',
-                    class: 'text-center'
-                });
-            }
-
-            this.fields = fields;
+            this.fields = visible_fields;
         },
 
         addKpi() {
-            this.items.unshift({
-                id: 0,
-                target: null,
-                completed_80: 10000,
-                completed_100: 30000,
-                lower_limit: 80,
-                upper_limit: 100,
-                stats: 3,
-                created_at: new Date().toISOString().substr(0, 19).replace('T',' '),
-                updated_at: new Date().toISOString().substr(0, 19).replace('T',' '),
-                created_by: 'Али Акпанов',
-                updated_by: 'Али Акпанов',
-                elements: [{
-                    sum: 0,
-                    method: 1,
-                    name: 'Активность',
-                    activity_id: 0,
-                    plan: 0,
-                    share: 0
-                }], 
-                expanded: false
-            });
+            this.items.unshift(newKpi()); 
+            //this.page_items.unshift(newKpi());
+           // this.page_items = this.items.slice(0, this.pageSize);
+            this.$toast.info('Добавлен KPI');
+        },
 
-            this.$toast.info('Добавить KPI');
+        validateMsg(item) {
+            let msg = '';
+
+            if(item.target == null)    msg = 'Выберите Кому назначить'
+            
+            let share = 0;
+
+            console.log(item);
+
+            if(item.items != undefined) {
+
+                item.items.every((el, i) => {
+
+                    if(!(el.deleted !== undefined && el.deleted)) share += Math.abs(el.share);
+ 
+                     
+                    if(el.name.length <= 1) {
+                        msg = 'Заполните название активности #' + (i+1);
+                        return false;
+                    }
+
+                    if(
+                        (el.activity_id == 0 || el.activity_id == undefined) 
+                        && el.source != 0
+                    ) { 
+                        msg = 'Выберите показатель #' + (i+1);
+                        return false;
+                    }
+
+                   
+                    if(Number(el.plan) <= 0) {
+                        msg = 'План должен быть больше 0 #' + (i+1);
+                        return false;
+                    }
+
+
+                    return true;
+                });
+            }
+            
+            // console.log(share) 
+            // if(share > 100) {
+            //     msg = 'Доля активностей должна быть не более 100%';
+            // }
+            
+            return msg;
         },
 
         saveKpi(i) {
-            let loader = this.$loading.show();
+
             let item = this.items[i]
             let method = this.items[i].id == 0 ? 'save' : 'update';
 
-            if(item.target == null) {
-                this.$toast.error('Выберите Кому назначить KPI!');
+            /**
+             * validate item
+             */
+            let not_validated_msg = this.validateMsg(item);
+            if(not_validated_msg != '') {
+                this.$toast.error(not_validated_msg)
                 return;
             }
+
             
+            let loader = this.$loading.show();
+
             let fields = {
                 id: item.id,
                 targetable_id: item.target.id,
-                targetable_type: item.target.type,
+                targetable_type: findModel(item.target.type),
                 completed_80: item.completed_80,
                 completed_100: item.completed_100,
                 upper_limit: item.upper_limit,
                 lower_limit: item.lower_limit,
-                items: item.elements 
+                items: item.items 
             };
  
             let req = this.items[i].id == 0 
-                ? axios.post('/kpi/' + method, fields)
-                : axios.put('/kpi/' + method, fields);
+                ? axios.post(this.uri + '/' + method, fields)
+                : axios.put(this.uri + '/' + method, fields);
 
             req.then(response => {
                 
-                let kpi = response.data.kpi;
-                
-                item.id = kpi.id;
-                item.elements.forEach((el, index) => {
-                    el.id = kpi.elements[index].id
+                item.id = response.data.id;
+                item.items.forEach((el, index) => {
+                    el.id = response.data.items[index]
                 });
 
-                this.$toast.info('KPI Сохранен!');
+                this.removeDeletedItems(item.items)
+
+                this.$toast.info('KPI Сохранен');
                 loader.hide()
             }).catch(error => {
+                let m = error;
+                if(error.message == 'Request failed with status code 409') {
+                    m = 'Выберите другую цель "Кому". Этому объекту уже назначен KPI';
+                }
+                
                 loader.hide()
-                alert(error)
+                alert(m)
             });
-        }, 
+
+
+        },  
+
+        removeDeletedItems(items) {
+            let indexes = [];
+            let counter = 0;
+            items.forEach((el, index) => {
+                if(el.deleted != undefined && el.deleted) {
+                    indexes.push(index)
+                }
+            });
+            console.log(indexes)
+            indexes.forEach(index => {
+                items.splice(index-counter, 1);
+                counter++;
+            });
+
+        },
 
         deleteKpi(i) {
-            let loader = this.$loading.show();
+         
             let item = this.items[i]
+            let a = this.all_items.findIndex(el => el.id == item.id);
 
             if(!confirm('Вы уверены?')) {
                 return;
             }
 
             if(item.id == 0) {
-                this.items.splice(i) // maybe will be error cause of page_items
+                if(a != -1) this.all_items.splice(a, 1);
+                 this.onSearch();
                 this.$toast.info('KPI Удален!');
                 return;
             }
 
-            axios.delete('/kpi/delete', {
-                id: item.id
-            }).then(response => {
+            let loader = this.$loading.show();
+            axios.delete(this.uri + '/delete/' + item.id).then(response => {
 
-                this.items.splice(i) // maybe will be error cause of page_items
+             
+                if(a != -1) this.all_items.splice(a, 1);
+                this.onSearch();
 
                 this.$toast.info('KPI Удален!');
                 loader.hide()
@@ -545,28 +494,53 @@ export default {
             this.$toast.info('Показать статистику');
         },
 
-        onSearch(text) { 
-            this.searchText = text;
+        onSearch() { 
+            let text = this.searchText;
+     
             if(this.searchText == '') {
-                //this.filtered_items = this.items; 
+               this.items = this.all_items;
             } else {
-                // this.filtered_items = this.items.filter((el, index) => {
-                // let has = false;
-                // el.targets.forEach(target => {
-                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-                // });
+                this.items = this.all_items.filter((el, index) => {
+                    let has = false;
 
-                // el.groups.forEach(target => {
-                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-                // });
+                    if (
+                        el.target != null
+                        && el.target.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                    ) {
+                        has = true;
+                    }
 
-                // el.roles.forEach(target => {
-                //     if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-                // });
+                    if (
+                        el.title.toLowerCase().indexOf(text.toLowerCase()) > -1
+                    ) {
+                        has = true;
+                    }
 
-                // return has; 
-                //}); 
+                    if (
+                        el.creator != null
+                        && (
+                            el.creator.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                            || el.creator.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                        )
+                    ) {
+                        has = true;
+                    }
+
+                    if (
+                        el.updater != null
+                        && (
+                            el.updater.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                            || el.updater.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                        )
+                    ) {
+                        has = true;
+                    }
+
+                    return has; 
+                }); 
             }
+
+            this.page_items = this.items.slice(0, this.pageSize);
         },
 
         validate(value, field) {

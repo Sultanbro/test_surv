@@ -3,68 +3,11 @@
 namespace Eddir\Messenger;
 
 use Eddir\Messenger\Console\InstallCommand;
-use Eddir\Messenger\Facades\MessengerFacade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use JetBrains\PhpStorm\ArrayShape;
 
 class MessengerServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     *
-     * @noinspection PhpCSValidationInspection
-     */
-    public function boot()
-    {
-        /*
-         * Optional methods to load your package assets
-         */
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'chat');
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
-
-        Route::group([
-            'namespace' => config('messenger.routes.namespace'),
-            'middleware' => config('messenger.routes.middleware'),
-            'prefix' => config('messenger.routes.prefix'),
-        ], function () {
-            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
-        });
-
-        $components = [
-            'ChatApp',
-            'ChatComponent',
-            'ChatConversation',
-            'ChatFeed',
-            'ChatHeader',
-            'ChatsList',
-            'MessageInput',
-            'SideChatsList',
-        ];
-
-        $for_publishing = [];
-        foreach ($components as $component) {
-            $for_publishing[__DIR__ . "/../resources/js/Components/Chat/$component.vue"] =
-                resource_path("js/Components/Chat/$component.vue");
-        }
-
-        $this->publishes($for_publishing, 'messenger-views');
-
-        if ($this->app->runningInConsole() or "it's ok to publish views outside of the console" != "") {
-            $this->publishes([
-                __DIR__ . '/../config/config.php' => config_path('messenger.php'),
-            ], 'messenger-config');
-
-            // Publishing the views.
-            $this->publishes([
-                __DIR__ . '/../resources/views' => resource_path('views/eddir/messenger'),
-            ], 'messenger-views');
-
-            // Registering package commands.
-             $this->commands([InstallCommand::class]);
-        }
-    }
-
     /**
      * Register the application services.
      */
@@ -80,20 +23,48 @@ class MessengerServiceProvider extends ServiceProvider
     }
 
     /**
-     * API routes configurations.
+     * Bootstrap the application services.
      *
-     * @return array
+     * @noinspection PhpCSValidationInspection
      */
-    #[ArrayShape([
-    'prefix'     => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-                    'namespace'  => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-                    'middleware' => "\Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed",
-    ])] private function apiRoutesConfigurations(): array
+    public function boot()
     {
-        return [
-            'prefix' => config('messenger.api_routes.prefix'),
-            'namespace' => config('messenger.api_routes.namespace'),
-            'middleware' => config('messenger.api_routes.middleware'),
-        ];
+        Route::group([
+            'namespace' => config('messenger.routes.namespace'),
+            'middleware' => config('messenger.routes.middleware'),
+            'prefix' => config('messenger.routes.prefix'),
+        ], function () {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        });
+
+        if ($this->app->runningInConsole()) {
+            $this->bootForConsole();
+        }
+    }
+
+    /**
+     * Console-specific booting.
+     */
+    public function bootForConsole()
+    {
+        // Registering package commands.
+        $this->commands([InstallCommand::class]);
+
+        // Messenger migrations.
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
+        // Publishing the configuration file.
+        $this->publishes([
+            __DIR__ . '/../config/config.php' => config_path('messenger.php'),
+        ], 'messenger-config');
+
+        // Publishing Vue components.
+        $this->publishes([
+            __DIR__ . '/../resources/js/Components/Chat/' => resource_path("js/Components/Chat/"),
+        ], 'messenger-vue-components');
+
+        $this->publishes([
+            __DIR__.'/../public' => public_path('vendor/messenger'),
+        ], 'messenger-assets');
     }
 }

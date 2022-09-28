@@ -71,7 +71,8 @@ return [
 			'bucket' => 'video',
 			'endpoint' => 'https://storage.oblako.kz:443',
 			'use_path_style_endpoint' => true,
-			'throw' => false
+			'throw' => false,
+			'visibility' => 'public',
         ],
 
         'ftp' => [

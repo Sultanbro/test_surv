@@ -57,9 +57,27 @@ class ProfileGroup extends Model
     CONST FROM_UCALLS = -1;
     CONST NOWHERE = 0;
 
+    /**
+     * @return MorphMany
+     */
+    public function qpremium(): MorphMany
+    {
+        return $this->morphMany('App\Models\QuartalPremium', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    /**
+     * @return MorphMany
+     */
+    public function bonuses(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
     public function users()
     {
-        return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id');
+        return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id')
+            ->withPivot(['from', 'to'])
+            ->withTimestamps();
     }
 
     /**

@@ -2,18 +2,33 @@
 
 namespace App\Service;
 
-use App\Models\Analytics\UserStat;
-use App\Models\Kpi\Kpi;
-use App\Models\Kpi\KpiItem;
-use App\ProfileGroup;
-use App\User;
-use Carbon\Carbon;
-use Exception;
+use App\AnalyticsSettingsIndividually;
+use App\Http\Requests\BonusesFilterRequest;
+use App\Models\GroupUser;
+use App\Models\Kpi\Bonus;
+use App\Models\QuartalPremium;
+use App\Position;
+use App\Traits\KpiHelperTrait;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Exception;
+use App\User;
+use App\ProfileGroup;
+use App\Models\Kpi\KpiItem;
+use App\Models\Kpi\Kpi;
+use App\Models\Analytics\UserStat;
+use App\Models\Analytics\UpdatedUserStat;
+use App\Models\Analytics\Activity;
+use App\Models\Analytics\AnalyticStat;
+use App\Models\History;
 
 class KpiStatisticService
 {
+    use KpiHelperTrait;
     /**
      * Фильтры!
      *
@@ -50,6 +65,44 @@ class KpiStatisticService
      * Диапазон.
      */
     const RANGE = 6;
+
+    /**
+     * Модель группы.
+     */
+    const PROFILE_GROUP = 'App\ProfileGroup';
+
+    /**
+     * Модель пользователей.
+     */
+    const USER = 'App\User';
+
+    /**
+     * Модель позиций.
+     */
+    const POSITION = 'App\Position';
+
+    /**
+     * Workdays for kpi_items
+     */
+    public $workdays;
+
+    /**
+     * UpdatedUserStat for kpi_items
+     */
+    public $updatedValues;
+
+    /**
+     * Daily plan from histories for kpi_items
+     */
+    public $dailyPlans;
+
+    /**
+     * Asis for recruiters 
+     * temp decision
+     * 
+     * after moving from asi to userstat delete
+     */
+    public $asis;
 
     /**
      * С фронта прилитает тип метода подробнее в CalculateKpiService
@@ -202,9 +255,7 @@ class KpiStatisticService
     }
 
     /**
-     * @param array $date
-     * @param int $userId
-     * @return int
+     *  кол-во записей с UserStat
      */
     private function getRecordsCount(array $date, int $userId): int
     {
@@ -214,13 +265,7 @@ class KpiStatisticService
     }
 
     /**
-     * @param int $lower_limit
-     * @param int $upper_limit
-     * @param float $completed_percent
-     * @param int $share
-     * @param float $completed_80
-     * @param float $completed_100
-     * @return float|int
+     * Расчет суммы К выдаче по результатам KPI
      */
     private function sumOfActivity(
         int $lower_limit,
@@ -228,8 +273,8 @@ class KpiStatisticService
         float $completed_percent,
         int $share,
         float $completed_80,
-        float $completed_100): float|int
-    {
+        float $completed_100
+    ) : float|int {
         $result = 0;
         $completed_percent = 80;
         $lower_limit = $lower_limit / 100;
@@ -252,5 +297,1139 @@ class KpiStatisticService
             $result = 0;
         }
         return $result;
+    }
+
+    /**
+     * Получаем KPI бонусы.
+     * @param BonusesFilterRequest $request
+     * @return array
+     */
+    public function fetchBonuses(BonusesFilterRequest $request): array
+    {
+        $bonuses    = $this->getBonuses($request);
+        $kpiBonuses = [];
+
+        foreach ($bonuses as $bonus)
+        {
+            if ($bonus->targetable_type == self::PROFILE_GROUP)
+            {
+                $kpiBonuses[] = $this->getProfileGroupBonus($bonus, $request);
+            }
+
+            if ($bonus->targetable_type == self::USER)
+            {
+                $kpiBonuses[] = $this->getUserBonus($bonus, $request);
+            }
+
+            if ($bonus->targetable_type == self::POSITION)
+            {
+                $kpiBonuses[] = $this->getPositionBonus($bonus, $request);
+            }
+        }
+
+        return $kpiBonuses;
+    }
+
+    /**
+     * Получаем сотрудников.
+     */
+    private function getUserBonus($bonus, $request)
+    {
+        $month = $request->month ?? null;
+        $year = $request->year ?? null;
+
+        return User::with([
+            'bonuses' => function ($bs) use ($bonus, $month, $year){
+                $bs
+                    ->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month))
+                    ->where('activity_id', $bonus->activity_id);
+            },
+            'bonuses.obtainedBonuses'
+        ])
+            ->where('id', $bonus->targetable_id)
+            ->first(['id', 'name']);
+    }
+
+    /**
+     * Получаем по позициям.
+     * @param $bonus
+     * @param $request
+     * @return Builder[]|Collection
+     */
+    private function getPositionBonus($bonus, $request)
+    {
+        $userId = $request->user_id ?? null;
+        $month  = $request->month ?? null;
+        $year   = $request->year ?? null;
+
+        return Position::with([
+            'bonuses' => fn ($bs) => $bs
+                ->where('activity_id', $bonus->activity_id)
+                ->when($year && $month, fn ($bonus) => $bonus->whereYear('created_at', $year)->whereMonth('created_at', $month)),
+            'users' => fn ($user) => $user->select('id','position_id',DB::raw('CONCAT(name,\' \',last_name) as full_name')),
+            'users.obtainedBonuses' => fn ($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
+        ])->where('id', $bonus->targetable_id)->get(['id', 'position'])
+            ->each(function ($data) use ($bonus) {
+                $data->targetable_type = $bonus->targetable_type;
+                $data->targetable_id   = $bonus->targetable_id;
+                $data->activity_id     = $bonus->activity_id;
+        });
+    }
+
+    /**
+     * Получаем по группам.
+     * @param $bonus
+     * @param $request
+     * @return Builder[]|Collection
+     */
+    private function getProfileGroupBonus($bonus, $request)
+    {
+        $userId = $request->user_id ?? null;
+        $month  = $request->month ?? null;
+        $year   = $request->year ?? null;
+
+        return ProfileGroup::with([
+            'bonuses' => fn ($bs) =>
+                $bs->where('activity_id', $bonus->activity_id)
+                    ->when($year && $month, fn ($bns) => $bns->whereYear('created_at', $year)->whereMonth('created_at', $month)),
+            'users' => fn ($user) => $user->select('id', DB::raw('CONCAT(name,\' \',last_name) as full_name')),
+            'users.obtainedBonuses' => fn ($obtainedBns) => $obtainedBns->where('bonus_id', $bonus->id),
+        ])->where('id', $bonus->targetable_id)
+            ->get(['id', 'name'])->each(function ($data) use ($bonus){
+                $data->targetable_type = $bonus->targetable_type;
+                $data->targetable_id   = $bonus->targetable_id;
+                $data->activity_id     = $bonus->activity_id;
+            });
+    }
+
+    /**
+     * @param Request $request
+     */
+    private function getBonuses(Request $request)
+    {
+        $parameters = $request->all();
+        $type       = isset($parameters['targetable_type']) ? $this->getModel($parameters['targetable_type']) : null;
+        $id         = $parameters['targetable_id'] ?? null;
+
+        return Bonus::withTrashed()->when(isset($type) && isset($id), fn($kpi) => $kpi->where([
+            ['targetable_type', $type],
+            ['targetable_id', $id]
+        ]))->paginate(50);
+    }
+
+    /**
+     * Список Квартальных премии
+     */
+    public function fetchQuartalPremiums(Request $request): array
+    {
+        $quartalPremiums = $this->getQuartalPremiums($request);
+        $users         = [];
+        $profileGroups = [];
+        $positionsId     = [];
+
+        foreach ($quartalPremiums as $quartalPremium)
+        {
+            if ($quartalPremium->targetable_type == self::USER) {
+                $user = $this->getUsersQp($quartalPremium);
+
+                if (empty($user)) {
+                    continue;
+                }
+
+                $users[] = [
+                    'targetable_id' => $quartalPremium->targetable_id,
+                    'targetable_type' => $quartalPremium->targetable_type,
+                    'id' => $user->user_id,
+                    'name' => $user->full_name,
+                    'items' => [
+                        'activity_id' => $user->activity_id,
+                        'title' => $quartalPremium->title,
+                        'text'  => $quartalPremium->text,
+                        'plan'  => $quartalPremium->plan,
+                        'from'  => $quartalPremium->from,
+                        'to'    => $quartalPremium->to,
+                        'sum'   => $quartalPremium->sum,
+                        'fact'  => $user->fact
+                    ]
+                ];
+            }
+
+            if ($quartalPremium->targetable_type == self::PROFILE_GROUP) {
+                $profileGroup = $this->getProfileGroupQp($quartalPremium);
+                if (empty($profileGroup->toArray())) {
+                    continue;
+                }
+
+                $profileGroups[] = $profileGroup;
+            }
+        }
+
+        return [
+            $users,
+            $profileGroups
+        ];
+
+
+    }
+
+    /**
+     * Получаем кв-премий групповые.
+     */
+    private function getProfileGroupQp($quartalPremium)
+    {
+        return ProfileGroup::query()
+            ->select(DB::raw('CONCAT(u.name,\' \',u.last_name) as full_name'),'us.user_id','us.activity_id','profile_groups.name', DB::raw('SUM(us.value) as fact'))
+            ->join('group_user as gu','gu.group_id','=','profile_groups.id')
+            ->join('users as u','u.id','=','gu.user_id')
+            ->join('user_stats as us','us.user_id','=','u.id')
+            ->where('profile_groups.id', $quartalPremium->targetable_id)
+            ->where('us.activity_id','=',$quartalPremium->activity_id)
+            ->whereBetween('us.date',[$quartalPremium->from, $quartalPremium->to])
+            ->groupBy(['us.activity_id','us.user_id','profile_groups.name','u.name', 'u.last_name'])
+            ->get()->each(function ($data) use ($quartalPremium) {
+                       $data->targetable_id = $quartalPremium->targetable_id;
+                       $data->targetable_type = $quartalPremium->targetable_type;
+                       $data->expended = false;
+                       $data->quartalPremiums = [
+                           'title' => $quartalPremium->title,
+                           'text'  => $quartalPremium->text,
+                           'plan'  => $quartalPremium->plan,
+                           'from'  => $quartalPremium->from,
+                           'to'    => $quartalPremium->to,
+                           'sum'   => $quartalPremium->sum,
+                       ];
+            });
+    }
+
+    /**
+     * Получаем кв-премий индивидуальные.
+     */
+    private function getUsersQp($quartalPremium)
+    {
+       return User::query()->leftJoin('user_stats as us', 'us.user_id', '=', 'users.id')
+           ->select(['users.id', 'user_id', 'activity_id', 'name', DB::raw('SUM(value) as fact'),  DB::raw("CONCAT_WS(' ', users.last_name, users.name) as full_name")])
+        //    ->where([
+        //        ['activity_id', $quartalPremium->activity_id]
+        //    ])
+           ->where('users.id', $quartalPremium->targetable_id)
+          // ->whereBetween('us.date', [$quartalPremium->from, $quartalPremium->to])
+           ->groupBy('activity_id', 'user_id', 'full_name')
+           ->first();
+    }
+
+    /**
+     * Получаем кв-премий.
+     */
+    private function getQuartalPremiums(Request $request)
+    {
+        $type = isset($request->targetable_type) ? $this->getModel($request->targetable_type) : null;
+        $id   = $request->targetable_id ?? null;
+
+        /**
+         * eeeee
+         */
+
+        $filters = $request->filters;
+        
+        /**
+         * filters
+         *
+         * date_from
+         * user_id
+         */
+        if(
+            isset($filters['data_from']['year'])
+            && isset($filters['data_from']['month'])
+        ) {
+            $date = Carbon::createFromDate(
+                $filters['data_from']['year'],
+                $filters['data_from']['month'],
+                1
+            );
+        } else {
+            $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
+        }
+
+        $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
+
+        /**
+         * indiv or common
+         */
+        if($user_id != 0) {
+            $qps = QuartalPremium::withTrashed();
+
+            $user = User::withTrashed()->with('groups')->find($user_id);
+            $position_id = $user->position_id;
+            
+            $groups = $user->groups->pluck('id')->toArray();
+        
+            $qps->where(function($query) use ($user_id, $groups, $position_id) {
+                    $query->where(function($q) use ($user_id) {
+                            $q->where('targetable_id', $user_id)
+                              ->where('targetable_type', 'App\User');
+                        })
+                        ->orWhere(function($q) use ($groups) {
+                            $q->whereIn('targetable_id', $groups)
+                              ->where('targetable_type', 'App\ProfileGroup');
+                        })
+                        ->orWhere(function($q) use ($position_id) {
+                            $q->where('targetable_id', $position_id)
+                              ->where('targetable_type', 'App\Position');
+                        });
+                });
+              
+        } else {
+            $qps = QuartalPremium::withTrashed()->when(isset($type) && isset($id), fn($qp) => $qp->where([
+                ['targetable_type', $type],
+                ['targetable_id', $id]
+            ]));
+        }
+        
+        $qps = $qps
+            // ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+            //                                         ->endOfMonth()
+            //                                         ->format('Y-m-d')
+            // )
+            ->get();
+
+        return $qps;
+    }
+
+    /**
+     * Вытащить список kpi со статистикой
+     *
+     * getUsersForKpi($kpi)
+     * getUserStats($kpi, $_user_ids, $date)
+     * connectKpiWithUserStats(Kpi $kpi, $_users)
+     */
+    public function fetchKpis(Request $request) : array
+    {
+       
+        $filters = $request->filters;
+        
+        /**
+         * filters
+         *
+         * date_from
+         * user_id
+         */
+        if(
+            isset($filters['data_from']['year'])
+            && isset($filters['data_from']['month'])
+        ) {
+            $date = Carbon::createFromDate(
+                $filters['data_from']['year'],
+                $filters['data_from']['month'],
+                1
+            );
+        } else {
+            $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
+        }
+
+        
+        $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
+        
+        
+        $this->workdays = collect($this->userWorkdays($request));
+        $this->updatedValues = UpdatedUserStat::query()
+                        ->whereMonth('date', $date->month)
+                        ->whereYear('date', $date->year)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+        
+        $this->asis = AnalyticsSettingsIndividually::query()
+            ->whereMonth('date', $date->month)
+            ->whereYear('date', $date->year)
+            ->get();
+
+        /**
+         * get kpis
+         */ 
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+
+        $kpis = Kpi::query()
+            //->withTrashed()
+            ->with([
+                'histories' => function($query) use ($last_date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+                },
+                'items.histories' => function($query) use ($last_date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+                },
+                'items.activity'
+            ]);
+
+        if($user_id != 0) {
+            $user = User::withTrashed()->with('groups')->find($user_id);
+            $position_id = $user->position_id;
+            
+            $groups = $user->groups->pluck('id')->toArray();
+   
+            $kpis->where(function($query) use ($user_id, $groups, $position_id) {
+                    $query->where(function($q) use ($user_id) {
+                            $q->where('targetable_id', $user_id)
+                              ->where('targetable_type', 'App\User');
+                        })
+                        ->orWhere(function($q) use ($groups) {
+                            $q->whereIn('targetable_id', $groups)
+                              ->where('targetable_type', 'App\ProfileGroup');
+                        })
+                        ->orWhere(function($q) use ($position_id) {
+                            $q->where('targetable_id', $position_id)
+                              ->where('targetable_type', 'App\Position');
+                        });
+                });
+              
+        }
+
+        $kpis = $kpis
+            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+                                                    ->endOfMonth()
+                                                    ->format('Y-m-d')
+            )
+            ->get();
+
+        foreach ($kpis as $key => $kpi) {
+            $kpi->kpi_items = [];
+            
+            // remove items if it's not in history
+            if($kpi->histories->first()) {
+                $payload = json_decode($kpi->histories->first()->payload, true);
+
+                if(isset($payload['children'])) {
+                    $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+                }
+            }
+          
+            //  
+            $kpi->avg = 0; // avg percent from kpi_items' percent
+            $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
+        }
+
+
+        return [
+            'items' => $kpis,
+            'activities' => Activity::get(),
+            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+        ];
+    }
+
+    /**
+     * Helper for fetchKpis()
+     */
+    private function getUsersForKpi(
+        Kpi $kpi,
+        Carbon $date,
+        int $user_id = 0
+    ) : array
+    {
+      
+        // check target exists
+        if(!$kpi->target) return [];
+       
+        $type = $kpi->target['type'];
+
+
+        // User::class
+        if($type == 1) {
+            $_user_ids = [$kpi->targetable_id];
+        }
+  
+        // ProfileGroup::class
+        if($type == 2) {
+            $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
+            //if($user_id != 0)  $_user_ids = in_array($user_id, $_user_ids) ? [$user_id] : [];
+            if($user_id != 0)  $_user_ids = [$user_id];
+        }
+      
+        // Position::class
+        if($type == 3) $_user_ids = [];
+
+        
+        // get users with user stats
+        $_users = $this->getUserStats($kpi, $_user_ids, $date);
+
+        // create final users array
+        $users = $this->connectKpiWithUserStats(
+            $kpi,
+            $_users,
+            $date,
+        );
+
+        return $users;
+    }
+
+   
+
+    /**
+     * Create final users array
+     * 
+     * connect user activity facts and avg values with kpi_items
+     * 
+     * find fact
+     * identify actual plan
+     */
+    private function connectKpiWithUserStats(
+        Kpi $kpi,
+        mixed $_users,
+        Carbon $date,
+    ) : array
+    {
+
+        // count workdays in month
+        $workdays = [];
+        $workdays[5] = workdays($date->year, $date->month, [6,0]);
+        $workdays[6] = workdays($date->year, $date->month, [0]);
+
+        // fill users array
+        $users = [];
+
+        /**
+         * connect user activity facts and avg values with kpi_items
+         */
+        foreach ($_users as $key => $user) {
+       
+            $kpi_items = [];
+
+            foreach ($kpi->items as $key => $_item) {
+
+                // to array because object changes every loop
+                $item = $_item->toArray();
+                
+                // check user stat exists
+                $exists = collect($user['items'])
+                        ->where('activity_id', $item['activity_id'])
+                        ->first();
+
+                // assign keys
+                if($exists) {
+                    $item['fact']          = $exists->fact;
+                    $item['avg']           = $exists->avg;
+                    $item['records_count'] = $exists->records_count;
+                    $item['days']          = $exists->days;
+                    $item['registered']    = $exists->registered_days;
+                    $item['applied']       = $exists->applied;
+
+                    if($_item->activity
+                    && $_item->activity->view == Activity::VIEW_QUALITY) {
+                        
+                        $query = UserStat::query()
+                            ->selectRaw("
+                                value,
+                                activity_id,
+                                user_id,
+                                DAY(date) as day
+                            ")
+                            ->whereMonth('date', $date->month)
+                            ->whereYear('date', $date->year)
+                            ->where('activity_id', $_item->activity_id)
+                            ->where('user_id', $user['id'])
+                            ->get();
+            
+                        /**
+                         * if avg methods
+                         * take weeks
+                         * 
+                         */
+                        if(in_array($_item->method, [2, 4, 6])) {
+                            $weeks = $this->weeksArray($date->month, $date->year);
+            
+                            /**
+                             * count avg of every user
+                             */
+            
+                            $avg = 0;
+                            $count = 0;
+        
+                            foreach ($weeks as $key => $week) {
+                                $val = $query->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value');
+        
+                                if($val && $val > 0) {
+                                    $avg += $val;
+                                    $count++;
+                                }
+                            }
+
+                            $item['fact']          = $query->sum('value');
+                            $item['avg']           = $count > 0 ? round($avg / $count, 2) : 0;
+                            $item['records_count'] = $count;
+            
+                        } else {
+                            $item['fact']          = $query->sum('value');
+                            $item['avg']           = $query->avg('avg');
+                            $item['records_count'] = $query->count();
+                        }
+                        
+                    }
+
+
+
+                } else {
+                    $item['fact']          = 0;
+                    $item['avg']           = 0;
+                    $item['records_count'] = 0;
+                    $item['days']          = 0;
+                    $item['registered']    = 0;
+                    $item['applied']       = null;
+                }   
+
+                /**
+                 * take another activity values
+                 */
+                $item['fact'] = $item['fact'] ?? 0;
+                $this->takeCommonValue( $_item, $date, $item);
+                $this->takeCellValue(   $_item, $date, $item);
+                $this->takeRentability( $_item, $date, $item);
+                
+                
+                // for Bpartners
+                if($kpi->targetable_type == 'App\ProfileGroup' && $kpi->targetable_id == 48) {
+                   // $this->takeRecruiterValues($_item, $date, $item, $user['id']);
+                }
+                $this->takeUpdatedValue($_item, $date, $item, $user['id']);
+                
+             
+                // plan
+                $item['full_time'] = $user['full_time'];
+                $history = $_item->histories->first();
+                $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+                
+
+                $item['daily_plan'] = $has_edited_plan && array_key_exists('plan', $has_edited_plan)
+                    ? $has_edited_plan['plan']
+                    : (float)$_item->plan;
+                $item['plan'] = $item['daily_plan'];
+                /**
+                 * count workdays
+                 */
+                $item['workdays'] = $workdays[6];
+                $percent_of_plan_for_sum_method = 1;
+
+                if($_item->activity) {
+                    $has_workdays = $this->workdays->where('user_id', $user['id'])
+                                                ->where('activity_id', $_item->activity->id)
+                                                ->first();
+                    if($has_workdays) {
+                        $percent_of_plan_for_sum_method = $has_workdays['workdays_in_month'] > 0
+                                                        ? $has_workdays['user_work_days'] / $has_workdays['workdays_in_month']
+                                                        : 1;
+                        $item['workdays'] = $has_workdays['user_work_days'];
+                    }
+                } 
+                
+                /**
+                 * sum method in kpi_item
+                 * change plan
+                 */
+                if($item['method'] == 1) {
+                    
+                    /**
+                     * for part timer reduce plan twice
+                     */
+                    if($user['full_time'] == 0) $percent_of_plan_for_sum_method /= 2;
+                    
+                    /**
+                     * final plan 
+                     */
+                    $item['plan'] = round($item['plan'] * $percent_of_plan_for_sum_method);
+                }
+                
+                $kpi_items[] = $item;
+            }
+            
+            /**
+             * add user to final array
+             */
+            $user['items'] = $kpi_items;
+            $users[] = $user;
+        }
+
+        return $users;
+    }
+
+    /**
+     * get Recruiter values
+     * 
+     * @param KpiItem $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * 
+     * @return array
+     */
+    private function takeRecruiterValues(KpiItem $kpi_item, Carbon $date, array &$item, $user_id) : void
+    {
+        $asi = $this->asis->where('employee_id', $user_id)->first();
+        $activities = (new RecruitingActivityService)->activities;
+        $activity_id = in_array($kpi_item->activity_id, $activities) ? $kpi_item->activity_id : 0;
+        if($asi && $activity_id != 0) {
+            $data = json_decode($asi->data, true);
+        
+            $index = array_search($activity_id, $activities);
+            if($index) {
+                $sum = 0;
+                $count = 0;
+                for($i = 1; $i <= 31; $i++) {
+                    if(isset($data[$index][$i]) && $data[$index][$i] != null && $data[$index][$i] != '') {
+                        $sum += (float) $data[$index][$i];
+                        $count++;
+                    }
+                }
+            }
+
+        
+
+            $item['fact'] = round($sum, 2);
+            $item['records_count'] = $count;
+            if($count > 0) {
+                $item['avg'] = round($sum / $count, 2);
+            }
+
+        }
+        
+    }
+
+    private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
+    {
+        
+        /**
+         * take quality value
+         * avg goes with weeks 
+         */
+        if($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view == Activity::VIEW_QUALITY) {
+            
+            $query = UserStat::query()
+                ->selectRaw("
+                    value,
+                    activity_id,
+                    user_id,
+                    DAY(date) as day
+                ")
+                ->whereMonth('date', $date->month)
+                ->whereYear('date', $date->year)
+                ->where('activity_id', $kpi_item->activity_id)
+             
+                ->get();
+
+            /**
+             * if avg methods
+             * take weeks
+             * 
+             */
+            if(in_array($kpi_item->method, [2, 4, 6])) {
+                $weeks = $this->weeksArray($date->month, $date->year);
+
+                $total_avg = 0;
+                $total_count = 0;
+ 
+                $users = $query->groupBy('user_id');
+             
+                /**
+                 * count avg of every user
+                 */
+
+               //  dd(array_keys($users));
+                foreach ($users as $id => $user) {
+
+                    $avg = 0;
+                    $count = 0;
+
+                    foreach ($weeks as $key => $week) {
+                        $val = $user->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value');
+
+                        if($val && $val > 0) {
+                            $avg += $val;
+                            $count++;
+                        }
+                    }
+                    if($count > 0) {
+
+                        
+                        $total_avg += $count > 0 ? round($avg / $count, 2) : 0;
+                        $total_count++;
+                    }
+                }
+             
+                $item['fact']          = $query->sum('value');
+                $item['avg']           = $total_count > 0 ? round($total_avg / $total_count, 2) : 0;
+                $item['records_count'] = $total_count;
+
+            } else {
+                $item['fact']          = $query->sum('value');
+                $item['avg']           = $query->avg('avg');
+                $item['records_count'] = $query->count();
+            }
+            
+        }
+            
+        /**
+         * take another common values
+         */
+        if($kpi_item->common == 1 && $kpi_item->activity && $kpi_item->activity->view != Activity::VIEW_QUALITY) {
+            
+            if(in_array($kpi_item->method, [2, 4, 6])) {
+            
+                $query = UserStat::selectRaw("
+                        SUM(value) as fact,
+                        AVG(value) as avg,
+                        COUNT(value) as records_count,
+                        activity_id,
+                        user_id,
+                        date
+                    ")
+                    ->whereMonth('date', $date->month)
+                    ->whereYear('date', $date->year)
+                    ->where('value', '>', 0)
+                    ->where('activity_id', $kpi_item->activity_id)
+                    ->groupBy('user_id')
+                    ->get();
+                
+              
+                $item['fact']          = $query->sum('fact');
+                $item['avg']           = $query->where('avg', '>', 0)->avg('avg');
+                $item['records_count'] = $query->count();
+
+            } else {
+
+                $query = UserStat::selectRaw("
+                        SUM(value) as fact,
+                        AVG(value) as avg,
+                        COUNT(value) as records_count,
+                        activity_id,
+                        date
+                    ")
+                    ->whereMonth('date', $date->month)
+                    ->whereYear('date', $date->year)
+                    ->where('value', '>', 0)
+                    ->where('activity_id', $kpi_item->activity_id)
+                    ->first();
+
+                if($query) {
+                    $item['fact']          = $query->fact;
+                    $item['avg']           = $query->avg;
+                    $item['records_count'] = $query->records_count;
+                }
+
+            }
+        
+        }
+        
+    }
+
+    /**
+     * Create weeks array with days 
+     * copy of method in QualityController
+     */
+    private function weeksArray($month, $year)
+    {
+        $weeks = [];
+        $week_number = 1;
+        $week = [];
+        $daysInMonth = Carbon::createFromFormat('m-Y', $month . '-' . $year)->daysInMonth;
+
+        for($d = 1; $d <= $daysInMonth; $d++) {
+            
+            array_push($week, (int)$d); 
+            
+            if(Carbon::createFromFormat('d-m-Y', $d . '-' . $month . '-' . $year)->dayOfWeek == Carbon::SUNDAY) {
+                $weeks[$week_number] = $week;
+                $week = [];
+                $week_number++;
+            }
+
+            if($d == $daysInMonth){
+                $weeks[$week_number] = $week;
+            }
+        }
+
+        return $weeks;
+    }
+
+    /**
+     * take cell value from analytics
+     * for kpi item
+     * 
+     * @param $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * 
+     * @return float
+     */
+    private function takeCellValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
+    {
+        if($kpi_item->activity 
+        && $kpi_item->activity->view == Activity::VIEW_CELL) {
+            $item['fact'] = AnalyticStat::getCellValue(
+                $kpi_item->activity->group_id,
+                $kpi_item->cell,
+                $date->format('Y-m-d'),
+                2
+            );
+
+            $item['fact'] = round($item['fact'], 2);
+            $item['avg'] = $item['fact'];
+        }
+
+       
+    }
+
+    /**
+     * take rentability value from analytics
+     * for kpi item
+     * 
+     * @param KpiItem $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * 
+     * @return float
+     */
+    private function takeRentability(KpiItem $kpi_item, Carbon $date, array &$item) : void
+    {
+        if($kpi_item->activity
+        && $kpi_item->activity->view == Activity::VIEW_RENTAB) {
+            $item['fact'] = AnalyticStat::getRentability(
+                $kpi_item->activity->group_id, 
+                $date->format('Y-m-d')
+            );
+
+            $item['fact'] = round($item['fact'], 2);
+            $item['avg'] = $item['fact'];
+        }
+
+    }
+
+    /**
+     * take timeboard value from analytics
+     * for kpi item
+     * 
+     * @param KpiItem $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * 
+     * @return void
+     */
+    private function takeTimeboardValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
+    {
+        if($kpi_item->activity
+        && $kpi_item->activity->source == Activity::SOURCE_TIMEBOARD) {
+            $item['fact'] = round($item['fact'], 2);
+        }
+    }
+
+    /**
+     * take HR value from analytics
+     * for kpi item
+     * 
+     * @param KpiItem $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * 
+     * @return void
+     */
+    private function takeHRValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
+    {
+        if($kpi_item->activity
+        && $kpi_item->activity->source == Activity::SOURCE_HR) {
+            $item['fact'] = round($item['fact'], 2);
+        }
+    }
+
+
+    /**
+     * take cell value from analytics
+     * for kpi item
+     * 
+     * @param $kpi_item
+     * @param Carbon $date
+     * @param array &$item
+     * @param int $user_id
+     * 
+     * @return float
+     */
+    private function takeUpdatedValue(
+        KpiItem $kpi_item,
+        Carbon $date,
+        array &$item,
+        int $user_id
+    ) : void
+    {
+        $has = $this->updatedValues
+                ->where('user_id', $user_id)
+                ->where('kpi_item_id', $kpi_item->id);
+
+        if($kpi_item->activity_id != 0) $has = $has->where('activity_id', $kpi_item->activity_id);
+
+        $has = $has->first();
+
+        if($has) {
+            $item['fact'] = (float) $has->value;
+            $item['avg']  = (float) $has->value;
+        }
+
+        $item['fact'] = round($item['fact'], 2);
+        $item['avg'] = round($item['avg'], 2);
+    }
+   
+
+    /**
+     * get users with user stats
+     */
+    private function getUserStats(Kpi $kpi, array $user_ids, Carbon $date) : \Illuminate\Support\Collection
+    {
+        $activities = $kpi->items
+            ->pluck('activity_id')
+            ->unique()
+            ->toArray();
+
+
+        // subquery
+		$sum_and_counts = \DB::table('user_stats')
+			->selectRaw("user_id,
+				SUM(value) as fact,
+				AVG(value) as avg,
+				COUNT(value) as records_count,
+				activity_id,
+				date")
+			->whereMonth('date', $date->month)
+			->whereYear('date', $date->year)
+            ->where('value', '>', 0)
+            ->whereIn('activity_id', $activities)
+			->groupBy('user_id', 'activity_id');
+
+        // query
+		$users = User::withTrashed()
+			->select([
+				'users.id',
+				'users.last_name',
+				'users.name',
+				'users.full_time',
+				'sum_and_counts.fact',
+				'sum_and_counts.avg',
+				'sum_and_counts.records_count',
+				'sum_and_counts.activity_id',
+				'ud.applied',
+				\DB::raw('datediff(CURDATE(), ud.applied) as days'),
+				\DB::raw('datediff(CURDATE(), users.created_at) as registered_days')
+			])
+            ->leftJoinSub($sum_and_counts, 'sum_and_counts', function ($join)
+			{
+		     	$join->on('users.id', '=', 'sum_and_counts.user_id');
+			})
+			->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+			->where('ud.is_trainee', 0)
+			->whereIn('users.id', $user_ids)
+			->orderBy('last_name')
+			->get();
+
+        // group collection
+		$users = $users->groupBy('id')
+			->map(function($items) {
+				return [
+					'id' => $items[0]->id,
+					'name' => $items[0]->last_name . ' ' . $items[0]->name,
+					'expanded' => false,
+					'full_time' => $items[0]->full_time,
+					'items' => $items->map(function ($item) {
+						$item->percent = 0;
+						$item->share = 0;
+
+						return $item;
+					}),
+				];
+			});
+
+		return $users->values(); //array_values($users->toArray());
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function userWorkdays(Request $request): array
+    {
+        $default_date = ['year' => Carbon::now()->year, 'month' => Carbon::now()->month];
+        $filters = $request->input('filters') ?? ['data_from' => $default_date];
+        if(!array_key_exists('data_from', $filters)) $filters['data_from'] = $default_date;
+
+        $users = $this->getUserProfileGroup($filters);
+
+        $result = [];
+
+        foreach ($users as $user) {
+            if ($user->applied == null) {
+                continue;
+            }
+
+            $userAppliedDate = Carbon::createFromFormat('Y-m-d H:i:s', $user->applied);
+
+            if ($userAppliedDate->year > $filters['data_from']['year']) {
+                continue;
+            }
+
+            $ignore          = $user->working_day_id == 1 ? [6,0] : [0];
+            $userWorkDays    = $this->workdays($userAppliedDate->year, $userAppliedDate->month, $userAppliedDate->day, $ignore);
+            $workdaysInMonth = workdays($filters['data_from']['year'], $filters['data_from']['month'], $ignore);
+
+            if ($userAppliedDate->year == $filters['data_from']['year'] && $userAppliedDate->month == $filters['data_from']['month'])
+            {
+                $result[] = [
+                    'user_id'           => $user->user_id,
+                    'activity_id'       => $user->activity_id,
+                    'applied_at'        => $user->applied,
+                    'user_work_days'    => $userWorkDays,
+                    'workdays_in_month' => $workdaysInMonth,
+                    'user_plan'         => $user->full_time == 1 ? $userWorkDays * $user->plan : $userWorkDays * $user->plan / 2,
+                    'workdays'          => $user->working_day_id == 1 ? 5 : 6,
+                    'weekdays'          => $user->weekdays
+                ];
+            }else{
+                $result[] = [
+                    'user_id'           => $user->user_id,
+                    'activity_id'       => $user->activity_id,
+                    'applied_at'        => $user->applied,
+                    'user_work_days'    => $workdaysInMonth,
+                    'workdays_in_month' => $workdaysInMonth,
+                    'user_plan'         => $user->full_time == 1 ? $workdaysInMonth * $user->plan : $workdaysInMonth * $user->plan / 2,
+                    'workdays'          => $user->working_day_id == 1 ? 5 : 6,
+                    'weekdays'          => $user->weekdays
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $filters
+     * @return Collection|array
+     */
+    private function getUserProfileGroup($filters): Collection|array
+    {
+        return User::query()
+            ->join('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->join('group_user as gu', 'gu.user_id', '=', 'users.id')
+            ->join('kpis as kp', fn ($kp) => $kp->on('kp.targetable_id', '=', 'gu.group_id')->where('kp.targetable_type', '=', self::PROFILE_GROUP))
+            ->join('kpi_items as ki', 'ki.kpi_id', '=', 'kp.id')
+            ->join('activities as a', 'ki.activity_id', '=', 'a.id')
+            ->where('ud.is_trainee', 0)
+            ->get();
+    }
+    /**
+     * @param $year
+     * @param $month
+     * @param $day
+     * @param array $ignore
+     * @return int
+     */
+    private function workdays($year, $month, $day, array $ignore = [6,0]): int
+    {
+        $count = 0;
+        $counter = mktime(0, 0, 0, $month, $day, $year);
+        while (date("n", $counter) == $month) {
+            if (!in_array(date("w", $counter), $ignore)) {
+                $count++;
+            }
+            $counter = strtotime("+1 day", $counter);
+        }
+        return $count;
     }
 }

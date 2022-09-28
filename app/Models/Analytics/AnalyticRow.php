@@ -86,7 +86,7 @@ class AnalyticRow extends Model
                 'column_id' => $column->id,
                 'value' => $field,
                 'show_value' => $field,
-                'editable' => in_array($field, ['Impl', 'Pr, cstll']) ? 0 : 1,
+                'editable' => 1, //in_array($field, ['Impl', 'Pr, cstll']) ? 0 : 1,
                 'class' => 'text-left font-bold',
                 'type' => AnalyticStat::INITIAL,
             ]);
@@ -113,7 +113,7 @@ class AnalyticRow extends Model
                         'column_id' => $col->id,
                         'value' => $field,
                         'show_value' => $field,
-                        'editable' => 0,
+                        'editable' => 1,
                         'class' => 'text-center font-bold bg-grey',
                         'type' => AnalyticStat::INITIAL,
                     ];
@@ -137,7 +137,7 @@ class AnalyticRow extends Model
                         'value' => $i,
                         'show_value' => $i,
                         'class' => 'text-center font-bold bg-grey',
-                        'editable' => 0, 
+                        'editable' => 1, 
                         'type' => AnalyticStat::INITIAL,
                     ]);
                 }
@@ -149,7 +149,7 @@ class AnalyticRow extends Model
                     'group_id' => $group_id,
                     'date' => $date,
                     'row_id' => $row->id,
-                    'editable' => 0,
+                    'editable' => 1,
                     'class' => 'text-center font-bold',
                 ];
 
@@ -204,14 +204,14 @@ class AnalyticRow extends Model
             if($index == 0) {
                 $arr['row_id'] = $row_2;
                 $arr['column_id'] = $column->id;
-                $arr['editable'] = 0;
+                $arr['editable'] = 1;
                 $arr['value'] = '[' . $column_sum->id . ':'. $row_2 .'] - [' . $column_plan->id . ':' . $row_2. ']';
 
                 AnalyticStat::create($arr); // A2
                 
                 $arr['row_id'] = $row_2;
                 $arr['column_id'] = $column_plan->id;
-                $arr['editable'] = 0;
+                $arr['editable'] = 1;
                 $arr['value'] = 0;
                 $arr['type'] = 'salary';
                 
@@ -224,7 +224,7 @@ class AnalyticRow extends Model
                
                 $arr['row_id'] = $row_3;
                 $arr['column_id'] = $column_plan->id;
-                $arr['editable'] = 0;
+                $arr['editable'] = 1;
                 $arr['class'] = 'text-center';
                 $arr['value'] = '[' . $column_sum->id . ':'. $row_2 .'] / [' . $column_plan->id . ':' . $row_4. '] * 100';
                 $arr['comment'] = 'Баланс выполнения';
@@ -232,7 +232,7 @@ class AnalyticRow extends Model
 
                 $arr['row_id'] = $row_3;
                 $arr['column_id'] = $column_sum->id;
-                $arr['editable'] = 0;
+                $arr['editable'] = 1;
                 $arr['value'] = '[' . $column_sum->id . ':'. $row_2 .'] / [' . $column_sum->id . ':' . $row_4. '] * 100';
                 $arr['comment'] = 'Процент выполнения месячного плана';
                 AnalyticStat::create($arr); // C3

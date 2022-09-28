@@ -24,21 +24,25 @@ class KnowBaseController extends Controller
         $this->middleware('auth');
     }
 
+    /**
+     * get blade view
+     */
     public function index(Request $request)
     {
         View::share('menu', 'kb');
         View::share('link', 'kb');
 
-
         return view('admin.books');
     }
 
-    public function get(Request $request)
+    /**
+     * Get list of knowbases 
+     */
+    public function get(Request $request) : array
     {
-
         $books = KnowBase::whereNull('parent_id')
                 ->orderBy('order');
-        
+
         if(!auth()->user()->can('kb_edit')) $books->whereIn('id', $this->getBooks());
         
         $books = $books->get();
@@ -48,8 +52,11 @@ class KnowBaseController extends Controller
         ];
     }
 
-    private function getBooks($access = 0) {
-        
+    /**
+     * Get knowbase ids that user can see
+     */
+    private function getBooks($access = 0) : array
+    {
         $books = [];
         if(auth()->user()->is_admin == 1)  {
             $books = KnowBase::whereNull('parent_id')->get('id')->pluck('id')->toArray();
@@ -93,11 +100,13 @@ class KnowBaseController extends Controller
             $books = array_merge($books, $books_with_read_access);
         }
    
-            
         return $books;
     }
 
-    public function search(Request $request)
+    /**
+     * Search knowbases that contains $phrase
+     */
+    public function search(Request $request) : array
     {
 
         if(!auth()->user()->can('kb_edit')) {
@@ -126,7 +135,10 @@ class KnowBaseController extends Controller
         ];
     }
 
-    private function cutFragment($text, $fragment)
+    /**
+     * Cut long text to search results
+     */
+    private function cutFragment($text, $fragment) : String
     {
         $plainText = strip_tags($text);
 
@@ -139,7 +151,10 @@ class KnowBaseController extends Controller
         return '...' . mb_substr($plainText, $start_pos, 50) . '...';
     }
 
-    public function getArchived(Request $request)
+    /**
+     * Get archived knowbases
+     */
+    public function getArchived(Request $request) : array
     {
         if(auth()->user()->can('kb_edit')) {
             $books = KnowBase::onlyTrashed()->whereNull('parent_id')->orderBy('order')->get()->toArray();
@@ -152,7 +167,10 @@ class KnowBaseController extends Controller
         ];
     }
 
-    public function getTree(Request $request)
+    /**
+     * Get children of knowbase
+     */
+    public function getTree(Request $request) : array
     {
         $course_item_id = $request->course_item_id;
         
@@ -207,7 +225,10 @@ class KnowBaseController extends Controller
         ];
     }
 
-    public function getPage(Request $request)
+    /**
+     * get page of knowbase
+     */
+    public function getPage(Request $request) : array
     {
         $course_item_id = $request->course_item_id;
         $user_id = auth()->id();
@@ -260,7 +281,9 @@ class KnowBaseController extends Controller
             $can_read = true;
         } else if($top_parent != null && in_array($top_parent->id, $this->getBooks())) {
             $can_read = true;  
-        } 
+        } else if($course_item_id != 0) {
+            $can_read = true;
+        }
 
         if($can_read) {
             $data = [
@@ -281,6 +304,10 @@ class KnowBaseController extends Controller
         return $data;
     }
 
+    /**
+     * find top parent of knowbase 
+     * @return Knowbase | null
+     */
     private function getTopParent($id)
     {
         $kb = KnowBase::withTrashed()->find($id);
@@ -290,7 +317,10 @@ class KnowBaseController extends Controller
         return $kb;
     }
 
-    private function getBreadcrumbs($page)
+    /**
+     * Breadcrumbs of page
+     */
+    private function getBreadcrumbs($page) : array
     {
         $breadcrumbs = [];
         $breadcrumbs[] = $page;
@@ -309,7 +339,11 @@ class KnowBaseController extends Controller
         return array_reverse($breadcrumbs);
     }
 
-    public function updateSection(Request $request)
+    /**
+     * Update access to knowbase
+     * update knowbase
+     */
+    public function updateSection(Request $request) : void
     {
         $page = KnowBase::find($request->id);
         if ($page) {
@@ -349,7 +383,10 @@ class KnowBaseController extends Controller
 
     }
     
-    private function saveBookAccesses($book_id, $items, $level = 1)
+    /**
+     * save knowbase accesses
+     */
+    private function saveBookAccesses($book_id, $items, $level = 1) : void
     {
         foreach ($items as $key => $item) {
             if($item['type'] == 1) $model = 'App\\User';
@@ -365,7 +402,10 @@ class KnowBaseController extends Controller
         }
     }
 
-    public function updatePage(Request $request, $id = null)
+    /**
+     * update knowbase title and text
+     */
+    public function updatePage(Request $request, $id = null) : void
     {
         $page = KnowBase::find($request->id);
         if ($page) {
@@ -380,14 +420,21 @@ class KnowBaseController extends Controller
         }
     }
 
-    private function canSaveWithoutTest() {
-        $setting = Setting::where('name', 'allow_save_kb_without_test')
-                ->first();
-
+    /**
+     * check settings
+     */
+    private function canSaveWithoutTest() : bool
+    {
+        $setting = Setting::where('name', 'allow_save_kb_without_test')->first();
         return $setting && $setting->value == 1;
     }
 
-    private function notifyAboutChanges($text, KnowBase $page) {
+    /**
+     * send notifications to users who has access to knowbase
+     * if settings was set
+     */
+    private function notifyAboutChanges($text, KnowBase $page) : void
+    {
         $setting = Setting::where('name', 'send_notification_after_edit')
                 ->first();
 
@@ -426,7 +473,10 @@ class KnowBaseController extends Controller
         }
     }
     
-    public function saveOrder(Request $request, $id = null)
+    /**
+     * order of knowbases
+     */
+    public function saveOrder(Request $request, $id = null) : void
     {
 
         $page = KnowBase::find($request->id);
@@ -454,7 +504,10 @@ class KnowBaseController extends Controller
 
     }
 
-    public function createPage(Request $request)
+    /**
+     * new knowbase page
+     */
+    public function createPage(Request $request) : KnowBase
     {
         $kb = KnowBase::where('parent_id', $request->id)->orderBy('order', 'desc')->first();
         $order = $kb ? $kb->order + 1 : 0;
@@ -475,10 +528,12 @@ class KnowBaseController extends Controller
         $kb->parent_id = null;
 
         return $kb;
-
     }
 
-    public function addSection(Request $request)
+    /**
+     * create parent knowbase (book) 
+     */
+    public function addSection(Request $request) : KnowBase
     {
         $kb = KnowBase::whereNull('parent_id')->orderBy('order', 'desc')->first();
 
@@ -495,7 +550,19 @@ class KnowBaseController extends Controller
 
     }
 
-    public function deleteSection(Request $request)
+    /**
+     * delete parent knowbase (book)
+     */
+    public function deleteSection(Request $request) : void
+    {
+        $kb = KnowBase::find($request->id);
+        if($kb) $kb->delete();
+    }   
+
+    /**
+     * delete child knowbase
+     */
+    public function deletePage(Request $request) : void
     {
         $kb = KnowBase::find($request->id);
         if ($kb) {
@@ -504,25 +571,21 @@ class KnowBaseController extends Controller
 
     }
 
-    public function deletePage(Request $request)
-    {
-        $kb = KnowBase::find($request->id);
-        if ($kb) {
-            $kb->delete();
-        }
-
-    }
-
-    public function restoreSection(Request $request)
+    /**
+     * restore parent knowbase
+     */
+    public function restoreSection(Request $request) : void
     {
         $kb = KnowBase::onlyTrashed()->find($request->id);
-        if ($kb) {
-            $kb->restore();
-        }
+        if($kb)  $kb->restore();
 
     }
 
-    public function saveTest(Request $request)
+    /**
+     * save test questions for knowbase page
+     * @return array of ids
+     */
+    public function saveTest(Request $request) : array
     {   
         $ids = [];
         foreach ($request->questions as $key => $q) {
@@ -561,8 +624,11 @@ class KnowBaseController extends Controller
         return $ids;
     }
 
-
-    public function getAccess(Request $request) {
+    /**
+     * access editor for knowbase
+     */
+    public function getAccess(Request $request) : array
+    {
 
         $book = KnowBase::withTrashed()->find($request->id);
 
@@ -578,7 +644,10 @@ class KnowBaseController extends Controller
         ];
     }
 
-    private function getWhoCanReadOrEdit($book_id, $access = 'read')
+    /**
+     * users who has access to knowbase
+     */
+    private function getWhoCanReadOrEdit($book_id, $access = 'read') : array
     {       
         $can = [];
 

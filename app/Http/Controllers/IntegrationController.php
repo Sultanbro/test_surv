@@ -40,4 +40,17 @@ class IntegrationController extends Controller
 
         return response()->json($response);
     }
+
+    /**
+     * Тянем лиды для текущего пользователя
+     * @param BitrixIntegrationService $service
+     * @return JsonResponse
+     */
+    public function getLeads(Request $request, BitrixIntegrationService $service): JsonResponse
+    {
+        $page = $request->input('page');
+        $response = $service->getLeads($request, $page);
+
+        return response()->json($response);
+    }
 }

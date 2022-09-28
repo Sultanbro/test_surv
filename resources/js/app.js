@@ -131,7 +131,7 @@ Vue.component('call-bases', require('./components/CallBase.vue').default); // д
 Vue.component('trainee-report', require('./components/TraineeReport.vue').default);
 Vue.component('profile', require('./components/profile/Profile.vue').default); // шапка
 Vue.component('t-recruiter-stats', require('./components/analytics/TableRecruiterStats.vue').default); // Почасовая таблица рекрутинга
-Vue.component('user-earnings', require('./components/profile/UserEarnings.vue').default); // Блок начислений в профиле
+Vue.component('user-earnings', require('./components/profile/UserEarnings/UserEarnings.vue').default); // Блок начислений в профиле
 Vue.component('g-recruting', require('./components/analytics/Recruting.vue').default); // сводная информация рекрутинг
 Vue.component('top-gauges', require('./components/TopGauges.vue').default); // TOП спидометры, есть и в аналитике
 Vue.component('book-segment', require('./components/BookSegment.vue').default); // 
@@ -214,7 +214,8 @@ Vue.component('groups', require('./pages/groups.vue').default); // Группы
 Vue.component('fines', require('./pages/Fines.vue').default); // штрафы table
 Vue.component('s-notifications', require('./pages/Notifications.vue').default); // Уведомления
 Vue.component('bookgroups', require('./pages/bookgroups.vue').default); // обучение книги
-Vue.component('check-list', require('./pages/checkList.vue').default); // чек лист
+Vue.component('check-list', require('./pages/checkList.vue').default); // чек 
+Vue.component('awards', require('./pages/Awards/Awards.vue').default); // награды
 
 
 // KPI
@@ -226,10 +227,16 @@ Vue.component('kpi', require('./pages/kpi/Kpi.vue').default); // kpi
 Vue.component('kpi-items', require('./pages/kpi/KpiItems.vue').default); // kpi
 Vue.component('indicators', require('./pages/kpi/Indicators.vue').default); // kpi
 Vue.component('stats', require('./pages/kpi/Stats.vue').default); // kpi
+Vue.component('t-stats', require('./pages/kpi/StatsTable.vue').default); // kpi
+Vue.component('t-stats-bonus', require('./pages/kpi/StatsTableBonus.vue').default); // kpi
+Vue.component('t-stats-quartal', require('./pages/kpi/StatsTableQuartal.vue').default); // kpi
 Vue.component('bonuses', require('./pages/kpi/Bonuses.vue').default); // kpi
 Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').default); // kpi
 
+// temp
+Vue.component('profile-salary-info', require('./pages/ProfileSalaryInfo.vue').default); 
 
+Vue.component('award-user-sidebar', require('./components/sidebars/AwardUserSidebar.vue').default); // сайдбар для награждения пользователя
  
 Vue.directive("click-outside", {
   bind(el, binding, vnode) {

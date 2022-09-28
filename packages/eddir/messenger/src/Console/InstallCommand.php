@@ -15,6 +15,7 @@ class InstallCommand extends Command
     {
         $this->updateNodePackages(function ($packages) {
             return [
+                       "vuex"                    => "^4.0.2",
                        "vue-draggable-resizable" => "^2.3.0",
                        "moment"                  => "",
                        "vue-simple-context-menu" => "3.4.2",
@@ -28,6 +29,16 @@ class InstallCommand extends Command
 
         $this->call('vendor:publish', [
             '--tag' => 'messenger-config',
+            '--force' => true,
+        ]);
+
+        $this->call('vendor:publish', [
+            '--tag' => 'messenger-vue-components',
+            '--force' => true,
+        ]);
+
+        $this->call('vendor:publish', [
+            '--tag' => 'messenger-assets',
             '--force' => true,
         ]);
 

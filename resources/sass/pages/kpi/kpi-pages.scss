@@ -1,3 +1,216 @@
+$bon-first-column: 80px;
+$bon-last-column: 92px;
+$bon-gradient: linear-gradient(0deg, #353e4b, #254c83);
+$bon-gradient-light: linear-gradient(0deg, rgba(53,62,75, .24), rgba(55,75,102, .67));
+$bon-bg-grey: #e8ebef;
+$color-user: rgb(38, 98, 166); 
+$color-group: rgb(208, 138, 33);
+$color-position: rgb(54, 182, 73);
+
 .kpi-pages {
     
+    tr.collapsable {
+        //display: none;
+        display: table-row;
+        &.active {
+            display: table-row;
+        }
+    }
+
+    .collapse-table {
+      
+        td, th {
+            &:last-child {
+                width: 100% !important;
+            }
+        }
+    }
+
+    .table__wrapper {
+        width: calc(100vw - 154px);
+        overflow: auto;
+    }
+    
+    // second collapse
+    .table__wrapper__second {
+        width: calc(100vw - 154px);
+        overflow: auto;
+        max-height: 1px;
+        transition: 0.3s ease all;
+    }
+    
+    .collapsable.active > td > div.table__wrapper__second {
+        max-height: 10000px;
+    }
+    
+    // another
+    .searcher {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        min-width: 250px;
+    }
+
+    .kpi {
+        table
+        {
+            td, th {
+                min-width: 40px;
+            }
+
+            textarea,
+            select,
+            input {
+                min-width: 40px;
+                border: none;
+            }
+        }
+    }
+
+    table.j-table {
+        td,th {
+            &:last-child {
+                width: $bon-last-column;
+                min-width: $bon-last-column !important;
+            }
+        }
+    }
+
+    table {
+        td, th {
+            min-width: 125px;
+            padding: 0;
+            height: 1px;
+            font-weight: 400;
+            
+            &:first-child {
+                width: $bon-first-column;
+                min-width: $bon-first-column !important;
+            }
+
+            
+            
+        }
+
+        &.table-inner {
+            th {
+                height: 30px;
+                padding: 0px 10px !important;
+            }
+
+            // th, td {
+            //     &:last-child {
+            //         width: 1px;
+            //         min-width: 1px !important;
+            //     }
+            // }
+        }
+        
+
+        th {
+            height: 40px;
+            background: $bon-gradient;
+            padding: 10px;
+            color: #fff;
+        }
+
+        &.table.table-inner th {
+            background: $bon-gradient-light;
+            font-size: 12px;
+            font-weight: 400;
+
+            &.first-child {
+                background: #3f454e;
+            }
+        }
+
+        .b-table-sticky-column {
+            background: $bon-bg-grey;
+        }
+
+        th.b-table-sticky-column {
+            background: $bon-gradient;
+        }
+
+        textarea,
+        select,
+        input {
+            min-width: 200px;
+            border: none;
+        }
+
+        .text-center {
+            textarea,
+            select,
+            input {
+                text-align: center;
+            }
+        }
+
+        input[type="checkbox"] {
+            min-width: unset !important;
+        }
+
+        .l-2 {
+            left: $bon-first-column;
+        }
+    }
+}
+
+.field {
+    font-weight: 600;
+}
+ 
+.child-row {
+    background:#7fabe7;
+}
+
+.input-sm {
+    padding: 3px 10px;
+}
+
+.w-lg {
+    min-width: 250px !important;
+    width: 250px;
+}
+
+.color {
+
+    &-user {
+        color: $color-user;
+    }
+
+    &-group {
+        color: $color-group;
+    }
+
+    &-position {
+        color: $color-position;
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.w-sm {
+    width: 66px;
+}
+
+.little-expander {
+    font-size: 8px;
+    position: relative;
+    top: -1px;
+}
+
+
+
+
+.kpi-pages table.child-table td:last-child,
+.kpi-pages table.child-table th:last-child {
+    width: unset;
+    min-width: unset !important;
+}
+
+.bg-transparent {
+    background: transparent !important;
 }

@@ -45,7 +45,8 @@ class IntellectController extends Controller {
     public $time_link = 'https://bpartners.kz/btime?hash=';
 
 
-    public function bitrixCreateLead(Request $request) {
+    public function bitrixCreateLead(Request $request)
+    {
         History::bitrix('Переименовали лид в удаленный', $request->all());
         
         if($request->phone && $request->lead_id) {
@@ -87,7 +88,8 @@ class IntellectController extends Controller {
 
     }
 
-	public function start(Request $request) {   
+	public function start(Request $request)
+    {   
         
             History::bitrix('Запуск чатбота', $request->all());
 
@@ -677,39 +679,51 @@ class IntellectController extends Controller {
 
                 if($request->link == 1) { // ссылка для подписи договора дял удаленных
 
-                    History::intellect('Cсылка на подпись', [
-                        $lead->status,
-                        $request->all(),
-                    ]);
                     
-
-                   
+                    $lead->files = json_encode([]);
+                    $lead->signed = 2;   
+                    $lead->status = '39';
+                    $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6); // Раньше был, чтобы фиксировать время заполнения скайпа. Сейчас для хранения времени подписи
+                    // if($lead->status != 'LOSE') {
+                        
+                    // }
+                    
+                    $lead->save();
+    
+                    History::system('Уд Соискатель готов', [
+                        'lead_id' => $lead->lead_id,
+                        'date' => date('Y-m-d H:i:s', time() + 3600 * 6),
+                    ]);
+    
+                    $this->updateFields($lead->lead_id, [
+                        'UF_CRM_1628091269' => 1, // Подписал соглашение о неразглашении
+                    ]);
                   
 
-                    if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
-                        $lead->status = '40';
+                    // if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
+                    //     $lead->status = '40';
 
-                        $this->updateFields($lead->lead_id, [
-                            'STATUS_ID' => '40' // Статус: Рекрут: Подходящий, ждем подписания
-                        ]);
+                    //     $this->updateFields($lead->lead_id, [
+                    //         'STATUS_ID' => '40' // Статус: Рекрут: Подходящий, ждем подписания
+                    //     ]);
 
-                        //////////
+                    //     //////////
 
-                        usleep(4000000); // 3 sec
-                        $bitrix = new Bitrix();
-                        $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
-                        $lead->save();
-                    }
+                    //     usleep(4000000); // 3 sec
+                    //     $bitrix = new Bitrix();
+                    //     $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
+                    //     $lead->save();
+                    // }
                     
                
-                    /////////////////
+                    // /////////////////
                     
-                    $link = $this->contract_link . $lead->hash;
-                    $this->send_msg($request->phone, 'Подписать соглашение: %0a' . $link);
+                    // $link = $this->contract_link . $lead->hash;
+                    // $this->send_msg($request->phone, 'Подписать соглашение: %0a' . $link);
 
-                    return [
-                        'link' => $this->contract_link . $lead->hash
-                    ];    
+                    // return [
+                    //     'link' => $this->contract_link . $lead->hash
+                    // ];    
                 } 
     
                 if($request->link == 2) { // ссылка для выбора времени для офисных
@@ -836,12 +850,17 @@ class IntellectController extends Controller {
         ];
         
         $query = http_build_query($fields);
-        $result = $this->curl_post('https://infinitys.bitrix24.kz/rest/2/0cgtwatfrdxpeuae/crm.lead.update.json', $query);
+        $result = $this->curl_post('https://infinitys.bitrix24.kz/rest/2/09av6uq61up4ymhb/crm.lead.update.json', $query);
         
         return $result;
     }
 
-    private function getLeads(array $status = [], String $title = '', String $from = '2010-01-01', String $to = '2050-01-01')
+    private function getLeads(
+        array $status = [],
+        String $title = '',
+        String $from = '2010-01-01',
+        String $to = '2050-01-01'
+    )
     {
         $filter = [];
         $filter['>DATE_CREATE'] = $from . 'T00:00:00';
@@ -857,7 +876,7 @@ class IntellectController extends Controller {
         
         $query = http_build_query($fields);
         
-        $result = $this->curl_post('https://infinitys.bitrix24.kz/rest/2/0cgtwatfrdxpeuae/crm.lead.list.json', $query);
+        $result = $this->curl_post('https://infinitys.bitrix24.kz/rest/2/09av6uq61up4ymhb/crm.lead.list.json', $query);
         
         return $result;
     }
@@ -869,12 +888,13 @@ class IntellectController extends Controller {
             'params' => ['REGISTER_SONET_EVENT' => 'Y'],
         ]);
         
-        $result = $this->curl_post('https://infinitys.bitrix24.kz/rest/2/0cgtwatfrdxpeuae/crm.lead.add.json', $query);
+        $result = $this->curl_post('https://infinitys.bitrix24.kz/rest/2/09av6uq61up4ymhb/crm.lead.add.json', $query);
         
         return $result;
     }
 
-	public function curl_get($url) {
+	public function curl_get($url)
+    {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -887,7 +907,8 @@ class IntellectController extends Controller {
         return json_decode($json_resuls);
     }
 
-    public function get_int($url) {
+    public function get_int($url)
+    {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -903,7 +924,8 @@ class IntellectController extends Controller {
         return json_decode($json_resuls);
     }
 
-	public function curl_post($url, $query) {
+	public function curl_post($url, $query)
+    {
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -926,8 +948,11 @@ class IntellectController extends Controller {
         return $result;
     }
 
-    /* Подпись договора и заполнения скайпа */
-    public function contract(Request $request) {
+    /* 
+     * Подпись договора и заполнения скайпа 
+     */
+    public function contract(Request $request)
+    {
 
         $lead = Lead::where('hash', $request->hash)->latest()->first();
 
@@ -1030,8 +1055,11 @@ class IntellectController extends Controller {
         
     } 
 
-    /* Выбор времени собеседования дял офисных кандидатов */
-    public function choose_time(Request $request) {
+    /*
+     * Выбор времени собеседования дял офисных кандидатов 
+     */
+    public function choose_time(Request $request)
+    {
         
         if($request->has('hash')) {
             
@@ -1096,7 +1124,8 @@ class IntellectController extends Controller {
     /**
      * Saves answers after Whatsapp questions
      */
-    public function quiz_after_fire(Request $request) {
+    public function quiz_after_fire(Request $request)
+    {
         
         History::intellect('Уволенный анкета', $request->all());
         

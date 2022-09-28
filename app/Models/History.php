@@ -22,4 +22,13 @@ class History extends Model
         'created_at',
         'updated_at'
     ];
+
+    protected $casts = [
+        'payload',
+    ];
+
+    public function historable() 
+    {
+        return $this->morphTo(__FUNCTION__, 'reference_table', 'reference_id');
+    }
 }

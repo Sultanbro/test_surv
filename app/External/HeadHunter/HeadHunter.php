@@ -28,7 +28,7 @@ class HeadHunter {
 	CONST MANAGER_ID = 7618556;   // Искомый менеджер. Амиров Олжас o_amir4@mail.ru. Подтягиваем только его вакансии
 	CONST MANAGER_ID_2 = 7700035;   // Искомый менеджер. Денис Тастемиров
 
-    CONST MANAGERS = [7618556, 7700035];
+    CONST MANAGERS = [7618556, 7700035, 7792661];
     CONST SEGMENT = '1462'; // Сегмент в битриксе
 
     /**
@@ -199,7 +199,7 @@ class HeadHunter {
     public function getVacancy($id) {
         $response = $this->get('/vacancies/' . $id);
         $arr = $this->toArray($response); 
-        return !in_array($arr->manager->id, [self::MANAGER_ID, self::MANAGER_ID_2]) ? null : $arr;
+        return !in_array($arr->manager->id, self::MANAGERS) ? null : $arr;
     }
 
     /**

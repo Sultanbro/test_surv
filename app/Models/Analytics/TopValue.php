@@ -153,8 +153,8 @@ class TopValue extends Model
                         
                     $gauges[] = $gauge;
 
-                    if($top_value->max_value - $top_value->min_value != 0 && ($top_value->is_main == 1 || $index == 0)) {
-                        $percento = ($top_value->value - $top_value->min_value) / ($top_value->max_value - $top_value->min_value);
+                    if((float)$top_value->max_value - (float)$top_value->min_value != 0 && ($top_value->is_main == 1 || $index == 0)) {
+                        $percento = ((float)$top_value->value - (float)$top_value->min_value) / ((float)$top_value->max_value - (float)$top_value->min_value);
                     }
                     
                 }
@@ -391,24 +391,25 @@ class TopValue extends Model
     public static function getGaugeSections($args) {
 
         $value = $args['value'];
-        $min = $args['min_value'];
-        $max = $args['max_value'];
+        $min = (float)$args['min_value'];
+        $max = (float)$args['max_value'];
         $round = array_key_exists('round', $args) ? (int)$args['round'] : 0;
         $options = $args['options'];
         $reverse = array_key_exists('reverse', $args) ? $args['reverse'] : false;
 
         
         $sections = $options['staticLabels']['labels']; //  
-  
-
-        $sections = [
-            round($min, $round),
-            round((($max - $min) * 0.2) + $min, $round),
-            round((($max - $min) * 0.4) + $min, $round),
-            round((($max - $min) * 0.6) + $min, $round),
-            round((($max - $min) * 0.8) + $min, $round),
-            round($max, $round),
-        ];
+      
+      
+            $sections = [
+                round($min, $round),
+                round((($max - $min) * 0.2) + $min, $round),
+                round((($max - $min) * 0.4) + $min, $round),
+                round((($max - $min) * 0.6) + $min, $round),
+                round((($max - $min) * 0.8) + $min, $round),
+                round($max, $round),
+            ];
+     
 
        // dump((($max - $min) * 0.2) + $min);
         

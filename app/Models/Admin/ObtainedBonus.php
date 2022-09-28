@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Classes\Helpers\Currency;
 use App\Salary;
 use App\Models\TestBonus;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ObtainedBonus extends Model
 {
@@ -21,6 +22,14 @@ class ObtainedBonus extends Model
         'amount',
         'comment'
     ];
+
+    /**
+     * @return BelongsTo
+     */
+    public function bonus(): BelongsTo
+    {
+        return $this->belongsTo('App\Models\Kpi\Bonus', 'bonus_id');
+    }
 
     public static function createOrUpdate($arr) {
         $ob = self::where('user_id', $arr['user_id'])

@@ -70,7 +70,7 @@
                 Группа
             </th>
             <th class="mark" v-if="is_admin">
-                Показатели
+                Показатели 
             </th>
             <th class="mark" v-if="is_admin">
                 Ед.изм.

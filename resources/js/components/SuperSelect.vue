@@ -1,6 +1,5 @@
 <template>
 <div class="super-select" ref="select" :class="posClass" v-click-outside="close">
-
     <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
         <div 
             v-for="(value, i) in values"
@@ -10,8 +9,12 @@
             {{ value.name }}
             <i class="fa fa-times" @click.stop="removeValue(i)" v-if="!one_choice_made"></i>
         </div>
+        <div 
+            id="placeholder"
+            class="selected-item placeholder">
+            {{ placeholder }}
+        </div>
     </div>
-    
     <div class="show" v-if="show">
         <div class="search">
             <input 
@@ -24,7 +27,7 @@
         
         <div class="options-window">
             <div class="types"> 
-                <div class="type" :class="{'active': type == 1}" @click="changeType(1)">
+                <div class="type" :class="{'active': type == 1}" @click="changeType(1)" >
                     <div class="text">Сотрудники</div>
                     <i class="fa fa-user"></i>
                 </div>
@@ -32,7 +35,7 @@
                     <div class="text" >Отделы</div>
                     <i class="fa fa-users"></i>
                 </div>
-                <div class="type" :class="{'active': type == 3}" @click="changeType(3)">
+                <div class="type" :class="{'active': type == 3}" @click="changeType(3)" >
                     <div class="text">Должности</div>
                     <i class="fa fa-briefcase"></i>
                 </div>
@@ -72,6 +75,14 @@
 export default {
     name: 'Superselect',
     props: {
+        onlytype:{
+            type: Number,
+            default: 0
+        },
+        placeholder:{
+            type: String,
+            default: '',
+        },
         values: {
             type: Array,
             default: []
@@ -95,6 +106,7 @@ export default {
     },
     data() {
         return {
+            show_placeholder: true,
             options: [],
             filtered_options: [],
             type: 1,
@@ -110,9 +122,15 @@ export default {
         console.log(this.values)
         console.log(this.values.length)
         if(this.one_choice && this.values.length > 0) this.one_choice_made = true; 
-        this.checkSelectedAll();  
+        this.checkSelectedAll(); 
+        if(this.onlytype > 0){
+            this.changeType(2);
+        } 
     },
     methods: {
+        hidePlaceholder(){
+            this.show_placeholder = !this.show_placeholder;
+        },
         checkSelectedAll() {
             if(this.values.length == 1
                 && this.values[0]['id']== 0
@@ -137,14 +155,16 @@ export default {
         },
 
         toggleShow() {
- 
-
             if(this.one_choice_made) {
                 return;
             }
              
             this.show = !this.show;
-
+            if(this.show){
+                document.getElementById('placeholder').style.display = "none";
+            }else{
+                document.getElementById('placeholder').style.display = "block";
+            }
 
             if(this.first_time) {
                 this.fetch();
@@ -200,14 +220,18 @@ export default {
             if(this.ask_before_delete != '') {
                 if(!confirm(this.ask_before_delete)) return;
             }
-
+            
             let v = this.values[i];
+            console.log(v);
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
             this.values.splice(i, 1);
 
             let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
-            if(index != -1) this.filtered_options.splice(index, 1);
+            if(index != -1) {
+                this.filtered_options.splice(index, 1);
+                this.$emit('remove');
+            }
         },
 
         removeValueFromList(i) {
@@ -267,3 +291,8 @@ export default {
 
 }
 </script>
+<style scoped lang="scss">
+    .placeholder{
+        background: #fff !important;
+    }
+</style>

@@ -86,12 +86,36 @@ class ChatsController extends Controller
         if (strlen($request->get('q')) < 1) {
             return response()->json([ 'message' => 'Search query must be at least 1 characters long' ], 422);
         }
-//        $chats = MessengerFacade::searchChats($request->get('q'), 369);
         $chats = MessengerFacade::searchChats($request->get('q'), Auth::user()->id);
-//        $users = MessengerFacade::searchUsers($request->get('q'));
-        return response()->json($chats);
-    }
+        $users = MessengerFacade::searchUsers($request->get('q'));
 
+        foreach ($chats as $chat) {
+            MessengerFacade::getChatAttributesForUser($chat, Auth::user());
+        }
+
+        foreach ($users as $user) {
+            // set default image if user has no image
+            if (empty($user->img_url)) {
+                if (empty($user->image)) {
+                    $user->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
+                }
+                
+                
+                if($user->img_url == '' || $user->img_url == 'avatar.png') {
+                    $user->image = '/images/avatar.png';
+                } else {
+                    $user->image = '/users_img/' . $user->img_url;
+                }
+    
+                $user->name = $user->name . ' ' . $user->last_name;
+            }
+        }
+
+        return response()->json([
+            'chats' => $chats,
+            'users' => $users,
+        ]);
+    }
 
     /**
      * Get chat information by id
@@ -104,15 +128,30 @@ class ChatsController extends Controller
     {
         // get chat
         $chat = MessengerFacade::getChat($chat_id);
+
         // check if chat exists
         if (!$chat->users) { // need to check users, so we can return later chat data with users as polymorphic call
             return response()->json([ 'message' => 'Chat not found' ], 404);
         }
 
+        $chat = MessengerFacade::getChatAttributesForUser($chat, Auth::user());
         $chat->pinned_message = $chat->getPinnedMessages()->last();
 
         // return chat model
         return response()->json($chat);
+    }
+
+    /**
+     * Get private chat info
+     *
+     * @param int $user_id
+     *
+     * @return JsonResponse
+     */
+    public function getPrivateChat(int $user_id): JsonResponse
+    {
+        $chat = MessengerFacade::getPrivateChat(Auth::user()->id, $user_id);
+        return response()->json( MessengerFacade::getChatAttributesForUser($chat, Auth::user()) );
     }
 
     /**

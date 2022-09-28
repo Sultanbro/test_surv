@@ -17,7 +17,7 @@
                   @close="toggleMessenger"
     />
     <SideChatsList v-show="!fullscreen"
-                   :contacts="chats"
+                   :contacts="contacts"
                    @contact-selected="startConversationWith"
                    @open="toggleMessenger"
     />
@@ -28,7 +28,7 @@
 import Conversation from './ChatConversation.vue';
 import ChatsList from './ChatsList.vue';
 import SideChatsList from './SideChatsList.vue';
-import API from "./API.vue";
+import API from "./Store/API.vue";
 
 export default {
   components: {Conversation, ChatsList, SideChatsList},
@@ -40,6 +40,7 @@ export default {
       user: {},
       messages: [],
       chats: [],
+      contacts: [],
       pinnedMessage: null,
     };
   },
@@ -57,6 +58,13 @@ export default {
         this.handlePinnedMessage(e.message);
       });
 
+      // read message notification
+      window.Echo.channel(`messages.${this.user.id}`).listen('.readMessage', e => {
+        if (e.user.id !== this.user.id) {
+          this.handleReadMessage(e.message);
+        }
+      });
+
       // toggleMessenger
       // this.toggleMessenger();
 
@@ -64,12 +72,24 @@ export default {
       // this.startConversationWith(this.chats[0]);
     });
     this.setActiveStatus();
+
+    window.onfocus = (e) => {
+      // set messages as read
+      if (this.messages.length > 0) {
+        API.setMessagesAsRead([this.messages[this.messages.length - 1].id]);
+      }
+    };
   },
   methods: {
     updateChats(callback = () => {}) {
       API.fetchChats(response => {
-        this.chats = response.chats;
+        // sort by last message date
+        this.chats = this.sortChats(response.chats);
         this.user = response.user;
+
+        // this.contacts as clone of this.chats
+        this.contacts = this.chats.slice();
+
         callback(response);
       });
     },
@@ -77,7 +97,14 @@ export default {
       if (search.length > 0) {
 
         API.searchChats(search, chats => {
-          this.chats = chats;
+          chats.users.forEach(user => {
+            user.id = 'user' + user.id;
+            user.title = user.name;
+            user.private = true;
+          });
+
+          this.chats = chats.users;
+          this.chats = this.chats.concat(chats.chats);
         });
       } else {
         this.updateChats();
@@ -91,33 +118,87 @@ export default {
 
       // Get chat info
       API.getChatInfo(chat.id, response => {
+        // if private set title to username
+        if (response.private) {
+
+          // if response contains users
+          if (response.users) {
+            // find user with current user id
+            let user = response.users.find(user => user.id !== this.user.id);
+            // if user found set title to username
+            if (user) {
+              response.title = user.name;
+            }
+          }
+        }
+
         this.selectedChat = response;
+
+        // API fetch messages
+        API.fetchMessages(response.id, messages => {
+          this.messages = messages.reverse();
+
+          // get messages ids
+          let messagesIds = messages.map(message => message.id);
+
+          // set messages as read
+          API.setMessagesAsRead(messagesIds, chats => {
+            this.chats = this.sortChats(chats);
+          });
+        });
+
+
         this.handlePinnedMessage(response.pinned_message);
       });
 
-      // API fetch messages
-      API.fetchMessages(chat.id, messages => {
-        this.messages = messages.reverse();
-
-        // get messages ids
-        let messagesIds = messages.map(message => message.id);
-
-        // set messages as read
-        API.setMessagesAsRead(messagesIds, chats => {
-          this.chats = chats;
-        });
+    },
+    sortChats(chats) {
+      chats.sort((a, b) => {
+        if (a.last_message === null) {
+          return 1;
+        }
+        if (b.last_message === null) {
+          return -1;
+        }
+        return new Date(b.last_message.created_at) - new Date(a.last_message.created_at);
       });
+      // get chats as array of titles and last_message_date
+      let chatsArray = chats.map(chat => {
+        return {
+          lmd: chat.last_message ? chat.last_message.created_at : null,
+          title: chat.title,
+          id: chat.id,
+          private: chat.private,
+        };
+      });
+      return chats;
     },
     saveNewMessage(message) {
       this.messages.push(message);
+      // if tab is active
+      if (document.hasFocus()) {
+        // set message as read
+        API.setMessagesAsRead([message.id]);
+      }
     },
     handleIncomingMessage(message) {
+      // update last message
+      this.chats.map(single => {
+          // find chat with same id to update last message, exclude message from current user
+          if (single.id !== message['chat_id'] || message['sender_id'] === this.user.id) {
+            return single;
+          }
+          single.last_message = message;
+          single.unread_messages_count = single.unread_messages_count + 1;
+          return single;
+        }
+      );
+      this.chats = this.sortChats(this.chats);
+      this.contacts = this.chats.slice();
+
       if (this.selectedChat && message['chat_id'] === this.selectedChat.id && message['sender_id'] !== this.user.id) {
         this.saveNewMessage(message);
-        return;
       }
-
-      this.updateUnreadCount(message['chat_id'], false);
     },
     handlePinnedMessage(message) {
       if (!message) {
@@ -128,25 +209,36 @@ export default {
         this.pinnedMessage = message;
       }
     },
+    handleReadMessage(message) {
+      if (this.selectedChat && message['chat_id'] === this.selectedChat.id) {
+        // fetch messages again
+        API.fetchMessages(this.selectedChat.id, messages => {
+          this.messages = messages.reverse();
+        });
+      }
+    },
     updateUnreadCount(contact_id, reset) {
       this.chats = this.chats.map(single => {
         if (single.id !== contact_id) {
           return single;
         }
 
-        if (reset) single.unseen = 0;
-        else single.unseen += 1;
+        if (reset) single.unread_messages_count = 0;
+        else single.unread_messages_count += 1;
 
         return single;
       });
+      this.contacts = this.chats.slice();
     },
     setActiveStatus() {
       // todo
     },
     createChat(items) {
       let members_ids = items.members.map(member => member.id);
-      API.createChat(items.title, '', members_ids, () => {
-        this.updateChats();
+      API.createChat(items.title, '', members_ids, chat => {
+        this.updateChats(() => {
+          this.startConversationWith(chat);
+        });
       });
     },
     deleteMessage(message) {
@@ -160,6 +252,7 @@ export default {
         this.chats = this.chats.filter(
           contact => contact.id !== chat.id
         );
+        this.contacts = this.chats.slice(); // todo: переделать на vuex
         if (this.selectedChat && this.selectedChat.id === chat.id) {
           this.selectedChat = null;
         }
@@ -174,6 +267,7 @@ export default {
   display: flex;
   position: fixed;
   width: 100%;
+  height: 100vh;
   justify-content: flex-end;
 }
 </style>

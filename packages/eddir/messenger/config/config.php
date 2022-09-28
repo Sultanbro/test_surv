@@ -53,7 +53,7 @@ return [
     */
     'user_avatar' => [
         'folder' => 'users-avatar',
-        'default' => 'avatar.png',
+        'default' => null, // default avatar image url (if null, use the default image from the package)
     ],
 
     /*

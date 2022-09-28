@@ -23,23 +23,18 @@ class IndicatorController extends Controller
     /**
      * Получаем все показатели из таблицы indicators.
      */
-    public function getAllIndicators(): JsonResponse
+    public function fetch(Request $request): JsonResponse
     {
-        $indicators = Activity::query()->get()->makeHidden([
-            'unit',
-            'order',
-            'editable',
-            'data'
-        ]);
+        $response = $this->activityService->fetch($request);
 
-        return response()->json($indicators);
+        return response()->json($response);
     }
 
     /**
      * Страница для Показателя
      * @param $id
      */
-    public function showIndicator($id): JsonResponse
+    public function get($id): JsonResponse
     {
         $indicator = Activity::withTrashed()->findOrFail($id);
 

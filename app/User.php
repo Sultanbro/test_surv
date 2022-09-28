@@ -3,7 +3,9 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,6 +26,7 @@ use App\ProfileGroupUser as PGU;
 use App\Models\CourseResult;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\Access\Authorizable;
+use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable implements Authorizable
 {
@@ -78,6 +81,52 @@ class User extends Authenticatable implements Authorizable
         'phone_3',
         'phone_4',
     ];
+
+    public function groupKpis()
+    {
+        return $this->hasManyThrough(ProfileGroup::class, Kpi::class);
+    }
+
+    public function bonuses(): MorphMany
+    {
+        return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    public function qpremium(): MorphMany
+    {
+        return $this->morphMany('App\Models\QuartalPremium', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    /**
+     * Получить всех стажеров которые ответственен.
+     * @return HasMany
+     */
+    public function trainees(): HasMany
+    {
+        return $this->hasMany('App\Models\Attendance', 'user_id', 'id');
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id')
+            ->withPivot(['created_at', 'updated_at', 'deleted_at'])->withTimestamps();
+    }
+
+    public function scopeGetDeletedFromGroupUser($query, $date)
+    {
+        $this->groups()->get();
+    }
+
+    /**
+     * @return MorphMany
+     */
+    public function histories(): MorphMany
+    {
+        return $this->morphMany('App\Models\History', 'reference', 'reference_table', 'reference_id', 'id');
+    }
 
     /**
      * @return MorphMany
@@ -173,15 +222,15 @@ class User extends Authenticatable implements Authorizable
     public function workdays_from_applied($date, $workdays = 6) {
         $date = Carbon::parse($date);
         $applied_from = 0;
-        if($this->user_description && $this->user_description->applied) {
+        if($this->user_description && $this->user_description->applied) { 
             $applied = Carbon::parse($this->user_description->applied);
-            $applied->addDay();
+         
             $year = $applied->year;
             $month = $applied->month;
             
             if($year == $date->year && $month == $date->month) {
-                $exclude = $workdays == 5 ? 2 : 1;
-                $applied_from = workdays_diff($applied->format('Y-m-d'), Carbon::parse($date)->endOfMonth()->format('Y-m-d'), $exclude);
+                $exclude = $workdays == 5 ? 2 : 1; 
+                $applied_from = workdays_diff($applied->format('Y-m-d'), Carbon::parse($date)->endOfMonth()->format('Y-m-d'), $exclude) + 1;
                 //$applied_from = $applied_from - 1;
                 $applied_from = $applied_from < 0 ? 0 : $applied_from;
             }
@@ -190,7 +239,15 @@ class User extends Authenticatable implements Authorizable
         return $applied_from;
     }
 
-    public function user_description()
+    /**
+     * @return HasOne
+     */
+    public function description(): HasOne
+    {
+       return $this->hasOne('App\UserDescription', 'user_id', 'id');
+    } 
+
+    public function user_description(): HasOne
     {
        return $this->hasOne('App\UserDescription', 'user_id', 'id');
     } 
@@ -689,16 +746,9 @@ class User extends Authenticatable implements Authorizable
         return $this->hasMany('App\Voice');
     }
 
-    
-
     public function photo()
     {
         return $this->hasOne('App\Photo');
-    }
-
-    public function groups()
-    {
-        return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id');
     }
 
     public function fines()
@@ -1023,5 +1073,16 @@ class User extends Authenticatable implements Authorizable
 
     public function checklists(){
         return $this->belongsToMany(\App\Models\Checklist::class);
+    }
+
+    /**
+     * working employees
+     */
+    public function scopeEmployees(Builder $query)
+    {
+        $query->with('user_description')
+              ->whereHas('user_description', function ($query) {
+                   $query->where('is_trainee', 0);
+              });
     }
 }
