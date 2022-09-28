@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RewardRequest;
 use App\Models\Award;
 use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
+use App\Repositories\AwardRepository;
 use App\Service\Award\AwardService;
 use App\User;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,6 +24,19 @@ class AwardController extends Controller
     public function __construct(AwardService $awardService)
     {
         $this->awardService = $awardService;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function reward(RewardRequest $request, AwardRepository $awardRepository)
+    {
+        return $this->awardService->reward($request, $awardRepository);
+    }
+
+    public function deleteReward(RewardRequest $request, AwardRepository $awardRepository)
+    {
+        return $this->awardService->deleteReward($request, $awardRepository);
     }
 
     /**

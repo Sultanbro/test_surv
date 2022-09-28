@@ -2,6 +2,7 @@
 
 namespace App\Service\Award;
 
+use App\Http\Requests\RewardRequest;
 use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
 use App\Models\Award;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class AwardService
 {
@@ -133,6 +135,44 @@ class AwardService
             return $awards;
 
         } catch (\Throwable $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param RewardRequest $request
+     * @param $awardRepository
+     * @return mixed
+     * @throws Exception
+     */
+    public function deleteReward(RewardRequest $request, $awardRepository)
+    {
+        try {
+            $awardId = $request->input('award_id');
+            $userId  = $request->input('user_id');
+            $added   = $awardRepository->detachUser($awardId, $userId);
+
+            return response()->success($added);
+        }catch (Throwable $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param RewardRequest $request
+     * @param $awardRepository
+     * @return mixed
+     * @throws Exception
+     */
+    public function reward(RewardRequest $request, $awardRepository)
+    {
+        try {
+            $awardId = $request->input('award_id');
+            $userId  = $request->input('user_id');
+            $added   = $awardRepository->attachUser($awardId, $userId);
+
+            return response()->success($added);
+        }catch (Throwable $exception) {
             throw new Exception($exception->getMessage());
         }
     }
