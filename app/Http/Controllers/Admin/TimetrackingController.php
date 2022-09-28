@@ -57,7 +57,7 @@ class TimetrackingController extends Controller
     {
         View::share('title', 'Табель сотрудников');
         View::share('menu', 'timetracking');
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function settings()
@@ -637,14 +637,14 @@ class TimetrackingController extends Controller
             ->delete();
 
         $corp_books = [];
-//        foreach ($request['corp_books'] as $corp_book) {
-//            \App\Models\KnowBaseModel::create([
-//                'book_id' => $corp_book['id'],
-//                'model_id' => $group->id,
-//                'model_type' => 'App\\ProfileGroup',
-//                'access' => 1,
-//            ]);
-//        }
+        foreach ($request['corp_books'] as $corp_book) {
+            \App\Models\KnowBaseModel::create([
+                'book_id' => $corp_book['id'],
+                'model_id' => $group->id,
+                'model_type' => 'App\\ProfileGroup',
+                'access' => 1,
+            ]);
+        }
 
         DB::transaction(function () use (
             $group,
