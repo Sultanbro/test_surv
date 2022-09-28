@@ -340,22 +340,13 @@ class FunnelStats extends Command
                     if($daytype) $first_day_users++;
 
                     $daytype = DayType::whereIn('type', [5,7])
-                        ->where('date', Carbon::parse($lead->day_second)->format('Y-m-d'))
+                        ->where('date', '>=', Carbon::parse($lead->day_second)->format('Y-m-d'))
                         ->where('user_id', $user->id)
                         ->first();
 
                     if($daytype) {
                         $second_day_users++;
-                    } else {
-                        $daytype = DayType::whereIn('type', [5,7])
-                            ->where('date', '>', Carbon::parse($lead->day_second)->format('Y-m-d'))
-                            ->where('user_id', $user->id)
-                            ->first();
-                        if($daytype) {
-                            $second_day_users++;
-                        }
-                    }
-                    
+                    } 
                      
                     $today = Carbon::now();
                     if($today->dayOfWeek == 6) $today = $today->subDays(1);

@@ -21,6 +21,8 @@ class RecruitingActivityService
         52, // Пропущенные
         53, // Сделки
         54, // Принято
+        204, // 1 день стажировавшихся
+        207, // 2+ день стажировавшихся
     ];
 
     /**
@@ -44,6 +46,8 @@ class RecruitingActivityService
     CONST I_CALLS_MISSED = 5; // Пропущенные звонки
     CONST I_CONVERTED = 6; // Сконвертировано
     CONST I_APPLIED = 7; // Принято на работу
+    CONST I_FIRST_DAY_TRAINED = 8; // 1 день стажировавшихся
+    CONST I_SECOND_DAY_TRAINED_FROM = 9; // 2+ день стажировавшихся
 
     /**
      * Сохранить
@@ -84,5 +88,13 @@ class RecruitingActivityService
     public function setUser(int $user_id) 
     {
         $this->user_id = $user_id;
+    }
+
+    /**
+     * getUser
+     */
+    public function getUser() 
+    {
+        return $this->user_id;
     }
 }

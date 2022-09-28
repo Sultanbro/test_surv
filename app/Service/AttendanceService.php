@@ -6,6 +6,7 @@ use App\DayType;
 use App\Http\Requests\GetDayAttendanceRequest;
 use App\Http\Requests\UpdateAttendanceRequest;
 use App\Models\Attendance;
+use App\Models\Bitrix\Lead;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -46,9 +47,12 @@ class AttendanceService
         ]);
     }
 
-    public function getAttendance(GetDayAttendanceRequest $request): array
+    /**
+     * DEPRECATED
+     */
+    public function getAttendanceForMonth(GetDayAttendanceRequest $request): array
     {
-        $managerId = $request->input('admin_id');
+        $managerId = $request->input('manager_id');
         $month     = $request->input('month');
         $year      = $request->input('year');
 
@@ -61,7 +65,49 @@ class AttendanceService
             $dates[] = $date;
         }
 
-        return $this->getFirstDayAttendance($managerId, $dates);
+        return $this->getFirstDayAttendanceForMonth($managerId, $dates);
+    }
+
+    /**
+     * @param $managerId
+     * @param $date
+     * @return int
+     */
+    public function getFirstDayAttendance($managerId, String $date): int
+    {
+        return Lead::with('daytypes')
+            ->whereHas('daytypes', function ($query) use ($date) {
+                $query->whereDate('date', $date)
+                    ->whereIn('type', [
+                        DayType::DAY_TYPES['TRAINEE'],
+                        DayType::DAY_TYPES['RETURNED']
+                    ]);
+            })
+            ->where('invite_at', $date)
+            ->where('resp_id', $managerId)
+            ->get()
+            ->count();
+    }
+
+    /**
+     * @param $managerId
+     * @param $date
+     * @return int
+     */
+    public function getSecondDayAttendance($managerId, String $date): int
+    {
+        return Lead::with('daytypes')
+            ->whereHas('daytypes', function ($query) use ($date) {
+                $query->whereDate('date', '>', $date)
+                    ->whereIn('type', [
+                        DayType::DAY_TYPES['TRAINEE'],
+                        DayType::DAY_TYPES['RETURNED']
+                    ]);
+            })
+            ->where('day_second', $date)
+            ->where('resp_id', $managerId)
+            ->get()
+            ->count();
     }
 
     /**
@@ -69,13 +115,14 @@ class AttendanceService
      * @param $dates
      * @return array
      */
-    private function getFirstDayAttendance($managerId, $dates): array
+    private function getFirstDayAttendanceForMonth($managerId, $dates): array
     {
         $firstAttends = DayType::query()
             ->select(DB::raw('MIN(date) as date'),'user_id','admin_id')
             ->where('admin_id','=', $managerId)
             ->whereIn('type', [DayType::DAY_TYPES['TRAINEE'], DayType::DAY_TYPES['RETURNED']])
             ->whereIn('date', $dates)
+            ->whereIn('user_id', $user_ids)
             ->groupBy('user_id', 'admin_id')
             ->orderBy('date','ASC')
             ->get()->toArray();
