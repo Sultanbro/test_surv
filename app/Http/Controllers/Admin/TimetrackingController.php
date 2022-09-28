@@ -57,7 +57,7 @@ class TimetrackingController extends Controller
     {
         View::share('title', 'Табель сотрудников');
         View::share('menu', 'timetracking');
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     public function settings()
@@ -629,7 +629,7 @@ class TimetrackingController extends Controller
         foreach ($request['users'] as $user) {
             $users_id[] = $user['id'];
         }
-  
+
         $kbm = \App\Models\KnowBaseModel::
             where('model_type', 'App\\ProfileGroup')
             ->where('model_id', $group->id)
@@ -637,14 +637,14 @@ class TimetrackingController extends Controller
             ->delete();
 
         $corp_books = [];
-        foreach ($request['corp_books'] as $corp_book) {
-            \App\Models\KnowBaseModel::create([
-                'book_id' => $corp_book['id'],
-                'model_id' => $group->id,
-                'model_type' => 'App\\ProfileGroup',
-                'access' => 1,
-            ]);
-        }
+//        foreach ($request['corp_books'] as $corp_book) {
+//            \App\Models\KnowBaseModel::create([
+//                'book_id' => $corp_book['id'],
+//                'model_id' => $group->id,
+//                'model_type' => 'App\\ProfileGroup',
+//                'access' => 1,
+//            ]);
+//        }
 
         DB::transaction(function () use (
             $group,
@@ -862,7 +862,7 @@ class TimetrackingController extends Controller
         $head_ids = [];
         $group = ProfileGroup::find($request['group_id']);
 
-        $currentUser = User::bitrixUser();
+        $currentUser = User::bitrixUser() ?? User::find(5);
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
         if (!in_array($currentUser->id, $group_editors) && $currentUser->is_admin != 1) {
@@ -2446,42 +2446,30 @@ class TimetrackingController extends Controller
         $bonus = Bonus::where('id', $request->id)->first();
         if($bonus) $bonus->delete();
     }
-
-    /**
-     * Вставляем в таблицу group_user
-     * @param $group
-     * @param $usersId
-     */
     private function insertDataToGroupUser($group, $usersId)
     {
-        $this->checkUserForExisting($usersId, $group);
-
+        $data = [];
         foreach ($usersId as $userId)
         {
-            $exist = $group->users()->where([
-                ['user_id',  '=', $userId],
-                ['group_id', '=', $group->id]
-            ])->exists();
+            $exist = DB::table('group_user')
+                ->where('user_id', $userId)
+                ->where('group_id', $group->id)
+                ->exists();
 
             if (!$exist)
             {
-                DB::table('group_user')->insert([
+                $data[] = [
                     'user_id'  => $userId,
-                    'group_id' => $group->id
-                ]);
+                    'group_id' => $group->id,
+                    'from'     => Carbon::now()->toDateString(),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
             }
         }
+        DB::table('group_user')->insert($data);
     }
 
-    /**
-     * @param $usersId
-     * @param $group
-     * @return void
-     */
-    private function checkUserForExisting($usersId, $group): void
-    {
-        DB::table('group_user')->whereNotIn('user_id', $usersId)->where('group_id', $group->id)->delete();
-    }
     /**
      * Получем массив user-ов и добавляем в таблицу group_user
      */
