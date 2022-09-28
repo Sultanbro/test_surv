@@ -201,4 +201,11 @@ class Lead extends Model
 
         return $skypes;
     }
+
+    /**
+     *  Trainee (Lead) has many daytypes 
+     */
+    public function daytypes() {
+        $this->hasMany('App\DayType','user_id', 'user_id');
+    }
 }

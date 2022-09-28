@@ -83,6 +83,7 @@ class Kernel extends ConsoleKernel
         $schedule->command("count:hours")->hourly(); // обновление минут
         $schedule->command("check:late")->hourly(); // Опоздание
         $schedule->command("bonus:update")->hourly(); // Бонусы сотрудников
+        $schedule->command("recruiter:attendance")->hourly(); // Рекрутеры 1 и 2 день стажировки присутствовавших
         $schedule->command("callibro:minutes_aggrees")->everyFiveMinutes(); // Отработанное время сотрудников Евраз 1 Хоум
        // $schedule->command("callibro:minutes_aggrees")->hourlyAt(40); // Отработанное время сотрудников Евраз 1 Хоум
         $schedule->command('whatsapp:estimate_first_day')->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
