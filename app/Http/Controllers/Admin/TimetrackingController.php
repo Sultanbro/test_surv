@@ -593,31 +593,31 @@ class TimetrackingController extends Controller
         //time_exceptions
 
         return response()->json([
-            'name' => isset($group) ? $group->name : 'Noname',
-            'users' => isset($users) ? $users : [],
-            'corp_books' => $corp_books,
-            'group_id' => isset($group) ? $group->id : 0,
-            'timeon' => isset($group->work_start) ? $group->work_start : "00:00",
-            'timeoff' => isset($group->work_end) ? $group->work_end : "00:00",
-            'plan' => isset($group->plan) ? $group->plan : 0,
-            'zoom_link' => isset($group->zoom_link) ? $group->zoom_link : '',
-            'bp_link' => isset($group->bp_link) ? $group->bp_link : '',
-            'dialer_id' => isset($group->dialer) ? $group->dialer->dialer_id : null,
-            'script_id' => isset($group->dialer) ? $group->dialer->script_id : null,
-            'talk_minutes' => isset($group->dialer) ? $group->dialer->talk_minutes : null,
-            'talk_hours' => isset($group->dialer) ? $group->dialer->talk_hours : null,
-            'quality' => isset($group) ? $group->quality : 'local',
-            'bonuses' => $bonuses,
-            'activities' => $activities,
-            'payment_terms' => $payment_terms,
-            'time_exceptions' => isset($group) ? $group->time_exceptions : [],
-            'time_address' => isset($group) ? $group->time_address : 0,
-            'workdays' => isset($group) ? $group->workdays : 6,
-            'editable_time' => isset($group) ? $group->editable_time : 0,
-            'paid_internship' => isset($group) ? $group->paid_internship : 0,
+            'name'               => isset($group) ? $group->name : 'Noname',
+            'users'              => isset($users) ? $users : [],
+            'corp_books'         => $corp_books,
+            'group_id'           => isset($group) ? $group->id : 0,
+            'timeon'             => isset($group->work_start) ? $group->work_start : "00:00",
+            'timeoff'            => isset($group->work_end) ? $group->work_end : "00:00",
+            'plan'               => isset($group->plan) ? $group->plan : 0,
+            'zoom_link'          => isset($group->zoom_link) ? $group->zoom_link : '',
+            'bp_link'            => isset($group->bp_link) ? $group->bp_link : '',
+            'dialer_id'          => isset($group->dialer) ? $group->dialer->dialer_id : null,
+            'script_id'          => isset($group->dialer) ? $group->dialer->script_id : null,
+            'talk_minutes'       => isset($group->dialer) ? $group->dialer->talk_minutes : null,
+            'talk_hours'         => isset($group->dialer) ? $group->dialer->talk_hours : null,
+            'quality'            => isset($group) ? $group->quality : 'local',
+            'bonuses'            => $bonuses,
+            'activities'         => $activities,
+            'payment_terms'      => $payment_terms,
+            'time_exceptions'    => isset($group) ? $group->time_exceptions : [],
+            'time_address'       => isset($group) ? $group->time_address : 0,
+            'workdays'           => isset($group) ? $group->workdays : 6,
+            'editable_time'      => isset($group) ? $group->editable_time : 0,
+            'paid_internship'    => isset($group) ? $group->paid_internship : 0,
             'show_payment_terms' => isset($group) ? $group->show_payment_terms : 0,
-            'groups' => ProfileGroup::where('active', 1)->get()->pluck('name', 'id'),
-            'archived_groups' => ProfileGroup::where('active', 0)->get(['name', 'id']),
+            'groups'             => ProfileGroup::where('active', 1)->get()->pluck('name', 'id'),
+            'archived_groups'    => ProfileGroup::where('active', 0)->get(['name', 'id']),
 
         ]);
     }
@@ -628,7 +628,7 @@ class TimetrackingController extends Controller
         $group = ProfileGroup::with('dialer')->find($request->group);
         //
         $users_id = [];
-        $groups = ProfileGroup::where('active', 1)->get();
+
         foreach ($request['users'] as $user) {
             $users_id[] = $user['id'];
         }
@@ -649,10 +649,9 @@ class TimetrackingController extends Controller
             ]);
         }
 
-        //
         $group->work_start = $request['timeon'];
         $group->work_end = $request['timeoff'];
-        $group->users = json_encode(array_unique($users_id));
+        $group->users = json_encode(array_values(array_unique($users_id)));
 
 
         $group->name = $request['gname'];
@@ -725,7 +724,7 @@ class TimetrackingController extends Controller
         
         return [
             'groups' => ProfileGroup::where('active', 1)->pluck('name', 'id')->toArray(),
-            'group' => $group->id
+            'group'  => $group->id
         ];;
     }
 

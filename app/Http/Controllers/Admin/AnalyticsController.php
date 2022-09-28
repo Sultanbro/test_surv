@@ -401,8 +401,19 @@ class AnalyticsController extends Controller
      */
     public function addHours($group_id, $user_type, $value, $old_value, $date)
     {
+        // TODO users
         $group_users = json_decode(ProfileGroup::find($group_id)->users);
-        $tts = Timetracking::whereIn('user_id', $group_users)
+
+        if(tenant('id') === 'bp') {
+            $user_ids = User::withTrashed()
+                ->where('position_id', 32) // operators only
+                ->whereIn('id', $group_users)
+                ->get(['id'])
+                ->pluck('id')
+                ->toArray();
+        }
+        
+        $tts = Timetracking::whereIn('user_id', $user_ids)
             ->whereDate('enter', $date)
             ->orderBy('enter', 'desc')
             ->get();
