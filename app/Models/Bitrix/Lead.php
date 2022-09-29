@@ -206,6 +206,6 @@ class Lead extends Model
      *  Trainee (Lead) has many daytypes 
      */
     public function daytypes() {
-        $this->hasMany('App\DayType','user_id', 'user_id');
+        return $this->hasMany('App\DayType','user_id', 'user_id');
     }
 }

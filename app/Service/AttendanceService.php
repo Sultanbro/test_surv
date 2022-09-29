@@ -75,6 +75,12 @@ class AttendanceService
      */
     public function getFirstDayAttendance($managerId, String $date): int
     {
+        $user = User::withTrashed()->find($managerId);
+
+        if(!$user) {
+            return 0;
+        }
+
         return Lead::with('daytypes')
             ->whereHas('daytypes', function ($query) use ($date) {
                 $query->whereDate('date', $date)
@@ -83,8 +89,8 @@ class AttendanceService
                         DayType::DAY_TYPES['RETURNED']
                     ]);
             })
-            ->where('invite_at', $date)
-            ->where('resp_id', $managerId)
+            ->whereDate('invite_at', $date)
+            ->where('resp_id', $user->email)
             ->get()
             ->count();
     }
@@ -96,6 +102,12 @@ class AttendanceService
      */
     public function getSecondDayAttendance($managerId, String $date): int
     {
+        $user = User::withTrashed()->find($managerId);
+
+        if(!$user) {
+            return 0;
+        }
+
         return Lead::with('daytypes')
             ->whereHas('daytypes', function ($query) use ($date) {
                 $query->whereDate('date', '>', $date)
@@ -104,8 +116,8 @@ class AttendanceService
                         DayType::DAY_TYPES['RETURNED']
                     ]);
             })
-            ->where('day_second', $date)
-            ->where('resp_id', $managerId)
+            ->whereDate('invite_at', $date)
+            ->where('resp_id', $user->email)
             ->get()
             ->count();
     }

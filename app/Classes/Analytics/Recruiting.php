@@ -61,7 +61,8 @@ class Recruiting
     CONST I_CALLS_MISSED = 5; // Пропущенные звонки
     CONST I_CONVERTED = 6; // Сконвертировано
     CONST I_APPLIED = 7; // Принято на работу
-
+    CONST I_FIRST_DAY_TRAINED = 8; // 1 день стажировавшихся
+    CONST I_SECOND_DAY_TRAINED_FROM = 9; // 2+ день стажировавшихся
     /**
      * Поля чатбота
      */
