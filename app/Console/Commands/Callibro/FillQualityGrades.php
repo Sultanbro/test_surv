@@ -95,7 +95,7 @@ class FillQualityGrades extends Command
                     'dialer_id' => $group['dialer_id'],
                 ], $group['script_grades'])->groupBy('call_id');
 
-                
+                if($user->id == 18675) dd($grades);
                 $total = 0;
                 $count = 0;
 

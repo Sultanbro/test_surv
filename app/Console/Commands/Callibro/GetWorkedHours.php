@@ -113,7 +113,7 @@ class GetWorkedHours extends Command
                 }
 
                 $aggrees         = Eurasian::getAggrees($user->email, $this->date);
-                // $correct_minutes = Eurasian::getCallCounts($user->email, $this->date);
+                $correct_minutes = Eurasian::getCallCounts($user->email, $this->date);
 
                 $fields = [
                     'date'        => $this->startOfMonth,
@@ -123,7 +123,7 @@ class GetWorkedHours extends Command
                 
                 $this->saveUserStat(16, $minutes, $fields); // минуты
                 $this->saveUserStat(18, $aggrees, $fields); // согласия
-                // $this->saveUserStat(148, $correct_minutes, $fields); // звонки от 10 секунд
+                $this->saveUserStat(208, $correct_minutes, $fields); // звонки от 10 секунд
                 
                 if($minutes > 0 && $user->program_id == 1) {
                     $hours = Callibro::getWorkedHours($user->email, $this->date);
@@ -158,7 +158,7 @@ class GetWorkedHours extends Command
             $minutes = $this->dialer->talk_hours * 60;
             $message = 'Изменено на ' . $this->dialer->talk_hours . ' часов. Выполнен план на ' . $this->dialer->talk_minutes . ' минут разговора';
         } else{ 
-            $point = (int)($worked_minutes / 60);
+            $point   = (int)($worked_minutes / 60);
             $minutes = $worked_minutes + $point * 5;
             $message = 'Отработано ' . $worked_minutes. ' минут. Добавлено ' . $point * 5 . ' минут';
         }
