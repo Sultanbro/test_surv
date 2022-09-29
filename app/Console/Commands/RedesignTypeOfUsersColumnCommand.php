@@ -49,17 +49,25 @@ class RedesignTypeOfUsersColumnCommand extends Command
     {
         foreach ($this->getUsersData() as $departmentId => $users)
         {
-            $users = User::query()->whereIn('id', json_decode($users))->whereNull('deleted_at')->get();
-
+            $users = User::withTrashed()->whereIn('id', json_decode($users))->get();
             foreach ($users as $user)
             {
-                DB::table('group_user')->insert([
-                    'group_id'   => $departmentId,
-                    'user_id'    => $user->id,
-                    'from'       => $user->user_description->applied ?? null,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+                $exist = DB::table('group_user')->where([
+                    ['user_id',  '=', $user->id],
+                    ['group_id', '=', $departmentId]
+                ])->exists();
+
+                if (!$exist) {
+                    DB::table('group_user')->insert([
+                        'group_id' => $departmentId,
+                        'user_id' => $user->id,
+                        'from' => $user->user_description->applied ?? null,
+                        'to' => $user->deleted_at ?? null,
+                        'status' => $user->deleted_at == '' ? 'active' : 'drop',
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
             }
         }
     }
