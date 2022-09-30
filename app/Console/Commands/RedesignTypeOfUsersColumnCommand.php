@@ -61,7 +61,7 @@ class RedesignTypeOfUsersColumnCommand extends Command
                     DB::table('group_user')->insert([
                         'group_id' => $departmentId,
                         'user_id' => $user->id,
-                        'from' => $user->user_description->applied ?? null,
+                        'from' => $user->created_at ?? null,
                         'to' => $user->deleted_at ?? null,
                         'status' => $user->deleted_at == '' ? 'active' : 'drop',
                         'created_at' => now(),
