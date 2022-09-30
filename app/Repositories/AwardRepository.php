@@ -36,10 +36,14 @@ class AwardRepository extends CoreRepository
      * Получаем все награды с типом Номинаций.
      * @return mixed
      */
-    public function getNomination()
+    public function getNomination($user): array
     {
-        return $this->model()->join('award_types as at', 'at.id', '=', 'awards.award_type_id')
-                ->where('at.name', 'like', '%Номинаций%')->get()->toArray();
+        return $this->model()
+            ->join('award_types as at', 'at.id', '=', 'awards.award_type_id')
+            ->join('award_user as au', 'au.award_id', '=', 'awards.id')
+            ->where('at.name', 'like', '%Номинаций%')
+            ->where('au.user_id', '!=', $user->id)
+            ->get()->toArray();
     }
 
     /**

@@ -31,20 +31,22 @@ class AwardController extends Controller
      */
     public function reward(RewardRequest $request, AwardRepository $awardRepository)
     {
+        $this->access();
         return $this->awardService->reward($request, $awardRepository);
     }
 
     public function deleteReward(RewardRequest $request, AwardRepository $awardRepository)
     {
+        $this->access();
         return $this->awardService->deleteReward($request, $awardRepository);
     }
 
     /**
      * @throws Exception
      */
-    public function getAwards()
+    public function myAwards()
     {
-        $authUser = Auth::user() ?? User::find(5);
+        $authUser = Auth::user() ?? User::find(13865);
         $response = $this->awardService->myAwards($authUser);
 
         return \response()->success($response);
@@ -57,6 +59,7 @@ class AwardController extends Controller
     public function index()
     {
         try {
+            $this->access();
             $awardTypes = Award::all();
             return response()->success($awardTypes);
         } catch (Exception $exception) {
@@ -71,6 +74,7 @@ class AwardController extends Controller
      */
     public function store(StoreAwardRequest $request)
     {
+        $this->access();
         return $this->awardService->storeAward($request);
     }
 
@@ -80,6 +84,7 @@ class AwardController extends Controller
     public function show(Award $award)
     {
         try {
+            $this->access();
             return response()->success($award);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
@@ -100,6 +105,7 @@ class AwardController extends Controller
      */
     public function update(UpdateAwardRequest $request, Award $award)
     {
+        $this->access();
         $response = $this->awardService->updateAward($request, $award);
 
         return response()->success($response);
@@ -111,6 +117,7 @@ class AwardController extends Controller
     public function destroy(Award $award)
     {
         try {
+            $this->access();
             return response()->success($award->delete());
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());

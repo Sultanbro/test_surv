@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('awards', function (Blueprint $table) {
-            $table->unsignedBigInteger('course_id')->after('award_type_id');
+            $table->unsignedBigInteger('course_id')->nullable()->after('award_type_id');
         });
     }
 

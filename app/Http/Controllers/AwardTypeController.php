@@ -19,6 +19,7 @@ class AwardTypeController extends Controller
 
     public function __construct(AwardService $awardService)
     {
+        $this->access();
         $this->awardService = $awardService;
     }
 

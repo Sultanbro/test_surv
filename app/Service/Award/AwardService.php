@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateAwardRequest;
 use App\Models\Award;
 use App\Models\AwardType;
 use App\Repositories\AwardRepository;
+use App\Repositories\AwardTypeRepository;
 use App\Repositories\CoreRepository;
 use App\User;
 use Exception;
@@ -31,9 +32,20 @@ class AwardService
      */
     public $path;
 
+    /**
+     * @var CoreRepository
+     */
+    public CoreRepository $awardRepository;
+
+    /**
+     * @var CoreRepository
+     */
+    public CoreRepository $awardTypeRepository;
 
     public function __construct()
     {
+        $this->awardRepository     = app(AwardRepository::class);
+        $this->awardTypeRepository = app(AwardTypeRepository::class);
         $this->disk = Storage::disk('s3');
         $this->path = 'awards/';
     }
@@ -80,7 +92,7 @@ class AwardService
             $success = Award::query()->create([
                 'award_type_id' => $request->input('award_type_id'),
                 'course_id' => $request->input('course_id'),
-                'format'    => $request->file('image')->extension(),
+                'format'    => $request->file('file')->extension(),
                 'icon'      => $request->input('icon'),
                 'path'      => $this->saveAwardFile($request)['relative']
             ]);
@@ -123,13 +135,14 @@ class AwardService
     public function myAwards($user): array
     {
         try {
-            $awardRepository = app(AwardRepository::class);
             $awards = [];
             $access = $this->showOtherAwards($user);
-            $awards['myAwards']   = $awardRepository->relationAwardUser($user);
-            $awards['nomination'] = $awardRepository->getNomination();
+            $awards['awards']['my']   = $this->awardRepository->relationAwardUser($user);
+            $awards['awards']['nomination'] = $this->awardRepository->getNomination($user);
+            $awards['types'] = $this->awardTypeRepository->allTypes();
+
             if ($access) {
-                $awards['otherAwards'] = $awardRepository->relationAwardUser($user, '!=');
+                $awards['awards']['all'] = $this->awardRepository->relationAwardUser($user, '!=');
             }
 
             return $awards;

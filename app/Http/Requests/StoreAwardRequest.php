@@ -27,8 +27,8 @@ class StoreAwardRequest extends FormRequest
     {
         return [
             'award_type_id'  => 'required|integer',
-            'course_id'      => 'required|integer',
-            'image'          => ['required', File::types(['jpg', 'png', 'pdf'])->max(2048)]
+            'course_id'      => 'integer',
+            'file'          => ['required', File::types(['jpg', 'png', 'pdf'])->max(2048)]
         ];
     }
 }

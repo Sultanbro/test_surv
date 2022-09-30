@@ -570,7 +570,7 @@ Route::middleware([
     ], function () {
         Route::post('/reward', [AwardController::class, 'reward'])->name('reward');
         Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->name('delete-reward');
-        Route::get('/my', [AwardController::class, 'getAwards'])->name('my-awards');
+        Route::get('/my', [AwardController::class, 'myAwards'])->name('my-awards');
         Route::get('/get', [AwardController::class, 'index'])->name('get');
         Route::get('/get/{award}', [AwardController::class, 'show'])->name('show');
         Route::post('/store', [AwardController::class, 'store'])->name('store');
