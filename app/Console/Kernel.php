@@ -125,7 +125,6 @@ class Kernel extends ConsoleKernel
         /**
          * РАЗ В НЕДЕЛЮ
          */
-        
         $schedule->command("usernotification:report")->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
         $schedule->command("usernotification:foreigner")->weekly()->mondays()->at('02:00'); // Уведомление руководителей групп об оплате иностранным стажерам. Запускается каждый понедельник
         $schedule->command("fine:check")->weeklyOn(1, '00:00'); // Каждый понедельник в 6 утра проверка на отсутствие в воскресенье 

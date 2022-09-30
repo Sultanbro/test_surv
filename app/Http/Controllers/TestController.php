@@ -28,42 +28,14 @@ use App\Http\Controllers\IntellectController;
 use App\Models\Bitrix\Lead;
 use App\Models\GroupUser;
 use App\Salary;
+use App\Service\Department\UserService;
 
 class TestController extends Controller { 
   
 	public function test() { 
 
-		$date = '2022-09-23';
-		$lead = Lead::with('daytypes')
-			->whereHas('daytypes', function ($query) use ($date) {
-				$query->whereDate('date', '>', $date)
-					->whereIn('type', [
-						DayType::DAY_TYPES['TRAINEE'],
-						DayType::DAY_TYPES['RETURNED']
-					]);
-			})
-			->whereDate('invite_at', $date)
-			->where('resp_id', $managerId)
-			->get()
-			->count();
-		dd($lead);
-
-		$test = '{"document_id":["crm","CCrmDocumentLead","LEAD_549148"],"auth":{"domain":"infinitys.bitrix24.kz","client_endpoint":"https:\/\/infinitys.bitrix24.kz\/rest\/","server_endpoint":"https:\/\/oauth.bitrix.info\/rest\/","member_id":"f1b4c78d4509008a30bd8a97f967759f"},"lead_id":"549148","phone":"87711486535","namex":"\u0422\u0435\u0441\u0442 \u0420\u0443\u0441\u043b\u0430\u043d","email":null,"segment":"\u041a\u0430\u043d\u0434\u0438\u0434\u0430\u0442\u044b (hh, nur \u0438 \u0434\u0440.)","resp_email":"ekudaibergen7@gmail.com"}';
-		$test = json_decode($test);
-
-		//dd($test['segment']);
-		dd(Lead::getSegment($test->segment));
-
-		dd(tenant());
-       // $users    = json_decode(ProfileGroup::query()->findOrFail(53)->users, true);
-		dd(static::class);
-		// foreach ($users as $key => $user_id) {
-		// 	GroupUser::create([
-		// 		'user_id'  => $user_id,
-		// 		'group_id' => 53,
-		// 	]);
-		// }
-		
+		dump((new UserService)->getFiredEmployees(31, '2022-09-01'));
+		dd((new UserService)->getEmployees(31, '2022-09-01'));
 		
 	}  
 

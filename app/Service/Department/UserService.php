@@ -45,7 +45,7 @@ class UserService
                     ->orWhere('to', '>', $this->getFullDate($date))
             );
 
-            $data[] = $this->getGroupUsers($groupUser->get(), $date);
+            $data = $this->getGroupUsers($groupUser->get(), $date);
         }
 
         return $data;
@@ -71,8 +71,8 @@ class UserService
                     ->whereNull('to')
                     ->orWhere('to', '>', $this->getFullDate($date))
                 );
-
-            $data[] = $this->getGroupEmployees($groupUser->get(), $date);
+            
+            $data = $this->getGroupEmployees($groupUser->get(), $date);
         }
 
         return $data;
@@ -98,7 +98,7 @@ class UserService
                     ->orWhere('to', '>', $this->getFullDate($date))
                 );
 
-            $data[] = $this->getGroupsTrainees($groupUser->get(), $date);
+            $data = $this->getGroupsTrainees($groupUser->get(), $date);
         }
 
         return $data;
@@ -120,12 +120,34 @@ class UserService
             $firedUsers = $this->getGroupFiredUsers($groupUser->get(), $date);
 
             if (!empty($firedUsers)) {
-                $data[] = $firedUsers;
+                $data = $firedUsers;
             }
         }
 
         return $data;
     }
+
+     /**
+     * @param int $groupId
+     * @param string $date
+     * @return array
+     */
+    public function getFiredEmployees(int $groupId, string $date): array
+    {
+        $groups = $this->getGroups($groupId);
+        $data   = [];
+        foreach ($groups as $group)
+        {
+            $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
+                ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
+            
+            $data = $this->getGroupEmployees($groupUser->get(), $date);
+        }
+
+        return $data;
+    }
+
+    
 
     /**
      * @param int $groupId
@@ -144,7 +166,7 @@ class UserService
             $firedUsers = $this->getGroupFiredTrainees($groupUser->get(), $date);
 
             if (!empty($firedUsers)) {
-                $data[] = $firedUsers;
+                $data = $firedUsers;
             }
         }
 
