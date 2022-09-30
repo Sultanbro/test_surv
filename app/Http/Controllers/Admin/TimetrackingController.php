@@ -860,7 +860,9 @@ class TimetrackingController extends Controller
 
         $users_ids = [];
         $head_ids = [];
-        $group = ProfileGroup::find($request['group_id']);
+        $group = ProfileGroup::with('users')->find($request['group_id']);
+
+        
 
         $currentUser = User::bitrixUser() ?? User::find(5);
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
@@ -870,6 +872,8 @@ class TimetrackingController extends Controller
                 'error' => 'access',
             ];
         }
+
+        $user_ids = $group ? $group->users()->pluck('id')->toArray() : [];
         
         /**
          * Выбираем кого покзаывать
@@ -885,20 +889,19 @@ class TimetrackingController extends Controller
                 })
                 ->where('ud.is_trainee', 0)
                 ->get(['users.id','ud.applied']);
-            $end_month = Carbon::parse($year . '-' . $request->month . '-01')->endOfMonth();
-            foreach($my_ids as $ids){
-                $hire_date = Carbon::parse($ids->applied);
+                
+            foreach($my_ids as $ids) {
                 $_user_ids[] = $ids->id;
-                // if($hire_date->lt($end_month) || !isset($ids->applied)){
-                //     $_user_ids[] = $ids->id;
-                // }
             }
         }
         
         if($request->user_types == 1) { // Уволенныне
-            $_user_ids = User::onlyTrashed()->when($group, function ($query) use ($group) {
-                return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
-            })->pluck('id')->toArray();
+            $_user_ids = User::onlyTrashed()
+                ->when($group, function ($query) use ($group) {
+                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
+                })
+                ->pluck('id')
+                ->toArray();
             //////////////////////
             $date = $year . '-' . $request->month . '-01';
             $date_for_register = Carbon::parse($date); 
@@ -933,7 +936,9 @@ class TimetrackingController extends Controller
             $_user_ids = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', $users_ids)
+                ->when($group, function ($query) use ($group) {
+                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
+                })
                 ->where('ud.is_trainee', 1) 
                 ->get(['users.id'])
                 ->pluck('id')

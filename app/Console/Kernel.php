@@ -132,6 +132,12 @@ class Kernel extends ConsoleKernel
         $schedule->command("fine:check")->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
 
 
+        /**
+         * Раз в месяц
+         */
+        $schedule->command("analytics:pivots")->monthly(); // создать сводные таблицы отделов в аналитике 
+        
+
     }
 
     /**
