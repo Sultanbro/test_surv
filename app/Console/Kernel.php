@@ -135,6 +135,7 @@ class Kernel extends ConsoleKernel
          * Раз в месяц
          */
         $schedule->command("analytics:pivots")->monthly(); // создать сводные таблицы отделов в аналитике 
+        $schedule->command("analytics:parts")->monthly(); // создать декомпозицию и спидометры в аналитике
         
 
     }

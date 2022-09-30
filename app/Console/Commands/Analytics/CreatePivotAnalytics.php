@@ -34,8 +34,6 @@ class CreatePivotAnalytics extends Command
     public function __construct()
     {
         parent::__construct();
-
-        
     }
 
     /**
@@ -47,7 +45,7 @@ class CreatePivotAnalytics extends Command
     {
         $this->line('start creating pivot tables:');
         
-        if(!Carbon::now()->day == 1) return false;
+        if(Carbon::now()->day != 1) return false;
 
         $newDate  = date('Y-m-d');
         $prevDate = Carbon::now()->subMonth()->format('Y-m-d');
