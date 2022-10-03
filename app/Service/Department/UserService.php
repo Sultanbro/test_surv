@@ -39,8 +39,11 @@ class UserService
             $groupUser = GroupUser::withTrashed()->where([
                 ['group_id', $group->id],
             ])
-                ->where('from', '<', $this->getFullDate($date))
-                ->whereNull('to');
+                ->where('from', '<=', $this->getFullDate($date))
+                ->where(fn ($query) =>  $query
+                    ->whereNull('to')
+                    ->orWhere('to', '<=', $this->getFullDate($date))
+            );
 
             $data = $this->getGroupUsers($groupUser->get(), $date);
         }
@@ -63,8 +66,11 @@ class UserService
             $groupUser = GroupUser::withTrashed()->where([
                 ['group_id', $group->id],
             ])
-                ->where('from', '<', $this->getFullDate($date))
-                ->whereNull('to');
+                ->where('from', '<=', $this->getFullDate($date))
+                ->where(fn ($query) =>  $query
+                    ->whereNull('to')
+                    ->orWhere('to', '<=', $this->getFullDate($date))
+                );
 
             $data = $this->getGroupEmployees($groupUser->get(), $date);
         }
@@ -87,7 +93,10 @@ class UserService
             $groupUser = GroupUser::withTrashed()->where([
                 ['group_id', $group->id],
             ])->where('from', '<', $this->getFullDate($date))
-                ->whereNull('to');
+                ->where(fn ($query) =>  $query
+                    ->whereNull('to')
+                    ->orWhere('to', '>', $this->getFullDate($date))
+                );
 
             $data = $this->getGroupsTrainees($groupUser->get(), $date);
         }
@@ -169,7 +178,7 @@ class UserService
         $firedTraineeData = [];
         foreach ($firedTrainees as $firedTrainee)
         {
-            $user = User::withTrashed()->where('id', $firedTrainee->user_id)
+            $user = User::withTrashed()->where('users.id', $firedTrainee->user_id)
                 ->withWhereHas('description', fn($description) => $description->where('is_trainee', 1))->first();
 
             if (empty($user)){
@@ -192,7 +201,7 @@ class UserService
         $firedUserData = [];
         foreach ($firedUsers as $firedUser)
         {
-            $user = User::withTrashed()->where('users.id', $firedUser->user_id)->first();
+            $user = User::withTrashed()->where('id', $firedUser->user_id)->first();
 
             if (empty($user)){
                 continue;
@@ -206,10 +215,9 @@ class UserService
 
     /**
      * @param $groupUsers
-     * @param $date
      * @return array
      */
-    private function getGroupsTrainees($groupUsers, $date): array
+    private function getGroupsTrainees($groupUsers): array
     {
         $traineesData = [];
         foreach ($groupUsers as $groupUser)
@@ -230,10 +238,9 @@ class UserService
 
     /**
      * @param $groupUsers
-     * @param $date
      * @return array
      */
-    private function getGroupEmployees($groupUsers, $date): array
+    private function getGroupEmployees($groupUsers): array
     {
         $userData = [];
         foreach ($groupUsers as $groupUser)
@@ -254,10 +261,9 @@ class UserService
 
     /**
      * @param $groups
-     * @param $date
      * @return array
      */
-    private function getGroupUsers($groups, $date): array
+    private function getGroupUsers($groups): array
     {
         $userData = [];
         foreach ($groups as $group)
