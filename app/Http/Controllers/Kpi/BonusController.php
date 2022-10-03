@@ -26,7 +26,7 @@ class BonusController extends Controller
     public function __construct(BonusService $bonusService)
     {
         $this->bonusService = $bonusService;
-        $this->middleware('auth');
+
     }
 
     public function get(Request $request)

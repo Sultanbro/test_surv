@@ -495,12 +495,12 @@ Route::middleware([
      */
     Route::group([
         'prefix'     => 'bonus',
-        'middleware' => 'auth'
+        'as' => 'bonus.'
     ], function(){
-        Route::post('get',[BonusController::class,'get']);
-        Route::post('save',[BonusController::class,'save']);
-        Route::put('update',[BonusController::class,'update']);
-        Route::delete('delete/{id}',[BonusController::class,'delete']);
+        Route::post('get',[BonusController::class,'get'])->name('get');
+        Route::post('save',[BonusController::class,'save'])->name('save');
+        Route::put('update',[BonusController::class,'update'])->name('update');
+        Route::delete('delete',[BonusController::class,'delete'])->name('delete');
     });
 
     /**
