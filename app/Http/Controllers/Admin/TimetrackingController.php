@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Classes\Helpers\InsertData;
 use App\Components\TelegramBot;
 use App\DayType;
 use App\Events\TransferUserInGroupEvent;
@@ -49,6 +50,7 @@ use App\Models\Admin\EditedKpi;
 use App\Timeboard\UserPresence;
 use App\PositionDescription;
 use App\ProfileGroupUser as PGU;
+use App\Service\Department\UserService;
 
 class TimetrackingController extends Controller
 {
@@ -56,7 +58,7 @@ class TimetrackingController extends Controller
     {
         View::share('title', 'Табель сотрудников');
         View::share('menu', 'timetracking');
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function settings()
@@ -537,13 +539,9 @@ class TimetrackingController extends Controller
 
     public function deletegroup(Request $request)
     {
-        DB::transaction(function () use ($request) {
-            $group = ProfileGroup::where('id', $request->oldGroup)->first();
-            $group->active = 0;
-            $group->save();
-
-            event(new TransferUserInGroupEvent($group, $request->newGroup));
-        });
+        $group = ProfileGroup::where('id', $request->group)->first();
+        $group->active = 0;
+        $group->save();
         return 'true';
     }
 
@@ -632,7 +630,7 @@ class TimetrackingController extends Controller
         foreach ($request['users'] as $user) {
             $users_id[] = $user['id'];
         }
-  
+
         $kbm = \App\Models\KnowBaseModel::
             where('model_type', 'App\\ProfileGroup')
             ->where('model_id', $group->id)
@@ -649,22 +647,29 @@ class TimetrackingController extends Controller
             ]);
         }
 
-        //
-        $group->work_start = $request['timeon'];
-        $group->work_end = $request['timeoff'];
-        $group->users = json_encode(array_unique($users_id));
+        DB::transaction(function () use (
+            $group,
+            $request,
+            $users_id
+        ) {
+            $this->insertDataToGroupUser($group, $users_id);
 
+            $group->work_start = $request['timeon'];
+            $group->work_end = $request['timeoff'];
 
-        $group->name = $request['gname'];
-        $group->zoom_link = $request['zoom_link'];
-        $group->bp_link = $request['bp_link'];
-        $group->workdays = $request['workdays'];
-        $group->payment_terms = $request['payment_terms'];
-        $group->editable_time = $request['editable_time'];
-        $group->paid_internship = $request['paid_internship'];
-        $group->quality = $request['quality'];
-        $group->show_payment_terms = $request['show_payment_terms'];
-        $group->save();
+            $group->name = $request['gname'];
+            $group->zoom_link = $request['zoom_link'];
+            $group->bp_link = $request['bp_link'];
+            $group->workdays = $request['workdays'];
+            $group->payment_terms = $request['payment_terms'];
+            $group->editable_time = $request['editable_time'];
+            $group->paid_internship = $request['paid_internship'];
+            $group->quality = $request['quality'];
+            $group->show_payment_terms = $request['show_payment_terms'];
+
+            $group->save();
+        });
+
 
         if($request['dialer_id']) {
             if($group->dialer) {
@@ -849,28 +854,21 @@ class TimetrackingController extends Controller
         return view('admin.reports', compact('groups', 'fines', 'years'));
     }
 
-    public function getReports(GetReportsRequest $request)
+    public function getReports(Request $request)
     {
 
-        
         $year = $request['year'];
-        $groupId = $request->input('group_id');
-        $group = ProfileGroup::query()->findOrFail($groupId) ?? null;
+        $month = $request->month;
 
-
+        $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
 
         $users_ids = [];
         $head_ids = [];
-        if ($group && $group->users != null) {
-            $users_ids = json_decode($group->users);
-            $head_ids = json_decode($group->head_id);
-        }
+        $group = ProfileGroup::with('users')->find($request['group_id']);
 
+        
 
-
-        //$users_ids = $group->users()->get(['id'])->pluck('id')->toArray();
-       // $head_ids = json_decode($group->head_id);
-        $currentUser = User::bitrixUser() ?? User::findOrFail(5);
+        $currentUser = User::bitrixUser() ?? User::find(5);
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе
         if (!in_array($currentUser->id, $group_editors) && $currentUser->is_admin != 1) {
@@ -879,35 +877,37 @@ class TimetrackingController extends Controller
             ];
         }
         
+        $user_ids = $group ? $group->users()->pluck('id')->toArray() : [];
+        
         /**
          * Выбираем кого покзаывать
          */
-
         if($request->user_types == 0) { // Действующие
-            $_user_ids = [];    
+            $_user_ids = [];
             $my_ids = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', $users_ids)
-                ->where('ud.is_trainee', 0) 
+                ->when($group, function ($query) use ($group) {
+                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
+                })
+                ->where('ud.is_trainee', 0)
                 ->get(['users.id','ud.applied']);
-            $end_month = Carbon::parse($year . '-' . $request->month . '-01')->endOfMonth();
-            foreach($my_ids as $ids){
-                $hire_date = Carbon::parse($ids->applied);
+                
+            foreach($my_ids as $ids) {
                 $_user_ids[] = $ids->id;
-                // if($hire_date->lt($end_month) || !isset($ids->applied)){
-                //     $_user_ids[] = $ids->id;
-                // }
             }
+
+            $users = (new UserService)->getEmployees($request->group_id, $date);
         }
         
         if($request->user_types == 1) { // Уволенныне
-        //     $_user_ids = User::onlyTrashed()
-        //    // ->whereIn('id', $users_ids)
-        //     ->pluck('id')
-        //     ->toArray();
+            $_user_ids = User::onlyTrashed()
+                ->when($group, function ($query) use ($group) {
+                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
+                })
+                ->pluck('id')
+                ->toArray();
             //////////////////////
-            $_user_ids = [];
             $date = $year . '-' . $request->month . '-01';
             $date_for_register = Carbon::parse($date); 
             $date_for_fire = Carbon::parse($date)->startOfMonth();
@@ -927,13 +927,15 @@ class TimetrackingController extends Controller
             
             $_user_ids = DB::table('users')
                 ->whereNotNull('deleted_at')
-                ->whereDate('deleted_at', '>=', $date_for_fire)
+                ->whereMonth('deleted_at',$date_for_register->month)
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
                 ->whereIn('users.id', $_user_ids)
                 ->where('ud.is_trainee', 0) 
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
+
+            $users = (new UserService)->getEmployees($request->group_id, $date);
         }
 
         if($request->user_types == 2) { // Стажеры
@@ -941,14 +943,21 @@ class TimetrackingController extends Controller
             $_user_ids = DB::table('users')
                 ->whereNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', $users_ids)
+                ->when($group, function ($query) use ($group) {
+                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
+                })
                 ->where('ud.is_trainee', 1) 
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
+
+            
+            $users = (new UserService)->getTrainees($request->group_id, $date);
         }
 
+        $users = collect($users);
 
+        $_user_ids = $users->pluck('id')->toArray();
         
 
         //////////////////////
@@ -1059,6 +1068,8 @@ class TimetrackingController extends Controller
 
 
         $data['editable_time'] = $group->editable_time;
+        
+        
         return $data;
     }
 
@@ -2451,6 +2462,29 @@ class TimetrackingController extends Controller
     {
         $bonus = Bonus::where('id', $request->id)->first();
         if($bonus) $bonus->delete();
+    }
+    private function insertDataToGroupUser($group, $usersId)
+    {
+        $data = [];
+        foreach ($usersId as $userId)
+        {
+            $exist = DB::table('group_user')
+                ->where('user_id', $userId)
+                ->where('group_id', $group->id)
+                ->exists();
+
+            if (!$exist)
+            {
+                $data[] = [
+                    'user_id'  => $userId,
+                    'group_id' => $group->id,
+                    'from'     => Carbon::now()->toDateString(),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+        }
+        DB::table('group_user')->insert($data);
     }
 
     /**

@@ -17,6 +17,7 @@ use App\Models\Bitrix\Lead;
 use App\Models\Admin\History;
 use App\UserNotification;
 use App\ProfileGroupUser as PGU;
+use App\Service\Department\UserService;
 use App\UserAbsenceCause;
 
 class Recruiting 
@@ -61,7 +62,8 @@ class Recruiting
     CONST I_CALLS_MISSED = 5; // Пропущенные звонки
     CONST I_CONVERTED = 6; // Сконвертировано
     CONST I_APPLIED = 7; // Принято на работу
-
+    CONST I_FIRST_DAY_TRAINED = 8; // 1 день стажировавшихся
+    CONST I_SECOND_DAY_TRAINED_FROM = 9; // 2+ день стажировавшихся
     /**
      * Поля чатбота
      */
@@ -1231,45 +1233,40 @@ public function planRequired($arr) {
             $staffy[$key]['name'] = $group->name;
             for ($i=1; $i <=12; $i++) { 
                 
-                $pgu = PGU::where('date', $date->month($i)->format('Y-m-d'))->where('group_id', $group->id)->first();
+                // $pgu = PGU::where('date', $date->month($i)->format('Y-m-d'))->where('group_id', $group->id)->first();
 
                 $assigned = 0;
                 $fired = 0;
 
-                if($pgu) {
-                    $assigneds = \DB::table('users')
-                        ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                        ->whereIn('users.id', $pgu->assigned)
-                        ->where('is_trainee', 0)
-                        ->get();
+                // if($pgu) {
+                //     $assigneds = \DB::table('users')
+                //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                //         ->whereIn('users.id', $pgu->assigned)
+                //         ->where('is_trainee', 0)
+                //         ->get();
 
-                    $assigned = $assigneds->count();
+                //     $assigned = $assigneds->count();
 
-
-                    // foreach ($assigneds as $us) {
-                    //     $assigned += $us->full_time == 1 ? 1 : 0.5;
-                    // }
-
-                    $fireds = \DB::table('users')
-                        ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                        ->whereIn('users.id', $pgu->fired)
-                        ->where('is_trainee', 0)
-                        ->get();
+                //     $fireds = \DB::table('users')
+                //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                //         ->whereIn('users.id', $pgu->fired)
+                //         ->where('is_trainee', 0)
+                //         ->get();
                     
-                        $fired = $fireds->count();
+                //     $fired = $fireds->count();
 
-                    // foreach ($fireds as $us) {
-                    //     $fired += $us->full_time == 1 ? 1 : 0.5;
-                    // }
-                }
-                $worked = $assigned + $fired;
-                // if($date->format('Y-m-d') == '2022-07-01') {
-                //     $worked = $pgu ? count($pgu->assigned) + count($pgu->fired) : 0;
-                // } else {
-                 
                 // }
-          
                 
+                $service = new UserService();
+                
+                $assigned = $service->getEmployees($group->id, $date->month($i)->format('Y-m-d'));
+                $fired    = $service->getFiredEmployees($group->id, $date->month($i)->format('Y-m-d'));
+
+                $fired    = count($fired);
+                $assigned = count($assigned);
+
+                $worked = $assigned + $fired;
+              
                 $staffy[$key]['m'.$i] = '0%';
                 if($worked > 0) {
                     $staffy[$key]['m'.$i] = round(( $fired / $worked ) * 100, 1) . '%';

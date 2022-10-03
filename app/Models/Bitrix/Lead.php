@@ -85,21 +85,24 @@ class Lead extends Model
     const SEGMENT_INCOME = 14;
 
     CONST SEGMENTS = [
-        'Кандидаты на вакансию (таргет)' => 1,
-        'Кандидаты на вакансию (hh, nur, job)' => 2,
-        'Кандидаты на вакансию (hh, nur и др.)' => 2,
-        'Кандидаты на вакансию (promo акции)' => 3,
-        'Кандидаты на вакансию (месенджеры)' => 4, 
+        'Кандидаты (таргет)' => 1,
+        'Кандидаты (hh, nur и др.)' => 2,
+        'Кандидаты (promo акции)' => 3, 
+        'Кандидаты (вацап, телега и др мессенджеры)' => 4, 
         'Кандидаты на вакансию (Гарантия трудоустройства)' => 5,
-        'Кандидаты на вакансию (Участники семинаров, форумов, встреч)' => 6,
-        'Кандидаты на вакансию (Муса)' => 7,
-        'Кандидаты на вакансию (Алина)' => 8,
-        'Кандидаты на вакансию (Салтанат)' => 9,
-        'Кандидаты на вакансию (Акжол)' => 10,
-        'Кандидаты на вакансию (Дархан)' => 11,
-        'Кандидаты на вакансию (Шолпан)' => 12,
-        'Кандидаты на вакансию (Сайт BP)' => 13,
-        'Busines Partner (Входящее обращение)' => 14,
+        'Кандидаты на вакансию (Участники семинаров, форумов, встреч)' => 6, 
+        'Кандидаты на вакансию (Муса)' => 7, // derprecated
+        'Кандидаты на вакансию (Алина)' => 8, // derprecated
+        'Кандидаты на вакансию (Салтанат)' => 9,  // derprecated
+        'Кандидаты на вакансию (Акжол)' => 10, // derprecated
+        'Кандидаты на вакансию (Дархан)' => 11, // derprecated
+        'Кандидаты на вакансию (Шолпан)' => 12, // derprecated
+        'Кандидаты на вакансию (Сайт BP)' => 13, // derprecated
+        'Busines Partner (Входящее обращение)' => 14, 
+        'Кандидаты (Интеллектуальный обзвон)' => 15,
+        'Кандидаты (job.bpartners.kz)' => 16,
+        'Кандидаты (QR)' => 17,
+        'Кандидаты (ВХ звонок)' => 18,
     ];
 
     CONST SEGMENTS_ALT = [
@@ -116,18 +119,24 @@ class Lead extends Model
         '2536' => 11,
         '2538' => 12,
         '2436' => 13,
-        '873' => 14,
+        '873'  => 14,
+        '2012' => 15,
+        '2436' => 16,
+        '2362' => 17,
+        '2426' => 18,
     ];
 
 
     public static function getSegment($str) {
         if($str == NULL) return 0;
-        return array_key_exists($str, self::SEGMENTS) ? self::SEGMENTS[$str] : 99;
+        $segment = Segment::where('name', $str)->first();
+        return $segment ? $segment->id : 99;
     }
  
     public static function getSegmentAlt($str) {
         if($str == NULL) return 0;
-        return array_key_exists($str, self::SEGMENTS_ALT) ? self::SEGMENTS_ALT[$str] : 99;
+        $segment = Segment::where('on_lead', $str)->first();
+        return $segment ? $segment->id : 99;
     }
     
     /**
@@ -191,5 +200,12 @@ class Lead extends Model
 
 
         return $skypes;
+    }
+
+    /**
+     *  Trainee (Lead) has many daytypes 
+     */
+    public function daytypes() {
+        return $this->hasMany('App\DayType','user_id', 'user_id');
     }
 }

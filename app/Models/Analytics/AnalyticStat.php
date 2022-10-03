@@ -52,6 +52,7 @@ class AnalyticStat extends Model
 
         $columns = Column::where('group_id', $group_id)
             ->where('date', $date)
+            ->orderBy('order', 'asc') 
             ->get();
 
         $weekdays = self::getWeekdays($date); // coloring weekdays

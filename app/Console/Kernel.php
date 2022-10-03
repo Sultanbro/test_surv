@@ -83,6 +83,7 @@ class Kernel extends ConsoleKernel
         $schedule->command("count:hours")->hourly(); // обновление минут
         $schedule->command("check:late")->hourly(); // Опоздание
         $schedule->command("bonus:update")->hourly(); // Бонусы сотрудников
+        $schedule->command("recruiter:attendance")->hourly(); // Рекрутеры 1 и 2 день стажировки присутствовавших
         $schedule->command("callibro:minutes_aggrees")->everyFiveMinutes(); // Отработанное время сотрудников Евраз 1 Хоум
        // $schedule->command("callibro:minutes_aggrees")->hourlyAt(40); // Отработанное время сотрудников Евраз 1 Хоум
         $schedule->command('whatsapp:estimate_first_day')->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
@@ -124,12 +125,18 @@ class Kernel extends ConsoleKernel
         /**
          * РАЗ В НЕДЕЛЮ
          */
-        
         $schedule->command("usernotification:report")->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
         $schedule->command("usernotification:foreigner")->weekly()->mondays()->at('02:00'); // Уведомление руководителей групп об оплате иностранным стажерам. Запускается каждый понедельник
         $schedule->command("fine:check")->weeklyOn(1, '00:00'); // Каждый понедельник в 6 утра проверка на отсутствие в воскресенье 
         $schedule->command("fine:check")->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
 
+
+        /**
+         * Раз в месяц
+         */
+        $schedule->command("analytics:pivots")->monthly(); // создать сводные таблицы отделов в аналитике 
+        $schedule->command("analytics:parts")->monthly(); // создать декомпозицию и спидометры в аналитике
+        
 
     }
 

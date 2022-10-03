@@ -70,7 +70,7 @@ class Conversion extends Command
         $this->day = $date->day;
         $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
 
-        $groups = [53, 70, 79];
+        $groups = [53];
         foreach($groups as $group_id) {
             $this->fetch($group_id);
             $this->line('Fetch completed for group_id: ' . $group_id);
@@ -83,41 +83,7 @@ class Conversion extends Command
         $users = User::whereIn('id', $users_ids)->get();
 
         foreach($users as $user) {
-           // if($user->position_id != 32) continue; // Не оператор
-            
-            if($group_id == 70) { // Kaztel
-                $closed = Kaztel::getClosedCards($this->date,$user->email);
-                if($closed == -1) continue; // Не записывать так как нет аккаунта
-
-                $aggrees = Kaztel::getAggrees($user->email, $this->date);
-
-                $this->line($user->id . ' '.  $user->last_name . ' ' . $user->name);
-
-                if($aggrees == 0) {
-                    $conversion = 0; 
-                } else {
-                    if($closed == 0)
-                        $conversion = 0;
-                    else
-                        $conversion = $aggrees / $closed * 100;
-                    $conversion = number_format($conversion, 1);
-                }
-
-                $this->line('Согласий  '. $aggrees);
-                $this->line('Закрыто   '. $closed);
-                $this->line('Конверсия '. $conversion);
-
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 136 // Конверсия согласий
-                ], $conversion);
-
-                $this->line('Сохранено');
-                $this->line(' '); 
-            }
-
+           
             if($group_id == 53) { // Eurasian
                 $closed = Eurasian::getClosedCards($this->date,$user->email);
                 if($closed == -1) continue; // Не записывать так как нет аккаунта
@@ -126,9 +92,8 @@ class Conversion extends Command
 
                 $this->line($user->id . ' '.  $user->last_name . ' ' . $user->name);
 
-                if($aggrees == 0) {
-                    $conversion = 0; 
-                } else {
+                $conversion = 0; 
+                if($aggrees != 0) {
                     $conversion = $aggrees / $closed * 100;
                     $conversion = number_format($conversion, 1);
                 }
@@ -148,63 +113,12 @@ class Conversion extends Command
                 $this->line(' '); 
             }
 
-            if($group_id == 79) { // Euras2
-           
-                $closed = Euras2::getCallCounts($user->email, $this->date);//Euras2::getClosedCards($this->date,$user->email);
-                if($closed == -1) continue; // Не записывать так как нет аккаунта
-
-                $aggrees = Euras2::getAggrees($user->email, $this->date);
-                
-                $this->line($user->id . ' '.  $user->last_name . ' ' . $user->name);
-                    
-                if($aggrees == 0) {
-                    $conversion = 0; 
-                } else {
-                    $conversion = ($aggrees * 100) / $closed;
-                    $conversion = number_format($conversion, 1);
-                }
-
-                $this->line('Согласий  '. $aggrees);
-                $this->line('Закрыто   '. $closed);
-                $this->line('Конверсия '. $conversion);
-
-                $this->saveASI([
-                    'date' => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id' => $group_id,
-                    'type' => 145 // Конверсия согласий
-                ], $conversion);
-
-                $this->line('Сохранено');
-                $this->line(' '); 
-    
-            }
-
         }
 
     }
 
     public function saveASI(array $fields, $value) {
-        $asi = AnalyticsSettingsIndividually::where($fields)->first();
-
-        if($asi) {
-            $data = json_decode($asi->data, true);
-            $data[$this->day] = $value;
-            $asi->data = json_encode($data);
-            $asi->user_id = 0;
-            $asi->group_id = $fields['group_id'];
-            $asi->save();
-        } else {
-            AnalyticsSettingsIndividually::create([
-                'date' => $fields['date'],
-                'employee_id' => $fields['employee_id'],
-                'user_id' => 0,
-                'group_id' => $fields['group_id'],
-                'data'=> json_encode([$this->day => $value]),
-                'type' => $fields['type'] // минуты
-            ]);
-        }
-
+      
          // User stat New analytics
         $date = Carbon::parse($fields['date'])->day($this->day)->format('Y-m-d');
         $us = UserStat::where([

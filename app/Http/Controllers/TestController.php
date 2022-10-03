@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Classes\Analytics\Impl;
 use App\Classes\Analytics\PrCstll;
+use App\DayType;
 use App\External\HeadHunter\HeadHunter;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
@@ -24,22 +25,17 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\QualityRecordWeeklyStat;
 use App\Http\Controllers\IntellectController;
+use App\Models\Bitrix\Lead;
 use App\Models\GroupUser;
 use App\Salary;
+use App\Service\Department\UserService;
 
 class TestController extends Controller { 
   
 	public function test() { 
-		dd(tenant());
-       // $users    = json_decode(ProfileGroup::query()->findOrFail(53)->users, true);
-		dd(static::class);
-		// foreach ($users as $key => $user_id) {
-		// 	GroupUser::create([
-		// 		'user_id'  => $user_id,
-		// 		'group_id' => 53,
-		// 	]);
-		// }
-		
+		return (new UserService)->getTrainees(42, '2022-09-01');
+
+		return ProfileGroup::find(42)->users()->pluck('user_id')->toArray();
 		
 	}  
 

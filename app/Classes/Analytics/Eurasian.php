@@ -413,4 +413,26 @@ class Eurasian
         
         return $cards->get()->count();
     }
+
+    public static function getCallCounts($user_email, $day)
+    {
+        $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
+      
+        $dialer_id = 398;
+        $mycount = 0;
+
+        if($account) {
+            $mycount = DB::connection('callibro')->table('calls')
+                    ->select('id')
+                    ->whereDate('start_time', $day)
+                    ->where('billsec', '>=', 10)
+                    ->where('call_account_id', $account->id)
+                    ->where('call_dialer_id', $dialer_id)
+                    ->where('cause', '!=', 'SYSTEM_SHUTDOWN')
+                    ->get()
+                    ->count();
+        } 
+
+        return $mycount;
+    }
 }

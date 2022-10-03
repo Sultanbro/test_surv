@@ -16,6 +16,7 @@ use App\AnalyticsSettings;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\AnalyticStat;
 use App\GroupSalary;
+use App\Salary;
 
 class TopValue extends Model
 {
@@ -511,7 +512,12 @@ class TopValue extends Model
         return $gauges;
     }
 
-    public  static function getPivotRentability($year)
+    /**
+     * table on TOP page -> rentability tab
+     * 
+     * @return array
+     */
+    public  static function getPivotRentability($year) : array
     {
         $table = [];
 
@@ -543,11 +549,37 @@ class TopValue extends Model
 
                 $xdate = $date->month($i)->format('Y-m-d');
                 
+                /**
+                 * get salary
+                 */
                 $salary = GroupSalary::where('group_id', $group->id)->where('date', $xdate)->get()->sum('total');
 
+                /**
+                 * Temp for DM2
+                 * count ФОТ
+                 */
+                $date_diff = $date->timestamp - Carbon::parse('2022-09-01')->timestamp;
+                if($date_diff >= 0 && $group->id == 93) {
+
+                    $data = Salary::salariesTable(0, $xdate, $group->users()->pluck('id')->toArray(), 93);
+                    $sum = 0;
+        
+                    foreach( $data['users'] as $user) {
+                        $sum += array_sum(array_values($user['earnings']));
+                        if($user['edited_bonus']) {
+                            $sum += $user['edited_bonus'];
+                        } else {
+                            $sum += array_sum(array_values($user['bonuses']));
+                            $sum += array_sum(array_values($user['awards']));
+                            $sum += array_sum(array_values($user['test_bonus']));
+                        }
+                        $sum += $user['edited_kpi'] ? $user['edited_kpi'] : $user['kpi'];
+                    }
+        
+                    $salary =  $sum;
+                }
 
                 // TEMP
-
                 $rentability = 0;
                 $proceeds = 0;
                 
@@ -574,9 +606,14 @@ class TopValue extends Model
                 $total_row['l' . $i] += $proceeds;
                 $total_row['c' . $i] += $salary;
                 $total_row['r' . $i] += $rentability;
+
+
             }
+
             $table[] = $row;
         }
+
+
         
         for($i=1;$i<=12;$i++) { 
             $total_row['l' . $i] = round($total_row['l' . $i]);
