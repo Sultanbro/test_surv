@@ -83,7 +83,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function surv(Request $request)
@@ -2257,7 +2257,7 @@ class UserController extends Controller
     /// загрузка аватарки через профиль в компоненте ( vue.js )
     public function uploadImageProfile(Request $request){
 
-        $user = Auth::user() ?? User::findOrFail(5);
+        $user = User::withTrashed()->find(auth()->user()->getAuthIdentifier());
 
 
         if ($user->img_url){

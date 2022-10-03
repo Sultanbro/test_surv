@@ -21,7 +21,7 @@ class Controller extends BaseController
      */
     protected function access(): void
     {
-        $user = Auth::user()->is_admin ?? User::find(5)->is_admin;
+        $user = Auth::user()->is_admin;
         abort_if(!$user, Response::HTTP_FORBIDDEN, "You don't have permission to add award!");
     }
 }

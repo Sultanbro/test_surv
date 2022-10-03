@@ -24,6 +24,7 @@ class AwardController extends Controller
     public function __construct(AwardService $awardService)
     {
         $this->awardService = $awardService;
+        $this->middleware('auth');
     }
 
     /**

@@ -24,7 +24,11 @@ class BonusSeeder extends Seeder
             $bonuses[] = [
                 'id'              => $i,
                 'targetable_id'   => $faker->numberBetween(1, 100),
-                'targetable_type' => array_rand(['App\User', 'App\ProfileGroup', 'App\Position']),
+                'targetable_type' => array_random([
+                    'App\User',
+                    'App\ProfileGroup',
+                    'App\Position'
+                ]),
                 'activity_id'     => $faker->numberBetween(1, 100),
                 'group_id'     => $faker->numberBetween(1, 100),
                 'title'           => $faker->word,

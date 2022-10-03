@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Faker\Factory as Faker;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,9 +17,11 @@ class AwardTypeFactory extends Factory
      */
     public function definition()
     {
+        $faker = Faker::create();
+
         return [
-            'name' => $this->faker->word,
-            'description' => $this->faker->text,
+            'name' => $faker->word,
+            'description' => $faker->word,
         ];
     }
 }

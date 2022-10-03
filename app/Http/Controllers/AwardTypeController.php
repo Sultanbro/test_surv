@@ -21,6 +21,7 @@ class AwardTypeController extends Controller
     {
         $this->access();
         $this->awardService = $awardService;
+        $this->middleware('auth');
     }
 
     /**

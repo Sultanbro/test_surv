@@ -105,10 +105,10 @@ class BonusTest extends TestCase
 
         ]), $this->header);
 
-        $response->assertStatus(Response::HTTP_OK)->assertSuccessful();
-
         $auth->delete();
         $bonus->delete();
+
+        $response->assertStatus(Response::HTTP_OK)->assertSuccessful();
     }
 
     public function testDeleteBonus()
