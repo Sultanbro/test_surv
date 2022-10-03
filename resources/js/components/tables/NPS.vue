@@ -38,7 +38,7 @@
                             
 
                             <div class="inner-text">
-                                <b v-if="item.texts[field.key] !== undefined">Оценки</b>
+                                <b v-if="item.texts[field.key] !== undefined">Оценки ({{ item.grades[field.key] }})</b>
                                 <div class="d-flex">
                                     <div class="w-50">
                                         <b>Плюсы ({{ item.texts[field.key] !== undefined ? item.texts[field.key].length : 0 }})</b>

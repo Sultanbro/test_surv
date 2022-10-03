@@ -37,7 +37,7 @@ class NpsController extends Controller
     }
 
     /**
-     * Страница  axios
+     * Страница NPS в ТОП
      * @method POST
      */
     public function fetch(Request $request)
@@ -97,8 +97,11 @@ class NpsController extends Controller
                 }
 
                 $avg = $count_grades > 0 ? round($grade / $count_grades, 1) : '';
+
                 $arr[$i] = $avg;
-                $arr['texts'][$i] = $texts;
+
+                $arr['grades'][$i] = $count_grades; // quantity for every month
+                $arr['texts'][$i] = $texts; // pluses
                 $arr['minuses'][$i] = $minuses;
             }
 
@@ -115,7 +118,9 @@ class NpsController extends Controller
     }
 
 
-
+    /**
+     * Оценка тренера
+     */
     public function estimate_your_trainer(Request $request)
     {
 
@@ -200,7 +205,11 @@ class NpsController extends Controller
 
     }
 
-    private function getRooks($groups, $position_id) {
+    /**
+     * Получить руководителей или старших спецов
+     */
+    private function getRooks($groups, $position_id)
+    {
 
         $user_ids = [];
         $users = [];
