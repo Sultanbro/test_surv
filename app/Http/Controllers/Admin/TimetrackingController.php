@@ -50,6 +50,7 @@ use App\Models\Admin\EditedKpi;
 use App\Timeboard\UserPresence;
 use App\PositionDescription;
 use App\ProfileGroupUser as PGU;
+use App\Service\Department\UserService;
 
 class TimetrackingController extends Controller
 {
@@ -857,6 +858,9 @@ class TimetrackingController extends Controller
     {
 
         $year = $request['year'];
+        $month = $request->month;
+
+        $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
 
         $users_ids = [];
         $head_ids = [];
@@ -872,13 +876,12 @@ class TimetrackingController extends Controller
                 'error' => 'access',
             ];
         }
-
+        
         $user_ids = $group ? $group->users()->pluck('id')->toArray() : [];
         
         /**
          * Выбираем кого покзаывать
          */
-
         if($request->user_types == 0) { // Действующие
             $_user_ids = [];
             $my_ids = DB::table('users')
@@ -893,6 +896,8 @@ class TimetrackingController extends Controller
             foreach($my_ids as $ids) {
                 $_user_ids[] = $ids->id;
             }
+
+            $users = (new UserService)->getEmployees($request->group_id, $date);
         }
         
         if($request->user_types == 1) { // Уволенныне
@@ -929,6 +934,8 @@ class TimetrackingController extends Controller
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
+
+            $users = (new UserService)->getEmployees($request->group_id, $date);
         }
 
         if($request->user_types == 2) { // Стажеры
@@ -943,9 +950,14 @@ class TimetrackingController extends Controller
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
+
+            
+            $users = (new UserService)->getTrainees($request->group_id, $date);
         }
 
+        $users = collect($users);
 
+        $_user_ids = $users->pluck('id')->toArray();
         
 
         //////////////////////

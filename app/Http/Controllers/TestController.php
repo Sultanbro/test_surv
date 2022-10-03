@@ -33,9 +33,9 @@ use App\Service\Department\UserService;
 class TestController extends Controller { 
   
 	public function test() { 
+		return (new UserService)->getTrainees(42, '2022-09-01');
 
-		dump((new UserService)->getFiredEmployees(31, '2022-09-01'));
-		dd((new UserService)->getEmployees(31, '2022-09-01'));
+		return ProfileGroup::find(42)->users()->pluck('user_id')->toArray();
 		
 	}  
 
