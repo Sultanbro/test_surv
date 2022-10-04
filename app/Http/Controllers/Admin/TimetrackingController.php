@@ -897,7 +897,7 @@ class TimetrackingController extends Controller
                 $_user_ids[] = $ids->id;
             }
 
-            $users = (new UserService)->getFiredEmployees($request->group_id, $date);
+            $users = (new UserService)->getEmployees($request->group_id, $date);
         }
         
         if($request->user_types == 1) { // Уволенныне
