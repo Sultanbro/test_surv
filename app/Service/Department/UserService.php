@@ -63,16 +63,11 @@ class UserService
         $data = [];
         foreach ($groups as $group)
         {
-            $groupUser = GroupUser::withTrashed()->where([
-                ['group_id', $group->id],
-            ])
-                ->where('from', '<=', $this->getFullDate($date))
-                ->where(fn ($query) =>  $query
-                    ->whereNull('to')
-                    ->orWhere('to', '<=', $this->getFullDate($date))
-                );
+            $groupUser = GroupUser::withTrashed()->where('group_id','=', $group->id)
+                ->where('from','<', $this->getFullDate($date))
+                ->where(fn ($query) => $query->whereNull('to')->orWhere('to','>',$this->getFullDate($date)));
 
-            $data = $this->getGroupEmployees($groupUser->get(), $date);
+            $data = $this->getGroupEmployees($groupUser->get());
         }
 
         return $data;
@@ -90,15 +85,11 @@ class UserService
         $data = [];
         foreach ($groups as $group)
         {
-            $groupUser = GroupUser::withTrashed()->where([
-                ['group_id', $group->id],
-            ])->where('from', '<', $this->getFullDate($date))
-                ->where(fn ($query) =>  $query
-                    ->whereNull('to')
-                    ->orWhere('to', '>', $this->getFullDate($date))
-                );
+            $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
+                ->where('from', '<', $this->getFullDate($date))
+                ->where(fn ($query) =>  $query->whereNull('to')->orWhere('to', '>', $this->getFullDate($date)));
 
-            $data = $this->getGroupsTrainees($groupUser->get(), $date);
+            $data = $this->getGroupsTrainees($groupUser->get());
         }
 
         return $data;
@@ -141,7 +132,7 @@ class UserService
             $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
                 ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
             
-            $data = $this->getGroupEmployees($groupUser->get(), $date);
+            $data = $this->getGroupEmployees($groupUser->get());
         }
 
         return $data;
