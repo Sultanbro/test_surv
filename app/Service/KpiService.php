@@ -127,18 +127,10 @@ class KpiService
      */
     public function update(KpiUpdateRequest $request): array
     {
-     
-
             $id = $request->id;
-
-            event(new TrackKpiUpdatesEvent($id));
             $kpi_item_ids = [];
 
-      
-            
-            $user_id = auth()->id();
-
-            DB::transaction(function () use ($request, $id, &$kpi_item_ids, $user_id) {
+            DB::transaction(function () use ($request, $id, &$kpi_item_ids) {
 
                 $kpi_item_ids = $this->updateItems($id, $request->items);
 
@@ -152,6 +144,7 @@ class KpiService
                 Kpi::findOrFail($id)->update($all);
             });
 
+            event(new TrackKpiUpdatesEvent($id));
 
         return [
             'id' => $id,
@@ -246,13 +239,13 @@ class KpiService
                  * Обновляем kpi_item
                  */
 
-                event(new TrackKpiItemEvent($item['id']));
-
                 if (isset($item['deleted'])) {
                     $kpi->items()->where('id', $item['id'])->delete();
                 }else{
                     $kpi->items()->where('id', $item['id'])->update($item);
                 }
+
+                event(new TrackKpiItemEvent($item['id']));
             }
         }
 

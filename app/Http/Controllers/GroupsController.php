@@ -64,8 +64,10 @@ class GroupsController extends Controller
 
                 if($minutes < 0) $minutes = 0;
 
+                $total_minutes = (int) $minutes + (int) $additional_minutes;
+
                 if($record) {
-                    $record->total_hours = $minutes + $additional_minutes;
+                    $record->total_hours = $total_minutes;
                     $record->updated = 1;
                     $record->save();
                 } else {
@@ -74,7 +76,7 @@ class GroupsController extends Controller
                         'exit' => $date,
                         'updated' => 1,
                         'user_id' => $item['id'],
-                        'total_hours' => $minutes + $additional_minutes,
+                        'total_hours' => $total_minutes,
                     ]);
                 }
 

@@ -97,7 +97,7 @@
                         <input type="text" class="form-control w-sm" v-model="item.unit" />
                     </td>
                     <td class="text-center">
-                        <input type="number" class="form-control" v-model="item.plan" min="0" />
+                        <input type="number" class="form-control" v-model="item.plan"  />
                     </td>
                     <td class="text-center">
                         <input type="number" class="form-control" v-model="item.share" min="0"  max="100"/>

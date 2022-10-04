@@ -369,10 +369,10 @@ export default {
                     }
 
                    
-                    if(Number(el.plan) <= 0) {
-                        msg = 'План должен быть больше 0 #' + (i+1);
-                        return false;
-                    }
+                    // if(Number(el.plan) <= 0) {
+                    //     msg = 'План должен быть больше 0 #' + (i+1);
+                    //     return false;
+                    // }
 
 
                     return true;
