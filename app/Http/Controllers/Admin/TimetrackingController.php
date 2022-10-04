@@ -935,7 +935,7 @@ class TimetrackingController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $users = (new UserService)->getEmployees($request->group_id, $date);
+            $users = (new UserService)->getFiredUsers($request->group_id, $date);
         }
 
         if($request->user_types == 2) { // Стажеры
