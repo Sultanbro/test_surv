@@ -58,7 +58,7 @@ class TimetrackingController extends Controller
     {
         View::share('title', 'Табель сотрудников');
         View::share('menu', 'timetracking');
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     public function settings()
@@ -935,7 +935,7 @@ class TimetrackingController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $users = (new UserService)->getFiredUsers($request->group_id, $date);
+            $users = (new UserService)->getFiredEmployees($request->group_id, $date);
         }
 
         if($request->user_types == 2) { // Стажеры
