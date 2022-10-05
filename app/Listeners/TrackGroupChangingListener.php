@@ -30,7 +30,7 @@ class TrackGroupChangingListener
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  TrackGroupChangingEvent  $event
      * @return void
      */
     public function handle(TrackGroupChangingEvent $event)
@@ -48,7 +48,7 @@ class TrackGroupChangingListener
                 'working_hours'         => $group->work_start . '-' . $group->work_end,
                 'workdays'              => $group->workdays,
                 'group_id'              => $event->groupId,
-                'salary'                => $user->zarplata->zarplata,
+                'salary'                => $user->salaries()->orderBy('id', 'DESC')->first()->amount ?? null,
                 'operating-mode'        => $user->full_time == 1 ? 'Full time' : 'Part time'
             ])
         ]);
