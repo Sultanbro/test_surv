@@ -215,9 +215,10 @@ class UserService
     private function getGroupsTrainees($groupUsers): array
     {
         $traineesData = [];
+
         foreach ($groupUsers as $groupUser)
         {
-            $user = User::withTrashed()->where('id', $groupUser->user_id)
+            $user = User::query()->where('id', $groupUser->user_id)
                 ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 1))
                 ->first();
 
@@ -271,6 +272,15 @@ class UserService
         }
 
         return $userData;
+    }
+
+    /**
+     * Получить с уволенными.
+     * @return void
+     */
+    public function getTraineesWithTrashed(): void
+    {
+        //
     }
 
     /**
