@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\TrackUserFiredEvent;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
@@ -59,6 +60,7 @@ class TrackUserFiredListener
     private function changeUserStatus($user): void
     {
         $user->groups()->update([
+            'to' => Carbon::now()->toDateTimeString(),
             'status' => 'fired'
         ]);
     }
