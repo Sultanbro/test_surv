@@ -28,7 +28,9 @@ class TrackKpiItemListener
      */
     public function handle(TrackKpiItemEvent $event)
     {
-        $kpiItem = KpiItem::query()->findOrFail($event->kpiItemId);
+        $kpiItem = KpiItem::query()->withTrashed()->findOrFail($event->kpiItemId);
+
+
         History::query()->create([
             'reference_table'   => 'App\Models\Kpi\KpiItem',
             'reference_id'      => $kpiItem->id,

@@ -28,7 +28,7 @@ class TrackKpiUpdatesListener
      */
     public function handle(TrackKpiUpdatesEvent $event)
     {
-        $kpi = Kpi::query()->findOrFail($event->kpiId);
+        $kpi = Kpi::query()->withTrashed()->findOrFail($event->kpiId);
     
         DB::table('histories')->insert([
             'reference_table'   => 'App\Models\Kpi\Kpi',

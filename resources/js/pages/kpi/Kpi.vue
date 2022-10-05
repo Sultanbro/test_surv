@@ -346,8 +346,6 @@ export default {
             
             let share = 0;
 
-            console.log(item);
-
             if(item.items != undefined) {
 
                 item.items.every((el, i) => {
@@ -379,11 +377,6 @@ export default {
                 });
             }
             
-            // console.log(share) 
-            // if(share > 100) {
-            //     msg = 'Доля активностей должна быть не более 100%';
-            // }
-            
             return msg;
         },
 
@@ -406,7 +399,7 @@ export default {
 
             let fields = {
                 id: item.id,
-                targetable_id: item.target.id,
+                targetable_id: item.target.id, 
                 targetable_type: findModel(item.target.type),
                 completed_80: item.completed_80,
                 completed_100: item.completed_100,
@@ -451,7 +444,7 @@ export default {
                     indexes.push(index)
                 }
             });
-            console.log(indexes)
+   
             indexes.forEach(index => {
                 items.splice(index-counter, 1);
                 counter++;

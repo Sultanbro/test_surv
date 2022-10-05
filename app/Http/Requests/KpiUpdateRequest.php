@@ -29,11 +29,11 @@ class KpiUpdateRequest extends FormRequest
             'lower_limit'           => 'nullable',
             'upper_limit'           => 'nullable',
             'colors'                => 'array|nullable',
-            'items.*.name'          => 'nullable|string',
-            'items.*.plan'          => 'nullable|numeric',
-            'items.*.share'          => 'nullable|numeric',
-            'items.*.activity_id'   => 'nullable|numeric',
-            'items.*.deleted'       => 'nullable|bool'
+            // 'items.*.name'          => 'nullable|string',
+            // 'items.*.plan'          => 'nullable|numeric',
+            // 'items.*.share'          => 'nullable|numeric',
+            // 'items.*.activity_id'   => 'nullable|numeric',
+            // 'items.*.deleted'       => 'nullable|bool'
         ];
     }
 }

@@ -72,9 +72,9 @@ class KpiController extends Controller
      */
     public function update(KpiUpdateRequest $request): JsonResponse
     {
-        
+       
         $response = $this->kpiService->update($request);
-
+      
         return response()->json($response);
     }
 
