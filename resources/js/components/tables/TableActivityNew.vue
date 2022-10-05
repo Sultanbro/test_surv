@@ -661,7 +661,7 @@ export default {
                         
                         cellValues["plan"] = sumForOne;
                         
-                        let average = (sumForOne / countWorkedDays).toFixed(0);
+                        let average = (sumForOne / countWorkedDays).toFixed(2);
                         let finishAverage = !isNaN(average) ? average : 0;
                         cellValues["avg"] = finishAverage;
                         

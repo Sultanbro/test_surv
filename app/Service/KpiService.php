@@ -108,7 +108,11 @@ class KpiService
                 $kpi->children = $kpi_item_ids;
                 $kpi->save();
 
+                $kpi_id = $kpi->id;
+
             });
+
+            event(new TrackKpiUpdatesEvent($kpi_id));
 
             return [
                 'id' => $kpi_id,
@@ -193,6 +197,8 @@ class KpiService
                 'activity_id'   => $item['activity_id'],
                 'common'        => $item['common']
             ]);
+
+            event(new TrackKpiItemEvent($kpi_item->id));
 
             $ids[] = $kpi_item->id;
         }
