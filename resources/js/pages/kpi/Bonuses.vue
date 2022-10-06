@@ -324,6 +324,8 @@
                                                 >
                                                     <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
                                                 </select>
+                                                <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.from" /> 
+                                                <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.to" /> 
                                             </div>
     
                                             <div v-else>
