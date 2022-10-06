@@ -46,6 +46,8 @@ class Bonus extends Model
         'unit',
         'quantity',
         'daypart',
+        'from',
+        'to',
         'text',
         'created_by',
         'updated_by',
@@ -62,8 +64,8 @@ class Bonus extends Model
      * Daypart
      */
     CONST FULL_DAY = 0;
-    CONST FIRST_HALF = 1;
-    CONST SECOND_HALF = 2;
+    CONST PERIOD = 1;
+    CONST MONTH = 2;
 
     public function obtainedBonuses(): HasMany
     {
@@ -73,7 +75,8 @@ class Bonus extends Model
     /**
      * count obtained bonuses of users in group
      */
-    public static function obtained_in_group($group_id, $date) {
+    public static function obtained_in_group($group_id, $date)
+    {
         $group = ProfileGroup::find($group_id);
         
          $user_ids = json_decode($group->users);
@@ -95,9 +98,9 @@ class Bonus extends Model
             ->pluck('id')
             ->toArray();
         
-       // $users = (new UserService)->getEmployees($group_id, $date);
+        // $users = (new UserService)->getEmployees($group_id, $date);
 
-//if($group_id) $users = [15317];
+        //if($group_id) $users = [15317];
 
         foreach ($users as $user_id) { //  fill $awards array
             $awards[$user_id] = 0;
@@ -243,7 +246,8 @@ class Bonus extends Model
     /**
      * Fetch value number from callibro
      */
-    public static function fetch_value_from_callibro($bonus, $group_id, $date, $user_id) {
+    public static function fetch_value_from_callibro($bonus, $group_id, $date, $user_id)
+    {
         $vars = self::prepare_callibro_vars($bonus, $group_id, $date);
 
         // FIND USER
@@ -266,7 +270,8 @@ class Bonus extends Model
     /**
      * Prepare vars for calls table in callibro
      */
-    public static function prepare_callibro_vars($bonus, $group_id, $date) {
+    public static function prepare_callibro_vars($bonus, $group_id, $date)
+    {
         $vars = [];
         if($bonus->daypart == 1) {
             $vars['start_date'] = $date . ' 09:00:00';
@@ -311,7 +316,8 @@ class Bonus extends Model
     /**
      *  query to calls table
      */
-    public static function callibro_query($vars) {
+    public static function callibro_query($vars)
+    {
         if($vars['type'] == 'calls') {
             $items = DB::connection('callibro')->table('calls')
                     ->select('call_account_id as account_id', 'billsec', 'start_time')
@@ -341,7 +347,8 @@ class Bonus extends Model
      * int $group_id
      * String $date Y-m-d
      */
-    public static function fetch_best_user_from_callibro($bonus, $group_id, $date) {
+    public static function fetch_best_user_from_callibro($bonus, $group_id, $date)
+    {
 
         $vars = self::prepare_callibro_vars($bonus, $group_id, $date);
 
@@ -370,7 +377,8 @@ class Bonus extends Model
     /**
      * Determine who first reached the quantity from collection of calls
      */
-    public static function getLeader($calls, $quantity) {
+    public static function getLeader($calls, $quantity)
+    {
 
         $accounts = [];
         $last_calls = [];
@@ -415,7 +423,8 @@ class Bonus extends Model
     /**
      * Fetch value from AnalyticsSettingsIndividually
      */
-    public static function fetch_value_from_activity($activity_id, $user_id, $date) {
+    public static function fetch_value_from_activity($activity_id, $user_id, $date)
+    {
         if($activity_id == 0) return 0;
         
         $date = Carbon::parse($date);
@@ -441,7 +450,8 @@ class Bonus extends Model
     /**
      * Fetch value from UserStat
      */
-    public static function fetch_value_from_activity_new($activity_id, $user_id, $date) {
+    public static function fetch_value_from_activity_new($activity_id, $user_id, $date)
+    {
         if($activity_id == 0) return 0;
     
         $stat = UserStat::where('date', $date)
@@ -455,7 +465,8 @@ class Bonus extends Model
     /**
      * Fetch value from AnalyticsSettingsIndividually for recruting TEMPORARY
      */
-    public static function fetch_value_from_activity_for_recruting($activity_id, $user_id, $date, $daypart = 0) {
+    public static function fetch_value_from_activity_for_recruting($activity_id, $user_id, $date, $daypart = 0)
+    {
         $indexes = [
             22 => 0,
             45 => 1,
@@ -510,15 +521,8 @@ class Bonus extends Model
         return 0;
     }
 
-    public static function getPotentialBonusesHtml($group_id) {
-        // 'title',
-        // 'sum',
-        // 'group_id',
-        // 'activity_id',
-        // 'unit',
-        // 'quantity',
-        // 'daypart',
-
+    public static function getPotentialBonusesHtml($group_id)
+    {
         $group = ProfileGroup::find($group_id);
 
         $bonuses = self::where('group_id', $group_id)->get();
@@ -540,7 +544,8 @@ class Bonus extends Model
         
     }
 
-    public static function getEurasBestUser($from, $to){
+    public static function getEurasBestUser($from, $to)
+    {
         $group = ProfileGroup::find(79);
         $users = json_decode($group->users);
         $group_users = User::whereIn('id',$users)->get();
