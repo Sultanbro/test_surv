@@ -157,8 +157,8 @@ class AnalyticsController extends Controller
         // Ed 
         $ffp = Recruiting::getFiredInfo($date->subMonth()->format('Y-m-d'), $group_id);
         $ff = Recruiting::getFiredInfo($date->addMonth()->format('Y-m-d'), $group_id);
-        $fired_percent_prev = $ffp['percent'];
-        $fired_percent = $analyticService->getFiredUsersPerMonthPercent($group, $date);
+        $fired_percent_prev = $analyticService->getFiredUsersPerMonthPercent($group, $date->subMonth());
+        $fired_percent = $analyticService->getFiredUsersPerMonthPercent($group, $date->addMonth());
         $fired_number_prev = $analyticService->getFiredUsersPerMonth($group, $date->subMonth());
         $fired_number = $analyticService->getFiredUsersPerMonth($group, $date->addMonth());
 

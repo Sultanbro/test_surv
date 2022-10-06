@@ -9,6 +9,19 @@ use App\Service\Department\UserService;
 class AnalyticService
 {
     /**
+     * @var UserService
+     */
+    protected UserService $userService;
+
+    /**
+     * Конструктор.
+     */
+    public function __construct()
+    {
+        $this->userService = new UserService();
+    }
+
+    /**
      * @param ProfileGroup $group
      * @param $date
      * @return int
@@ -19,9 +32,15 @@ class AnalyticService
             ->whereYear('to', $date->year)->whereMonth('to', $date->month)->count();
     }
 
-    public function getFiredUsersPerMonthPercent(ProfileGroup $group, $date)
+    /**
+     * @param ProfileGroup $group
+     * @param $date
+     * @return float
+     */
+    public function getFiredUsersPerMonthPercent(ProfileGroup $group, $date): float
     {
-        $allUser = (new UserService())->getEmployees($group->id, $date->toDateString());
-
+        $firedUsers = $this->getFiredUsersPerMonth($group, $date);
+        $allUsers   = count($this->userService->getUsers($group->id, $date->toDateString()));
+        return round(($firedUsers/($allUsers + $firedUsers)) * 100, 1);
     }
 }
