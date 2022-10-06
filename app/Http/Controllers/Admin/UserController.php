@@ -1908,12 +1908,36 @@ class UserController extends Controller
         $groups =  GroupUser::where('user_id', $user_id)
             ->where('status', 'active')
             ->get()
-            ->pluck('user_id')
+            ->pluck('group_id')
             ->toArray();
+        // $g= ProfileGroup::whereIn('id', array_values($groups))
+        // ->select(['id', 'name'])
+        // ->get()
+        // ->toArray();
 
-        return ProfileGroup::whereIn('id', $groups)
-            ->get()
-            ->toArray();
+        return ProfileGroup::whereIn('id', array_values($groups))
+        ->select(['id', 'name'])
+        ->get()
+        ->toArray();
+
+        // return 
+
+        //     $_groups = [];
+
+        // $groups = ProfileGroup::where('active', 1)->get();
+
+        // foreach($groups as $group) {
+        //     if($group->users == null) {
+        //         $group->users = '[]';
+        //     }
+        //     $group_users = json_decode($group->users);
+            
+        //     if(in_array($user_id, $group_users)) {
+        //         array_push($_groups, $group);  
+        //     }
+        // }
+     
+        // return $_groups;
     }
 
     /**
