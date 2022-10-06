@@ -20,6 +20,7 @@ use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Service\Department\UserService;
 use DB;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class Bonus extends Model
 {      
@@ -180,12 +181,16 @@ class Bonus extends Model
                     ->delete();
 
                 foreach ($users as $user_id) {
+
+                    dump('*              '.$user_id);
+
                     if($group_id == 48) {
                         $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
                     } else {
                         $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
                     }
                     
+                    dump('HH  '. $val . ' --- ' . $bonus->quantity);
                     if((int)$val >= $bonus->quantity) { 
 
                         $data = [
@@ -464,16 +469,25 @@ class Bonus extends Model
         if($bonus->activity_id == 0) return 0;
     
         $stat = UserStat::query()
+            ->select([
+                DB::raw('SUM(value) as sum'),
+            ])
             ->where('user_id', $user_id)
             ->where('activity_id', $bonus->activity_id);
 
         if($bonus->daypart == 2) {
+
+            $date = Carbon::parse($date);
+
+            $stat->whereMonth('date', $date->month)
+                ->whereYear('date', $date->year);
+
+
+        } else {
             $stat->where('date', $date);
         }
 
-        $stat = $stat->first();
-        
-        return $stat ? $stat->value : 0;
+        return $stat->first()->sum;
     }
 
     /**

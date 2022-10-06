@@ -48,23 +48,21 @@ class ObtainedBonus extends Model
      */
     public static function createOrUpdateForMonth($arr) : void
     {
-        $ob = self::where('user_id', $arr['user_id'])
-                    ->where('date', $arr['date'])
-                    ->where('bonus_id', $arr['bonus_id'])
-                    ->first();
-        if($ob) {
-            $ob->amount = $arr['amount'];
-            $ob->comment = $arr['comment'];
-            $ob->save();
-        } else {
-            self::create([
-                'user_id'  => $arr['user_id'],
-                'date'     => $arr['date'],
-                'bonus_id' => $arr['bonus_id'],
-                'amount'   => $arr['amount'],
-                'comment'  => $arr['comment'],
-            ]);
-        }
+        $date = Carbon::parse($arr['date'])->startOfMonth();
+
+        self::where('user_id', $arr['user_id'])
+                ->whereMonth('date', $date->month)
+                ->whereYear('date', $date->year)
+                ->where('bonus_id', $arr['bonus_id'])
+                ->delete();
+
+        self::create([
+            'user_id'  => $arr['user_id'],
+            'date'     => $date->format('Y-m-d'),
+            'bonus_id' => $arr['bonus_id'],
+            'amount'   => $arr['amount'],
+            'comment'  => $arr['comment'],
+        ]);
     }
 
     /**
