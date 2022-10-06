@@ -655,6 +655,8 @@ export default {
             let units = [];
             let quantities = [];
             let dayparts = [];
+            let froms = [];
+            let tos = [];
             let texts = [];
             this.newBonusesArray.forEach(bonus => {
                 titles.push(bonus.title);
@@ -663,6 +665,8 @@ export default {
                 units.push(bonus.unit);
                 quantities.push(bonus.quantity);
                 dayparts.push(bonus.daypart);
+                froms.push(bonus.from);
+                tos.push(bonus.to);
                 texts.push(bonus.text);
             });
             let my_item = {
@@ -675,6 +679,8 @@ export default {
                 "unit": units,
                 "quantity": quantities,
                 "daypart": dayparts,
+                "from": froms,
+                "to": tos,
                 "text": texts
             };
             let fields = {
