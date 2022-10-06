@@ -42,6 +42,8 @@ class BonusUpdatedListener
                 'unit'        => $item->unit ?? null,
                 'quantity'        => $item->quantity ?? null,
                 'daypart'        => $item->daypart ?? null,
+                'from'        => $item->from ?? null,
+                'to'        => $item->to ?? null,
                 'text'        => $item->text ?? null,
             ]),
             'created_at'         => now(),

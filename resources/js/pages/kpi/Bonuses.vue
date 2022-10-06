@@ -139,22 +139,24 @@
                                         </td>
                                         <td>
                                             <select 
-                                                v-model="item.unit"
-                                                class="form-control"
-                                            >
-                                                            <option value="0" selected>-</option>
-                                                            <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                                                        <select 
-                                                v-model="item.daypart"
-                                                class="form-control"
-                                            >
-                                                <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                                    v-model="item.unit"
+                                                    class="form-control"
+                                                >
+                                                <option value="0" selected>-</option>
+                                                <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
                                             </select>
-                                            <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.from" /> 
-                                            <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.to" /> 
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <select 
+                                                    v-model="item.daypart"
+                                                    class="form-control"
+                                                >
+                                                    <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                                </select>
+                                                <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.from" /> 
+                                                <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.to" /> 
+                                            </div>
                                         </td>
                                         <td>
                                             <input type="text" class="form-control" v-model="item.sum" />
@@ -317,7 +319,7 @@
                                                 </select>
                                             </div>
     
-                                            <div v-else-if="field.key == 'daypart'">
+                                            <div v-else-if="field.key == 'daypart'" class="d-flex">
                                                 <select 
                                                     v-model="item.daypart"
                                                     class="form-control"
