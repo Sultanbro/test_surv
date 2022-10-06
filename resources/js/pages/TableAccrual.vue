@@ -1198,7 +1198,7 @@ export default {
             this.openSidebar = true
             this.sidebarContent = data
 
-            if(this.hasPermission && this.is_admin) {
+            if(this.hasPermission) {
                 this.profile_link = '<a href="https://test.jobtron.org/login-as-employee/' + data.item.user_id + '?auth=' + this.auth_token + '" target="_blank">';
                 this.profile_link += '<i class="fa fa-link pointer ml-2 mr-2"></i></a>';
             } else {
