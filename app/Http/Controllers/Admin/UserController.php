@@ -1911,7 +1911,9 @@ class UserController extends Controller
             ->pluck('user_id')
             ->toArray();
 
-        return array_unique($groups);
+        return ProfileGroup::whereIn('id', $groups)
+            ->get()
+            ->toArray();
     }
 
     /**
