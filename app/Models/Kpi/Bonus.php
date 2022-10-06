@@ -61,7 +61,7 @@ class Bonus extends Model
     CONST FOR_FIRST = 'first';
 
     /**
-     * Daypart
+     * Dayparts
      */
     CONST FULL_DAY = 0;
     CONST PERIOD = 1;
@@ -112,22 +112,27 @@ class Bonus extends Model
             if($bonus->sum == 0) continue;
             if($bonus->activity_id == 0) continue;
             
-            if($bonus->unit == self::FOR_FIRST && $group_id != 79) {
+            if($bonus->unit == self::FOR_FIRST) {
         
                 $best_user = 0;
                 $best_value = 0;
 
                 if(in_array($group_id, [53,57])) {
+
                     $best_user = self::fetch_best_user_from_callibro($bonus, $group_id, $date);
+
                     // save award to the best user
                     if($best_user != 0) {
-                        ObtainedBonus::createOrUpdate([
-                            'user_id' => $best_user,
-                            'date' => $date,
+
+                        $data = [
+                            'user_id'  => $best_user,
+                            'date'     => $date,
                             'bonus_id' => $bonus->id,
-                            'amount' => $bonus->sum,
-                            'comment' => $bonus->title . ' : ' . $best_value . ';'
-                        ]);
+                            'amount'   => $bonus->sum,
+                            'comment'  => $bonus->title . ' : ' . $best_value . ';'
+                        ];
+
+                        ObtainedBonus::createOrUpdate($data, $bonus->daypart);
                     } 
 
                 } else {
@@ -135,9 +140,9 @@ class Bonus extends Model
             
                     foreach ($users as $user_id) {
                         if($group_id == 48) {
-                            $val = self::fetch_value_from_activity_for_recruting($bonus->activity_id, $user_id, $date, $bonus->daypart);
+                            $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
                         } else {
-                            $val = self::fetch_value_from_activity_new($bonus->activity_id, $user_id, $date);
+                            $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
                         }
                         
                         if((int)$val >= $bonus->quantity && (int)$val >= $best_value) {
@@ -153,13 +158,15 @@ class Bonus extends Model
 
                     // save award to the best user
                     if($best_user != 0 && (int)$best_value >= $bonus->quantity) {
-                        ObtainedBonus::createOrUpdate([
-                            'user_id' => $best_user,
-                            'date' => $date,
+                        $data = [
+                            'user_id'  => $best_user,
+                            'date'     => $date,
                             'bonus_id' => $bonus->id,
-                            'amount' => $bonus->sum,
-                            'comment' => $bonus->title . ' : ' . $best_value . ';'
-                        ]);
+                            'amount'   => $bonus->sum,
+                            'comment'  => $bonus->title . ' : ' . $best_value . ';'
+                        ];
+
+                        ObtainedBonus::createOrUpdate($data, $bonus->daypart);
                     } 
                 }
                 
@@ -174,68 +181,79 @@ class Bonus extends Model
 
                 foreach ($users as $user_id) {
                     if($group_id == 48) {
-                        $val = self::fetch_value_from_activity_for_recruting($bonus->activity_id, $user_id, $date, $bonus->daypart);
+                        $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
                     } else {
-                        $val = self::fetch_value_from_activity_new($bonus->activity_id, $user_id, $date);
+                        $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
                     }
                     
                     if((int)$val >= $bonus->quantity) { 
-                        ObtainedBonus::createOrUpdate([
-                            'user_id' => $user_id,
-                            'date' => $date,
+
+                        $data = [
+                            'user_id'  => $user_id,
+                            'date'     => $date,
                             'bonus_id' => $bonus->id,
-                            'amount' => $bonus->sum,
-                            'comment' => $bonus->title . ' : ' . (int)$val . ';'
-                        ]);
+                            'amount'   => $bonus->sum,
+                            'comment'  => $bonus->title . ' : ' . (int)$val . ';'
+                        ];
+
+                        ObtainedBonus::createOrUpdate($data, $bonus->daypart);
                     }
                 }
                 
             }
             
-            if($bonus->unit == self::FOR_ONE  && $group_id != 79) {
+            if($bonus->unit == self::FOR_ONE) {
+
                 foreach ($users as $user_id) {
                     
                     if($group_id == 48) {
-                        $val = self::fetch_value_from_activity_for_recruting($bonus->activity_id, $user_id, $date);
-                    } else if(in_array($group_id, [53,57,79]) && in_array($bonus->activity_id, [16,37,18,38,146,147])) { // Минуты и согласия
+
+                        $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
+
+                    } else if(
+                        in_array($group_id, [53,57,79])
+                        && in_array($bonus->activity_id, [16,37,18,38,146,147])
+                    ) { // Минуты и согласия
+
                         $val = self::fetch_value_from_callibro($bonus, $group_id, $date, $user_id);
+
                     } else {       
-                        $val = self::fetch_value_from_activity_new($bonus->activity_id, $user_id, $date);
+
+                        $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
+                        
                     }
                     
-                    $summy = (float)$val * $bonus->sum;
-
-                    //if($summy > 0) {
-                        ObtainedBonus::createOrUpdate([
-                            'user_id' => $user_id,
-                            'date' => $date,
-                            'bonus_id' => $bonus->id,
-                            'amount' => (int)$summy,
-                            'comment' => $bonus->title . ' : ' . $val . ';'
-                        ]);
-                   // }
-                    
-                    
-                }
-            }
-
-            if($bonus->unit == self::FOR_FIRST && $group_id == 79) {
-                $euras_best_user = 0;
-                if($bonus->daypart == 1) {
-                    $euras_best_user = self::getEurasBestUser($date . ' 09:00:00', $date . ' 13:00:00');
-                }else if($bonus->daypart == 2){
-                    $euras_best_user = self::getEurasBestUser($date . ' 14:00:00', $date . ' 19:00:00');
-                }
-                if($euras_best_user != 0){
-                    ObtainedBonus::createOrUpdate([
-                        'user_id' => $euras_best_user,
-                        'date' => $date,
+                    $data = [
+                        'user_id'  => $user_id,
+                        'date'     => $date,
                         'bonus_id' => $bonus->id,
-                        'amount' => $bonus->sum,
-                        'comment' => $bonus->title . ' : ' . $bonus->sum . ';'
-                    ]);
+                        'amount'   => (int) $val * $bonus->sum,
+                        'comment'  => $bonus->title . ' : ' . $val . ';'
+                    ];
+
+                    ObtainedBonus::createOrUpdate($data, $bonus->daypart);
                 }
             }
+
+            // if($bonus->unit == self::FOR_FIRST && $group_id == 79) {
+
+            //     $euras_best_user = 0;
+
+            //     if($bonus->daxypart == 1) {
+            //         $euras_best_user = self::getEurasBestUser($date . ' 09:00:00', $date . ' 13:00:00');
+            //     }else if($bonus->daxypart == 2){
+            //         $euras_best_user = self::getEurasBestUser($date . ' 14:00:00', $date . ' 19:00:00');
+            //     }
+            //     if($euras_best_user != 0){
+            //         ObtainedBonus::createOrUphate([
+            //             'user_id' => $euras_best_user,
+            //             'date' => $date,
+            //             'bonus_id' => $bonus->id,
+            //             'amount' => $bonus->sum,
+            //             'comment' => $bonus->title . ' : ' . $bonus->sum . ';'
+            //         ]);
+            //     }
+            // }
 
 
         }
@@ -273,18 +291,18 @@ class Bonus extends Model
     public static function prepare_callibro_vars($bonus, $group_id, $date)
     {
         $vars = [];
+
         if($bonus->daypart == 1) {
-            $vars['start_date'] = $date . ' 09:00:00';
-            $vars['end_date'] = $date . ' 13:00:00';
-        } else if($bonus->daypart == 2) {
-            $vars['start_date'] = $date . ' 14:00:00';
-            $vars['end_date'] = $date . ' 19:00:00';
-        } else if($bonus->daypart == 3) {
-            $vars['start_date'] = $date . ' 19:00:00';
-            $vars['end_date'] = $date . ' 23:00:00';
+            $vars['start_date'] = $date.' '.$bonus->from.':00';
+            $vars['end_date']   = $date.' '.$bonus->to.':00';
+        } elseif($bonus->daypart == 2) {
+            $date = Carbon::parse($date);
+
+            $vars['start_date'] = $date->startOfMonth()->format('Y-m-d') . ' 00:00:00';
+            $vars['end_date']   = $date->endOfMonth()->format('Y-m-d') . ' 23:59:59';
         } else {
             $vars['start_date'] = $date . ' 00:00:00';
-            $vars['end_date'] = $date . ' 23:59:59';
+            $vars['end_date']   = $date . ' 23:59:59';
         }
 
         if($group_id == 53) {
@@ -292,18 +310,9 @@ class Bonus extends Model
             $vars['script_status_ids'] = [2519]; // Cтатус в скрипте: Дата Визита
         }
 
-        if($group_id == 57) {
-            $vars['dialer_id'] = 250;
-            $vars['script_status_ids'] = [
-                13111,13112
-            ]; 
-        }
-
         if($group_id == 79) {
             $vars['dialer_id'] = 444;
-            $vars['script_status_ids'] = [
-                13559
-            ]; 
+            $vars['script_status_ids'] = [13559]; 
         }
 
         $vars['type'] = 'calls';
@@ -313,6 +322,7 @@ class Bonus extends Model
 
         return $vars;
     }
+
     /**
      *  query to calls table
      */
@@ -349,7 +359,6 @@ class Bonus extends Model
      */
     public static function fetch_best_user_from_callibro($bonus, $group_id, $date)
     {
-
         $vars = self::prepare_callibro_vars($bonus, $group_id, $date);
 
         $items = self::callibro_query($vars);
@@ -450,22 +459,29 @@ class Bonus extends Model
     /**
      * Fetch value from UserStat
      */
-    public static function fetch_value_from_activity_new($activity_id, $user_id, $date)
+    public static function fetch_value_from_activity_new($bonus, $user_id, $date)
     {
-        if($activity_id == 0) return 0;
+        if($bonus->activity_id == 0) return 0;
     
-        $stat = UserStat::where('date', $date)
+        $stat = UserStat::query()
             ->where('user_id', $user_id)
-            ->where('activity_id', $activity_id)
-            ->first();
+            ->where('activity_id', $bonus->activity_id);
+
+        if($bonus->daypart == 2) {
+            $stat->where('date', $date);
+        }
+
+        $stat = $stat->first();
         
         return $stat ? $stat->value : 0;
     }
 
     /**
      * Fetch value from AnalyticsSettingsIndividually for recruting TEMPORARY
+     * 
+     * @return int|float
      */
-    public static function fetch_value_from_activity_for_recruting($activity_id, $user_id, $date, $daypart = 0)
+    public static function fetch_value_from_activity_for_recruting($bonus, $user_id, $date)
     {
         $indexes = [
             22 => 0,
@@ -478,28 +494,33 @@ class Bonus extends Model
             54 => 7,
         ]; // activity => index
 
+        if(!array_key_exists($bonus->activity_id, $indexes)) {
+            return 0;
+        }
 
-        if(!array_key_exists($activity_id, $indexes)) return 0;
+        $date = Carbon::parse($date);
         
-        
-        if($activity_id == 45) {
+        if($bonus->activity_id == 45) {
             
-            $records = RecruiterStat::where('date', $date)
+            $records = RecruiterStat::query()
                 ->where('calls', '>', 0)
                 ->where('user_id', $user_id);
-             
-            if($daypart == 1) {
-                $records = $records->where('hour', '>=', 9)->where('hour', '<', 13);
+            
+            if($bonus->daypart != 2) {
+                $records->where('date', $date);
+            } else {
+                $records->whereMonth($date->month)
+                        ->whereYear($date->year);
             }
 
-            if($daypart == 2) {
-                $records = $records->where('hour', '>=', 14)->where('hour', '<', 19);
+            if($bonus->daypart == 1) {
+                $records->where('hour', '>=', $bonus->from)
+                        ->where('hour', '<', $bonus->to);
             }
-            
+
             return $records->get()->sum('calls');
         }
         
-        $date = Carbon::parse($date);
         $day = $date->day;
         $date->startOfMonth();
 
@@ -511,13 +532,12 @@ class Bonus extends Model
         if($activity) { 
             $data = json_decode($activity->data, true);
             
-            $index = $indexes[$activity_id];
+            $index = $indexes[$bonus->activity_id];
             if(array_key_exists($index, $data) && array_key_exists($day, $data[$index])) {
                 return $data[$index][$day];
             }
         } 
             
-        
         return 0;
     }
 

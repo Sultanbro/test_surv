@@ -153,6 +153,8 @@
                                             >
                                                 <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
                                             </select>
+                                            <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.from" /> 
+                                            <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.to" /> 
                                         </td>
                                         <td>
                                             <input type="text" class="form-control" v-model="item.sum" />
@@ -587,8 +589,8 @@ export default {
             source_key: 1,
             dayparts: {
                 0: 'Полный день',
-                1: 'До обеда',
-                2: 'После обеда',
+                1: 'Период',
+                2: 'Месяц',
             },
             units: {
                 one: 'За каждую единицу',
