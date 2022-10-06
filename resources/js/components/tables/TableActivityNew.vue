@@ -99,7 +99,13 @@
         </tr>
 
         <tr v-for="(item, index) in filtered" :key="index">
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email">
+            
+
+            <td v-if="item.name == 'SPECIAL_BTN'">
+                <button class="btn btn-primary rounded btn-sm">Кнопка</button>
+            </td>
+            
+            <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email" v-else>
                 <div class="wd d-flex">
                     {{ item.lastname }} {{ item.name }}
                     <b-badge variant="success" v-if="item.group == 'Просрочники'">{{ item.group }}</b-badge>
@@ -116,7 +122,7 @@
                     </div>
                 </div>
             </td>
-            
+
             <template v-if="activity.plan_unit == 'minutes'">
                 <td class="px-2 stat da"><div>{{ item.avg }}</div></td>
                 <td class="px-2 stat da"><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
@@ -383,12 +389,37 @@ export default {
             this.filtered = this.itemsArray;
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
+
+            this.addButtonToFirstItem();
+
             loader.hide();    
 
 
         },
 
-       
+        addButtonToFirstItem() {
+            this.itemsArray[0].name = 'SPECIAL_BTN';
+
+            let sum = 0,
+                count = 0,
+                avg = 0;
+
+            /**
+             * fields 
+             * 
+             * month:234  План
+               name:"Балнур" Сотрудник
+               percent:"0.00%"  %
+               plan:"0.00"    Выполнено
+               avg: 0       Ср.
+             */
+            this.itemsArray.forEach((item) => {
+                sum += Number(item.plan);
+                count++;
+            })
+
+            avg = count > 0 ? Number(sum / count).toFixed() : 0;
+        },
 
         updateTable(items) {
             let loader = this.$loading.show();
