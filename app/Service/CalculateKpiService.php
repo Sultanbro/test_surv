@@ -73,8 +73,8 @@ class CalculateKpiService
         if($data['full_time'] == 0) {
             $percent = $percent / 2;
         }
-
-        return $plan != 0 ? round($data['fact'] / $plan * $percent * 100 , 2) : 0.00;
+   
+        return $plan != 0 ? round($data['fact'] / ($plan * $percent) * 100 , 2) : 0.00;
     }
 
     /**
