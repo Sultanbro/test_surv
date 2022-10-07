@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Kpi\Bonus;
 use App\Imports\TimetrackingImport;
+use App\Service\Department\UserService;
 
 class GroupsController extends Controller
 {   
@@ -188,12 +189,12 @@ class GroupsController extends Controller
 
                 if($group_id == 42) {
                     $gusers = $this->groupUsers(42);
-                    $gusers = $gusers->sortBy('name');
+                    $gusers = collect($gusers)->sortBy('name');
                 }
 
                 if($group_id == 88) {
                     $gusers = $this->groupUsers(88);
-                    $gusers = $gusers->sortBy('name');
+                    $gusers = collect($gusers)->sortBy('name');
                 }
                 
                 $items = [];
@@ -336,31 +337,17 @@ class GroupsController extends Controller
         return $missingFields;
     }
 
-    private function groupUsers($group_id) {
-        $users = []; 
-        $groups = ProfileGroup::where('id', $group_id)->get();
-
-     
-
-        
-        foreach($groups as $group) {
-            $gr = $group->groupUsers();
-            if($gr) {
-                foreach($gr as $g) {
-                    array_push($users, $g->id); 
-                }
-            }   
-        }
-
-    
-        $users = array_unique($users);
-
-        $_users = User::whereIn('id', $users)->orderBy('last_name', 'asc')->get();
-        return $_users;
+    /**
+     * get users 
+     * 
+     * @return array
+     */
+    private function groupUsers($group_id) : array
+    {
+        return (new UserService)->getEmployees($group_id, date('Y-m-d'));
     }
 
-
-
+    
     public function saveKaspiHours($user_id, $minutes, $date) 
     {
         $date = Carbon::parse($date);

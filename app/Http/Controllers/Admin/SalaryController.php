@@ -40,6 +40,7 @@ use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedSalary;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Imports\UsersImport;
+use App\Service\Department\UserService;
 
 class SalaryController extends Controller
 {
@@ -49,24 +50,6 @@ class SalaryController extends Controller
         View::share('title', 'Начисления');
         View::share('menu', 'timetrackingaccruals');
         $this->middleware('auth');
-        //$this->middleware('admin');
-
-        // $this->middleware('admin.basic.auth', ['only' => [
-        //     'balance',
-        //     'sip',
-        //     'report',
-        //     'balanceUpdate',
-        // ]]);
-
-        // $notifications = [
-        //     'exchangers' => DB::connection('infobank')->table('exchangers')->where('status', 0)->count(),
-        //     'posts' => DB::connection('infobank')->table('posts')->where('status', 0)->count(),
-        //     'glossary' => DB::connection('infobank')->table('glossary')->where('status', 0)->count(),
-        //     'reviews' => DB::connection('infobank')->table('reviews')->where('status', 0)->count() + DB::connection('infobank')->table('exchanger_reviews')->where('status', 0)->count(),
-        //     'comments' => DB::connection('infobank')->table('comments')->where('status', 0)->count(),
-        // ];
-
-        // View::share('notifications', $notifications);
     }
 
     public function index()
@@ -135,43 +118,53 @@ class SalaryController extends Controller
         }
     }
 
+    /**
+     * Страница начисления
+     */
     public function salaries(Request $request)
     {       
-     
         if(!auth()->user()->can('salaries_view')) {
             return [
                 'error' => 'access'
             ];
         }
-        //$year = date('Y');  // TODO Удалить лишнее
-        $year = $request['year'];
-        $data = [];
         
+        $year  = $request->year;
+        $month = $request->month;
+
+        $currentUser = User::bitrixUser();
+
+        $date = Carbon::createFromDate($year, $month, 1);
+
+        $data = [];
 
         if ($request->has('group_id')) {
             $group = ProfileGroup::find($request->group_id);
             
-            $users_ids = [];
-            if($group) $users_ids = json_decode($group->users, true);
+            // $users_ids = [];
+            // if($group) $users_ids = json_decode($group->users, true);
 
-            if($request->user_types == 2) {
-                $groupuser = ProfileGroupUser::where('group_id', $request->group_id)
-                ->whereYear('date', $request->year)
-                ->whereMonth('date', $request->month)
-                ->first();
-
-            
-                $t_users_ids = [];
-                if($groupuser) {
-                    $users_ids = $groupuser->assigned;
-                    $t_users_ids = $users_ids;
-                }
+            if($request->user_types == 0) {
+                $users = (new UserService)->getUsers($request->group_id, $date->format('Y-m-d')); 
             }
-            
-        }
-        $currentUser = User::bitrixUser();
 
-        $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
+            if($request->user_types == 1) {
+                $users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d')); 
+            }
+    
+            if($request->user_types == 2) {
+                $users = (new UserService)->getTrainees($request->group_id, $date->format('Y-m-d')); 
+            }
+
+            $users_ids = collect($users)->pluck('id')->toArray();
+
+            // if($request->user_types == 2) 
+        }
+
+        $group_editors = is_array(json_decode($group->editors_id))
+            ? json_decode($group->editors_id)
+            : [];
+
         // Доступ к группе
         if(auth()->user()->is_admin == 1) {
             
@@ -297,7 +290,8 @@ class SalaryController extends Controller
         ];
     }
 
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $day = $request->day;
         $year = $request->year;
         $type = $request->type;
@@ -386,33 +380,35 @@ class SalaryController extends Controller
 
     public function exportExcel(Request $request)
     {
-       
-        // if(Auth::user()->id == 5) dump(now());
         $rules = [
             'year' => 'required',
             'month' => 'required',
             'group_id' => 'required',
         ];
 
+        $currentUser = User::bitrixUser();
+
         $validator = validator($request->all(), $rules);
 
         if ($validator->fails()) {
             return redirect()->to('/timetracking/salaries')->withErrors('Поля не введены');
         }
-        //dd($request->group_id);
+
         $group = ProfileGroup::find($request->group_id);
+        $date = Carbon::createFromDate($request->year, $request->month, 1);
 
-        $users_ids = [];
-        if (!empty($group) && $group->users != null) {
-           // $users_ids = json_decode($group->users);
-            if($group) $users_ids = json_decode($group->users, true);
-        }
-        //dd($users_ids);
-        $currentUser = User::bitrixUser();
+        $users = (new UserService)->getUsers($request->group_id, $date->format('Y-m-d')); 
+        $users_ids = collect($users)->pluck('id')->toArray();
 
+        // $users_ids = [];
+        // if (!empty($group) && $group->users != null) {
+        //     // $users_ids = json_decode($group->users);
+        //     if($group) $users_ids = json_decode($group->users, true);
+        // }
+  
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
+        
         // Доступ к группе
-
         if(auth()->user()->is_admin != 1) {
             if (!in_array($currentUser->id, $group_editors)) {
                 return [
@@ -421,55 +417,43 @@ class SalaryController extends Controller
             }
         }
         
-        //////////////////////
         $date = $request->year . '-' . $request->month . '-01';
-        $date_for_register = Carbon::parse($date);
-        $date_for_fire = Carbon::parse($date)->addMonth();
      
-
-        // if(Auth::user()->id == 5) dump(now());
-   
         $working_users = DB::table('users')
-            
             ->leftJoin('user_descriptions', 'user_descriptions.user_id', '=', 'users.id')
             ->whereNull('users.deleted_at')
             ->where('is_trainee', 0)
             ->whereIn('users.id', $users_ids);
 
+        /////////////
 
-        //dd($working_users);
+        // $x_users = User::withTrashed()
+        //     ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
+        //     ->get(['id','last_group']);
 
-
-            /////////////
-
-            $x_users = User::withTrashed()
-                ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
-                ->get(['id','last_group']);
-
-            $fired_users = [];
-            foreach($x_users as $d_user) {
-                if($d_user->last_group) {
-                    $lg = json_decode($d_user->last_group);
-                    if(in_array($request['group_id'], $lg)) {
-                        array_push($fired_users, $d_user->id);
-                    }
-                } 
-            }
-            $salary_users = Salary::whereYear('date', $request->year)
-                ->whereMonth('date', $request->month)
-                ->whereIn('user_id', $fired_users)
-                ->get(['user_id'])
-                ->pluck('user_id')
-                ->toArray(); 
+        // $fired_users = [];
+        // foreach($x_users as $d_user) {
+        //     if($d_user->last_group) {
+        //         $lg = json_decode($d_user->last_group);
+        //         if(in_array($request['group_id'], $lg)) {
+        //             array_push($fired_users, $d_user->id);
+        //         }
+        //     } 
+        // }
+        // $salary_users = Salary::whereYear('date', $request->year)
+        //     ->whereMonth('date', $request->month)
+        //     ->whereIn('user_id', $fired_users)
+        //     ->get(['user_id'])
+        //     ->pluck('user_id')
+        //     ->toArray(); 
        
-            $fired_users_2 = array_unique($salary_users);
+        // $fired_users_2 = array_unique($salary_users);
 
-            $fired_users = array_merge($fired_users, $fired_users_2);
-            $fired_users = array_unique(array_values($fired_users));
+        // $fired_users = array_merge($fired_users, $fired_users_2);
 
-       
-            ///////////
-      
+        // $fired_users = array_unique(array_values($fired_users));
+
+        ///////////
         $working_users = $working_users->get(['users.id'])->pluck('id')->toArray();
         $headings = [
             'ФИО', // 0
@@ -499,206 +483,30 @@ class SalaryController extends Controller
 
         $date = Carbon::createFromDate($request->year,$request->month,1);
         
-    
-        
-        if($date->format('Y-m-d') == '2022-04-01' && $request->group_id == 53) {
-            array_push($working_users, 11250);
-        }
-       
-        $myusers = $working_users;
+        $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
+        $fired_users = collect($fired_users)->pluck('id')->toArray();
 
-      
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
-        //dd(1);
-         
-        
+    
         $_users = array_merge([['']],$working_users['users']);
         $_users = array_merge($_users, [[''],[''],['']]);
         $_users = array_merge($_users, $fired_users['users']);
-        //dd(count($_users)-4);
+     
         $data[0] = [
-            'name' => 'Действующие и Уволенные',
-            'sheet' => $_users,
+            'name'     => 'Действующие и Уволенные',
+            'sheet'    => $_users,
             'headings' => $headings,
-            'counter' => count($working_users['users']) - 1
+            'counter'  => count($working_users['users']) - 1
         ];
 
-         //dd($data);
-
-        // if(Auth::user()->id == 5) dump(now());
         if(ob_get_length() > 0) ob_clean(); //  ob_end_clean();
         $edate = $date->format('m.Y');
 
-
-       
-
-        /*return (new Collection([[1, 2, 3], [1, 2, 3]]))->downloadExcel(
-            $filePath,
-            $writerType = null,
-            $headings = false
-        );*/
-        
-        /*
-        return $this->excel->download( function ($excel) use ($data, $group) {
-
-            $excel->setTitle('Отчет');
-            $excel->setCreator('Laravel Media')->setCompany('MediaSend KZ');
-            $excel->setDescription('экспорт данных в Excel файл');
-
-            foreach($data as $list) {
-                
-                $excel->sheet($list['name'], function ($sheet) use ($list, $group) {
-                   
-                    
-                    // FIRST
-                    $sheet->fromArray($list['sheet'], null, 'A4', false, false);
-                    $sheet->prependRow(3, $list['headings']);
-                    $sheet->cell('A1', function($cell) use ($group) {
-                        $cell->setValue($group->name);
-                        $cell->setFontWeight('bold'); 
-                        $cell->setFontSize(14); 
-                    });
-                  
-                    $counter = $list['counter'];
-
-                    // SECOND
-                    $sheet->cell('A' . (7 + $counter), function($cell) use ($group) {
-                        $cell->setValue('Уволенные');
-                        $cell->setFontWeight('bold'); 
-                        $cell->setFontSize(14); 
-                    });
-
-                  //  $sheet->fromArray($list['sheet_2'], null, 'A' . (6 + $counter), false, false);
-                    //$sheet->prependRow((6 + $counter), $list['headings']);
-              
-
-
-
-                    // границы 1
-                    $fields = ['A', 'B', 'C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R', 'S', 'T', 'U'];
-                    $last = 'U';
-               
-                    $count_fields = ($counter + 4);
-                    for($i = 0; $i < count($fields); $i++) {
-                        for($j = 5; $j < $count_fields + 1; $j++) {
-                            $sheet->cell($fields[$i] . $j, function($cell) {
-                                $cell->setBorder('thin', 'thin', 'thin', 'thin');
-                            });
-                        }
-                    }
-
-                    //границы 2
-                    $count_fields = (count($list['sheet']));
-                    for($i = 0; $i < count($fields); $i++) {
-                        for($j = $counter + 9; $j < $count_fields + 4; $j++) {
-                            $sheet->cell($fields[$i] . $j, function($cell) {
-                                $cell->setBorder('thin', 'thin', 'thin', 'thin');
-                                //$cell->setBackground('#c4dbca');
-                            });
-                        }
-                    }
-                    
-                    // итоги
-                    $totals = 'F' . (count($list['sheet']) + 4) . ':' . $last  . (count($list['sheet']) + 4);
-                    $totals2 = 'F' . ($counter + 5) . ':' . $last  . ($counter + 5);
-                    
-                
-                
-    
-                    $sheet->cells('A5:A'. $count_fields, function($cell) {
-                        $cell->setBackground('#e0e0e0'); 
-                    });
-    
-                    $sheet->cells('B5:' . $last . $count_fields, function($cell) {
-                        $cell->setBackground('#fefefe'); 
-                    });
-                    
-
-                    // Итоговые колонки
-
-                    $sheet->cells('F5:F'. $count_fields, function($cell) {
-                        $cell->setBackground('#e0e0e0'); 
-                    });
-
-                    $sheet->cells('J5:J'. $count_fields, function($cell) {
-                        $cell->setBackground('#e0e0e0'); 
-                    });
-    
-                    $sheet->cells('M5:M'. $count_fields, function($cell) {
-                        $cell->setBackground('#ffc000'); 
-                    });
-    
-                    $sheet->cells('T5:T'. $count_fields, function($cell) {
-                        $cell->setBackground('#e0e0e0'); 
-                        $cell->setAlignment('right');
-                    });
-
-                    $sheet->cells('U5:U'. $count_fields, function($cell) {
-                        $cell->setBackground('#eeeeee'); 
-                        $cell->setAlignment('right');
-                    });
-                    
-                    
-    
-                    $sheet->cell('A3', function($cell) {
-                        $cell->setBackground('#8ccf5b'); 
-                        $cell->setFontWeight('bold');
-                        $cell->setBorder('thin', 'thin', 'thin', 'thin'); 
-                    });
-                        
-                    $sheet->cell('B3:' . $last . '3', function($cell) {
-                        $cell->setBorder('thin', 'thin', 'thin', 'thin'); 
-                        $cell->setAlignment('center');
-                        $cell->setFontWeight('bold');
-                    });
-    
-                    
-                    $sheet->cell('B3:G3', function($cell) {
-                        $cell->setBackground('#8ccf5b'); // салатовый
-                    });
-     
-                    $sheet->cell('H3:L3', function($cell) {
-                        $cell->setBackground('#3b73c0'); // темно синий
-                    });
-    
-                    $sheet->cell('M3', function($cell) {
-                        $cell->setBackground('#ffc000'); // оранжевый
-                    });
-    
-                    $sheet->cell('N3:'. $last . '3', function($cell) {
-                        $cell->setBackground('#8ccf5b'); // салатовый
-                    });
-                    
-                    $sheet->cells($totals2, function($cell) {
-                        $cell->setBorder('thin', 'thin', 'thin', 'thin'); 
-                        $cell->setBackground('#c4dbca'); 
-                        $cell->setAlignment('right');
-                    });
-
-                    $sheet->cells($totals, function($cell) {
-                        $cell->setBorder('thin', 'thin', 'thin', 'thin'); 
-                        $cell->setBackground('#c4dbca'); 
-                        $cell->setAlignment('right');
-                    });
-                    
-                });
-            }
-            
-            $excel->setActiveSheetIndex(0);
-
-        },'Начисления ' . $edate .' "'.$group->name . '".xls');
-
-        */
-
-     
         $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'],$data[0]['sheet'], $group ,$data[0]['counter']);
         $exp_title = 'Начисления ' . $edate .' "'.$group->name . '".xlsx';
-        return Excel::download($exp, $exp_title);
-        //dd(array_keys($data));
-        //return $data['users'];
-        //return Excel::download(new UsersExport, 'users.xlsx');
 
+        return Excel::download($exp, $exp_title);
     }
 
     private function getSheet($users_ids, $date, $group_id) {

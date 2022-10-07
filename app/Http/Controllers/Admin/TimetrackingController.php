@@ -955,7 +955,6 @@ class TimetrackingController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            
             $users = (new UserService)->getTrainees($request->group_id, $date);
         }
 
@@ -2467,9 +2466,12 @@ class TimetrackingController extends Controller
         $bonus = Bonus::where('id', $request->id)->first();
         if($bonus) $bonus->delete();
     }
+
     private function insertDataToGroupUser($group, $usersId)
     {
         $data = [];
+
+        
         foreach ($usersId as $userId)
         {
             $exist = DB::table('group_user')
@@ -2480,14 +2482,15 @@ class TimetrackingController extends Controller
             if (!$exist)
             {
                 $data[] = [
-                    'user_id'  => $userId,
-                    'group_id' => $group->id,
-                    'from'     => Carbon::now()->toDateString(),
+                    'user_id'    => $userId,
+                    'group_id'   => $group->id,
+                    'from'       => Carbon::now()->toDateString(),
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
             }
         }
+
         DB::table('group_user')->insert($data);
     }
 

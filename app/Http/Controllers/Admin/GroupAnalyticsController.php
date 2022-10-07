@@ -56,6 +56,7 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Analytics\TraineeReport;
+use App\Models\GroupUser;
 use App\ProfileGroupUser as PGU;
 
 class GroupAnalyticsController extends Controller
@@ -638,23 +639,11 @@ class GroupAnalyticsController extends Controller
      * Пригласить на стажировку во вкладке Аналитика Групп (Рекрутинг) - Стажеры
      * Создает пользователей и меняет сделку в битриксе
      */
-    public function inviteUsllers(Request $request) {
-     
-        //dd(ob_get_status()); 
-        
-       // if(ob_get_length() > 0) ob_clean();
-        //dd(ob_get_length());
-        return response()->json([
-            'code' => 200
-        ]);
-    }
-
-    public function inviteUsers(Request $request) {
+    public function inviteUsers(Request $request)
+    {
         $leads = Lead::whereIn('id', $request->users)->get();
-        $whatsapp = new IC();
         
         /////////// check group and zoom link existence
-        
         $group = ProfileGroup::find($request['group_id']);
 
         if(!$group) {
@@ -662,25 +651,10 @@ class GroupAnalyticsController extends Controller
                 'code' => 201
             ];
         }
-
         
-
-        // save users migrations
-
-        $pgu = PGU::where('group_id', $group->id)
-            ->where('date', Carbon::now()->day(1)->format('Y-m-d'))
-            ->first();  
-
-        if($pgu) {
-            $arr = array_unique(array_merge($pgu->assigned, $request->users));
-            $arr = array_values($arr);
-            $pgu->assigned = $arr;
-            $pgu->save();
-        }
         ////
-    
         if($request->time) {
-            $hour = substr($request->time, 0, 2);
+            $hour   = substr($request->time, 0, 2);
             $minute = substr($request->time, 3, 2);
             $invite_at = Carbon::parse($request->date)->hour($hour)->minute($minute); 
         } else {
@@ -694,7 +668,10 @@ class GroupAnalyticsController extends Controller
         $msg_for_group_leader = '';
 
         $has_remote_to_send_notification = false;
-        //////////
+
+        /**
+         * leads
+         */
         foreach ($leads as $lead) {
            
             // Проверить существует ли user
@@ -767,26 +744,12 @@ class GroupAnalyticsController extends Controller
                     'is_trainee' => 1,
                 ]);
 
-                // create trainee
-                $trainee = Trainee::where('user_id', $user->id)->first();
-                if(!$trainee) {
-                    $trainee = Trainee::create([
-                        'user_id' => $user->id,
-                        'lead_id' => $lead->lead_id,
-                        'deal_id' => $lead->deal_id,
-                    ]);  
-                } else {
-                    $trainee->lead_id = $lead->lead_id;
-                    $trainee->deal_id = $lead->deal_id;
-                    $trainee->save();
-                }
-
-                    
                 $old_invite_at = $lead->invite_at;
-                $lead->invite_at = $invite_at;
-                $lead->day_second = $day_second;
-                $lead->user_id = $user->id;
+
                 $lead->invite_group_id = $request->group_id;    
+                $lead->day_second = $day_second;
+                $lead->invite_at = $invite_at;
+                $lead->user_id = $user->id;
                 $lead->invited = 1;
 
                 if($user_type == 'remote') {
@@ -797,12 +760,12 @@ class GroupAnalyticsController extends Controller
                 
             } else {
 
-                
                 $old_invite_at = $lead->invite_at;
+
+                $lead->invite_group_id = $request->group_id;    
                 $lead->invite_at = $invite_at;
                 $lead->day_second = $day_second;
                 $lead->user_id = $user->id;
-                $lead->invite_group_id = $request->group_id;    
                 $lead->invited = 2; // Сотрудник уже существует
                 
                 if($user_type == 'remote') {
@@ -817,50 +780,15 @@ class GroupAnalyticsController extends Controller
                     'is_trainee' => 1,
                 ]);
 
-                // create trainee
-                $trainee = Trainee::where('user_id', $user->id)->first();
-                if(!$trainee) {
-                    $trainee = Trainee::create([
-                        'user_id' => $user->id,
-                        'lead_id' => $lead->lead_id,
-                        'deal_id' => $lead->deal_id,
-                    ]);  
-                } else {
-                    $trainee->lead_id = $lead->lead_id;
-                    $trainee->deal_id = $lead->deal_id;
-                    $trainee->save();
-                }
-
                 $user->segment = $lead->segment;
                 $user->save();
             }
 
             $lead->save();
 
-            
-            /*==============================================================*/
-            /*******  Создание пользователя в Callibro.org */
-            /*==============================================================*/
-
-            // $account = Account::where('email', $email)->first();
-            // if (!$account) {
-
-            //     if($lead->name == '') {
-            //         $lead->name = 'Без имени';
-            //     }
-            //     $account = Account::create([
-            //         'password' => User::randString(16),
-            //         'owner_uid' => 5,
-            //         'name' => $uname,
-            //         'surname' => '',
-            //         'email' => strtolower($email),
-            //         'status' => Account::ACTIVE_STATUS,
-            //         'role' => [Account::OPERATOR],
-            //         'activate_key' => '',
-            //     ]);
-            // }
-
-            /** zarplata */
+            /**
+             * zarplata
+             */
             $zarplata = Zarplata::where('user_id', $user->id)->first();
             if($zarplata) {
                 $zarplata->zarplata = 70000;
@@ -881,30 +809,21 @@ class GroupAnalyticsController extends Controller
             /*******  Зачисление пользователя в группу */
             /*==============================================================*/
             
-            // Удаление стажера из всех груп
-            $groups = $user->inGroups();
-    
-            foreach($groups as $gr) {
-                $gr_users = json_decode($gr->users);
-                $gr_users = array_diff($gr_users, [$user->id]);
-                $gr_users = array_values($gr_users);
-
-                $gr->users = json_encode($gr_users);
-                unset($gr->show);
-                $gr->save();
-            }
-
-            // Зачисление в выбранную группу
-            if ($group->users !== null) {
-
-                $users_array = json_decode($group->users);
-                $users_array[] = $user->id;
-            } else {
-                $users_array = [];
-                $users_array[] = $user->id;
-            }
-            $group->users = json_encode($users_array);
-            $group->save();
+            /* Удаление стажера из всех груп */
+            GroupUser::where('user_id', $user->id)
+                ->whereNull('to')
+                ->update([
+                    'to'     => date('Y-m-d'),
+                    'status' => 'drop',
+                ]);
+            
+            /* Зачисление в выбранную группу */
+            GroupUser::create([
+                'user_id'  => $user->id,
+                'group_id' => $group->id,
+                'from'     => date('Y-m-d'),
+                'status'   => 'active',
+            ]);
             
             /*==============================================================*/
             /*******  Начало стажировки */

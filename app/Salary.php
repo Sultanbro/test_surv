@@ -539,35 +539,6 @@ class Salary extends Model
 
         if($user_types == 1) {// Уволенные
             $users->onlyTrashed();
-
-            $x_users = \DB::table('users')
-                ->whereDate('deleted_at', '>=', $date->format('Y-m-d'))
-                ->get(['users.id','users.last_group']);
-              
-            $fired_users = [];
-            foreach($x_users as $d_user) {
-           
-                if($d_user->last_group) { 
-                  
-                    $lg = json_decode($d_user->last_group);
-                    if(in_array($group_id, $lg)) {
-                        array_push($fired_users, $d_user->id);
-                    }
-                } 
-            }
-       
-            $users_ids = $fired_users;
-         
-            $users_ids = User::with('user_description')
-                ->withTrashed()
-                ->whereHas('user_description', function ($query) {
-                    $query->where('is_trainee', 0);
-                })
-                ->whereIn('users.id', $users_ids)
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-            
         }
 
         if($user_types == -1 || $user_types == 3) {// one person

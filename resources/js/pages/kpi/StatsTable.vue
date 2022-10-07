@@ -161,6 +161,7 @@ export default {
 
     created() {
        this.prepareFields()
+       this.countAvg();
     },
     mounted(){
     },
@@ -215,7 +216,8 @@ export default {
                     kpi_count++;
                 });
 
-                /**
+                console.log(kpi_count, kpi_sum);
+                /** 
                  * count avg completed percent of kpi by users
                  */
                 kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
@@ -224,7 +226,7 @@ export default {
         },
 
     } 
-}
+} 
 </script>
 
 
