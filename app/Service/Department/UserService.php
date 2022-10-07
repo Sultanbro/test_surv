@@ -36,11 +36,12 @@ class UserService
         $data = [];
         foreach ($groups as $group)
         {
-            $groupUser = GroupUser::withTrashed()->where('group_id','=',$group->id)
+            $groupUser = GroupUser::withTrashed()->select('user_id')->where('group_id','=',$group->id)
                 ->where(fn ($query) => $query->whereYear('from','<=', $this->getYear($date))->orWhereMonth('from','<=',$this->getMonth($date)))
                 ->where(fn ($query) => $query->whereNull('to')->orWhere(
                     fn ($query) => $query->whereYear('to','<=',$this->getYear($date))->whereMonth('to','>',$this->getMonth($date)))
-                );
+                )->groupBy(['user_id'])
+                ->havingRaw('count(user_id) >= ?',[1]);
 
             $data = $this->getGroupUsers($groupUser->get(), $date);
         }
