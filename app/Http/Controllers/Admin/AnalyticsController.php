@@ -67,7 +67,7 @@ class AnalyticsController extends Controller
     public function __construct()
     {
         View::share('title', 'Аналитика групп');
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
