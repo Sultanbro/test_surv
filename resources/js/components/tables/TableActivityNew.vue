@@ -11,7 +11,7 @@
                 </div>  
                 <div class="mr-2">
                     <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
-                </div>  
+                </div>   
                 <div class="mr-2">
                     <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
                 </div>  
@@ -401,27 +401,27 @@ export default {
         },
 
         switchAction() {
-            if(this.itemsArray.length == 0) return;
+            if(this.items.length == 0) return;
 
             if(this.currentAction == 'avg') {
                 this.currentAction = 'sum'
 
-                this.sum.forEach((s, key) => {
-                    this.itemsArray[0][key] = s;
+                Object.keys(this.sum).forEach((key) => {
+                    this.items[0][key] = this.sum[key];
                 });
 
             } else if(this.currentAction == 'sum') {
 
                 this.currentAction = 'avg'
 
-                this.sum.forEach((s, key) => {
-                    this.itemsArray[0][key] = this.percentage[key] > 0 
-                        ? Number(s / this.percentage[key]).toFixed(2)
+                Object.keys(this.sum).forEach((key) => {
+                    this.items[0][key] = this.percentage[key] > 0 
+                        ? Number(this.sum[key] / this.percentage[key]).toFixed(2)
                         : 0;
                 });
             }
 
-            console.log(this.itemsArray[0]);
+            this.filterTable();
         },
 
         addButtonToFirstItem() {
