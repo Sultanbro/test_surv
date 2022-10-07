@@ -58,6 +58,7 @@ use App\QualityRecordWeeklyStat;
 use App\Models\Analytics\TraineeReport;
 use App\AdaptationTalk;
 use App\Models\GroupUser;
+use App\Service\Department\UserService;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -139,25 +140,16 @@ class UserController extends Controller
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
 
             $positions = Position::all();
-            $photo = Photo::where('user_id', $user->id)->first();
+            $photo     = Photo::where('user_id', $user->id)->first();
             $downloads = Downloads::where('user_id', $user->id)->first();
             $user_position = Position::find($user->position_id);
 
             /*** Группы пользователя */
             $groups = '';
-            $_groups = ProfileGroup::where('active', 1)->get();
+            $gs = $user->inGroups();
             
-            $gs = [];
-            foreach($_groups as $group) {
-                if($group->users == null) {
-                    $group->users = '[]';
-                }
-                $group_users = json_decode($group->users);
-                
-                if(in_array($user->id, $group_users)) {
-                    array_push($gs, $group);
-                    $groups .= '<div>' . $group->name . '</div>';
-                }
+            foreach($gs as $group) {
+                $groups .= '<div>' . $group['name'] . '</div>';
             }
 
             /*** Текущая книга для прочтения */
@@ -271,7 +263,7 @@ class UserController extends Controller
                 $activities = UserStat::activities($gs[0]->id , date('Y-m-d'));
                     $activities = json_encode($activities);
 
-                $users_ids = json_decode($gs[0]->users);
+                $users_ids = (new UserService)->getEmployees($gs[0]->id, date('Y-m-d'));
 
                 $quality = $_activities ? QualityRecordWeeklyStat::table($users_ids, date('Y-m-d')) : [];
                 
@@ -620,21 +612,9 @@ class UserController extends Controller
 
         foreach ($users as $key => $user) {
 
-            $user->groups = [];
-            $user_groups = [];
-            
-            foreach ($groups as $group) {
-                $group_users = json_decode($group->users);
-                if (!is_array($group_users)) {
-                    continue;
-                }
+            $_user = User::withTrashed()->find($user->id);
 
-                if (in_array($user->id, $group_users)) {
-                    $user_groups[] = $group->id;
-                }
-            }
-
-            $user->groups = $user_groups;
+            $user->groups = $_user ? $_user->inGroups()->pluck('id')->toArray() : [];
             
             if(is_null($user->deleted_at) || $user->deleted_at == '0000-00-00 00:00:00') {
                 $user->deleted_at = '';
@@ -644,15 +624,6 @@ class UserController extends Controller
                     $user->deleted_at = '';
                 } 
             }
-
-            
-            
-            // if(is_null($user->has_trainee)) {
-            //     $user->applied = $user->created_at;
-            // } else if(time() - Carbon::parse($user->applied)->timestamp <= 60) {
-                
-            //         $users->applied = null;
-            // } 
 
             if ($request['start_date_applied'] != null &&
                 Carbon::parse($user->applied)->timestamp - Carbon::parse($request['start_date_applied'])->timestamp < 0) {

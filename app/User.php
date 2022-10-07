@@ -24,6 +24,7 @@ use App\Http\Controllers\IntellectController as IC;
 use App\Classes\Helpers\Phone;
 use App\ProfileGroupUser as PGU;
 use App\Models\CourseResult;
+use App\Models\GroupUser;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
@@ -329,23 +330,16 @@ class User extends Authenticatable implements Authorizable
      */
     public function inGroups()
     {
-        $_groups = [];
-
-        $groups = ProfileGroup::where('active', 1)->get();
-
-        foreach($groups as $group) {
-            if($group->users == null) {
-                $group->users = '[]';
-            }
-            $group_users = json_decode($group->users);
+        $groups = GroupUser::where('user_id', $this->id)
+            ->where('status', 'active')
+            ->get()
+            ->pluck('group_id')
+            ->toArray();
             
-            if(in_array($this->id, $group_users)) {
-                $group->show = false;
-                array_push($_groups, $group);  
-            }
-        }
-        
-        return $_groups;
+        return ProfileGroup::whereIn('id', array_values($groups))
+            //->where('active', 1)
+            ->select(['id', 'name'])
+            ->get();
     }
 
     /**
