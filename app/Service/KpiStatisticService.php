@@ -881,14 +881,13 @@ class KpiStatisticService
                 $this->takeCellValue(   $_item, $date, $item);
                 $this->takeRentability( $_item, $date, $item);
                 
-                
+              
                 // for Bpartners
                 if($kpi->targetable_type == 'App\ProfileGroup' && $kpi->targetable_id == 48) {
                    // $this->takeRecruiterValues($_item, $date, $item, $user['id']);
                 }
                 $this->takeUpdatedValue($_item, $date, $item, $user['id']);
                 
-             
                 // plan
                 $item['full_time'] = $user['full_time'];
                 $history = $_item->histories->first();
@@ -934,6 +933,7 @@ class KpiStatisticService
                     $item['plan'] = round($item['plan'] * $percent_of_plan_for_sum_method);
                 }
                 
+               
                 $kpi_items[] = $item;
             }
             
@@ -1156,6 +1156,7 @@ class KpiStatisticService
      */
     private function takeCellValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
     {
+        
         if($kpi_item->activity 
         && $kpi_item->activity->view == Activity::VIEW_CELL) {
             $item['fact'] = AnalyticStat::getCellValue(

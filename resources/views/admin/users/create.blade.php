@@ -1235,10 +1235,9 @@
 
 
 
-modal-deactivate
 @if(isset($user))
 @if (is_null($user->deleted_at))
-<b-modal id="modal-deactivate" hide-footer hide-header>
+<b-modal id="modal-deactivate" hide-footer hide-header style="display:none">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body text-center">
@@ -1914,11 +1913,11 @@ function raf() {
 }
 </script>
 
-<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/jquery.inputmask.bundle.js"></script>
+<!--
 <script>
 $(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
 </script>
-
+-->
 
 
 <script>

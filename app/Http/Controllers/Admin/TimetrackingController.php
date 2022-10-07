@@ -550,14 +550,18 @@ class TimetrackingController extends Controller
         $corp_books = [];
 
         if ($request->group) {
+
             $group =  ProfileGroup::find($request->group);
-          //  $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->with('dialer')->first();
-            //if(!$group) $group = ProfileGroup::find($request->group);
-            
-            if ($group->users()->get()->toArray() != null) {
-                $users = $group->users()->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
-            }
-           
+    
+            $users = (new UserService)->getUsers($group->id, date('Y-m-d'));
+
+            $users = collect($users)
+                ->map(function ($item) {
+                    $item->email = $item->last_name . ' ' . $item->name.' '.$item->email; 
+                    return $item;
+                });
+
+
             $kbm = \App\Models\KnowBaseModel::
                 where('model_type', 'App\\ProfileGroup')
                 ->where('model_id', $group->id)

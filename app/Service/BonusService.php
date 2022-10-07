@@ -52,7 +52,8 @@ class BonusService
     /**
      * Группировать бонусы
      */
-    private function groupItems($items) {
+    private function groupItems($items) : array
+    {
         $arr = [];
 
         $types = $items->where('target', '!=', null)->groupBy('target.type');
@@ -92,6 +93,8 @@ class BonusService
                     'unit'              => $request->input('unit')[$i],
                     'quantity'          => $request->input('quantity')[$i],
                     'daypart'           => $request->input('daypart')[$i],
+                    'from'              => $request->input('from')[$i],
+                    'to'                => $request->input('to')[$i],
                     'text'              => $request->input('text')[$i],
                     'created_by'        => auth()->id() ?? 5,
                     'updated_by'        => auth()->id() ?? 5,
@@ -109,7 +112,7 @@ class BonusService
     /**
      * Обновляем данные и сохраняем в histories старые данные.
      */
-    public function update(BonusUpdateRequest $request): void
+    public function update(BonusUpdateRequest $request) : void
     {
         try {
 
@@ -131,7 +134,7 @@ class BonusService
     /**
      * Удалить бонус
      */
-    public function delete(Request $request): void
+    public function delete(Request $request) : void
     {
         Bonus::findOrFail($request->id)->delete();
     }

@@ -31,7 +31,45 @@ class ObtainedBonus extends Model
         return $this->belongsTo('App\Models\Kpi\Bonus', 'bonus_id');
     }
 
-    public static function createOrUpdate($arr) {
+    /**
+     * create or update bonus on day or month
+     */
+    public static function createOrUpdate($data, $daypart = 0) : void
+    {
+        if($daypart == 2) {
+            self::createOrUpdateForMonth($data);
+        } else {
+            self::createOrUpdateForDay($data);
+        }
+    }
+
+    /**
+     * create or update bonus on month
+     */
+    public static function createOrUpdateForMonth($arr) : void
+    {
+        $date = Carbon::parse($arr['date'])->startOfMonth();
+
+        self::where('user_id', $arr['user_id'])
+                ->whereMonth('date', $date->month)
+                ->whereYear('date', $date->year)
+                ->where('bonus_id', $arr['bonus_id'])
+                ->delete();
+
+        self::create([
+            'user_id'  => $arr['user_id'],
+            'date'     => $date->format('Y-m-d'),
+            'bonus_id' => $arr['bonus_id'],
+            'amount'   => $arr['amount'],
+            'comment'  => $arr['comment'],
+        ]);
+    }
+
+    /**
+     * create or update bonus on month
+     */
+    public static function createOrUpdateForDay($arr) : void
+    {
         $ob = self::where('user_id', $arr['user_id'])
                     ->where('date', $arr['date'])
                     ->where('bonus_id', $arr['bonus_id'])
@@ -42,11 +80,11 @@ class ObtainedBonus extends Model
             $ob->save();
         } else {
             self::create([
-                'user_id' => $arr['user_id'],
-                'date' => $arr['date'],
+                'user_id'  => $arr['user_id'],
+                'date'     => $arr['date'],
                 'bonus_id' => $arr['bonus_id'],
-                'amount' => $arr['amount'],
-                'comment' => $arr['comment'],
+                'amount'   => $arr['amount'],
+                'comment'  => $arr['comment'],
             ]);
         }
     }
