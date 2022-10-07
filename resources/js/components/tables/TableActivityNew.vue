@@ -102,7 +102,7 @@
             
 
             <td v-if="item.name == 'SPECIAL_BTN'">
-                <button class="btn btn-light rounded btn-sm">Сумма\Среднее</button>
+                <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
             </td>
             
             <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email" v-else>
@@ -255,7 +255,10 @@ export default {
             itemsArray: [],
             avgOfAverage: 0,
             totalCountDays: 0,
+            currentAction: 'avg',
             sum: {},
+            avg: {},
+            counts: {}, // elements for avg
             percentage: [],
             records: [],
             totalRowName: '',
@@ -397,28 +400,34 @@ export default {
 
         },
 
+        switchAction() {
+            if(this.itemsArray.length == 0) return;
+
+            if(this.currentAction == 'avg') {
+                this.currentAction = 'sum'
+
+                this.sum.forEach((s, key) => {
+                    this.itemsArray[0][key] = s;
+                });
+
+            } else if(this.currentAction == 'sum') {
+
+                this.currentAction = 'avg'
+
+                this.sum.forEach((s, key) => {
+                    this.itemsArray[0][key] = this.percentage[key] > 0 
+                        ? Number(s / this.percentage[key]).toFixed(2)
+                        : 0;
+                });
+            }
+
+            console.log(this.itemsArray[0]);
+        },
+
         addButtonToFirstItem() {
+            if(this.itemsArray.length == 0) return;
+            
             this.itemsArray[0].name = 'SPECIAL_BTN';
-
-            let sum = 0,
-                count = 0,
-                avg = 0;
-
-            /**
-             * fields 
-             * 
-             * month:234  План
-               name:"Балнур" Сотрудник
-               percent:"0.00%"  %
-               plan:"0.00"    Выполнено
-               avg: 0       Ср.
-             */
-            this.itemsArray.forEach((item) => {
-                sum += Number(item.plan);
-                count++;
-            })
-
-            avg = count > 0 ? Number(sum / count).toFixed() : 0;
         },
 
         updateTable(items) {
@@ -488,7 +497,7 @@ export default {
                 if (this.sum.hasOwnProperty(key)) {
                     let sum = isNaN(parseFloat(this.sum[key])) ? 0 : parseFloat(this.sum[key]);
                     let percentage = isNaN(parseFloat(this.percentage[key])) ? 0 : parseFloat(this.percentage[key]);
-                    if(this.activity.plan_unit == 'minutes')  {
+                    if(this.activity.plan_unit == 'minutes') {
                         this.itemsArray[0][key] = parseFloat(sum).toFixed(0);
                         if(sum != 0)  {
                             total += sum;
@@ -648,7 +657,7 @@ export default {
             let row0_avg = 0; 
             let row0_avg_items = 0;
             
-              let avg_of_column = 0;
+            let avg_of_column = 0;
             let quan_of_column = 0;
 
             this.records.forEach((account, index) => {
@@ -666,6 +675,7 @@ export default {
                             cellValues[key] = Number(value);
 
                             if (isNaN(this.sum[key])) this.sum[key] = 0;
+
                             if (isNaN(this.percentage[key])) this.percentage[key] = 0;
                             
                             this.sum[key] = this.sum[key] + Number(account[key]); // vertical sum
