@@ -28,8 +28,7 @@ class AnalyticService
      */
     public function getFiredUsersPerMonth(ProfileGroup $group, $date): int
     {
-        return GroupUser::withTrashed()->where('group_id', $group->id)
-            ->whereYear('to', $date->year)->whereMonth('to', $date->month)->count();
+        return count($this->userService->getFiredEmployees($group->id, $date->toDateString()));
     }
 
     /**
