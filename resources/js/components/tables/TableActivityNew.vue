@@ -102,7 +102,7 @@
             
 
             <td v-if="item.name == 'SPECIAL_BTN'">
-                <button class="btn btn-primary rounded btn-sm">Кнопка</button>
+                <button class="btn btn-light rounded btn-sm">Сумма\Среднее</button>
             </td>
             
             <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email" v-else>
