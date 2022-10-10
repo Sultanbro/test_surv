@@ -524,8 +524,12 @@ class TopValue extends Model
     {
         $table = [];
 
-        $date = Carbon::createFromDate($year,1,1);
-        $groups = ProfileGroup::whereNotIn('id', [34,58,26])->where('active', 1)->orWhere(fn ($query) => $query
+        $date = Carbon::createFromDate($year,$month,1);
+
+        $groups = ProfileGroup::whereNotIn('id', [34,58,26])->where([
+            ['has_analytics','=',1],
+            ['active','=',1]
+        ])->orWhere(fn ($query) => $query
             ->whereYear('archived_date','<=', $year)
             ->whereMonth('archived_date','>=', $date->month)
         )->get();

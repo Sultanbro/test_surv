@@ -38,7 +38,7 @@ class TopController extends Controller
     public function __construct()
     {
         View::share('title', 'ТОП');
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -74,7 +74,7 @@ class TopController extends Controller
 
         return response()->json([
             'rentability' => TopValue::getRentabilityGauges($date),
-            'utility' => TopValue::getUtilityGauges($date),
+            'utility'  => TopValue::getUtilityGauges($date),
             'proceeds' => $this->getProceeds($date),
         ]);
         
