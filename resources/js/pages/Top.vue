@@ -75,7 +75,7 @@
         </div>
 
 
-        <t-rentability :year="currentYear"></t-rentability>
+        <t-rentability :year="currentYear" :month="monthInfo.currentMonth"></t-rentability>
 
       </b-tab>
 

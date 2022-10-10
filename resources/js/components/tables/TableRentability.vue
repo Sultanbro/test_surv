@@ -112,6 +112,9 @@ export default {
         year: function(newVal, oldVal) { 
             this.fetchData();
         },
+        month: function(newVal, oldVal) { 
+            this.fetchData();
+        },
     },
 
     created() {
@@ -143,7 +146,8 @@ export default {
         fetchData() {
             axios 
                 .post("/timetracking/top/get-rentability", {
-                    year: this.year
+                    year: this.year,
+                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
                 })
                 .then((response) => {
                     this.items = response.data
