@@ -85,6 +85,7 @@ export default {
     name: "TableRentability",
     props: {
         year: Number,
+        month: Number
     },
     data() {
         return {
