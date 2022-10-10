@@ -148,7 +148,7 @@ export default {
             axios 
                 .post("/timetracking/top/get-rentability", {
                     year: this.year,
-                    month: this.$moment(this.month, 'MMMM').format('M'),
+                    month: this.month
                 })
                 .then((response) => {
                     this.items = response.data
