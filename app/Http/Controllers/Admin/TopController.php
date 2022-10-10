@@ -89,10 +89,19 @@ class TopController extends Controller
     }
 
     /**
-     * Сводная таблица рентабельности
+     * Сводная таблица рентабельности за год
      */
-    public function getRentability(Request $request) {
+    public function getRentability(Request $request) 
+    {
         return TopValue::getPivotRentability($request->year);
+    }
+
+    /**
+     * Сводная таблица рентабельности только за месяц
+     */
+    public function getRentabilityOnMonth(Request $request) 
+    {
+        return TopValue::getPivotRentabilityOnMonth($request->year, $request->month);
     }
     
     /**
