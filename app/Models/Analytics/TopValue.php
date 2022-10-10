@@ -114,8 +114,8 @@ class TopValue extends Model
     /**
      * Спидометры полезности
      */
-    public static function getUtilityGauges($date, $group_ids) {
-
+    public static function getUtilityGauges($date) {
+        $group_ids = ProfileGroup::activeProfileGroupsWithAnalytics();
         $gauge_groups = [];
 
         $activities = Activity::whereIn('group_id', $group_ids)->get();
@@ -447,8 +447,11 @@ class TopValue extends Model
     /**
      * Спидометры рентабельности
      */
-    public static function getRentabilityGauges($date, $groups, $common_name = '') {
+    public static function getRentabilityGauges($date, $common_name = '') {
         $gauges = [];
+        $carbon = Carbon::createFromFormat('Y-m-d', $date);
+
+        $groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month);
 
         if(!$date) {
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
@@ -522,7 +525,10 @@ class TopValue extends Model
         $table = [];
 
         $date = Carbon::createFromDate($year,1,1);
-        $groups = ProfileGroup::whereNotIn('id', [34,58,26])->where('active', 1)->get();
+        $groups = ProfileGroup::whereNotIn('id', [34,58,26])->where('active', 1)->orWhere(fn ($query) => $query
+            ->whereYear('archived_date','<=', $year)
+            ->whereMonth('archived_date','>=', $date->month)
+        )->get();
 
         $r_counts = []; // for count avg rentability on every monht
         $total_row = []; // first row

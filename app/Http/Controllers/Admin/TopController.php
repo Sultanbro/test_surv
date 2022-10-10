@@ -39,8 +39,6 @@ class TopController extends Controller
     {
         View::share('title', 'ТОП');
         $this->middleware('auth');
-
-        
     }
 
     /**
@@ -49,19 +47,16 @@ class TopController extends Controller
     public function index()
     {   
         View::share('menu', 'timetrackingtop');
-
         if(!auth()->user()->can('top_view')) {
             return redirect('/');
         }
 
         $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
 
-        $this->groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get()->pluck('id')->toArray();
-      //  dd(TopValue::getUtilityGauges($date, $this->groups)[6]['gauges'][2]);
         return view('admin.top')->with([
             'data' => [
-                'rentability' => TopValue::getRentabilityGauges($date,$this->groups),
-                'utility' => TopValue::getUtilityGauges($date, $this->groups),
+                'rentability' => TopValue::getRentabilityGauges($date),
+                'utility' => TopValue::getUtilityGauges($date),
                 'proceeds' => $this->getProceeds($date),
                 'prognoz_groups' => Recruiting::getPrognozGroups($date),
             ],
@@ -76,13 +71,10 @@ class TopController extends Controller
     {   
     
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
-        
-        $this->groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get()->pluck('id')->toArray();
-
 
         return response()->json([
-            'rentability' => TopValue::getRentabilityGauges($date, $this->groups),
-            'utility' => TopValue::getUtilityGauges($date, $this->groups),
+            'rentability' => TopValue::getRentabilityGauges($date),
+            'utility' => TopValue::getUtilityGauges($date),
             'proceeds' => $this->getProceeds($date),
         ]);
         
@@ -147,7 +139,7 @@ class TopController extends Controller
             }
 
             
-            $this->groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get()->pluck('id')->toArray();
+            $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month);
             
 
 
