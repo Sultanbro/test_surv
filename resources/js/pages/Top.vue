@@ -75,7 +75,7 @@
         </div>
 
 
-        <t-rentability :year="currentYear" :month="monthInfo.currentMonth"></t-rentability>
+        <t-rentability :year="currentYear" :month="monthInfo.month"></t-rentability>
 
       </b-tab>
 
@@ -241,7 +241,8 @@ export default {
         monthEnd: 0,
         workDays: 0,
         weekDays: 0,
-        daysInMonth: 0
+        daysInMonth: 0,
+        month: new Date().getMonth() + 1
       },
       gaugeOptions: {
         angle: 0,
