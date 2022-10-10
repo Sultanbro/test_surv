@@ -1503,9 +1503,8 @@ public function planRequired($arr) {
 
         $date = Carbon::parse($date)->startOfMonth();
 
-        $groups1 = ProfileGroup::whereIn('id', [42])->get();
         $groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get();
-        $groups = $groups->merge($groups1);
+
         foreach($groups as $group) {
             $item = [];
 
@@ -1518,14 +1517,16 @@ public function planRequired($arr) {
 
             $item['sent'] = $leads->count();
 
-            $users = json_decode($group->users);
+            $users = (new UserService)->getUsers($group->id, $date);
+            $user_ids = collect($users)->pluck('id')->toArray();
 
             $applied = User::withTrashed()
                 ->with('user_description')
                 ->whereHas('user_description', function ($query) use ($date){
-                    $query->whereDate('applied', '<=', $date->format('Y-m-d'));
+                    $query->whereMonth('applied', $date->month)
+                          ->whereYear('applied', $date->year);
                 })
-                ->whereIn('id', $users)
+                ->whereIn('id', $user_ids)
                 ->get(['id'])
                 ->pluck('id')
                 ->toArray();
@@ -1540,30 +1541,27 @@ public function planRequired($arr) {
                 ->count();
 
 
-            $percent = $item['sent'] > 0 ? $item['working']/ $item['sent'] * 100 : 0;
-            $item['percent'] = round($percent, 1);
+            $percent = $item['sent'] > 0
+                ? $item['working'] / $item['sent'] * 100
+                : 0;
 
-            
-            $_users_ids = DB::table('users')
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', json_decode($group->users))
-                ->where('ud.is_trainee', 1) 
-                ->pluck('users.id')
-                ->toArray();
-            $item['active'] = $item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', json_decode($group->users))->where('type',5)->get()->count();
+            $item['percent'] = round($percent, 1) . '%';
 
-            //$item['active'] = DayType::where('date',Carbon::now()->toDateString())->whereIn('user_id', $leads->pluck('user_id')->toArray())->where('type',5)->get()->count();//$item['sent'];
+            $item['active'] = DayType::where('date', Carbon::now()->toDateString())
+                                    ->whereIn('user_id', $user_ids)
+                                    ->where('type', 5)
+                                    ->get()
+                                    ->count();
+
             $get_required = self::getPrognozGroups($date);
+
             foreach($get_required as $req){
                 if($req['id'] == $group->id){
                     $item['required'] = $req['left_to_apply'];
                 }
             }
-            //$this->getPrognozGroups($date);
+
             array_push($arr, $item);
-
-
         }
 
         return $arr;
