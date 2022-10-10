@@ -520,7 +520,7 @@ class TopValue extends Model
      * 
      * @return array
      */
-    public  static function getPivotRentability($year) : array
+    public  static function getPivotRentability($year, $month) : array
     {
         $table = [];
 
