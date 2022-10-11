@@ -2,26 +2,20 @@
 
 namespace App;
 
-//use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use DB;
 use Auth;
 use App\User;
 use App\UserFine;
 use App\ProfileGroupUser;
-use App\DayType;
-use App\Timetracking;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedSalary;
-use App\Models\TestBonus;
 
 class Salary extends Model
 {
-   // use SoftDeletes;
     protected $table = 'salaries';
 
     protected $dates = ['date'];
@@ -47,22 +41,19 @@ class Salary extends Model
      * 1 only working
      * 2 only fired
      */
-    public static function getTotal($date, $group_id, $user_types = 0) {
+    public static function getTotal($date, $group_id, $user_types = 0)
+    {
 
         $month = Carbon::parse($date)->startOfMonth();
         
         $group = ProfileGroup::find($group_id);
+
         dump($group->name);
         dump('------------');
         dump('~~~~~~~~~~~~');
+
         $internshipPayRate = $group->paid_internship == 1 ? 0.5 : 0;
         $user_ids = ProfileGroup::employees($group_id, $date, $user_types);
-
-        // // 
-        // $users_ids = [];
-        // if($group) $users_ids = json_decode($group->users, true);
-
-        // //
 
         $users = User::withTrashed()
             //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -102,8 +93,6 @@ class Salary extends Model
         ->oldest('users.last_name')
         ->get();
 
-     
-
         $all_total = 0;
 
         $okpi = 0;
@@ -134,9 +123,6 @@ class Salary extends Model
             }
 
             $user_ids = array_unique(array_values($fired_users));
-
-           
-            //$user_ids = $pgu->fired;
         } 
       
         foreach ($users as $key => $user) {
@@ -157,62 +143,22 @@ class Salary extends Model
                     continue;
                 }
             }
+
             ////////////
             $hourly_pay = $user->hourly_pay($month->format('Y-m-d'));
-            //$internshipPayRate = $user->internshipPayRate();
+
             // Вычисление даты принятия
             $user_applied_at = $user->applied_at();
 
             /////// TTS 
-
-            
-            // $tts = Timetracking::whereYear('enter', $month->year)
-            //         ->select([
-            //             DB::raw('DAY(enter) as day'),
-            //             DB::raw('sum(total_hours) as total_hours')
-            //         ])
-            //         ->whereMonth('enter', $month->month)
-            //         ->whereDate('enter', '>=', Carbon::parse($user_applied_at)->format('Y-m-d'))
-            //         ->where('user_id', $user->id)
-            //         ->groupBy('day')
-            //         ->get();
-            // dd('x');
             $tts = $user->timetracking
                 ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp); 
-               // ->groupBy('day');
-       
-               // dump($user->salaries);
-            // $trainee_days = DayType::where('user_id', $user->id)
-            //     ->select([
-            //         DB::raw('DAY(date) as day'),
-            //     ])
-            //     ->whereYear('date', $month->year)
-            //     ->whereMonth('date', $month->month)
-            //     ->whereIn('type', [5,6,7])
-            //     ->get();
                 
                
             $trainee_days = $user->daytypes->whereIn('type', [5,6,7]);
-             
-
-             /////  Рaбочие дни до принятия на работу
-
-            // $tts_before_apply = Timetracking::whereYear('enter', $month->year)
-            //     ->select([
-            //         DB::raw('DAY(enter) as day'),
-            //         DB::raw('sum(total_hours) as total_hours')
-            //     ])
-            //     ->whereMonth('enter', $month->month)
-            //     ->whereDate('enter', '<', Carbon::parse($user_applied_at)->format('Y-m-d'))
-            //     ->where('user_id', $user->id)
-            //     ->groupBy('day')
-            //     ->get();
 
             $tts_before_apply = $user->timetracking
                 ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
-                //->groupBy('day');
-                //->get();
-
 
                 $earnings = []; 
                 $hourly_pays = []; 
@@ -524,25 +470,25 @@ class Salary extends Model
        
         return $salaries;
     }
-
+    
+    /**
+     * salaries Table
+     */
     public static function salariesTable($user_types, $date, $users_ids, $group_id = 0)
     {
         $date = Carbon::parse($date)->day(1);
 
+        $users = User::query();
 
-        $users = User::where('id', '!=', 0);
-
-        if($user_types == 0) {// Действующие
+        if($user_types == 0) { // Действующие
             $users->whereNull('deleted_at');
         } 
 
-
-        if($user_types == 1) {// Уволенные
+        if($user_types == 1) { // Уволенные
             $users->onlyTrashed();
         }
 
-        if($user_types == -1 || $user_types == 3) {// one person
-
+        if($user_types == -1 || $user_types == 3) { // one person
             $users->withTrashed();
         }
 
@@ -564,8 +510,6 @@ class Salary extends Model
                 ->get(['users.id'])
                 ->pluck('id')
                 ->toArray();
-
-       
         }
 
         $users->whereIn('users.id', array_unique($users_ids));
@@ -573,7 +517,9 @@ class Salary extends Model
         $users->with([
             'user_description',
             'salaries' => function ($q) use ($date) {
-                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', $date->month)->whereYear('date', $date->year);
+                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                    ->whereMonth('date', $date->month)
+                    ->whereYear('date', $date->year);
             },
             'daytypes' => function ($q) use ($date) {
                 $q->select([
@@ -586,16 +532,25 @@ class Salary extends Model
                     ->groupBy('day', 'type', 'user_id', 'date');
             },
             'fines' => function ($q) use ($date) {
-                $q->selectRaw("*,DATE_FORMAT(day, '%e') as date")->whereMonth('day', $date->month)->whereYear('day', $date->year)->where('status', 1);
+                $q->selectRaw("*,DATE_FORMAT(day, '%e') as date")
+                    ->whereMonth('day', $date->month)
+                    ->whereYear('day', $date->year)
+                    ->where('status', 1);
             },
             'trackHistory' => function ($q) use ($date) {
-                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $date->month)->whereYear('date', $date->year);
+                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                    ->whereMonth('date', '=', $date->month)
+                    ->whereYear('date', $date->year);
             },
             'obtainedBonuses' => function ($q) use ($date) {
-                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $date->month)->whereYear('date', $date->year);
+                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                    ->whereMonth('date', '=', $date->month)
+                    ->whereYear('date', $date->year);
             },
             'testBonuses' => function ($q) use ($date) {
-                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $date->month)->whereYear('date', $date->year);
+                $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                    ->whereMonth('date', '=', $date->month)
+                    ->whereYear('date', $date->year);
             },
             'timetracking' => function ($q) use ($date) {
                 $q->select(['user_id',
@@ -621,73 +576,83 @@ class Salary extends Model
             'users.working_time_id',
         ]);
 
-      
-     
-     
-        ///////////////////// 
-
         $data['users'] = [];
         $data['total_resources'] = 0;
 
-        //me($users);
         foreach ($users as $key => $user) {
             
+            /**
+             * Show the user only in first group he assigned
+             * Exception: show DM1 users in both groups DM2
+             */
             $ugroups = $user->inGroups();
 
-            if(count($ugroups) > 0) {
+            if(count($ugroups) > 0 && $group_id != 93) {
                 if($ugroups[0]->id != $group_id && $user_types != -1) {
                     continue;
                 }
             }
-          
+            
+            /**
+             * if internship is paid
+             */
             $internshipPayRate = $user->internshipPayRate();
             
+            /**
+             * count fines
+             */
             $fines = [];
             $fines_total = 0;
+
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
+
                 $d = '' . $i;
+
                 if(strlen ($i) == 1) $d = '0' . $i;
+
                 $x = $user->fines->where('date', $d);
+
                 if($x->count() > 0) {
+
                     $arr = [];
+
                     foreach($x as $y) {
                         array_push($arr, [
                             $y->name => $y->penalty_amount
                         ]);
                         $fines_total += $y->penalty_amount;
                     }
+
                     $fines[$i] = $arr;
                 } else {
                     $fines[$i] = [];
                 }
             }
             
-            // Вычисление даты принятия
+            /**
+             * Вычисление даты принятия
+             */
             $user_applied_at = $user->applied_at();
 
             /////// TTS 
-         
             $tts = $user->timetracking
                     ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp); 
             
-            $trainee_days = $user->daytypes->whereIn('type', [5,7]);
-            $retraining_days = $user->daytypes->whereIn('type', [6]);
-            $absent_days = $user->daytypes->whereIn('type', [2]);
-
-          
+            $trainee_days     = $user->daytypes->whereIn('type', [5,7]);
+            $retraining_days  = $user->daytypes->whereIn('type', [6]);
+            $absent_days      = $user->daytypes->whereIn('type', [2]);
             $tts_before_apply = $user->timetracking
                 ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);      
                 
             
-                
-
-            $earnings = []; 
+            $earnings    = []; 
             $hourly_pays = []; 
-            $hours = []; 
+            $hours       = []; 
+            $trainings   = []; 
 
-            $trainings = []; 
-
-            // worktime hours in day
+            /**
+             * worktime hours in day
+             */
             if($user->working_time_id == 1) {
                 $worktime = 8;
             } else {
@@ -695,14 +660,20 @@ class Salary extends Model
             }
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
+
                 $d = '' . $i;
+
                 if(strlen ($i) == 1) $d = '0' . $i;
                 
                 //count hourly pay 
                 $s = $user->salaries->where('day', $d)->first();
+
                 $zarplata = $s ? $s->amount : 70000;
+
                 $working_hours = $user->workingTime ? $user->workingTime->time : 9;
+
                 $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
+
                 $workdays = workdays($date->year, $date->month, $ignore);
             
                 $hourly_pay = $zarplata / $workdays / $working_hours;
@@ -712,10 +683,10 @@ class Salary extends Model
 
                 // add to array
 
-                $earnings[$i] = null;  
+                $earnings[$i]    = null;  
                 $hourly_pays[$i] = null;  
-                $hours[$i] = null;  
-                $trainings[$i] = null; 
+                $hours[$i]       = null;  
+                $trainings[$i]   = null; 
 
                 $x = $tts->where('day', $i);
                 $y = $tts_before_apply->where('day', $i);
@@ -725,32 +696,35 @@ class Salary extends Model
 
                 if($a) {
                     $earnings[$i] = 0;
-                    $hours[$i] = 0;
+                    $hours[$i]    = 0;
                 } else if($r) { // переобучение
                     $trainings[$i] = true;
                     $total_hours = 0;
+
                     if($x->count() > 0) {
                         $total_hours = $x->sum('total_hours');
                     }
 
-                    // $earning = $hourly_pay * $worktime * 0.5;
                     $earning = $total_hours / 60 * $hourly_pay * 0.5;
-                    $earnings[$i] = round($earning);// стажировочные на пол суммы
+                    $earnings[$i] = round($earning); // стажировочные на пол суммы
                     
                     $hours[$i] = round($total_hours / 60, 1); 
+
                 } else if($t) { // день отмечен как стажировка
                     $trainings[$i] = true;
                     
                     $earning = $hourly_pay * $worktime * $internshipPayRate;
-                    $earnings[$i] = round($earning);// стажировочные на пол суммы
+                    $earnings[$i] = round($earning); // стажировочные на пол суммы
                     
                     $hours[$i] = round($worktime / 2, 1);
                 } else if($x->count() > 0) { // отработанное врея есть
+                    
                     $total_hours = $x->sum('total_hours');
                     $earning = $total_hours / 60 * $hourly_pay;
                     $earnings[$i] = round($earning);
                     $hours[$i] = round($total_hours / 60, 1);
-                } else if($y->count() > 0) {// отработанное врея есть до принятия на работу
+
+                } else if($y->count() > 0) { // отработанное врея есть до принятия на работу
                     $total_hours = $y->sum('total_hours');
                     $earning = $total_hours / 60 * $hourly_pay;
                     $earnings[$i] = round($earning);
@@ -758,35 +732,53 @@ class Salary extends Model
                 }   
             } 
 
-            // headphone price minus
+            /**
+             * Subtract from salary headphone price 
+             */
             $headphones_amount = 0;
 
             if($user->user_description) {
                 $headphones_date = Carbon::parse($user->user_description->headphones_date);
-                if($user->user_description->headphones_amount > 0 &&
-                    $headphones_date->year == $date->year &&
-                    $headphones_date->month == $date->month) {
+                if($user->user_description->headphones_amount > 0
+                    && $headphones_date->year == $date->year
+                    && $headphones_date->month == $date->month) {
                     $headphones_amount = $user->user_description->headphones_amount;
                 }
             }
-          
-             
+            
+            /**
+             * Advanсes 
+             */
             $avanses = [];
+
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
+
                 $d = '' . $i;
+
                 if(strlen ($i) == 1) $d = '0' . $i;
+
                 $x = $user->salaries->where('day', $d)->first();
+
                 if($x && $x->paid != 0) {
+
                     $avanses[$i] = $x->paid;
                     if($i == 1 && $headphones_amount > 0) $avanses[$i] = (int)$x->paid + $headphones_amount;
+
                 } else {
+
                     $avanses[$i] = null;
                     if($i == 1 && $headphones_amount > 0) $avanses[$i] = $headphones_amount;
+
                 }
             }
 
+            /**
+             * Bonus added manually from salary page
+             */
             $bonuses = [];
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
+
+
                 $d = '' . $i;
                 if(strlen ($i) == 1) $d = '0' . $i;
                 $x = $user->salaries->where('day', $d)->first();
@@ -798,6 +790,9 @@ class Salary extends Model
                 
             }
 
+            /**
+             * Bonus from settings
+             */
             $award_date = Carbon::createFromFormat('m-Y', $date->month . '-' . $date->year);
 
             $awards = [];
@@ -813,6 +808,9 @@ class Salary extends Model
                 }
             }
             
+            /**
+             * Bonus for course tests
+             */
             $test_bonus = [];
             
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
@@ -827,35 +825,39 @@ class Salary extends Model
                 }
             }
 
-            $user->test_bonus = $test_bonus; 
-
-            $user->fine = $fines; 
-            $user->trainings = $trainings; 
-            $user->fines_total = $fines_total; 
-            $user->avanses = $avanses; 
-            
-            $user->earnings = $earnings; 
+            /**
+             * add to user new fields
+             */
             $user->worked_days = Carbon::parse($user_applied_at)->timestamp; 
+            $user->fines_total = $fines_total; 
+            $user->trainings   = $trainings; 
             $user->hourly_pays = $hourly_pays; 
-            $user->hours = $hours; 
-  
-            $user->bonuses = $bonuses; 
-            $user->awards = $awards; 
+            $user->hours       = $hours; 
+            $user->fine        = $fines; 
+            $user->avanses     = $avanses; 
+            $user->earnings    = $earnings; 
+            $user->bonuses     = $bonuses; 
+            $user->test_bonus  = $test_bonus; 
+            $user->awards      = $awards; 
             
-
+            /**
+             * If user has edited Salary take it
+             */
             $user->edited_salary = null;
-            $editedSalary = EditedSalary::where('user_id', $user->id)->where('date', $date)->first();
+
+            $editedSalary = EditedSalary::where('user_id', $user->id)
+                                    ->where('date', $date)
+                                    ->first();
+                                    
             if($editedSalary) {
                 $ku = User::withTrashed()->find($editedSalary->author_id);
                 $editedSalary->user = $ku ? $ku->last_name . ' ' . $ku->name : 'Неизвестно';
                 $user->edited_salary = $editedSalary;
             }
             
-
-            
-
-
-
+            /**
+             * If user has edited KPI take it
+             */
             $editedKpi = EditedKpi::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
@@ -872,7 +874,10 @@ class Salary extends Model
             } else {
                 $user->kpi = Kpi::userKpi($user->id, $date);
             }   
-                
+            
+            /**
+             * If user has edited Bonus for month take it
+             */
             $editedBonus = EditedBonus::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
@@ -886,15 +891,20 @@ class Salary extends Model
                 $user->edited_bonus = $editedBonus;
             } 
             
-
-
+            // add to array
             $data['users'][] = $user; 
             $data['total_resources'] += $user->full_time == 1 ? 1 : 0.5;  
         }
 
-        $_agrees = array_column($data['users'], 'worked_days');
-        array_multisort($_agrees, SORT_DESC, $data['users']); 
+        /**
+         * sort users by worked days from applied date
+         */
+        $worked_days = array_column($data['users'], 'worked_days');
+        array_multisort($worked_days, SORT_DESC, $data['users']); 
 
+        /**
+         * token
+         */
         $data['auth_token'] = Auth::user()->remember_token;
 
         return $data;
