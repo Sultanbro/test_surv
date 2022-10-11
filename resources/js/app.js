@@ -20,11 +20,13 @@ import Vue from 'vue'
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
 import VueCircle from 'vue2-circle-progress'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 
 import Croppa from 'vue-croppa';
 import 'vue-croppa/dist/vue-croppa.css';
-
 Vue.use(Croppa);
+Vue.use(VueAxios, axios)
 
 // pagination
 import JwPagination from 'jw-vue-pagination';
@@ -45,6 +47,12 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 //import VueCoreVideoPlayer from 'vue-core-video-player';
  
+
+// Vue Konva for canvas
+import VueKonva from 'vue-konva';
+Vue.use(VueKonva);
+
+
 
 import VueVideoPlayer from 'vue-video-player'
  
@@ -254,6 +262,7 @@ Vue.directive("click-outside", {
 //   stopProp(event) { event.stopPropagation() }
 });
 
+console.log('test fdfsdf ');
 const app = new Vue({
   el: '.right-panel-app'
 }); 

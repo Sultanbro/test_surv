@@ -10,6 +10,7 @@ use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 use App\Models\Videos\Video;
 use App\Models\Books\Book;
+Use App\Models\Photo;
 
 class FileUploadController extends Controller {
 

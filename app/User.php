@@ -800,8 +800,9 @@ class User extends Authenticatable implements Authorizable
 
     public function getCurrentSalary()
     {
-        $tz = Setting::TIMEZONES[$this->timezone];
-        $date = \Carbon\Carbon::now($tz);
+       // $tz = Setting::TIMEZONES[$this->timezone];
+       // $tz = 'Asia\Almaty';
+        $date = \Carbon\Carbon::now();
         $salaries = $this->getSalaryByMonth($date);
         $user_applied_at = $this->applied_at();
 

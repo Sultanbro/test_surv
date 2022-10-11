@@ -30,7 +30,7 @@
         "setasign/tfpdf": "^1.25",
         "spatie/laravel-ignition": "^1.0",
         "spatie/laravel-permission": "^5.5",
-        "stancl/tenancy": "^3.5",
+        "stancl/tenancy": "^3.6",
         "symfony/http-client": "^6.1",
         "symfony/postmark-mailer": "^6.1"
     },

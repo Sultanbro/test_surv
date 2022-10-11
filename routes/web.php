@@ -37,5 +37,13 @@ Route::get('/projects/edit/{id}', [TenantController::class, 'edit']);
 Route::post('/projects/save', [TenantController::class, 'save']);
 Route::post('/projects/update', [TenantController::class, 'update']);
 
+Route::get('upload_file', function () {
+    return view('upload');
+});
+use App\Http\Controllers\FileUploadController;
+ 
+Route::post('store_file', [FileUploadController::class, 'fileStore']);
+
+
 //Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 

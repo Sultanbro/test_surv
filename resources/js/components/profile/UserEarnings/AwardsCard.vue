@@ -4,7 +4,7 @@
 		:header="header"
 		body-class="p-1"
 		header-class="p-2 bg-secondary text-white font-weight-bold">
-			<div class="temp-placeholder m-1" v-for="(award, index) in values">
+			<div class="temp-placeholder m-1" v-for="(award, index) in values" :key="index">
 				{{ award.imgSrc }}
 			</div>
 			<div class="text-center w-100" v-if="values.length === 0">Ничего нет</div>
