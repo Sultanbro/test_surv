@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Exceptions\Kpi\TargetDuplicateException;
+use Carbon\Carbon;
 
 class KpiService
 {
@@ -45,9 +46,19 @@ class KpiService
     {   
         if($filters !== null) {} 
         
-        $kpis = Kpi::with(['items', 'creator', 'updater', 'histories' => function($query) {
-            //$query->whereDate('created_at', '<=', $last_date);
-        }])->get();
+        $last_date = Carbon::now()->endOfMonth()->format('Y-m-d');
+
+        $kpis = Kpi::with([
+            'items',
+            'creator',
+            'updater',
+            'histories' => function($query) use ($last_date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+            },
+            'items.histories' => function($query) use ($last_date) {
+                $query->whereDate('created_at', '<=', $last_date);
+            },
+        ])->get();
         
         $kpis_final = [];
 
@@ -59,10 +70,27 @@ class KpiService
             // remove items if it's not in history
             if($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
-             
+                
+                $items = $kpi->items;
+
                 if(isset($payload['children'])) {
-                    $item['items'] = array_values($kpi->items->whereIn('id', $payload['children'])->toArray());
+                    $items = $kpi->items->whereIn('id', $payload['children']);
                 } 
+
+                foreach ($items as $key => $_item) {
+
+                    $history = $_item->histories->first();
+
+                    $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+                    
+                    $_item['daily_plan'] = $has_edited_plan && array_key_exists('plan', $has_edited_plan)
+                        ? $has_edited_plan['plan']
+                        : (float)$_item->plan;
+
+                    $_item['plan'] = $_item['daily_plan'];
+                }
+
+                $item['items'] = $items->values();
             }
 
             array_push($kpis_final, $item);
