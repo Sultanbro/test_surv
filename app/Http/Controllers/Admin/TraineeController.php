@@ -93,7 +93,7 @@ class TraineeController extends Controller
             ->sortBy('name')
             ->toArray();
 
-        foreach($users as $key => $user) {
+        foreach($users as $key => $user) { 
             $users[$key]['id'] = $this->numhash($user['id']);
         }
 
