@@ -1547,9 +1547,15 @@ public function planRequired($arr) {
 
             $item['percent'] = round($percent, 1) . '%';
 
+            /**
+             * Active trainees
+             */
+            $users = (new UserService)->getTrainees($group->id, $date->format('Y-m-d'));
+            $user_ids = collect($users)->pluck('id')->toArray();
+
             $item['active'] = DayType::where('date', Carbon::now()->toDateString())
                                     ->whereIn('user_id', $user_ids)
-                                    ->where('type', 5)
+                                    ->whereIn('type', [5, 7])
                                     ->get()
                                     ->count();
 
