@@ -424,7 +424,6 @@ class AnalyticStat extends Model
      */
     public static function convert_formula($text, $row_keys, $col_keys)
     {
-
         $matches =[];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
 
