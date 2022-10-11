@@ -1517,7 +1517,7 @@ public function planRequired($arr) {
 
             $item['sent'] = $leads->count();
 
-            $users = (new UserService)->getUsers($group->id, $date);
+            $users = (new UserService)->getUsers($group->id, $date->format('Y-m-d'));
             $user_ids = collect($users)->pluck('id')->toArray();
 
             $applied = User::withTrashed()
