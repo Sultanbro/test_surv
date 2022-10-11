@@ -1,19 +1,17 @@
 <template>
   <BRow>
     <BCol cols="10">
-      <BImg
-        v-b-modal.modal-1-xl
-        :src="img"
-        class="mb-3 modal-sertificate"
-        fluid
-        block
-        rounded
-      ></BImg>
-      <canvas width="100%" height="100%" ref="canvas"> </canvas>
-
+      <v-stage ref="stage" :config="stageSize">
+        <v-layer ref="layer">
+          <v-image
+            :config="{
+              image: image,
+            }"
+          />
+        </v-layer>
+      </v-stage>
       <v-stage
         ref="stage"
-        :src="img"
         type="file"
         :config="stageSize"
         @mousemove="handleMouseMove"
@@ -46,31 +44,8 @@
           />
         </v-layer>
       </v-stage>
+      <div id="container"></div>
     </BCol>
-    <BCol cols="2">
-      <BCardGroup class="canvas-blocks" deck columns>
-        <BCard
-          border-variant="primary"
-          header="Primary"
-          header-bg-variant="primary"
-          header-text-variant="white"
-          align="center"
-        >
-        </BCard>
-
-        <BCard
-          border-variant="secondary"
-          header="Secondary"
-          header-border-variant="secondary"
-          align="center"
-        >
-        </BCard>
-
-        <BCard border-variant="success" header="Success" align="center">
-        </BCard>
-      </BCardGroup>
-    </BCol>
-    <div class="" id="container"></div>
   </BRow>
 </template>
 
@@ -80,6 +55,7 @@ const height = window.innerHeight;
 export default {
   name: "UploadSertificateModal",
   props: {
+    sertificate: File,
     img: String,
   },
   data() {
@@ -92,9 +68,18 @@ export default {
       lines: [],
       isDrawing: false,
       recs: [],
+      image: null,
     };
   },
   mounted() {
+    console.log(this.sertificate, 'sert');
+    const image = new window.Image();
+    image.src = `http://bp.localhost.com/upload/sertificates/${this.sertificate.name}`;
+    image.onload = () => {
+      // set image only when it is loaded
+      this.image = image;
+    };
+
     var width = window.innerWidth;
     var height = window.innerHeight;
 
@@ -107,49 +92,6 @@ export default {
 
     var layer = new Konva.Layer();
     stage.add(layer);
-    console.log(this.img);
-    const image = new window.Image();
-    image.src = `https://konvajs.org/assets/yoda.jpg`;
-
-    // another solution is to use rectangle shape
-    var background = new Konva.Rect({
-      x: 0,
-      y: 0,
-      width: stage.width(),
-      height: stage.height(),
-      fillLinearGradientStartPoint: { x: 0, y: 0 },
-      fillLinearGradientEndPoint: { x: stage.width(), y: stage.height() },
-      // gradient into transparent color, so we can see CSS styles
-      fillPatternImage: img,
-      fillLinearGradientColorStops: [
-        0,
-        "yellow",
-        0.5,
-        "blue",
-        0.6,
-        "rgba(0, 0, 0, 0)",
-      ],
-      // remove background from hit graph for better perf
-      // because we don't need any events on the background
-      listening: false,
-    });
-    layer.add(background);
-    // the stage is draggable
-    // that means absolute position of background may change
-    // so we need to reset it back to {0, 0}
-
-    stage.on("dragmove", () => {
-      background.absolutePosition({ x: 0, y: 0 });
-    });
-
-    // add demo shape
-    var circle = new Konva.Circle({
-      x: stage.width() / 2,
-      y: stage.height() / 2,
-      radius: 100,
-      fill: "red",
-    });
-    layer.add(circle);
   },
   methods: {
     handleMouseDown(event) {

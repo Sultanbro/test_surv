@@ -30,7 +30,7 @@
       <div class="sertificate-modal">
         <BImg :src="imageSrc" class="mb-3 img" fluid block rounded></BImg>
         <BModal id="modal-1" title="BootstrapVue" class="w-80%">
-          <UploadSertificateModal :img="imageSrc" />
+          <UploadSertificateModal :img="imageSrc" :sertificate="sertificate" />
         </BModal>
       </div>
       <BButton
@@ -61,6 +61,7 @@ export default {
     UploadSertificateModal,
   },
   props: {
+    sertificate: File,
     fileType: Number,
   },
   data() {
@@ -112,11 +113,11 @@ export default {
             alert("File not uploaded.");
           } else {
             alert("File uploaded successfully.");
-            console.log(response.data);
+            console.log(response.data, "data");
           }
         })
         .catch(function (error) {
-          console.log('error');
+          console.log("error");
           console.log(error);
         });
     },

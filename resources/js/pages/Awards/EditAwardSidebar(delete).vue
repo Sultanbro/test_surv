@@ -64,11 +64,11 @@
           required
         />
 
-        
         <UploadSertificate
           @image-download="formFile"
           v-if="fileType === 2"
           :fileType="fileType"
+          :sertificate="form.formFile"
           required
         />
 
@@ -89,7 +89,7 @@
 <script>
 import UploadFile from "./types/UploadFile.vue";
 import FormUsers from "./types/FormUsers.vue";
-import UploadSertificate from "./types/UploadSertificate.vue"
+import UploadSertificate from "./types/UploadSertificate.vue";
 
 export default {
   name: "EditAwardSidebar",
@@ -114,25 +114,21 @@ export default {
       },
     };
   },
-  computed: {
-    showFileType() {},
-  },
+  computed: {},
   methods: {
     onSubmit() {
       this.formFile;
-      console.log(this.formFile, 'formFile'); 
-      console.log(this.form, 'this.form');
       this.$refs.newSertificateForm.reset();
     },
     setFileType(id) {
-      console.log('id', id)
+      console.log("id", id);
       this.fileType = id;
       this.form.award_type_id = id;
     },
     formFile(val) {
-      console.log(val);
+      console.log(val, "val");
       this.form.formFile = val;
-    }
+    },
   },
 };
 </script>

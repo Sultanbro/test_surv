@@ -4,7 +4,7 @@
      $allowed_extensions = array('jpg','jpeg','png','pdf');
       $extension = pathinfo($filename, PATHINFO_EXTENSION);
        if(in_array(strtolower($extension),$allowed_extensions) ) {     
-          if(move_uploaded_file($_FILES['file']['tmp_name'], "uploads/".$filename)){
+          if(move_uploaded_file($_FILES['file']['tmp_name'], "upload/sertificates/".$filename)){
                 echo 1;
           }else{
               echo 0;
