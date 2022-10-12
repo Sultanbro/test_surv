@@ -383,6 +383,7 @@ class User extends Authenticatable implements Authorizable
             ? Carbon::createFromDate(date('Y'), $request->month, $request->day)
             : date('Y-m-d');
 
+        dd('test');
         if ($user) {
             
             (new UserService)->fireUser($user->id, $fireDate);
@@ -430,7 +431,7 @@ class User extends Authenticatable implements Authorizable
                 $whatsapp = new IC();
 
                 $wphone = Phone::normalize($user->phone);
-                
+
                 if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://bp.jobtron.org/quiz_after_fire?phone='. $wphone);
                     
                 if($bitrix_id != 0) {
