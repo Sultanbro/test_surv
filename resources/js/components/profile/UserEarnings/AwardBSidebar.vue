@@ -6,119 +6,54 @@
     @close="$emit('update:open', false)"
     width="60%"
   >
-    <div id="award-headers" class="rounded-left">
-      <b-card class="rounded-0 py-2" bg-variant="light">
-        <!-- Variant with tabs and bootstrap -->
-        <b-tab
-          v-for="(award, index) in awardsLocal"
+    <div id="body">
+      <BTabs content-class="mt-3" fill>
+        <BTab
+          v-for="(awardCard, index) in awardCards"
           :key="index"
-          :title="award"
+          :title="awardCard.header"
+          active
         >
-          <b-card-text>Tab contents {{ award }}</b-card-text>
-        </b-tab>
-        <!-- Same but with a fake data -->
-        <b-tab
+          <BCard
+            bg-variant="primary"
+            text-variant="white"
+            header="Primary"
+            class="text-center"
+          >
+          </BCard
+        ></BTab>
+      </BTabs>
+      <BTabs content-class="mt-3" fill>
+        <BTab
           v-for="(fakeAward, index) in fakeAwardsLocal"
           :key="index"
           :title="fakeAward.name"
+          active
         >
-          <b-card-text>Tab contents {{ fakeAward.content }}</b-card-text>
-        </b-tab>
-
-        <!-- Award headers with fetch data -->
-        <b-button
-          block
-          variant="info"
-          v-for="(award, index) in awardsLocal"
-          :key="index"
-          :pressed="award.pressed"
-          @click="awardsClickHandler(index)"
+          <BCard
+            bg-variant="primary"
+            text-variant="white"
+            header="Primary"
+            class="text-center"
+          >
+            <BCardImg
+              src="https://placekitten.com/480/210"
+              alt="Image"
+              bottom
+            ></BCardImg>
+            <BCardText>
+              {{ fakeAward.content }}
+            </BCardText>
+          </BCard></BTab
         >
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="mr-3">{{ award.name }}</span>
-          </div>
-        </b-button>
-      </b-card>
-    </div>
-
-    <!-- Award headers with fetch data -->
-    <!-- Award headers removed from the left side to inner block -->
-    <div id="left-panel" class="rounded-left">
-      <b-card class="rounded-0 py-2" bg-variant="light">
-
-        <b-button
-          block
-          variant="info"
-          v-for="(award, index) in awardsLocal"
-          :key="index"
-          :pressed="award.pressed"
-          @click="awardsClickHandler(index)"
-        >
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="mr-3">{{ award.name }}</span>
-          </div>
-        </b-button>
-
-        <b-button
-          block
-          variant="info"
-          v-for="(fakeAward, index) in fakeAwardsLocal"
-          :key="index"
-          :pressed="fakeAward.pressed"
-          @click="awardsClickHandler(index)"
-        >
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="mr-3">{{ fakeAward.name }}</span>
-          </div>
-        </b-button>
-      </b-card>
-    </div>
-
-    <div id="body">
-      <template v-if="nominationsSelected">
-        <b-card
-          class="nominations-card"
-          body-class="text-center px-2"
-          header-class="p-2 bg-secondary text-white"
-        >
-          <template #header>
-            <b>Заработали больше всех</b>
-          </template>
-          <b-card-group>
-            <b-card
-              :class="index === 1 && 'mx-sm-2'"
-              header-class="p-2 text-center"
-              v-for="(item, index) in featuredUsers"
-              :key="index"
-            >
-              <template #header>
-                <b>{{ index + 1 }} место</b>
-              </template>
-
-              <img class="user-image" src="/images/avatar.png" />
-              <b-card-text>{{ item.name }}</b-card-text>
-
-              <template #footer>
-                <em>{{ item.value }}</em>
-              </template>
-            </b-card>
-          </b-card-group>
-        </b-card>
-      </template>
-
-      <template v-else>
-        <awards-card
-          v-for="(card, index) in awardCards"
-          :key="index"
-          v-bind="card"
-        />
-      </template>
+      </BTabs>
     </div>
   </sidebar>
 </template>
 
 <script>
 import AwardsCard from "./AwardsCard";
+const baseUrl = "https://dummyjson.com/users";
 
 export default {
   name: "AwardSidebar",
@@ -129,6 +64,7 @@ export default {
   },
   data() {
     return {
+      id: 1,
       data: "data",
       fakeAwardsLocal: [
         { name: "Сертификаты", content: "fake content sertificate" },
@@ -136,22 +72,34 @@ export default {
         { name: "Красавчики", content: "fake content hansome" },
         { name: "Поездки", content: "fake content trip" },
       ],
-    //   awardsLocal: this.createAwardsLocal(this.awards),
+      //   awardsLocal: this.createAwardsLocal(this.awards),
       featuredUsers: [
         { name: "Фамилия Имя Отчество", value: "100 000 тнг." },
         { name: "Фамилия Имя Отчество", value: "80 000 тнг." },
         { name: "Фамилия Имя Отчество", value: "69 000 тнг." },
       ],
       awardCards: [
-        { type: "all", header: "Все", values: [] },
         { type: "my", header: "Мои", values: [] },
-        { type: "notMy", header: "Других сотрудников", values: [] },
+        { type: "all", header: "Все", values: [] },
       ],
       nominationsSelected: false,
     };
   },
   methods: {
     // EVENT HANDLERS
+
+    async getSertificateById(id) {
+      axios
+        .get(`${baseUrl}/` + id)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+          this.errored = true;
+        })
+        .finally(() => (this.loading = false));
+    },
 
     async awardsClickHandler(index) {
       try {
@@ -226,7 +174,8 @@ export default {
     },
   },
   mounted() {
-    console.log("reactive");
+    const res = this.getSertificateById(this.id);
+    console.log(res);
     if (this.awards.length) {
       this.awardsClickHandler(0);
     }
