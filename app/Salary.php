@@ -478,7 +478,7 @@ class Salary extends Model
     {
         $date = Carbon::parse($date)->day(1);
 
-        $users = User::withTrashed()->query();
+        $users = User::withTrashed();
 
         // if($user_types == 0) { // Действующие
         //     $users->whereNull('deleted_at');
