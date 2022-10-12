@@ -376,7 +376,7 @@ class ActivityController extends Controller
     }
 
     private function groupUsers($group_id) {
-        return (new UserService)->getEmployees($group_id, date('Y-m-d'));
+        return collect((new UserService)->getEmployees($group_id, date('Y-m-d')));
     }
 
     private function checkMissingFields() {
