@@ -583,10 +583,13 @@ class TopValue extends Model
                             $sum += array_sum(array_values($user['awards']));
                             $sum += array_sum(array_values($user['test_bonus']));
                         }
-                        $sum += $user['edited_kpi'] ? $user['edited_kpi'] : $user['kpi'];
+
+                        $sum += $user['edited_kpi']
+                            ? $user['edited_kpi']->amount
+                            : $user['kpi'];
                     }
         
-                    $salary =  $sum;
+                    $salary = $sum;
                 }
 
                 // TEMP

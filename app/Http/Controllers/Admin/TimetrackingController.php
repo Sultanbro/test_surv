@@ -1822,13 +1822,13 @@ class TimetrackingController extends Controller
 
     public function setDay(Request $request)
     {
-        $request->validate([
-            //'type' => 'in:' . implode(',', array_values(DayType::DAY_TYPES)),
-            'user_id' => 'exists:users,ID',
-        ]);
+        // $request->validate([
+        //     //'type' => 'in:' . implode(',', array_values(DayType::DAY_TYPES)),
+        //    // 'user_id' => 'exists:users,ID',
+        // ]);
 
         $user = User::bitrixUser();
-        $targetUser = User::find($request->user_id);
+        $targetUser = User::withTrashed()->find($request->user_id);
            
         if($targetUser == null) {return ['success' => 1, 'history' => null];}
 
@@ -2132,9 +2132,10 @@ class TimetrackingController extends Controller
         /**
          * Тип уволить с отработкой и без
          */
-
+       
         if ($request->type == 4) { // Уволенный сотрудник DayType::DAY_TYPES['ABCENSE']
             $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->user_id)->first();
+         
             if($trainee) {
 
                 // Поиск ID лида или сделки
@@ -2182,6 +2183,7 @@ class TimetrackingController extends Controller
             } else {
                 
                 if($request->fire_type == 1) { // Без отработки
+                
                     User::deleteUser($request);
                 } else { // C отработкой
                     if ($request->hasFile('file')) { // Заявление об увольнении

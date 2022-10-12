@@ -25,6 +25,7 @@ use App\Classes\Helpers\Phone;
 use App\ProfileGroupUser as PGU;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
+use App\Service\Department\UserService;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
@@ -363,73 +364,44 @@ class User extends Authenticatable implements Authorizable
         return $_groups;
     }
     
-    public static function deleteUser(Request $request) // Уволить сотрудника
+    /**
+     * Уволить сотрудника
+     */
+    public static function deleteUser(Request $request) 
     {   
-        $user_id =  $request->user_id ? $request->user_id : $request->id;
-        $user = self::find($user_id);
+        $user_id = $request->user_id 
+            ? $request->user_id
+            : $request->id;
+
+        $user = self::withTrashed()->find($user_id);
         
         if($user == null)  {
             return back()->withErrors('Пользователь не найден');
         }
 
-        $_groups = [];
+        $fireDate = $request->day && $request->month
+            ? Carbon::createFromDate(date('Y'), $request->month, $request->day)
+            : date('Y-m-d');
 
-        $groups = ProfileGroup::where('active', 1)->get();
-
-        foreach($groups as $group) {
-            if($group->users == null) {
-                $group->users = '[]';
-            }
-            $group_users = json_decode($group->users);
-            
-            if(in_array($user_id, $group_users)) {
-                $group->show = false;
-                array_push($_groups, $group->id);  
-            }
-        }
-        
-        foreach($_groups as $group_id) {
-            $pgu = PGU::where('group_id', $group_id)
-                ->where('date', Carbon::now()->day(1)->format('Y-m-d'))
-                ->first();
-            if($pgu) {
-            
-                $assigned = $pgu->assigned;
-                $assigned = array_diff($assigned, [$user->id]);
-                $assigned = array_values($assigned);
-                $pgu->assigned = $assigned;
-
-                $firedx = $pgu->fired;
-               
-                $firedx[] = $user->id;
-
-                $pgu->fired = array_unique($firedx);
-                $pgu->save();
-
-            }
-        }
-        
-        
+        dd('test');
         if ($user) {
-            $user->deleted_at = Carbon::now();
-            $user->last_group = json_encode($_groups);
-
             
+            (new UserService)->fireUser($user->id, $fireDate);
 
-            if($request->day && $request->month) $user->deleted_at = Carbon::createFromDate(date('Y'), $request->month, $request->day); // ->format('Y-m-d');
+            $user->deleted_at = Carbon::now();
+
+            if($request->day && $request->month) $user->deleted_at = $fireDate;
 
             $email = $user->email;
             $user->save();
 
-
             self::setDay($user->id);
-
 
             $user->delete();
 
             /***** */
             $ud = UserDescription::where([
-                'user_id' => $user->id,
+                'user_id'    => $user->id,
                 'is_trainee' => 0,
             ])->first();
 
@@ -457,13 +429,16 @@ class User extends Authenticatable implements Authorizable
 
 
                 $whatsapp = new IC();
+
                 $wphone = Phone::normalize($user->phone);
+
                 if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://bp.jobtron.org/quiz_after_fire?phone='. $wphone);
                     
                 if($bitrix_id != 0) {
                     $ud->bitrix_id = 0;
                     $ud->save();
                 }
+
                 $ud->fired = now();
                 $ud->save();
             }
@@ -794,8 +769,9 @@ class User extends Authenticatable implements Authorizable
 
     public function getCurrentSalary()
     {
-        $tz = Setting::TIMEZONES[$this->timezone];
-        $date = \Carbon\Carbon::now($tz);
+       // $tz = Setting::TIMEZONES[$this->timezone];
+       // $tz = 'Asia\Almaty';
+        $date = \Carbon\Carbon::now();
         $salaries = $this->getSalaryByMonth($date);
         $user_applied_at = $this->applied_at();
 

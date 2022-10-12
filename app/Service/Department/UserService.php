@@ -319,4 +319,22 @@ class UserService
     {
         return $date == null ? Carbon::now()->toDateString() :  $date;
     }
+
+    /**
+     * Удалить из группы 
+     * @param int $userID
+     * @param String|null $date
+     * @return void
+     */
+    public function fireUser(int $userID, $date = null) : void
+    {
+        if($date == null) $date = date('Y-m-d');
+
+        GroupUser::where('user_id', $userID)
+            ->whereNull('to')
+            ->update([
+                'to'     => $date,
+                'status' => 'fired',
+            ]);
+    }
 }
