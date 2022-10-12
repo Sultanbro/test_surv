@@ -51,9 +51,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 // Vue Konva for canvas
 import VueKonva from 'vue-konva';
 Vue.use(VueKonva);
-
-
-
 import VueVideoPlayer from 'vue-video-player'
  
 import DatePicker from 'vue2-datepicker';

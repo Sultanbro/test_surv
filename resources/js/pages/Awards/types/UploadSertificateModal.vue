@@ -1,44 +1,7 @@
 <template>
   <BRow>
     <BCol cols="10">
-      <div class="konva-stage">
-        <v-stage
-          ref="stage"
-          type="file"
-          :config="stageSize"
-          @mousemove="handleMouseMove"
-          @mouseDown="handleMouseDown"
-          @mouseUp="handleMouseUp"
-        >
-          <v-layer ref="layer">
-            <v-text
-              ref="text"
-              :config="{
-                x: 10,
-                y: 10,
-                fontSize: 20,
-                text: text,
-                fill: 'black',
-              }"
-            />
-            <v-rect
-              v-for="(rec, index) in recs"
-              :key="index"
-              :config="{
-                x: Math.min(rec.startPointX, rec.startPointX + rec.width),
-                y: Math.min(rec.startPointY, rec.startPointY + rec.height),
-                width: Math.abs(rec.width),
-                height: Math.abs(rec.height),
-                fill: 'rgb(0,0,0,0)',
-                stroke: 'black',
-                strokeWidth: 3,
-                fillPatternImage: image,
-              }"
-            />
-          </v-layer>
-        </v-stage>
-        <div id="container"></div>
-      </div>
+      <div class="konva-stage" id="container" ref="container"></div>
       <v-stage
         ref="stage"
         type="file"
@@ -78,8 +41,9 @@
 </template>
 
 <script>
-const width = window.innerWidth;
-const height = window.innerHeight;
+var width = window.innerWidth;
+var height = window.innerHeight;
+
 export default {
   name: "UploadSertificateModal",
   props: {
@@ -97,6 +61,8 @@ export default {
       isDrawing: false,
       recs: [],
       image: null,
+      stageWidth: null,
+      stageHeight: null,
     };
   },
   mounted() {
@@ -104,59 +70,67 @@ export default {
     const image = new window.Image();
     image.src = `http://bp.localhost.com/upload/sertificates/${this.sertificate.name}`;
     image.onload = () => {
+      console.log(image.width, "11111111111111111111111;");
+      this.stageWidth = image.width;
+      console.log(this.stageWidth, "0000000000000000;");
+      this.stageHeight = image.height;
       // set image only when it is loaded
       this.image = image;
+      var width = window.innerWidth;
+
+      console.log(image.width, "22222222222222222222;");
+      var stage = new Konva.Stage({
+        container: "container",
+        width: this.stageWidth,
+        draggable: true,
+      });
+
+      var layer = new Konva.Layer();
+      stage.add(layer);
+
+      console.log(this.stageWidth, "3333333333333333333333333;");
+      // another solution is to use rectangle shape
+      var background = new Konva.Rect({
+        x: 0,
+        y: 0,
+        width: stage.width(),
+        height: stage.height(),
+        listening: false,
+      });
+      var imageObj = new Image();
+      imageObj.onload = function () {
+        background.fillPatternImage(imageObj);
+      };
+      imageObj.src = `http://bp.localhost.com/upload/sertificates/${this.sertificate.name}`;
+      layer.add(background);
+      // the stage is draggable
+      // that means absolute position of background may change
+      // so we need to reset it back to {0, 0}
+
+      stage.on("dragmove", () => {
+        background.absolutePosition({ x: 0, y: 0 });
+      });
+
+      // add demo shape
+      var rec = new Konva.Rect({
+        x: stage.width() / 2,
+        y: stage.height() / 2,
+        width: stage.width() / 2,
+        height: stage.height() / 2,
+        fill: "rgb(0,0,0,0)",
+        stroke: "black",
+        strokeWidth: 3,
+      });
+      layer.add(rec);
     };
-
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-
-    var stage = new Konva.Stage({
-      container: "container",
-      width: width,
-      height: height,
-      draggable: true,
-    });
-
-    var layer = new Konva.Layer();
-    stage.add(layer);
-
-    // another solution is to use rectangle shape
-    var background = new Konva.Rect({
-      x: 0,
-      y: 0,
-      width: stage.width(),
-      height: stage.height(),
-      listening: false,
-    });
-
-    var imageObj = new Image();
-    imageObj.onload = function () {
-      background.fillPatternImage(imageObj);
-    };
-    imageObj.src = `http://bp.localhost.com/upload/sertificates/${this.sertificate.name}`;
-    layer.add(background);
-    // the stage is draggable
-    // that means absolute position of background may change
-    // so we need to reset it back to {0, 0}
-
-    stage.on("dragmove", () => {
-      background.absolutePosition({ x: 0, y: 0 });
-    });
-
-    // add demo shape
-    var rec = new Konva.Rect({
-      x: Math.min(rec.startPointX, rec.startPointX + rec.width),
-      y: Math.min(rec.startPointY, rec.startPointY + rec.height),
-      width: Math.abs(rec.width),
-      height: Math.abs(rec.height),
-      fill: "rgb(0,0,0,0)",
-      stroke: "black",
-      strokeWidth: 3,
-    });
-    layer.add(rec);
   },
   methods: {
+    getWidth() {
+      console.log(this.stageWidth, "stageWidth");
+      let res =
+        this.stageWidth <= container.width ? this.stageWidth : container;
+      return res;
+    },
     handleMouseDown(event) {
       this.isDrawing = true;
       const pos = this.$refs.stage.getNode().getPointerPosition();
@@ -197,6 +171,8 @@ body {
 .konva-stage {
   width: 100%;
   height: 100%;
+  display: flex;
+  justify-content: center;
 }
 .modal-sertificate {
   width: 100%;
