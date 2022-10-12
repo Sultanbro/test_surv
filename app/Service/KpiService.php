@@ -83,11 +83,24 @@ class KpiService
 
                     $has_edited_plan = $history ? json_decode($history->payload, true) : false;
                     
-                    $_item['daily_plan'] = $has_edited_plan && array_key_exists('plan', $has_edited_plan)
-                        ? $has_edited_plan['plan']
-                        : (float)$_item->plan;
+                    /**
+                     * fields from history
+                     */
+                    $_item['daily_plan'] = (float)$_item->plan;
+
+                    if($has_edited_plan) {
+                        if(array_key_exists('plan', $has_edited_plan))  $_item['daily_plan'] = $has_edited_plan['plan'];
+                        if(array_key_exists('name', $has_edited_plan))  $_item['name'] = $has_edited_plan['name'];
+                        if(array_key_exists('share', $has_edited_plan)) $_item['share'] = $has_edited_plan['share'];
+                        if(array_key_exists('method', $has_edited_plan))$_item['method'] = $has_edited_plan['method'];
+                        if(array_key_exists('unit', $has_edited_plan))  $_item['unit'] = $has_edited_plan['unit'];
+                        if(array_key_exists('cell', $has_edited_plan))  $_item['cell'] = $has_edited_plan['cell'];
+                        if(array_key_exists('common', $has_edited_plan))$_item['common'] = $has_edited_plan['common'];
+                        if(array_key_exists('activity_id', $has_edited_plan)) $_item['activity_id'] = $has_edited_plan['activity_id'];
+                    }
 
                     $_item['plan'] = $_item['daily_plan'];
+
                 }
 
                 $item['items'] = $items->values();
@@ -278,6 +291,8 @@ class KpiService
                 if (isset($item['deleted'])) {
                     $kpi->items()->where('id', $item['id'])->delete();
                 }else{
+                    unset($item['daily_plan']);
+                    unset($item['histories']);
                     $kpi->items()->where('id', $item['id'])->update($item);
                 }
          
