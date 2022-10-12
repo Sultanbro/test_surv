@@ -373,7 +373,7 @@ class User extends Authenticatable implements Authorizable
             ? $request->user_id
             : $request->id;
 
-        $user = self::find($user_id);
+        $user = self::withTrashed()->find($user_id);
         
         if($user == null)  {
             return back()->withErrors('Пользователь не найден');
