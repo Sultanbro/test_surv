@@ -165,8 +165,6 @@ export default {
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  background-color: #f0f0f0;
 }
 .konva-stage {
   width: 100%;
