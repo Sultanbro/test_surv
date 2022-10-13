@@ -7,17 +7,23 @@ use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\KnowBase;
+use App\Models\QuartalBonus;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\Mail as Mailable;
 use Illuminate\Mail\Mailer;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\Activity;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Swift_Mailer;
 use Swift_SmtpTransport;
+use Swift_TransportException;
 use Illuminate\Http\Request;
-use Auth;
+use App\Kpi;
+use App\Salary;
 use Carbon\Carbon;
+use App\Models\Kpi\Bonus;
 use App\Downloads;
 use App\Account;
 use App\UserNotification;
@@ -39,6 +45,7 @@ use App\Zarplata;
 use App\TimetrackingHistory;
 use App\Photo;
 use App\UserAbsenceCause;
+use App\Models\Admin\ObtainedBonus;
 use App\External\Bitrix\Bitrix;
 use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
@@ -54,12 +61,22 @@ use App\UserReport;
 use App\Models\User\NotificationTemplate;
 use App\Models\User\Card;
 use App\Classes\Helpers\Currency;
+use App\Models\TestBonus;
+use App\Models\Admin\EditedBonus;
+use App\Models\Admin\EditedKpi;
+use App\Classes\UserAnalytics;
 use App\QualityRecordWeeklyStat;
+use App\Http\Controllers\Admin\GroupAnalyticsController as GAController;
+use App\Models\Analytics\IndividualKpi;
 use App\Models\Analytics\TraineeReport;
 use App\AdaptationTalk;
 use App\Models\GroupUser;
 use App\Service\Department\UserService;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Crypt;
+use Image;
+use Session;
 
 
 class UserController extends Controller
@@ -287,6 +304,8 @@ class UserController extends Controller
             //View::share('title', 'Мой профиль'); 
             View::share('menu', 'profile');
 
+
+         
             return view('admin.timetracking', compact(
                 'user',
                 'oklad',
@@ -316,6 +335,8 @@ class UserController extends Controller
                     'workdays' => $workdays
                 ]);
         }
+        
+        
     }
 
     /**
@@ -625,6 +646,15 @@ class UserController extends Controller
                 } 
             }
 
+            
+            
+            // if(is_null($user->has_trainee)) {
+            //     $user->applied = $user->created_at;
+            // } else if(time() - Carbon::parse($user->applied)->timestamp <= 60) {
+                
+            //         $users->applied = null;
+            // } 
+
             if ($request['start_date_applied'] != null &&
                 Carbon::parse($user->applied)->timestamp - Carbon::parse($request['start_date_applied'])->timestamp < 0) {
                 $users->forget($key);
@@ -769,6 +799,7 @@ class UserController extends Controller
             'date'        => $date,
             'description' => $desc,
         ]);
+        
     }
 
     /**
@@ -784,6 +815,7 @@ class UserController extends Controller
         }
 
         return 1;
+        
     }
 
     /**
@@ -791,6 +823,11 @@ class UserController extends Controller
      */
     public function createPerson()
     {   
+        // $user = Auth::user();
+        // $rectuiting = ProfileGroup::find(48);
+        // if($rectuiting) $users = json_decode($rectuiting->users);
+        // if(in_array($user, ))
+
         if(!Auth::user()) return redirect('/');
 
         View::share('title', 'Новый сотрудник');
@@ -801,6 +838,7 @@ class UserController extends Controller
         }
 
         return view('admin.users.create', $this->preparePersonInputs());
+        
     }
 
     /**
@@ -854,14 +892,18 @@ class UserController extends Controller
 
             foreach ($knowbase_query as $corpbook){
                 $corpbooks[] = array_shift($corpbook);
+
             }
 
         }
 
-        $programs     = Program::orderBy('id', 'desc')->get();
-        $workingDays  = WorkingDay::all();
+
+
+
+        $programs = Program::orderBy('id', 'desc')->get();
+        $workingDays = WorkingDay::all();
         $workingTimes = WorkingTime::all();
-        $timezones    = Setting::TIMEZONES;
+        $timezones = Setting::TIMEZONES;
         
         $arr = compact('positions', 'groups', 'timezones', 'programs', 'workingDays', 'workingTimes', 'corpbooks');
 
@@ -937,6 +979,8 @@ class UserController extends Controller
                     ];
                 }
 
+
+
                 $groups = $user->headInGroups();
             
                 foreach($groups as $gr) {
@@ -970,6 +1014,13 @@ class UserController extends Controller
                 } else {
                     $user->worked_with_us = 'Еще стажируется';
                 }
+                // humor
+
+                if($user->id == 5)  $user->worked_with_us = 'Алеке 😁!';
+                if($user->id == 18)  $user->worked_with_us = 'Не успел, а основал эту команду 😁!';
+                if($user->id == 4444)  $user->worked_with_us = 'Успел, он же программист!';
+                if($user->id == 157)  $user->worked_with_us = 'Весь КЦ на нем стоит 😁!';
+                if($user->id == 84)  $user->worked_with_us = 'Да это же Моооля 😁!';
 
                 $user->in_groups = $this->getPersonGroup($user->id);
                 
@@ -986,12 +1037,17 @@ class UserController extends Controller
             $arr['user'] = $user;
         }
 
+
+
+
+
+
         return $arr;
     }
 
     /**
      * storePerson
-     * 
+     *
      * @param Request $request
      */
     public function storePerson(Request $request)
@@ -1066,6 +1122,10 @@ class UserController extends Controller
         /*==============================================================*/
         /*******  Создание пользователя в U-marketing.org  */
         /*==============================================================*/
+
+
+        
+
 
         if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
             $user->update([
@@ -1338,12 +1398,14 @@ class UserController extends Controller
             ]);
         }
 
+
+
         return redirect()->to('/timetracking/edit-person?id=' . $user->id);
     }
 
     /**
      * Update user profile from settings
-     * 
+     *
      * @param Request $request
      */
     public function updatePerson(Request $request)
@@ -1351,11 +1413,12 @@ class UserController extends Controller
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
-
         /*==============================================================*/
         /********** Подготовка  */
+        /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника ), не знаю баг или нет  */
         /*==============================================================*/
 
+        //if(Auth::user()->id == 5) dd($request->all());
         $id = $request['id'];
         $user = User::with('zarplata')->where('id', $id)->withTrashed()->first();
         $photo = Photo::where('user_id', $id)->first();
@@ -1382,9 +1445,13 @@ class UserController extends Controller
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
             }
             
+            
                 $text = 'Нужно ввести другую почту, так как сотрудник c таким email уже существует! <br>' . $request['email'] .'<br><a href="/timetracking/edit-person?id=' . $oldUser->id . '"   target="_blank">' . $oldUser->last_name . ' ' . $oldUser->name . '</a>';
                 return redirect()->to('/timetracking/edit-person?id=' . $request['id'])->withInput()->withErrors($text);
           
+
+            
+            
         } else {
             // Если нет другого аккаунта с новым email, то меняем уже сущ аккаунт в калибро
             $old_account = Account::where('email', $user->id)->where('owner_uid', 5)->first();
@@ -1416,7 +1483,7 @@ class UserController extends Controller
                     $request['selectedCityInput'] = null;
                 }
             }
-        } else {
+        }else{
             $request['working_city'] = null;
             $request['selectedCityInput'] = null;
         }
@@ -1455,7 +1522,7 @@ class UserController extends Controller
 
 
         /**
-         * Adaptation talks 
+         * Adaptation talks
          */
         foreach ($request->adaptation_talks as $key => $talk) {
             
@@ -1475,10 +1542,13 @@ class UserController extends Controller
                 ]);
             }
         }
+        
+
 
         /**
          *  Битрикс ID профиля
          */
+
         $ud = UserDescription::where('user_id', $user->id)
             ->first();
 
@@ -1544,6 +1614,7 @@ class UserController extends Controller
         /**
          * Оплатите внешнему рекрутеру за нового сотрудника
          */
+        //dd($request->all());
 
         if(in_array($user->segment, [7,8,9,10,11,12])) {
 
@@ -1597,9 +1668,8 @@ class UserController extends Controller
                 $gr->head_id = json_encode($gr_users);
                 $gr->save();
                    
-            }     
+            }
         }
-
         /*==============================================================*/
         /********** Добавление дополнительных телефонов  */
         /*==============================================================*/ 
@@ -1769,12 +1839,18 @@ class UserController extends Controller
             
         }
 
+         //////////////////////
+        /******************* */
+        //////////////////////
+        
+        
         return redirect()->to('/timetracking/edit-person?id=' . $user->id);
+
     }
 
     /**
      * editPersonBook
-     * 
+     *
      * @param Request $request
      */
     public function editPersonBook(Request $request)
@@ -1809,13 +1885,13 @@ class UserController extends Controller
 
     /**
      * edit user groups in settings
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @throws \Exception
      */
-    public function editPersonGroup(Request $request)
-    {
+    public function editPersonGroup(Request $request) {
+
         $group = ProfileGroup::find($request['group_id']);
         $exist = $group->users()->where([
             ['user_id', $request['user_id']],
@@ -1843,7 +1919,7 @@ class UserController extends Controller
 
     /**
      * set user in groups as head
-     * 
+     *
      * @return void
      */
     public function setUserHeadInGroups(Request $request) : void
@@ -1869,9 +1945,9 @@ class UserController extends Controller
 
     /**
      * get user groups
-     * 
+     *
      * @param int $user_id
-     * 
+     *
      * @return array
      */
     public function getPersonGroup(int $user_id) : array
@@ -1891,7 +1967,7 @@ class UserController extends Controller
         ->get()
         ->toArray();
 
-        // return 
+        // return
 
         //     $_groups = [];
 
@@ -1902,12 +1978,12 @@ class UserController extends Controller
         //         $group->users = '[]';
         //     }
         //     $group_users = json_decode($group->users);
-            
+
         //     if(in_array($user_id, $group_users)) {
-        //         array_push($_groups, $group);  
+        //         array_push($_groups, $group);
         //     }
         // }
-     
+
         // return $_groups;
     }
 
@@ -2138,6 +2214,9 @@ class UserController extends Controller
             return response(['success'=>'1']);
         }
 
+
+
+
     }
 
     /**
@@ -2145,6 +2224,11 @@ class UserController extends Controller
      */
     public function uploadPhoto(Request $request)
     {
+
+
+
+
+
         $data = $request["image"];
 
 
@@ -2169,6 +2253,7 @@ class UserController extends Controller
 
                 if (file_exists($filename)) {
                     unlink(public_path('users_img/'.$update_user->img_url));
+//                    unlink("users_img/".$update_user->img_url);
                 }
 
             }
@@ -2192,6 +2277,7 @@ class UserController extends Controller
 
                 if (file_exists($filename)) {
                     unlink( public_path('users_img/'.$request['file_name'] ));
+//                    unlink("users_img/".$update_user->img_url);
                 }
             }
 
@@ -2202,6 +2288,10 @@ class UserController extends Controller
 
             return response(['src'=>$img,'filename'=>$imageName]);
         }
+
+
+
+
 
     }
 
@@ -2273,7 +2363,7 @@ class UserController extends Controller
 
 
     }
-    
+
     /**
      * Kairat uploadCroppedImageProfile
      */
@@ -2328,7 +2418,7 @@ class UserController extends Controller
     /**
      * Kairat getProfileImage
      */
-    public function getProfileImage(Request $request) 
+    public function getProfileImage(Request $request)
     {
         $user = User::find($request['id']);
         $filename = $user->img_url;
