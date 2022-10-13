@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\TrackCourseItemFinishedEvent;
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Events\TransferUserInGroupEvent;
+use App\Listeners\TrackCourseItemFinishedListener;
 use App\Listeners\TrackGroupChangingListener;
 use App\Listeners\TrackUserFiredListener;
 use App\Listeners\TransferUserInGroupListener;
@@ -45,6 +47,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         TransferUserInGroupEvent::class => [
             TransferUserInGroupListener::class
+        ],
+        TrackCourseItemFinishedEvent::class => [
+            TrackCourseItemFinishedListener::class
         ]
     ];
 

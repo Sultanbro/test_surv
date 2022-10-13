@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TrackCourseItemFinishedEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\Models\Course;
@@ -28,11 +29,11 @@ class MyCourseController extends Controller
     }
 
     public function index(Request $request) {
-        
+
         View::share('menu', 'mycourse');
         return view('admin.mycourse');
-    }   
-    
+    }
+
     /**
      *  get all courses of auth user
      *  this method is hidden for non-admin users
@@ -48,7 +49,7 @@ class MyCourseController extends Controller
             ->get(['course_id'])
             ->pluck('course_id')
             ->toArray();
-        
+
         $courses = Course::whereIn('id', $course_ids)
             ->with('course_results', function ($query) use ($user_id) {
                 $query->where('user_id', $user_id);
@@ -59,12 +60,12 @@ class MyCourseController extends Controller
         return [
             'courses' => $courses,
         ];
-    }   
+    }
 
     /**
      * Save passed course element to user
      * @param Request $request
-     * 
+     *
      * @return [type]
      */
     public function pass(Request $request)
@@ -92,9 +93,9 @@ class MyCourseController extends Controller
                 'status' =>  1,
             ]);
         }
-        
+
         /**
-         * save questions answers 
+         * save questions answers
          */
         $sum_bonus = 0;
 
@@ -109,10 +110,10 @@ class MyCourseController extends Controller
                 if($tr) {
                     $tr->answer = $q['result']['answer'];
                     $tr->save();
-                } else {    
+                } else {
 
-                   // $tq = TestQuestion::find($q['id']);
-                if($q['success']) $sum_bonus += $q['points'];
+                    // $tq = TestQuestion::find($q['id']);
+                    if($q['success']) $sum_bonus += $q['points'];
 
                     TestResult::create([
                         'test_question_id' => $q['result']['test_question_id'],
@@ -125,7 +126,7 @@ class MyCourseController extends Controller
 
             }
         }
-        
+
         /**
          * save bonuses
          */
@@ -141,14 +142,14 @@ class MyCourseController extends Controller
                     $type = 'За чтение: ';
                 }
             }
-            
+
             if($request->type == 2) {
                 $video = Video::find($request->id);
                 if($video) {
                     $item = VideoPlaylist::find($video->playlist_id);
                     $type = 'За обучение по видео: ';
                 }
-            } 
+            }
 
             if($request->type == 3) {
                 $item = KnowBase::getTopParent($request->id);
@@ -157,15 +158,15 @@ class MyCourseController extends Controller
                 }
             }
 
-            //save 
+            //save
             TestBonus::create([
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'amount' => $sum_bonus,
                 'comment' => $item ? $type . $item->title : 'За обучение',
             ]);
-        } 
-        
+        }
+
         /**
          * count progress and weekly_progress
          * save in CourseResult
@@ -178,7 +179,7 @@ class MyCourseController extends Controller
             $course_finished  = false;
             if($completed_stages >= $request->all_stages) $course_finished = true;
             if($count_progress > 100) $count_progress = 100;
-        
+
             // save course result for report
 
             $model = 0;
@@ -187,12 +188,12 @@ class MyCourseController extends Controller
             //if($request->type == 3) $model = 'App\KnowBase';
 
             $course_item = CourseItem::where('id', $request->course_item_id)->first();
-                
-         
+
+
             $cr = $course_item ? CourseResult::where('course_id', $course_item->course_id)
                 ->where('user_id', $user_id)
                 ->first() : null;
-      
+
             if($cr) {
                 if($cr->status == CourseResult::INITIAL) $cr->status = CourseResult::ACTIVE;
                 if($cr->started_at == null) $cr->started_at = now();
@@ -200,7 +201,7 @@ class MyCourseController extends Controller
                 $cr->points += $sum_bonus;
                 $cr->progress = $count_progress;
 
-                // week progress 
+                // week progress
                 $wp = $cr->weekly_progress;
                 if($wp == null) $wp = [];
 
@@ -210,23 +211,24 @@ class MyCourseController extends Controller
                 }
                 $wp[date('Y-m-d')] = $sum;
                 $cr->weekly_progress = $wp;
-        
-                
-                // 
+
+
+                //
                 if($course_finished) {
                     $cr->status = CourseResult::COMPLETED;
                     $cr->ended_at = now();
+                    event(new TrackCourseItemFinishedEvent($course_item->course, $user_id));
                 }
 
                 $cr->save();
-         
+
             }
         }
 
         return [
             'item_model' => $model,
         ];
-    }   
+    }
 
     /**
      * get course
@@ -234,7 +236,7 @@ class MyCourseController extends Controller
     public function getMyCourse(Request $request) : array
     {
         $course = CourseResult::activeCourse($request->id);
-       
+
         $all_stages = 0;
         $completed_stages = 0;
         $items = [];
@@ -254,7 +256,7 @@ class MyCourseController extends Controller
             'all_stages' => $all_stages,
             'completed_stages' => $completed_stages
         ];
-    }   
+    }
 
     /**
      * IDK WTF is that for
@@ -268,8 +270,8 @@ class MyCourseController extends Controller
         $title = 'Этап';
 
         $progresses = CourseProgress::where('user_id', $user_id)
-                ->where('item_model', $course_item->item_model)
-                ->get();
+            ->where('item_model', $course_item->item_model)
+            ->get();
 
         $statusOfCourse = 1;
 
@@ -279,7 +281,7 @@ class MyCourseController extends Controller
             $kb = KnowBase::with('children','questions')->where('id', $course_item->item_id)->first();
 
             if(!$kb) return null;
-            
+
             $title = $kb->title;
             KnowBase::getArray($steps, $kb);
         }
@@ -289,7 +291,7 @@ class MyCourseController extends Controller
             if(!$pl) return null;
 
             $title = $pl->title;
-            
+
             foreach ($pl->videos as $key => $video) {
                 $fp = $progresses->where('item_id', $video->id)->first();
                 $steps[] = [
@@ -309,7 +311,7 @@ class MyCourseController extends Controller
             $book = Book::with('questions')->find($course_item->item_id);
 
             if(!$book) return null;
-            
+
             $title = $book->title;
 
             $pages = $book->questions->groupBy('page');
@@ -324,7 +326,7 @@ class MyCourseController extends Controller
             ];
 
             foreach ($pages as $page => $test) {
-                
+
                 $fp = $progresses->where('item_id', $page)->first();
 
                 $steps[] = [
@@ -342,14 +344,14 @@ class MyCourseController extends Controller
 
         $active = false;
         if($no_active && $statusOfCourse == CourseResult::ACTIVE) {
-            $no_active = false; 
+            $no_active = false;
             $active == true;
         } else if($statusOfCourse == CourseResult::ACTIVE) {
             $statusOfCourse = CourseResult::INITIAL;
-        } 
-        
-        
-        
+        }
+
+
+
         return [
             'id' => $course_item->id,
             'item_id' => $course_item->item_id,

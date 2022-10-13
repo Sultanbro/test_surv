@@ -8,6 +8,8 @@ use App\Models\CourseModel;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\Models\Videos\Video;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
@@ -27,6 +29,18 @@ class Course extends Model
         'points', // amount of bonuses in course
         'stages' // all stages in course
     ];
+
+    /**
+     * Отношение Один к одному.
+     * Главная таблица.
+     *
+     * course->awards.
+     * @return hasOne
+     */
+    public function award(): HasOne
+    {
+        return $this->hasOne(Award::class, 'course_id');
+    }
 
     public function items()
     {
