@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Classes\Analytics\Impl;
 use App\Classes\Analytics\PrCstll;
+use App\Classes\Callibro;
 use App\DayType;
 use App\External\HeadHunter\HeadHunter;
 use App\Models\Analytics\AnalyticStat;
@@ -34,7 +35,7 @@ class TestController extends Controller {
   
 	public function test() { 
 		// return (new UserService)->getTrainees(42, '2022-09-01');
-
+		dd(Callibro::getWorkedHours('91.erke.91@mail.ru', '2022-10-12'));
 		$a = AnalyticStat::getCellValue(
 			42,
 			'C26',

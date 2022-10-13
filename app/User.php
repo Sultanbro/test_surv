@@ -383,7 +383,6 @@ class User extends Authenticatable implements Authorizable
             ? Carbon::createFromDate(date('Y'), $request->month, $request->day)
             : date('Y-m-d');
 
-        dd('test');
         if ($user) {
             
             (new UserService)->fireUser($user->id, $fireDate);

@@ -16,6 +16,7 @@ use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Analytics\IndividualKpi;
 use App\Models\Kpi\Bonus;
+use App\Service\Department\UserService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserStat extends Model
@@ -86,11 +87,18 @@ class UserStat extends Model
                 }
 
                 if($activity->type == 'quality') {
+
                     $working = ProfileGroup::employees($group_id, $date, 1);
                     $fired =  ProfileGroup::employees($group_id, $date, 2);
+
+                    $working = (new UserService)->getEmployees($group_id, $date);
+                    $working = collect($working)->pluck('id')->toArray();
+
+                    $fired = (new UserService)->getFiredEmployees($group_id, $date);
+                    $fired = collect($fired)->pluck('id')->toArray();
+
                     $users_ids = array_unique(array_merge($working, $fired));
 
-   
                     $item['records'] = QualityRecordWeeklyStat::table($users_ids, $date);
                 }    
                     
@@ -123,15 +131,27 @@ class UserStat extends Model
                 ->toArray();
             $date = Carbon::parse($date)->day(1)->format('Y-m-d');
 
-            $group = ProfileGroup::find($activity->group_id);
-            $x_users = $group ? json_decode($group->users, true) : [];
-            $users = array_merge(ProfileGroup::employees($activity->group_id, $date, 1) , ProfileGroup::employees($activity->group_id, $date, 2));
-            $users = array_merge($users , $x_users);
-            $users = array_merge($users, $has_records_on_user_stats);
+
+            /**
+             * get All Users in group
+             */
+            $working = ProfileGroup::employees($activity->group_id, $date, 1);
+            $fired =  ProfileGroup::employees($activity->group_id, $date, 2);
+
+            $working = (new UserService)->getEmployees($activity->group_id, $date);
+            $working = collect($working)->pluck('id')->toArray();
+
+            $fired = (new UserService)->getFiredEmployees($activity->group_id, $date);
+            $fired = collect($fired)->pluck('id')->toArray();
+
+            $users_ids = array_unique(array_merge($working, $fired));
+
+            $users = array_merge($users_ids, $has_records_on_user_stats);
             $users = array_unique($users);
 
-            
-            
+            /**
+             * form table row
+             */
             foreach($users as $user_id) {
                 $item = [];
                 
