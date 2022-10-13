@@ -45,10 +45,10 @@ class CreatePivotAnalytics extends Command
     {
         $this->line('start creating pivot tables:');
         
-        if(Carbon::now()->day != 1) return false;
-
-        $newDate  = date('Y-m-d');
-        $prevDate = Carbon::now()->subMonth()->format('Y-m-d');
+        //if(Carbon::now()->day != 1) return false;
+        
+        $newDate  = Carbon::now()->day(1)->format('Y-m-d');
+        $prevDate = Carbon::now()->subMonth()->day(1)->format('Y-m-d');
         
         $groups   = ProfileGroup::query()
                     ->where('active', 1)
@@ -170,8 +170,7 @@ class CreatePivotAnalytics extends Command
 
         $colsWithValue = $this->getColsWithValue($newDate, $group_id);
 
-        $stats = AnalyticStat::query()
-            ->where('date', $prevDate)
+        $stats = AnalyticStat::where('date', $prevDate)
             ->where('group_id', $group_id)
             ->get();
 
@@ -180,22 +179,26 @@ class CreatePivotAnalytics extends Command
             $existsRowAndCol = array_key_exists($stat->row_id, $newRows)
                             && array_key_exists($stat->column_id, $newCols);
             
-            if($existsRowAndCol) {
-                AnalyticStat::create([
-                    'group_id'    => $stat->group_id,
-                    'date'        => $newDate,
-                    'row_id'      => $newRows[$stat->row_id],
-                    'column_id'   => $newCols[$stat->column_id],
-                    'value'       => $stat->value,
-                    'show_value'  => in_array($newCols[$stat->column_id], $colsWithValue) ? $stat->show_value : '',
-                    'activity_id' => $stat->activity_id,
-                    'editable'    => $stat->editable, 
-                    'class'       => $stat->class,
-                    'type'        => $stat->type,
-                    'comment'     => $stat->comment,
-                    'decimals'    => $stat->decimals,
-                ]);
-            }
+            if(!$existsRowAndCol) continue;
+
+            $value      = $this->getValue($stat, $newRows, $newCols, $colsWithValue);
+            $show_value = $this->getShowValue($stat, $newRows, $newCols, $colsWithValue);
+
+            AnalyticStat::create([
+                'group_id'    => $stat->group_id,
+                'date'        => $newDate,
+                'row_id'      => $newRows[$stat->row_id],
+                'column_id'   => $newCols[$stat->column_id],
+                'value'       => $value,
+                'show_value'  => $show_value,
+                'activity_id' => $stat->activity_id,
+                'editable'    => $stat->editable, 
+                'class'       => $stat->class,
+                'type'        => $stat->type,
+                'comment'     => $stat->comment,
+                'decimals'    => $stat->decimals,
+            ]);
+            
         }
     }
 
@@ -214,6 +217,78 @@ class CreatePivotAnalytics extends Command
             ->get('id')
             ->pluck('id')
             ->toArray();
+    }
+
+    /**
+     * get value from AnalyticStat
+     * 
+     * @param AnalyticStat $stat
+     * @param array $newCols
+     * @param array $newRows
+     * @param array $colsWithValue
+     * 
+     * @return string|int|null
+     */
+    private function getValue(
+        AnalyticStat $stat,
+        array $newRows,
+        array $newCols,
+        array $colsWithValue
+    ) : string|int|null
+    {
+        $value = $stat->value;
+
+        if($stat->type == 'remote' || $stat->type == 'inhouse') {
+            $value = '';
+        }
+
+        if($stat->type == 'formula') {
+            $value = AnalyticStat::convert_formula_to_new_month($stat->value, $newRows, $newCols);
+        }
+
+        if($stat->type == 'initial' || in_array($newCols[$stat->column_id], $colsWithValue)) {
+            $value = '';
+        }
+
+        if($stat->row_id == array_values($newRows)[0]) {
+            $value = $stat->value;
+        }
+
+        return $value;
+    }
+
+    /**
+     * get show value from AnalyticStat
+     * 
+     * @param AnalyticStat $stat
+     * @param array $newCols
+     * @param array $newRows
+     * @param array $colsWithValue
+     * 
+     * @return string|int|null
+     */
+    private function getShowValue(
+        AnalyticStat $stat,
+        array $newRows,
+        array $newCols,
+        array $colsWithValue
+    ) : string|int|null
+    {
+        $value = '';
+        $row_id = $newRows[$stat->row_id];
+        $col_id = $newCols[$stat->column_id];
+        
+        if(in_array($newCols[$stat->column_id], $colsWithValue)) {
+            $value = $stat->show_value;
+        }
+        
+        
+        if($row_id == array_values($newRows)[0]
+           || $stat->type == 'formula') {
+            $value = $stat->show_value;
+        }
+
+        return $value;
     }
 
 }

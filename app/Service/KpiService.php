@@ -32,7 +32,7 @@ class KpiService
         return [
             'kpis'       => $kpi->get(),
             'activities' => Activity::get(),
-            'groups' => \App\ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
+            'groups'     => \App\ProfileGroup::where('active',1)->get()->pluck('name', 'id')->toArray(),
         ];
     }
 
@@ -55,12 +55,13 @@ class KpiService
 
             $item = $kpi->toArray();
 
+           
             // remove items if it's not in history
             if($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
              
                 if(isset($payload['children'])) {
-                    $item['items'] = $kpi->items->whereIn('id', $payload['children']);
+                    $item['items'] = array_values($kpi->items->whereIn('id', $payload['children'])->toArray());
                 } 
             }
 
@@ -108,7 +109,11 @@ class KpiService
                 $kpi->children = $kpi_item_ids;
                 $kpi->save();
 
+                $kpi_id = $kpi->id;
+
             });
+
+            event(new TrackKpiUpdatesEvent($kpi_id));
 
             return [
                 'id' => $kpi_id,
@@ -127,21 +132,13 @@ class KpiService
      */
     public function update(KpiUpdateRequest $request): array
     {
-     
-
             $id = $request->id;
-
-            event(new TrackKpiUpdatesEvent($id));
             $kpi_item_ids = [];
-
-      
-            
-            $user_id = auth()->id();
-
-            DB::transaction(function () use ($request, $id, &$kpi_item_ids, $user_id) {
+     
+            DB::transaction(function () use ($request, $id, &$kpi_item_ids) {
 
                 $kpi_item_ids = $this->updateItems($id, $request->items);
-
+                
                 $all = $request->all();
 
                 $all['updated_by'] = auth()->id();
@@ -152,6 +149,7 @@ class KpiService
                 Kpi::findOrFail($id)->update($all);
             });
 
+            event(new TrackKpiUpdatesEvent($id));
 
         return [
             'id' => $id,
@@ -201,6 +199,8 @@ class KpiService
                 'common'        => $item['common']
             ]);
 
+            event(new TrackKpiItemEvent($kpi_item->id));
+
             $ids[] = $kpi_item->id;
         }
 
@@ -215,7 +215,7 @@ class KpiService
         $item_ids = [];
 
         $kpi = Kpi::findOrFail($id);
-
+        
         foreach ($items as $item)
         {
             $item['kpi_id'] = $id;
@@ -231,6 +231,7 @@ class KpiService
 
             unset($item['source']);
 
+            
             if($item['id'] == 0) {
 
                 /**
@@ -245,14 +246,14 @@ class KpiService
                 /**
                  * Обновляем kpi_item
                  */
-
-                event(new TrackKpiItemEvent($item['id']));
-
+                
                 if (isset($item['deleted'])) {
                     $kpi->items()->where('id', $item['id'])->delete();
                 }else{
                     $kpi->items()->where('id', $item['id'])->update($item);
                 }
+         
+                event(new TrackKpiItemEvent($item['id']));
             }
         }
 

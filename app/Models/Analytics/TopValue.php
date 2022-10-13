@@ -517,7 +517,7 @@ class TopValue extends Model
      * 
      * @return array
      */
-    public  static function getPivotRentability($year) : array
+    public  static function getPivotRentability($year, $month) : array
     {
         $table = [];
 
@@ -623,6 +623,91 @@ class TopValue extends Model
 
         array_unshift($table, $total_row);
 
+       
+        return $table;
+    }
+
+    /**
+     * get month of getPivotRentability
+     * 
+     * @return array
+     */
+    public  static function getPivotRentabilityOnMonth($year, $month) : array
+    {
+        $table = [];
+
+        $date = Carbon::createFromDate($year, $month, 1);
+        $groups = ProfileGroup::whereNotIn('id', [34,58,26])->where('active', 1)->get();
+        
+        $edited_proceeds = TopEditedValue::whereYear('date', $year)->get();
+
+        foreach ($groups as $key => $group) {
+            $row = [];
+
+            $row['group_id'] = $group->id;
+            $row['name']     = $group->name;
+
+            $row['date'] = $group->created_at->diffInDays();
+            $row['date_formatted'] = $group->created_at->format('d.m.Y');
+            
+           
+                $xdate = $date->format('Y-m-d');
+                
+                /**
+                 * get salary
+                 */
+                $salary = GroupSalary::where('group_id', $group->id)->where('date', $xdate)->get()->sum('total');
+
+                /**
+                 * Temp for DM2
+                 * count ФОТ
+                 */
+                $date_diff = $date->timestamp - Carbon::parse('2022-09-01')->timestamp;
+                if($date_diff >= 0 && $group->id == 93) {
+
+                    $data = Salary::salariesTable(0, $xdate, $group->users()->pluck('id')->toArray(), 93);
+                    $sum = 0;
+        
+                    foreach( $data['users'] as $user) {
+                        $sum += array_sum(array_values($user['earnings']));
+                        if($user['edited_bonus']) {
+                            $sum += $user['edited_bonus'];
+                        } else {
+                            $sum += array_sum(array_values($user['bonuses']));
+                            $sum += array_sum(array_values($user['awards']));
+                            $sum += array_sum(array_values($user['test_bonus']));
+                        }
+                        $sum += $user['edited_kpi'] ? $user['edited_kpi'] : $user['kpi'];
+                    }
+        
+                    $salary =  $sum;
+                }
+
+                // TEMP
+                $rentability = 0;
+                $proceeds = 0;
+                
+                $proceeds = AnalyticStat::getProceedsSum($group->id, $xdate);
+               
+                $edited_proceed = $edited_proceeds->where('date', $xdate)
+                    ->where('group_id', $group->id)
+                    ->first();
+
+                if($edited_proceed) {
+                    $proceeds = (int)$edited_proceed->value;
+                } 
+                
+                $rentability = $proceeds > 0 ?  ($proceeds - $salary) / $proceeds : 0;
+                //if($rentability > 0) $r_counts[$i]++;
+
+                $row['proceeds'] = $proceeds > 0 ? round($proceeds) : '';
+                $row['salary'] = $salary > 0 ? round($salary) : '';
+                $row['margin'] = $rentability > 0 ? round($rentability, 1) . '%' : '';
+              
+                $table[] = $row;
+            
+
+        }
        
         return $table;
     }

@@ -36,14 +36,12 @@ class UserService
         $data = [];
         foreach ($groups as $group)
         {
-            $groupUser = GroupUser::withTrashed()->where([
-                ['group_id', $group->id],
-            ])
-                ->where('from', '<=', $this->getFullDate($date))
-                ->where(fn ($query) =>  $query
-                    ->whereNull('to')
-                    ->orWhere('to', '<=', $this->getFullDate($date))
-            );
+            $groupUser = GroupUser::withTrashed()->select('user_id')->where('group_id','=',$group->id)
+                ->where(fn ($query) => $query->whereYear('from','<=', $this->getYear($date))->orWhereMonth('from','<=',$this->getMonth($date)))
+                ->where(fn ($query) => $query->whereNull('to')->orWhere(
+                    fn ($query) => $query->whereYear('to','<=',$this->getYear($date))->whereMonth('to','>',$this->getMonth($date)))
+                )->groupBy(['user_id'])
+                ->havingRaw('count(user_id) >= ?',[1]);
 
             $data = $this->getGroupUsers($groupUser->get(), $date);
         }
@@ -63,16 +61,13 @@ class UserService
         $data = [];
         foreach ($groups as $group)
         {
-            $groupUser = GroupUser::withTrashed()->where([
-                ['group_id', $group->id],
-            ])
-                ->where('from', '<=', $this->getFullDate($date))
-                ->where(fn ($query) =>  $query
-                    ->whereNull('to')
-                    ->orWhere('to', '<=', $this->getFullDate($date))
+            $groupUser = GroupUser::withTrashed()->where('group_id','=',$group->id)
+                ->where(fn ($query) => $query->whereYear('from','<=', $this->getYear($date))->orWhereMonth('from','<=',$this->getMonth($date)))
+                ->where(fn ($query) => $query->whereNull('to')->orWhere(
+                    fn ($query) => $query->whereYear('to','<=',$this->getYear($date))->whereMonth('to','>',$this->getMonth($date)))
                 );
 
-            $data = $this->getGroupEmployees($groupUser->get(), $date);
+            $data = $this->getGroupEmployees($groupUser->get());
         }
 
         return $data;
@@ -90,15 +85,13 @@ class UserService
         $data = [];
         foreach ($groups as $group)
         {
-            $groupUser = GroupUser::withTrashed()->where([
-                ['group_id', $group->id],
-            ])->where('from', '<', $this->getFullDate($date))
-                ->where(fn ($query) =>  $query
-                    ->whereNull('to')
-                    ->orWhere('to', '>', $this->getFullDate($date))
+            $groupUser = GroupUser::withTrashed()->where('group_id','=',$group->id)
+                ->where(fn ($query) => $query->whereYear('from','<=', $this->getYear($date))->orWhereMonth('from','<=',$this->getMonth($date)))
+                ->where(fn ($query) => $query->whereNull('to')->orWhere(
+                    fn ($query) => $query->whereYear('to','>=',$this->getYear($date))->orWhereMonth('to','>=',$this->getMonth($date)))
                 );
 
-            $data = $this->getGroupsTrainees($groupUser->get(), $date);
+            $data = $this->getGroupsTrainees($groupUser->get());
         }
 
         return $data;
@@ -141,7 +134,7 @@ class UserService
             $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
                 ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
             
-            $data = $this->getGroupEmployees($groupUser->get(), $date);
+            $data = $this->getGroupEmployees($groupUser->get());
         }
 
         return $data;
@@ -220,9 +213,10 @@ class UserService
     private function getGroupsTrainees($groupUsers): array
     {
         $traineesData = [];
+
         foreach ($groupUsers as $groupUser)
         {
-            $user = User::withTrashed()->where('id', $groupUser->user_id)
+            $user = User::query()->where('id', $groupUser->user_id)
                 ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 1))
                 ->first();
 
@@ -276,6 +270,15 @@ class UserService
         }
 
         return $userData;
+    }
+
+    /**
+     * Получить с уволенными.
+     * @return void
+     */
+    public function getTraineesWithTrashed(): void
+    {
+        //
     }
 
     /**

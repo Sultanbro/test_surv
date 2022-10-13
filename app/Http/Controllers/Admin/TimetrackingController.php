@@ -58,7 +58,7 @@ class TimetrackingController extends Controller
     {
         View::share('title', 'Табель сотрудников');
         View::share('menu', 'timetracking');
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     public function settings()
@@ -550,14 +550,18 @@ class TimetrackingController extends Controller
         $corp_books = [];
 
         if ($request->group) {
+
             $group =  ProfileGroup::find($request->group);
-          //  $group = ProfileGroup::where('name', 'like', '%' . $request->group . '%')->with('dialer')->first();
-            //if(!$group) $group = ProfileGroup::find($request->group);
-            
-            if ($group->users()->get()->toArray() != null) {
-                $users = $group->users()->get(['id', DB::raw("CONCAT(name,' ',last_name,'-',email) as email")]);
-            }
-           
+    
+            $users = (new UserService)->getUsers($group->id, date('Y-m-d'));
+
+            $users = collect($users)
+                ->map(function ($item) {
+                    $item->email = $item->last_name . ' ' . $item->name.' '.$item->email; 
+                    return $item;
+                });
+
+
             $kbm = \App\Models\KnowBaseModel::
                 where('model_type', 'App\\ProfileGroup')
                 ->where('model_id', $group->id)
@@ -935,7 +939,7 @@ class TimetrackingController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $users = (new UserService)->getEmployees($request->group_id, $date);
+            $users = (new UserService)->getFiredEmployees($request->group_id, $date);
         }
 
         if($request->user_types == 2) { // Стажеры
@@ -951,7 +955,6 @@ class TimetrackingController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            
             $users = (new UserService)->getTrainees($request->group_id, $date);
         }
 
@@ -2463,9 +2466,12 @@ class TimetrackingController extends Controller
         $bonus = Bonus::where('id', $request->id)->first();
         if($bonus) $bonus->delete();
     }
+
     private function insertDataToGroupUser($group, $usersId)
     {
         $data = [];
+
+        
         foreach ($usersId as $userId)
         {
             $exist = DB::table('group_user')
@@ -2476,14 +2482,15 @@ class TimetrackingController extends Controller
             if (!$exist)
             {
                 $data[] = [
-                    'user_id'  => $userId,
-                    'group_id' => $group->id,
-                    'from'     => Carbon::now()->toDateString(),
+                    'user_id'    => $userId,
+                    'group_id'   => $group->id,
+                    'from'       => Carbon::now()->toDateString(),
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
             }
         }
+
         DB::table('group_user')->insert($data);
     }
 

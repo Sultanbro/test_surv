@@ -11,7 +11,7 @@
                 </div>  
                 <div class="mr-2">
                     <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
-                </div>  
+                </div>   
                 <div class="mr-2">
                     <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
                 </div>  
@@ -99,7 +99,13 @@
         </tr>
 
         <tr v-for="(item, index) in filtered" :key="index">
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email">
+            
+
+            <td v-if="item.name == 'SPECIAL_BTN'">
+                <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
+            </td>
+            
+            <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email" v-else>
                 <div class="wd d-flex">
                     {{ item.lastname }} {{ item.name }}
                     <b-badge variant="success" v-if="item.group == 'Просрочники'">{{ item.group }}</b-badge>
@@ -116,7 +122,7 @@
                     </div>
                 </div>
             </td>
-            
+
             <template v-if="activity.plan_unit == 'minutes'">
                 <td class="px-2 stat da"><div>{{ item.avg }}</div></td>
                 <td class="px-2 stat da"><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
@@ -249,7 +255,10 @@ export default {
             itemsArray: [],
             avgOfAverage: 0,
             totalCountDays: 0,
+            currentAction: 'avg',
             sum: {},
+            avg: {},
+            counts: {}, // elements for avg
             percentage: [],
             records: [],
             totalRowName: '',
@@ -383,12 +392,43 @@ export default {
             this.filtered = this.itemsArray;
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
+
+            this.addButtonToFirstItem();
+
             loader.hide();    
 
 
         },
 
-       
+        switchAction() {
+            if(this.items.length == 0) return;
+
+            if(this.currentAction == 'avg') {
+                this.currentAction = 'sum'
+
+                Object.keys(this.sum).forEach((key) => {
+                    this.items[0][key] = this.sum[key];
+                });
+
+            } else if(this.currentAction == 'sum') {
+
+                this.currentAction = 'avg'
+
+                Object.keys(this.sum).forEach((key) => {
+                    this.items[0][key] = this.percentage[key] > 0 
+                        ? Number(this.sum[key] / this.percentage[key]).toFixed(2)
+                        : 0;
+                });
+            }
+
+            this.filterTable();
+        },
+
+        addButtonToFirstItem() {
+            if(this.itemsArray.length == 0) return;
+            
+            this.itemsArray[0].name = 'SPECIAL_BTN';
+        },
 
         updateTable(items) {
             let loader = this.$loading.show();
@@ -457,7 +497,7 @@ export default {
                 if (this.sum.hasOwnProperty(key)) {
                     let sum = isNaN(parseFloat(this.sum[key])) ? 0 : parseFloat(this.sum[key]);
                     let percentage = isNaN(parseFloat(this.percentage[key])) ? 0 : parseFloat(this.percentage[key]);
-                    if(this.activity.plan_unit == 'minutes')  {
+                    if(this.activity.plan_unit == 'minutes') {
                         this.itemsArray[0][key] = parseFloat(sum).toFixed(0);
                         if(sum != 0)  {
                             total += sum;
@@ -617,7 +657,7 @@ export default {
             let row0_avg = 0; 
             let row0_avg_items = 0;
             
-              let avg_of_column = 0;
+            let avg_of_column = 0;
             let quan_of_column = 0;
 
             this.records.forEach((account, index) => {
@@ -635,6 +675,7 @@ export default {
                             cellValues[key] = Number(value);
 
                             if (isNaN(this.sum[key])) this.sum[key] = 0;
+
                             if (isNaN(this.percentage[key])) this.percentage[key] = 0;
                             
                             this.sum[key] = this.sum[key] + Number(account[key]); // vertical sum
@@ -661,7 +702,7 @@ export default {
                         
                         cellValues["plan"] = sumForOne;
                         
-                        let average = (sumForOne / countWorkedDays).toFixed(0);
+                        let average = (sumForOne / countWorkedDays).toFixed(2);
                         let finishAverage = !isNaN(average) ? average : 0;
                         cellValues["avg"] = finishAverage;
                         

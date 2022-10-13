@@ -85,6 +85,7 @@ export default {
     name: "TableRentability",
     props: {
         year: Number,
+        month: Number
     },
     data() {
         return {
@@ -110,6 +111,9 @@ export default {
     },
     watch: { 
         year: function(newVal, oldVal) { 
+            this.fetchData();
+        },
+        month: function(newVal, oldVal) { 
             this.fetchData();
         },
     },
@@ -143,7 +147,8 @@ export default {
         fetchData() {
             axios 
                 .post("/timetracking/top/get-rentability", {
-                    year: this.year
+                    year: this.year,
+                    month: this.month
                 })
                 .then((response) => {
                     this.items = response.data

@@ -124,6 +124,8 @@ function newBonus() {
         unit: 'all',
         quantity: 1,
         daypart: 0,
+        from: null,
+        to: null,
         text: '',
         created_at: datestring,
         updated_at: datestring,

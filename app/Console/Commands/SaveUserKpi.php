@@ -19,7 +19,7 @@ class SaveUserKpi extends Command
      *
      * @var string
      */
-    protected $signature = 'user:save_kpi {date?}';  //php artisan user:save_kpi 2022-08-01 // целый месяц , долго
+    protected $signature = 'user:save_kpi {date?} {user_id?}';  //php artisan user:save_kpi 2022-08-01 // целый месяц , долго
                                                              
 
     /**
@@ -86,22 +86,22 @@ class SaveUserKpi extends Command
         /**
          * working users not trainees
          */
-
-
-        //$group = \App\ProfileGroup::find(42);
         $users =  \DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where(function($query) use ($date){
                 $query->whereDate('deleted_at', '>=', $date)
                     ->orWhereNull('deleted_at');
             })
-            ->where('is_trainee', 0)
-        //   ->whereIn('users.id', json_decode($group->users))
-         //  ->where('users.id', 15511)
-                       ->select(['users.id','users.last_name', 'users.name'])
-            ->get(['users.id']);
+            ->where('is_trainee', 0);
+       
         
-       /// dd(json_encode($users->pluck('id')->toArray()));
+        if($this->argument('user_id')) {
+            $users->where('users.id', $this->argument('user_id'));
+        }
+
+        $users = $users->select(['users.id','users.last_name', 'users.name'])
+                    ->get(['users.id']);
+        
         $this->comment($users->count());
             
         /**
@@ -146,7 +146,7 @@ class SaveUserKpi extends Command
         foreach ($kpis as $key => $kpi) {
             if(!isset($kpi['users'][0])) continue;
             
-  
+           // dd($kpi['users'][0]['items'][0]);
             foreach ($kpi['users'][0]['items'] as $item) {
                
                 $workdays = $item['activity'] && $item['activity']['weekdays'] != 0
@@ -162,7 +162,7 @@ class SaveUserKpi extends Command
                     'days_from_user_applied' => 0,
                     'workdays' => $workdays,
                 ], $item['method']);
-
+               
                 if(
                     //!$item['allow_overfulfillment'] 
                     $completed_percent > 100) {
@@ -175,17 +175,17 @@ class SaveUserKpi extends Command
                     $completed_percent,
                     $item['share'],
                     $kpi['completed_80'],
-                    $kpi['completed_100']
+                    $kpi['completed_100'],
                 );
 
         
-                dump($kpi['lower_limit'],
-                $kpi['upper_limit'],
-                $completed_percent,
-                $item['share'],
-                $kpi['completed_80'],
-                $kpi['completed_100']);
-                dump($earned);
+                // dump($kpi['lower_limit'],
+                // $kpi['upper_limit'],
+                // $completed_percent,
+                // $item['share'],
+                // $kpi['completed_80'],
+                // $kpi['completed_100']);
+                 dump($earned);
 
             }
         }

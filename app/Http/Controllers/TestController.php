@@ -33,10 +33,16 @@ use App\Service\Department\UserService;
 class TestController extends Controller { 
   
 	public function test() { 
-		return (new UserService)->getTrainees(42, '2022-09-01');
+		// return (new UserService)->getTrainees(42, '2022-09-01');
 
-		return ProfileGroup::find(42)->users()->pluck('user_id')->toArray();
-		
+		$a = AnalyticStat::getCellValue(
+			42,
+			'C26',
+			'2022-09-01',
+			2
+		);
+
+		dd($a);
 	}  
 
 	public function test_mail_invitation()

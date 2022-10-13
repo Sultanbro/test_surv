@@ -19,6 +19,7 @@ use App\Trainee;
 use App\DayType;
 use App\Classes\Helpers\Phone;
 use App\Models\Analytics\RecruiterStat;
+use App\Models\Analytics\UserStat;
 
 class RecruiterStats extends Command
 {
@@ -278,9 +279,50 @@ class RecruiterStats extends Command
                 'date' => $this->date,
                 'profile' => $profile,
             ]);
+
+           
+           
+
+
+
         }
-        
+
+        $this->saveMinutes($admin_user->id);
+
+      
         $this->line('------' . $admin_user->last_name . ' ' . $admin_user->name . ' ' . $admin_user->email);
+    }   
+
+    /**
+     * save minutes to UserStat
+     * Bpartners HR activity MInutes
+     */
+    private function saveMinutes($user_id)
+    {
+        $recStat = RecruiterStat::select(
+                DB::raw('SUM(minutes) as minutes') 
+            )
+            ->where('user_id', $user_id)
+            ->where('date', $this->date)
+            ->first();
+
+        $stat = UserStat::where([
+            'date'        => $this->date,
+            'user_id'     => $user_id,
+            'activity_id' => 206 // Bpartners HR activity MInutes
+        ])->first();
+
+        if($stat) {
+            $stat->value = $recStat->minutes;
+            $stat->save();
+        } else {
+            UserStat::create([
+                'date'        => $this->date,
+                'user_id'     => $user_id,
+                'activity_id' => 206, // Bpartners HR activity MInutes
+                'value'       => $recStat->minutes
+            ]);
+        }
     }
 
     

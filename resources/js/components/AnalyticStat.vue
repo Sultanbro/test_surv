@@ -487,8 +487,19 @@
                 let expression = this.getExpression(combinations);
     
                 console.log(expression)
-    
-                return expression !== null && expression.length > 0 ? Parser.evaluate(expression) : 0
+                
+                let result = 0;
+
+                if(expression !== null && expression.length > 0) {
+                    try {
+                        result = Parser.evaluate(expression);
+                    } catch (e) {
+                        console.log(e)
+                        console.log(result, 'result')
+                    } 
+                } 
+                
+                return result;
             },
     
             add_class(item, clasxs) {

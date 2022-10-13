@@ -139,20 +139,24 @@
                                         </td>
                                         <td>
                                             <select 
-                                                v-model="item.unit"
-                                                class="form-control"
-                                            >
-                                                            <option value="0" selected>-</option>
-                                                            <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                                                        <select 
-                                                v-model="item.daypart"
-                                                class="form-control"
-                                            >
-                                                <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                                    v-model="item.unit"
+                                                    class="form-control"
+                                                >
+                                                <option value="0" selected>-</option>
+                                                <option v-for="key in Object.keys(units)" :value="key">{{ units[key] }}</option>
                                             </select>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <select 
+                                                    v-model="item.daypart"
+                                                    class="form-control"
+                                                >
+                                                    <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
+                                                </select>
+                                                <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.from" /> 
+                                                <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.to" /> 
+                                            </div>
                                         </td>
                                         <td>
                                             <input type="text" class="form-control" v-model="item.sum" />
@@ -315,13 +319,15 @@
                                                 </select>
                                             </div>
     
-                                            <div v-else-if="field.key == 'daypart'">
+                                            <div v-else-if="field.key == 'daypart'" class="d-flex">
                                                 <select 
                                                     v-model="item.daypart"
                                                     class="form-control"
                                                 >
                                                     <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
                                                 </select>
+                                                <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.from" /> 
+                                                <input v-if="item.daypart == 1" type="time" class="form-control" v-model="item.to" /> 
                                             </div>
     
                                             <div v-else>
@@ -587,8 +593,8 @@ export default {
             source_key: 1,
             dayparts: {
                 0: 'Полный день',
-                1: 'До обеда',
-                2: 'После обеда',
+                1: 'Период',
+                2: 'Месяц',
             },
             units: {
                 one: 'За каждую единицу',
@@ -651,6 +657,8 @@ export default {
             let units = [];
             let quantities = [];
             let dayparts = [];
+            let froms = [];
+            let tos = [];
             let texts = [];
             this.newBonusesArray.forEach(bonus => {
                 titles.push(bonus.title);
@@ -659,6 +667,8 @@ export default {
                 units.push(bonus.unit);
                 quantities.push(bonus.quantity);
                 dayparts.push(bonus.daypart);
+                froms.push(bonus.from);
+                tos.push(bonus.to);
                 texts.push(bonus.text);
             });
             let my_item = {
@@ -671,6 +681,8 @@ export default {
                 "unit": units,
                 "quantity": quantities,
                 "daypart": dayparts,
+                "from": froms,
+                "to": tos,
                 "text": texts
             };
             let fields = {

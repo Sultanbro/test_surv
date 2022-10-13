@@ -417,7 +417,13 @@ class AnalyticStat extends Model
     }
 
 
-    public static function convert_formula($text, $row_keys, $col_keys) {
+    /**
+     * convert cells
+     * from [123:34] to E5
+     * 
+     */
+    public static function convert_formula($text, $row_keys, $col_keys)
+    {
 
         $matches =[];
         preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
@@ -428,6 +434,29 @@ class AnalyticStat extends Model
             $exp = explode(':',$match);
             if(array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
                 $text = str_replace("[" . $match. "]", $col_keys[$exp[0]] . $row_keys[$exp[1]], $text);
+            } else {
+                $text = str_replace("[" . $match. "]", '0', $text);
+            }
+        }
+
+        return $text;
+    }
+
+    /**
+     * convert cells
+     * from [123:34] to [234:45]
+     */
+    public static function convert_formula_to_new_month($text, $row_keys, $col_keys)
+    {
+        $matches =[];
+        preg_match_all('/\[{1}\d+:\d+\]{1}/', $text, $matches);
+
+        foreach($matches[0] as $match) {
+            $match = str_replace("[", "", $match);
+            $match = str_replace("]", "", $match);
+            $exp = explode(':',$match);
+            if(array_key_exists($exp[0], $col_keys) && array_key_exists($exp[1], $row_keys)) {
+                $text = str_replace("[" . $match. "]", "[". $col_keys[$exp[0]] . ':' . $row_keys[$exp[1]] . "]", $text);
             } else {
                 $text = str_replace("[" . $match. "]", '0', $text);
             }

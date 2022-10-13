@@ -18,41 +18,45 @@ class HomeController extends Controller
 {
     /**
      * Create a new controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
         
     }
     
+    /**
+     * main page
+     */
     public function index(){
         return view('home');
     }
 
-    public function loginAs(Request $request, $id) {
-
+    /**
+     * login to test.jobtron.org 
+     * to see antoher profile
+     */
+    public function loginAs(Request $request, $id)
+    {
         if(tenant('id') == 'bp') {
-            $token = User::whereIn('id', [5,18, 157 , 84])
+            $token = User::whereIn('id', [5,18, 3423, 84])
                 ->where('remember_token', $request->auth)
                 ->first();
 
-        
             if($token) {
-                $user = User::find($id);
+                $user   = User::find($id);
 
                 $admins = User::where('is_admin', 1)->get('id')->pluck('id')->toArray();
+
                 if(in_array($id, $admins) && $token->is_admin != 1) {
                     return redirect('/');
                 } 
 
                 if(empty($user->remember_token)){
-                    $token = bin2hex(random_bytes(60));
+                    $token                = bin2hex(random_bytes(60));
                     $user->remember_token = $token;
                     $user->save();
                 }
 
-            
                 Auth::login($user, true);
             }
         }
@@ -60,6 +64,9 @@ class HomeController extends Controller
         return redirect('/');
     }
 
+    /**
+     * quiz to fired users
+     */
     public function quiz_after_fire(Request $request)
     {
         return view('specific.quiz_after_fire')->with([
@@ -68,6 +75,9 @@ class HomeController extends Controller
         ]);
     }
     
+    /**
+     * estimate first day for trainees
+     */
     public function estimate_first_day(Request $request)
     {
 
@@ -122,6 +132,9 @@ class HomeController extends Controller
         
     }
 
+    /**
+     * estimate trainer for trainees
+     */
     public function estimate_trainer(Request $request)
     {
         return view('specific.estimate_trainer')->with([
@@ -136,6 +149,9 @@ class HomeController extends Controller
         ]);
     }
 
+    /**
+     * save estimation
+     */
     public function save_estimate_trainer(Request $request)
     {
         History::intellect('Оценка тренера', $request->all());

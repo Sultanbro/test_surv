@@ -413,6 +413,7 @@ Route::middleware([
     Route::post('/timetracking/top', [TopController::class, 'fetch']);
     Route::post('/timetracking/top/save_top_value', [TopController::class, 'saveTopValue']);
     Route::post('/timetracking/top/get-rentability', [TopController::class, 'getRentability']);
+    Route::post('/timetracking/top/get-rentability-on-month', [TopController::class, 'getRentabilityOnMonth']);
     Route::post('/timetracking/top/create_gauge', [TopController::class, 'createGauge']);
     Route::post('/timetracking/top/get_activities', [TopController::class, 'getActivities']);
     Route::post('/timetracking/top/delete_gauge', [TopController::class, 'deleteGauge']);
