@@ -20,7 +20,6 @@ use Swift_Mailer;
 use Swift_SmtpTransport;
 use Swift_TransportException;
 use Illuminate\Http\Request;
-use Auth;
 use App\Kpi;
 use App\Salary;
 use Carbon\Carbon;
