@@ -135,7 +135,10 @@ class RecruiterAttendance extends Command
      */
     public function traineesWasFromSecondDay($user_id, $date) : int
     {
-        return $this->attendance_service->getSecondDayAttendance($user_id, $date);
+        return $this->attendance_service->getCurrentAttendance(
+            $user_id,
+            $date,
+        );
     }
 
 }

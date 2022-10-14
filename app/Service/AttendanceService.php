@@ -122,6 +122,32 @@ class AttendanceService
             ->count();
     }
 
+     /**
+     * @param $managerId
+     * @param $date
+     * @return int
+     */
+    public function getCurrentAttendance($managerId, String $date): int
+    {
+        $user = User::withTrashed()->find($managerId);
+
+        if(!$user) {
+            return 0;
+        }
+
+        return Lead::with('daytypes')
+            ->whereHas('daytypes', function ($query) use ($date) {
+                $query->whereDate('date', $date)
+                    ->whereIn('type', [
+                        DayType::DAY_TYPES['TRAINEE'],
+                        DayType::DAY_TYPES['RETURNED']
+                    ]);
+            })
+            ->where('resp_id', $user->email)
+            ->get()
+            ->count();
+    }
+
     /**
      * @param $managerId
      * @param $dates
