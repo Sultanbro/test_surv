@@ -848,6 +848,7 @@ class AnalyticsController extends Controller
      *          "total": 2495,
      *          "user_id": 2658,
      *          "users": {
+     *              {
      *                 "id": 2658,
      *                 "name": "Vasya",
      *                 "last_name" "Pupkin"

@@ -39,7 +39,7 @@ class UserStat extends Model
     public static function activities($group_id, $date) {
         $activities = [];
         
-        $acts = Activity::where('group_id', $group_id)->whereIn('type', ['default', 'collection', 'quality'])->orderBy('order', 'desc')->get();
+        $acts = Activity::where('group_id', $group_id)->whereIn('view', [Activity::VIEW_DEFAULT, Activity::VIEW_COLLECTION, Activity::VIEW_QUALITY])->orderBy('order', 'desc')->get();
 
         $group = ProfileGroup::find($group_id);
       
