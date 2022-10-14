@@ -128,11 +128,14 @@
                            v-model="record[field]"
                            @change="updateProceed(record, field, 'day')">
                   </div>
-                  <div v-else>
+                  <div v-else :class="{
+                      'weekend': isWeekend(field)
+                    }">
                     <span v-if="record[field] != 0">{{ record[field] }}</span>
                     <span v-else></span>
                   </div>
                 </template>
+
                 <template v-else>
 
                   <template v-if="field == 'Группа'">
@@ -149,9 +152,7 @@
                   </template>
 
                   <template v-else>
-                    <div :class="{
-                      'weekend': isWeekend(field)
-                    }">
+                    <div>
                         {{ record[field] }}
                     </div>
                   </template>
