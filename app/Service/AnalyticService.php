@@ -59,6 +59,7 @@ class AnalyticService
         for ($month = 1; $month <= $monthInYear; $month++)
         {
             $statistics[$month] = UserStat::query()
+                ->with('users', fn ($user) => $user->select('id', 'name', 'last_name'))
                 ->select(DB::raw('SUM(value) as total'),'user_id')
                 ->whereIn('user_id', $users)
                 ->whereYear('date', $year)

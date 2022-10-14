@@ -831,7 +831,35 @@ class AnalyticsController extends Controller
         
     }
 
-
+    /**
+     * Request:
+     *  {
+     *    "year": 2022,
+     *    "group_id": 31
+     *  }
+     *
+     * Response:
+     * {
+     *    "status": 200,
+     *    "message": "success",
+     *    "data": {
+     *      "1": [
+     *        {
+     *          "total": 2495,
+     *          "user_id": 2658,
+     *          "users": {
+     *              {
+     *                 "id": 2658,
+     *                 "name": "Vasya",
+     *                 "last_name" "Pupkin"
+     *              }
+     *        }...
+     *    }
+     * }
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public function getUserStatisticsByMonth(Request $request)
     {
         $year    = $request->input('year') ?? null;
