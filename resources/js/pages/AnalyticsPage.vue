@@ -85,12 +85,17 @@
                                 <template v-for="(activity, index) in data.activities"> 
                                     <b-tab :title="activity.name" :key="index"  @change="showcubTab(index)">
                                         
-
                                         <!-- Switch month and year of Activity in detailed -->
-                                        <b-tabs type="card" @change="switchYearOrMonthInActivity">
+                                        <button class="btn btn-default btn-sm rounded" @click="switchToMonthInActivity(index)">Месяц</button>
+                                        <button class="btn btn-default btn-sm rounded" @click="switchToYearInActivity(index)">Год</button>
 
+                                        <!-- tabs -->
+                                        <div v-if="activityStates[index] !== undefined">
+                                            {{ activityStates[index] }}
                                             <!-- Month tab of activity in detailed -->
-                                            <b-tab title="Месяц" key="1">
+                                            <div :class="{
+                                                'hidden' : activityStates[index] == 'year'
+                                            }">
                                                 <t-activity-new v-if="activity.type == 'default'"
                                                     :month="monthInfo"
                                                     :activity="activity"
@@ -114,13 +119,15 @@
                                                     :key="activity.id"
                                                     :editable="activity.editable == 1 ? true : false"
                                                 ></t-quality-weekly>
-                                            </b-tab>
+                                            </div>
 
                                             <!-- Year tab of activity in detailed -->
-                                            <b-tab title="Год" key="2">
-                                                
-                                                <!-- Year table -->
-                                                <table class="table b-table table-sm table-bordered">
+                                            <div :class="{
+                                                'hidden' : activityStates[index] == 'month'
+                                            }">
+
+                                                  <!-- Year table -->
+                                                  <table class="table b-table table-sm table-bordered">
                                                     <tr>
                                                         <th class="b-table-sticky-column text-left t-name wd">
                                                             <div>Сотрудник</div>
@@ -149,10 +156,9 @@
                                                     </template>
                                                 </table>
 
+                                            </div>
 
-                                            </b-tab>
-                                        </b-tabs>
-
+                                        </div>
                                         
 
                                     </b-tab>
@@ -292,6 +298,7 @@ export default {
             years: [2020, 2021, 2022],
             yearActivityTableFields: [],
             yearActivityTable: [],
+            activityStates: {},
             currentYear: new Date().getFullYear(),
             monthInfo: {},
             currentGroup: null,
@@ -353,8 +360,35 @@ export default {
     },
     methods: {
 
-        switchYearOrMonthInActivity(v) {
-            console.log(v)
+        switchToMonthInActivity(index) {
+            this.activityStates[index] = 'month'
+            console.log(index)
+        },
+
+        switchToYearInActivity(index) {
+            this.activityStates[index] = 'year'
+            console.log(index)
+
+            this.fetchYearTableOfActivity();
+        },
+
+        fetchYearTableOfActivity() {
+            let loader = this.$loading.show();
+
+
+            axios.post('/timetracking/user-statistics-by-month', {
+                group_id: this.currentGroup,
+                year: this.currentYear,
+            }).then(response => {
+
+                console.log(response.data)
+                //this.yearActivityTable = response.data.tble
+
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
         },
 
         setActivityYearTableFields() {
@@ -454,15 +488,21 @@ export default {
                     this.noan = false;    
 
                     this.activity_select = [];
-                    this.data.activities.forEach(a => {
+
+                    let activityStatesObj = {};
+                    this.data.activities.forEach((a, index) => {
                         this.activity_select.push({
                             'name':a.name,
                             'id':a.id,
                         });
+
+                        activityStatesObj[index] = 'month';
                     })
 
+                    this.activityStates = activityStatesObj;
+
                     this.call_bases = response.data.call_bases;
-                    this.archived_groups = response.data.archived_groups;
+                    this.archived_groups = response.data.archived_groups; 
                     this.ggroups = response.data.groups;
                 }
 

@@ -422,7 +422,7 @@ class SalaryController extends Controller
                 10147,
             ]);
 
-            $fired_users = array_merge($working_users, [15936, 15691        ]);
+            $fired_users = array_merge($fired_users, [15936, 15691        ]);
             
         }
 

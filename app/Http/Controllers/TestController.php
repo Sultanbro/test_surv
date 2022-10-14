@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Classes\Analytics\Impl;
 use App\Classes\Analytics\PrCstll;
+use App\Classes\Analytics\Recruiting;
 use App\Classes\Callibro;
 use App\DayType;
 use App\External\HeadHunter\HeadHunter;
@@ -26,6 +27,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\QualityRecordWeeklyStat;
 use App\Http\Controllers\IntellectController;
+use App\Models\Analytics\RecruiterStat;
 use App\Models\Bitrix\Lead;
 use App\Models\GroupUser;
 use App\Salary;
@@ -35,6 +37,7 @@ class TestController extends Controller {
   
 	public function test() { 
 
+		dd(RecruiterStat::tables('2022-10-14')[14]);
 		$user = User::find(3460);
 
 		dd($user->inGroups());

@@ -28,6 +28,7 @@ use App\Models\Analytics\Activity;
 use App\Models\Analytics\UserStat;
 use Auth;
 use App\Models\CallibroDialer;
+use App\Service\Department\UserService;
 use App\UserNotification;
 
 class QualityController extends Controller
@@ -87,8 +88,15 @@ class QualityController extends Controller
         
         // dd('test');
 
-        $working = ProfileGroup::employees($request->group_id, $date, 1);
-        $fired =  ProfileGroup::employees($request->group_id, $date, 2);
+        // $working = ProfileGroup::employees($request->group_id, $date, 1);
+        // $fired =  ProfileGroup::employees($request->group_id, $date, 2);
+
+        $working = (new UserService)->getEmployees($request->group_id, $date); 
+        $working = collect($working)->pluck('id')->toArray();
+
+        $fired = (new UserService)->getEmployees($request->group_id, $date); 
+        $fired = collect($fired)->pluck('id')->toArray();
+        
         $user_ids = array_unique(array_merge($working, $fired));
 
         $raw_items = User::withTrashed()->whereIn('id', $user_ids)->orderBy('last_name', 'asc')->select(['id','last_name', 'name'])->get();
