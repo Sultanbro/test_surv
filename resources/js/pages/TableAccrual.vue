@@ -43,7 +43,7 @@
         </div>
         
         <!-- filters -->
-        <div class="row" v-if="hasPermission">
+        <div class="row mb-2" v-if="hasPermission">
             <div class="col-4">
                 <div>
                     <p class="mb-0 fz-08 text-black"><b>Итого действующие ФОТ
@@ -75,22 +75,20 @@
                     <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
                     <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
                 </b-form-group>
+                <b-form-group class="d-flex ddf">
+                    <b-form-radio v-model="show_user"  name="some-radios2" value="0">Все</b-form-radio>
+                    <b-form-radio v-model="show_user"  name="some-radios2" value="1" class="mr-0">Есть начисления</b-form-radio>
+                </b-form-group>
             </div>
             <div class="col-2">
                 <p class="text-right fz-09 text-black">
                     <span>Сотрудники:</span> 
                     <b> {{ users_count }} | {{ total_resources }}</b>
                 </p>
-                <b-form-group class="d-flex ddf" style="justify-content:flex-end;">
-                    <b-form-radio v-model="show_user"  name="some-radios2" value="0">Все</b-form-radio>
-                    <b-form-radio v-model="show_user"  name="some-radios2" value="1" class="mr-0">Есть начисления</b-form-radio>
-                </b-form-group>
-            </div>
-            <div class="col-12" >
                 <b-button v-if="selectedGroup.salary_approved == 0 && can_edit"
                         style="float:right"
                         @click="showBeforeApprove = true" 
-                        class="rounded btn-sm" 
+                        class="rounded btn-sm mb-3" 
                         variant="info">Проверено и готово к выдаче</b-button>
                         
                 <p class="approved-text" v-if="selectedGroup.salary_approved == 1">
@@ -103,8 +101,6 @@
         
         <!-- table -->
         <div v-if="hasPermission">
-        
-
             <b-table
                 responsive 
                 striped 

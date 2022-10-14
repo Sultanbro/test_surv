@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Exceptions\Kpi\TargetDuplicateException;
+use Carbon\Carbon;
 
 class KpiService
 {
@@ -45,9 +46,19 @@ class KpiService
     {   
         if($filters !== null) {} 
         
-        $kpis = Kpi::with(['items', 'creator', 'updater', 'histories' => function($query) {
-            //$query->whereDate('created_at', '<=', $last_date);
-        }])->get();
+        $last_date = Carbon::now()->endOfMonth()->format('Y-m-d');
+
+        $kpis = Kpi::with([
+            'items',
+            'creator',
+            'updater',
+            'histories' => function($query) use ($last_date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+            },
+            'items.histories' => function($query) use ($last_date) {
+                $query->whereDate('created_at', '<=', $last_date);
+            },
+        ])->get();
         
         $kpis_final = [];
 
@@ -59,10 +70,40 @@ class KpiService
             // remove items if it's not in history
             if($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
-             
+                
+                $items = $kpi->items;
+
                 if(isset($payload['children'])) {
-                    $item['items'] = array_values($kpi->items->whereIn('id', $payload['children'])->toArray());
+                    $items = $kpi->items->whereIn('id', $payload['children']);
                 } 
+
+                foreach ($items as $key => $_item) {
+
+                    $history = $_item->histories->first();
+
+                    $has_edited_plan = $history ? json_decode($history->payload, true) : false;
+                    
+                    /**
+                     * fields from history
+                     */
+                    $_item['daily_plan'] = (float)$_item->plan;
+
+                    if($has_edited_plan) {
+                        if(array_key_exists('plan', $has_edited_plan))  $_item['daily_plan'] = $has_edited_plan['plan'];
+                        if(array_key_exists('name', $has_edited_plan))  $_item['name'] = $has_edited_plan['name'];
+                        if(array_key_exists('share', $has_edited_plan)) $_item['share'] = $has_edited_plan['share'];
+                        if(array_key_exists('method', $has_edited_plan))$_item['method'] = $has_edited_plan['method'];
+                        if(array_key_exists('unit', $has_edited_plan))  $_item['unit'] = $has_edited_plan['unit'];
+                        if(array_key_exists('cell', $has_edited_plan))  $_item['cell'] = $has_edited_plan['cell'];
+                        if(array_key_exists('common', $has_edited_plan))$_item['common'] = $has_edited_plan['common'];
+                        if(array_key_exists('activity_id', $has_edited_plan)) $_item['activity_id'] = $has_edited_plan['activity_id'];
+                    }
+
+                    $_item['plan'] = $_item['daily_plan'];
+
+                }
+
+                $item['items'] = $items->values();
             }
 
             array_push($kpis_final, $item);
@@ -250,6 +291,8 @@ class KpiService
                 if (isset($item['deleted'])) {
                     $kpi->items()->where('id', $item['id'])->delete();
                 }else{
+                    unset($item['daily_plan']);
+                    unset($item['histories']);
                     $kpi->items()->where('id', $item['id'])->update($item);
                 }
          

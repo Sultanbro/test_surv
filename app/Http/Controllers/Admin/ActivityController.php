@@ -18,6 +18,7 @@ use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Ozon;
 use App\Models\Analytics\UserStat;
 use App\Imports\UserStatsImport;
+use App\Service\Department\UserService;
 
 class ActivityController extends Controller
 {   
@@ -375,16 +376,7 @@ class ActivityController extends Controller
     }
 
     private function groupUsers($group_id) {
-        $users = []; 
-        $group = ProfileGroup::find($group_id);
-
-        if($group) {
-            $users = json_decode($group->users);
-            $users = array_unique($users);
-        } 
-
-        $_users = User::whereIn('id', $users)->orderBy('last_name', 'asc')->get(['id', 'last_name', 'name', 'email']);
-        return $_users;
+        return collect((new UserService)->getEmployees($group_id, date('Y-m-d')));
     }
 
     private function checkMissingFields() {

@@ -145,7 +145,7 @@ class SalaryController extends Controller
             // if($group) $users_ids = json_decode($group->users, true);
 
             if($request->user_types == 0) {
-                $users = (new UserService)->getUsers($request->group_id, $date->format('Y-m-d')); 
+                $users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d')); 
             }
 
             if($request->user_types == 1) {

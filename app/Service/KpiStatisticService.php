@@ -893,11 +893,26 @@ class KpiStatisticService
                 $history = $_item->histories->first();
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
                 
+                /**
+                 * fields from history
+                 */
+                $item['daily_plan'] = (float)$_item->plan;
 
-                $item['daily_plan'] = $has_edited_plan && array_key_exists('plan', $has_edited_plan)
-                    ? $has_edited_plan['plan']
-                    : (float)$_item->plan;
+                if($has_edited_plan) {
+                    if(array_key_exists('plan', $has_edited_plan))  $item['daily_plan'] = $has_edited_plan['plan'];
+                    if(array_key_exists('name', $has_edited_plan))  $item['name'] = $has_edited_plan['name'];
+                    if(array_key_exists('share', $has_edited_plan)) $item['share'] = $has_edited_plan['share'];
+                    if(array_key_exists('method', $has_edited_plan))$item['method'] = $has_edited_plan['method'];
+                    if(array_key_exists('unit', $has_edited_plan))  $item['unit'] = $has_edited_plan['unit'];
+                    if(array_key_exists('cell', $has_edited_plan))  $item['cell'] = $has_edited_plan['cell'];
+                    if(array_key_exists('common', $has_edited_plan))$item['common'] = $has_edited_plan['common'];
+                    if(array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
+                     
+                }
+                
+
                 $item['plan'] = $item['daily_plan'];
+
                 /**
                  * count workdays
                  */

@@ -42,6 +42,8 @@ class TrackKpiItemListener
                 'plan'          => $kpiItem->plan,
                 'share'         => $kpiItem->share,
                 'cell'          => $kpiItem->cell,
+                'method'        => $kpiItem->method,
+                'unit'          => $kpiItem->unit,
             ])
         ]);
     }

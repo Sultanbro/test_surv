@@ -198,7 +198,13 @@
 
     </sidebar>
 
-    <award-sidebar
+<!--     <award-sidebar
+        v-if="showAwardSidebar"
+        :open.sync="showAwardSidebar"
+        :awards="data.awards"
+    /> -->
+
+    <AwardBSidebar
         v-if="showAwardSidebar"
         :open.sync="showAwardSidebar"
         :awards="data.awards"
@@ -208,11 +214,12 @@
 </template>
     
 <script>
-import AwardSidebar from './AwardSidebar'
+/* import AwardSidebar from './AwardSidebar' */
+import AwardBSidebar from './AwardBSidebar'
 
 export default {
     name: "UserEarnings",
-    components: { AwardSidebar },
+    components: { /* AwardSidebar, */ AwardBSidebar },
     props: {
         month: {},
         data: Object,

@@ -467,7 +467,6 @@
             },
     
             editMode() {
-                console.log('hey what happened');
                 this.editTableMode = !this.editTableMode
             },
     
@@ -486,8 +485,6 @@
             calc(combinations) {
                 let expression = this.getExpression(combinations);
     
-                console.log(expression)
-                
                 let result = 0;
 
                 if(expression !== null && expression.length > 0) {
@@ -710,11 +707,8 @@
       
     
                 if(!(this.focused_item == i && this.focused_field == f)) {
-                    console.log('hide');
                      this.hideContextMenu();
                 }
-               
-                    console.log(i,f)
     
                 // indexes
                 this.focused_item = i
@@ -733,33 +727,27 @@
     
             focusName(i,f, s) {
     
-                console.log(i,f, s)
                 this.hideContextMenu();
                 // indexes
                 this.focused_item = i
                 this.focused_field = f
     
                 // cell value
-                // console.log(this.items[i])
-                // console.log(this.fields[f])
-    
                 this.focused_subfield = s;
     
                 let field = s == 2 ? 'plan' : 'name';
     
                 this.cell_value = this.items[i][field].value
                 this.cell_comment = this.items[i][field].comment
-               //console.log(this.items[i][this.fields[f].key])
+
                 this.cell_type = this.cell_types[this.items[i][field].type]
     
-              //  console.log(this.items[i][field])
                 this.coords = this.items[i][field].cell
             },
     
             hideContextMenu() {
                 this.items.forEach((item, index) => {
                     Object.values(item).forEach((value) => {
-                       // console.log(value)
                         value.context = false
                     });
                 })
@@ -913,7 +901,7 @@
             },
             
             editQueryItem(item) {
-                console.log(item)
+               
                 axios.post("/timetracking/analytics/edit-stat", {
                     date: this.$moment(
                         `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
@@ -1083,7 +1071,6 @@
                     text = text.replaceAll("{" + index + "}", "{" + item['name']['row_id'] + "}");
                 });
     
-                console.log(text);
                 var regExp = /[a-zA-Z]/g;
                             
                 if(regExp.test(text)){
@@ -1160,9 +1147,7 @@
             },
     
             form() {
-              //  console.log(this.fields)
                 this.set_letters(this.fields.length);
-               // this.set_fields();
             },
     
             nextItem () { // move by arrows
@@ -1311,7 +1296,7 @@
                     last_pos = text.indexOf(combinations[i], last_pos),
                     positions.push({
                         text: combinations[i],
-                        index: last_pos,
+                        index: last_pos, 
                         type: s !== undefined && s.type == 'formula' ? 'formula' : 'cell',
                         value: s !== undefined ?  s.value : 0,
                         code: s !== undefined ?  '[' + s.column_id + ':'+ s.row_id + ']' : 0,
@@ -1319,17 +1304,23 @@
                 }
     
                 // just numbers in expression
+                let last_pos_floats = -1;
                 for(let i = 0;i<floats.length;i++) {
-                    let f_index = text.indexOf(floats[i]);
+
+                    last_pos_floats++;
+
+                    last_pos_floats = text.indexOf(floats[i], last_pos_floats);
+
                     let f_text = floats[i];
+
                     if(['*','/','+', '-', '('].includes(floats[i][0])) {
-                        f_index++;
+                        last_pos_floats++;
                         f_text = f_text.substr(1,f_text.length);
                     }
-                    
+
                     positions.push({
                         text: f_text,
-                        index: f_index,
+                        index: last_pos_floats,
                         type: 'value',
                         value: Number(f_text)
                     });
@@ -1342,14 +1333,13 @@
                     return 0;
                 });
                
-               return positions;
+                return positions;
             },
     
             searcher(cell){
     
                 let res;
                 for (var i=0; i < this.items.length; i++) {
-                    //console.log(this.items[i])
                     Object.values(this.items[i]).forEach(item => {
                         if(item.cell == cell) {
                             res = item;
@@ -1363,7 +1353,6 @@
     
                 let items = [];
                 for (var i=0; i < this.items.length; i++) {
-                    //console.log(this.items[i])
                     Object.values(this.items[i]).forEach(item => {
                         if(item.type == 'formula') {
                             items.push(item);

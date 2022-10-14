@@ -88,7 +88,13 @@
                                             <th class="text-center t-name table-title">Кол-во <br>переданных <br> стажеров</th>
                                             <th class="text-center t-name table-title">Кол-во <br>приступивших <br>к работе</th>
                                             <th class="text-center t-name table-title">Процент <br>прохождения<br> стажировки</th>
-                                            <th class="text-center t-name table-title">Кол-во<br> стажирующихся активных<br></th>
+                                            <th class="text-center t-name table-title">
+                                                Кол-во<br> стажирующихся активных
+                                                <i class="fa fa-info-circle"
+                                                    v-b-popover.hover.right.html="'Стажеры, которые присутстовали на сегодня. В табели у них есть оранжевая отметка.'"
+                                                    title="Активные стажеры">
+                                                </i>
+                                            </th>
                                         </thead>
                                         <tbody v-for="ocenka in recruiting.ocenka_svod">
                                             <tr>

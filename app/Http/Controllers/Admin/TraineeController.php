@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\View;
 use App\External\Bitrix\Bitrix;
 use App\Models\Bitrix\Lead;
 use App\AnalyticsSettingsIndividually;
+use App\Service\Department\UserService;
 use App\Timeboard\UserPresence;
 
 class TraineeController extends Controller
@@ -27,7 +28,11 @@ class TraineeController extends Controller
 
     }
 
-    public function autochecker() {
+    /**
+     * hmmm
+     */
+    public function autochecker()
+    {
         $this->middleware('auth');
         $user = Auth::user(); 
 
@@ -39,7 +44,6 @@ class TraineeController extends Controller
             } else {
                 $group->checktime = null;
             }
-            
         }
 
         return view('admin.autocheck.autochecker')->with([
@@ -47,9 +51,12 @@ class TraineeController extends Controller
         ]);  
     }
 
-    public function open($id, Request $request) {
+    /**
+     * open Trainees marking link
+     */
+    public function open($id, Request $request)
+    {
         $this->middleware('auth');
-        $user = Auth::user(); 
 
         if ($request->isMethod('post')) {
             $group = ProfileGroup::find($id);
@@ -58,49 +65,35 @@ class TraineeController extends Controller
                 $group->save();
             }
         } 
-        
-        // $groups = $user->headInGroups();
-
-        // foreach($groups as $group) {
-        //     if(Carbon::parse($group->checktime)->timestamp - time() >= 0) {
-        //         $group->checktime = Carbon::parse($group->checktime)->setTimezone('Asia/Almaty');
-        //     } else {
-        //         $group->checktime = null;
-        //     }
-            
-        // }
 
         return [
             'code' => 200,
             'time' => Carbon::now()->addMinutes(30)->addHours(6)->format('H:i')
         ];
-        // return view('admin.autocheck.autochecker')->with([
-        //     'groups' => $groups
-        // ]);  
     }
 
-    public function autocheck($id) {
-        
-        
+    /**
+     * maybe trainees marking page
+     */
+    public function autocheck($id)
+    {
         $group = ProfileGroup::find($id);
         if(!$group) abort(404);
         
-        // $users = \DB::table('users')
-        //     ->whereNull('deleted_at')
-        //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-        //     ->where('ud.is_trainee', 1)
-        //     ->whereIn('users.id', json_decode($group->users, true))
-        //     ->select(DB::raw("CONCAT_WS(' ', last_name, name) as name"), 'users.id as id')->get()->sortBy('name')->toArray();
+        $trainees = (new UserService)->getTrainees($group->id, date('Y-m-d'));
+        $user_ids = collect($trainees)->pluck('id')->toArray();
 
         $users = User::with('user_description')
             ->whereHas('user_description', function ($query) {
                 $query->where('is_trainee', 1);
             })
-            ->whereIn('users.id', json_decode($group->users, true))
+            ->whereIn('users.id', $user_ids)
             ->select(DB::raw("CONCAT_WS(' ', last_name, name) as name"), 'id')
-            ->get()->sortBy('name')->toArray();
+            ->get()
+            ->sortBy('name')
+            ->toArray();
 
-        foreach($users as $key => $user) {
+        foreach($users as $key => $user) { 
             $users[$key]['id'] = $this->numhash($user['id']);
         }
 
@@ -112,7 +105,8 @@ class TraineeController extends Controller
     /**
      * Trainee marked
      */
-    public function save($id, Request $request) {
+    public function save($id, Request $request)
+    {
         //dd($request->ip());
 
         $group = ProfileGroup::find($id);
@@ -122,14 +116,14 @@ class TraineeController extends Controller
         $user = User::find($user_id);
         $user = $user ? $user->last_name . ' ' . $user->name : '';
 
-        if($group && $group->checktime && Carbon::parse($group->checktime)->timestamp - time() >= 0) {
-            // $users = $group->checktime_users;
-            // array_push($users, $user_id);
-            // $users = array_unique($users);
-            // $group->checktime_users = $users;
-            // $group->save();
+        if(
+            $group
+            && $group->checktime
+            && Carbon::parse($group->checktime)->timestamp - time() >= 0
+        ) {
 
             /** Отметиться */
+
             $marked_user = UserPresence::where('date', date('Y-m-d'))
                 ->where('user_id', $user_id)
                 ->first();
@@ -137,7 +131,9 @@ class TraineeController extends Controller
                 UserPresence::create(['user_id' => $user_id, 'date' => date('Y-m-d')]);
             }
 
-            /** Проверить daytype на отсутствие */
+            /** 
+             * Проверить daytype на отсутствие 
+             */
             $daytype = DayType::where([
                 'user_id' => $user_id,
                 'date' => date('Y-m-d'),
@@ -149,7 +145,6 @@ class TraineeController extends Controller
                 ->whereDate('group', date('Y-m-d'))
                 ->delete();
             
-
             // on tabel history
             $th = TimetrackingHistory::where([
                 'user_id' => $user_id,
@@ -158,7 +153,7 @@ class TraineeController extends Controller
                 'description' => 'Не отметился по указанной ссылке для стажеров',
             ])->delete();
 
-            /////
+            //
             if($daytype) $daytype->update([
                             'type' => 5,
                         ]);
@@ -166,17 +161,22 @@ class TraineeController extends Controller
             // сообщение 
             $message = 'Вы успешно отметились! Можете возвращаться на стажировку';
         } else {
-            $message = $group ? 'Не получилось отметиться. Видимо ссылка уже устарела...'  : 'Ошибка системы. Группа не найдена';
+            $message = $group 
+                ? 'Не получилось отметиться. Видимо ссылка уже устарела...'
+                : 'Ошибка системы. Группа не найдена';
         }
 
-        // 
 		return view('admin.autocheck.save')->with([
             'message' =>  $message,
             'user' =>  $user,
         ]);
 	}
 
-    private function numhash($n) {
+    /**
+     * cipher user_id
+     */
+    private function numhash($n)
+    {
         return (((0x0000FFFF & $n) << 16) + ((0xFFFF0000 & $n) >> 16));
     }
     
