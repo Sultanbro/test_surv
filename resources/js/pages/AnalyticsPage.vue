@@ -85,29 +85,75 @@
                                 <template v-for="(activity, index) in data.activities"> 
                                     <b-tab :title="activity.name" :key="index"  @change="showcubTab(index)">
                                         
-                                        <t-activity-new v-if="activity.type == 'default'"
-                                            :month="monthInfo"
-                                            :activity="activity"
-                                            :key="activity.id"
-                                            :group_id="currentGroup"
-                                            :work_days="monthInfo.workDays"
-                                            :editable="activity.editable == 1 ? true : false"
-                                        ></t-activity-new>
 
-                                         <t-activity-collection v-if="activity.type == 'collection'"
-                                            :month="monthInfo"
-                                            :activity="activity"
-                                            :is_admin="true"
-                                            :key="activity.id"
-                                            :price="activity.price"
-                                        ></t-activity-collection>
+                                        <!-- Switch month and year of Activity in detailed -->
+                                        <b-tabs type="card" @change="switchYearOrMonthInActivity">
 
-                                        <t-quality-weekly v-if="activity.type == 'quality'"
-                                            :monthInfo="monthInfo"
-                                            :items="activity.records"
-                                            :key="activity.id"
-                                            :editable="activity.editable == 1 ? true : false"
-                                        ></t-quality-weekly>
+                                            <!-- Month tab of activity in detailed -->
+                                            <b-tab title="Месяц" key="1">
+                                                <t-activity-new v-if="activity.type == 'default'"
+                                                    :month="monthInfo"
+                                                    :activity="activity"
+                                                    :key="activity.id"
+                                                    :group_id="currentGroup"
+                                                    :work_days="monthInfo.workDays"
+                                                    :editable="activity.editable == 1 ? true : false"
+                                                ></t-activity-new>
+
+                                                <t-activity-collection v-if="activity.type == 'collection'"
+                                                    :month="monthInfo"
+                                                    :activity="activity"
+                                                    :is_admin="true"
+                                                    :key="activity.id"
+                                                    :price="activity.price"
+                                                ></t-activity-collection>
+
+                                                <t-quality-weekly v-if="activity.type == 'quality'"
+                                                    :monthInfo="monthInfo"
+                                                    :items="activity.records"
+                                                    :key="activity.id"
+                                                    :editable="activity.editable == 1 ? true : false"
+                                                ></t-quality-weekly>
+                                            </b-tab>
+
+                                            <!-- Year tab of activity in detailed -->
+                                            <b-tab title="Год" key="2">
+                                                
+                                                <!-- Year table -->
+                                                <table class="table b-table table-sm table-bordered">
+                                                    <tr>
+                                                        <th class="b-table-sticky-column text-left t-name wd">
+                                                            <div>Сотрудник</div>
+                                                        </th>
+
+                                                        <template v-for="(field, key) in yearActivityTableFields">
+                                                            <th :class="field.class">
+                                                                <div>{{ field.name }}</div>
+                                                            </th>
+                                                        </template>
+
+                                                    </tr>
+
+                                                    <template v-for="( row, index ) in yearActivityTable">
+                                                        <tr :key="index">
+                                                            <th class="b-table-sticky-column text-left t-name wd">
+                                                                {{ row.name }}
+                                                            </th>
+
+                                                            <template v-for="(field, key) in yearActivityTableFields">
+                                                                <td :class="field.class" :key="key">
+                                                                    <div>{{ row[field.name] }}</div>
+                                                                </td>
+                                                            </template>
+                                                        </tr>
+                                                    </template>
+                                                </table>
+
+
+                                            </b-tab>
+                                        </b-tabs>
+
+                                        
 
                                     </b-tab>
                                 </template>
@@ -244,6 +290,8 @@ export default {
             active: '1',
             hasPremission: false, // доступ
             years: [2020, 2021, 2022],
+            yearActivityTableFields: [],
+            yearActivityTable: [],
             currentYear: new Date().getFullYear(),
             monthInfo: {},
             currentGroup: null,
@@ -287,6 +335,7 @@ export default {
         let group = urlParams.get('group');
         let active = urlParams.get('active');
         let load = urlParams.get('load');
+
         this.ggroups = this.groups
         this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
         
@@ -294,16 +343,46 @@ export default {
     
         this.setMonth()
         this.setYear()
+        this.setActivityYearTableFields()
 
         if(load != null) {
             this.fetchData()
         }
-       // this.fetchData()
-
 
         
     },
     methods: {
+
+        switchYearOrMonthInActivity(v) {
+            console.log(v)
+        },
+
+        setActivityYearTableFields() {
+            let fieldsArray = [];
+            let order = 1;
+
+            fieldsArray.push({
+                key: "total",
+                name: "Итог",
+                order: order++,
+                сlass: " text-center px-1 t-total",
+            });
+
+            for (let i = 1; i <= 12; i++) {
+                if (i.length == 1) i = "0" + i;
+
+                fieldsArray.push({
+                    key: i,
+                    name: moment(this.currentYear + "-" + i + "-01").format("MMMM"),
+                    order: order++,
+                    сlass: "text-center px-1 month",
+                });
+            }
+
+            this.yearActivityTableFields = fieldsArray;
+
+            
+        },
 
         onTabClick() {
             console.log('horay')    
