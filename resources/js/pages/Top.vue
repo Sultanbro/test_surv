@@ -147,8 +147,13 @@
                               @change="updateProceed(record, field, 'name')">
                     </div>
                   </template>
+
                   <template v-else>
-                    {{ record[field] }}
+                    <div :class="{
+                      'weekend': isWeekend(field)
+                    }">
+                        {{ record[field] }}
+                    </div>
                   </template>
                 </template>
 
@@ -322,6 +327,14 @@ export default {
       });
     },
 
+    isWeekend(field) {
+      var arr = field.split(".");
+      var month = Number(arr[1]) - 1;
+      var dayOfWeek = new Date(2022, month, arr[0]).getDay();
+
+      return dayOfWeek == 6 || dayOfWeek == 0;
+    },
+
     saveRentGauge(g_index) {
       let loader = this.$loading.show();
       axios.post('/timetracking/top/save_rent_max', {
@@ -391,6 +404,10 @@ export default {
 </script>
 
 <style lang="scss">
+
+.weekend {
+  background: orange;
+}
 .gauge-title {
   font-weight: bold;
   display: none;
