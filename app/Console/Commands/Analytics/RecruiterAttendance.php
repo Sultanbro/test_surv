@@ -17,7 +17,7 @@ class RecruiterAttendance extends Command
      *
      * @var string
      */
-    protected $signature = 'recruiter:attendance';
+    protected $signature = 'recruiter:attendance {date?}';
 
     /**
      * The console command description.
@@ -58,7 +58,7 @@ class RecruiterAttendance extends Command
     {
         parent::__construct();
 
-        $this->date = date('Y-m-d');
+        $this->date = $this->argument('date') ? $this->argument('date') : date('Y-m-d');
 
         $this->activity = new RecruitingActivityService();
      
