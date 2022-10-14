@@ -67,7 +67,7 @@ class AnalyticsController extends Controller
     public function __construct()
     {
         View::share('title', 'Аналитика групп');
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -831,5 +831,15 @@ class AnalyticsController extends Controller
         
     }
 
+
+    public function getUserStatisticsByMonth(Request $request)
+    {
+        $year    = $request->input('year') ?? null;
+        $groupId = $request->input('group_id') ?? null;
+
+        $response = (new AnalyticService)->userStatisticsPerMonth($year, $groupId);
+
+        return response()->success($response);
+    }
 }
 

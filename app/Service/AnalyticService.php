@@ -2,9 +2,12 @@
 
 namespace App\Service;
 
+use App\Models\Analytics\UserStat;
 use App\Models\GroupUser;
 use App\ProfileGroup;
+use App\Repositories\ProfileGroupRepository;
 use App\Service\Department\UserService;
+use Illuminate\Support\Facades\DB;
 
 class AnalyticService
 {
@@ -41,5 +44,38 @@ class AnalyticService
         $firedUsers = $this->getFiredUsersPerMonth($group, $date);
         $allUsers   = count($this->userService->getUsers($group->id, $date->toDateString()));
         return round(($firedUsers/($allUsers + $firedUsers)) * 100, 1);
+    }
+
+    /**
+     * @param $year
+     * @param $groupId
+     * @return array
+     */
+    public function userStatisticsPerMonth($year, $groupId): array
+    {
+        $users = $this->getProfileGroup($groupId)->users()->pluck('id')->toArray();
+        $monthInYear = 12;
+        $statistics = [];
+        for ($month = 1; $month <= $monthInYear; $month++)
+        {
+            $statistics[$year . '-' . $month] = UserStat::query()
+                ->select(DB::raw('SUM(value) as total'),'user_id')
+                ->whereIn('user_id', $users)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->groupByRaw('user _id, year(date), month(date)')
+                ->get();
+        }
+
+        return $statistics;
+    }
+
+    /**
+     * @param $groupId
+     * @return mixed
+     */
+    public function getProfileGroup($groupId)
+    {
+        return app(ProfileGroupRepository::class)->getGroup($groupId);
     }
 }

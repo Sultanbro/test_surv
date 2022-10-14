@@ -491,6 +491,7 @@ Route::middleware([
     Route::post('/timetracking/analytics/add-salary', [AnalyticsController::class, 'addSalary']);
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
+    Route::any('/timetracking/user-statistics-by-month', [AnalyticsController::class, 'getUserStatisticsByMonth']);
     /**
      * Редактирование бонусов
      */
