@@ -58,12 +58,12 @@ class AnalyticService
         $statistics = [];
         for ($month = 1; $month <= $monthInYear; $month++)
         {
-            $statistics[$year . '-' . $month] = UserStat::query()
+            $statistics[$month] = UserStat::query()
                 ->select(DB::raw('SUM(value) as total'),'user_id')
                 ->whereIn('user_id', $users)
                 ->whereYear('date', $year)
                 ->whereMonth('date', $month)
-                ->groupByRaw('user _id, year(date), month(date)')
+                ->groupByRaw('user_id, year(date), month(date)')
                 ->get();
         }
 
