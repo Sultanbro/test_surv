@@ -338,7 +338,7 @@ class User extends Authenticatable implements Authorizable
     public function inGroups()
     {
         $groups = GroupUser::where('user_id', $this->id)
-            ->where('status', 'active')
+           // ->where('status', 'active')
             ->get()
             ->pluck('group_id')
             ->toArray();
@@ -389,7 +389,6 @@ class User extends Authenticatable implements Authorizable
             ? Carbon::createFromDate(date('Y'), $request->month, $request->day)
             : date('Y-m-d');
 
-        dd('test');
         if ($user) {
             
             (new UserService)->fireUser($user->id, $fireDate);

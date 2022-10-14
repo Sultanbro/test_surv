@@ -1467,27 +1467,32 @@ class TimetrackingController extends Controller
         
         if ($request->isMethod('post')) {
             $group = ProfileGroup::find($request->group_id);
-            $user_ids = json_decode($group->users);
-            if($group->users == null) $user_ids = [];
+            // $user_ids = json_decode($group->users);
+            // if($group->users == null) $user_ids = [];
             
-            $users_ids = json_decode($group->users);
-            //проверка на принятие на работу
-            $user_ids = [];    
-            $my_ids = DB::table('users')
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', $users_ids)
-                ->where('ud.is_trainee', 0) 
-                ->get(['users.id','ud.applied']);
-            $end_month = Carbon::parse($request->year . '-' . $request->month . '-01')->endOfMonth();
-            foreach($my_ids as $ids){
-                $hire_date = Carbon::parse($ids->applied);
-                $user_ids[] = $ids->id;
-                // if($hire_date->lt($end_month) || !isset($ids->applied)){
-                //     //dump($hire_date->toDateString());
-                //     $user_ids[] = $ids->id;
-                // }
-            } 
+            // $users_ids = json_decode($group->users);
+            // //проверка на принятие на работу
+            // $user_ids = [];    
+            // $my_ids = DB::table('users')
+            //     ->whereNull('deleted_at')
+            //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            //     ->whereIn('users.id', $users_ids)
+            //     ->where('ud.is_trainee', 0) 
+            //     ->get(['users.id','ud.applied']);
+            // $end_month = Carbon::parse($request->year . '-' . $request->month . '-01')->endOfMonth();
+            // foreach($my_ids as $ids){
+            //     $hire_date = Carbon::parse($ids->applied);
+            //     $user_ids[] = $ids->id;
+            //     // if($hire_date->lt($end_month) || !isset($ids->applied)){
+            //     //     //dump($hire_date->toDateString());
+            //     //     $user_ids[] = $ids->id;
+            //     // }
+            // } 
+
+            $date = Carbon::createFromDate($request->year, $request->month, $request->day);
+            
+            $workingUsers = (new UserService)->getUsers($request->group_id, $date->format('Y-m-d')); 
+            $user_ids = collect($workingUsers)->pluck('id')->toArray();
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
             // Доступ к группе

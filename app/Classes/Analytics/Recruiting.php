@@ -1496,26 +1496,44 @@ public function planRequired($arr) {
             ->get()->count();
 
         return $users_off;
-    }
+    }   
 
-    public static function ocenka_svod($date) {
+    /**
+     * Таблица в HR -> Этап стажировки -> Сводная
+     */
+    public static function ocenka_svod($date)
+    {
         $arr = [];
 
         $date = Carbon::parse($date)->startOfMonth();
 
-        $groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get();
+        $groups = ProfileGroup::where('active', 1)
+                    ->where('has_analytics', 1)
+                    ->get();
 
         foreach($groups as $group) {
+
             $item = [];
 
+            /**
+             * Название группы
+             */
             $item['name'] = $group->name;
             
+            /**
+             * Кол-во переданных стажеров
+             */
             $leads = Lead::whereYear('invite_at', $date->year)
                 ->whereMonth('invite_at', $date->month)
                 ->where('invite_group_id', $group->id)
                 ->get();
 
             $item['sent'] = $leads->count();
+
+            /**
+             * Кол-во приступивших к работе
+             * к нему собираются
+             */
 
             $users = (new UserService)->getUsers($group->id, $date->format('Y-m-d'));
             $user_ids = collect($users)->pluck('id')->toArray();
@@ -1530,7 +1548,7 @@ public function planRequired($arr) {
                 ->get(['id'])
                 ->pluck('id')
                 ->toArray();
-
+            
             $item['working'] = User::with('user_description')
                 ->withTrashed()
                 ->whereHas('user_description', function ($query) {
@@ -1540,7 +1558,10 @@ public function planRequired($arr) {
                 ->get()
                 ->count();
 
-
+            
+            /**
+             * Процент прохождения стажировки
+             */
             $percent = $item['sent'] > 0
                 ? $item['working'] / $item['sent'] * 100
                 : 0;
@@ -1548,7 +1569,7 @@ public function planRequired($arr) {
             $item['percent'] = round($percent, 1) . '%';
 
             /**
-             * Active trainees
+             * Кол-во стажирующихся активных
              */
             $users = (new UserService)->getTrainees($group->id, $date->format('Y-m-d'));
             $user_ids = collect($users)->pluck('id')->toArray();
@@ -1559,6 +1580,9 @@ public function planRequired($arr) {
                                     ->get()
                                     ->count();
 
+            /**
+             * Требуется нанять	
+             */
             $get_required = self::getPrognozGroups($date);
 
             foreach($get_required as $req){
@@ -1567,13 +1591,18 @@ public function planRequired($arr) {
                 }
             }
 
+
             array_push($arr, $item);
         }
 
         return $arr;
     }
     
-    public static function getPrognozGroups($date) {
+    /**
+     * Требуется нанять	возможно
+     */
+    public static function getPrognozGroups($date)
+    {
         $arr = [];
 
         $groups = ProfileGroup::where('active', 1)->where('has_analytics', 1)->get();

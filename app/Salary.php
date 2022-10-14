@@ -478,39 +478,39 @@ class Salary extends Model
     {
         $date = Carbon::parse($date)->day(1);
 
-        $users = User::query();
+        $users = User::withTrashed();
 
-        if($user_types == 0) { // Действующие
-            $users->whereNull('deleted_at');
-        } 
+        // if($user_types == 0) { // Действующие
+        //     $users->whereNull('deleted_at');
+        // } 
 
-        if($user_types == 1) { // Уволенные
-            $users->onlyTrashed();
-        }
+        // if($user_types == 1) { // Уволенные
+        //     $users->onlyTrashed();
+        // }
 
-        if($user_types == -1 || $user_types == 3) { // one person
-            $users->withTrashed();
-        }
+        // if($user_types == -1 || $user_types == 3) { // one person
+        //     $users->withTrashed();
+        // }
 
-        if($user_types == 0) { // Действующие
-            $users_ids = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0)
-                ->whereIn('users.id', $users_ids)
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-        }
+        // if($user_types == 0) { // Действующие
+        //     $users_ids = \DB::table('users')
+        //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        //         ->where('is_trainee', 0)
+        //         ->whereIn('users.id', $users_ids)
+        //         ->get(['users.id'])
+        //         ->pluck('id')
+        //         ->toArray();
+        // }
 
-        if($user_types == 2) {
-            $users_ids = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 1)
-                ->whereIn('users.id', $users_ids)
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-        }
+        // if($user_types == 2) {
+        //     $users_ids = \DB::table('users')
+        //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        //         ->where('is_trainee', 1)
+        //         ->whereIn('users.id', $users_ids)
+        //         ->get(['users.id'])
+        //         ->pluck('id')
+        //         ->toArray();
+        // }
 
         $users->whereIn('users.id', array_unique($users_ids));
 
@@ -586,12 +586,23 @@ class Salary extends Model
              * Exception: show DM1 users in both groups DM2
              */
             $ugroups = $user->inGroups();
+            if(in_array($user->id, [
+                6401,
+                5084,
+                5975,
+                9873,
+                7211,
+                6634,
+                7203,
+                10147
+            ])) {
 
-            if(count($ugroups) > 0 && $group_id != 93) {
+            } else if(count($ugroups) > 0 && $group_id != 93) {
                 if($ugroups[0]->id != $group_id && $user_types != -1) {
                     continue;
                 }
             }
+            
             
             /**
              * if internship is paid
