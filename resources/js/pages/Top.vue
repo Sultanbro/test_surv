@@ -119,7 +119,10 @@
 
 
               <td v-for="(field, findex) in proceeds.fields" :key="findex"
-                  class="text-center t-name table-title" :class="{'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field)}">
+                  class="text-center t-name table-title" :class="{
+                    'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field),
+                    'weekend': isWeekend(field)
+                  }">
 
                 <template v-if="!['%', 'План', 'Итого', '+/-', 'Группа'].includes(field)">
                   <div v-if="record['group_id'] < 0">
@@ -128,9 +131,7 @@
                            v-model="record[field]"
                            @change="updateProceed(record, field, 'day')">
                   </div>
-                  <div v-else :class="{
-                      'weekend': isWeekend(field)
-                    }">
+                  <div v-else>
                     <span v-if="record[field] != 0">{{ record[field] }}</span>
                     <span v-else></span>
                   </div>
@@ -407,7 +408,7 @@ export default {
 <style lang="scss">
 
 .weekend {
-  background: orange;
+  background: orange !important;
 }
 .gauge-title {
   font-weight: bold;
