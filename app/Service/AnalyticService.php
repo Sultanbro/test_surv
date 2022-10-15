@@ -7,7 +7,9 @@ use App\Models\GroupUser;
 use App\ProfileGroup;
 use App\Repositories\ProfileGroupRepository;
 use App\Service\Department\UserService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\User;
 
 class AnalyticService
 {
@@ -47,28 +49,33 @@ class AnalyticService
     }
 
     /**
-     * @param $year
+     * @param $date
      * @param $groupId
      * @return array
      */
-    public function userStatisticsPerMonth($year, $groupId): array
+    public function userStatisticsPerMonth($date, $groupId): array
     {
-        $users = $this->getProfileGroup($groupId)->users()->pluck('id')->toArray();
+        $carbon = $this->getDate($date);
+        $users  = collect((new UserService)->getUsers($groupId, $carbon))->pluck('id')->toArray();
         $monthInYear = 12;
         $statistics = [];
-        for ($month = 1; $month <= $monthInYear; $month++)
+        foreach ($users as $user)
         {
-            $statistics[$month] = UserStat::query()
-                ->with('users', fn ($user) => $user->select('id', 'name', 'last_name'))
-                ->select(DB::raw('SUM(value) as total'),'user_id')
-                ->whereIn('user_id', $users)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->groupByRaw('user_id, year(date), month(date)')
-                ->get();
+            for ($month = 1; $month <= $monthInYear; $month++)
+            {
+                $statistics[$user][$month]= UserStat::
+                    select(DB::raw('SUM(value) as total'))
+                    ->where('user_id', $user)
+                    ->whereYear('date', $date['year'])
+                    ->whereMonth('date', $month)
+                    ->groupByRaw('user_id, year(date), month(date)')
+                    ->first() ?? 0;
+            }
         }
-
-        return $statistics;
+        return [
+            'statistics' => $statistics,
+            'users' => (new UserService)->getUsers($groupId, $carbon)
+        ];
     }
 
     /**
@@ -78,5 +85,12 @@ class AnalyticService
     public function getProfileGroup($groupId)
     {
         return app(ProfileGroupRepository::class)->getGroup($groupId);
+    }
+
+    private function getDate($date)
+    {
+        $date = $date['year'] . '-' . $date['month'] . '-' . 1;
+
+        return Carbon::parse($date)->endOfMonth()->format('Y-m-d');
     }
 }

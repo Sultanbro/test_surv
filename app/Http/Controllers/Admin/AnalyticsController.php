@@ -862,10 +862,10 @@ class AnalyticsController extends Controller
      */
     public function getUserStatisticsByMonth(Request $request)
     {
-        $year    = $request->input('year') ?? null;
+        $date    = $request->input('date') ?? null;
         $groupId = $request->input('group_id') ?? null;
 
-        $response = (new AnalyticService)->userStatisticsPerMonth($year, $groupId);
+        $response = (new AnalyticService)->userStatisticsPerMonth($date, $groupId);
 
         return response()->success($response);
     }
