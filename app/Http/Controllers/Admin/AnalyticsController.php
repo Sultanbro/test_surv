@@ -864,8 +864,9 @@ class AnalyticsController extends Controller
     {
         $date    = $request->input('date') ?? null;
         $groupId = $request->input('group_id') ?? null;
+        $activity_id = $request->input('activity_id') ?? null;
 
-        $response = (new AnalyticService)->userStatisticsPerMonth($date, $groupId);
+        $response = (new AnalyticService)->userStatisticsPerMonth($date, $groupId, $activity_id);
 
         return response()->success($response);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Models\Analytics\Activity;
 use App\Models\Analytics\UserStat;
 use App\Models\GroupUser;
 use App\ProfileGroup;
@@ -53,21 +54,25 @@ class AnalyticService
      * @param $groupId
      * @return array
      */
-    public function userStatisticsPerMonth($date, $groupId): array
+    public function userStatisticsPerMonth($date, $groupId, $activity_id): array
     {
         $carbon = $this->getDate($date);
         $users  = collect((new UserService)->getUsers($groupId, $carbon))->pluck('id')->toArray();
         $monthInYear = 12;
         $statistics = [];
+
+        $necessaryFields = DB::raw($this->necessaryFields($activity_id));
+        
         foreach ($users as $user)
         {
             for ($month = 1; $month <= $monthInYear; $month++)
             {
                 $statistics[$user][$month]= UserStat::
-                    select(DB::raw('SUM(value) as total'))
+                    select($necessaryFields)
                     ->where('user_id', $user)
                     ->whereYear('date', $date['year'])
                     ->whereMonth('date', $month)
+                    ->where('activity_id', $activity_id)
                     ->groupByRaw('user_id, year(date), month(date)')
                     ->first() ?? 0;
             }
@@ -76,6 +81,26 @@ class AnalyticService
             'statistics' => $statistics,
             'users' => (new UserService)->getUsers($groupId, $carbon)
         ];
+    }
+
+    /**
+     * determine necessary field total or avg from Activity method
+     * 
+     * @return String
+     */
+    private function necessaryFields($activity_id): String
+    {
+        $activity = Activity::withTrashed()->find($activity_id);
+
+        $method = $activity ? $activity->method : Activity::METHOD_SUM;
+
+        return in_array($method, [
+                Activity::METHOD_SUM,
+                Activity::METHOD_SUM_NOT_LESS,
+                Activity::METHOD_AVG_NOT_MORE,
+            ])
+            ? 'SUM(value) as total'
+            : 'AVG(value) as total';
     }
 
     /**
