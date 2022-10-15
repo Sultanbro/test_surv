@@ -40,13 +40,6 @@
                             <div class="mb-5"></div>
                             <g-recruting :records="recruiting.indicators" v-if="recruiting.indicators" :isAnalyticsPage="true"></g-recruting>
                             <div class="mb-5"></div>
-                            <t-summary-recruting :records="recruiting.recrutingTotals" :month="monthInfo"></t-summary-recruting> 
-                            <div class="mt-5"></div>
-
-                            <t-decomposition 
-                                :month="monthInfo"
-                                :data="decomposition"
-                            ></t-decomposition>
                         </b-tab>
                         <b-tab title="Стажеры" key="3" card>
                             <t-skypes :month="monthInfo" 
