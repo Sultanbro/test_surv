@@ -175,7 +175,12 @@
                                                         <li  @click="add_salary(item[field.key])" v-if="['name'].includes(field.key)">
                                                             Начисления отдела
                                                         </li>
-                                                
+                                                        <li>
+                                                          <div class="d-flex decimals">
+                                                            <p>Дробные</p>
+                                                            <input v-model="item[field.key].decimals"  type="number" @change="setDecimals(item[field.key])"/>
+                                                          </div>
+                                                        </li>
                                                 </ul>
                                             </div>
     
@@ -399,7 +404,7 @@
                     time: 'Часы из табеля',
                     stat: 'Показатели',
                     avg: 'Среднее',
-                    sum: 'Сумма дней',
+                    sum: 'Сумма',
                     salary: 'Начисления',
                     remote: 'Отсутствие remote',
                     inhouse: 'Отсутствие inhouse',
