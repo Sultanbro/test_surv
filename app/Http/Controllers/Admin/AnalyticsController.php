@@ -67,7 +67,7 @@ class AnalyticsController extends Controller
     public function __construct()
     {
         View::share('title', 'Аналитика групп');
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -833,5 +833,44 @@ class AnalyticsController extends Controller
         
     }
 
+    /**
+     * Request:
+     *  {
+     *    "year": 2022,
+     *    "group_id": 31
+     *  }
+     *
+     * Response:
+     * {
+     *    "status": 200,
+     *    "message": "success",
+     *    "data": {
+     *      "1": [
+     *        {
+     *          "total": 2495,
+     *          "user_id": 2658,
+     *          "users": {
+     *              {
+     *                 "id": 2658,
+     *                 "name": "Vasya",
+     *                 "last_name" "Pupkin"
+     *              }
+     *        }...
+     *    }
+     * }
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function getUserStatisticsByMonth(Request $request)
+    {
+        $date    = $request->input('date') ?? null;
+        $groupId = $request->input('group_id') ?? null;
+        $activity_id = $request->input('activity_id') ?? null;
+
+        $response = (new AnalyticService)->userStatisticsPerMonth($date, $groupId, $activity_id);
+
+        return response()->success($response);
+    }
 }
 

@@ -40,29 +40,6 @@
                             <div class="mb-5"></div>
                             <g-recruting :records="recruiting.indicators" v-if="recruiting.indicators" :isAnalyticsPage="true"></g-recruting>
                             <div class="mb-5"></div>
-                            <t-summary-recruting :records="recruiting.recrutingTotals" :month="monthInfo"></t-summary-recruting> 
-                            <div class="mt-5"></div>
-
-                            <t-decomposition 
-                                :month="monthInfo"
-                                :data="decomposition"
-                            ></t-decomposition>
-                        </b-tab>
-                        <b-tab title="Подробная" key="2" card>
-                            <t-recruting-user v-for="hr in recruiting.hrs" :key="hr.id" 
-                                :records="hr.records"
-                                :name="hr.name"
-                                :id="hr.id"
-                                :editable="true"
-                                :deleted="hr.deleted"
-                                :hr="hr"
-                                :month="monthInfo"
-                                :workdays="hr.workdays"></t-recruting-user>
-
-                            <div class="mb-2"><b>Архивированы</b></div>
-                            <div v-for="hr in recruiting.hrs">
-                                <div v-if="hr.deleted == true">{{ hr.name }}</div>
-                            </div>
                         </b-tab>
                         <b-tab title="Стажеры" key="3" card>
                             <t-skypes :month="monthInfo" 

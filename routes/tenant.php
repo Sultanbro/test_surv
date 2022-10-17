@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 
+use App\Http\Controllers\AwardController;
+use App\Http\Controllers\AwardTypeController;
 use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
@@ -384,7 +386,7 @@ Route::middleware([
         Route::get('/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
         Route::get('/leads/list', [\App\Http\Controllers\IntegrationController::class, 'getLeads']);
     });
-    
+
     Route::group([
         'prefix' => 'department',
         'as'     => 'department.'
@@ -489,17 +491,18 @@ Route::middleware([
     Route::post('/timetracking/analytics/add-salary', [AnalyticsController::class, 'addSalary']);
     Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
+    Route::any('/timetracking/user-statistics-by-month', [AnalyticsController::class, 'getUserStatisticsByMonth']);
     /**
      * Редактирование бонусов
      */
     Route::group([
         'prefix'     => 'bonus',
-        'middleware' => 'auth'
+        'as' => 'bonus.'
     ], function(){
-        Route::post('get',[BonusController::class,'get']);
-        Route::post('save',[BonusController::class,'save']);
-        Route::put('update',[BonusController::class,'update']);
-        Route::delete('delete/{id}',[BonusController::class,'delete']);
+        Route::post('get',[BonusController::class,'get'])->name('get');
+        Route::post('save',[BonusController::class,'save'])->name('save');
+        Route::put('update',[BonusController::class,'update'])->name('update');
+        Route::delete('delete',[BonusController::class,'delete'])->name('delete');
     });
 
     /**
@@ -546,9 +549,37 @@ Route::middleware([
         Route::put('update',[IndicatorController::class,'update'])->name('update');
         Route::delete('delete/{id}',[IndicatorController::class,'delete'])->name('delete');
     });
-   
 
-  
+    /**
+     * Типы награды для сотрудников.
+     */
+    Route::group([
+        'prefix' => 'award-types',
+        'as'     => 'award-types.',
+    ], function () {
+        Route::get('/get', [AwardTypeController::class, 'index'])->name('get');
+        Route::post('/store', [AwardTypeController::class, 'store'])->name('store');
+        Route::put('/update/{awardType}', [AwardTypeController::class, 'update'])->name('update');
+        Route::delete('/delete/{awardType}', [AwardTypeController::class, 'destroy'])->name('destroy');
+    });
+
+    /**
+     * Награды для сотрудников.
+     */
+    Route::group([
+        'prefix' => 'awards',
+        'as'     => 'awards.',
+    ], function () {
+        Route::post('/reward', [AwardController::class, 'reward'])->name('reward');
+        Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->name('delete-reward');
+        Route::get('/my', [AwardController::class, 'myAwards'])->name('my-awards');
+        Route::get('/get', [AwardController::class, 'index'])->name('get');
+        Route::get('/get/{award}', [AwardController::class, 'show'])->name('show');
+        Route::post('/store', [AwardController::class, 'store'])->name('store');
+        Route::put('/update/{award}', [AwardController::class, 'update'])->name('update');
+        Route::delete('/delete/{award}', [AwardController::class, 'destroy'])->name('destroy');
+    });
+
 
     Route::get('/books/{id?}', [BpartnersController::class, 'books']);
     Route::any('/pages/update/', [BpartnersController::class, 'pagesupdate']);

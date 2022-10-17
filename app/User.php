@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Award;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -83,6 +84,11 @@ class User extends Authenticatable implements Authorizable
         'phone_3',
         'phone_4',
     ];
+
+    public function awards(): BelongsToMany
+    {
+        return $this->belongsToMany(Award::class, 'award_user', 'user_id', 'award_id');
+    }
 
     public function groupKpis()
     {
@@ -332,7 +338,7 @@ class User extends Authenticatable implements Authorizable
     public function inGroups()
     {
         $groups = GroupUser::where('user_id', $this->id)
-            ->where('status', 'active')
+           // ->where('status', 'active')
             ->get()
             ->pluck('group_id')
             ->toArray();
@@ -383,7 +389,6 @@ class User extends Authenticatable implements Authorizable
             ? Carbon::createFromDate(date('Y'), $request->month, $request->day)
             : date('Y-m-d');
 
-        dd('test');
         if ($user) {
             
             (new UserService)->fireUser($user->id, $fireDate);

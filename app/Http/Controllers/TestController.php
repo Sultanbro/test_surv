@@ -11,6 +11,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Classes\Analytics\Impl;
 use App\Classes\Analytics\PrCstll;
+use App\Classes\Analytics\Recruiting;
+use App\Classes\Callibro;
 use App\DayType;
 use App\External\HeadHunter\HeadHunter;
 use App\Models\Analytics\AnalyticStat;
@@ -25,6 +27,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\QualityRecordWeeklyStat;
 use App\Http\Controllers\IntellectController;
+use App\Models\Analytics\RecruiterStat;
 use App\Models\Bitrix\Lead;
 use App\Models\GroupUser;
 use App\Salary;
@@ -33,16 +36,18 @@ use App\Service\Department\UserService;
 class TestController extends Controller { 
   
 	public function test() { 
-		// return (new UserService)->getTrainees(42, '2022-09-01');
 
-		$a = AnalyticStat::getCellValue(
-			42,
-			'C26',
-			'2022-09-01',
-			2
-		);
+		dd(RecruiterStat::tables('2022-10-14')[14]);
+		$user = User::find(3460);
 
-		dd($a);
+		dd($user->inGroups());
+
+		dd(collect((new UserService)->getEmployees(42, '2022-10-01'))->where('id', 3460)->first()->toArray());
+
+
+
+
+
 	}  
 
 	public function test_mail_invitation()

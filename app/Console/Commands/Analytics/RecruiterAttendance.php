@@ -17,7 +17,7 @@ class RecruiterAttendance extends Command
      *
      * @var string
      */
-    protected $signature = 'recruiter:attendance';
+    protected $signature = 'recruiter:attendance {date?}';
 
     /**
      * The console command description.
@@ -58,7 +58,7 @@ class RecruiterAttendance extends Command
     {
         parent::__construct();
 
-        $this->date = date('Y-m-d');
+        
 
         $this->activity = new RecruitingActivityService();
      
@@ -90,15 +90,24 @@ class RecruiterAttendance extends Command
     {
         $this->line('start Users remained: ' . count($this->users));
         
-        $dates = [
-            Carbon::now()->format('Y-m-d'),
-            Carbon::now()->subDays(1)->format('Y-m-d'),
-            Carbon::now()->subDays(2)->format('Y-m-d'),
-            Carbon::now()->subDays(3)->format('Y-m-d'),
-            Carbon::now()->subDays(4)->format('Y-m-d'),
-            Carbon::now()->subDays(5)->format('Y-m-d'),
-            Carbon::now()->subDays(6)->format('Y-m-d'),
-        ];
+        /**
+         * create dates array
+         */
+        if($this->argument('date')) {
+            $dates = [
+                $this->argument('date')
+            ];
+        } else {
+            $dates = [
+                Carbon::now()->format('Y-m-d'),
+                Carbon::now()->subDays(1)->format('Y-m-d'),
+                Carbon::now()->subDays(2)->format('Y-m-d'),
+                Carbon::now()->subDays(3)->format('Y-m-d'),
+                Carbon::now()->subDays(4)->format('Y-m-d'),
+                Carbon::now()->subDays(5)->format('Y-m-d'),
+                Carbon::now()->subDays(6)->format('Y-m-d'),
+            ];
+        }
 
         foreach ($dates as $key => $date) {
             $this->activity->setDate($date);
@@ -135,7 +144,10 @@ class RecruiterAttendance extends Command
      */
     public function traineesWasFromSecondDay($user_id, $date) : int
     {
-        return $this->attendance_service->getSecondDayAttendance($user_id, $date);
+        return $this->attendance_service->getCurrentAttendance(
+            $user_id,
+            $date,
+        );
     }
 
 }

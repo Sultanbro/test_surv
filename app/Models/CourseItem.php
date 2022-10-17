@@ -7,6 +7,7 @@ use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\Models\Videos\Video;
 use App\KnowBase;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CourseItem extends Model
@@ -32,6 +33,11 @@ class CourseItem extends Model
     CONST MODEL_KB = 'kb';
     CONST MODEL_BOOK = 'book';
 
+
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class, 'course_id');
+    }
 
     public function isVideo() {
         return $this->item_model == 'App\Models\Videos\VideoPlaylist';

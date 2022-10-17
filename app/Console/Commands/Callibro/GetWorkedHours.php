@@ -159,11 +159,14 @@ class GetWorkedHours extends Command
             $message = 'Изменено на ' . $this->dialer->talk_hours . ' часов. Выполнен план на ' . $this->dialer->talk_minutes . ' минут разговора';
         } else{ 
             $point   = (int)($worked_minutes / 60);
-            $minutes = $worked_minutes + $point * 5;
-            $message = 'Отработано ' . $worked_minutes. ' минут. Добавлено ' . $point * 5 . ' минут';
+            $minutes = $worked_minutes; //+ $point * 5;
+            //$message = 'Отработано ' . $worked_minutes. ' минут. Добавлено ' . $point * 5 . ' минут';
+            $message = 'Отработано ' . $worked_minutes. ' минут.';
         }
 
-   
+        if($minutes > 480) {
+            $minutes = 480;
+        }
 
         if($timetracking) {
             if($timetracking->updated != 1) {

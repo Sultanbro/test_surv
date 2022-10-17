@@ -64,10 +64,9 @@ class RecruiterStat extends Model
 
     private static function table($records) {
         
-
         $users = $records->pluck('user_id')->toArray();
         $users = array_unique($users);
-
+        
         $records = $records->groupBy('hour');
         $arr = [];
         
@@ -122,7 +121,7 @@ class RecruiterStat extends Model
                 $minutes = $hour_record->minutes != 0 ? $hour_record->minutes : '-';
                 $converts = $hour_record->converts != 0 ? $hour_record->converts : '-';
 
-                if($hour_record->calls < 2 && $hour_record->minutes < 2 && $hour_record->converts == 0) {
+                if($hour_record->calls < 2 && $hour_record->minutes < 2 && $hour_record->converts == 0 && $hour_record->dials < 2) {
                     $total = '';
                 } else {
                     $total = $dials . '/' . $calls . '/' . $minutes .'/' . $converts;

@@ -3,6 +3,7 @@
 namespace App\Models\Kpi;
 
 use App\Models\Admin\ObtainedBonus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Analytics\Activity;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\DB as FacadesDB;
 
 class Bonus extends Model
 {      
-    use SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable; 
+    use SoftDeletes, HasFactory, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable;
     
     protected $table = 'kpi_bonuses';
 

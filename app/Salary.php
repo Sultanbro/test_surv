@@ -13,6 +13,7 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedSalary;
+use App\Service\Department\UserService;
 
 class Salary extends Model
 {
@@ -53,7 +54,23 @@ class Salary extends Model
         dump('~~~~~~~~~~~~');
 
         $internshipPayRate = $group->paid_internship == 1 ? 0.5 : 0;
-        $user_ids = ProfileGroup::employees($group_id, $date, $user_types);
+       // $user_ids = ProfileGroup::employees($group_id, $date, $user_types);
+
+       $working = (new UserService)->getEmployees($group_id, $date); 
+       $working = collect($working)->pluck('id')->toArray();
+
+       $fired = (new UserService)->getFiredEmployees($group_id, $date); 
+       $fired = collect($fired)->pluck('id')->toArray();
+
+        $user_ids = [];
+        if($user_types == 0)  {
+            $user_ids = array_merge($working, $fired);
+        } else if($user_types == 1) {
+            $user_ids = $working;
+        } else if($user_types == 2) {
+            $user_ids = $fired;
+        }
+
 
         $users = User::withTrashed()
             //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -104,26 +121,26 @@ class Salary extends Model
             ->whereYear('date', $month->year)
             ->first();
             
-        if($user_types == 1 && $pgu) {
-            $user_ids = $pgu->assigned;
-        } else if($user_types == 2) {
+        // if($user_types == 1 && $pgu) {
+        //     $user_ids = $pgu->assigned;
+        // } else if($user_types == 2) {
             
-            $x_users = User::withTrashed()
-                ->whereDate('deleted_at', '>=', Carbon::createFromDate($month->year, $month->month, 1)->format('Y-m-d'))
-                ->get(['id','last_group']);
+        //     $x_users = User::withTrashed()
+        //         ->whereDate('deleted_at', '>=', Carbon::createFromDate($month->year, $month->month, 1)->format('Y-m-d'))
+        //         ->get(['id','last_group']);
 
-            $fired_users = [];
-            foreach($x_users as $d_user) {
-                if($d_user->last_group) {
-                    $lg = json_decode($d_user->last_group);
-                    if(in_array($group_id, $lg)) {
-                        array_push($fired_users, $d_user->id);
-                    }
-                } 
-            }
+        //     $fired_users = [];
+        //     foreach($x_users as $d_user) {
+        //         if($d_user->last_group) {
+        //             $lg = json_decode($d_user->last_group);
+        //             if(in_array($group_id, $lg)) {
+        //                 array_push($fired_users, $d_user->id);
+        //             }
+        //         } 
+        //     }
 
-            $user_ids = array_unique(array_values($fired_users));
-        } 
+        //     $user_ids = array_unique(array_values($fired_users));
+        // } 
       
         foreach ($users as $key => $user) {
 
@@ -138,7 +155,19 @@ class Salary extends Model
 
             $groups = $user->inGroups();
 
-            if(count($groups) > 0) {
+            if(in_array($user->id, [
+                6401,
+                5084,
+                5975,
+                9873,
+                7211,
+                6634,
+                7203,
+                10147,
+                15936, 15691  
+            ])) {
+
+            } else if(count($groups) > 0) {
                 if($groups[0]->id != $group_id) {
                     continue;
                 }
@@ -478,39 +507,39 @@ class Salary extends Model
     {
         $date = Carbon::parse($date)->day(1);
 
-        $users = User::query();
+        $users = User::withTrashed();
 
-        if($user_types == 0) { // Действующие
-            $users->whereNull('deleted_at');
-        } 
+        // if($user_types == 0) { // Действующие
+        //     $users->whereNull('deleted_at');
+        // } 
 
-        if($user_types == 1) { // Уволенные
-            $users->onlyTrashed();
-        }
+        // if($user_types == 1) { // Уволенные
+        //     $users->onlyTrashed();
+        // }
 
-        if($user_types == -1 || $user_types == 3) { // one person
-            $users->withTrashed();
-        }
+        // if($user_types == -1 || $user_types == 3) { // one person
+        //     $users->withTrashed();
+        // }
 
-        if($user_types == 0) { // Действующие
-            $users_ids = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0)
-                ->whereIn('users.id', $users_ids)
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-        }
+        // if($user_types == 0) { // Действующие
+        //     $users_ids = \DB::table('users')
+        //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        //         ->where('is_trainee', 0)
+        //         ->whereIn('users.id', $users_ids)
+        //         ->get(['users.id'])
+        //         ->pluck('id')
+        //         ->toArray();
+        // }
 
-        if($user_types == 2) {
-            $users_ids = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 1)
-                ->whereIn('users.id', $users_ids)
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-        }
+        // if($user_types == 2) {
+        //     $users_ids = \DB::table('users')
+        //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+        //         ->where('is_trainee', 1)
+        //         ->whereIn('users.id', $users_ids)
+        //         ->get(['users.id'])
+        //         ->pluck('id')
+        //         ->toArray();
+        // }
 
         $users->whereIn('users.id', array_unique($users_ids));
 
@@ -586,12 +615,23 @@ class Salary extends Model
              * Exception: show DM1 users in both groups DM2
              */
             $ugroups = $user->inGroups();
+            if(in_array($user->id, [
+                6401,
+                5084,
+                5975,
+                9873,
+                7211,
+                6634,
+                7203,
+                10147
+            ])) {
 
-            if(count($ugroups) > 0 && $group_id != 93) {
+            } else if(count($ugroups) > 0 && $group_id != 93) {
                 if($ugroups[0]->id != $group_id && $user_types != -1) {
                     continue;
                 }
             }
+            
             
             /**
              * if internship is paid

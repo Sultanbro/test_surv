@@ -20,6 +20,7 @@ use App\DayType;
 use App\Classes\Helpers\Phone;
 use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\UserStat;
+use App\Service\Department\UserService;
 
 class RecruiterStats extends Command
 {
@@ -101,9 +102,12 @@ class RecruiterStats extends Command
     private function getRecruiterStats() {
         
         $group = ProfileGroup::find(Recruiting::GROUP_ID);
-        $users = json_decode($group->users);
+       // $users = json_decode($group->users);
         
+        $users = (new UserService)->getEmployees(Recruiting::GROUP_ID, Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')); 
+        $users = collect($users)->pluck('id')->toArray();
 
+    
         if($this->argument('user')) $users = [(int)$this->argument('user')];
         
         foreach ($users as $user_id) {

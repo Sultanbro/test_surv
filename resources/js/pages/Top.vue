@@ -119,7 +119,10 @@
 
 
               <td v-for="(field, findex) in proceeds.fields" :key="findex"
-                  class="text-center t-name table-title" :class="{'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field)}">
+                  class="text-center t-name table-title" :class="{
+                    'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field),
+                    'weekend': isWeekend(field)
+                  }">
 
                 <template v-if="!['%', 'План', 'Итого', '+/-', 'Группа'].includes(field)">
                   <div v-if="record['group_id'] < 0">
@@ -133,6 +136,7 @@
                     <span v-else></span>
                   </div>
                 </template>
+
                 <template v-else>
 
                   <template v-if="field == 'Группа'">
@@ -147,8 +151,11 @@
                               @change="updateProceed(record, field, 'name')">
                     </div>
                   </template>
+
                   <template v-else>
-                    {{ record[field] }}
+                    <div>
+                        {{ record[field] }}
+                    </div>
                   </template>
                 </template>
 
@@ -322,6 +329,14 @@ export default {
       });
     },
 
+    isWeekend(field) {
+      var arr = field.split(".");
+      var month = Number(arr[1]) - 1;
+      var dayOfWeek = new Date(2022, month, arr[0]).getDay();
+
+      return dayOfWeek == 6 || dayOfWeek == 0;
+    },
+
     saveRentGauge(g_index) {
       let loader = this.$loading.show();
       axios.post('/timetracking/top/save_rent_max', {
@@ -391,6 +406,10 @@ export default {
 </script>
 
 <style lang="scss">
+
+.weekend {
+  background: orange !important;
+}
 .gauge-title {
   font-weight: bold;
   display: none;

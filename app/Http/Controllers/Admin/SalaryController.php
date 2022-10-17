@@ -397,8 +397,34 @@ class SalaryController extends Controller
         $group = ProfileGroup::find($request->group_id);
         $date = Carbon::createFromDate($request->year, $request->month, 1);
 
-        $users = (new UserService)->getUsers($request->group_id, $date->format('Y-m-d')); 
-        $users_ids = collect($users)->pluck('id')->toArray();
+        /**
+         * get users
+         */
+        $working_users = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d')); 
+        $working_users = collect($working_users)->pluck('id')->toArray();
+
+        $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d')); 
+        $fired_users = collect($fired_users)->pluck('id')->toArray();
+
+        /**
+         * Костль на сентябрьские начисления по ДМё
+         * чтобы выводить нехваьающих юзеров пор каким то причинам
+         */
+        if($date->format('Y-m-d') == '2022-09-01' && $request->group_id == 31) {
+            $working_users = array_merge($working_users, [
+                6401,
+                5084,
+                5975,
+                9873,
+                7211,
+                6634,
+                7203,
+                10147,
+            ]);
+
+            $fired_users = array_merge($fired_users, [15936, 15691        ]);
+            
+        }
 
         // $users_ids = [];
         // if (!empty($group) && $group->users != null) {
@@ -419,11 +445,11 @@ class SalaryController extends Controller
         
         $date = $request->year . '-' . $request->month . '-01';
      
-        $working_users = DB::table('users')
-            ->leftJoin('user_descriptions', 'user_descriptions.user_id', '=', 'users.id')
-            ->whereNull('users.deleted_at')
-            ->where('is_trainee', 0)
-            ->whereIn('users.id', $users_ids);
+        // $working_users = DB::table('users')
+        //     ->leftJoin('user_descriptions', 'user_descriptions.user_id', '=', 'users.id')
+        //     ->whereNull('users.deleted_at')
+        //     ->where('is_trainee', 0)
+        //     ->whereIn('users.id', $working_users);
 
         /////////////
 
@@ -454,7 +480,7 @@ class SalaryController extends Controller
         // $fired_users = array_unique(array_values($fired_users));
 
         ///////////
-        $working_users = $working_users->get(['users.id'])->pluck('id')->toArray();
+        //$working_users = $working_users->get(['users.id'])->pluck('id')->toArray();
         $headings = [
             'ФИО', // 0
             'На карте', // 1
@@ -483,8 +509,8 @@ class SalaryController extends Controller
 
         $date = Carbon::createFromDate($request->year,$request->month,1);
         
-        $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
-        $fired_users = collect($fired_users)->pluck('id')->toArray();
+        // $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
+        // $fired_users = collect($fired_users)->pluck('id')->toArray();
 
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
@@ -510,7 +536,7 @@ class SalaryController extends Controller
     }
 
     private function getSheet($users_ids, $date, $group_id) {
-        
+        // if(in_array(17758, $users_ids)) dd($users_ids);
         $users = \DB::table('users')
             ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
             ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
@@ -577,13 +603,24 @@ class SalaryController extends Controller
             $_user = User::withTrashed()->find($user->id);
             $ugroups = $_user->inGroups();
 
-            if(count($ugroups) > 0) {
+            if(in_array($user->id, [
+                6401,
+                5084,
+                5975,
+                9873,
+                7211,
+                6634,
+                7203,
+                10147
+            ])) {
+
+            } else if(count($ugroups) > 0) {
                 if($ugroups[0]->id != $group_id) {
                     continue;
                 }
             }
            
-           
+            
 
             // Вычисление даты принятия
             $user_applied_at = $_user->applied_at();
@@ -593,6 +630,8 @@ class SalaryController extends Controller
             if($ud && $ud->is_trainee != 0) {
                 continue;
             } 
+
+       
             // delete not applied 
        
             
@@ -849,7 +888,7 @@ class SalaryController extends Controller
             if($edited_salary && $edited_salary->amount == 0) {
                 continue;
             }
-                
+         
             // if($user->id == 5670) {
 
             
@@ -863,7 +902,7 @@ class SalaryController extends Controller
             if($salary == 0 && $bonus == 0 && $prepaid == 0 && $trainee_fees == 0 && $edited_salary_amount == 0) {
                 continue;
             }
-           
+            
             // if($user->id == 10242) {
             //     dd($salary);
             // }
@@ -896,7 +935,7 @@ class SalaryController extends Controller
 
             $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
 
-            
+           
 
             // Строка в экселе
             try {
@@ -954,6 +993,7 @@ class SalaryController extends Controller
                 }
             } catch (\Exception $e) {
                 dd($e);
+                
             }
         }
 
