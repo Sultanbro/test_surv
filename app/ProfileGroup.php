@@ -52,7 +52,7 @@ class ProfileGroup extends Model
         'paid_internship', // оплачиваемая стажировка 1 0
         'rentability_max', // предел рентабельности для спидометра
         'show_payment_terms', // показывать в профиле условия оплаты труда,
-        'Әarchived_date' // дата последнего архивирование
+        'archived_date' // дата последнего архивирование
 
     ];
 

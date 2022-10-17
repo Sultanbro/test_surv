@@ -38,7 +38,7 @@ class TopController extends Controller
     public function __construct()
     {
         View::share('title', 'ТОП');
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
