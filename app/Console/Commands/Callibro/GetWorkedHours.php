@@ -18,6 +18,7 @@ use App\Classes\Analytics\HomeCredit;
 use App\Models\Analytics\UserStat;
 use App\Classes\Callibro;
 use App\Models\CallibroDialer;
+use App\Service\Department\UserService;
 
 class GetWorkedHours extends Command
 {
@@ -26,7 +27,7 @@ class GetWorkedHours extends Command
      *
      * @var string
      */
-    protected $signature = 'callibro:minutes_aggrees {date?}';
+    protected $signature = 'callibro:minutes_aggrees {date?} {fired?}';
 
     /**
      * The console command description.
@@ -99,9 +100,22 @@ class GetWorkedHours extends Command
 
     private function fetch($group_id) 
     {
-        $users_ids = json_decode(ProfileGroup::find($group_id)->users);
-        $users     = User::whereIn('id', $users_ids)->get();
+        $users = (new UserService)->getEmployees(
+            $group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        ); 
 
+        $users = collect($users);
+
+        if($this->argument('fired')) {
+            $fired = (new UserService)->getFiredEmployees(
+                $group_id,
+                Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+            ); 
+            
+            $users = $users->merge(collect($fired));
+        }
+        
         foreach($users as $user) {
 
             if($group_id == 53) { // Euras

@@ -14,6 +14,7 @@ use App\Classes\Analytics\PrCstll;
 use App\Classes\Analytics\Recruiting;
 use App\Classes\Callibro;
 use App\DayType;
+use App\External\Bitrix\Bitrix;
 use App\External\HeadHunter\HeadHunter;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
@@ -37,18 +38,25 @@ class TestController extends Controller {
   
 	public function test() { 
 
-		dd(RecruiterStat::tables('2022-10-14')[14]);
-		$user = User::find(3460);
-
-		dd($user->inGroups());
-
-		dd(collect((new UserService)->getEmployees(42, '2022-10-01'))->where('id', 3460)->first()->toArray());
-
-
-
-
+		$this->hhRefresher();
 
 	}  
+
+	private function getSegmentAndSaveForLead($id) {
+
+		$res =	(new Bitrix)->getLeads(0, '', 'ALL', 'ASC', '2010-01-01', '2050-01-01', "DATE_CREATE", $id, 'title');
+		
+		$segment = 999;
+
+		if(array_key_exists('result',$res) && array_key_exists('UF_CRM_1498210379', $res['result'])) {
+			$segment = $res['result']['UF_CRM_1498210379'];
+
+			$segment = Lead::getSegmentAlt($segment);
+		}
+
+		return $segment;
+
+	}
 
 	public function test_mail_invitation()
 	{
@@ -65,7 +73,7 @@ class TestController extends Controller {
 	public function hhRefresher() {
 		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
 		$hh = new HeadHunter();
-		$hh->auth_code = 'KQO11PIM867V8R3MDUF95O1RGRKQJKKUE8LIK4L96OAM28QTFUO39APUGCUPRVNI';
+		$hh->auth_code = 'TCH5D6U72JSK1NS6UJNSKR55ESU2IVKQ5C7NSVFGMRE3A13DBUQ6QGA8IR3ORBDM';
 		dd($hh->refreshAccessToken());
 
 	}

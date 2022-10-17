@@ -556,9 +556,10 @@ class AnalyticsController extends Controller
      */
     public function change_order(Request $request)
     {
+        $order = count($request->activities);
         foreach ($request->activities as $activity) {
             $act = Activity::find($activity['id']);
-            $act->order = count($request->activities) - 1;  
+            $act->order = $order--;  
             $act->save();
         }
     }

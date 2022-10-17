@@ -145,26 +145,54 @@ class UserDescription extends Model
 				->orwhereNotNull('rating2');
 		})->get()->pluck('user_id')->toArray();
 
-        $uds = array_unique($uds);
-        foreach ($uds as $head_id) {
-            $user = User::withTrashed()->find($head_id);
-            if($user) {
-                $ratings = self::getAvgRating($head_id, true, $date);
-                $hgs = ProfileGroup::headIn($head_id, false);
 
-                if($ratings['quantity'] > 0) {
-                    array_push($ratings_heads, [
-                        'name' => $user->last_name . ' ' .$user->name,
-                        'group' => $hgs->count() > 0 ? $hgs[0]->name : '---',
-                        'quantity' => $ratings['quantity'],
-                        'avg' => $ratings['avg'],
-                    ]);
-                }
-                
+        $uds = array_unique($uds);
+
+        $users = User::withTrashed()
+            ->whereIn('id', $uds)
+            ->get();
+
+        $heads = self::getGroupsWithHead();
+        
+        foreach ($users as $user) {
+            $ratings = self::getAvgRating($user->id, true, $date);
+
+            if($ratings['quantity'] > 0) {
+                array_push($ratings_heads, [
+                    'name' => $user->last_name . ' ' .$user->name,
+                    'group' => array_key_exists($user->id, $heads) && count($heads[$user->id]) > 0 ? $heads[$user->id][0] : '---',
+                    'quantity' => $ratings['quantity'],
+                    'avg' => $ratings['avg'],
+                ]);
             }
         }
 
         return $ratings_heads;
+    }
+
+    
+    private static function getGroupsWithHead() : array
+    {
+
+        $groups = ProfileGroup::get();
+
+        $users = [];
+
+        foreach ($groups as $key => $group) {
+
+            $heads = json_decode($group->head_id, true);
+            
+            foreach ($heads as $key => $head_id) {
+                if(array_key_exists($head_id, $users)) {
+                    array_push($users[$head_id], $group->id);
+                } else {
+                    $users[$head_id] = [$group->name];
+                }
+            }
+        }
+
+        return $users;
+
     }
     
 }

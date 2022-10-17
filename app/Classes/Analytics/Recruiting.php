@@ -1776,8 +1776,12 @@ public function planRequired($arr) {
                 ->orWhereNotNull('rating2');
         })->get();  
         
+        $users = User::withTrashed()
+            ->whereIn('id', $ratings_leads->pluck('user_id')->toArray())
+            ->get();
+            
         foreach($ratings_leads as $rl) {
-            $user = User::withTrashed()->find($rl->user_id);
+            $user = $users->where('id', $rl->user_id)->first();
             if($user) {
                 $group = ProfileGroup::userIn($user->id, false);
 

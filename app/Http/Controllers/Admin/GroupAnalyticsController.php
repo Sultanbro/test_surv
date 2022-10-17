@@ -209,27 +209,31 @@ class GroupAnalyticsController extends Controller
         $indicators['today'] = date('d');
         $indicators['month'] = $request->month;
 
+        $igroups = ProfileGroup::where('active', 1)->get()->pluck('name', 'id')->toArray();
+        
+        $igroups[0] = 'Все группы';
+
         return [
             'date' => $month->startOfMonth()->format('Y-m-d'),
             'records' => $data, // Сводная таблица
-            'hrs' => $hrs, // Подробные таблицы рекрутеров
+            'hrs' => [], // Подробные таблицы рекрутеров
             'skypes' => Lead::fetch($date), // Cконвертированные сделки. Раньше собирали скайпы (Нужно переименовать)
             'segments' => Segment::pluck('name', 'id'), // Cегменты
             'indicators' => $indicators, // Разные показатели на главной
             'sgroups' => ProfileGroup::where('active', 1)->get(), // Группы для приглашения
-            'invite_groups' => ProfileGroup::pluckIdName(), // Фильтр для таблицы "стажеры"
+            'invite_groups' => $igroups, // Фильтр для таблицы "стажеры"
             'causes' => RM::fireCauses($date), // причины увольнения
             'absents_first' => $absence_causes['first_day'], 
             'absents_second' => $absence_causes['second_day'],
             'absents_third' => $absence_causes['third_day'],
             'ratings' => RM::ratingsGroups($date), // Оценки операторов по группам
             'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
-            'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
             'staff_longevity' => RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
             'quiz' => RM::getQuizTable($month->startOfMonth()), // Анкета уволенных
-            'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных
+            'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
             'ratings_dates' => RM::ratingsDates($date), // Оценки операторов по датам
-            'ratings_heads' => UserDescription::getHeadsRatings($month->startOfMonth()), // Оценки операторов по руководителям
+            'ratings_heads' => UserDescription::getHeadsRatings($month->startOfMonth()), // Оценки операторов по руководителям // 12.2 sec
             'recruiter_stats' => RecruiterStat::tables($month->startOfMonth()->format('Y-m-d')), // Почасовая таблица на главной
             'recruiter_stats_rates' => $recruiter_stats_rates, // Кол-во рекрутеров (Ставка)
             'recruiter_stats_leads' => RecruiterStat::leads($month->startOfMonth()->format('Y-m-d')), // Кол-во лидов битрикс в статусе "В работе"

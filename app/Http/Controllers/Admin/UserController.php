@@ -224,36 +224,51 @@ class UserController extends Controller
 
             $head_in_groups = [];
             $trainee_report = [];
-            if($user->position_id == 45 || $user->position_id == 55) {
-                if($user->position_id == 45) {
-                    $head_in_groups = $user->headInGroups();     
-                }else {
-                    $head_in_groups = $user->inGroups();
-                }
-                
-                $x = []; 
-                foreach($head_in_groups as $xgroup) {
-                    $x[] = $xgroup->id;
-                }
-                $trainee_report = TraineeReport::getBlocks(date('Y-m-d'), $x);
+
+            
+            /**
+             * костыль Корп универ должен видеть эту таблицу
+             * TraineeReport::getBlocks
+             */
+
+            $corpUni = tenant('id') == 'bp' 
+                ? GroupUser::where('user_id', $user->id)
+                    ->where('status', 'active')
+                    ->where('group_id', 96)
+                    ->first()
+                : null;
+
+            /**
+             * fetch TraineeReport::getBlocks
+             * оценки руководителей
+             */
+            if($corpUni) {
+                $head_in_groups = [1];
+                $trainee_report = TraineeReport::getBlocks(date('Y-m-d'));
 
             }
             
-
-            foreach($head_in_groups as $group) {
-                if(Carbon::parse($group->checktime)->timestamp - time() >= 0) {
-                    $group->checktime = Carbon::parse($group->checktime)->setTimezone('Asia/Almaty');
-                } else {
-                    $group->checktime = null;
-                }
-            }
-            ///////////////////////////////////////
+            /**
+             * checktime for trainees
+             */
+            // foreach($head_in_groups as $group) {
+            //     if(Carbon::parse($group->checktime)->timestamp - time() >= 0) {
+            //         $group->checktime = Carbon::parse($group->checktime)->setTimezone('Asia/Almaty');
+            //     } else {
+            //         $group->checktime = null;
+            //     }
+            // }
+            
+            // month for js
    
             $month = [
                 'daysInMonth' => Carbon::now()->daysInMonth,
                 'currentMonth' => Carbon::now()->format('F')
             ];
 
+            /**
+             * recruiter stats
+             */
             $recruiter_stats_rates = [];
 
             for ($i = 1; $i <= Carbon::now()->daysInMonth; $i++) {
@@ -263,6 +278,9 @@ class UserController extends Controller
             }
             $recruiter_stats_rates = json_encode($recruiter_stats_rates);
 
+            /**
+             * zarplata
+             */
             $zarplata = Zarplata::where('user_id', $user->id)->first();
 
             $oklad = 0;

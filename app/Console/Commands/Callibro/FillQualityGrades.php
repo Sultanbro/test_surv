@@ -12,6 +12,7 @@ use App\QualityRecordMonthlyStat;
 use App\Models\CallibroDialer;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\UserStat;
+use App\Service\Department\UserService;
 
 class FillQualityGrades extends Command
 {
@@ -20,7 +21,7 @@ class FillQualityGrades extends Command
      *
      * @var string
      */
-    protected $signature = 'callibro:grades {date?}';
+    protected $signature = 'callibro:grades {date?} {fired?}';
 
     /**
      * The console command description.
@@ -82,6 +83,7 @@ class FillQualityGrades extends Command
         foreach($this->groups as $group) {
             $group['script_grades'] = Callibro::script_grades($group['script_id']);
             $users = $this->getUsers($group['group_id']);
+
             $this->line('========');
             $this->line($group['name']);
             $this->line('========');
@@ -95,7 +97,7 @@ class FillQualityGrades extends Command
                     'dialer_id' => $group['dialer_id'],
                 ], $group['script_grades'])->groupBy('call_id');
 
-                if($user->id == 18675) dd($grades);
+                //if($user->id == 18675) dd($grades);
                 $total = 0;
                 $count = 0;
 
@@ -131,14 +133,22 @@ class FillQualityGrades extends Command
      * Get users collection
      */
     private function getUsers($group_id) {
-        $user_ids = json_decode(ProfileGroup::find($group_id)->users);
 
-        return \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0)
-                ->whereIn('users.id', $user_ids)
-                ->select(['users.id', 'users.email', 'users.name', 'users.last_name'])
-                ->get();
+        $users = collect((new UserService)->getEmployees(
+            $group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        )); 
+
+        if($this->argument('fired')) {
+            $fired = (new UserService)->getFiredEmployees(
+                $group_id,
+                Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+            ); 
+            
+            $users = $users->merge(collect($fired));
+        }
+
+        return $users;
     }
 
     /**
