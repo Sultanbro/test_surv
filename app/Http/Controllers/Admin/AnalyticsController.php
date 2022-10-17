@@ -183,7 +183,7 @@ class AnalyticsController extends Controller
             'utility' => $util,
             'totals' => [],
             'groups' => $groups,
-            'archived_groups' => ProfileGroup::where('has_analytics', -1)->where('active', 1)->get(),
+            'archived_groups' => ProfileGroup::where('has_analytics', -1)->get(),
             'call_bases' => $call_bases,
             'fired_percent_prev' => $fired_percent_prev,
             'fired_percent' => $fired_percent,
