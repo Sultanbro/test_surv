@@ -174,8 +174,8 @@ class SaveUserKpi extends Command
                     $kpi['upper_limit'],
                     $completed_percent,
                     $item['share'],
-                    $kpi['completed_80'],
-                    $kpi['completed_100'],
+                    $item['full_time'] == 1 ? $kpi['completed_80'] : $kpi['completed_80'] / 2,
+                    $item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
                 );
 
         

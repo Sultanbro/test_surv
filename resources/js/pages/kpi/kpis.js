@@ -197,6 +197,11 @@ function calcSum(el, kpi, completed) {
     let completed_80 = kpi.completed_80
     let completed_100 = kpi.completed_100
 
+    if(el.full_time == 0) {
+        completed_80 /= 2;
+        completed_100 /= 2;
+    }
+
     // check overfulfillment
     if(!kpi.allow_overfulfillment && completed > 1) completed = 1;
 

@@ -262,18 +262,12 @@
                                             </tr>    
 
                                             <tr class="after-edit"> 
-                                                <td >
+                                                <td colspan="3">
                                                     <p class="name pr-1">Email</p>
                                                 </td>
                                                 <td>
-                                                    <input  type="email" name="email" required placeholder="Email"
+                                                    <input  type="email" name="email" required placeholder="Email" disabled
                                                         value="{{$user->email}}" class="changers" />
-                                                </td>
-                                                <td >
-                                                    <p class="name pr-1 ml-2 text-right">Новый пароль</p>
-                                                </td>
-                                                <td >
-                                                    <input type="text" name="password" class="changers" style="margin:0">
                                                 </td>
                                             </tr>
 

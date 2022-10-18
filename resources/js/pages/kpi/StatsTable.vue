@@ -41,8 +41,8 @@
                     <td class="px-2 py-1" v-if="editable">{{ wrap_item.avg }}%</td>
                     <td class="px-2 py-1" v-if="!editable">{{ wrap_item.lower_limit }}%</td>
                     <td class="px-2 py-1" v-if="!editable">{{ wrap_item.upper_limit }}%</td>
-                    <td class="px-2 py-1" v-if="!editable">{{ wrap_item.completed_80 }}</td>
-                    <td class="px-2 py-1" v-if="!editable">{{ wrap_item.completed_100 }}</td>
+                    <td class="px-2 py-1" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
+                    <td class="px-2 py-1" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
                     <td class="px-2 py-1" v-if="!editable">{{ wrap_item.my_sum }}</td>
                     <td v-if="editable"></td>
                         
@@ -73,7 +73,7 @@
                                             <td :colspan="fields.length + 2">
                                                 <div class="table__wrapper__second">
                                                     <kpi-items
-                                                        :my_sum="wrap_item.completed_100"
+                                                        :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
                                                         :kpi_id="user.id"
                                                         :items="user.items" 
                                                         :expanded="user.expanded"

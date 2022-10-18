@@ -38,7 +38,9 @@ class TestController extends Controller {
   
 	public function test() { 
 
-		$this->hhRefresher();
+		User::find(5)->update([
+			'password' => \Hash::make('jJyvhXYF')
+		]);
 
 	}  
 
