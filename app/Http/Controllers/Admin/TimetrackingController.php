@@ -1491,7 +1491,7 @@ class TimetrackingController extends Controller
 
             $date = Carbon::createFromDate($request->year, $request->month, $request->day);
             
-            $workingUsers = (new UserService)->getUsers($request->group_id, $date->format('Y-m-d')); 
+            $workingUsers = (new UserService)->getEmployees($request->group_id, $date->format('Y-m-d'));
             $user_ids = collect($workingUsers)->pluck('id')->toArray();
 
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
