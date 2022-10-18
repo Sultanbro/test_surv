@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserProfileUpdateRequest;
 use App\KnowBase;
 use App\Models\QuartalBonus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -84,8 +85,11 @@ use Session;
 
 class UserController extends Controller
 {
-    public function __construct()
+    public AdminUserService $userService;
+
+    public function __construct(AdminUserService $userService)
     {
+        $this->userService = $userService;
         $this->middleware('auth');
     }
 
@@ -135,9 +139,58 @@ class UserController extends Controller
         return true;
     }
 
+    /**
+     * @return JsonResponse
+     */
+    public function recruterStatsRates(): JsonResponse
+    {
+        $recruiter_stats_rates = [];
+
+        for ($i = 1; $i <= Carbon::now()->daysInMonth; $i++) {
+            $rec = new RM();
+            $value = $rec->getOnlineRates(Carbon::now()->day($i)->format('Y-m-d'));
+            $recruiter_stats_rates[$i] = $value;
+        }
+        $recruiter_stats_rates = json_encode($recruiter_stats_rates);
+
+        return response()->success($recruiter_stats_rates);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function personalInfo(Request $request): JsonResponse
+    {;
+        $response = $this->userService->getPersonalData();
+
+        return response()->success($response);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function activities(Request $request): JsonResponse
+    {
+        $response = $this->userService->getActivitiesToProfile($request);
+
+        return response()->success($response);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function courses(): JsonResponse
+    {
+        $user = \auth()->user();
+
+        return response()->success($user->getActiveCourses());
+    }
+
     public function getProfile(Request $request)
     {
-        $user = User::find(auth()->id());
+        $user = User::find(auth()->id() ?? 5);
 
         $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
 
@@ -276,6 +329,7 @@ class UserController extends Controller
         // arc
         $activities = '[]';
         $quality = [];
+
         if(count($gs) > 0) {
             $request->group_id = $gs[0]->id;
             $_activities = Activity::where('group_id', $gs[0]->id)->first();
@@ -306,7 +360,6 @@ class UserController extends Controller
         /////////////////////////////////////
         //View::share('title', 'Мой профиль');
         View::share('menu', 'profile');
-
 
         return view('admin.timetracking', compact(
             'user',

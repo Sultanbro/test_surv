@@ -115,9 +115,20 @@ Route::middleware([
     Route::any('/', [UserController::class, 'getProfile']);
     Route::view('/doc', 'docs.index');
     Route::view('/html', 'design');
-    
-    Route::post('/profile', [UserController::class, 'profile']);
-    Route::get('/profile', [UserController::class, 'getProfile']);
+
+
+    Route::group([
+        'prefix' => 'profile',
+        'as' => 'profile.'
+    ], function () {
+        Route::post('/', [UserController::class, 'profile']);
+        Route::get('/', [UserController::class, 'getProfile']);
+        Route::get('/personal-info', [UserController::class, 'personalInfo']);
+        Route::get('/recruter-stats', [UserController::class, 'recruterStatsRates']);
+        Route::get('/activities', [UserController::class, 'activities']);
+        Route::get('/courses', [UserController::class, 'courses']);
+    });
+
 
     Route::post('logout', [LoginController::class, 'logout']);//->name('logout');
 

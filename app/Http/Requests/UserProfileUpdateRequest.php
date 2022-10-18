@@ -26,14 +26,15 @@ class UserProfileUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'email'     => ['unique:users,email'],
+            'email'     => ['unique:users,email', 'email'],
             'currency'  => Rule::in(User::CURRENCY)
         ];
     }
 
     public function messages()
     {
-        $email = User::findOrFail(auth()->id())->email;
+        $email = auth()->user()->email;
+
         return [
             'email.unique' => 'Введенный E-mail уже занят: ' . $email
         ];
