@@ -33,7 +33,7 @@ class UserProfileUpdateRequest extends FormRequest
 
     public function messages()
     {
-        $email = User::findOrFail(18)->email;
+        $email = User::findOrFail(auth()->id())->email;
         return [
             'email.unique' => 'Введенный E-mail уже занят: ' . $email
         ];
