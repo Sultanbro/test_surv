@@ -58,6 +58,14 @@ class ProfileController extends Controller
     }
 
     /**
+     * Мой профиль с новым дизайном
+     */
+    public function newprofile()
+    {
+        return view('newprofile');
+    }
+
+    /**
      * Вопросы в профиле о навыках и опыте
      */
     public function saveAnswer(Request $request)

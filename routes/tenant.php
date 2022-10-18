@@ -750,6 +750,9 @@ Route::middleware([
 });
 
 
+Route::get('/newprofile', [ProfileController::class, 'newprofile']);
+
+
 /**
  * 
  * API routes
