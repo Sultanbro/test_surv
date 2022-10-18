@@ -84,6 +84,10 @@ class User extends Authenticatable implements Authorizable
         'phone_3',
         'phone_4',
     ];
+    /**
+     * Валюты для профиля.
+     */
+    const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
 
     public function awards(): BelongsToMany
     {

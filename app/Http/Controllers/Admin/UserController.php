@@ -6,8 +6,10 @@ use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserProfileUpdateRequest;
 use App\KnowBase;
 use App\Models\QuartalBonus;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -72,6 +74,7 @@ use App\Models\Analytics\TraineeReport;
 use App\AdaptationTalk;
 use App\Models\GroupUser;
 use App\Service\Department\UserService;
+use \App\Service\Admin\UserService as AdminUserService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
@@ -83,7 +86,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -104,257 +107,235 @@ class UserController extends Controller
     }
 
     /**
-     * profile
+     * Профиль пользователя.
+     * @param UserProfileUpdateRequest $request
+     * @return bool
      */
-    public function profile(Request $request)
+    public function profile(UserProfileUpdateRequest $request)
     {
         $user = User::find(auth()->id());
 
-    
-        /******* Смена пароля */
-        if($request->isMethod('post')) {
-            $new_email = trim(strtolower($request->email));
-           
-            if($user->email != $new_email) {  // Введен новый email
-                
-                $checkEmail = User::where('email', $new_email)->first();
-           
-                if($checkEmail) {
-                    return redirect()->back()->withErrors(['Введенный E-mail уже занят: ' . $new_email]);
-                } else {
+        $service = new AdminUserService($user);
 
-                    $user->email = $new_email;
-                    $user->save();
-                }
-               
-            } 
-            
-            if($request->currency != $user->currency 
-             && in_array(strtoupper($request->currency), ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'])){
-                $user->currency = strtolower($request->currency);
-                $user->save();
-            } 
-
-            
-            if(!empty($request->password)) { // Введен новый пароль
-                
-
-                $user->password = \Hash::make($request->password);
-                $user->save();
-
-                unset(auth()->user()['can']);
-                unset(auth()->user()['groups']);
-                Auth::logout();
-
-                return redirect()->back();
-            } 
-            
-            return redirect()->back();
-            
-        } else { // GET запрос
-
-            // rate
-            $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
-
-            $positions = Position::all();
-            $photo     = Photo::where('user_id', $user->id)->first();
-            $downloads = Downloads::where('user_id', $user->id)->first();
-            $user_position = Position::find($user->position_id);
-
-            /*** Группы пользователя */
-            $groups = '';
-            $gs = $user->inGroups();
-            
-            foreach($gs as $group) {
-                $groups .= '<div>' . $group['name'] . '</div>';
-            }
-
-            /*** Текущая книга для прочтения */
-            $book = null;
-
-            /* recruiter */
-
-
-            $rg_users = [];
-            if(tenant('id') == 'bp') {
-                $rec_group = ProfileGroup::find(48);
-
-                if($rec_group) {
-                    $rg_users = $rec_group->users == null ? [] : json_decode($rec_group->users);
-                }
-
-            }
-
-            
-
-                $recruiter_stats = json_encode([]);
-                $recruiter_records = json_encode([]);
-
-                // workdays recruiter
-
-                $ignore = $user->working_day_id == 1 ? [6,0] : [0];
-                $workdays = workdays(date('Y'), date('m'), $ignore);
-                $wd = $user->workdays_from_applied(date('Y-m-d'), $user->working_day_id == 1 ? 5 : 6);
-                if($wd != 0) $workdays = $wd;
-             
-                // another code 
-
-                if(in_array($user->id, $rg_users)) {
-                    $is_recruiter = true;
-                    $recruiter_stats = json_encode(RecruiterStat::tables(date('Y-m-d')));
-
-                    $asi  = AnalyticsSettingsIndividually::whereYear('date', date('Y'))
-                        ->whereMonth('date', date('m'))
-                        ->where('group_id', RM::GROUP_ID)
-                        ->where('employee_id', $user->id)
-                        ->first();
-
-                        if($asi) {
-                            $recruiter_records = json_decode($asi->data);
-                        }  else {
-                            $rm = new RM();
-                            $recruiter_records = $rm->defaultUserTable($user->id)['records'];
-                        }
-                    
-                    $indicators = $this->recruiting_temp();
-                } else {
-                    $is_recruiter = false;
-                    $indicators = json_encode([]);
-                }
-
-            $head_in_groups = [];
-            $trainee_report = [];
-
-            
-            /**
-             * костыль Корп универ должен видеть эту таблицу
-             * TraineeReport::getBlocks
-             */
-
-            $corpUni = tenant('id') == 'bp' 
-                ? GroupUser::where('user_id', $user->id)
-                    ->where('status', 'active')
-                    ->where('group_id', 96)
-                    ->first()
-                : null;
-
-            /**
-             * fetch TraineeReport::getBlocks
-             * оценки руководителей
-             */
-            if($corpUni) {
-                $head_in_groups = [1];
-                $trainee_report = TraineeReport::getBlocks(date('Y-m-d'));
-
-            }
-            
-            /**
-             * checktime for trainees
-             */
-            // foreach($head_in_groups as $group) {
-            //     if(Carbon::parse($group->checktime)->timestamp - time() >= 0) {
-            //         $group->checktime = Carbon::parse($group->checktime)->setTimezone('Asia/Almaty');
-            //     } else {
-            //         $group->checktime = null;
-            //     }
-            // }
-            
-            // month for js
-   
-            $month = [
-                'daysInMonth' => Carbon::now()->daysInMonth,
-                'currentMonth' => Carbon::now()->format('F')
-            ];
-
-            /**
-             * recruiter stats
-             */
-            $recruiter_stats_rates = [];
-
-            for ($i = 1; $i <= Carbon::now()->daysInMonth; $i++) {
-                $rec = new RM();
-                $value = $rec->getOnlineRates(Carbon::now()->day($i)->format('Y-m-d'));
-                $recruiter_stats_rates[$i] = $value;
-            }
-            $recruiter_stats_rates = json_encode($recruiter_stats_rates);
-
-            /**
-             * zarplata
-             */
-            $zarplata = Zarplata::where('user_id', $user->id)->first();
-
-            $oklad = 0;
-            if($zarplata) $oklad = $zarplata->zarplata;
-            $oklad = round($oklad * $currency_rate, 0);
-            $oklad = number_format($oklad, 0, '.', ' ');
-
-            // arc
-            $activities = '[]';
-            $quality = [];
-            if(count($gs) > 0) {
-                $request->group_id = $gs[0]->id;
-                $_activities = Activity::where('group_id', $gs[0]->id)->first();
-                
-                $activities = UserStat::activities($gs[0]->id , date('Y-m-d'));
-                    $activities = json_encode($activities);
-
-                $users_ids = (new UserService)->getEmployees($gs[0]->id, date('Y-m-d'));
-
-                $quality = $_activities ? QualityRecordWeeklyStat::table($users_ids, date('Y-m-d')) : [];
-                
-            }   
-            
-            $show_payment_terms = false;
-            foreach ($gs as $key => $gr) {
-                if($gr->payment_terms && $gr->payment_terms != '' && $gr->show_payment_terms == 1) {
-                    $show_payment_terms = true;
-                }
-            }
-
-            $blocks_number = 1;
-
-            $position_desc = PositionDescription::where('position_id', $user->position_id)->first();
-            if($position_desc && $position_desc->show == 1) $blocks_number++;
-            if($show_payment_terms) $blocks_number++;
-
-
-            /////////////////////////////////////
-            //View::share('title', 'Мой профиль'); 
-            View::share('menu', 'profile');
-
-
-         
-            return view('admin.timetracking', compact(
-                'user',
-                'oklad',
-                'positions',
-                'user_position',
-                'photo', 
-                'downloads',
-                'groups',
-                'book',
-                'is_recruiter',
-                'indicators',
-                'month', 
-                'recruiter_stats',
-                'recruiter_stats_rates',
-                'recruiter_records',
-                'head_in_groups'
-                ))->with([
-                    'answers' => UserExperience::getAnswers($user->id),
-                    'position_desc' => $position_desc,
-                    'groups_pt' => $gs,
-                    'show_payment_terms' => $show_payment_terms,
-                    'blocks_number' => $blocks_number,
-                    'activities' => $activities,
-                    'quality' => $quality,
-                    'trainee_report' => $trainee_report,
-                    'courses' => $user->getActiveCourses(),
-                    'workdays' => $workdays
-                ]);
+        if (isset($request->email))
+        {
+            $service->updateEmail($request);
         }
-        
-        
+
+        if (isset($request->currency))
+        {
+            $service->updateCurrency($request);
+        }
+
+        if (isset($request->password))
+        {
+            $service->changePassword($request);
+        }
+
+        return true;
+    }
+
+    public function getProfile(Request $request)
+    {
+        $user = User::find(auth()->id());
+
+        $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
+
+        $positions = Position::all();
+        $photo     = Photo::where('user_id', $user->id)->first();
+        $downloads = Downloads::where('user_id', $user->id)->first();
+        $user_position = Position::find($user->position_id);
+
+        /*** Группы пользователя */
+        $groups = '';
+        $gs = $user->inGroups();
+
+        foreach($gs as $group) {
+            $groups .= '<div>' . $group['name'] . '</div>';
+        }
+
+        /*** Текущая книга для прочтения */
+        $book = null;
+
+        /* recruiter */
+
+
+        $rg_users = [];
+        if(tenant('id') == 'bp') {
+            $rec_group = ProfileGroup::find(48);
+
+            if($rec_group) {
+                $rg_users = $rec_group->users == null ? [] : json_decode($rec_group->users);
+            }
+
+        }
+
+
+
+        $recruiter_stats = json_encode([]);
+        $recruiter_records = json_encode([]);
+
+        // workdays recruiter
+
+        $ignore = $user->working_day_id == 1 ? [6,0] : [0];
+        $workdays = workdays(date('Y'), date('m'), $ignore);
+        $wd = $user->workdays_from_applied(date('Y-m-d'), $user->working_day_id == 1 ? 5 : 6);
+        if($wd != 0) $workdays = $wd;
+
+        // another code
+
+        if(in_array($user->id, $rg_users)) {
+            $is_recruiter = true;
+            $recruiter_stats = json_encode(RecruiterStat::tables(date('Y-m-d')));
+
+            $asi  = AnalyticsSettingsIndividually::whereYear('date', date('Y'))
+                ->whereMonth('date', date('m'))
+                ->where('group_id', RM::GROUP_ID)
+                ->where('employee_id', $user->id)
+                ->first();
+
+            if($asi) {
+                $recruiter_records = json_decode($asi->data);
+            }  else {
+                $rm = new RM();
+                $recruiter_records = $rm->defaultUserTable($user->id)['records'];
+            }
+
+            $indicators = $this->recruiting_temp();
+        } else {
+            $is_recruiter = false;
+            $indicators = json_encode([]);
+        }
+
+        $head_in_groups = [];
+        $trainee_report = [];
+
+
+        /**
+         * костыль Корп универ должен видеть эту таблицу
+         * TraineeReport::getBlocks
+         */
+
+        $corpUni = tenant('id') == 'bp'
+            ? GroupUser::where('user_id', $user->id)
+                ->where('status', 'active')
+                ->where('group_id', 96)
+                ->first()
+            : null;
+
+        /**
+         * fetch TraineeReport::getBlocks
+         * оценки руководителей
+         */
+        if($corpUni) {
+            $head_in_groups = [1];
+            $trainee_report = TraineeReport::getBlocks(date('Y-m-d'));
+
+        }
+
+        /**
+         * checktime for trainees
+         */
+        // foreach($head_in_groups as $group) {
+        //     if(Carbon::parse($group->checktime)->timestamp - time() >= 0) {
+        //         $group->checktime = Carbon::parse($group->checktime)->setTimezone('Asia/Almaty');
+        //     } else {
+        //         $group->checktime = null;
+        //     }
+        // }
+
+        // month for js
+
+        $month = [
+            'daysInMonth' => Carbon::now()->daysInMonth,
+            'currentMonth' => Carbon::now()->format('F')
+        ];
+
+        /**
+         * recruiter stats
+         */
+        $recruiter_stats_rates = [];
+
+        for ($i = 1; $i <= Carbon::now()->daysInMonth; $i++) {
+            $rec = new RM();
+            $value = $rec->getOnlineRates(Carbon::now()->day($i)->format('Y-m-d'));
+            $recruiter_stats_rates[$i] = $value;
+        }
+        $recruiter_stats_rates = json_encode($recruiter_stats_rates);
+
+        /**
+         * zarplata
+         */
+        $zarplata = Zarplata::where('user_id', $user->id)->first();
+
+        $oklad = 0;
+        if($zarplata) $oklad = $zarplata->zarplata;
+        $oklad = round($oklad * $currency_rate, 0);
+        $oklad = number_format($oklad, 0, '.', ' ');
+
+        // arc
+        $activities = '[]';
+        $quality = [];
+        if(count($gs) > 0) {
+            $request->group_id = $gs[0]->id;
+            $_activities = Activity::where('group_id', $gs[0]->id)->first();
+
+            $activities = UserStat::activities($gs[0]->id , date('Y-m-d'));
+            $activities = json_encode($activities);
+
+            $users_ids = (new UserService)->getEmployees($gs[0]->id, date('Y-m-d'));
+
+            $quality = $_activities ? QualityRecordWeeklyStat::table($users_ids, date('Y-m-d')) : [];
+
+        }
+
+        $show_payment_terms = false;
+        foreach ($gs as $key => $gr) {
+            if($gr->payment_terms && $gr->payment_terms != '' && $gr->show_payment_terms == 1) {
+                $show_payment_terms = true;
+            }
+        }
+
+        $blocks_number = 1;
+
+        $position_desc = PositionDescription::where('position_id', $user->position_id)->first();
+        if($position_desc && $position_desc->show == 1) $blocks_number++;
+        if($show_payment_terms) $blocks_number++;
+
+
+        /////////////////////////////////////
+        //View::share('title', 'Мой профиль');
+        View::share('menu', 'profile');
+
+
+        return view('admin.timetracking', compact(
+            'user',
+            'oklad',
+            'positions',
+            'user_position',
+            'photo',
+            'downloads',
+            'groups',
+            'book',
+            'is_recruiter',
+            'indicators',
+            'month',
+            'recruiter_stats',
+            'recruiter_stats_rates',
+            'recruiter_records',
+            'head_in_groups'
+        ))->with([
+            'answers' => UserExperience::getAnswers($user->id),
+            'position_desc' => $position_desc,
+            'groups_pt' => $gs,
+            'show_payment_terms' => $show_payment_terms,
+            'blocks_number' => $blocks_number,
+            'activities' => $activities,
+            'quality' => $quality,
+            'trainee_report' => $trainee_report,
+            'courses' => $user->getActiveCourses(),
+            'workdays' => $workdays
+        ]);
     }
 
     /**
