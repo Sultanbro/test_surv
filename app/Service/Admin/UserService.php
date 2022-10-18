@@ -6,7 +6,9 @@ use App\Classes\Helpers\Currency;
 use App\Downloads;
 use App\Http\Requests\UserProfileUpdateRequest;
 use App\Models\Analytics\Activity;
+use App\Models\Analytics\TraineeReport;
 use App\Models\Analytics\UserStat;
+use App\Models\GroupUser;
 use App\Photo;
 use App\Position;
 use App\QualityRecordWeeklyStat;
@@ -26,7 +28,7 @@ class UserService
 
     public function __construct()
     {
-        $this->authUser = User::findOrFail(5);
+        $this->authUser = \auth()->user();
     }
 
     /**
@@ -141,6 +143,41 @@ class UserService
         return [
             'activities' => $activities,
             'quality' => $quality
+        ];
+    }
+
+    /**
+     * Отчет стажера.
+     * @return array
+     */
+    public function getTraineeReport(): array
+    {
+        $trainee_report = [];
+
+        /**
+         * костыль Корп универ должен видеть эту таблицу
+         * TraineeReport::getBlocks
+         */
+
+        $corpUni = tenant('id') == 'bp'
+            ? GroupUser::where('user_id', $this->authUser->id)
+                ->where('status', 'active')
+                ->where('group_id', 96)
+                ->first()
+            : null;
+
+        /**
+         * fetch TraineeReport::getBlocks
+         * оценки руководителей
+         */
+        if($corpUni) {
+            $head_in_groups = [1];
+            $trainee_report = TraineeReport::getBlocks(date('Y-m-d'));
+
+        }
+
+        return [
+            'trainee_report' => $trainee_report
         ];
     }
 }
