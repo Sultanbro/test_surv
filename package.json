@@ -58,6 +58,7 @@
         "resolve-url-loader": "^5.0.0",
         "resumablejs": "^1.1.0",
         "select2": "~4.0",
+        "slick-carousel": "^1.8.1",
         "v-mask": "^2.0.2",
         "vgauge": "^1.2.12",
         "vue-advanced-cropper": "^1.11.1",
