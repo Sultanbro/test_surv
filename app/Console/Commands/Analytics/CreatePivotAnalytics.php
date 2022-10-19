@@ -45,7 +45,7 @@ class CreatePivotAnalytics extends Command
     {
         $this->line('start creating pivot tables:');
         
-        //if(Carbon::now()->day != 1) return false;
+        if(Carbon::now()->day != 1) return false;
         
         $newDate  = Carbon::now()->day(1)->format('Y-m-d');
         $prevDate = Carbon::now()->subMonth()->day(1)->format('Y-m-d');
@@ -302,12 +302,12 @@ class CreatePivotAnalytics extends Command
             $value = '';
         }
 
-        if($stat->type == 'formula') {
-            $value = AnalyticStat::convert_formula_to_new_month($stat->value, $newRows, $newCols);
-        }
-
         if($stat->type == 'initial' || in_array($newCols[$stat->column_id], $colsWithValue)) {
             $value = '';
+        }
+        
+        if($stat->type == 'formula') {
+            $value = AnalyticStat::convert_formula_to_new_month($stat->value, $newRows, $newCols);
         }
 
         if($stat->row_id == array_values($newRows)[0]) {
@@ -338,14 +338,17 @@ class CreatePivotAnalytics extends Command
         $row_id = $newRows[$stat->row_id];
         $col_id = $newCols[$stat->column_id];
         
-        if(in_array($newCols[$stat->column_id], $colsWithValue)) {
-            $value = $stat->show_value;
-        }
-        
-        
         if($row_id == array_values($newRows)[0]
            || $stat->type == 'formula') {
             $value = $stat->show_value;
+        }
+
+        if(in_array($newCols[$stat->column_id], $colsWithValue)) {
+            $value = $stat->show_value;
+        }
+
+        if(in_array($stat->type, ['formula', 'avg', 'sum', 'salary'])) {
+            $value = '';
         }
 
         return $value;
