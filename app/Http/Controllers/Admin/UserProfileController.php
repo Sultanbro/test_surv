@@ -8,6 +8,7 @@ use App\Classes\Helpers\Currency;
 use App\Downloads;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserProfileUpdateRequest;
+use App\Models\Analytics\Activity;
 use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\TraineeReport;
 use App\Models\Analytics\UserStat;

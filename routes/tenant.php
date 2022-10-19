@@ -114,7 +114,7 @@ Route::middleware([
     
     
 
-    Route::any('/', [UserController::class, 'getProfile']);
+    Route::any('/', [UserProfileController::class, 'getProfile']);
     Route::view('/doc', 'docs.index');
     Route::view('/html', 'design');
 
