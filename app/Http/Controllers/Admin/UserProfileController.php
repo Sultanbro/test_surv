@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\AnalyticsSettings;
 use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Recruiting as RM;
 use App\Classes\Helpers\Currency;
+use App\DayType;
 use App\Downloads;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserProfileUpdateRequest;
@@ -335,5 +337,115 @@ class UserProfileController extends Controller
             'courses' => $user->getActiveCourses(),
             'workdays' => $workdays
         ]);
+    }
+
+    /**
+     * Recruiting temp function
+     * Only for BP
+     * 
+     * @return String|false
+     */
+    private function recruiting_temp() : String|false
+    {
+        if(tenant('id') != 'bp') return json_encode([]);
+
+        $group = ProfileGroup::find(48);
+
+        $indicators = []; // Для визуальных данных под сводной таблицей
+      
+        $settings = AnalyticsSettings::query()
+            ->whereYear('date', date('Y'))
+            ->whereMonth('date', date('m'))
+            ->where('group_id', RM::GROUP_ID)
+            ->where('type', 'basic')
+            ->first();
+
+        if($settings) {
+            $arr = $settings->data;
+
+            $indicators['info']['created']   = $arr[RM::S_CREATED]['fact']; 
+            $indicators['info']['converted'] = $arr[RM::S_CONVERTED]['fact']; 
+
+            $trainees = DayType::query()
+                ->whereYear('date', date('Y'))
+                ->whereMonth('date', date('m'))
+                ->whereDay('date', date('d'))
+                ->where('type', 5)
+                ->get()
+                ->pluck('user_id')
+                ->toArray();
+
+            $indicators['info']['trainees']     = count(array_unique($trainees));
+            $indicators['info']['applied']      = $arr[RM::S_APPLIED]['fact']; 
+            $indicators['info']['remain_apply'] = $arr[RM::S_APPLIED]['plan'] - $arr[RM::S_APPLIED]['fact']; 
+
+            $x_count = \DB::table('users')
+                ->whereNull('deleted_at')
+                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+                ->where('ud.is_trainee', 0)
+                ->get()
+                ->count();
+
+            $indicators['info']['working'] = $x_count;
+
+            $trainees = DayType::query()
+                ->whereYear('date', date('Y'))
+                ->whereMonth('date', date('m'))
+                ->whereDay('date', date('d'))
+                ->whereIn('type', [5,7])
+                ->get()
+                ->pluck('user_id')
+                ->toArray();
+
+            $indicators['info']['training']      = count(array_unique($trainees));
+            $indicators['info']['fired']         = $arr[RM::S_FIRED]['fact']; 
+            $indicators['info']['applied_plan']  = $arr[RM::S_APPLIED]['plan']; 
+            $indicators['info']['trainees_plan'] = $arr[RM::S_TRAINING_TODAY]['plan']; 
+
+            $indicators['today'] = date('d');
+            $indicators['month'] = (int)date('m');
+        }
+        
+        // AGAIN USERS
+        $trainees = (new UserService)->getEmployees($group->id, date('Y-m-d'));
+        $user_ids = collect($trainees)->pluck('id')->toArray();
+
+        $t = RM::getTableRecruiters($user_ids, ['year' => date('Y'), 'month' => date('m')]);
+
+        $indicators['recruiters'] = $t['recruiters'];
+
+        /// Заказы руководителей
+        $orders = [];
+        $orderGroups = ProfileGroup::where('active', 1)->get(); 
+        foreach ($orderGroups as $group) {
+            $orders[] = [
+                'group'    => $group->name,
+                'required' => $group->required,
+                'fact'     => $group->provided . ' ',
+            ];
+        }
+        
+        $indicators['orders'] = $orders;
+
+        // Count remain days
+        $start = Carbon::now();
+        $end = Carbon::now()->setDate(date('Y'), date('m'), 1)->endOfMonth();
+        
+        $holidays = [
+        //     Carbon::create(2014, 2, 2),
+        ];
+        
+        if($end->timestamp - $start->timestamp >= 0 && $end->month >= date('m')) {
+            $remain_days = $start->diffInDaysFiltered(function (Carbon $date) use ($holidays) {
+                return !$date->isDayOfWeek(Carbon::SUNDAY); //&& !in_array($date, $holidays);
+            }, $end);
+        } else {
+            $remain_days = 0;
+        }
+
+        $indicators['info']['remain_days'] = $remain_days;
+
+        
+        return json_encode($indicators);
     }
 }
