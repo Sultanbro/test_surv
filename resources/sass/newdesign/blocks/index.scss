@@ -1,0 +1,177 @@
+.content.index{
+  margin-top: 5rem;
+  padding-bottom: 6.5rem;
+}
+.index__table{
+  background: #F8F9FD;
+  border-radius: 1.5rem 1.5rem 0 0;
+  padding: 3rem 0 5rem 3.8rem;
+
+}
+.index__tab{
+  white-space: nowrap;
+}
+.index .tab__content{
+  width: 100%;
+  padding-right: 3.5rem;
+
+}
+
+.index__content{
+  margin-top: 2.3rem;
+  width: 100%;
+
+
+  table{
+    padding-right: 3.5rem;
+    width: 100%;
+    font-family: "Inter",sans-serif;
+    text-align: center;
+    border-spacing: 0px;
+    color:#62788B;
+    border-radius: 1.2rem 1.2rem 0 0;
+    td{
+      border: 1px solid #E7EAEA;
+      font-size:1.2rem;
+      height: 4rem;
+
+      background: #fff;
+      div{
+        width: 5rem;
+      }
+      div.large{
+        width: 19.5rem;
+      }
+      div.medium{
+        width: 7rem;
+      }
+      div.small{
+        width: 6rem;
+      }
+      &.blue{
+        background: #DDE9FF;
+        div{
+          width: 8rem;
+        }
+      }
+      &.red {
+        background: #EB5271;
+        color:#fff;
+      }
+      &.green {
+        background: #B7E100;
+      }
+
+    }
+    tr{
+      width: 189.3rem;
+      td:first-child{
+        text-align: left;
+        div{
+          padding-left: 1.5rem;
+
+          max-width: 19.5rem;
+          position:relative;
+
+        }
+      }
+      &.prize{
+        div{
+          width: 90%;
+
+        }
+        div::after{
+          content:"";
+          position:absolute;
+          top: 0;
+          right: 0;
+          z-index: 1;
+          width: 1.5rem;
+          height: 2rem;
+
+        }
+        &.first-place td:first-child div::after{
+          background: url("../images/dist/first-place.png") center no-repeat;
+          background-size: cover;
+        }
+        &.second-place td:first-child div::after{
+          background: url("../images/dist/second-place.png") center no-repeat;
+          background-size: cover;
+        }
+        &.third-place td:first-child div::after{
+          background: url("../images/dist/third-place.png") center no-repeat;
+          background-size: cover;
+        }
+      }
+    }
+    tr:first-child{
+      th,td{
+        width: 20rem;
+      }
+    }
+    th{
+      font-size:1.2rem;
+      color:#62788B;
+      font-weight: 600;
+      height: 4rem;
+      border: 1px solid #E7EAEA;
+      text-align: center;
+    }
+    th:first-child{
+      border-radius:1.2rem 0 0 0;
+    }
+    th:last-child{
+      border-radius:0 1.2rem 0 0;
+    }
+  }
+
+}
+
+@media(max-width:440px){
+  .index__tabs{
+    display: none;
+  }
+  .index .mobile-select{
+    margin: 0;
+  }
+  .index__table{
+    padding: 2rem 0 5rem 2rem;
+  }
+  .content.index{
+    padding-bottom: 4rem;
+    margin-top: 4rem;
+  }
+}
+
+
+@media(min-width:1300px){
+  .intro__stats{
+    justify-content: unset;
+    gap:3rem;
+  }
+}
+
+@media(min-width:1650px){
+  .stat__item{
+    min-height: 30rem;
+    flex: 0 1 24rem;
+    font-size:1.8rem;
+    padding: 1rem 2rem 2rem;
+
+    .stat__name{
+      margin-bottom: 1rem;
+    }
+  }
+  .stat__image{
+    width: 100%;
+    max-width: 16rem;
+  }
+}
+
+
+
+@media(min-width:1910px){
+  .content.index{
+    margin-top: 6rem;
+  }
+}

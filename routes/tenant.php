@@ -95,6 +95,7 @@ Route::middleware([
     \Auth::routes(); 
    
 
+    Route::get('/newprofile', [ProfileController::class, 'newprofile']);
 
     Route::get('/send-mail', function() {
         $mailData = [
@@ -761,6 +762,9 @@ Route::middleware([
                 
     });
 });
+
+
+
 
 
 /**

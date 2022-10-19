@@ -11,6 +11,7 @@ use App\DayType;
 use App\UserDescription;
 use Carbon\Carbon;
 use App\Models\Bitrix\Lead;
+use App\Service\Department\UserService;
 
 class MarkTrainees extends Command
 {
@@ -51,10 +52,13 @@ class MarkTrainees extends Command
 
         $groups = ProfileGroup::where('active', 1)->get();
 
+        
 		$users = [];
 		foreach($groups as $group) {
-			$users  = array_merge($users, json_decode($group->users));
-			$users = array_unique($users);
+			$gusers = (new UserService)->getTrainees($group->id, Carbon::now()->startOfMonth()->format('Y-m-d')); 
+            $gusers = collect($gusers)->pluck('id')->toArray();
+
+            $users = array_merge($users, $gusers);
 		}
 
         $trainees = \DB::table('users')
