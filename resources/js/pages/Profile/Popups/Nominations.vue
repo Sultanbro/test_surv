@@ -1,0 +1,279 @@
+<template>
+<div class="popup nominations js-popup">
+    <div class="popup__content">
+        <div class="popup-header">
+            <a class="popup-close js-close-popup" href="#" ><img src="images/dist/popup-close.svg" alt="Close icon" ></a>
+            <div class="popup__header-content">
+                <div class="popup__title">
+                    Номинации
+                </div>
+                <div class="popup__subtitle">
+                    Дополнительное поле с описанием функционала данного окна
+                </div>
+            </div>
+        </div>
+        <div class="popup__body">
+
+            <div class="tabs ">
+                <div class="popup__filter">
+                    <div class="trainee__tabs tabs__wrapper">
+                        <div  class="trainee__tab tab__item is-active" onclick="switchTabs(this)"  data-index="1">Номинации</div>
+                        <div  class="trainee__tab tab__item" onclick="switchTabs(this)"  data-index="2">Сертификаты</div>
+                        <div  class="trainee__tab tab__item" onclick="switchTabs(this)"  data-index="3">Лучшие сотрудники</div>
+                    </div>
+                    <select class="select-css trainee-select mobile-select">
+                        <option value="1">Номинации</option>
+                        <option value="2">Сертификаты</option>
+                        <option value="3">Лучшие сотрудники</option>
+                    </select>
+
+
+                <!--							<div class="nominations__arrows">-->
+                <!--								<a id="nominationBack" href="#" class="arrow__item"><img src="images/dist/arrow-back.svg" alt="arrow icon"></a>-->
+                <!--								<a id="nominationNext" href="#" class="arrow__item"><img src="images/dist/arrow-next.svg" alt=" arrow icon"></a>-->
+                <!--							</div>-->
+
+                </div>
+
+                <div class="tab__content">
+                    <div class="nominations__content custom-scroll-y tab__content-item is-active"  data-content="1">
+                        <div class="nominations__wrapper">
+                            <!--									<div class="nominations__left">-->
+                            <!--										<div class="nominations__half">-->
+                            <!--											<div class="nominations__half-title">Количество исходящих-->
+                            <!--												вызовов</div>-->
+                            <!--											<div class="nominations__value">597</div>-->
+                            <!--											<div class="nominations__half-title">-->
+                            <!--												План: 470-->
+                            <!--											</div>-->
+                            <!--										</div>-->
+                            <!--										<div class="nominations__half">-->
+                            <!--											<div class="nominations__half-title">Количество исходящих-->
+                            <!--												вызовов</div>-->
+                            <!--											<div class="nominations__value">597</div>-->
+                            <!--											<div class="nominations__half-title">-->
+                            <!--												План: 470-->
+                            <!--											</div>-->
+                            <!--										</div>-->
+                            <!--									</div>-->
+                            <div class="nominations__item">
+                                <div class="nominations__item-title">
+                                    Процент успешных
+                                    исходящих продаж
+                                </div>
+                                <div class="nominations__item-avatar gift-1">
+                                    <img src="images/dist/profile-avatar.png" alt="profile avatar">
+                                </div>
+                                <div class="nominations__item-name">
+                                    Елена Линовская
+                                </div>
+                                <div class="nominations__item-subtext">
+                                    колл-центр
+                                </div>
+                                <div class="nominations__item-value">
+                                    15 500 ₸
+                                </div>
+                                <div class="nominations__item-wrapper">
+                                    <div class="nominations__item-row">
+                                        <p>KPI</p>
+                                        <p>1300 ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>БОНУСЫ</p>
+                                        <p>200 ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>ОКЛАД</p>
+                                        <p>14000 ₸</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nominations__item green">
+                                <div class="nominations__item-title">
+                                    Процент успешных
+                                    исходящих продаж
+                                </div>
+                                <div class="nominations__item-avatar gift-2">
+                                    <img src="images/dist/profile-avatar.png" alt="profile avatar">
+                                </div>
+                                <div class="nominations__item-name">
+                                    Елена Линовская
+                                </div>
+                                <div class="nominations__item-subtext">
+                                    колл-центр
+                                </div>
+                                <div class="nominations__item-value">
+                                    15 500 ₸
+                                </div>
+                                <div class="nominations__item-wrapper">
+                                    <div class="nominations__item-row">
+                                        <p>KPI</p>
+                                        <p>1300 ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>БОНУСЫ</p>
+                                        <p>200 ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>ОКЛАД</p>
+                                        <p>14000 ₸</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nominations__item">
+                                <div class="nominations__item-title">
+                                    Процент успешных
+                                    исходящих продаж
+                                </div>
+                                <div class="nominations__item-avatar gift-3">
+                                    <img src="images/dist/profile-avatar.png" alt="profile avatar">
+                                </div>
+                                <div class="nominations__item-name">
+                                    Елена Линовская
+                                </div>
+                                <div class="nominations__item-subtext">
+                                    колл-центр
+                                </div>
+                                <div class="nominations__item-value">
+                                    15 500 ₸
+                                </div>
+                                <div class="nominations__item-wrapper">
+                                    <div class="nominations__item-row">
+                                        <p>KPI</p>
+                                        <p>1300 ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>БОНУСЫ</p>
+                                        <p>200 ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>ОКЛАД</p>
+                                        <p>14000 ₸</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nominations__content custom-scroll-y tab__content-item"  data-content="2">
+                        <div class="tabs__include">
+                            <div class="tabs__wrapper wrapper-include">
+                                <div  class="tab__item-include is-active" onclick="switchTabsInclude(this)"  data-index="1">Мои номинации</div>
+                                <div  class="tab__item-include" onclick="switchTabsInclude(this)"  data-index="2">Доступные номинации</div>
+                                <div  class="tab__item-include" onclick="switchTabsInclude(this)"  data-index="3">Номинации других участников</div>
+                            </div>
+                            <div class="tab__content-include">
+                                <div class="tab__content-item-include is-active"  data-content="1">
+                                    <div class="certificates__title">
+                                        Сертификатов: <span class="current">10</span> из <span class="all">17</span>
+                                    </div>
+
+                                    <div class="certificates__wrapper">
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-1.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-2.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-3.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-1.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-2.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-3.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-1.png" alt="certificate image">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="tab__content-item-include"  data-content="2">
+                                    <div class="certificates__title">
+                                        Сертификатов: <span class="current">0</span> из <span class="all">80</span>
+                                    </div>
+
+                                    <div class="certificates__wrapper">
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-3.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-2.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-1.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-3.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-1.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-2.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-3.png" alt="certificate image">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab__content-item-include"  data-content="3">
+                                    <div class="certificates__title">
+                                        Сертификатов: <span class="current">3</span> из <span class="all">80</span>
+                                    </div>
+
+                                    <div class="certificates__wrapper">
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-2.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-1.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-2.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-3.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-1.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-2.png" alt="certificate image">
+                                        </div>
+                                        <div class="certificates__item">
+                                            <img src="images/dist/certificate-3.png" alt="certificate image">
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</template>
+
+<script>
+export default {
+    name: "PopupNominations", 
+    props: {},
+    data: function () {
+        return {
+            fields: [], 
+        };
+    },
+    methods: {
+        
+    }
+};
+</script>

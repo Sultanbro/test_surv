@@ -246,7 +246,36 @@ Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').defau
 Vue.component('profile-salary-info', require('./pages/ProfileSalaryInfo.vue').default); 
 
 Vue.component('award-user-sidebar', require('./components/sidebars/AwardUserSidebar.vue').default); // сайдбар для награждения пользователя
- 
+
+
+/**
+ * new design Profile page
+ */
+Vue.component('new-intro-stats', require('./pages/Profile/IntroStats.vue').default); 
+Vue.component('new-intro-smart-table', require('./pages/Profile/IntroSmartTable.vue').default); 
+Vue.component('new-intro-top', require('./pages/Profile/IntroTop.vue').default); 
+Vue.component('new-profit', require('./pages/Profile/Profit.vue').default); 
+Vue.component('new-courses', require('./pages/Profile/Courses.vue').default); 
+Vue.component('new-trainee-estimation', require('./pages/Profile/TraineeEstimation.vue').default); 
+Vue.component('new-compare-indicators', require('./pages/Profile/CompareIndicators.vue').default); 
+
+Vue.component('popup-award', require('./pages/Profile/Popup/Award.vue').default); 
+Vue.component('popup-kpi', require('./pages/Profile/Popup/Kpi.vue').default); 
+Vue.component('popup-balance', require('./pages/Profile/Popup/Balance.vue').default); 
+Vue.component('popup-bonuses', require('./pages/Profile/Popup/Bonuses.vue').default); 
+Vue.component('popup-nominations', require('./pages/Profile/Popup/Nominations.vue').default); 
+
+
+/**
+ * Layout of new design
+ */
+Vue.component('left-sidebar', require('./pages/Layouts/LeftSidebar.vue').default); 
+Vue.component('right-sidebar', require('./pages/Layouts/RightSidebar.vue').default); 
+Vue.component('profile-sidebar', require('./pages/Layouts/ProfileSidebar.vue').default); 
+
+/**
+ * click outside event
+ */
 Vue.directive("click-outside", {
   bind(el, binding, vnode) {
     el.clickOutsideEvent = (event) => {

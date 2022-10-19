@@ -42,13 +42,34 @@
         <div class="wrapper">
 
             <main class="main"> 
-                @yield('content')
+                <div class="container container-left-padding">
+                    
+                    <!-- Mobile menu buttons -->
+                    <div class="header__top">
+                        <a href="#" class="header__top-button burger-left">Раскрыть меню</a>
+                        <div class="header__top-wrapper">
+                            <a href="#" class="header__top-button burger-right">Раскрыть меню</a>
+                            <a href="#" class="header__right-icon">
+                                <img src="images/dist/header-right-3.svg" alt="nav icon" class="header__icon-img">
+                            </a>
+                            <a href="#" class="header__right-icon red">
+                                <img src="images/dist/header-right-2.svg" alt="nav icon" class="header__icon-img">
+                            </a>
+                        </div>
+                    </div>
+
+                    @yield('content')
+
+                </div>
             </main>
 
             <footer class="footer"></footer>
 
             <div class="overlay custom-scroll-y js-overlay">
+
+                @yield('popups')
                 @include('layouts.popups')
+
             </div>
 
         </div>
