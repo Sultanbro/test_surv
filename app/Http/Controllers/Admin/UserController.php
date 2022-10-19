@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Classes\Analytics\Recruiting;
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;

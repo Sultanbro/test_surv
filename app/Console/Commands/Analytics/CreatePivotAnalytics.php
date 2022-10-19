@@ -45,7 +45,7 @@ class CreatePivotAnalytics extends Command
     {
         $this->line('start creating pivot tables:');
         
-        //if(Carbon::now()->day != 1) return false;
+        if(Carbon::now()->day != 1) return false;
         
         $newDate  = Carbon::now()->day(1)->format('Y-m-d');
         $prevDate = Carbon::now()->subMonth()->day(1)->format('Y-m-d');
@@ -130,11 +130,27 @@ class CreatePivotAnalytics extends Command
     {
         $newCols = [];
 
-        $cols = AnalyticColumn::where('date', $prevDate)
-                    ->where('group_id', $group_id)
-                    ->orderBy('order','asc')
-                    ->get();
+        /**
+         * get days in month to prevent creating spare columns
+         */
+        $daysInMonth     = Carbon::parse($newDate)->daysInMonth; 
+        $daysInPrevMonth = Carbon::parse($prevDate)->daysInMonth; 
 
+        
+        /**
+         * get cols from prev month
+         */
+        $cols = AnalyticColumn::where('date', $prevDate)
+                    ->where('group_id', $group_id);
+                    
+        if($daysInMonth == 28) $cols->whereNotIn('name', [29, 30, 31]);
+        if($daysInMonth == 29) $cols->whereNotIn('name', [30, 31]);
+        if($daysInMonth == 30) $cols->whereNotIn('name', [31]);
+        
+        $cols = $cols->orderBy('order','asc')->get();
+
+        $lastOrder = 0;
+        
         foreach($cols as $col) {
             $newCol = AnalyticColumn::create([
                 'group_id' => $col->group_id,
@@ -142,11 +158,55 @@ class CreatePivotAnalytics extends Command
                 'date'     => $newDate,
                 'order'    => $col->order,
             ]);
+            
+            /**
+             * order we will use for missing columns 
+             */
+            $lastOrder = $col->order;
 
+            /**
+             * to know what columns was before
+             */
             $newCols[$col->id] = $newCol->id;
         }
 
+        /**
+         * create missing day columns
+         */
+        $columnsMissingFromPreviousMonth = $this->columnsMissingFromPreviousMonth($daysInMonth, $daysInPrevMonth);
+
+        foreach($columnsMissingFromPreviousMonth as $day) {
+            $newCol = AnalyticColumn::create([
+                'group_id' => $group_id,
+                'name'     => $day,
+                'date'     => $newDate,
+                'order'    => ++$lastOrder,
+            ]);
+        }
+
         return $newCols;
+    }
+
+    /**
+     * day columnsMissingFromPreviousMonth
+     * 
+     * @param int $daysInPrevMonth
+     * @param int $daysInMonth
+     * 
+     * @return array
+     */
+    private function columnsMissingFromPreviousMonth(
+        int $daysInMonth,
+        int $daysInPrevMonth
+    ) : array
+    {   
+        $cols = [];
+
+        if($daysInMonth - $daysInPrevMonth == 1) $cols = ['31'];
+        if($daysInMonth - $daysInPrevMonth == 2) $cols = ['30', '31'];
+        if($daysInMonth - $daysInPrevMonth == 3) $cols = ['29', '30', '31'];
+
+        return $cols;
     }
 
     /**
@@ -242,12 +302,12 @@ class CreatePivotAnalytics extends Command
             $value = '';
         }
 
-        if($stat->type == 'formula') {
-            $value = AnalyticStat::convert_formula_to_new_month($stat->value, $newRows, $newCols);
-        }
-
         if($stat->type == 'initial' || in_array($newCols[$stat->column_id], $colsWithValue)) {
             $value = '';
+        }
+        
+        if($stat->type == 'formula') {
+            $value = AnalyticStat::convert_formula_to_new_month($stat->value, $newRows, $newCols);
         }
 
         if($stat->row_id == array_values($newRows)[0]) {
@@ -278,14 +338,17 @@ class CreatePivotAnalytics extends Command
         $row_id = $newRows[$stat->row_id];
         $col_id = $newCols[$stat->column_id];
         
-        if(in_array($newCols[$stat->column_id], $colsWithValue)) {
-            $value = $stat->show_value;
-        }
-        
-        
         if($row_id == array_values($newRows)[0]
            || $stat->type == 'formula') {
             $value = $stat->show_value;
+        }
+
+        if(in_array($newCols[$stat->column_id], $colsWithValue)) {
+            $value = $stat->show_value;
+        }
+
+        if(in_array($stat->type, ['formula', 'avg', 'sum', 'salary'])) {
+            $value = '';
         }
 
         return $value;

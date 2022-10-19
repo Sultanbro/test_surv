@@ -54,7 +54,14 @@ class ProfileController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+    }
+
+    /**
+     * Мой профиль с новым дизайном
+     */
+    public function newprofile()
+    {
+        return view('newprofile');
     }
 
     /**

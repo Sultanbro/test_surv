@@ -5,6 +5,8 @@
  */
 
 require('./bootstrap').default;
+require('./newprofile').default; // new design for profile. There is jquery
+
 window.Vue = require('vue').default;
 window.collect = require('collect.js')// globally
 
