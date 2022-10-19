@@ -148,14 +148,15 @@
   }
 }
 @media(min-width:1360px){
-  .container{
-    padding-left: 40rem;
+  .container.container-left-padding {
+    padding-left: 43rem;
     padding-right: 6rem;
+    padding-top: 3rem;
   }
 }
 
 @media(min-width:1910px){
-  .container{
+  .container.container-left-padding {
     padding-right: 8rem;
   }
 }

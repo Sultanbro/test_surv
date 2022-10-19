@@ -24,7 +24,6 @@ nav, footer, header, aside {
 }
 html{
   overflow-x:hidden;
-  font-size:10px;
   -webkit-appearance: none;
   scrollbar-color: #AEBEE0 #ECF0F9 ;
   scrollbar-width: thin;
@@ -46,9 +45,8 @@ html{
 
 body {
   font-family: 'Inter', sans-serif;
-  overflow-x:hidden;
-  overflow-y:hidden;
-  font-size:10px;
+  // overflow-x:hidden;
+  // overflow-y:hidden;
   height: 100%;
   width: 100%;
   font-weight:400;

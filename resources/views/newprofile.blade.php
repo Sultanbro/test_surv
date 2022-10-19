@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="font-size:10px;">
 
 <head>
 
@@ -15,12 +15,12 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="css/app.min.css">
+	<link rel="stylesheet" href="css/admin/app.css">
 
 </head>
 
 <body ontouchstart="">
-<div class="container header__container">
+<div class="container header__container right-panel-app">
 	<div class="header__profile _anim _anim-no-hide custom-scroll-y">
 		<div class="profile__content">
 			<a href="#" class="profile__logo">
@@ -114,7 +114,7 @@
 	</div>
 	<header class="header">
 
-		<div class="header__left closed">
+		<div class="header__left closedd">
 			<div class="header__avatar">
 				<img src="images/dist/header-avatar.png" alt="avatar image" >
 				<div class="header__menu">
@@ -220,7 +220,7 @@
 				</a>
 			</div>
 		</div>
-		<div class="header__right closed">
+		<div class="header__right closedd">
 			<div class="header__right-nav">
 				<a href="#" class="header__right-icon">
 					<img src="images/dist/header-right-1.svg" alt="nav icon" class="header__icon-img">
@@ -274,8 +274,8 @@
 
 </div>
 <div class="wrapper">
-	<main class="main">
-			<div class="container">
+	<main class="main"> 
+			<div class="container container-left-padding">
 				<div class="header__top">
 					<a href="#" class="header__top-button burger-left">Раскрыть меню</a>
 					<div class="header__top-wrapper">
