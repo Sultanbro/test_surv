@@ -13,4 +13,16 @@ class WorkingDay extends Model
     protected $fillable = [
         'name'
     ];
+
+    /**
+     * ID = 1;
+     * График 5-2;
+     */
+    const FIVE_DAYS = 5;
+
+    /**
+     * ID = 2;
+     * График 6-1;
+     */
+    const SIX_DAYS = 6;
 }

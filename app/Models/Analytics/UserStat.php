@@ -2,6 +2,7 @@
 
 namespace App\Models\Analytics;
 
+use App\WorkingDay;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Analytics\Activity;
 use Carbon\Carbon;
@@ -166,7 +167,16 @@ class UserStat extends Model
 
                 $ud = UserDescription::where('user_id', $localUser->id)->first();
                 //$applied_from = $localUser->workdays_from_applied($date, $group_1->workdays);
-                $applied_from = $localUser->workdays_from_applied($date, 6);
+                $user = User::query()->find($user_id);
+
+                $workDay = WorkingDay::SIX_DAYS;
+
+                if (isset($user->working_day_id))
+                {
+                    $workDay = $user->working_day_id == 1 ? WorkingDay::FIVE_DAYS : WorkingDay::SIX_DAYS;
+                }
+
+                $applied_from = $localUser->workdays_from_applied($date, $workDay);
                 
                 $work_days = 26;
                 if($applied_from > 0){
