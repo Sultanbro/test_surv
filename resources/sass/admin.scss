@@ -11,6 +11,9 @@ $hover-blue: #007bff;
 @import "~select2/src/scss/core.scss";// Select2
 @import "~vue-multiselect/dist/vue-multiselect.min.css";// 
 
+p {
+    margin-bottom: 0;
+}
 
 @import "btns";
 @import "breadcrumbs"; 

@@ -35,7 +35,6 @@
     },
     "dependencies": {
         "@tinymce/tinymce-vue": "^3.0.1",
-        "ant-design-vue": "^1.4.10",
         "bootstrap": "^4.6.0",
         "bootstrap-vue": "^2.21.2",
         "child_process": "^1.0.2",
