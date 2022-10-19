@@ -14,7 +14,6 @@ Vue.use(BootstrapVue)
 import mDatePicker from './vue-multi-date-picker/src/lib'
 Vue.use(mDatePicker)
 
-//import "ant-design-vue/dist/antd.css";
 import moment from 'moment'
 moment.locale('ru')
 require('moment-weekday-calc')

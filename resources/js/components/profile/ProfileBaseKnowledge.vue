@@ -21,7 +21,6 @@
 const MEMBER = 1;
 const HEAD = 2;
 
-import 'ant-design-vue/dist/antd.css'
 export default {
   name: "ProfileBaseKnowledge",
   props: {

@@ -793,7 +793,6 @@ __WEBPACK_IMPORTED_MODULE_6_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_0_boot
 
 __WEBPACK_IMPORTED_MODULE_6_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1__vue_multi_date_picker_src_lib__["a" /* default */]);
 
-//import "ant-design-vue/dist/antd.css";
 
 __WEBPACK_IMPORTED_MODULE_2_moment___default.a.locale('ru');
 __webpack_require__(334);
@@ -21377,19 +21376,7 @@ options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(115)(content, options);
 if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../css-loader/index.js!./antd.css", function() {
-			var newContent = require("!!../../css-loader/index.js!./antd.css");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
+
 
 /***/ })
 

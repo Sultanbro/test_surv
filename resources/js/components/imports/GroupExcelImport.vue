@@ -104,7 +104,6 @@
 
 
 <script>
-import 'ant-design-vue/dist/antd.css'
 export default {
     name: "group-excel-import",
     props: {

@@ -126,7 +126,6 @@
 
 
 <script>
-import 'ant-design-vue/dist/antd.css'
 export default {
     name: "activity-excel-import",
     props: {
