@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 
+use App\Http\Controllers\Admin\UserProfileController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\AwardTypeController;
 use App\Http\Controllers\AttendanceController;
@@ -116,9 +117,21 @@ Route::middleware([
     Route::any('/', [UserController::class, 'getProfile']);
     Route::view('/doc', 'docs.index');
     Route::view('/html', 'design');
-    
-    Route::post('/profile', [UserController::class, 'profile']);
-    Route::get('/profile', [UserController::class, 'getProfile']);
+
+
+    Route::group([
+        'prefix' => 'profile',
+        'as' => 'profile.'
+    ], function () {
+        Route::post('/', [UserProfileController::class, 'profile']);
+        Route::get('/', [UserProfileController::class, 'getProfile']);
+        Route::get('/personal-info', [UserProfileController::class, 'personalInfo']);
+        Route::get('/recruter-stats', [UserProfileController::class, 'recruterStatsRates']);
+        Route::get('/activities', [UserProfileController::class, 'activities']);
+        Route::get('/courses', [UserProfileController::class, 'courses']);
+        Route::get('/trainee-report', [UserProfileController::class, 'traineeReport']);
+    });
+
 
     Route::post('logout', [LoginController::class, 'logout']);//->name('logout');
 
