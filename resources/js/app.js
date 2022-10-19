@@ -259,11 +259,11 @@ Vue.component('new-courses', require('./pages/Profile/Courses.vue').default);
 Vue.component('new-trainee-estimation', require('./pages/Profile/TraineeEstimation.vue').default); 
 Vue.component('new-compare-indicators', require('./pages/Profile/CompareIndicators.vue').default); 
 
-Vue.component('popup-award', require('./pages/Profile/Popup/Award.vue').default); 
-Vue.component('popup-kpi', require('./pages/Profile/Popup/Kpi.vue').default); 
-Vue.component('popup-balance', require('./pages/Profile/Popup/Balance.vue').default); 
-Vue.component('popup-bonuses', require('./pages/Profile/Popup/Bonuses.vue').default); 
-Vue.component('popup-nominations', require('./pages/Profile/Popup/Nominations.vue').default); 
+Vue.component('popup-award', require('./pages/Profile/Popups/Award.vue').default); 
+Vue.component('popup-kpi', require('./pages/Profile/Popups/Kpi.vue').default); 
+Vue.component('popup-balance', require('./pages/Profile/Popups/Balance.vue').default); 
+Vue.component('popup-bonuses', require('./pages/Profile/Popups/Bonuses.vue').default); 
+Vue.component('popup-nominations', require('./pages/Profile/Popups/Nominations.vue').default); 
 
 
 /**
