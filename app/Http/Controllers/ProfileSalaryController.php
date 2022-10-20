@@ -140,6 +140,7 @@ class ProfileSalaryController extends Controller
             'quarter_bonus' => $quarter_bonus.' '. strtoupper($user->currency),
             'oklad' => round((float)$oklad * $currency_rate, 0),
             'bonus' => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
+            'currency' => strtoupper($user->currency) , 's',
             'kpis' => $kpis,
             'bonusHistory' => $bonusHistory,
             'editedBonus' => $editedBonus,
@@ -148,6 +149,11 @@ class ProfileSalaryController extends Controller
             'salary_percent' => $oklad > 0 ? $salary / $oklad * 100 : 0,
             'kpi_percent' => $kpi / 400, // kpi / 40000 * 100
             'kpi' => number_format((float)$kpi * $currency_rate,  0, '.', '\''). ' ' . strtoupper($user->currency),
+            'sumKpi' => $editedKpi ? $editedKpi->amount : $kpi,
+            'sumSalary' => $salary,
+            'sumBonuses' => $editedBonus ? $editedBonus->amount : $bonus,
+            'sumQuartalPremiums' => $quarter_bonus,
+            'sumNominations' => 0, // кол-во номинаций
             'salary' => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
             'salary_info' => [
                 'worked_days' => $user->worked_days(),

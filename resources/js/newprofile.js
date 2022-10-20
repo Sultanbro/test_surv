@@ -419,65 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
     VJQuery(window).on('resize',function(e){
 
     })
-    function OpacityStats(){
-            let     MAXBALANCE = 40000,
-                    MAXKPI = 40000,
-                    MAXBONUSES = 30,
-                    MAXKVARTAL = 40000,
-                    MAXNOMINATIONS = 30,
-                    maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
-                    let values = VJQuery('.stat__value span');
-            for(let i=0;i<values.length;i++){
-
-                let value = values[i].textContent.replace(/,/g,"")
-                if(value !== '0'){
-                    VJQuery(values[i]).closest('.stat__value').addClass('active')
-                }
-
-
-
-
-                VJQuery({numberValue: 0}).animate({numberValue: value/maxArray[i] * 100}, {
-                    duration: 4000,
-                    easing: "swing",
-                    step: function(val) {
-                        VJQuery(values[i]).closest('.stat__item').find('.front').css('height',val+'%')
-                    },
-                    complete: function(){
-                        VJQuery(values[i]).closest('.stat__item').find('.front').css('height',value/maxArray[i] * 100 + '%')
-                    }
-                });
-            }
-
-    }
-    OpacityStats();
-
-        VJQuery('.stat__value').each(function(){
-            let n = VJQuery(this).children('span').text().replace(/\D/g,'');
-            let element = VJQuery(this);
-
-            function separateNumber(x) {
-                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                //разделитель можно задать тут вторым аргументом для метода replace. Сейчас, как видно, пробел
-            }
-
-            VJQuery({numberValue: 0}).animate({numberValue: n}, {
-                duration: 4000,
-                easing: "swing",
-                step: function(val) {
-                    element.children('span').text(separateNumber(Math.round(val)));
-                },
-                complete: function(){
-                    element.children('span').text(separateNumber(Math.round(n)));
-                }
-            });
-        })
-
-
-
-
-
-
+ 
     VJQuery('.point-close').click(function(){
         VJQuery(this).closest('.profile-box').find('.profile-slick').slideToggle(700, 'swing')
         VJQuery(this).closest('.profile-box').find('.profile__title').toggleClass('_slicked')
