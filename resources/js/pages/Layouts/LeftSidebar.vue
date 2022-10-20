@@ -1,55 +1,58 @@
 <template>
 <div class="header__left closedd">
     <div class="header__avatar">
-        <img src="images/dist/header-avatar.png" alt="avatar image" >
+        <img :src="$avatar" alt="avatar image" >
         <div class="header__menu">
             <div class="header__menu-title">
-                Специалист тутми <a href="#">#14182</a>
-                <p>mikle@tutmee.ru</p>
+                Пользователь <a href="#">#{{ $userId }}</a>
+                <p>test@jobtron.org</p>
             </div>
-            <a href="#" class="menu__item">
+            <a href="/cabinet" class="menu__item">
                 <img src="images/dist/icon-settings.svg" alt="settings icon">
                 <span class="menu__item-title">Настройки</span>
             </a>
-            <a href="#"  class="menu__item">
-                <img src="images/dist/icon-exit.svg" alt="settings icon">
-                <span class="menu__item-title">Выход</span>
-            </a>
+            <form action="/logout" method="POST">
+                <button class="menu__item">
+                    <img src="images/dist/icon-exit.svg" alt="settings icon">
+                    <span class="menu__item-title">Выход</span>
+                </button>
+                @csrf
+            </form>
         </div>
     </div>
     <nav class="header__nav">
         <div class="header__nav-link profile">
-            <a href="#profile">
+            <a href="/">
                 <span class="_icon-nav-1 header__nav-icon"></span>
                 <span class="header__nav-name">Профиль</span>
             </a>
         </div>
         <div class="header__nav-link">
-            <a href="#news">
+            <a href="/news">
                 <span class="_icon-nav-2 header__nav-icon"></span>
                 <span class="header__nav-name">Новости</span>
             </a>
         </div>
         <div class="header__nav-link">
-            <a href="#kaspi">
+            <a href="/struct">
                 <span class="_icon-nav-3 header__nav-icon"></span>
                 <span class="header__nav-name">Структура</span>
             </a>
         </div>
         <div class="header__nav-link">
-            <a href="#nominations">
+            <a href="/admin/upbooks">
                 <span class="_icon-nav-4 header__nav-icon"></span>
                 <span class="header__nav-name">Обучение</span>
             </a>
         </div>
         <div class="header__nav-link">
-            <a href="#base" >
+            <a href="/kb">
                 <span class="_icon-nav-5 header__nav-icon"></span>
                 <span class="header__nav-name">База знаний</span>
             </a>
         </div>
         <div class="header__nav-link">
-            <a href="#balance">
+            <a href="/timetracking/reports">
                 <span class="_icon-nav-6 header__nav-icon"></span>
                 <span class="header__nav-name">Отчеты</span>
             </a>
@@ -85,20 +88,20 @@
         </div>
 
         <div class="header__nav-link">
-            <a href="#kpi" >
+            <a href="/kpi" >
                 <span class="_icon-nav-7 header__nav-icon"></span>
                 <span class="header__nav-name">KPI</span>
             </a>
         </div>
         <div class="header__nav-link">
-            <a href="#award" >
+            <a href="/timetracking/fines" >
                 <span class="_icon-nav-8 header__nav-icon"></span>
                 <span class="header__nav-name">Депрем</span>
             </a>
         </div>
     </nav>
     <div class="header__nav-link last">
-        <a href="#">
+        <a href="/timetracking/settings">
             <span class="_icon-nav-9 header__nav-icon"></span>
             <span class="header__nav-name">Настройка</span>
         </a>

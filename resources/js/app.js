@@ -83,6 +83,7 @@ Date.prototype.addHours = function (h) {
 Vue.prototype.$moment = moment
 
 Vue.prototype.$userId = document.querySelector("meta[name='user_id']").getAttribute('content');
+Vue.prototype.$avatar = document.querySelector("meta[name='avatar']").getAttribute('content');
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
