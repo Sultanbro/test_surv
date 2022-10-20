@@ -132,6 +132,7 @@ Route::middleware([
         Route::get('/trainee-report', [UserProfileController::class, 'traineeReport']);
     });
 
+    Route::any('/bonuses', [UserProfileController::class, 'getBonuses']);
 
     Route::post('logout', [LoginController::class, 'logout']);//->name('logout');
 

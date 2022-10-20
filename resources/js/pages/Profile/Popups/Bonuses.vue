@@ -1,5 +1,5 @@
 <template>
-<div class="popup__content  mt-3">
+<div class="popup__content  mt-5">
     <div class="popup__filter-title">
         Зарабатывайте бонусы, выполняя дополнительные активности
     </div>
@@ -33,166 +33,26 @@
                     <thead>
                         <tr>
                             <th>Дата</th>
-                            <th>Бонус</th>
+                            <th>Автор</th>
                             <th>Комментарии</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>22-06-14</td>
-                            <td>1700</td>
-                            <td><p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p></td>
-                        </tr>
-                        <tr>
-                            <td>22-06-14</td>
-                            <td>1700</td>
-                            <td><p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p></td>
-                        </tr>
-                        <tr class="green">
-                            <td>22-06-14</td>
-                            <td>1700</td>
-                            <td><p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p></td>
-                        </tr>
-                        <tr>
-                            <td>22-06-14</td>
-                            <td>1700</td>
-                            <td><p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p>
-                                <p>Кол-во сборов 3-6 НБ: 17;</p></td>
+                        <tr v-for="item in history">
+                            <td>{{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}</td>
+                            <td>{{ item.author }}</td>
+                            <td>
+                                <p class="fz14 mb-0" v-html="item.description"></p>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div class="kaspi__content custom-scroll-y tab__content-item"  data-content="2">
                 <div class="kaspi__wrapper">
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift-green.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                100 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift-green.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                200 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift-green.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                300 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift-green.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                400 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                500 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                600 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                1000 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                1500 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                2000 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
-                    <div class="kaspi__item">
-                        <img src="images/dist/kaspi-gift.png" alt="" class="kaspi__item-img">
-                        <div class="kaspi__item-about">
-                            <div class="kaspi__item-title">
-                                3000 KZT
-                            </div>
-                            <div class="kaspi__item-text">
-                                За каждую единицу сбора
-                            </div>
-                        </div>
-                    </div>
+                    
+                    <div v-html="potential_bonuses"></div>
+
                 </div>
             </div>
 
@@ -216,6 +76,8 @@ export default {
                 weekDays: 0,
                 daysInMonth: 0
             },
+            potential_bonuses: '',
+            history: []
         };
     },
     created(){
@@ -240,9 +102,22 @@ export default {
             this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
         },
 
-        fetchData() {
 
-        }
+        fetchData() {
+            let loader = this.$loading.show();
+            
+            axios
+                .post("/bonuses", {
+                    month: this.$moment(this.currentMonth, 'MMMM').format('M'),
+                    year: new Date().getFullYear(),
+                })
+                .then((response) => {
+                    this.potential_bonuses = response.data.potential_bonuses
+                    this.history = response.data.history
+                   
+                    loader.hide();
+                });
+        },
     }
 };
 </script>

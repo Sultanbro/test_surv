@@ -10,11 +10,13 @@ use App\DayType;
 use App\Downloads;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserProfileUpdateRequest;
+use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\TraineeReport;
 use App\Models\Analytics\UserStat;
 use App\Models\GroupUser;
+use App\Models\Kpi\Bonus;
 use App\Photo;
 use App\User;
 use App\Position;
@@ -75,6 +77,35 @@ class UserProfileController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function getBonuses(Request $request) : JsonResponse
+    {
+        $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
+
+        $potential_bonuses = '';
+
+        $user = auth()->user() ? User::find(auth()->id()) : null;
+        
+        if($user && count($user->inGroups()) > 0 ) {
+            foreach ($user->inGroups() as $g) {
+                $potential_bonuses .= Bonus::getPotentialBonusesHtml($g->id);
+                $potential_bonuses .= '<br>';
+            }
+        }
+
+        $currency_rate = $user && in_array($user->currency, array_keys(Currency::rates()))
+            ? (float)Currency::rates()[$user->currency]
+            : 0.0000001;
+            
+        
+        return response()->success([
+            'history' => ObtainedBonus::getHistory($user->id, $date, $currency_rate),
+            'potential_bonuses' => $potential_bonuses
+        ]);
     }
 
     /**

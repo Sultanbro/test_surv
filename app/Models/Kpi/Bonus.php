@@ -569,7 +569,15 @@ class Bonus extends Model
         //me($bonuses);
         if($bonuses->count() > 0) {
             foreach ($bonuses as $key => $bonus) {
-                $html .= '- <b>'. $bonus->sum . ' KZT:</b> ' .  $bonus->text . '<br>';  
+                $html .= `<div class="kaspi__item">
+                    <img src="/images/dist/kaspi-gift-green.png" alt="" class="kaspi__item-img">
+                    <div class="kaspi__item-about">
+                        <div class="kaspi__item-title">
+                            {$bonus->sum} KZT
+                        </div>
+                        <div class="kaspi__item-text">{$bonus->text}</div>
+                    </div>
+                </div>`;
             }
         } else {
             $html .= 'К сожалению, пока по данному проекту не предусмотрены бонусы<br>';

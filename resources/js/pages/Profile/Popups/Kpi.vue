@@ -14,7 +14,7 @@
 
     <div class="kpi__content">
 
-        <div v-for="(wrap_item, w) in items.slice().reverse()" class="mt-3 mb-5">
+        <div v-for="(wrap_item, w) in items.slice().reverse()" class="mt-5 mb-5">
 
             <div class="kpi__kaspi">
                 <div class="kpi__title popup__content-title">
