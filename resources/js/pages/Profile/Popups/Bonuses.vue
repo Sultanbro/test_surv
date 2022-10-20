@@ -33,16 +33,16 @@
                     <thead>
                         <tr>
                             <th>Дата</th>
-                            <th>Автор</th>
+                            <th>Сумма</th>
                             <th>Комментарии</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="item in history">
-                            <td>{{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}</td>
-                            <td>{{ item.author }}</td>
+                            <td>{{ (new Date(item.date)).addHours(6).toLocaleString('ru-RU') }}</td>
+                            <td>{{ item.sum }}</td>
                             <td>
-                                <p class="fz14 mb-0" v-html="item.description"></p>
+                                <p class="fz14 mb-0" v-html="item.comment"></p>
                             </td>
                         </tr>
                     </tbody>
@@ -82,6 +82,7 @@ export default {
     },
     created(){
         this.setMonth()
+        this.fetchData()
     },
     methods: {
         /**
