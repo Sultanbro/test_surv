@@ -1905,6 +1905,7 @@ var position = document.querySelector('#position');
 var position_group = document.querySelector('#position_group');
 
 function raf() {
+    if(document.querySelector('#position_group') == null) return; 
     if(document.querySelector('#position').value == '45') {
         document.querySelector('#position_group').style.display = 'block';
     } else {

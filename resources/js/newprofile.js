@@ -1,6 +1,6 @@
 // // Import vendor jQuery plugin example
 // import '~/app/libs/mmenu/dist/mmenu.js'
-import 'jquery';
+
 import 'slick-carousel';
 
 
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         animItem.classList.add('_active');
                         if(animItem.classList.contains('schedule')){
                             animItem.dispatchEvent(new Event('change'));
-                            $('.schedule__table tbody td:first-child').addClass('anim')
+                            VJQuery('.schedule__table tbody td:first-child').addClass('anim')
                         }
                     } else {
                         if (!animItem.classList.contains('_anim-no-hide'))
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(window.innerWidth>900){
                 animOnScroll()
             } else{
-                $('._anim').addClass('_active');
+                VJQuery('._anim').addClass('_active');
             }
 
         }
@@ -60,19 +60,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Profit slider
 
-    $('.profit__inner').slick({
+    VJQuery('.profit__inner').slick({
         infinite: true,
         speed: 400,
         fade: true,
         adaptiveHeight: true,
     });
-    $('.profit__prev').on('click', function(e) {
+    VJQuery('.profit__prev').on('click', function(e) {
         e.preventDefault();
-        $('.profit__inner').slick('slickPrev');
+        VJQuery('.profit__inner').slick('slickPrev');
     });
-    $('.profit__next').on('click', function(e) {
+    VJQuery('.profit__next').on('click', function(e) {
         e.preventDefault();
-        $('.profit__inner').slick('slickNext');
+        VJQuery('.profit__inner').slick('slickNext');
     });
 
 
@@ -80,30 +80,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Profit info slider
 
-    $('.courses__content__wrapper').slick({
+    VJQuery('.courses__content__wrapper').slick({
         variableWidth: true,
     })
 
-    $('.courses__item').each(function(){
-        let coursePercent = $(this).find('.courses__percent span').text();
-        $(this).find('.courses__line').css('width',coursePercent);
+    VJQuery('.courses__item').each(function(){
+        let coursePercent = VJQuery(this).find('.courses__percent span').text();
+        VJQuery(this).find('.courses__line').css('width',coursePercent);
     })
 
-    $('.courses__button').click(function(e){
+    VJQuery('.courses__button').click(function(e){
         e.preventDefault();
-        $('.profit__info').addClass('active')
-        $('.courses__content').addClass('hidden')
+        VJQuery('.profit__info').addClass('active')
+        VJQuery('.courses__content').addClass('hidden')
     })
-    $('.profit__info-back, .profit__info-back-mobile').click(function(e){
+    VJQuery('.profit__info-back, .profit__info-back-mobile').click(function(e){
         e.preventDefault();
-        $('.profit__info').removeClass('active')
-        $('.courses__content').removeClass('hidden')
+        VJQuery('.profit__info').removeClass('active')
+        VJQuery('.courses__content').removeClass('hidden')
     })
 
 
 
 
-    $('.profit__info__wrapper').slick({
+    VJQuery('.profit__info__wrapper').slick({
         variableWidth: false,
         infinite:false,
         slidesToScroll:2,
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     if(window.innerWidth>900){
-        $('.header__left,.header__right').removeClass('closed');
+        VJQuery('.header__left,.header__right').removeClass('closed');
 
     }
 
@@ -189,93 +189,93 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Table's background filling %
 
-    $('.colored').each(function(e,i){
-       $(this).css('background',`linear-gradient(to right, ${$(this).attr('data-color')} ${$(this).find('.value').text()}, #fff ${$(this).find('.value').text()})`)
+    VJQuery('.colored').each(function(e,i){
+       VJQuery(this).css('background',`linear-gradient(to right, ${VJQuery(this).attr('data-color')} ${VJQuery(this).find('.value').text()}, #fff ${VJQuery(this).find('.value').text()})`)
 
     })
 
     // Star settings
 
-        $('.trainee__content').each(function(){
+        VJQuery('.trainee__content').each(function(){
 
-            let starLength = $(this).find('.trainee__star-value span').text();
+            let starLength = VJQuery(this).find('.trainee__star-value span').text();
             console.log(starLength);
             if(starLength<=10 && starLength>=0){
                 for(let i=0; i<starLength;i++){
-                    $(this).find('.trainee__star-wrapper .star__item')[i].classList.add('done');
+                    VJQuery(this).find('.trainee__star-wrapper .star__item')[i].classList.add('done');
                 }
             }
         })
 
     // Smooth Scroll
 
-    $(".intro__button").on("click", function (event) {
+    VJQuery(".intro__button").on("click", function (event) {
         event.preventDefault();
-        var id  = $(this).attr('href'),
-            top = $(id).offset().top;
-        $('body,html').animate({scrollTop: top-150}, 1000);
+        var id  = VJQuery(this).attr('href'),
+            top = VJQuery(id).offset().top;
+        VJQuery('body,html').animate({scrollTop: top-150}, 1000);
     });
 
     // Header burger
 
-    $('.intro__top-burger, .burger-left').on('click', function(event){
+    VJQuery('.intro__top-burger, .burger-left').on('click', function(event){
         event.preventDefault();
-        $('.burger-left').toggleClass('opened')
-        $('.header__left').toggleClass('closed')
+        VJQuery('.burger-left').toggleClass('opened')
+        VJQuery('.header__left').toggleClass('closed')
 
     })
-    $('.header__right-arrow, .header__arrow, .burger-right').on('click', function(event){
+    VJQuery('.header__right-arrow, .header__arrow, .burger-right').on('click', function(event){
         event.preventDefault();
-        $('.header__right').toggleClass('closed')
-        $('.burger-right').toggleClass('opened')
-        $('.header__arrow').toggleClass('show')
+        VJQuery('.header__right').toggleClass('closed')
+        VJQuery('.burger-right').toggleClass('opened')
+        VJQuery('.header__arrow').toggleClass('show')
 
     })
 
 
 
 
-    const closePopup = $('.js-close-popup');
-    const modalOverlay = $('.overlay');
-    const popupAward = $('.popup.award');
-    const popupKPI = $('.popup.kpi');
-    const popupBalance = $('.popup.balance');
-    const popupKASPI = $('.popup.kaspi');
-    const popupNominations = $('.popup.nominations');
-    const popupNotifications = $('.popup.notifications');
-    const popupCheck = $('.popup.check');
+    const closePopup = VJQuery('.js-close-popup');
+    const modalOverlay = VJQuery('.overlay');
+    const popupAward = VJQuery('.popup.award');
+    const popupKPI = VJQuery('.popup.kpi');
+    const popupBalance = VJQuery('.popup.balance');
+    const popupKASPI = VJQuery('.popup.kaspi');
+    const popupNominations = VJQuery('.popup.nominations');
+    const popupNotifications = VJQuery('.popup.notifications');
+    const popupCheck = VJQuery('.popup.check');
     let profileFlag;
 
 
     //Hiding all Popups
-    $('.popup').fadeOut(0);
+    VJQuery('.popup').fadeOut(0);
 
     // Project popup
-    $('.header__nav-link a[href$="award"], .stat__item[data-item$="award"]').on('click', function(e){
+    VJQuery('.header__nav-link a[href$="award"], .stat__item[data-item$="award"]').on('click', function(e){
         e.preventDefault();
         openPopup(popupAward, modalOverlay);
     })
-    $('.header__nav-link a[href$="kpi"], .stat__item[data-item$="kpi"]').on('click', function(e){
+    VJQuery('.header__nav-link a[href$="kpi"], .stat__item[data-item$="kpi"]').on('click', function(e){
         e.preventDefault();
         openPopup(popupKPI, modalOverlay);
     })
-    $('.header__nav-link a[href$="balance"], .stat__item[data-item$="balance"]').on('click', function(e){
+    VJQuery('.header__nav-link a[href$="balance"], .stat__item[data-item$="balance"]').on('click', function(e){
         e.preventDefault();
         openPopup(popupBalance, modalOverlay);
     })
-    $('.header__nav-link a[href$="kaspi"], .stat__item[data-item$="kaspi"]').on('click', function(e){
+    VJQuery('.header__nav-link a[href$="kaspi"], .stat__item[data-item$="kaspi"]').on('click', function(e){
         e.preventDefault();
         openPopup(popupKASPI, modalOverlay);
     })
-    $('.header__nav-link a[href$="nominations"], .stat__item[data-item$="nominations"]').on('click', function(e){
+    VJQuery('.header__nav-link a[href$="nominations"], .stat__item[data-item$="nominations"]').on('click', function(e){
         e.preventDefault();
         openPopup(popupNominations, modalOverlay);
     })
-    $('.header__right-icon.bell').on('click', function(e){
+    VJQuery('.header__right-icon.bell').on('click', function(e){
         e.preventDefault();
         openPopup(popupNotifications, modalOverlay);
     })
-    $('.header__right-icon.check').on('click', function(e){
+    VJQuery('.header__right-icon.check').on('click', function(e){
         e.preventDefault();
         openPopup(popupCheck, modalOverlay);
     })
@@ -284,8 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openPopup(popup,overlay){
         overlay.addClass('active');
-        $(document.body).addClass('modal-open')
-        $('html').addClass('modal-open')
+        VJQuery(document.body).addClass('modal-open')
+        VJQuery('html').addClass('modal-open')
         popup.fadeIn(500);
         closeModalOverlay(popup,overlay)
         closeModal(closePopup,overlay,popup)
@@ -293,13 +293,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function closeModalOverlay(formPopup,object){
-        $(document).mousedown(function (e) {
+        VJQuery(document).mousedown(function (e) {
             if (e.target !== formPopup[0] && formPopup.has(e.target).length === 0) {
                 object.removeClass('active')
-                $(document.body).removeClass('modal-open')
-                $('html').removeClass('modal-open')
+                VJQuery(document.body).removeClass('modal-open')
+                VJQuery('html').removeClass('modal-open')
                 formPopup.fadeOut(500);
-                $(document).off('mousedown')
+                VJQuery(document).off('mousedown')
             }
 
         })
@@ -309,9 +309,9 @@ document.addEventListener('DOMContentLoaded', () => {
         close.click(function (e){
             e.preventDefault();
             object.removeClass('active')
-            $('.popup').removeClass('extra');
-            $(document.body).removeClass('modal-open')
-            $('html').removeClass('modal-open')
+            VJQuery('.popup').removeClass('extra');
+            VJQuery(document.body).removeClass('modal-open')
+            VJQuery('html').removeClass('modal-open')
             popup.fadeOut(500);
         })
     }
@@ -332,21 +332,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-       $(document).on('mouseup',function(e){
-           if($('.header__profile').hasClass('opened') && !(e.target.closest('.header__profile'))){
-               $('.header__profile').removeClass('opened');
-               $('.header__nav-link a[href$="profile"]').parent().removeClass('opened');
-               $(document.body).removeClass('modal-open')
-               $('html').removeClass('modal-open')
+       VJQuery(document).on('mouseup',function(e){
+           if(VJQuery('.header__profile').hasClass('opened') && !(e.target.closest('.header__profile'))){
+               VJQuery('.header__profile').removeClass('opened');
+               VJQuery('.header__nav-link a[href$="profile"]').parent().removeClass('opened');
+               VJQuery(document.body).removeClass('modal-open')
+               VJQuery('html').removeClass('modal-open')
            }
-           if(!($('.header__left').hasClass('closed')) && !(e.target.closest('.header__profile')) && !(e.target.closest('.header__right')) && !(e.target.closest('.header__left')) && window.innerWidth < 900){
-               $('.header__left').addClass('closed');
-               $('.burger-left').removeClass('opened');
+           if(!(VJQuery('.header__left').hasClass('closed')) && !(e.target.closest('.header__profile')) && !(e.target.closest('.header__right')) && !(e.target.closest('.header__left')) && window.innerWidth < 900){
+               VJQuery('.header__left').addClass('closed');
+               VJQuery('.burger-left').removeClass('opened');
            }
-           if(!($('.header__right').hasClass('closed')) && !(e.target.closest('.header__left')) && !(e.target.closest('.header__right')) && window.innerWidth < 900){
-               $('.header__right').addClass('closed');
-               $('.header__arrow').addClass('show')
-               $('.burger-right').removeClass('opened');
+           if(!(VJQuery('.header__right').hasClass('closed')) && !(e.target.closest('.header__left')) && !(e.target.closest('.header__right')) && window.innerWidth < 900){
+               VJQuery('.header__right').addClass('closed');
+               VJQuery('.header__arrow').addClass('show')
+               VJQuery('.burger-right').removeClass('opened');
            }
 
        })
@@ -379,17 +379,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        $('.header__nav-link a[href$="profile"]').on('click', function(e){
+        VJQuery('.header__nav-link a[href$="profile"]').on('click', function(e){
             e.preventDefault();
-            $('.header__profile').addClass('opened')
-            $(this).parent().addClass('opened')
+            VJQuery('.header__profile').addClass('opened')
+            VJQuery(this).parent().addClass('opened')
             if(!profileFlag){
                 animateValue(circleNum, 0, circleNumValue, 1500);
                 profileFlag = true;
             }
             if(window.innerWidth<440){
-                $(document.body).addClass('modal-open')
-                $('html').addClass('modal-open')
+                VJQuery(document.body).addClass('modal-open')
+                VJQuery('html').addClass('modal-open')
             }
         })
     let switchTabs = (tab) => {
@@ -409,14 +409,14 @@ document.addEventListener('DOMContentLoaded', () => {
         activeContent.classList.add("is-active");
     }
 
-    $('.mobile-select').change(function(){
+    VJQuery('.mobile-select').change(function(){
 
-        let selectTab = ($(this).closest('.tabs').find(`.tab__item[data-index=${$(this).val()}]`));
+        let selectTab = (VJQuery(this).closest('.tabs').find(`.tab__item[data-index=${VJQuery(this).val()}]`));
         switchTabs(selectTab[0])
     })
 
 
-    $(window).on('resize',function(e){
+    VJQuery(window).on('resize',function(e){
 
     })
     function OpacityStats(){
@@ -426,25 +426,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     MAXKVARTAL = 40000,
                     MAXNOMINATIONS = 30,
                     maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
-                    let values = $('.stat__value span');
+                    let values = VJQuery('.stat__value span');
             for(let i=0;i<values.length;i++){
 
                 let value = values[i].textContent.replace(/,/g,"")
                 if(value !== '0'){
-                    $(values[i]).closest('.stat__value').addClass('active')
+                    VJQuery(values[i]).closest('.stat__value').addClass('active')
                 }
 
 
 
 
-                $({numberValue: 0}).animate({numberValue: value/maxArray[i] * 100}, {
+                VJQuery({numberValue: 0}).animate({numberValue: value/maxArray[i] * 100}, {
                     duration: 4000,
                     easing: "swing",
                     step: function(val) {
-                        $(values[i]).closest('.stat__item').find('.front').css('height',val+'%')
+                        VJQuery(values[i]).closest('.stat__item').find('.front').css('height',val+'%')
                     },
                     complete: function(){
-                        $(values[i]).closest('.stat__item').find('.front').css('height',value/maxArray[i] * 100 + '%')
+                        VJQuery(values[i]).closest('.stat__item').find('.front').css('height',value/maxArray[i] * 100 + '%')
                     }
                 });
             }
@@ -452,16 +452,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     OpacityStats();
 
-        $('.stat__value').each(function(){
-            let n = $(this).children('span').text().replace(/\D/g,'');
-            let element = $(this);
+        VJQuery('.stat__value').each(function(){
+            let n = VJQuery(this).children('span').text().replace(/\D/g,'');
+            let element = VJQuery(this);
 
             function separateNumber(x) {
                 return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 //разделитель можно задать тут вторым аргументом для метода replace. Сейчас, как видно, пробел
             }
 
-            $({numberValue: 0}).animate({numberValue: n}, {
+            VJQuery({numberValue: 0}).animate({numberValue: n}, {
                 duration: 4000,
                 easing: "swing",
                 step: function(val) {
@@ -478,19 +478,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    $('.point-close').click(function(){
-        $(this).closest('.profile-box').find('.profile-slick').slideToggle(700, 'swing')
-        $(this).closest('.profile-box').find('.profile__title').toggleClass('_slicked')
+    VJQuery('.point-close').click(function(){
+        VJQuery(this).closest('.profile-box').find('.profile-slick').slideToggle(700, 'swing')
+        VJQuery(this).closest('.profile-box').find('.profile__title').toggleClass('_slicked')
     })
-    let buttonText = $('.profile__button p').text();
-    $('.profile__button').click(function(e){
+    let buttonText = VJQuery('.profile__button p').text();
+    VJQuery('.profile__button').click(function(e){
         e.preventDefault();
 
-        $(this).toggleClass('active');
-        if($(this).hasClass('active')){
-            $(this).find('p').text('Завершить рабочий день');
+        VJQuery(this).toggleClass('active');
+        if(VJQuery(this).hasClass('active')){
+            VJQuery(this).find('p').text('Завершить рабочий день');
         } else{
-            $(this).find('p').text(buttonText);
+            VJQuery(this).find('p').text(buttonText);
         }
     })
 })

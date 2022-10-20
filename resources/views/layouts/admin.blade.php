@@ -71,32 +71,17 @@
 
 
 
+<!-- <script src="/js/manifest.js"></script>
+<script src="/js/vendor.js"></script>  -->
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
+<script src="https://unpkg.com/vue-upload-multiple-image@1.1.6/dist/vue-upload-multiple-image.js"></script>
+<script src="{{ url('/js/app.js') }}"></script>
+
+
+
 
 <script src="{{ url('/js/jquery.maskedinput.js') }}"></script>
 
-@if(auth()->user() && !in_array(auth()->id(), [5,4444,1]))
-<script src="/js/jquery.iMissYou.min.js"></script>
-<script>
-$(document).ready(function(){
-    $.iMissYou({
-        title: "@yield('title') - Вернись  :(",
-        favicon: {
-            enabled: true,
-            src:'/IMissYouFavicon.ico'
-        }
-    });
-});
-</script>
-@endif
-
-<!-- <script src="{{ asset('js/jquery-1.11.2.min.js') }}"></script> -->
-  
-
-<!-- <script src="/js/manifest.js"></script>
-<script src="/js/vendor.js"></script>  -->
-<script src="https://unpkg.com/vue-upload-multiple-image@1.1.6/dist/vue-upload-multiple-image.js"></script>
-<script src="{{ url('/js/app.js') }}"></script>
 <script src="{{ url('/js/croppie.js') }}"></script>
 <script src="{{ url('/js/croppie.min.js') }}"></script>
 

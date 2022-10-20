@@ -12,7 +12,8 @@ window.collect = require('collect.js')// globally
 
 import BootstrapVue from 'bootstrap-vue'
 import JQuery from 'jquery'
-window.$ = JQuery
+window.VJQuery = JQuery
+
 
 import moment from 'moment'
 import Notifications from 'vue-notification'
