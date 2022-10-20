@@ -273,6 +273,7 @@ Vue.component('popup-nominations', require('./pages/Profile/Popups/Nominations.v
 Vue.component('left-sidebar', require('./pages/Layouts/LeftSidebar.vue').default); 
 Vue.component('right-sidebar', require('./pages/Layouts/RightSidebar.vue').default); 
 Vue.component('profile-sidebar', require('./pages/Layouts/ProfileSidebar.vue').default); 
+Vue.component('popup', require('./pages/Layouts/Popup.vue').default); 
 
 /**
  * click outside event

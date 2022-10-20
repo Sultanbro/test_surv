@@ -77,13 +77,6 @@
 
             <footer class="footer"></footer>
 
-            <div class="overlay custom-scroll-y js-overlay">
-
-                @yield('popups')
-                @include('layouts.popups')
-
-            </div>
-
         </div>
     </div>
 

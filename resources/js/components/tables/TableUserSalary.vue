@@ -439,39 +439,4 @@ export default {
     } 
 }
 
-$fine: red;
-$avans: #28a761;
-$bonus: #007bff;
-$training: orange;
-
-.fz-09 {
-    font-size: 0.9rem;
-}
-
-.fine,.avans,.bonus {
-    color:#fff;
-}
-.day-fine {
-    background: $fine;
-}
-.day-training {
-    background: $training;
-    &.day-fine {background: linear-gradient(110deg, $training 50%, $fine 50%);}
-}
-.day-bonus {
-    background: $bonus;
-    &.day-fine {background: linear-gradient(110deg, $bonus 50%, $fine 50%);}
-    &.day-training {background: linear-gradient(110deg, $bonus 50%, $training 50%);}
-    &.day-fine.day-training {background: linear-gradient(110deg, $bonus 33%, transparent 33%), linear-gradient(110deg, $fine 66%, $training 66%);}
-}
-.day-avans {
-    background:$avans;
-    &.day-fine {background: linear-gradient(110deg, $avans 50%, $fine 50%);}
-    &.day-bonus {background: linear-gradient(110deg, $avans 50%, $bonus 50%);}
-    &.day-training {background: linear-gradient(110deg, $avans 50%, $training 50%);}
-    &.day-bonus.day-fine {background: linear-gradient(110deg, $avans 33%, transparent 33%), linear-gradient(110deg, $bonus 66%, $fine 66%);}
-    &.day-bonus.day-fine.day-training {background: linear-gradient(110deg, $avans 25%, transparent 25%), linear-gradient(110deg, $bonus 50%, $fine 50%), linear-gradient(110deg, $fine 75%, $training 75%);}
-}
-
-
 </style>
