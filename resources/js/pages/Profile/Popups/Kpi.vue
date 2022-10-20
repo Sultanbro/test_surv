@@ -160,13 +160,7 @@ export default {
     created(){
         this.setMonth()
         this.prepareFields()
-        this.fetchData({
-            data_from: {
-                year: new Date().getFullYear(),
-                month: this.$moment(this.currentMonth, 'MMMM').format('M')
-            },
-            user_id: this.user_id
-        })
+        this.fetchBefore()
     },
     methods: {
         /**
@@ -193,7 +187,7 @@ export default {
                     year: new Date().getFullYear(),
                     month: this.$moment(this.currentMonth, 'MMMM').format('M')
                 },
-                user_id: 5
+                user_id: this.$userId
             })
         },
 
@@ -208,7 +202,6 @@ export default {
                 this.items = response.data.items;
                 this.items = this.kpis.map(res=> ({...res, my_sum: 0}))
                 
-                this.user_id = response.data.user_id
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
 

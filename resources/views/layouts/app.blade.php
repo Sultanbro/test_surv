@@ -7,6 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+    @auth
+        <meta name="user_id" content="{{ auth()->id() }}" />
+    @endauth
+
 	<title>@yield('title')</title>
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.2"/>
