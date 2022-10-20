@@ -112,8 +112,8 @@ export default {
                     year: new Date().getFullYear(),
                 })
                 .then((response) => {
-                    this.potential_bonuses = response.data.potential_bonuses
-                    this.history = response.data.history
+                    this.potential_bonuses = response.data.data.potential_bonuses
+                    this.history = response.data.data.history
                    
                     loader.hide();
                 });
