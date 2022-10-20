@@ -135,6 +135,7 @@ export default {
     data: function () {
         return {
             groups: [], 
+            editable: false,
             activities: [],
             items: [],
             currentMonth: null,
