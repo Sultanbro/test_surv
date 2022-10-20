@@ -19,7 +19,7 @@
 
 @section('popups')
 <popup-award></popup-award>
-
+<popup-kpi></popup-kpi>
 <popup-balance></popup-balance>
 <popup-bonuses></popup-bonuses>
 <popup-nominations></popup-nominations> 

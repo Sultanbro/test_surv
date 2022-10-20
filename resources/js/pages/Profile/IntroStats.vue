@@ -72,7 +72,6 @@
             </div>
         </div>
     
-        <popup-kpi></popup-kpi>
     </div>
     </template>
     
