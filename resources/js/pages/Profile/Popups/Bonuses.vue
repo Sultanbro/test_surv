@@ -1,5 +1,5 @@
 <template>
-<div class="popup__content">
+<div class="popup__content  mt-3">
     <div class="popup__filter-title">
         Зарабатывайте бонусы, выполняя дополнительные активности
     </div>
@@ -241,7 +241,7 @@ export default {
         },
 
         fetchData() {
-            
+
         }
     }
 };

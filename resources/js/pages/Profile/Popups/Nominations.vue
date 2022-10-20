@@ -1,5 +1,5 @@
 <template>
-<div class="popup__content">
+<div class="popup__content  mt-3">
     <div class="tabs ">
         <div class="popup__filter">
             <div class="trainee__tabs tabs__wrapper">
@@ -261,7 +261,7 @@ export default {
     },
     methods: {
         fetchData() {
-            
+
         }
     }
 };

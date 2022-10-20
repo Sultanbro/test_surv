@@ -1,5 +1,5 @@
 <template>
-<div class="popup__content">
+<div class="popup__content  mt-3">
     <div class="popup__filter">
         <div class="popup__filter-title">
             Ваши начисления за период работы

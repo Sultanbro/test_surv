@@ -1,5 +1,5 @@
 <template>
-<div class="popup__content">
+<div class="popup__content mt-3">
     <div class="popup__filter">
         <select class="select-css" v-model="currentMonth" @change="fetchData()">
             <option
