@@ -223,8 +223,8 @@ export default {
             }).then(response => {
                 
                 // items
-                this.kpis = response.data.items;
-                this.kpis = this.kpis.map(res=> ({...res, my_sum: 0}))
+                this.items = response.data.items;
+                this.items = this.kpis.map(res=> ({...res, my_sum: 0}))
                 
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
