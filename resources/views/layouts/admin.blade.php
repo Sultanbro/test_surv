@@ -5,6 +5,17 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.2"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@yield('title')</title>
+
+    @auth
+        <meta name="user_id" content="{{ auth()->id() }}" />
+
+        @if(isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url))
+            <meta name="avatar" content="/users_img/{{auth()->user()->img_url}}" />
+        @else
+            <meta name="avatar" content="https://cp.callibro.org/files/img/8.png" />
+        @endif
+    @endauth
+
     <meta name="description" content="Mediasend.kz Управление">
     <meta name="viewport" content="width=800, initial-scale=0.26">
     <meta name="csrf-token" content="{{ csrf_token() }}">
