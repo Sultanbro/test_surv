@@ -3,7 +3,6 @@
         <div class="stat__item" @click="$emit('pop', 'balance')">
             <div class="stat__image">
                 <div class="back">
-    
                     <img src="/images/dist/image-1.svg" alt="stat image" class="stat__front">
                 </div>
                 <div class="front">
@@ -15,7 +14,7 @@
                 <div class="stat__value"><span>{{ data.sumSalary }}</span> {{ data.currency }}</div>
             </div>
         </div>
-        <div class="stat__item" data-item="kpi">
+        <div class="stat__item" @click="$emit('pop', 'kpi')">
             <div class="stat__image">
                 <div class="back">
                     <img src="/images/dist/image-2.svg" alt="stat image" class="stat__back">
@@ -29,7 +28,7 @@
                 <div class="stat__value"><span>{{ data.sumKpi }}</span> {{ data.currency }}</div>
             </div>
         </div>
-        <div class="stat__item" data-item="kaspi">
+        <div class="stat__item" @click="$emit('pop', 'bonuses')">
             <div class="stat__image">
                 <div class="back">
                     <img src="/images/dist/image-3.svg" alt="stat image" class="stat__back">
@@ -43,7 +42,7 @@
                 <div class="stat__value"><span>{{ data.sumBonuses }}</span> {{ data.currency }}</div>
             </div>
         </div>
-        <div class="stat__item" data-item="award">
+        <div class="stat__item" @click="$emit('pop', 'qp')">
             <div class="stat__image">
                 <div class="back">
                     <img src="/images/dist/image-4.svg" alt="stat image" class="stat__back">
@@ -57,7 +56,7 @@
                 <div class="stat__value"><span>{{ data.sumQuartalPremiums }}</span> {{ data.currency }}</div>
             </div>
         </div>
-        <div class="stat__item" data-item="nominations">
+        <div class="stat__item" @click="$emit('pop', 'nominations')">
             <div class="stat__image">
                 <div class="back">
                     <img src="/images/dist/image-5.svg" alt="stat image" class="stat__back">
@@ -71,9 +70,6 @@
                 <div class="stat__value"><span>{{ data.sumNominations }}</span></div>
             </div>
         </div>
-        
-    
-
     </div>
 </template>
     
