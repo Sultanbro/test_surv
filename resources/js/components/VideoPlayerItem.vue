@@ -1,6 +1,6 @@
 <template>
     <div class="video-player">
-        <video-player 
+         <video-player 
             class="vjs-custom-skin"
             ref="videoPlayer"
             :options="playerOptions"
@@ -9,6 +9,7 @@
             @pause="onPlayerPause"
             @ready="playerReadied"
             @statechanged="playerStateChanged" />
+
     </div>
 </template>
 
@@ -34,17 +35,18 @@ export default {
                 language: 'ru',
                 playbackRates: [0.5, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2.0, 3.0],
                 sources: [{
-                    type: "video/mp4",
                     src: this.src,
+                    type: 'video/mp4'
                 }],
+                //sources: [this.src],
                 poster: "/images/author.jpg",
                 userActions: {
                     hotkeys: true
                 }
-            },
+            }, 
         }
     },
-    
+
     methods: {
         // listen event
         onPlayerPlay(player) {

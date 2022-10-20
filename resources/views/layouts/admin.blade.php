@@ -24,6 +24,16 @@
 </head>
 <body>
 
+<div class="profile__progressbar" style="display:none;">
+                    <svg class="progress-ring" width="80" height="80">
+                        <circle stroke="#fff" stroke-width="8" cx="40" cy="40" r="30" fill="#8FAF00"/>
+                        <circle class="progress-ring__circle" stroke="rgba(96,142,233,0.5)" stroke-width="4" cx="40" cy="40" r="36" fill="transparent"/>
+                    </svg>
+                    <div class="profile__progressbar-number">
+                        <span>87</span>%
+                    </div>
+                </div>
+
 <div id="app" class="right-panel right-panel-app d-flex">
 
     @include('layouts.side_menu', [

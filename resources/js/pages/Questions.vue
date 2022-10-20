@@ -342,10 +342,11 @@ export default {
     
     setResults() {
       this.questions.forEach((q) => {
-        if(q.result === null) return;
+        if(q.result == null) return;
         this.count_points = true;
         if (q.type == 0) {
           q.variants.forEach((v, vi) => {
+            if(q.result.answer === undefined) return;
             if(q.result.answer[vi] !== undefined) v.checked = q.result.answer[vi];
           });
         }

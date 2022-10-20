@@ -1602,3 +1602,8 @@ misc
   }
 }
 
+// to prevent conflict with new design
+.video-playlist .block {
+  opacity: 1;
+  visibility: visible;
+}
