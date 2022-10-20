@@ -11,10 +11,10 @@
             </option>
         </select>
     </div>
-    
+
     <div class="kpi__content">
 
-        <div v-for="(wrap_item, w) in items.slice().reverse()" class="mt-3 mb-3">
+        <div v-for="(wrap_item, w) in items.slice().reverse()" class="mt-3 mb-5">
 
             <div class="kpi__kaspi">
                 <div class="kpi__title popup__content-title">
@@ -153,7 +153,8 @@ export default {
                 'updated_at',
                 'created_by',
                 'updated_by',
-            ]
+            ],
+            user_id: 1
         };
     },
     created(){
@@ -164,7 +165,7 @@ export default {
                 year: new Date().getFullYear(),
                 month: this.$moment(this.currentMonth, 'MMMM').format('M')
             },
-            user_id: 5
+            user_id: this.user_id
         })
     },
     methods: {
@@ -207,6 +208,7 @@ export default {
                 this.items = response.data.items;
                 this.items = this.kpis.map(res=> ({...res, my_sum: 0}))
                 
+                this.user_id = response.data.user_id
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
 

@@ -708,9 +708,10 @@ class KpiStatisticService
 
 
         return [
-            'items' => $kpis,
+            'items'      => $kpis,
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'user_id'    => auth()->user() ? auth()->id() : 1 
         ];
     }
 
