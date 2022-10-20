@@ -1,6 +1,6 @@
 <template>
     <div class="intro__stats _anim _anim-no-hide block">
-        <div class="stat__item" data-item="balance">
+        <div class="stat__item" data-item="balances" @click="$emit('pop', 'balance')">
             <div class="stat__image">
                 <div class="back">
     
@@ -71,120 +71,116 @@
                 <div class="stat__value"><span>{{ data.sumNominations }}</span></div>
             </div>
         </div>
+        
     
+
     </div>
-    </template>
+</template>
     
-    <script>
-    export default {
-        name: "ProfileSalary", 
-        props: {},
-        data: function () {
-            return {
-                data: {
-                    sumSalary:  1234,
-                    sumKpi:   1234,
-                    sumBonuses:    1234,
-                    sumQuartalPremiums:   1234,
-                    sumNominations:    1234,
-                }, 
-                has_quartal_premiums: false,
-                values: []
-            };
-        },
-        created() {
-            this.fetch()
-        },
-        methods: {
-            fetch() {
-                let loader = this.$loading.show();
-    
-                axios.post('/profile/salary/get', {
-                    month: new Date().getMonth() + 1,
-                    year: new Date().getFullYear()
-                }).then(response => {
-                    this.data = response.data.user_earnings
-                    this.has_quartal_premiums = response.data.has_qp
+<script>
+export default {
+    name: "ProfileSalary", 
+    props: {},
+    data: function () {
+        return {
+            data: {},
+            has_quartal_premiums: false,
+            values: []
+        };
+    },
+    created() {
+        this.fetch()
+    },
+    methods: {
+        fetch() {
+            let loader = this.$loading.show();
 
-                    this.values = [
-                        this.data.sumSalary,
-                        this.data.sumKpi,
-                        this.data.sumBonuses,
-                        this.data.sumQuartalPremiums,
-                        this.data.sumNominations,
-                    ];
-                    this.$nextTick(() => this.OpacityStats())
-                    
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    alert(error)
-                });
-            },
-            
-            /**
-             * animate opacity in blocks
-             */
-            OpacityStats() { 
-                    let     MAXBALANCE = 80000,
-                            MAXKPI = 20000,
-                            MAXBONUSES = 10000,
-                            MAXKVARTAL = 50000,
-                            MAXNOMINATIONS = 1,
-                            maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
+            axios.post('/profile/salary/get', {
+                month: new Date().getMonth() + 1,
+                year: new Date().getFullYear()
+            }).then(response => {
+                this.data = response.data.user_earnings
+                this.has_quartal_premiums = response.data.has_qp
 
-                 let values = VJQuery('.stat__value span');
-                 console.log('test')
-                 console.log(values)
-                //let values = this.values;
+                this.values = [
+                    this.data.sumSalary,
+                    this.data.sumKpi,
+                    this.data.sumBonuses,
+                    this.data.sumQuartalPremiums,
+                    this.data.sumNominations,
+                ];
+                this.$nextTick(() => this.OpacityStats())
                 
-                for(let i=0;i<values.length;i++){
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
+        },
+        
+        /**
+         * animate opacity in blocks
+         */
+        OpacityStats() { 
+                let     MAXBALANCE = 80000,
+                        MAXKPI = 20000,
+                        MAXBONUSES = 10000,
+                        MAXKVARTAL = 50000,
+                        MAXNOMINATIONS = 1,
+                        maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
 
-                    let value = values[i].textContent.replace(/,/g,"")
-                    if(value !== '0'){
-                        VJQuery(values[i]).closest('.stat__value').addClass('active')
-                    }
+                let values = VJQuery('.stat__value span');
+                console.log('test')
+                console.log(values)
+            //let values = this.values;
+            
+            for(let i=0;i<values.length;i++){
 
-
- 
-
-                    VJQuery({numberValue: 0}).animate({numberValue: value/maxArray[i] * 100}, {
-                        duration: 4000,
-                        easing: "swing",
-                        step: function(val) {
-                            VJQuery(values[i]).closest('.stat__item').find('.front').css('height',val+'%')
-                        },
-                        complete: function(){
-                            VJQuery(values[i]).closest('.stat__item').find('.front').css('height',value/maxArray[i] * 100 + '%')
-                        }
-                    });
+                let value = values[i].textContent.replace(/,/g,"")
+                if(value !== '0'){
+                    VJQuery(values[i]).closest('.stat__value').addClass('active')
                 }
 
 
 
-                    VJQuery('.stat__value').each(function(){
-                        let n = VJQuery(this).children('span').text().replace(/\D/g,'');
-                        let element = VJQuery(this); 
 
-                        function separateNumber(x) { 
-                            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            //разделитель можно задать тут вторым аргументом для метода replace. Сейчас, как видно, пробел
+                VJQuery({numberValue: 0}).animate({numberValue: value/maxArray[i] * 100}, {
+                    duration: 4000,
+                    easing: "swing",
+                    step: function(val) {
+                        VJQuery(values[i]).closest('.stat__item').find('.front').css('height',val+'%')
+                    },
+                    complete: function(){
+                        VJQuery(values[i]).closest('.stat__item').find('.front').css('height',value/maxArray[i] * 100 + '%')
+                    }
+                });
+            }
+
+
+
+                VJQuery('.stat__value').each(function(){
+                    let n = VJQuery(this).children('span').text().replace(/\D/g,'');
+                    let element = VJQuery(this); 
+
+                    function separateNumber(x) { 
+                        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        //разделитель можно задать тут вторым аргументом для метода replace. Сейчас, как видно, пробел
+                    }
+
+                    VJQuery({numberValue: 0}).animate({numberValue: n}, {
+                        duration: 4000,
+                        easing: "swing",
+                        step: function(val) {
+                            element.children('span').text(separateNumber(Math.round(val)));
+                        },
+                        complete: function(){
+                            element.children('span').text(separateNumber(Math.round(n)));
                         }
+                    });
+                })
 
-                        VJQuery({numberValue: 0}).animate({numberValue: n}, {
-                            duration: 4000,
-                            easing: "swing",
-                            step: function(val) {
-                                element.children('span').text(separateNumber(Math.round(val)));
-                            },
-                            complete: function(){
-                                element.children('span').text(separateNumber(Math.round(n)));
-                            }
-                        });
-                    })
-
-                console.log('OK');
-            }, // end of opacity
-        }
-    };
-    </script>
+            console.log('OK');
+        }, // end of opacity
+    }
+};
+</script>
