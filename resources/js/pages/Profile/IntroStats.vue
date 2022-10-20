@@ -28,7 +28,7 @@
                 <div class="stat__value"><span>{{ data.sumKpi }}</span> {{ data.currency }}</div>
             </div>
         </div>
-        <div class="stat__item" @click="$emit('pop', 'bonuses')">
+        <div class="stat__item" @click="$emit('pop', 'bonus')">
             <div class="stat__image">
                 <div class="back">
                     <img src="/images/dist/image-3.svg" alt="stat image" class="stat__back">

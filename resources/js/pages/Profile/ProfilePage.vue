@@ -35,7 +35,7 @@
         :open="popBonuses" 
         @close="popBonuses=false"
         width="75%">
-        <popup-kpi></popup-kpi>
+        <popup-bonuses></popup-bonuses>
     </popup>
 
     <popup v-if="popQuartalPremiums"
@@ -44,7 +44,7 @@
         :open="popQuartalPremiums" 
         @close="popQuartalPremiums=false"
         width="75%">
-        <popup-kpi></popup-kpi>
+        <popup-quartal></popup-quartal>
     </popup>
 
     <popup v-if="popNominations"
@@ -53,7 +53,7 @@
         :open="popNominations" 
         @close="popNominations=false"
         width="75%">
-        <popup-kpi></popup-kpi>
+        <popup-nominations></popup-nominations>
     </popup>
     
 </div>
