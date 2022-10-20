@@ -15,9 +15,10 @@
         v-if="popBalance"
         title="Баланс оклада"
         desc="Дополнительное поле с описанием функционала данного окна"
-        :open="popBalance"
+        :open="popBalance" 
         @close="popBalance=false"
         width="75%">
+        <popup-balance></popup-balance>
     </popup>
 </div>
 </template>
@@ -38,6 +39,7 @@ export default {
     },
     methods: {
         pop(window) {
+            console.log(window)
             if(window == 'balance') this.popBalance = true;
             if(window == 'salary') this.popSalary = true;
             if(window == 'bonus') this.popBonuses = true;

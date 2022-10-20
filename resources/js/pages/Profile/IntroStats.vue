@@ -90,7 +90,7 @@ export default {
     created() {
         this.fetch()
     },
-    methods: {
+    methods: {  
         fetch() {
             let loader = this.$loading.show();
 
@@ -168,8 +168,6 @@ export default {
                         }
                     });
                 })
-
-            console.log('OK');
         }, // end of opacity
     }
 };

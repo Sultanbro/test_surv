@@ -1,9 +1,9 @@
 <template>
-  <div class="overlay custom-scroll-y js-overlay" @click.self="$emit('close');" :class="[{'active': open}]">
+  <div class="overlay custom-scroll-y js-overlay" @click.self="$emit('close')" :class="[{'active': open}]">
     <div class="popup award js-popup" :style="`width:${width}`">
       <div class="popup__content">
         <div class="popup-header">
-            <a class="popup-close js-close-popup" href="#">
+            <a class="popup-close js-close-popup" href="#" @click="$emit('close')">
               <img src="/images/dist/popup-close.svg" alt="Close icon">
             </a>
             <div class="popup__header-content">
