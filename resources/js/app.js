@@ -252,7 +252,7 @@ Vue.component('award-user-sidebar', require('./components/sidebars/AwardUserSide
 /**
  * new design Profile page
  */
-Vue.component('page-profile', require('./pages/Profile/PageProfile.vue').default); 
+Vue.component('page-profile', require('./pages/Profile/ProfilePage.vue').default); 
 
 Vue.component('new-intro-stats', require('./pages/Profile/IntroStats.vue').default); 
 Vue.component('new-intro-smart-table', require('./pages/Profile/IntroSmartTable.vue').default); 

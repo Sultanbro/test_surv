@@ -6,7 +6,7 @@
         <new-intro-smart-table></new-intro-smart-table>
     </div>
 
-    <new-profit></new-profit>
+    <new-profit></new-profit> 
     <new-courses></new-courses>
     <new-trainee-estimation></new-trainee-estimation>
     <new-compare-indicators></new-compare-indicators>
