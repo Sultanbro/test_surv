@@ -1,5 +1,5 @@
 <template>
-  <div class="overlay custom-scroll-y js-overlay" @click.self="$emit('close');" :class="[{'is-open':open}]">
+  <div class="overlay custom-scroll-y js-overlay" @click.self="$emit('close');" :class="[{'active': open}]">
     <div class="popup award js-popup" :style="`width:${width}`">
       <div class="popup__content">
         <div class="popup-header">

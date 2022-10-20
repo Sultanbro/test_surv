@@ -1,6 +1,6 @@
 <template>
     <div class="intro__stats _anim _anim-no-hide block">
-        <div class="stat__item" data-item="balances" @click="$emit('pop', 'balance')">
+        <div class="stat__item" @click="$emit('pop', 'balance')">
             <div class="stat__image">
                 <div class="back">
     
@@ -79,13 +79,12 @@
     
 <script>
 export default {
-    name: "ProfileSalary", 
+    name: "IntroStats", 
     props: {},
     data: function () {
         return {
             data: {},
             has_quartal_premiums: false,
-            values: []
         };
     },
     created() {
@@ -102,13 +101,6 @@ export default {
                 this.data = response.data.user_earnings
                 this.has_quartal_premiums = response.data.has_qp
 
-                this.values = [
-                    this.data.sumSalary,
-                    this.data.sumKpi,
-                    this.data.sumBonuses,
-                    this.data.sumQuartalPremiums,
-                    this.data.sumNominations,
-                ];
                 this.$nextTick(() => this.OpacityStats())
                 
                 loader.hide()
@@ -130,9 +122,7 @@ export default {
                         maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
 
                 let values = VJQuery('.stat__value span');
-                console.log('test')
-                console.log(values)
-            //let values = this.values;
+            
             
             for(let i=0;i<values.length;i++){
 
