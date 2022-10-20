@@ -71,6 +71,8 @@
             <div class="stat__value"><span>20</span></div>
         </div>
     </div>
+
+    <popup-kpi></popup-kpi>
 </div>
 </template>
 
@@ -80,11 +82,25 @@ export default {
     props: {},
     data: function () {
         return {
-            fields: [], 
+            user_earnings: [], 
+            has_qp: false
         };
     },
     methods: {
-        
+        fetch() {
+            let loader = this.$loading.show();
+
+            axios.post('/profile/salary/get', {
+                month: this.$moment(this.month, 'MMMM').format('M')
+            }).then(response => {
+                this.user_earnings = response.data.user_earnings
+                this.has_qp = response.data.has_qp
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
+        },
     }
 };
 </script>
