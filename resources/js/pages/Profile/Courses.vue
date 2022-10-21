@@ -5,7 +5,12 @@
             Ваши курсы
         </div>
         <div class="courses__content__wrapper">
-            <div class="courses__item current">
+
+            <div class="courses__item current"
+                v-for="(course, index) in data"
+                :key="index"
+                @click="selectCourse(index)" 
+            >
                 <img src="images/dist/courses-image.png" alt="" class="courses__image">
 
                 <div class="courses__progress">
@@ -19,79 +24,16 @@
                     <span>Продолжить курс</span>
                 </a>
             </div>
-            <div class="courses__item">
-                <img src="images/dist/courses-image.png" alt="" class="courses__image">
 
-                <div class="courses__progress">
-                    <div class="courses__line"></div>
-                </div>
-                <div class="courses__percent">
-                    Пройдено: <span>60%</span>
-                </div>
-                <a href="#" class="courses__button">
-                    <span>Продолжить курс</span>
-                </a>
-            </div>
-            <div class="courses__item">
-                <img src="images/dist/courses-image.png" alt="" class="courses__image">
-
-                <div class="courses__progress">
-                    <div class="courses__line"></div>
-                </div>
-                <div class="courses__percent">
-                    Пройдено: <span>92%</span>
-                </div>
-                <a href="#" class="courses__button">
-                    <span>Продолжить курс</span>
-                </a>
-            </div>
-            <div class="courses__item">
-                <img src="images/dist/courses-image.png" alt="" class="courses__image">
-
-                <div class="courses__progress">
-                    <div class="courses__line"></div>
-                </div>
-                <div class="courses__percent">
-                    Пройдено: <span>12%</span>
-                </div>
-                <a href="#" class="courses__button">
-                    <span>Продолжить курс</span>
-                </a>
-            </div>
-            <div class="courses__item">
-                <img src="images/dist/courses-image.png" alt="" class="courses__image">
-
-                <div class="courses__progress">
-                    <div class="courses__line"></div>
-                </div>
-                <div class="courses__percent">
-                    Пройдено: <span>22%</span>
-                </div>
-                <a href="#" class="courses__button">
-                    <span>Продолжить курс</span>
-                </a>
-            </div>
-            <div class="courses__item">
-                <img src="images/dist/courses-image.png" alt="" class="courses__image">
-
-                <div class="courses__progress">
-                    <div class="courses__line"></div>
-                </div>
-                <div class="courses__percent">
-                    Пройдено: <span>42%</span>
-                </div>
-                <a href="#" class="courses__button">
-                    <span>Продолжить курс</span>
-                </a>
-            </div>
         </div>
 
     </div>
-    <div class="profit__info" id="profitInfo">
+
+    <div class="profit__info" v-if="activeCourse != null">
         <div class="profit__info-title">
             Информация о курсе
         </div>
-        <div class="profit__info-back">
+        <div class="profit__info-back" @click="back">
             Назад
         </div>
         <div class="profit__info-back-mobile">
@@ -193,6 +135,7 @@
             Курс доступен до 24.01
         </div>
     </div>
+
 </div>
 </template>
 
@@ -202,11 +145,40 @@ export default {
     props: {},
     data: function () {
         return {
-            fields: [], 
+            data: [], 
+            activeCourse: null
         };
     },
+    created() {
+        this.fetchData()
+    },
+
     methods: {
-        
+        /**
+         * Загрузка данных 
+         */
+        fetchData() {
+            let loader = this.$loading.show();
+
+            axios.post('/profile/courses').then(response => {
+                this.data = response.data
+                loader.hide()
+            }).catch((e) => console.log(e))
+        },
+
+        /**
+         * select active course info
+         */
+        selectCourse(index) {
+            this.activeCourse = this.data[index]
+        },
+
+        /**
+         * back to all courses
+         */
+        back() {
+            this.activeCourse = null;
+        }
     }
 };
 </script>

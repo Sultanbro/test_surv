@@ -165,7 +165,7 @@ class UserProfileController extends Controller
     {
         $user = \auth()->user();
 
-        return response()->success($user->getActiveCourses());
+        return response()->json($user->getActiveCourses());
     }
 
     public function getProfile(Request $request)

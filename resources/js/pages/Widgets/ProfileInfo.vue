@@ -28,10 +28,7 @@ export default {
 
   data() {
     return {
-      data: {
-        currencies: {},
-        currency: 'KZT'
-      },
+      data: {},
     }
   },
 
@@ -40,18 +37,17 @@ export default {
   },
 
   methods: {
-      /**
-       * Загрузка данных 
-       */
-      fetchData() {
+    /**
+     * Загрузка данных 
+     */
+    fetchData() {
         let loader = this.$loading.show();
 
-        axios.post('/profile/personal-info', {
-            month: new Date().getMonth() + 1
-        }).then(response => {
-            this.data = response.data
-            loader.hide()
-        }).catch((e) => console.log(e))
+        axios.get('/profile/personal-info')
+          .then(response => {
+              this.data = response.data
+              loader.hide()
+          }).catch((e) => console.log(e))
     },
   }
 }
