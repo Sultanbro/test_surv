@@ -9,10 +9,9 @@
             <div class="courses__item current"
                 v-for="(course, index) in data"
                 :key="index"
-                @click="selectCourse(index)" 
             >
-                <img v-if="course.img !== null && course.img !== ''" :src="course.img" alt="курс" class="courses__image">
-                <img v-else src="/images/dist/courses-image.png" alt="" class="courses__image">
+                <img v-if="course.img !== null && course.img !== ''" :src="course.img" alt="курс" class="courses__image" @click="selectCourse(index)" >
+                <img v-else src="/images/dist/courses-image.png" alt="" class="courses__image" @click="selectCourse(index)" >
 
                 <div class="courses__progress">
                     <div class="courses__line"></div>
