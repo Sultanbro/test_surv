@@ -7,30 +7,9 @@
         </a>
         <a href="#" class="profile__button"><p>Начать рабочий день</p></a>
         <div class="profile__balance">Текущий баланс <p>3,567.12 <span>KZT</span></p></div>
-        <select class="select-css profile-select">
-            <option>Май</option>
-            <option>Апрель</option>
-            <option>Март</option>
-            <option>Февраль</option>
-            <option>Январь</option>
-        </select>
-        <div class="profile__about">
-            <div class="profile__name">Каримов Адиль</div>
-            <div class="profile__job profile-border">Старший специалист группы</div>
-            <div class="profile__salary profile-border">ОКЛАД 500 000</div>
-            <div class="profile__wrapper">
-                <p class="profile-border">5 - 2</p>
-                <p class="profile-border">09:00 - 18:00</p>
-                <p class="profile-border">8 часов</p>
-            </div>
-            <select class="select-css">
-                <option>KZT Казахстанский тенге</option>
-                <option>KZT Казахстанский тенге</option>
-                <option>KZT Казахстанский тенге</option>
-                <option>KZT Казахстанский тенге</option>
-                <option>KZT Казахстанский тенге</option>
-            </select>
-        </div>
+
+        <profile-info></profile-info>
+        
         <div class="profile__point profile-box">
             <div class="profile__title">Цель на сегодня</div>
             <div class="profile__point-wrapper profile-slick">
