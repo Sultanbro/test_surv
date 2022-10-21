@@ -10,12 +10,10 @@
         <p class="profile-border">{{ data.workingTime }}</p>
     </div>
 
-    <select class="select-css">
-        <option>KZT Казахстанский тенге</option>
-        <option>RUB Казахстанский тенге</option>
-        <option>KGS Казахстанский тенге</option>
-        <option>KZT Казахстанский тенге</option>
-        <option>KZT Казахстанский тенге</option>
+    <select class="select-css" v-model="data.currency">
+        <option v-for="key in Object.keys(data.currencies)" :value="key">
+          {{ key }} {{ data.currencies[key] }}
+        </option>
     </select>
 </div>
 </template>
@@ -30,7 +28,10 @@ export default {
 
   data() {
     return {
-      data: {},
+      data: {
+        currencies: {},
+        currency: 'KZT'
+      },
     }
   },
 

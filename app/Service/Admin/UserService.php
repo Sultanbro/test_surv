@@ -93,6 +93,15 @@ class UserService
             'workingDay'  => $workingDay,
             'workingTime' => $workingTime,
             'schedule'    => $schedule,
+            'currency'    => strtoupper($user->currency),
+            'currencies'  => [
+                'KZT' => 'Казахстанский тенге',
+                'RUB' => 'Российский рубль',
+                'KGS' => 'Киргизский сом',
+                'BYR' => 'Беларуский рубль',
+                'UAH' => 'Украинская гривна',
+                'UZS' => 'Узбекистанский сум',
+            ]
         ];
     }
 
