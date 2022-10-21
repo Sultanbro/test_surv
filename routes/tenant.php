@@ -128,7 +128,7 @@ Route::middleware([
         Route::any('/personal-info', [UserProfileController::class, 'personalInfo']);
         Route::get('/recruter-stats', [UserProfileController::class, 'recruterStatsRates']);
         Route::get('/activities', [UserProfileController::class, 'activities']);
-        Route::get('/courses', [UserProfileController::class, 'courses']);
+        Route::any('/courses', [UserProfileController::class, 'courses']);
         Route::get('/trainee-report', [UserProfileController::class, 'traineeReport']);
     });
 
