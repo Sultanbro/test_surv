@@ -12,18 +12,18 @@
         <p v-else>Завершить рабочий день</p>
     </a>
 
-    <!-- Corp book page when day has started -->
+    <!-- Corp book page when day has started --> 
     <b-modal v-model="showCorpBookPage"  title="Н" size="xl" class="modalle" hide-footer hide-header no-close-on-backdrop>
-        <div class="corpbook" >
+        <div class="corpbook" v-if="corp_book_page !== undefined && corp_book_page !== null">
           <div class="inner">
               <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей корпоративной книги</h5>
               <h3 class="text-center">{{ corp_book_page.title }}</h3>
 
               <div v-html="corp_book_page.text"></div>
 
-              <button class="btn btn-primary rounded m-auto" id="readCorpBook" @click="hideBook" disabled>
-                  <span class="text">Я прочитал</span>
-                  <span class="timer"></span>
+              <button href="#profitInfo" class="button-blue m-auto mt-5" id="readCorpBook" @click="hideBook" disabled>
+                <span class="text">Я прочитал</span>
+                <span class="timer"></span>
               </button>
           </div>      
       </div>
@@ -72,7 +72,7 @@ export default {
                 this.bookCounter();
               } 
 
-              this.$emit('currentBalance', response.data.total_earned)
+              this.$emit('currentBalance', response.data.balance)
           })
           .catch((error) => {
               console.log(error);
@@ -130,15 +130,15 @@ export default {
         let seconds = 60;
         let interv = setInterval(() => {
             seconds--;
-            $('#readCorpBook .timer').text(seconds);
+            VJQuery('#readCorpBook .timer').text(seconds);
             if(seconds == 0) {
-                $('#readCorpBook .timer').text('');
+              VJQuery('#readCorpBook .timer').text('');
                 clearInterval(interv);
             }
         }, 1000);
 
         setTimeout(() => {
-            $('#readCorpBook').prop('disabled', false);
+          VJQuery('#readCorpBook').prop('disabled', false);
         }, seconds * 1000);
     },
     
@@ -155,5 +155,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.aet {
+  background: #608EE9 !important;
+}
+.corpbook {
+  font-size: 14px;
+}
 </style>

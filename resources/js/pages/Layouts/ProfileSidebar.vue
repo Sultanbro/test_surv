@@ -90,7 +90,7 @@ export default {
         };
     },
     created() {
-        this.workStatus();
+        
     },
     methods: {
         /**
@@ -112,7 +112,8 @@ export default {
          * возвращает текущий баланс
          */
         currentBalance(balance) {
-            this.balance = balance
+            this.balance = balance.sum
+            this.currency = balance.currency
         }
 
         

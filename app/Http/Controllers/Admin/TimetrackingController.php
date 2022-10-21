@@ -474,6 +474,10 @@ class TimetrackingController extends Controller
             'zarplata' => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
             'bonus' => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
             'total_earned' => $total_earned,
+            'balance'  => [
+                'sum' => number_format(round(($salary + $kpi + $bonus) * $currency_rate, 2), 0, '.', ','),
+                'currency' => strtoupper($user->currency),
+            ],
             'corp_book' => [
                 'has' => $has_corp_book,
                 'page' => $page,

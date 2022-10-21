@@ -12,17 +12,17 @@ window.collect = require('collect.js')// globally
 
 import BootstrapVue from 'bootstrap-vue'
 import JQuery from 'jquery'
-window.VJQuery = JQuery
+window.VJQuery = JQuery 
 
 
 import moment from 'moment'
 import Notifications from 'vue-notification'
 import VueMask from 'v-mask' 
 import VGauge from 'vgauge';   
-import draggable from 'vuedraggable' 
+import draggable from 'vuedraggable'  
 import Multiselect from 'vue-multiselect'
 import Vue from 'vue'
-import vSelect from 'vue-select'
+import vSelect from 'vue-select' 
 import 'vue-select/dist/vue-select.css';
 import VueCircle from 'vue2-circle-progress'
 import axios from 'axios'
@@ -279,6 +279,7 @@ Vue.component('left-sidebar', require('./pages/Layouts/LeftSidebar.vue').default
 Vue.component('right-sidebar', require('./pages/Layouts/RightSidebar.vue').default); 
 Vue.component('profile-sidebar', require('./pages/Layouts/ProfileSidebar.vue').default); 
 Vue.component('profile-info', require('./pages/Widgets/ProfileInfo.vue').default); 
+Vue.component('start-day-btn', require('./pages/Widgets/StartDayBtn.vue').default); 
 Vue.component('popup', require('./pages/Layouts/Popup.vue').default); 
 
 /**
