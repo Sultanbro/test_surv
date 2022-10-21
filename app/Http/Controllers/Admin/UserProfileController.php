@@ -53,7 +53,6 @@ class UserProfileController extends Controller
         $this->middleware('auth');
         $this->userService = $userService;
         $this->user        = auth()->user();
-        $this->middleware('auth');
     }
 
     /**
