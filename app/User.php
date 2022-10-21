@@ -274,32 +274,6 @@ class User extends Authenticatable implements Authorizable
         return Oauth::get_token($this->id, $server);
     }
 
-
-    public static function user($user_id)
-    {
-        $user = User::find($user_id);
-        return $user;
-    }
-
-    /**
-     * Обноляет баланс после транзакции
-     * @param $amount
-     * @return float
-     */
-    public static function updateBalance($user_id, $amount)
-    {
-        if ($user_id > 0) {
-            $user_balance = self::balanceByUser($user_id);
-            $user_balance -= $amount;
-
-            User::where('id', $user_id)
-                ->update(['UF_BALANCE' => $user_balance]);
-            //DB::update('UPDATE b_uts_user SET UF_BALANCE = ? WHERE VALUE_ID = ?', [$user_balance, $user_id]);
-        }
-
-        return self::balanceByUser($user_id);
-    }
-
     /**
      * Oklad na chas
      */
@@ -313,26 +287,7 @@ class User extends Authenticatable implements Authorizable
         $date = Carbon::parse($date);
         $workdays = workdays($date->year, $date->month, $ignore);
 
-
- 
-
-        // проверка сданных экзаменов  
-        $wage = $zarplata; // WAGE: оклад + бонус от экзамена
-        $bonusFromExam = 0; // бонус от экзамена
-        $exam = Exam::where('user_id', $this->id) // Проверка сдавал ли сотрудник книгу в этом месяце
-            ->where('month', $date->month)
-            ->where('year', $date->year)
-            ->first();
-    
-        if(!is_null($exam) && $exam->success == 1) {
-            $bonusFromExam = 10000;
-            $wage += $bonusFromExam;
-        }    
-
-
-
-
-        return $wage / $workdays / $working_hours;
+        return $zarplata / $workdays / $working_hours;
     }
 
     /**
@@ -492,42 +447,6 @@ class User extends Authenticatable implements Authorizable
             'description' => 'Сотрудник уволен рекрутером',
         ]);
     }
-    /**
-     * Обноляет баланс после платеже
-     * @param $amount
-     * @return float
-     */
-    public static function addBalance($user_id, $payment)
-    {
-        if ($user_id > 0) {
-            $user_balance = self::balanceByUser($user_id);
-            $user_balance += $payment;
-
-            User::where('id', $user_id)
-                ->update(['UF_BALANCE' => $user_balance]);
-
-            //DB::update('UPDATE b_uts_user SET UF_BALANCE = ? WHERE VALUE_ID = ?', [$user_balance, $user_id]);
-        }
-
-        return self::balanceByUser($user_id);
-    }
-
-    /**
-     * @param $bonus
-     * @param $user_id
-     * @return float
-     */
-    public static function updateBonus($bonus, $user_id)
-    {
-        DB::update('UPDATE users SET bonus = bonus + ? WHERE ID = ?', [$bonus, $user_id]);
-        return true;
-    }
-
-    public static function substractBonus($cost, $user_id)
-    {
-        DB::update('UPDATE users SET bonus = bonus - ? WHERE ID = ?', [$cost, $user_id]);
-        return true;
-    }
 
     public static function userByEmail($user_email)
     {
@@ -540,21 +459,7 @@ class User extends Authenticatable implements Authorizable
         return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
     }
 
-    /**
-     * Возвращает баланс текущего пользователя
-     * @return float
-     */
-    public static function balance()
-    {
-        //$balance = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [self::bitrixUser()->id]);
-
-        $user = User::find(self::bitrixUser()->id);
-
-        if (isset($user)) {
-            return $user->UF_BALANCE;
-        }
-        return 0;
-    }
+  
 
     public static function logo()
     {
@@ -563,20 +468,6 @@ class User extends Authenticatable implements Authorizable
             return '/static/images/userlogo.jpg';
         }
         return $user->UF_LOGO;
-    }
-
-    public static function balanceByUser($user_id)
-    {
-        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [$user_id]);
-        $user = User::find($user_id);
-        return isset($user) ? $user->UF_BALANCE : 0;
-    }
-
-    public static function isUserAdmin($user_id)
-    {
-        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [$user_id]);
-        $user = User::find($user_id);
-        return (isset($user) ? $user->UF_ADMIN : 0) == 1;
     }
 
     public function course_results()
@@ -592,71 +483,6 @@ class User extends Authenticatable implements Authorizable
     public function test_results()
     {
         return $this->hasMany(\App\Models\TestResult::class, 'user_id');
-    }
-
-    public static function getApiKey()
-    {
-        $user_id = self::bitrixUser()->id;
-        $apiKey = md5($user_id . 'api.mediasend' . '_salt');
-
-        if (User::where('id', $user_id)->whereNull('UF_API_KEY')->count() > 0) {
-            User::where('id', $user_id)
-                ->update(['UF_API_KEY' => $apiKey]);
-        }
-
-        return self::getApiKeyByUserId($user_id);
-    }
-
-    public static function getApiKeyByUserId($user_id)
-    {
-        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [$user_id]);
-        $user = User::find($user_id);
-        return isset($user) ? $user->UF_API_KEY : '';
-    }
-
-    public static function getUserIdApiKey($api_key)
-    {
-        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE UF_API_KEY = ?", [$api_key]);
-
-        $user = User::where('UF_API_KEY', $api_key)->first();
-        if (isset($user)) {
-            return $user->id;
-        }
-        return false;
-    }
-
-    public static function getSipAccount($user_id = null)
-    {
-        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [$user_id?$user_id:self::bitrixUser()->id]);
-
-        $user = User::find($user_id ? $user_id : self::bitrixUser()->id);
-        return isset($user) ? $user->UF_SIP_ACC : null;
-    }
-
-    public static function updateSipAccount($user_id, $sip_acc)
-    {
-        User::where('id', $user_id)
-            ->update(['UF_SIP_ACC' => $sip_acc]);
-        //DB::update('UPDATE b_uts_user SET UF_SIP_ACC = ? WHERE VALUE_ID = ?', [$sip_acc, $user_id]);
-        return true;
-    }
-
-    public static function getSMPPAccount($user_id = null)
-    {
-        //$user_info = DB::select("SELECT * FROM b_uts_user WHERE VALUE_ID = ?", [$user_id?$user_id:self::bitrixUser()->id]);
-
-        $user = User::find($user_id ? $user_id : self::bitrixUser()->id);
-        return isset($user) ? $user->UF_SMPP : null;
-    }
-
-    public static function updateSMPPAccount($user_id, $smpp)
-    {
-
-        User::where('id', $user_id)
-            ->update(['UF_SMPP' => $smpp]);
-
-        //DB::update('UPDATE b_uts_user SET UF_SMPP = ? WHERE VALUE_ID = ?', [$smpp, $user_id]);
-        return true;
     }
 
     public static function randString($pass_len = 10, $pass_chars = false)
@@ -692,36 +518,6 @@ class User extends Authenticatable implements Authorizable
 
         }
         return $string;
-    }
-
-    public function autocalls()
-    {
-        return $this->hasMany('App\Autocall');
-    }
-
-    public function ai_dialings()
-    {
-        return $this->hasMany('App\AI_dialing');
-    }
-
-    public function contacts()
-    {
-        return $this->hasMany('App\Contact');
-    }
-
-    public function trainee() // стажер ли 
-    {
-        return $this->hasMany('App\Trainee');
-    }
-
-    public function sms()
-    {
-        return $this->hasMany('App\Message');
-    }
-
-    public function voices()
-    {
-        return $this->hasMany('App\Voice');
     }
 
     public function photo()
@@ -945,6 +741,16 @@ class User extends Authenticatable implements Authorizable
     public function workingTime()
     {
       return $this->belongsTo('App\WorkingTime');
+    }
+
+    /**
+     * Связь с моделью WorkingDay
+     *
+     * @return Eloquent
+     */
+    public function workingDay()
+    {
+      return $this->belongsTo('App\WorkingDay');
     }
 
     /**

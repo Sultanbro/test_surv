@@ -95,7 +95,6 @@ class DailySalaryUpdate extends Command
             $zarplata = Zarplata::where('user_id', $user_id)->first();
             $salary_amount = $zarplata ? $zarplata->zarplata : 70000;
 
-            $this->checkIfUserPassExam($user_id, $salary_amount);
 
             if($salary) {
                 dump($key . '+');
@@ -119,23 +118,6 @@ class DailySalaryUpdate extends Command
 
 
 
-    }
-
-    public function checkIfUserPassExam($user_id, &$salary_amount)
-    {   
-        $date = $this->argument('date') ?? date('Y-m-d');
-        $date = Carbon::parse($date);
-
-        $bonusFromExam = 0; // бонус от экзамена
-        $exam = Exam::where('user_id', $user_id) // Проверка сдавал ли сотрудник книгу в этом месяце
-            ->where('month', $date->month)
-            ->where('year', $date->year)
-            ->first();
-    
-        if(!is_null($exam) && $exam->success == 1) {
-            $bonusFromExam = 10000;
-            $salary_amount += $bonusFromExam;
-        }    
     }
 
 }

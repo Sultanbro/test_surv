@@ -12,7 +12,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GetReportsRequest;
 use App\Position;
 use App\Salary;
-use App\BPLink;
 use App\Service\GroupUserService;
 use App\TimetrackingHistory;
 use App\UserAbsenceCause;
@@ -714,23 +713,6 @@ class TimetrackingController extends Controller
             
             $pgu->save();
         }
-
-        //// book
-
-
-
-        // $bplink = BPLink::where('name', $request['bp_link'])->first();
-        
-        // if($bplink) {
-        //     $bplink->link = $request['zoom_link'];
-        //     $bplink->save();
-        // } else {
-        //     $bplink = new BPLink;
-        //     $bplink->name = $request['bp_link'] ?? 'NONAME' . $group->id;
-        //     $bplink->link = $request['zoom_link'] ?? 'NONAME' . $group->id;
-        //     $bplink->save();
-        // }
-        
         
         return [
             'groups' => ProfileGroup::where('active', 1)->pluck('name', 'id')->toArray(),

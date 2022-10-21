@@ -144,7 +144,7 @@ class UserProfileController extends Controller
     {;
         $response = $this->userService->getPersonalData();
 
-        return response()->success($response);
+        return response()->json($response);
     }
 
     /**

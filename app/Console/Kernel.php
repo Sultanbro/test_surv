@@ -5,27 +5,6 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-use App\Console\Commands\ExamZarpMonthly;
-use App\Console\Commands\FetchAnvizRecords;
-use App\Console\Commands\QualityRecordsTotals;
-use App\Console\Commands\Timetracking;
-use App\Console\Commands\MarkTrainees;
-use App\Console\Commands\CheckTimetrackers;
-use App\Console\Commands\DeleteUser;
-use App\Console\Commands\InviteToBitrixAndAdmin;
-use App\Console\Commands\NotifyManagersAboutForeigners;
-use App\Console\Commands\SalaryTrainees;
-use App\Console\Commands\RecruitingRecordsTotals;
-use App\Console\Commands\SetAbsent;
-use App\Console\Commands\ChecklistUpdater;
-use App\Console\Commands\Bitrix\BitrixStats;
-use App\Console\Commands\Bitrix\FunnelStats;
-use App\Console\Commands\Notifications\Adaptation;
-use App\Console\Commands\Notifications\FillReport;
-use App\Console\Commands\Callibro\GetWorkedHours;
-use App\Console\Commands\Whatsapp\Assessment;
-use App\Console\Commands\Employee\SalaryIndexation;
-
 class Kernel extends ConsoleKernel
 {
     /**

@@ -35,15 +35,22 @@ class UserService
      * @return array
      */
     public function getPersonalData(): array
-    {
-        $currency_rate = in_array($this->authUser->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$this->authUser->currency] : 0.0000001;
+    {   
+        /**
+         * Валютная ставка
+         */
+        $currency_rate = in_array($this->authUser->currency, array_keys(Currency::rates()))
+            ? (float)Currency::rates()[$this->authUser->currency]
+            : 0.0000001;
 
-        $positions = Position::all();
-        $photo     = Photo::where('user_id', $this->authUser->id)->first();
-        $downloads = Downloads::where('user_id', $this->authUser->id)->first();
+        /**
+         * Должность
+         */
         $user_position = Position::find($this->authUser->position_id);
 
-        /*** Группы пользователя */
+        /**
+         * Группы пользователя
+         */
         $groups = '';
         $gs = $this->authUser->inGroups();
 
@@ -51,6 +58,9 @@ class UserService
             $groups .= '<div>' . $group['name'] . '</div>';
         }
 
+        /**
+         * Оклад
+         */
         $zarplata = Zarplata::where('user_id', $this->authUser->id)->first();
 
         $oklad = 0;
@@ -58,14 +68,35 @@ class UserService
         $oklad = round($oklad * $currency_rate, 0);
         $oklad = number_format($oklad, 0, '.', ' ');
 
+        /**
+         * workday and time
+         */
+        
+        $workingDay = '5-2';
+        $workingTime = '09:00 - 18:00';
+        
+        if($this->authUser->workingDay()) $workingDay = $this->authUser->workingDay()->name;
+        if($this->authUser->workingTime()) $workingTime = $this->authUser->workingTime()->name;
+
+        /**
+         * Work schedule
+         */
+        $schedule = substr($this->authUser->work_starts_at(), 0 , 5);
+        
+        if($this->authUser->work_end) {
+            $schedule .= ' - ' . substr($this->authUser->work_end, 0 , 5);
+        } else {
+            $schedule .= ' - 00:00';
+        }
+
         return [
-            'user'           => $this->authUser,
-            'positions'      => $positions,
-            'photo'          => $photo,
-            'downloads'      => $downloads,
-            'user_positions' => $user_position,
-            'groups'         => $groups,
-            'salary'         => $oklad
+            'user'        => $this->authUser,
+            'position'    => $user_position,
+            'groups'      => $groups,
+            'salary'      => $oklad,
+            'workingDay'  => $workingDay,
+            'workingTime' => $workingTime,
+            'schedule'    => $schedule,
         ];
     }
 
