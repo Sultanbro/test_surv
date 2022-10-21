@@ -48,7 +48,7 @@ export default {
         axios.post('/profile/personal-info', {
             month: new Date().getMonth() + 1
         }).then(response => {
-            this.data = response.data.data
+            this.data = response.data
             loader.hide()
         }).catch((e) => console.log(e))
     },
