@@ -37,7 +37,7 @@ export default {
   created() {
     this.fetchData()
   },
-  
+
   methods: {
       /**
        * Загрузка данных 
@@ -45,7 +45,7 @@ export default {
       fetchData() {
         let loader = this.$loading.show();
 
-        axios.post('/personal-info', {
+        axios.post('/profile/personal-info', {
             month: new Date().getMonth() + 1
         }).then(response => {
             this.data = response.data.data
