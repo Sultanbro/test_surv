@@ -2,7 +2,7 @@
 <div class="profile__about" v-if="data.user !== undefined && data.user !== null">
 
     <div class="profile__name">{{ data.user.last_name + ' ' + data.user.name }}</div>
-    <div class="profile__job profile-border">{{ data.position }}</div>
+    <div class="profile__job profile-border">{{ data.position.position }}</div>
     <div class="profile__salary profile-border">ОКЛАД {{ data.salary }}</div>
     <div class="profile__wrapper">
         <p class="profile-border">{{ data.workingDay }}</p>
