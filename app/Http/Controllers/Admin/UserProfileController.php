@@ -51,7 +51,8 @@ class UserProfileController extends Controller
     public function __construct(AdminUserService $userService)
     {
         $this->userService = $userService;
-        $this->user = auth()->user();
+        $this->user        = auth()->user();
+        $this->middleware('auth');
     }
 
     /**
@@ -169,7 +170,7 @@ class UserProfileController extends Controller
 
     public function getProfile(Request $request)
     {
-        $user = User::find(auth()->id() ?? 5);
+        $user = User::find(auth()->id());
 
         $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
 
