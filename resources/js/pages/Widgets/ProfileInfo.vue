@@ -25,7 +25,7 @@ export default {
 
   name: 'ProfileInfo',
   props: {
-    
+
   },
 
   data() {
@@ -34,6 +34,10 @@ export default {
     }
   },
 
+  created() {
+    this.fetchData()
+  },
+  
   methods: {
       /**
        * Загрузка данных 
