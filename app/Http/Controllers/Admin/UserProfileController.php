@@ -50,6 +50,7 @@ class UserProfileController extends Controller
 
     public function __construct(AdminUserService $userService)
     {
+        $this->middleware('auth');
         $this->userService = $userService;
         $this->user = auth()->user();
     }

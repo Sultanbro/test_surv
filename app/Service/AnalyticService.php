@@ -46,7 +46,11 @@ class AnalyticService
     {
         $firedUsers = $this->getFiredUsersPerMonth($group, $date);
         $allUsers   = count($this->userService->getUsers($group->id, $date->toDateString()));
-        return round(($firedUsers/($allUsers + $firedUsers)) * 100, 1);
+        
+        
+        return ($allUsers + $firedUsers) > 0
+            ? round(($firedUsers/($allUsers + $firedUsers)) * 100, 1)
+            : 0;
     }
 
     /**
