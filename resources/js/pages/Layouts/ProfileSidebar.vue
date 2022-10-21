@@ -1,13 +1,21 @@
 <template>
 <div class="header__profile _anim _anim-no-hide custom-scroll-y">
     <div class="profile__content">
-        <a href="#" class="profile__logo">
-            <img src="images/dist/logo-download.svg" alt="logo download">
+        <a href="#" class="profile__logo" v-if="$userId == 5 || $userId == 18" @click="uploadLogo">
+            <img src="/images/dist/logo-download.svg" alt="logo download">
             Загрузить логотип
         </a>
-        <a href="#" class="profile__button"><p>Начать рабочий день</p></a>
-        <div class="profile__balance">Текущий баланс <p>3,567.12 <span>KZT</span></p></div>
 
+       
+
+        <start-day-btn @currentBalance="currentBalance"></start-day-btn>
+
+        <div class="profile__balance">
+            Текущий баланс
+            <p>{{ balance }} <span>{{ currency }}</span></p>
+        </div>
+
+        
         <profile-info></profile-info>
         
         <div class="profile__point profile-box">
@@ -63,8 +71,8 @@
             <img src="images/dist/close.svg" alt="close icon" class="point-close">
         </div>
 
-        <a href="#" class="profile__more">
-            <img src="images/dist/logo-download.svg" alt="more download">
+        <a href="#" class="profile__more" v-if="$userId == 5 || $userId == 18" @click="addWidget">
+            <img src="/images/dist/logo-download.svg" alt="more download">
         </a>
     </div>
 </div>
@@ -77,10 +85,37 @@ export default {
     data: function () {
         return {
             fields: [], 
+            balance: 0,
+            currency: 'KZT'
         };
     },
+    created() {
+        this.workStatus();
+    },
     methods: {
+        /**
+         * Загрузить лого
+         */
+        uploadLogo() {
+            alert('Вы не можете, потому что не работает');
+        },
 
+        /**
+         * Добавить виджет
+         */
+        addWidget() {
+            alert('Вы не можете, потому что не работают Виджеты');
+        },
+
+        /**
+         * callback c startDayBtn
+         * возвращает текущий баланс
+         */
+        currentBalance(balance) {
+            this.balance = balance
+        }
+
+        
     }
 };
 </script>

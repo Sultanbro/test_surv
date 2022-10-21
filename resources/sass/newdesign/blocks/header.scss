@@ -390,6 +390,11 @@
   display: block;
   text-transform: uppercase;
   transition: background .3s 0s;
+
+  &.red {
+    background: #fc5757;
+  }
+
   p{
     padding-left: 2rem;
     font-size:1.4rem;
