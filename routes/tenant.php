@@ -125,7 +125,7 @@ Route::middleware([
     ], function () {
         Route::post('/', [UserProfileController::class, 'profile']);
         Route::get('/', [UserProfileController::class, 'getProfile']);
-        Route::get('/personal-info', [UserProfileController::class, 'personalInfo']);
+        Route::any('/personal-info', [UserProfileController::class, 'personalInfo']);
         Route::get('/recruter-stats', [UserProfileController::class, 'recruterStatsRates']);
         Route::get('/activities', [UserProfileController::class, 'activities']);
         Route::get('/courses', [UserProfileController::class, 'courses']);

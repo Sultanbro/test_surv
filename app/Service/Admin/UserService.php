@@ -20,15 +20,9 @@ use Illuminate\Support\Facades\Auth;
 
 class UserService
 {
-    /**
-     * Авторизованный пользователь.
-     * @var $authUser
-     */
-    public $authUser;
-
     public function __construct()
     {
-        $this->authUser = \auth()->user();
+        // auth
     }
 
     /**
@@ -36,23 +30,25 @@ class UserService
      */
     public function getPersonalData(): array
     {   
+        $user = auth()->user();
+
         /**
          * Валютная ставка
          */
-        $currency_rate = in_array($this->authUser->currency, array_keys(Currency::rates()))
-            ? (float)Currency::rates()[$this->authUser->currency]
+        $currency_rate = in_array($user->currency, array_keys(Currency::rates()))
+            ? (float)Currency::rates()[$user->currency]
             : 0.0000001;
 
         /**
          * Должность
          */
-        $user_position = Position::find($this->authUser->position_id);
+        $user_position = Position::find($user->position_id);
 
         /**
          * Группы пользователя
          */
         $groups = '';
-        $gs = $this->authUser->inGroups();
+        $gs = $user->inGroups();
 
         foreach($gs as $group) {
             $groups .= '<div>' . $group['name'] . '</div>';
@@ -61,7 +57,7 @@ class UserService
         /**
          * Оклад
          */
-        $zarplata = Zarplata::where('user_id', $this->authUser->id)->first();
+        $zarplata = Zarplata::where('user_id', $user->id)->first();
 
         $oklad = 0;
         if($zarplata) $oklad = $zarplata->zarplata;
@@ -75,22 +71,22 @@ class UserService
         $workingDay = '5-2';
         $workingTime = '09:00 - 18:00';
         
-        if($this->authUser->workingDay()) $workingDay = $this->authUser->workingDay()->name;
-        if($this->authUser->workingTime()) $workingTime = $this->authUser->workingTime()->name;
+        if($user->workingDay) $workingDay = $user->workingDay->name;
+        if($user->workingTime) $workingTime = $user->workingTime->name;
 
         /**
          * Work schedule
          */
-        $schedule = substr($this->authUser->work_starts_at(), 0 , 5);
+        $schedule = substr($user->work_starts_at(), 0 , 5);
         
-        if($this->authUser->work_end) {
-            $schedule .= ' - ' . substr($this->authUser->work_end, 0 , 5);
+        if($user->work_end) {
+            $schedule .= ' - ' . substr($user->work_end, 0 , 5);
         } else {
             $schedule .= ' - 00:00';
         }
 
         return [
-            'user'        => $this->authUser,
+            'user'        => $user,
             'position'    => $user_position,
             'groups'      => $groups,
             'salary'      => $oklad,
@@ -106,12 +102,14 @@ class UserService
      * @return void
      */
     public function updateEmail(UserProfileUpdateRequest $request): void
-    {
+    {   
+        $user = auth()->user();
+
         $new_email = trim(strtolower($request->email));
 
-        if($this->authUser->email != $new_email) {  // Введен новый email
-            $this->authUser->email = $new_email;
-            $this->authUser->save();
+        if($user->email != $new_email) {  // Введен новый email
+            $user->email = $new_email;
+            $user->save();
         }
     }
 
@@ -121,11 +119,13 @@ class UserService
      * @return void
      */
     public function updateCurrency($request): void
-    {
-        if($request->currency != $this->authUser->currency
+    {   
+        $user = auth()->user();
+
+        if($request->currency != $user->currency
             && in_array(strtoupper($request->currency), User::CURRENCY)){
-            $this->authUser->currency = strtolower($request->currency);
-            $this->authUser->save();
+            $user->currency = strtolower($request->currency);
+            $user->save();
         }
     }
 
@@ -135,10 +135,12 @@ class UserService
      * @return RedirectResponse|void
      */
     public function changePassword($request)
-    {
+    {   
+        $user = auth()->user();
+
         if(!empty($request->password)) { // Введен новый пароль
-            $this->authUser->password = \Hash::make($request->password);
-            $this->authUser->save();
+            $user->password = \Hash::make($request->password);
+            $user->save();
 
             unset(auth()->user()['can']);
             unset(auth()->user()['groups']);
@@ -153,10 +155,11 @@ class UserService
      * @return array
      */
     public function getActivitiesToProfile(Request $request): array
-    {
+    {   
+        $user = auth()->user();
         $activities = '[]';
         $quality    = [];
-        $gs         = $this->authUser->inGroups();
+        $gs         = $user->inGroups();
 
         if(count($gs) > 0) {
             $request->group_id = $gs[0]->id;
@@ -182,7 +185,9 @@ class UserService
      * @return array
      */
     public function getTraineeReport(): array
-    {
+    {   
+        $user = auth()->user();
+
         $trainee_report = [];
 
         /**
@@ -191,7 +196,7 @@ class UserService
          */
 
         $corpUni = tenant('id') == 'bp'
-            ? GroupUser::where('user_id', $this->authUser->id)
+            ? GroupUser::where('user_id', $user->id)
                 ->where('status', 'active')
                 ->where('group_id', 96)
                 ->first()
