@@ -11,16 +11,17 @@
                 :key="index"
                 @click="selectCourse(index)" 
             >
-                <img src="images/dist/courses-image.png" alt="" class="courses__image">
+                <img v-if="course.img !== null && course.img !== ''" :src="course.img" alt="курс" class="courses__image">
+                <img v-else src="/images/dist/courses-image.png" alt="" class="courses__image">
 
                 <div class="courses__progress">
                     <div class="courses__line"></div>
                 </div>
                 <!-- Линия зависит от процентов в span-->
                 <div class="courses__percent">
-                    Пройдено: <span>32%</span>
+                    Пройдено: <span>99%</span>
                 </div>
-                <a href="#" class="courses__button">
+                <a :href="'/my-courses?id=' + course.id" class="courses__button">
                     <span>Продолжить курс</span>
                 </a>
             </div>
@@ -29,9 +30,9 @@
 
     </div>
 
-    <div class="profit__info" v-if="activeCourse != null">
+    <div class="profit__info" v-if="activeCourse !== null">
         <div class="profit__info-title">
-            Информация о курсе
+            Информация о курсе: {{ activeCourse.name }}
         </div>
         <div class="profit__info-back" @click="back">
             Назад
@@ -41,19 +42,12 @@
         </div>
         <div class="profit__info__inner">
             <div class="profit__info__item">
-                <img src="images/dist/courses-image.png" alt="info image" class="profit__info-image">
+                <img v-if="activeCourse.img !== null && activeCourse.img !== ''" :src="activeCourse.img" alt="info image" class="profit__info-image">
+                <img v-else src="/images/dist/courses-image.png" alt="info image" class="profit__info-image">
+
                 <div class="profit__info-about">
-                    <div class="profit__info-text">
-                        Описание курса или его содержания, которое может быть оформлено в несколько строчек для удобства чтения и восприятия информации о курсе.
-                        Здесь так же могут быть данные об авторах курса и другая дополнительная информация. Описание курса или его содержания, которое может быть
-                        оформлено в несколько строчек для удобства чтения и восприятия информации о курсе. Здесь так же могут быть данные об авторах курса и другая
-                        дополнительная информация. Описание курса или его содержания, которое может быть оформлено в несколько строчек для удобства чтения и
-                        восприятия информации о курсе. Здесь так же могут быть данные об авторах курса и другая дополнительная информация
-                    </div>
-                    <div class="profit__info-text mobile">
-                        Описание курса или его содержания, которое может быть оформлено в несколько строчек для удобства чтения и восприятия информации о курсе.
-                        Здесь так же могут быть данные об авторах курса и другая дополнительная информация.
-                    </div>
+                    <div class="profit__info-text" v-html="activeCourse.text"></div>
+                    <div class="profit__info-text mobile" v-html="activeCourse.text"></div>
                     <div class="profit__info__wrapper">
                         <div class="info__wrapper-item done">
                             <a href='#' class="info__item-box">
@@ -75,55 +69,6 @@
                                 <p>03 / 10</p>
                             </a>
                             <div class="info__item-value">7%</div>
-                        </div>
-                        <div class="info__wrapper-item ">
-                            <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
-                                <p>04 / 10</p>
-                            </a>
-                            <div class="info__item-value">4%</div>
-                        </div>
-                        <div class="info__wrapper-item ">
-                            <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
-                                <p>05 / 10</p>
-                            </a>
-                            <div class="info__item-value">0%</div>
-                        </div>
-                        <div class="info__wrapper-item">
-                            <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
-                                <p>06 / 10</p>
-                            </a>
-                            <div class="info__item-value">0%</div>
-                        </div>
-                        <div class="info__wrapper-item">
-                            <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
-                                <p>07 / 10</p>
-                            </a>
-                            <div class="info__item-value">0%</div>
-                        </div>
-                        <div class="info__wrapper-item">
-                            <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
-                                <p>08 / 10</p>
-                            </a>
-                            <div class="info__item-value">0%</div>
-                        </div>
-                        <div class="info__wrapper-item">
-                            <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
-                                <p>09 / 10</p>
-                            </a>
-                            <div class="info__item-value">0%</div>
-                        </div>
-                        <div class="info__wrapper-item">
-                            <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
-                                <p>10 / 10</p>
-                            </a>
-                            <div class="info__item-value">0%</div>
                         </div>
 
                     </div>
@@ -170,6 +115,7 @@ export default {
          * select active course info
          */
         selectCourse(index) {
+            console.log('clicked ' + index)
             this.activeCourse = this.data[index]
         },
 
