@@ -20,7 +20,7 @@
             <div class="kaspi__content custom-scroll-y tab__content-item is-active"  data-content="1">
                 <div class="notifications__wrapper">
 
-                    <div class="notifications__item unread" v-for="(item, i) in data.unread" :key="i">
+                    <div class="notifications__item" v-for="(item, i) in data.unread" :key="i">
                         <div class="notifications__item-date">{{ item.created_at }}</div>
                         <div class="notifications__title">
                             {{ item.title }}
