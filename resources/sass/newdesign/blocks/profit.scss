@@ -267,6 +267,7 @@
     max-width: 100%;
     object-fit: cover;
     margin-bottom: 3rem;
+    border-radius: 10px;
   }
 
   &.current{
@@ -337,6 +338,11 @@
   gap:1.6rem;
   align-items: center;
   margin-bottom: 5rem;
+
+  img {
+    max-width: 250px;
+    border-radius: 10px;
+  }
 
 }
 .profit__info-image{

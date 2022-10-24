@@ -1,6 +1,6 @@
 <template>
-<div class="profit block _anim _anim-no-hide content" id="profit" v-if="slides.length > 0">
-    <div class="profit__title title">
+<div class="profit block _anim _anim-no-hide content _active" id="profit" v-if="slides.length > 0">
+    <div class="profit__title title mt-5">
         Как можно зарабатывать больше
     </div>
     <div class="profit__subtitle subtitle">
