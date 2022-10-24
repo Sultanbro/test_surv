@@ -163,7 +163,7 @@ class UserProfileController extends Controller
      */
     public function courses(): JsonResponse
     {
-        $user = \auth()->user();
+        $user = auth()->user();
 
         return response()->json($user->getActiveCourses());
     }
@@ -480,5 +480,18 @@ class UserProfileController extends Controller
 
         
         return json_encode($indicators);
+    }
+
+
+    /**
+     * Условия оплаты из отделов и должности
+     * 
+     * @return JsonResponse
+     */
+    public function paymentTerms(Request $request): JsonResponse
+    {
+        $response = $this->userService->paymentTerms($request);
+
+        return response()->json($response);
     }
 }

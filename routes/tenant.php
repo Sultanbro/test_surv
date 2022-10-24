@@ -124,12 +124,13 @@ Route::middleware([
         'as' => 'profile.'
     ], function () {
         Route::post('/', [UserProfileController::class, 'profile']);
-        Route::get('/', [UserProfileController::class, 'getProfile']);
+        Route::any('/', [UserProfileController::class, 'getProfile']);
         Route::any('/personal-info', [UserProfileController::class, 'personalInfo']);
-        Route::get('/recruter-stats', [UserProfileController::class, 'recruterStatsRates']);
-        Route::get('/activities', [UserProfileController::class, 'activities']);
+        Route::any('/recruter-stats', [UserProfileController::class, 'recruterStatsRates']);
+        Route::any('/activities', [UserProfileController::class, 'activities']);
         Route::any('/courses', [UserProfileController::class, 'courses']);
-        Route::get('/trainee-report', [UserProfileController::class, 'traineeReport']);
+        Route::any('/trainee-report', [UserProfileController::class, 'traineeReport']);
+        Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
     });
 
     Route::any('/bonuses', [UserProfileController::class, 'getBonuses']);

@@ -11,6 +11,7 @@ use App\Models\Analytics\UserStat;
 use App\Models\GroupUser;
 use App\Photo;
 use App\Position;
+use App\PositionDescription;
 use App\QualityRecordWeeklyStat;
 use App\Zarplata;
 use Illuminate\Http\RedirectResponse;
@@ -223,6 +224,39 @@ class UserService
 
         return [
             'trainee_report' => $trainee_report
+        ];
+    }
+
+     /**
+     * Условия оплаты из отделов и должности
+     * 
+     * @param Request $request
+     * @return array
+     */
+    public function paymentTerms(Request $request): array
+    {
+        $user = auth()->user();
+
+        $groups = $user->inGroups();
+
+        $groupTerms = [];
+
+        foreach ($groups as $gr) {
+            if($gr->payment_terms && $gr->payment_terms != '' && $gr->show_payment_terms == 1) {
+                $groupTerms[] = [
+                    'name' => $gr->name,
+                    'text' => $gr->payment_terms,
+                ];
+            }
+        }
+
+        $position_desc = PositionDescription::where('position_id', $user->position_id)->first();
+   
+        return [
+            'groups' => $groupTerms,
+            'position' => $position_desc && $position_desc->show == 1
+                ? $position_desc
+                : null
         ];
     }
 }

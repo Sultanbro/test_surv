@@ -7,258 +7,185 @@
         Информация, которая может быть полезна для Вашего карьерного роста
     </div>
     <div class="profit__inner">
-        <div class="profit__inner-item">
+
+
+        <div class="profit__inner-item" v-for="(slide, i) in slides" :key="i">
             <div class="profit__inner__left">
+
                 <div class="profit__left-wrapper">
                     <div class="profit__inner-title">
-                        За что вы получаете оплату
+                        {{ slide.left.title }}
                     </div>
-                    <a href="#"><img src="images/dist/profit-info.svg" alt="info icon"></a>
+                    <a href="#">
+                        <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
+                    </a>
                 </div>
-                <div class="profit__inner-text">Оплата начисляется за количество часов активной работы.</div>
-                <div class="profit__inner-subtitle">
-                    Оплачиваемое время складывается из:
-                </div>
-                <ol class="profit__inner-list">
-                    <li class="profit__inner-text">время в разговоре с клиентами</li>
-                    <li class="profit__inner-text">времени в ожидании поступления звонка (то есть статусе
-                        “Готов”)</li>
-                    <li class="profit__inner-text">времени работы на “ручном режиме” обзвона</li>
-                    <li class="profit__inner-text">времени заполнения карты клиента (проставление статуса,
-                        комментарии и т.д.)</li>
-                    <li class="profit__inner-text">времени простоя не по вине оператора (отсутствие интернета,
-                        сбой системы обзвона и другое)</li>
-                </ol>
-                <div class="profit__inner-text">
-                    <p>Система автоматически фиксирует время Вашей работы и
-                        ежедневно производит перерасчет фактически отработанных часов.
-                    <span class="help semibold italic">* перерасчет производится на следующий день</span>
-                    </p>
-                    <p>Поэтому ежедневно на следующий день проверяйте в разделе “<span class="semibold">Мой
-                        профиль</span>” количество отработанных Вами часов за предыдущий
-                        день и начисления по оплате!
-                    </p>
-                    <p class="semibold italic">* например, фактические часы работы за 20 февраля нужно
-                        проверять 21 февраля после обеда.
-                    </p>
-                </div>
-
-
-
-
+                <div class="profit__inner-text" v-html="slide.left.text"></div>
             </div>
+
             <div class="profit__inner-right">
                 <div class="profit__inner-title">
-                    Заголовок дополнительного блока
+                    {{ slide.right.title }}
                 </div>
-                <div class="profit__inner-text profit-right">Оплата начисляется за количество часов активной работы.</div>
-                <div class="profit__inner-text profit-right">
-                    Здесь может располагаться любой длинный текст, который будет меняться
-                    блоками при клике по иконкам слайдера справа сверху. Ширина блока
-                    определяется от начала заголовка до конца иконки слайдера.
-                </div>
-                <div class="profit__inner-subtitle">
-                    Оплачиваемое время складывается из:
-                </div>
-                <ol class="profit__inner-list">
-                    <li class="profit__inner-text">время в разговоре с клиентами</li>
-                    <li class="profit__inner-text">времени в ожидании поступления звонка (то есть статусе
-                        “Готов”)</li>
-                    <li class="profit__inner-text">времени работы на “ручном режиме” обзвона</li>
-                    <li class="profit__inner-text">времени заполнения карты клиента (проставление статуса,
-                        комментарии и т.д.)</li>
-                    <li class="profit__inner-text">времени простоя не по вине оператора (отсутствие интернета,
-                        сбой системы обзвона и другое)</li>
-                </ol>
-                <div class="profit__inner-text">
-                    <p>Система автоматически фиксирует время Вашей работы и
-                        ежедневно производит перерасчет фактически отработанных часов.
-                        <span class="help semibold italic">* перерасчет производится на следующий день</span>
-                    </p>
-                    <p>Поэтому ежедневно на следующий день проверяйте в разделе “<span class="semibold">Мой
-                        профиль</span>” количество отработанных Вами часов за предыдущий
-                        день и начисления по оплате!
-                    </p>
+                <a href="#">
+                    <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
+                </a>
+                <div class="profit__inner-text profit-right" v-html="slide.right.text"></div>
             </div>
-        </div>
+
             <div class="profit__arrows">
                 <a href="#" class="profit__prev"></a>
                 <a href="#" class="profit__next"></a>
             </div>
         </div>
-        <div class="profit__inner-item">
-            <div class="profit__inner__left">
-                <div class="profit__left-wrapper">
-                    <div class="profit__inner-title">
-                        Титульный заголовок 2
-                    </div>
-                    <a href="#"><img src="images/dist/profit-info.svg" alt="info icon"></a>
-                </div>
-                <div class="profit__inner-text">Текст, который изменяется при листании слайдера.</div>
-                <div class="profit__inner-subtitle">
-                    Оплачиваемое время складывается из:
-                </div>
-                <ol class="profit__inner-list">
-                    <li class="profit__inner-text">время в разговоре с клиентами</li>
-                    <li class="profit__inner-text">времени в ожидании поступления звонка (то есть статусе
-                        “Готов”)</li>
-                    <li class="profit__inner-text">времени работы на “ручном режиме” обзвона</li>
-                    <li class="profit__inner-text">времени заполнения карты клиента (проставление статуса,
-                        комментарии и т.д.)</li>
-                    <li class="profit__inner-text">времени простоя не по вине оператора (отсутствие интернета,
-                        сбой системы обзвона и другое)</li>
-                </ol>
-                <div class="profit__inner-text">
-                    <p>Система автоматически фиксирует время Вашей работы и
-                        ежедневно производит перерасчет фактически отработанных часов.
-                        <span class="help semibold italic">* перерасчет производится на следующий день</span>
-                    </p>
-                    <p>Поэтому ежедневно на следующий день проверяйте в разделе “<span class="semibold">Мой
-                        профиль</span>” количество отработанных Вами часов за предыдущий
-                        день и начисления по оплате!
-                    </p>
-                    <p class="semibold italic">* например, фактические часы работы за 20 февраля нужно
-                        проверять 21 февраля после обеда.
-                    </p>
-                </div>
 
-
-
-
-            </div>
-            <div class="profit__inner-right">
-                <div class="profit__inner-title">
-                    Титульный заголовок 2
-                </div>
-                <div class="profit__inner-text profit-right">Оплата начисляется за количество часов активной работы.</div>
-                <div class="profit__inner-text profit-right">
-                    Здесь может располагаться любой длинный текст, который будет меняться
-                    блоками при клике по иконкам слайдера справа сверху. Ширина блока
-                    определяется от начала заголовка до конца иконки слайдера.
-                </div>
-                <div class="profit__inner-subtitle">
-                    Оплачиваемое время складывается из:
-                </div>
-                <ol class="profit__inner-list">
-                    <li class="profit__inner-text">время в разговоре с клиентами</li>
-                    <li class="profit__inner-text">времени в ожидании поступления звонка (то есть статусе
-                        “Готов”)</li>
-                    <li class="profit__inner-text">времени работы на “ручном режиме” обзвона</li>
-                    <li class="profit__inner-text">времени заполнения карты клиента (проставление статуса,
-                        комментарии и т.д.)</li>
-                    <li class="profit__inner-text">времени простоя не по вине оператора (отсутствие интернета,
-                        сбой системы обзвона и другое)</li>
-                </ol>
-                <div class="profit__inner-text">
-                    <p>Система автоматически фиксирует время Вашей работы и
-                        ежедневно производит перерасчет фактически отработанных часов.
-                        <span class="help semibold italic">* перерасчет производится на следующий день</span>
-                    </p>
-                    <p>Поэтому ежедневно на следующий день проверяйте в разделе “<span class="semibold">Мой
-                        профиль</span>” количество отработанных Вами часов за предыдущий
-                        день и начисления по оплате!
-                    </p>
-                </div>
-            </div>
-            <div class="profit__arrows">
-                <a href="#" class="profit__prev"></a>
-                <a href="#" class="profit__next"></a>
-            </div>
-        </div>
-        <div class="profit__inner-item">
-            <div class="profit__inner__left">
-                <div class="profit__left-wrapper">
-                    <div class="profit__inner-title">
-                        Титульный заголовок 3
-                    </div>
-                    <a href="#"><img src="images/dist/profit-info.svg" alt="info icon"></a>
-                </div>
-                <div class="profit__inner-text">Оплата начисляется за количество часов активной работы.</div>
-                <div class="profit__inner-subtitle">
-                    Оплачиваемое время складывается из:
-                </div>
-                <ol class="profit__inner-list">
-                    <li class="profit__inner-text">время в разговоре с клиентами</li>
-                    <li class="profit__inner-text">времени в ожидании поступления звонка (то есть статусе
-                        “Готов”)</li>
-                    <li class="profit__inner-text">времени работы на “ручном режиме” обзвона</li>
-                    <li class="profit__inner-text">времени заполнения карты клиента (проставление статуса,
-                        комментарии и т.д.)</li>
-                    <li class="profit__inner-text">времени простоя не по вине оператора (отсутствие интернета,
-                        сбой системы обзвона и другое)</li>
-                </ol>
-                <div class="profit__inner-text">
-                    <p>Система автоматически фиксирует время Вашей работы и
-                        ежедневно производит перерасчет фактически отработанных часов.
-                        <span class="help semibold italic">* перерасчет производится на следующий день</span>
-                    </p>
-                    <p>Поэтому ежедневно на следующий день проверяйте в разделе “<span class="semibold">Мой
-                        профиль</span>” количество отработанных Вами часов за предыдущий
-                        день и начисления по оплате!
-                    </p>
-                    <p class="semibold italic">* например, фактические часы работы за 20 февраля нужно
-                        проверять 21 февраля после обеда.
-                    </p>
-                </div>
-
-
-
-
-            </div>
-            <div class="profit__inner-right">
-                <div class="profit__inner-title">
-                    Титульный заголовок 3
-                </div>
-                <div class="profit__inner-text profit-right">Оплата начисляется за количество часов активной работы.</div>
-                <div class="profit__inner-text profit-right">
-                    Здесь может располагаться любой длинный текст, который будет меняться
-                    блоками при клике по иконкам слайдера справа сверху. Ширина блока
-                    определяется от начала заголовка до конца иконки слайдера.
-                </div>
-                <div class="profit__inner-subtitle">
-                    Оплачиваемое время складывается из:
-                </div>
-                <ol class="profit__inner-list">
-                    <li class="profit__inner-text">время в разговоре с клиентами</li>
-                    <li class="profit__inner-text">времени в ожидании поступления звонка (то есть статусе
-                        “Готов”)</li>
-                    <li class="profit__inner-text">времени работы на “ручном режиме” обзвона</li>
-                    <li class="profit__inner-text">времени заполнения карты клиента (проставление статуса,
-                        комментарии и т.д.)</li>
-                    <li class="profit__inner-text">времени простоя не по вине оператора (отсутствие интернета,
-                        сбой системы обзвона и другое)</li>
-                </ol>
-                <div class="profit__inner-text">
-                    <p>Система автоматически фиксирует время Вашей работы и
-                        ежедневно производит перерасчет фактически отработанных часов.
-                        <span class="help semibold italic">* перерасчет производится на следующий день</span>
-                    </p>
-                    <p>Поэтому ежедневно на следующий день проверяйте в разделе “<span class="semibold">Мой
-                        профиль</span>” количество отработанных Вами часов за предыдущий
-                        день и начисления по оплате!
-                    </p>
-                </div>
-            </div>
-            <div class="profit__arrows">
-                <a href="#" class="profit__prev"></a>
-                <a href="#" class="profit__next"></a>
-            </div>
-        </div>
     </div>
 </div>
 </template>
 
 <script>
+// слайдер с условиями оплаты для отделов и должности
 export default {
     name: "Profit", 
     props: {},
     data: function () {
         return {
-            fields: [], 
+            data: [], 
+            slides: []
         };
     },
+    created() {
+        this.fetchData()
+    },
+
     methods: {
-        
+        /**
+         * Загрузка данных 
+         */
+        fetchData() {
+            let loader = this.$loading.show();
+
+            axios.post('/profile/payment-terms').then(response => {
+                this.data = response.data
+                this.form();
+                loader.hide()
+            }).catch((e) => console.log(e))
+        },
+
+        /**
+         * form array for slider
+         */
+        form() {
+            let groups = this.data.groups;
+
+            /**
+             * groups' terms
+             */
+            let to = Math.ceil(groups.length / 2);
+
+            let lastKey = 0;
+            let lastLeftBlock = null;
+
+            for(let i = 0; i < to; i++) {
+                let left = null,
+                    right = null;
+
+                /**
+                 * define left and right side of slide
+                 */
+                left = {
+                    title: groups[lastKey].name,
+                    text: groups[lastKey].text
+                }
+
+                lastKey++;
+
+                if(groups[lastKey] !== undefined) {
+                    right = {
+                        title: groups[lastKey].name,
+                        text: groups[lastKey].text
+                    }
+                }
+
+                /**
+                 * push to slides
+                 */
+                if(right !== null) {
+                    this.slides.push({
+                        left: left,
+                        right: right,
+                    });
+                } else {
+                    lastLeftBlock = left;
+                }
+            }
+
+            /**
+             * position terms
+             */
+            if(this.data.position !== null) {
+                this.addPositionSlides(lastLeftBlock)
+            } else {
+                this.slides.push({
+                    left: lastLeftBlock,
+                    right: null,
+                });
+            }
+            
+        },
+
+        /**
+         * private: continue form slides
+         */
+        addPositionSlides(lastLeftBlock) {
+
+            let pos = this.data.position;
+
+            let items = [
+                {
+                    title: 'Следующая ступень карьерного ростa',
+                    text: pos.next_step,
+                },
+                {
+                    title: 'Требования к кандидату',
+                    text: pos.require,
+                },
+                {
+                    title: 'Что нужно делать',
+                    text: pos.actions,
+                },
+                {
+                    title: 'График работы',
+                    text: pos.time,
+                },
+                {
+                    title: 'Заработная плата',
+                    text: pos.salary,
+                },
+                {
+                    title: 'Нужные знания для перехода на следующую должность',
+                    text: pos.knowledge,
+                },
+            ];
+
+            // if(lastLeftBlock !== null) items.unshift(lastLeftBlock);
+            
+            if(lastLeftBlock !== null) {
+                this.slides.push({
+                    left: lastLeftBlock,
+                    right: items[0]
+                });
+
+                this.slides.push({left: items[1], right: items[2]});
+                this.slides.push({left: items[3], right: items[4]});
+                this.slides.push({left: items[5], right: null});
+
+            } else {
+                this.slides.push({left: items[0], right: items[1]});
+                this.slides.push({left: items[2], right: items[3]});
+                this.slides.push({left: items[4], right: items[5]});
+            }
+        }
     }
 };
 </script>
