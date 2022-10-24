@@ -198,7 +198,8 @@ class UserProfileController extends Controller
             $rec_group = ProfileGroup::find(48);
 
             if($rec_group) {
-                $rg_users = $rec_group->users == null ? [] : json_decode($rec_group->users);
+                $working  = (new UserService)->getEmployees(48, date('Y-m-d')); 
+                $rg_users = collect($working)->pluck('id')->toArray();
             }
 
         }
