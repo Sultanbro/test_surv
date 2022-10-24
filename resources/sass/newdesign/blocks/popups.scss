@@ -722,6 +722,29 @@ max-width: 100%;}
     border-radius: 1rem;
   }
 }
+
+.notifications__read {
+  position: absolute;
+  background-color: #B7E100;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  height: 100%;
+  width: 6.4rem;
+
+  &:after {
+    content: "";
+    background: url(/images/done.png?73ab6c3…) center no-repeat;
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+
 .notifications__item{
   margin-top: 1rem;
   color:#62788B;

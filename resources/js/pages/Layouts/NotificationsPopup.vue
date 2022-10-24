@@ -3,25 +3,46 @@
     <div class="tabs">
         <div class="popup__filter">
             <div class="trainee__tabs tabs__wrapper">
-                <div  class="trainee__tab tab__item is-active" onclick="switchTabs(this)"  data-index="1">Уведомления (<span>14</span>)</div>
-                <div  class="trainee__tab tab__item" onclick="switchTabs(this)"  data-index="2">Уведомления прочитанные</div>
+                <div  class="trainee__tab tab__item is-active" onclick="switchTabs(this)"  data-index="1">Новые 
+                    <template v-if="data.unreadQuantity != 0">
+                        (<span>{{ data.unreadQuantity }}</span>) 
+                    </template>
+                   
+                </div>
+                <div class="trainee__tab tab__item" onclick="switchTabs(this)"  data-index="2">Прочитанные</div>
             </div>
         </div>
 
         <div class="tab__content">
-            <div class="kaspi__content custom-scroll-y tab__content-item is-active"  data-content="1">
+            
+
+            <!-- Unread notifications -->
+            <div class="kaspi__content custom-scroll-y tab__content-item"  data-content="1">
                 <div class="notifications__wrapper">
 
-                    <div class="notifications__item">
-                        <div class="notifications__item-date">10.07.2022 13:02:15</div>
+                    <div class="notifications__item unread" v-for="(item, i) in data.unread" :key="i">
+                        <div class="notifications__item-date">{{ item.created_at }}</div>
                         <div class="notifications__title">
-                            Изменения в базе знаний
+                            {{ item.title }}
                         </div>
-                        <div class="notifications__text">
-                            <p>База знаний: Глоссарий №1</p>
-                            <p>Страница: <span class="red">Тестировщик</span></p>
+                        <div class="notifications__text" v-html="item.message"></div>
+                        <div class="notifications__read" @click="setRead(i)"></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Read notifications -->
+            <div class="kaspi__content custom-scroll-y tab__content-item is-active"  data-content="2">
+                <div class="notifications__wrapper">
+
+                    <div class="notifications__item" v-for="(item, i) in data.read" :key="i">
+                        <div class="notifications__item-date">{{ item.created_at }}</div>
+                        <div class="notifications__title">
+                            {{ item.title }}
                         </div>
-                        <div class="notifications__item-date absolute">10.07.2022 13:02:15</div>
+                        <div class="notifications__text" v-html="item.message"></div>
+                        <div class="notifications__item-date absolute">{{ item.read_at }}</div>
                     </div>
 
                 </div>
@@ -29,23 +50,6 @@
                 <a href="#" class="notifications__button" @click="setAllRead">
                     Отметить все как прочитанное
                 </a>
-            </div>
-
-            <div class="kaspi__content custom-scroll-y tab__content-item"  data-content="2">
-                <div class="notifications__wrapper">
-
-                    <div class="notifications__item unread">
-                        <div class="notifications__item-date">10.07.2022 13:02:15</div>
-                        <div class="notifications__title">
-                            Изменения в базе знаний
-                        </div>
-                        <div class="notifications__text">
-                            <p>База знаний: Глоссарий №1</p>
-                            <p>Страница: <span class="red">Тестировщик</span></p>
-                        </div>
-                    </div>
-
-                </div>
             </div>
 
         </div>
@@ -59,7 +63,11 @@ export default {
     props: {},
     data: function () {
         return {
-            data: [],
+            data: {
+                unreadQuantity: 0,
+                unread: [],
+                read: [],
+            },
         };
     },
     created(){
@@ -81,14 +89,14 @@ export default {
          * Set all notifications as read
          */
         setAllRead() {
-
+            console.log('set read all')
         },
 
         /**
          * set notification as read
          */
-        setRead(id) {
-
+        setRead(i) {
+            console.log(this.data.unread[i])
         }
     }
 };
