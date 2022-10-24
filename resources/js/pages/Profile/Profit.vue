@@ -131,6 +131,11 @@ export default {
                     right: null,
                 });
             }
+
+            /**
+             * init slider 
+             */
+            this.initSlider();
             
         },
 
@@ -185,6 +190,87 @@ export default {
                 this.slides.push({left: items[2], right: items[3]});
                 this.slides.push({left: items[4], right: items[5]});
             }
+        },
+
+        /**
+         * init slider for this block
+         */
+        initSlider() {
+
+            VJQuery('.profit__info__wrapper').slick({
+                variableWidth: false,
+                infinite:false,
+                slidesToScroll:2,
+                slidesToShow: 10,
+                responsive: [
+                    {
+                        breakpoint: 2140,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            swipeToSlide: false,
+                            slidesToScroll: 2,
+                            slidesToShow: 9,
+
+                        }
+                    },
+                    {
+                        breakpoint: 2000,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            swipeToSlide: false,
+                            slidesToScroll: 2,
+                            slidesToShow: 6,
+
+                        }
+                    },
+                    {
+                        breakpoint: 1800,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            swipeToSlide: false,
+                            slidesToScroll: 2,
+                            slidesToShow: 5,
+
+                        }
+                    },
+                    {
+                        breakpoint: 1600,
+                        settings: {
+                            infinite: true,
+                            variableWidth: true,
+                            swipeToSlide: true,
+                            slidesToShow: 1,
+
+                        }
+                    },
+
+                    {
+                        breakpoint: 780,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            slidesToShow: 2,
+                            slidesToScroll: 2,
+                            swipeToSlide: false,
+                        }
+                    },
+                    {
+                        breakpoint: 500,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            slidesToShow: 1,
+                            slidesToScroll: 1,
+                            swipeToSlide: false,
+                        }
+                    },
+
+                ]
+
+            });
         }
     }
 };
