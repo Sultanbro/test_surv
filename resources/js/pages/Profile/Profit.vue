@@ -1,5 +1,5 @@
 <template>
-<div class="profit block _anim _anim-no-hide content" id="profit">
+<div class="profit block _anim _anim-no-hide content" id="profit" v-if="slides.length > 0">
     <div class="profit__title title">
         Как можно зарабатывать больше
     </div>
