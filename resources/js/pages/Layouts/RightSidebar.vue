@@ -10,9 +10,6 @@
         <a href="#" class="header__right-icon loop" @click="$emit('pop', 'search')">
             <img src="/images/dist/header-right-3.svg" alt="nav icon" class="header__icon-img">
         </a>
-        <a href="#" class="header__right-icon" @click="$emit('pop', 'messenger')">
-            <img src="/images/dist/header-right-4.svg" alt="nav icon" class="header__icon-img">
-        </a>
         <a href="#" class="header__right-icon" @click="$emit('pop', 'mail')">
             <img src="/images/dist/header-right-5.svg" alt="nav icon" class="header__icon-img">
         </a>
@@ -56,7 +53,7 @@ export default {
     props: {},
     data: function () {
         return {
-            
+
         };
     },
     methods: {
