@@ -707,14 +707,6 @@ export default {
       border-right: 1px solid #dee2e6;
       border-bottom: 1px solid #dee2e6;
 }
-.trainee {
-    background: orange;
-    color: #000;
-    font-size: 9px;
-    padding: 1px 5px;
-    margin-left: 5px;
-    border-radius: 5px;
-}
 
 .ant-btn.ant-btn-primary {
   display: inline;
