@@ -29,7 +29,7 @@
 
     </div>
 
-    <div class="profit__info" v-else>
+    <div class="profit__info active" v-else>
         <div class="profit__info-title">
             Информация о курсе: {{ activeCourse.name }}
         </div>
