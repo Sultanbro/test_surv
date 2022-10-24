@@ -17,7 +17,7 @@
             
 
             <!-- Unread notifications -->
-            <div class="kaspi__content custom-scroll-y tab__content-item"  data-content="1">
+            <div class="kaspi__content custom-scroll-y tab__content-item is-active"  data-content="1">
                 <div class="notifications__wrapper">
 
                     <div class="notifications__item unread" v-for="(item, i) in data.unread" :key="i">
@@ -29,11 +29,14 @@
                         <div class="notifications__read" @click="setRead(i)"></div>
                     </div>
 
+                    <div v-if="data.unread.length == 0" class="mt-5">
+                        <h4>Нет новых уведомлений</h4>
+                    </div>
                 </div>
             </div>
 
             <!-- Read notifications -->
-            <div class="kaspi__content custom-scroll-y tab__content-item is-active"  data-content="2">
+            <div class="kaspi__content custom-scroll-y tab__content-item"  data-content="2">
                 <div class="notifications__wrapper">
 
                     <div class="notifications__item" v-for="(item, i) in data.read" :key="i">
@@ -45,6 +48,9 @@
                         <div class="notifications__item-date absolute">{{ item.read_at }}</div>
                     </div>
 
+                    <div v-if="data.unread.length == 0" class="mt-5">
+                        <h4>Нет прочитанных уведомлений</h4>
+                    </div>
                 </div>
 
                 <a href="#" class="notifications__button" @click="setAllRead">
