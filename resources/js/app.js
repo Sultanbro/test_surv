@@ -281,6 +281,8 @@ Vue.component('profile-sidebar', require('./pages/Layouts/ProfileSidebar.vue').d
 Vue.component('profile-info', require('./pages/Widgets/ProfileInfo.vue').default); 
 Vue.component('start-day-btn', require('./pages/Widgets/StartDayBtn.vue').default); 
 Vue.component('popup', require('./pages/Layouts/Popup.vue').default); 
+Vue.component('popup-checklist', require('./pages/Layouts/CheckListPopup.vue').default); 
+Vue.component('popup-notifications', require('./pages/Layouts/NotificationsPopup.vue').default); 
 
 /**
  * click outside event

@@ -133,6 +133,8 @@ Route::middleware([
         Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
     });
 
+    Route::any('/notifications', [UserProfileController::class, 'get']);
+
     Route::any('/bonuses', [UserProfileController::class, 'getBonuses']);
 
     Route::post('logout', [LoginController::class, 'logout']);//->name('logout');

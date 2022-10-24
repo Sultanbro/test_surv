@@ -4,7 +4,7 @@
         <a href="#" class="header__right-icon">
             <img src="/images/dist/header-right-1.svg" alt="nav icon" class="header__icon-img">
         </a>
-        <a href="#" class="header__right-icon bell red">
+        <a href="#" class="header__right-icon bell red" @click="popNotifications = true">
             <img src="/images/dist/header-right-2.svg" alt="nav icon" class="header__icon-img">
         </a>
         <a href="#" class="header__right-icon loop">
@@ -43,6 +43,17 @@
     <div class="header__right-arrow">
         <a href="#"><img src="/images/dist/header-arrow.svg" alt="arrow icon"></a>
     </div>
+
+
+    <popup v-if="popNotifications"
+        title="Уведомления"
+        desc="Дополнительное поле с описанием функционала данного окна"
+        :open="popNotifications" 
+        @close="popNotifications=false"
+        width="75%">
+        <popup-notifications></popup-notifications>
+    </popup>
+
 </div>
 </template>
 
@@ -52,7 +63,7 @@ export default {
     props: {},
     data: function () {
         return {
-            fields: [], 
+            popNotifications: false, 
         };
     },
     methods: {
