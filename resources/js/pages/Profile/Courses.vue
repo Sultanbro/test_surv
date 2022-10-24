@@ -1,6 +1,6 @@
 <template>
 <div class="courses__wrapper block _anim _anim-no-hide">
-    <div class="courses__content">
+    <div class="courses__content" v-if="activeCourse === null">
         <div class="courses__title">
             Ваши курсы
         </div>
@@ -29,7 +29,7 @@
 
     </div>
 
-    <div class="profit__info" v-if="activeCourse !== null">
+    <div class="profit__info" v-else>
         <div class="profit__info-title">
             Информация о курсе: {{ activeCourse.name }}
         </div>

@@ -125,7 +125,7 @@ export default {
              */
             if(this.data.position !== null) {
                 this.addPositionSlides(lastLeftBlock)
-            } else {
+            } elseif(lastLeftBlock !== null) {
                 this.slides.push({
                     left: lastLeftBlock,
                     right: null,
