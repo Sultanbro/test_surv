@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-                <a href="#" class="notifications__button" @click="setAllRead">
+                <a href="#" class="notifications__button mt-5" @click="setAllRead">
                     Отметить все как прочитанное
                 </a>
             </div>
