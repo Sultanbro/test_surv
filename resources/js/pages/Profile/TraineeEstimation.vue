@@ -257,7 +257,7 @@ export default {
         fetchData() {
             let loader = this.$loading.show();
             
-            axios.post("/trainee-report", {})
+            axios.post("/profile/trainee-report", {})
                 .then((response) => {
                     this.data = response.data
                     console.log(this.data)
