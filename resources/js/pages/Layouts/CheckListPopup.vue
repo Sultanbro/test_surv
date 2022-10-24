@@ -38,7 +38,6 @@
 </template>
 
 <script>
-import Axios from 'axios';
 export default {
     name: "CheckListPopup", 
     props: {},
@@ -54,7 +53,7 @@ export default {
         fetchData() {
             let loader = this.$loading.show();
             
-            Axios.post("/checklist", {})
+            axios.post("/checklist", {})
                 .then((response) => {
                     this.data = response.data
                     loader.hide();

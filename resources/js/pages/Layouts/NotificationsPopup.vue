@@ -33,6 +33,10 @@
                         <h4>Нет новых уведомлений</h4>
                     </div>
                 </div>
+
+                <a href="#" class="notifications__button mt-5" @click="setAllRead" v-if="data.unread.length > 0">
+                    Отметить все как прочитанное
+                </a>
             </div>
 
             <!-- Read notifications -->
@@ -52,10 +56,6 @@
                         <h4>Нет прочитанных уведомлений</h4>
                     </div>
                 </div>
-
-                <a href="#" class="notifications__button mt-5" @click="setAllRead">
-                    Отметить все как прочитанное
-                </a>
             </div>
 
         </div>
@@ -88,6 +88,9 @@ export default {
                     this.data = response.data
                     console.log(this.data)
                     loader.hide();
+                }).catch(e => {
+                    console.log(e)
+                    loader.hide();
                 });
         },
 
@@ -95,7 +98,26 @@ export default {
          * Set all notifications as read
          */
         setAllRead() {
-            console.log('set read all')
+
+            let loader = this.$loading.show();
+            
+            axios.post("/notifications/set-read-all/", {})
+                .then((response) => {
+                    if(response.data == '1') {
+
+                        this.data.unread.forEach(el => {
+                            this.data.read.push(el)
+                        });
+
+                        this.data.unread = [];
+
+                        this.$toast.success('Все уведомления отмечены прочитанными');
+                    }
+                    loader.hide();
+                }).catch(e => {
+                    console.log(e)
+                    loader.hide();
+                });
         },
 
         /**
@@ -103,6 +125,74 @@ export default {
          */
         setRead(i) {
             console.log(this.data.unread[i])
+
+            this.req(i, {
+                id: this.data.unread[i]
+            })
+        },
+
+        /**
+         * Сохранить отчет
+         */
+        saveReport(i) {
+            // let payload = {
+            //     id: this.data.unread[i].id, 
+            //     comment: 0,
+            //     type: 'report',
+            //     text: 'text of report'
+            // };
+            // this.req(i, payload)
+        },
+
+        /**
+         * Перенос обучения (дня стажировки на другой день)
+         */
+        transferTraining(i) {
+            // let payload = {
+            //     user_id: user_id,
+            //     date: '2022-09-01',
+            //     time: '14:00',
+            //     id: this.data.unread[i].id, 
+            //     type: 'transfer',
+            // };
+            // this.req(i, payload)
+        },
+
+        /**
+         * Сохранить причину отсутствия и дать оценку руководителю 
+         */
+        estimateTrainer(i) {
+            // let payload = {
+            //     id: this.data.unread[i].id, 
+            //     comment: 'Комментарий из select',
+            // }
+            // this.req(i, payload)
+        },
+
+        /**
+         * set Read request 
+         */
+        req(i, payload) {
+            let loader = this.$loading.show();
+            
+            axios.post("/notifications/set-read", payload)
+                .then((response) => {
+                    if(response.data == 1) {
+
+                        this.data.read.unshift(this.data.unread[i])
+                        this.data.unread.splice(i, 1);
+                        this.$toast.success('Уведомление прочитано');
+
+                        // $('#setReadCommentModal').fadeOut();
+                        // $('#setReadReportModal').fadeOut();
+                        // nullify(dateForTransfer);
+                    }
+
+                    loader.hide();
+                }).catch(e => {
+                    console.log(e)
+                    loader.hide();
+                });
         }
     }
 };
