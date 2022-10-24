@@ -1,5 +1,5 @@
 <template>
-<div class="popup__body">
+<div class="popup__con">
     <div class="check__title popup__content-title">
         Каримов Адиль
     </div>

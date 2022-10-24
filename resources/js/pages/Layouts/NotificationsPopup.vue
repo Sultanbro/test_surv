@@ -1,5 +1,5 @@
 <template>
-<div class="popup__body">
+<div class="popup__con">
     <div class="tabs">
         <div class="popup__filter">
             <div class="trainee__tabs tabs__wrapper">

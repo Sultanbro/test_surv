@@ -437,9 +437,9 @@ max-width: 100%;}
 }
 
 .kaspi__content, .nominations__content{
-  max-height:50rem;
+  // max-height:50rem;
   overflow-y:auto;
-  margin-right: -2rem;
+  // margin-right: -2rem;
   &::-webkit-scrollbar {
     border-radius: 1rem;
   }

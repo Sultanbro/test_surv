@@ -1,5 +1,5 @@
 <template>
-<div class="popup__body">
+<div class="popup__con">
     ????????
 </div>
 </template>
