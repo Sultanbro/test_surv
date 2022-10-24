@@ -116,7 +116,7 @@ class UserProfileController extends Controller
     {
         $response = $this->userService->getTraineeReport();
 
-        return response()->success($response);
+        return response()->json($response);
     }
 
     /**

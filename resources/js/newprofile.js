@@ -98,24 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Table's background filling %
+    // In trainee report estimations
 
-    VJQuery('.colored').each(function(e,i){
-       VJQuery(this).css('background',`linear-gradient(to right, ${VJQuery(this).attr('data-color')} ${VJQuery(this).find('.value').text()}, #fff ${VJQuery(this).find('.value').text()})`)
+    // VJQuery('.colored').each(function(e,i){
+    //    VJQuery(this).css('background',`linear-gradient(to right, ${VJQuery(this).attr('data-color')} ${VJQuery(this).find('.value').text()}, #fff ${VJQuery(this).find('.value').text()})`)
+    // })
 
-    })
-
-    // Star settings
-
-        VJQuery('.trainee__content').each(function(){
-
-            let starLength = VJQuery(this).find('.trainee__star-value span').text();
-            console.log(starLength);
-            if(starLength<=10 && starLength>=0){
-                for(let i=0; i<starLength;i++){
-                    VJQuery(this).find('.trainee__star-wrapper .star__item')[i].classList.add('done');
-                }
-            }
-        })
+    
 
     // Smooth Scroll
 

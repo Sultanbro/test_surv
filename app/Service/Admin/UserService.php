@@ -220,11 +220,10 @@ class UserService
             $head_in_groups = [1];
             $trainee_report = TraineeReport::getBlocks(date('Y-m-d'));
 
+            $trainee_report = collect($trainee_report)->groupBy('date')->sortBy('desc')->toArray();
         }
 
-        return [
-            'trainee_report' => $trainee_report
-        ];
+        return $trainee_report;
     }
 
      /**

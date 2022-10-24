@@ -5,7 +5,7 @@
         <div class="header__menu">
             <div class="header__menu-title">
                 Пользователь <a href="#">#{{ $userId }}</a>
-                <p>test@jobtron.org</p>
+                <p>test@jobtron.org</p> 
             </div>
             <a href="/cabinet" class="menu__item">
                 <img src="images/dist/icon-settings.svg" alt="settings icon">
@@ -17,7 +17,7 @@
                     <span class="menu__item-title">Выход</span>
                 </button>
                 @csrf
-            </form>
+            </form> 
         </div>
     </div>
     <nav class="header__nav">
