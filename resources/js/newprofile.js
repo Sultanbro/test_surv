@@ -60,25 +60,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Profit slider
 
-    VJQuery('.profit__inner').slick({
-        infinite: true,
-        speed: 400,
-        fade: true,
-        adaptiveHeight: true,
-    });
-    VJQuery('.profit__prev').on('click', function(e) {
-        e.preventDefault();
-        VJQuery('.profit__inner').slick('slickPrev');
-    });
-    VJQuery('.profit__next').on('click', function(e) {
-        e.preventDefault();
-        VJQuery('.profit__inner').slick('slickNext');
-    });
-
-
+    
 
 
     // Profit info slider
+    VJQuery('.profit__info__wrapper').slick({
+        variableWidth: false,
+        infinite:false,
+        slidesToScroll:2,
+        slidesToShow: 10,
+        responsive: [
+            {
+                breakpoint: 2140,
+                settings: {
+                    variableWidth: false,
+                    infinite:false,
+                    swipeToSlide: false,
+                    slidesToScroll: 2,
+                    slidesToShow: 9,
+
+                }
+            },
+            {
+                breakpoint: 2000,
+                settings: {
+                    variableWidth: false,
+                    infinite:false,
+                    swipeToSlide: false,
+                    slidesToScroll: 2,
+                    slidesToShow: 6,
+
+                }
+            },
+            {
+                breakpoint: 1800,
+                settings: {
+                    variableWidth: false,
+                    infinite:false,
+                    swipeToSlide: false,
+                    slidesToScroll: 2,
+                    slidesToShow: 5,
+
+                }
+            },
+            {
+                breakpoint: 1600,
+                settings: {
+                    infinite: true,
+                    variableWidth: true,
+                    swipeToSlide: true,
+                    slidesToShow: 1,
+
+                }
+            },
+
+            {
+                breakpoint: 780,
+                settings: {
+                    variableWidth: false,
+                    infinite:false,
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
+                    swipeToSlide: false,
+                }
+            },
+            {
+                breakpoint: 500,
+                settings: {
+                    variableWidth: false,
+                    infinite:false,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    swipeToSlide: false,
+                }
+            },
+
+        ]
+
+    });
 
     VJQuery('.courses__content__wrapper').slick({
         variableWidth: true,

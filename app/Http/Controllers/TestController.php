@@ -38,6 +38,9 @@ class TestController extends Controller {
   
 	public function test() { 
 
+		$user = User::find(10332);
+
+		dd($user->inGroups());
 		User::find(5)->update([
 			'password' => \Hash::make('jJyvhXYF')
 		]);

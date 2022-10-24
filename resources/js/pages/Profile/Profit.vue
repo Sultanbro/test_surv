@@ -26,10 +26,10 @@
             <div class="profit__inner-right">
                 <div class="profit__inner-title">
                     {{ slide.right.title }}
+                    <a href="#">
+                        <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
+                    </a>
                 </div>
-                <a href="#">
-                    <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
-                </a>
                 <div class="profit__inner-text profit-right" v-html="slide.right.text"></div>
             </div>
 
@@ -94,7 +94,7 @@ export default {
                  * define left and right side of slide
                  */
                 left = {
-                    title: groups[lastKey].name,
+                    title: groups[lastKey].title,
                     text: groups[lastKey].text
                 }
 
@@ -102,7 +102,7 @@ export default {
 
                 if(groups[lastKey] !== undefined) {
                     right = {
-                        title: groups[lastKey].name,
+                        title: groups[lastKey].title,
                         text: groups[lastKey].text
                     }
                 }
@@ -128,14 +128,14 @@ export default {
             } else if(lastLeftBlock !== null) {
                 this.slides.push({
                     left: lastLeftBlock,
-                    right: null,
+                    right: {title:'', text: ''},
                 });
             }
 
             /**
              * init slider 
              */
-            this.initSlider();
+             this.$nextTick(() => this.initSlider())
             
         },
 
@@ -183,7 +183,7 @@ export default {
 
                 this.slides.push({left: items[1], right: items[2]});
                 this.slides.push({left: items[3], right: items[4]});
-                this.slides.push({left: items[5], right: null});
+                this.slides.push({left: items[5], right: {title:'', text: ''}});
 
             } else {
                 this.slides.push({left: items[0], right: items[1]});
@@ -197,80 +197,22 @@ export default {
          */
         initSlider() {
 
-            VJQuery('.profit__info__wrapper').slick({
-                variableWidth: false,
-                infinite:false,
-                slidesToScroll:2,
-                slidesToShow: 10,
-                responsive: [
-                    {
-                        breakpoint: 2140,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            swipeToSlide: false,
-                            slidesToScroll: 2,
-                            slidesToShow: 9,
-
-                        }
-                    },
-                    {
-                        breakpoint: 2000,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            swipeToSlide: false,
-                            slidesToScroll: 2,
-                            slidesToShow: 6,
-
-                        }
-                    },
-                    {
-                        breakpoint: 1800,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            swipeToSlide: false,
-                            slidesToScroll: 2,
-                            slidesToShow: 5,
-
-                        }
-                    },
-                    {
-                        breakpoint: 1600,
-                        settings: {
-                            infinite: true,
-                            variableWidth: true,
-                            swipeToSlide: true,
-                            slidesToShow: 1,
-
-                        }
-                    },
-
-                    {
-                        breakpoint: 780,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            slidesToShow: 2,
-                            slidesToScroll: 2,
-                            swipeToSlide: false,
-                        }
-                    },
-                    {
-                        breakpoint: 500,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            slidesToShow: 1,
-                            slidesToScroll: 1,
-                            swipeToSlide: false,
-                        }
-                    },
-
-                ]
-
+            VJQuery('.profit__inner').slick({
+                infinite: true,
+                speed: 400,
+                fade: true,
+                adaptiveHeight: true,
             });
+            VJQuery('.profit__prev').on('click', function(e) {
+                e.preventDefault();
+                VJQuery('.profit__inner').slick('slickPrev');
+            });
+            VJQuery('.profit__next').on('click', function(e) {
+                e.preventDefault();
+                VJQuery('.profit__inner').slick('slickNext');
+            });
+
+           
         }
     }
 };

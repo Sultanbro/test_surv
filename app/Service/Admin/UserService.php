@@ -237,14 +237,14 @@ class UserService
     {
         $user = auth()->user();
 
-        $groups = $user->inGroups();
+        $groups = $user->inGroupsWithTerms();
 
         $groupTerms = [];
 
         foreach ($groups as $gr) {
             if($gr->payment_terms && $gr->payment_terms != '' && $gr->show_payment_terms == 1) {
                 $groupTerms[] = [
-                    'name' => $gr->name,
+                    'title' => 'Отдел: ' . $gr->name,
                     'text' => $gr->payment_terms,
                 ];
             }

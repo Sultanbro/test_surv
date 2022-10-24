@@ -309,6 +309,24 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * В каких группах находится user c условиями оплаты 
+     * @return array
+     */
+    public function inGroupsWithTerms()
+    {
+        $groups = GroupUser::where('user_id', $this->id)
+           // ->where('status', 'active')
+            ->get()
+            ->pluck('group_id')
+            ->toArray();
+            
+        return ProfileGroup::whereIn('id', array_values($groups))
+            //->where('active', 1)
+            ->select(['id', 'name', 'payment_terms', 'show_payment_terms'])
+            ->get();
+    }
+
+    /**
      * В каких группах руководит user 
      * @return array
      */
