@@ -52,7 +52,7 @@
                         <div class="notifications__item-date absolute">{{ item.read_at }}</div>
                     </div>
 
-                    <div v-if="data.unread.length == 0" class="mt-5">
+                    <div v-if="data.read.length == 0" class="mt-5">
                         <h4>Нет прочитанных уведомлений</h4>
                     </div>
                 </div>

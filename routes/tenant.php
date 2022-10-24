@@ -134,15 +134,23 @@ Route::middleware([
         Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
     });
 
-    Route::any('/notifications', [NotificationControlller::class, 'get']);
+
+    Route::group([
+        'prefix' => 'notifications',
+        'as' => 'notifications.'
+    ], function () {
+        Route::any('/', [NotificationControlller::class, 'get']);
+        Route::any('/set-read/', [NotificationControlller::class, 'setRead']);
+        Route::any('/set-read-all/', [NotificationControlller::class, 'setAllRead']);
+    });
+
 
     Route::any('/bonuses', [UserProfileController::class, 'getBonuses']);
 
     Route::post('logout', [LoginController::class, 'logout']);//->name('logout');
 
 
-    Route::any('/notifications/set-read/', [UserController::class, 'setNotiRead']);
-    Route::any('/notifications/set-read-all/', [UserController::class, 'setNotiReadAll']);
+   
     Route::post('/corp_book/set-read/', [UserController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
     Route::any('/timetracking/user/{id}', [UserController::class, 'profile']);
     Route::post('/timetracking/change-password', [UserController::class, 'changePassword']);
