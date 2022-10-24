@@ -8,15 +8,16 @@ use Illuminate\Support\Facades\Log;
 use App\ProfileGroup;
 use App\User;
 use App\UserNotification;
+use Illuminate\Database\Eloquent\Collection;
 
 class NotificationService
 {
     /**
      * Получить непрочитанные уведолмения
      * @param Request $request
-     * @return UserNotification
+     * @return Collection
      */
-    public function getUnreadNotifications(Request $request): UserNotification
+    public function getUnreadNotifications(Request $request): Collection
     {   
         $user_id = auth()->id();
 
@@ -59,9 +60,9 @@ class NotificationService
     /**
      * Получить прочитанные уведолмения
      * @param Request $request
-     * @return UserNotification
+     * @return Collection
      */
-    public function getReadNotifications(Request $request): UserNotification
+    public function getReadNotifications(Request $request): Collection
     {   
         $user_id = auth()->id();
 
