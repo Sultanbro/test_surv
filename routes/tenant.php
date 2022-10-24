@@ -72,6 +72,7 @@ use Eddir\Messenger\Http\Controllers\ChatsController;
 use Eddir\Messenger\Http\Controllers\MessagesController;
 use Eddir\Messenger\Http\Controllers\Api\MessagesController as ApiMessagesController;
 use \App\Http\Controllers\Department\UserController as DepartmentUserController;
+use App\Http\Controllers\NotificationControlller;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,7 +134,7 @@ Route::middleware([
         Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
     });
 
-    Route::any('/notifications', [UserProfileController::class, 'get']);
+    Route::any('/notifications', [NotificationControlller::class, 'get']);
 
     Route::any('/bonuses', [UserProfileController::class, 'getBonuses']);
 
