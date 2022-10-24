@@ -1,22 +1,22 @@
 <template>
 <div class="header__right closedd">
     <div class="header__right-nav">
-        <a href="#" class="header__right-icon">
+        <a href="#" class="header__right-icon" @click="$emit('pop', 'faq')">
             <img src="/images/dist/header-right-1.svg" alt="nav icon" class="header__icon-img">
         </a>
-        <a href="#" class="header__right-icon bell red" @click="popNotifications = true">
+        <a href="#" class="header__right-icon bell red" @click="$emit('pop', 'notifications')">
             <img src="/images/dist/header-right-2.svg" alt="nav icon" class="header__icon-img">
         </a>
-        <a href="#" class="header__right-icon loop">
+        <a href="#" class="header__right-icon loop" @click="$emit('pop', 'search')">
             <img src="/images/dist/header-right-3.svg" alt="nav icon" class="header__icon-img">
         </a>
-        <a href="#" class="header__right-icon">
+        <a href="#" class="header__right-icon" @click="$emit('pop', 'messenger')">
             <img src="/images/dist/header-right-4.svg" alt="nav icon" class="header__icon-img">
         </a>
-        <a href="#" class="header__right-icon">
+        <a href="#" class="header__right-icon" @click="$emit('pop', 'mail')">
             <img src="/images/dist/header-right-5.svg" alt="nav icon" class="header__icon-img">
         </a>
-        <a href="#" class="header__right-icon check">
+        <a href="#" class="header__right-icon check" @click="$emit('pop', 'checklist')">
             <img src="/images/dist/header-right-6.svg" alt="nav icon" class="header__icon-img">
         </a>
     </div>
@@ -45,14 +45,7 @@
     </div>
 
 
-    <popup v-if="popNotifications"
-        title="Уведомления"
-        desc="Дополнительное поле с описанием функционала данного окна"
-        :open="popNotifications" 
-        @close="popNotifications=false"
-        width="75%">
-        <popup-notifications></popup-notifications>
-    </popup>
+   
 
 </div>
 </template>
@@ -63,7 +56,7 @@ export default {
     props: {},
     data: function () {
         return {
-            popNotifications: false, 
+            
         };
     },
     methods: {
