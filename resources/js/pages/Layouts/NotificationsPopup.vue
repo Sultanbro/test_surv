@@ -110,6 +110,8 @@ export default {
                         });
 
                         this.data.unread = [];
+                        this.data.unreadQuantity = 0;
+                        
 
                         this.$toast.success('Все уведомления отмечены прочитанными');
                     }
@@ -181,6 +183,8 @@ export default {
 
                         this.data.read.unshift(this.data.unread[i])
                         this.data.unread.splice(i, 1);
+
+                        this.data.unreadQuantity--;
                         this.$toast.success('Уведомление прочитано');
 
                         // $('#setReadCommentModal').fadeOut();
