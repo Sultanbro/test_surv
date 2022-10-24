@@ -46,7 +46,7 @@
     <div class="right-panel-app">
 
 
-        <sidebars></sibebars>
+        <sidebars></sidebars>
        
         <!-- Main -->
         <div class="wrapper">
