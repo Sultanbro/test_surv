@@ -64,100 +64,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Profit info slider
-    VJQuery('.profit__info__wrapper').slick({
-        variableWidth: false,
-        infinite:false,
-        slidesToScroll:2,
-        slidesToShow: 10,
-        responsive: [
-            {
-                breakpoint: 2140,
-                settings: {
-                    variableWidth: false,
-                    infinite:false,
-                    swipeToSlide: false,
-                    slidesToScroll: 2,
-                    slidesToShow: 9,
+   
 
-                }
-            },
-            {
-                breakpoint: 2000,
-                settings: {
-                    variableWidth: false,
-                    infinite:false,
-                    swipeToSlide: false,
-                    slidesToScroll: 2,
-                    slidesToShow: 6,
 
-                }
-            },
-            {
-                breakpoint: 1800,
-                settings: {
-                    variableWidth: false,
-                    infinite:false,
-                    swipeToSlide: false,
-                    slidesToScroll: 2,
-                    slidesToShow: 5,
+    // VJQuery('.courses__item').each(function(){
+    //     let coursePercent = VJQuery(this).find('.courses__percent span').text();
+    //     VJQuery(this).find('.courses__line').css('width',coursePercent);
+    // })
 
-                }
-            },
-            {
-                breakpoint: 1600,
-                settings: {
-                    infinite: true,
-                    variableWidth: true,
-                    swipeToSlide: true,
-                    slidesToShow: 1,
-
-                }
-            },
-
-            {
-                breakpoint: 780,
-                settings: {
-                    variableWidth: false,
-                    infinite:false,
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
-                    swipeToSlide: false,
-                }
-            },
-            {
-                breakpoint: 500,
-                settings: {
-                    variableWidth: false,
-                    infinite:false,
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    swipeToSlide: false,
-                }
-            },
-
-        ]
-
-    });
-
-    VJQuery('.courses__content__wrapper').slick({
-        variableWidth: true,
-    })
-
-    VJQuery('.courses__item').each(function(){
-        let coursePercent = VJQuery(this).find('.courses__percent span').text();
-        VJQuery(this).find('.courses__line').css('width',coursePercent);
-    })
-
-    VJQuery('.courses__button').click(function(e){
-        e.preventDefault();
-        VJQuery('.profit__info').addClass('active')
-        VJQuery('.courses__content').addClass('hidden')
-    })
-    VJQuery('.profit__info-back, .profit__info-back-mobile').click(function(e){
-        e.preventDefault();
-        VJQuery('.profit__info').removeClass('active')
-        VJQuery('.courses__content').removeClass('hidden')
-    })
+    // VJQuery('.courses__button').click(function(e){
+    //     e.preventDefault();
+    //     VJQuery('.profit__info').addClass('active')
+    //     VJQuery('.courses__content').addClass('hidden')
+    // })
+    // VJQuery('.profit__info-back, .profit__info-back-mobile').click(function(e){
+    //     e.preventDefault();
+    //     VJQuery('.profit__info').removeClass('active')
+    //     VJQuery('.courses__content').removeClass('hidden')
+    // })
 
 
 

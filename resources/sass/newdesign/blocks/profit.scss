@@ -142,7 +142,6 @@
   }
 }
 .profit__info{
-  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -264,7 +263,7 @@
 
   .courses__image{
     width: 100%;
-    max-width: 100%;
+    max-width: 240px;
     object-fit: cover;
     margin-bottom: 3rem;
     border-radius: 10px;

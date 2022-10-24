@@ -6,19 +6,21 @@
         </div>
         <div class="courses__content__wrapper">
 
-            <div class="courses__item current"
+            <div class="courses__item"
                 v-for="(course, index) in data"
                 :key="index"
+                :class="{'current': index == 0}"
             >
                 <img v-if="course.img !== null && course.img !== ''" :src="course.img" alt="курс" class="courses__image" @click="selectCourse(index)" >
                 <img v-else src="/images/dist/courses-image.png" alt="" class="courses__image" @click="selectCourse(index)" >
 
-                <div class="courses__progress">
+                <!-- <div class="courses__progress">
                     <div class="courses__line"></div>
-                </div>
+                </div> -->
                 <!-- Линия зависит от процентов в span-->
                 <div class="courses__percent">
-                    Пройдено: <span>99%</span>
+                    <!-- Пройдено: <span>99%</span> -->
+                    {{ course.name }}
                 </div>
                 <a :href="'/my-courses?id=' + course.id" class="courses__button">
                     <span>Продолжить курс</span>
@@ -50,21 +52,21 @@
                     <div class="profit__info__wrapper">
                         <div class="info__wrapper-item done">
                             <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
+                                <img src="/images/dist/info-circle.png" alt="play image">
                                 <p>01 / 10</p>
                             </a>
                             <div class="info__item-value">100%</div>
                         </div>
                         <div class="info__wrapper-item ">
                             <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
+                                <img src="/images/dist/info-circle.png" alt="play image">
                                 <p>02 / 10</p>
                             </a>
                             <div class="info__item-value">14%</div>
                         </div>
                         <div class="info__wrapper-item ">
                             <a href='#' class="info__item-box">
-                                <img src="images/dist/info-circle.png" alt="play image">
+                                <img src="/images/dist/info-circle.png" alt="play image">
                                 <p>03 / 10</p>
                             </a>
                             <div class="info__item-value">7%</div>
@@ -106,6 +108,7 @@ export default {
 
             axios.post('/profile/courses').then(response => {
                 this.data = response.data
+                this.$nextTick(() => this.initSlider())
                 loader.hide()
             }).catch((e) => console.log(e))
         },
@@ -114,8 +117,10 @@ export default {
          * select active course info
          */
         selectCourse(index) {
+            return ;
             console.log('clicked ' + index)
             this.activeCourse = this.data[index]
+            // this.$nextTick(() => this.initInnerSlider())
         },
 
         /**
@@ -123,6 +128,97 @@ export default {
          */
         back() {
             this.activeCourse = null;
+            this.$nextTick(() => this.initSlider())
+        },
+
+        /**
+         * init slider
+         */
+        initSlider() {
+            VJQuery('.courses__content__wrapper').slick({
+                variableWidth: true,
+                infinite: false
+            });  
+        },
+
+        /**
+         * init inner slider that opens when click concrete course
+         */
+        initInnerSlider() {
+            VJQuery('.profit__info__wrapper').slick({
+                variableWidth: false,
+                infinite:false,
+                slidesToScroll:2,
+                slidesToShow: 10,
+                responsive: [
+                    {
+                        breakpoint: 2140,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            swipeToSlide: false,
+                            slidesToScroll: 2,
+                            slidesToShow: 9,
+
+                        }
+                    },
+                    {
+                        breakpoint: 2000,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            swipeToSlide: false,
+                            slidesToScroll: 2,
+                            slidesToShow: 6,
+
+                        }
+                    },
+                    {
+                        breakpoint: 1800,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            swipeToSlide: false,
+                            slidesToScroll: 2,
+                            slidesToShow: 5,
+
+                        }
+                    },
+                    {
+                        breakpoint: 1600,
+                        settings: {
+                            infinite: true,
+                            variableWidth: true,
+                            swipeToSlide: true,
+                            slidesToShow: 1,
+
+                        }
+                    },
+
+                    {
+                        breakpoint: 780,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            slidesToShow: 2,
+                            slidesToScroll: 2,
+                            swipeToSlide: false,
+                        }
+                    },
+                    {
+                        breakpoint: 500,
+                        settings: {
+                            variableWidth: false,
+                            infinite:false,
+                            slidesToShow: 1,
+                            slidesToScroll: 1,
+                            swipeToSlide: false,
+                        }
+                    },
+
+                ]
+
+            });
         }
     }
 };
