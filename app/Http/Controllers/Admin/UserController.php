@@ -2,36 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Classes\Analytics\Recruiting;
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UserProfileUpdateRequest;
 use App\KnowBase;
-use App\Models\QuartalBonus;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\Mail as Mailable;
 use Illuminate\Mail\Mailer;
-use App\Models\Analytics\UserStat;
-use App\Models\Analytics\Activity;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Swift_Mailer;
 use Swift_SmtpTransport;
-use Swift_TransportException;
 use Illuminate\Http\Request;
-use App\Kpi;
-use App\Salary;
 use Carbon\Carbon;
-use App\Models\Kpi\Bonus;
 use App\Downloads;
 use App\Account;
 use App\UserNotification;
-use App\PositionDescription;
 use App\Position;
 use App\Program;
 use App\WorkingDay;
@@ -40,7 +27,6 @@ use App\ProfileGroup;
 use App\Setting;
 use App\DayType;
 use App\User;
-use App\UserExperience;
 use App\Trainee;
 use App\UserDescription;
 use App\UserDeletePlan;
@@ -49,40 +35,22 @@ use App\Zarplata;
 use App\TimetrackingHistory;
 use App\Photo;
 use App\UserAbsenceCause;
-use App\Models\Admin\ObtainedBonus;
 use App\External\Bitrix\Bitrix;
 use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
 use App\Http\Controllers\IntellectController as IC;
 use App\Classes\Helpers\Phone;
 use App\Classes\Analytics\Recruiting as RM;
-use App\Models\Analytics\RecruiterStat;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Admin\History;
 use App\UserReport;
 use App\Models\User\NotificationTemplate;
 use App\Models\User\Card;
-use App\Classes\Helpers\Currency;
-use App\Models\TestBonus;
-use App\Models\Admin\EditedBonus;
-use App\Models\Admin\EditedKpi;
-use App\Classes\UserAnalytics;
-use App\QualityRecordWeeklyStat;
-use App\Http\Controllers\Admin\GroupAnalyticsController as GAController;
-use App\Models\Analytics\IndividualKpi;
-use App\Models\Analytics\TraineeReport;
 use App\AdaptationTalk;
 use App\Models\GroupUser;
-use App\Service\Department\UserService;
 use \App\Service\Admin\UserService as AdminUserService;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Crypt;
-use Image;
-use Session;
-
+use PhpParser\Node\Stmt\GroupUse;
 
 class UserController extends Controller
 {
@@ -165,19 +133,8 @@ class UserController extends Controller
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
             
             
-            // Стажеров показывал но долго грузит
-            // $trainees = Trainee::whereNull('applied')->get();
-            // foreach($users as $user) {
-            //     $trainee = $trainees->where('user_id', $user->id);
-            //     if($trainee->count() > 0) {
-            //         $user->is_trainee = true;
-            //     } else {
-            //         $user->is_trainee = false;
-            //     }
-            // }
         } elseif(isset($request['filter']) && $request['filter'] == 'deactivated') {
 
-            //$users = User::onlyTrashed()->whereIn('email', $array_accounts_email); 
             $users = \DB::table('users')
                 ->whereNotNull('deleted_at')
                 ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
@@ -194,8 +151,6 @@ class UserController extends Controller
             if ($request['start_date_deactivate']) $users = $users->whereDate('deleted_at', '>=', $request['start_date_deactivate']);
             if ($request['end_date_deactivate']) $users = $users->whereDate('deleted_at', '<=', $request['end_date_deactivate']);
             if ($request['segment'] != 0) $users = $users->where('segment', $request['segment']);
-            // $trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
-            // $users = $users->whereNotIn('users.id', $trainees);
             
         } elseif(isset($request['filter']) && $request['filter'] == 'nonfilled') {
 
@@ -307,7 +262,8 @@ class UserController extends Controller
 
             $_user = User::withTrashed()->find($user->id);
 
-            $user->groups = $_user ? $_user->inGroups()->pluck('id')->toArray() : [];
+            $userGroups = collect($this->getPersonGroup($_user->id))->pluck('id')->toArray();
+            $user->groups = $_user ?  $userGroups : [];
             
             if(is_null($user->deleted_at) || $user->deleted_at == '0000-00-00 00:00:00') {
                 $user->deleted_at = '';
@@ -318,14 +274,6 @@ class UserController extends Controller
                 } 
             }
 
-            
-            
-            // if(is_null($user->has_trainee)) {
-            //     $user->applied = $user->created_at;
-            // } else if(time() - Carbon::parse($user->applied)->timestamp <= 60) {
-                
-            //         $users->applied = null;
-            // } 
 
             if ($request['start_date_applied'] != null &&
                 Carbon::parse($user->applied)->timestamp - Carbon::parse($request['start_date_applied'])->timestamp < 0) {
@@ -347,10 +295,22 @@ class UserController extends Controller
             }   
             
 
-            if (isset($request['filter']) && $request['filter'] == 'deactivated' && $user->last_group != '[]') {
-                $user->groups = json_decode($user->last_group);
-            } elseif($user->deleted_at && $user->last_group != '[]') {
-                $user->groups = json_decode($user->last_group);
+            if (isset($request['filter']) && $request['filter'] == 'deactivated') {
+                $deleted = GroupUser::where('status', 'fired')
+                    ->where('user_id', $user->id)
+                    ->get()
+                    ->pluck('group_id')
+                    ->toArray();
+
+                $user->groups = $deleted; //json_decode($user->last_group);
+            } elseif($user->deleted_at) {
+                $deleted = GroupUser::where('status', 'fired')
+                    ->where('user_id', $user->id)
+                    ->get()
+                    ->pluck('group_id')
+                    ->toArray();
+
+                $user->groups = $deleted;
             }
 
 
@@ -686,13 +646,6 @@ class UserController extends Controller
                 } else {
                     $user->worked_with_us = 'Еще стажируется';
                 }
-                // humor
-
-                if($user->id == 5)  $user->worked_with_us = 'Алеке 😁!';
-                if($user->id == 18)  $user->worked_with_us = 'Не успел, а основал эту команду 😁!';
-                if($user->id == 4444)  $user->worked_with_us = 'Успел, он же программист!';
-                if($user->id == 157)  $user->worked_with_us = 'Весь КЦ на нем стоит 😁!';
-                if($user->id == 84)  $user->worked_with_us = 'Да это же Моооля 😁!';
 
                 $user->in_groups = $this->getPersonGroup($user->id);
                 
