@@ -3,7 +3,7 @@
 
     <div class="profile__name">{{ data.user.last_name + ' ' + data.user.name }}</div>
     <div class="profile__job profile-border">{{ data.position.position }}</div>
-    <div class="profile__job profile-border">{{ data.groups }}</div>
+    <div class="profile__job profile-border" v-html="data.groups"></div>
     <div class="profile__salary profile-border">ОКЛАД: {{ data.salary }}</div>
     <div class="profile__wrapper">
         <p class="profile-border">{{ data.workingDay }}</p>
