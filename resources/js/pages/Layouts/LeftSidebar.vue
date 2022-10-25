@@ -64,7 +64,7 @@
                     <img src="images/dist/icon-settings.svg" alt="settings icon">
                     <span class="menu__item-title">Мои курсы</span>
                 </a>
-                <a href="/courses" class="menu__item" v-can="'courses_view'">
+                <a href="/courses" class="menu__item" v-can="courses_view">
                     <img src="images/dist/icon-settings.svg" alt="settings icon">
                     <span class="menu__item-title">Курсы</span>
                 </a>
