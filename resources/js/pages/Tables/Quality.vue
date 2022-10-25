@@ -156,4 +156,11 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+td.averages,
+th.averages {
+  background: #B7E100;
+}
+</style>
  

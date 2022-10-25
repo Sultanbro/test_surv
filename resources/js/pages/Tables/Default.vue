@@ -388,7 +388,7 @@ export default {
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
 
-            this.addButtonToFirstItem();
+            if(this.show_headers) this.addButtonToFirstItem();
 
             loader.hide();    
         },

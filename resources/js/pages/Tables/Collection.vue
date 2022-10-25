@@ -12,7 +12,7 @@
         </div>
     </h4>
     
-    <table class="" :id="'stickyy-'+ activity.id">
+    <table class="" :id="'sticky-'+ activity.id">
         <tr>
             <th class="b-table-sticky-column" rowspan="2">
                 <div class="wd">
