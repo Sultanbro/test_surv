@@ -1,25 +1,29 @@
 <template>
 <div class="header__left closedd">
+    <!-- avatar  -->
     <div class="header__avatar">
         <img :src="$avatar" alt="avatar image" >
+        
+        <!-- hover menu -->
         <div class="header__menu">
             <div class="header__menu-title">
                 Пользователь <a href="#">#{{ $userId }}</a>
                 <p>test@jobtron.org</p> 
             </div>
             <a href="/cabinet" class="menu__item">
-                <img src="images/dist/icon-settings.svg" alt="settings icon">
+                <img src="/images/dist/icon-settings.svg" alt="settings icon">
                 <span class="menu__item-title">Настройки</span>
             </a>
             <form action="/logout" method="POST">
-                <button class="menu__item">
-                    <img src="images/dist/icon-exit.svg" alt="settings icon">
+                <button class="menu__item w-full">
+                    <img src="/images/dist/icon-exit.svg" alt="settings icon">
                     <span class="menu__item-title">Выход</span>
                 </button>
-                @csrf
+                <input type="hidden" :value="axios.defaults.headers.common['X-CSRF-TOKEN']" />
             </form> 
         </div>
     </div>
+
     <nav class="header__nav">
         <div class="header__nav-link profile">
             <a href="/">

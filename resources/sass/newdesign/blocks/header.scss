@@ -450,7 +450,7 @@
   border-radius:1rem;
   padding: 1.7rem 1rem;
   margin-top: 20px;
-  
+
   .select-css{
     margin-top: 0;
     margin-bottom: 0;
@@ -630,8 +630,6 @@
 }
 .header__left,
 .header__right{
-  overflow-y:auto;
-  overflow-x:hidden;
   height: 100%;
   position:fixed;
   z-index: 1001;
@@ -656,7 +654,8 @@
 }
 .header__right{
   right: 0;
-
+  overflow-y:auto;
+  overflow-x:hidden;
 }
 .header{
   display: block;
