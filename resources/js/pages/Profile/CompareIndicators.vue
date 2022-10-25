@@ -2136,11 +2136,29 @@ export default {
     props: {},
     data: function () {
         return {
-            fields: [], 
+            activities: [], 
+            quality: [], 
         };
     },
+    created() {
+        this.fetchData()
+    },
+
     methods: {
-        
+        /**
+         * Загрузка данных 
+         */
+        fetchData() {
+            let loader = this.$loading.show();
+
+            axios.post('/profile/activities').then(response => {
+
+                this.activities = response.data.activities
+                this.quality = response.data.quality
+
+                loader.hide()
+            }).catch((e) => console.log(e))
+        },
     }
 };
 </script>
