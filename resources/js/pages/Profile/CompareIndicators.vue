@@ -1,6 +1,6 @@
 <template>
 <div class="index block _anim _anim-no-hide content" id="index" :class="{'hidden': activities.length == 0}">
-    <div class="title index__title">
+    <div class="title index__title mt-5">
         Сравнение показателей
     </div>
     <div class="subtitle index__subtitle">

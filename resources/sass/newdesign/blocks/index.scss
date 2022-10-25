@@ -160,11 +160,14 @@
 @media(min-width:1300px){
   .intro__stats{
     justify-content: unset;
-    gap:3rem;
   }
 }
 
 @media(min-width:1650px){
+  .intro__stats{
+    justify-content: unset;
+    gap:3rem;
+  }
   .stat__item{
     min-height: 30rem;
     flex: 0 1 24rem;
