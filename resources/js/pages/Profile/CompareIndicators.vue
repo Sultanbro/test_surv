@@ -37,15 +37,15 @@
                     :data-content="index" 
                     :key="index"
                 >   
-                    <t-activity-collection v-if="act.type == 'collection'"
+                    <t-collection v-if="act.type == 'collection'"
                         :month="monthInfo"
                         :activity="act"
                         :is_admin="false"
                         :key="act.id"
                         :price="act.price"
-                    ></t-activity-collection>
+                    ></t-collection>
 
-                    <t-activity-new  v-else-if="act.type == 'default'"
+                    <t-default  v-else-if="act.type == 'default'"
                         :month="monthInfo"
                         :activity="act"
                         :key="act.id"
@@ -53,241 +53,23 @@
                         :work_days="act.workdays"
                         :editable="false"
                         :show_headers="false"
-                    ></t-activity-new>
+                    ></t-default>
 
-                    <t-quality-weekly v-else-if="act.type == 'quality'"
+                    <t-quality-new v-else-if="act.type == 'quality'"
                         :monthInfo="monthInfo"
                         :items="act.records"
-                    ></t-quality-weekly>
-                    <!-- <table>
-
-                        <colgroup></colgroup>
-
-                        <thead>
-                            <tr>
-                                <th>Сотрудник</th>
-                                <th>Ср.</th>
-                                <th>План</th>
-                                <th>Вып.</th>
-                                <th>%</th>
-                                <th>1</th>
-                                <th>2</th>
-                                <th>3</th>
-                                <th>4</th>
-                                <th>5</th>
-                                <th>6</th>
-                                <th>7</th>
-                                <th>8</th>
-                                <th>9</th>
-                                <th>10</th>
-                                <th>11</th>
-                                <th>12</th>
-                                <th>13</th>
-                                <th>14</th>
-                                <th>15</th>
-                                <th>16</th>
-                                <th>17</th>
-                            </tr>
-                        </thead> -->
-
-                        <!-- <tbody>
-
-                            <tr class="prize first-place" v-for="record in act.records">
-                                <td><div class="large">Аппазова Карлыгаш</div></td>
-                                <td><div class="medium">233</div></td>
-                                <td><div class="medium">7020</div></td>
-                                <td class="blue"><div>3026.00</div></td>
-                                <td><div class="small">43.11</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>260</div></td>
-                                <td class="red"><div>3</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>151</div></td>
-                                <td class="red"><div>239</div></td>
-                                <td class="red"><div>191</div></td>
-                                <td class="red"><div>295</div></td>
-                                <td class="red"><div>275</div></td>
-                                <td class="green"><div>280</div></td>
-                                <td class="green"><div>228</div></td>
-                                <td class="green"><div>146</div></td>
-                                <td ><div>150</div></td>
-                                <td ><div>206</div></td>
-                                <td ><div>120</div></td>
-                                <td ><div>134</div></td>
-                            </tr>
-                            <tr class="prize second-place">
-                                <td><div class="large">Аппазова Карлыгаш</div></td>
-                                <td><div class="medium">233</div></td>
-                                <td><div class="medium">7020</div></td>
-                                <td class="blue"><div>3026.00</div></td>
-                                <td><div class="small">43.11</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>260</div></td>
-                                <td class="red"><div>3</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>151</div></td>
-                                <td class="red"><div>239</div></td>
-                                <td class="red"><div>191</div></td>
-                                <td class="red"><div>295</div></td>
-                                <td class="red"><div>275</div></td>
-                                <td class="red"><div>280</div></td>
-                                <td class="red"><div>228</div></td>
-                                <td class="red"><div>146</div></td>
-                                <td  class="red"><div>150</div></td>
-                                <td  class="red"><div>206</div></td>
-                                <td  class="red"><div>120</div></td>
-                                <td  class="red"><div>134</div></td>
-                            </tr>
-                            <tr class="prize third-place">
-                                <td><div class="large">Аппазова Карлыгаш</div></td>
-                                <td><div class="medium">233</div></td>
-                                <td><div class="medium">7020</div></td>
-                                <td class="blue"><div>3026.00</div></td>
-                                <td><div class="small">43.11</div></td>
-                                <td class="green"><div>216</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="green"><div>260</div></td>
-                                <td class="red"><div>3</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="green"><div>151</div></td>
-                                <td class="red"><div>239</div></td>
-                                <td class="red"><div>191</div></td>
-                                <td class="green"><div>295</div></td>
-                                <td class="red"><div>275</div></td>
-                                <td class="green"><div>280</div></td>
-                                <td class="green"><div>228</div></td>
-                                <td class="green"><div>146</div></td>
-                                <td ><div>150</div></td>
-                                <td ><div>206</div></td>
-                                <td ><div>120</div></td>
-                                <td ><div>134</div></td>
-                            </tr>
-                            <tr>
-                                <td><div class="large">Аппазова Карлыгаш</div></td>
-                                <td><div class="medium">233</div></td>
-                                <td><div class="medium">7020</div></td>
-                                <td class="blue"><div>3026.00</div></td>
-                                <td><div class="small">43.11</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>260</div></td>
-                                <td class="red"><div>3</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>151</div></td>
-                                <td class="red"><div>239</div></td>
-                                <td class="red"><div>191</div></td>
-                                <td class="red"><div>295</div></td>
-                                <td class="red"><div>275</div></td>
-                                <td class="green"><div>280</div></td>
-                                <td class="green"><div>228</div></td>
-                                <td class="green"><div>146</div></td>
-                                <td ><div>150</div></td>
-                                <td ><div>206</div></td>
-                                <td ><div>120</div></td>
-                                <td ><div>134</div></td>
-                            </tr>
-                            <tr>
-                                <td><div class="large">Аппазова Карлыгаш</div></td>
-                                <td><div class="medium">233</div></td>
-                                <td><div class="medium">7020</div></td>
-                                <td class="blue"><div>3026.00</div></td>
-                                <td><div class="small">43.11</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>260</div></td>
-                                <td class="green"><div>3</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="green"><div>151</div></td>
-                                <td class="red"><div>239</div></td>
-                                <td class="red"><div>191</div></td>
-                                <td class="green"><div>295</div></td>
-                                <td class="red"><div>275</div></td>
-                                <td class="green"><div>280</div></td>
-                                <td class="red"><div>228</div></td>
-                                <td class="green"><div>146</div></td>
-                                <td class="green"><div>150</div></td>
-                                <td class="green"><div>206</div></td>
-                                <td class="red"><div>120</div></td>
-                                <td class="red"><div>134</div></td>
-                            </tr>
-                            <tr>
-                                <td><div class="large">Аппазова Карлыгаш</div></td>
-                                <td><div class="medium">233</div></td>
-                                <td><div class="medium">7020</div></td>
-                                <td class="blue"><div>3026.00</div></td>
-                                <td><div class="small">43.11</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>260</div></td>
-                                <td class="red"><div>3</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>151</div></td>
-                                <td class="red"><div>239</div></td>
-                                <td class="red"><div>191</div></td>
-                                <td class="red"><div>295</div></td>
-                                <td class="red"><div>275</div></td>
-                                <td class="red"><div>280</div></td>
-                                <td class="red"><div>228</div></td>
-                                <td class="red"><div>146</div></td>
-                                <td ><div>150</div></td>
-                                <td ><div>206</div></td>
-                                <td ><div>120</div></td>
-                                <td ><div>134</div></td>
-                            </tr>
-                            <tr>
-                                <td><div class="large">Аппазова Карлыгаш</div></td>
-                                <td><div class="medium">233</div></td>
-                                <td><div class="medium">7020</div></td>
-                                <td class="blue"><div>3026.00</div></td>
-                                <td><div class="small">43.11</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>260</div></td>
-                                <td class="red"><div>3</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>151</div></td>
-                                <td class="red"><div>239</div></td>
-                                <td class="red"><div>191</div></td>
-                                <td class="red"><div>295</div></td>
-                                <td class="red"><div>275</div></td>
-                                <td class="red"><div>280</div></td>
-                                <td class="red"><div>228</div></td>
-                                <td class="red"><div>146</div></td>
-                                <td ><div>150</div></td>
-                                <td ><div>206</div></td>
-                                <td ><div>120</div></td>
-                                <td ><div>134</div></td>
-                            </tr>
-                            <tr>
-                                <td><div class="large">Аппазова Карлыгаш</div></td>
-                                <td><div class="medium">233</div></td>
-                                <td><div class="medium">7020</div></td>
-                                <td class="blue"><div>3026.00</div></td>
-                                <td><div class="small">43.11</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>260</div></td>
-                                <td class="red"><div>3</div></td>
-                                <td class="red"><div>216</div></td>
-                                <td class="red"><div>151</div></td>
-                                <td class="red"><div>239</div></td>
-                                <td class="red"><div>191</div></td>
-                                <td class="red"><div>295</div></td>
-                                <td class="red"><div>275</div></td>
-                                <td class="red"><div>280</div></td>
-                                <td class="green"><div>228</div></td>
-                                <td class="red"><div>146</div></td>
-                                <td class="red"><div>150</div></td>
-                                <td class="red"><div>206</div></td>
-                                <td class="red"><div>120</div></td>
-                                <td class="red"><div>134</div></td>
-                            </tr>
-                        </tbody>
-
-                    </table>
- --> -->
+                    ></t-quality-new>
+            
+                    <!-- <tr class="prize first-place">
+                    <tr class="prize second-place" >
+                    <tr class="prize third-place">
+                    <td><div class="large">Аппазова Карлыгаш</div></td>
+                    <td><div class="medium">233</div></td>
+                    <td><div class="medium">7020</div></td>
+                    <td><div class="small">43.11</div></td>
+                    <td class="red"><div>3026.00</div></td>
+                    <td class="green"><div>3026.00</div></td>
+                    <td class="blue"><div>3026.00</div></td> -->
 
                 </div>
 
@@ -336,37 +118,9 @@ export default {
             axios.post('/profile/activities').then(response => {
 
                 this.activities = response.data.activities
-               // this.form();
+                
                 loader.hide()
             }).catch((e) => console.log(e))
-        },
-
-        /**
-         * form tables for activites
-         */
-        form() {
-
-            this.activities.forEach((act, i) => {
-                this.formFields(i)
-            });
-            
-        },
-
-        /**
-         * private: Form field
-         */
-        formFields(i) {
-            let fields = [];
-            let act = this.activities[i]
-
-            if(act.view == this.VIEW_DEFAULT) {
-                fields.push({name: 'Сотрудник', key: 'name'})
-            }
-
-            if(act.view == this.VIEW_QUALITY) {
-
-            }
-
         },
 
         /**

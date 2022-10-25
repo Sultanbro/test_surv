@@ -290,6 +290,14 @@ Vue.component('popup-search', require('./pages/Layouts/SearchPopup.vue').default
 Vue.component('popup-mail', require('./pages/Layouts/MailPopup.vue').default); 
 
 /**
+ * Tables of activity
+ */
+Vue.component('t-collection', require('./pages/Tables/Collection.vue').default); 
+Vue.component('t-default', require('./pages/Tables/Default.vue').default); 
+Vue.component('t-quality-new', require('./pages/Tables/Quality.vue').default); 
+
+
+/**
  * click outside event
  */
 Vue.directive("click-outside", {
