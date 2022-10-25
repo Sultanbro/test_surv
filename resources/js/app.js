@@ -318,6 +318,9 @@ Vue.directive("click-outside", {
  * permissions of auth user
  */
 Vue.directive('can', function (el, binding) {
+  console.log('WOWWWWW ABIK');
+  console.log(el);
+  console.log(binding);
   return Laravel.is_admin && Laravel.permissions.indexOf(binding) !== -1;
 })
 
