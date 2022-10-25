@@ -35,3 +35,4 @@ composer.lock
 /public/js/.app.js
 /public/css/app.css
 /public/users_img/
+.DS_Store
