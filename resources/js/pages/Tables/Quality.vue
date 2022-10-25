@@ -10,7 +10,7 @@
           <table class="class">
               <tr>
                   <th class="b-table-sticky-column text-left">
-                      <div>Сотрудник</div>  
+                      <div class="max-content">Сотрудник</div>  
                   </th>
                   <template v-for="(field, key) in fields">
                       <th :class="field.class">
@@ -20,7 +20,7 @@
               </tr>
               <tr v-for="(item, index) in users" :key="index"> 
                   <td class="b-table-sticky-column text-left">
-                      <div class="d-flex">{{ item.name }}
+                      <div class="d-flex max-content">{{ item.name }}
                           
                       </div> 
                   </td>
@@ -37,7 +37,7 @@
   
 <script>
 export default {
-    name: "TableQualityWeekly",
+    name: "TableQuality",
     props: {
         monthInfo: Object,
         items: Array,

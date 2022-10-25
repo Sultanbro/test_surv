@@ -57,9 +57,8 @@
             }"
         >
             <td class="b-table-sticky-column text-left" :title="item.id + ' ' + item.email">
-                <div class="wd d-flex align-items-center">
+                <div class="d-flex align-items-center max-content">
                     {{ item.lastname }} {{ item.name }}
-                    <b-badge variant="success" >Office</b-badge>
                 </div>
             </td>
 
@@ -120,7 +119,7 @@
 
 <script>
 export default {
-    name: "TActivityCollection",
+    name: "TableCollection",
     props: {
         month: Object,
         activity: Object,

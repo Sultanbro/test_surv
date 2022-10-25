@@ -58,7 +58,7 @@
 
         <tr>
             <th class="b-table-sticky-column text-left max-content pl-4">
-                <div class="">Сотрудник</div>
+                <div class="max-content">Сотрудник</div>
                  <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
             </th>
 
@@ -102,7 +102,7 @@
         <tr v-for="(item, index) in filtered" :key="index">
             
 
-            <td v-if="item.name == 'SPECIAL_BTN'" class="max-content">
+            <td v-if="item.name == 'SPECIAL_BTN'">
                 <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
             </td>
             
@@ -115,7 +115,7 @@
                 }"
                 v-else
             >
-                <div class="d-flex">
+                <div class="d-flex max-content">
                     {{ item.lastname }} {{ item.name }}
                 </div>
             </td>
@@ -222,7 +222,7 @@
 <script>
 
 export default {
-    name: "TableActivityNew",
+    name: "TableDefault",
     props: {
         month: Object,
         activity: Object,
