@@ -67,7 +67,7 @@
 
             <template v-for="day in month.daysInMonth">
                 <td v-if="item.editable"
-                    :class="'lb px-0 day-minute text-center Fri ' + item._cellVariants[day]"
+                    :class="'text-center ' + item._cellVariants[day]"
                     :title="day + ': сборы'"
                 >
                     <div>
@@ -81,7 +81,7 @@
                 <td v-else
                     :title="day + ': сборы'"
                     @click="editMode(item)"
-                    :class="'lb px-0 day-minute text-center Fri ' + item._cellVariants[day]"
+                    :class="'text-center ' + item._cellVariants[day]"
                 >
                     <div>{{ item[day] }}</div>
                 </td>
