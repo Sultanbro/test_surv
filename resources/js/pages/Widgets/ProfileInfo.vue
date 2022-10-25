@@ -1,15 +1,18 @@
 <template>
 <div class="profile__about" :class="{'hidden': data.user === undefined || data.user === null }">
 
-    <div class="profile__name">{{ data.user.last_name + ' ' + data.user.name }}</div>
-    <div class="profile__job profile-border">{{ data.position.position }}</div>
-    <div class="profile__job profile-border" v-html="data.groups"></div>
-    <div class="profile__salary profile-border">ОКЛАД: {{ data.salary }}</div>
-    <div class="profile__wrapper">
-        <p class="profile-border">{{ data.workingDay }}</p>
-        <p class="profile-border">{{ data.schedule }}</p>
-        <p class="profile-border">{{ data.workingTime }}</p>
-    </div>
+    <template v-if="data.user !== undefined && data.user !== null">
+      <div class="profile__name">{{ data.user.last_name + ' ' + data.user.name }}</div>
+      <div class="profile__job profile-border">{{ data.position.position }}</div>
+      <div class="profile__job profile-border" v-html="data.groups"></div>
+      <div class="profile__salary profile-border">ОКЛАД: {{ data.salary }}</div>
+      <div class="profile__wrapper">
+          <p class="profile-border">{{ data.workingDay }}</p>
+          <p class="profile-border">{{ data.schedule }}</p>
+          <p class="profile-border">{{ data.workingTime }}</p>
+      </div>
+    </template>
+  
 
     <!-- <select class="select-css" v-model="data.currency">
         <option v-for="key in Object.keys(data.currencies)" :value="key">

@@ -48,12 +48,14 @@ class UserService
         /**
          * Группы пользователя
          */
-        $groups = '<div><b>Отделы:</b></div>';
+        $groups = '<div><div><b>Отделы:</b></div>';
         $gs = $user->inGroups();
 
         foreach($gs as $group) {
             $groups .= '<div>' . $group['name'] . '</div>';
         }
+
+        $groups .= '</div>';
 
         /**
          * Оклад
