@@ -1,5 +1,5 @@
 <template>
-<div class="trainee block _anim _anim-no-hide content" id="trainee" >
+<div class="trainee block _anim _anim-no-hide content" id="trainee"  :class="{'hidden': Object.keys(data).length == 0}">
     <div class="trainee__title title">
         Оценка стажеров
     </div>

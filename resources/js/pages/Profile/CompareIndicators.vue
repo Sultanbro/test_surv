@@ -1,5 +1,5 @@
 <template>
-<div class="index block _anim _anim-no-hide content" id="index">
+<div class="index block _anim _anim-no-hide content" id="index" :class="{'hidden': activities.length == 0}">
     <div class="title index__title">
         Сравнение показателей
     </div>
@@ -118,7 +118,7 @@ export default {
             axios.post('/profile/activities').then(response => {
 
                 this.activities = response.data.activities
-                
+
                 loader.hide()
             }).catch((e) => console.log(e))
         },

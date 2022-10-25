@@ -3,7 +3,7 @@
     <div class="intro content">
         <new-intro-top></new-intro-top>
         <new-intro-stats @pop="pop"></new-intro-stats>
-        <new-intro-smart-table></new-intro-smart-table>
+        <!-- <new-intro-smart-table></new-intro-smart-table> -->
     </div>
 
     <new-profit></new-profit> 
