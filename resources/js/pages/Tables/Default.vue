@@ -57,8 +57,8 @@
     <table class="" :class="{'inverted' : color_invert}">
 
         <tr>
-            <th class="b-table-sticky-column text-left">
-                <div class="wd">Сотрудник</div>
+            <th class="b-table-sticky-column text-left max-content pl-4">
+                <div class="">Сотрудник</div>
                  <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
             </th>
 
@@ -102,11 +102,11 @@
         <tr v-for="(item, index) in filtered" :key="index">
             
 
-            <td v-if="item.name == 'SPECIAL_BTN'">
+            <td v-if="item.name == 'SPECIAL_BTN'" class="max-content">
                 <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
             </td>
             
-            <td class="b-table-sticky-column text-left"
+            <td class="b-table-sticky-column text-left max-content"
                 :title="item.id + ' ' + item.email" 
                 :class="{
                     'prize first-place': item.show_cup == 1,
@@ -115,7 +115,7 @@
                 }"
                 v-else
             >
-                <div class="wd d-flex">
+                <div class="d-flex">
                     {{ item.lastname }} {{ item.name }}
                 </div>
             </td>
@@ -901,26 +901,10 @@ export default {
 </script>
 
 <style lang="scss">
-.inverted {
-    .day-minute {
-        &.table-success {
-            background-color: #ff7669  !important;
-        }
-
-        &.table-danger {
-            background-color: #01c601 !important;
-        }
-    }
-}
 .b-table-sticky-column{
     position: sticky;
     left: 0;
     z-index: 2;
-}
-.wd {
-    font-size: 0.75rem;
-    width: max-content;
-    font-weight: 500;
 }
 .cell-input {
     background: none;

@@ -15,7 +15,7 @@
     <table class="" :id="'sticky-'+ activity.id">
         <tr>
             <th class="b-table-sticky-column" rowspan="2">
-                <div class="wd">
+                <div class="text-left pl-4">
                     ФИО
                     <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
                 </div>

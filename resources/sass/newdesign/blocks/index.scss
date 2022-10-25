@@ -34,8 +34,10 @@
       border: 1px solid #E7EAEA;
       font-size:1.2rem;
       height: 4rem;
-
       background: #fff;
+      &.max-content {
+        width: max-content;
+      }
       div{
         width: 5rem;
       }
@@ -63,6 +65,17 @@
       }
 
     }
+
+    &.inverted {
+        td.green {
+            background-color: #EB5271  !important;
+        }
+    
+        td.red {
+            background-color: #B7E100 !important;
+        }
+    }
+
     tr{
       width: 189.3rem;
       td:first-child{
