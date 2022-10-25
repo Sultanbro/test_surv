@@ -316,7 +316,13 @@ Vue.directive("click-outside", {
 //   stopProp(event) { event.stopPropagation() }
 });
 
-console.log('test fdfsdf ');
+/**
+ * permissions of auth user
+ */
+Vue.directive('can', function (el, binding) {
+  return Laravel.is_admin && Laravel.permissions.indexOf(binding) !== -1;
+})
+
 const app = new Vue({
   el: '.right-panel-app'
 }); 

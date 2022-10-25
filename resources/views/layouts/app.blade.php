@@ -117,6 +117,15 @@
 
     </script>
 
+    <script>
+        window.Laravel = @json([
+            'csrfToken'   => csrf_token(),
+            'userId'      => auth()->id(),
+            'email'       =>  auth()->user() ? auth()->user()->email : '',
+            'is_admin'    =>  auth()->user() ? auth()->user()->is_admin == 1 : false,
+            'permissions' => Auth::user()->getAllPermissions()->pluck('name')->toArray()
+        ])
+    </script>
     <script src="{{ url('/js/croppie.js') }}"></script>
     <script src="{{ url('/js/croppie.min.js') }}"></script>
 	<script src="{{ url('/js/app.js') }}"></script>
