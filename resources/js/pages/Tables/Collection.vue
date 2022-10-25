@@ -88,14 +88,14 @@
                 
                 <td v-if="!isNaN(Number(item[day]) * price)"
                     :title="day + ': тенге'"
-                    class="rb"
+                    class=""
                 >
                     {{ Number(item[day]) * price }}
                 </td>
 
                 <td v-else
                     :title="day + ': тенге'"
-                    class="rb"
+                    class=""
                 ></td>
             </template>
         </tr>
@@ -480,11 +480,6 @@ export default {
     position: sticky;
     left: 0;
     z-index: 2;
-}
-.wd {
-    font-size: 0.75rem;
-    width: max-content;
-    font-weight: 500;
 }
 
 .cell-input {
