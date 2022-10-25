@@ -73,6 +73,7 @@ class UserStat extends Model
                     'workdays' => $workdays,
                     'weekdays' => $activity->weekdays,
                     'type' => $activity->type,
+                    'view' => $activity->view,
                     'unit' => $activity->unit == '%' ? '%' : '',
                     'table' => 1, 
                     'records' => [],

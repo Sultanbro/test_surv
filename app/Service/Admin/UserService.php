@@ -177,7 +177,6 @@ class UserService
 
         return [
             'activities' => UserStat::activities($gs[0]->id, date('Y-m-d')),
-            'quality'    => $quality
         ];
     }
 
