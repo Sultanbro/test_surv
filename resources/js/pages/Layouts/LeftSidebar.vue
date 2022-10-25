@@ -19,7 +19,7 @@
                     <img src="/images/dist/icon-exit.svg" alt="settings icon">
                     <span class="menu__item-title">Выход</span>
                 </button>
-                <input type="hidden" :value="token" />
+                <input type="hidden" :value="token" name="csrf-token" />
             </form> 
         </div>
     </div>
