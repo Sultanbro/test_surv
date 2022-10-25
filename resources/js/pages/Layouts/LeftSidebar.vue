@@ -7,8 +7,8 @@
         <!-- hover menu -->
         <div class="header__menu">
             <div class="header__menu-title">
-                Пользователь <a href="#">#{{ $userId }}</a>
-                <p>test@jobtron.org</p> 
+                Пользователь <a href="#">#{{ $laravel.userId }}</a>
+                <p>{{ $laravel.email }}</p> 
             </div>
             <a href="/cabinet" class="menu__item">
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
@@ -19,7 +19,7 @@
                     <img src="/images/dist/icon-exit.svg" alt="settings icon">
                     <span class="menu__item-title">Выход</span>
                 </button>
-                <input type="hidden" :value="token" name="csrf-token" />
+                <input type="hidden" :value="$laravel.csrfToken" name="_token" />
             </form> 
         </div>
     </div>
