@@ -277,6 +277,7 @@
 
 }
 
+
 @media(max-width:1200px){
   .intro__stats{
     gap: 2rem;
@@ -440,6 +441,15 @@
   }
   .intro__top-burger{
     display: none;
+  }
+}
+
+@media(min-width:1360px) and (max-width: 1639px) {
+  .intro__stats {
+    gap: 3.5%;
+  }
+  .intro__stats {
+    flex: 0 0 16.5%;
   }
 }
 
