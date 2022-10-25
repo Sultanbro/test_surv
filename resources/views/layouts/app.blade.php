@@ -7,16 +7,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    @auth
-        <meta name="user_id" content="{{ auth()->id() }}" />
-
-        @if(isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url))
-            <meta name="avatar" content="/users_img/{{auth()->user()->img_url}}" />
-        @else
-            <meta name="avatar" content="https://cp.callibro.org/files/img/8.png" />
-        @endif
-    @endauth
-
 	<title>@yield('title')</title>
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.2"/>

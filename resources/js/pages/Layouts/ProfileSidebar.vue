@@ -1,7 +1,7 @@
 <template>
 <div class="header__profile _anim _anim-no-hide custom-scroll-y">
     <div class="profile__content">
-        <a href="#" class="profile__logo" v-if="$userId == 5 || $userId == 18" @click="uploadLogo">
+        <a href="#" class="profile__logo" v-if="$laravel.userId == 5 || $laravel.userId == 18" @click="uploadLogo">
             <img src="/images/dist/logo-download.svg" alt="logo download">
             Загрузить логотип
         </a>
@@ -71,7 +71,7 @@
             <img src="images/dist/close.svg" alt="close icon" class="point-close">
         </div>
 
-        <a href="#" class="profile__more" v-if="$userId == 5 || $userId == 18" @click="addWidget">
+        <a href="#" class="profile__more" v-if="$laravel.userId == 5 || $laravel.userId == 18" @click="addWidget">
             <img src="/images/dist/logo-download.svg" alt="more download">
         </a>
     </div>

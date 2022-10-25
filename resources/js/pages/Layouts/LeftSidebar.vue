@@ -2,7 +2,7 @@
 <div class="header__left closedd">
     <!-- avatar  -->
     <div class="header__avatar">
-        <img :src="$avatar" alt="avatar image" >
+        <img :src="$laravel.avatar" alt="avatar image" >
         
         <!-- hover menu -->
         <div class="header__menu">
@@ -44,10 +44,31 @@
             </a>
         </div>
         <div class="header__nav-link">
-            <a href="/admin/upbooks">
+            <a>
                 <span class="_icon-nav-4 header__nav-icon"></span>
                 <span class="header__nav-name">Обучение</span>
             </a>
+            <div class="header__menu">
+                <div class="header__menu-title">
+                    Отчеты
+                </div>
+                <a href="/admin/upbooks" class="menu__item">
+                    <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <span class="menu__item-title">Читать книги</span>
+                </a>
+                <a href="/video_playlists" class="menu__item">
+                    <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <span class="menu__item-title">Смотреть видео</span>
+                </a>
+                <a href="/my-courses" class="menu__item">
+                    <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <span class="menu__item-title">Мои курсы</span>
+                </a>
+                <a href="/courses" class="menu__item" v-can="'courses_view'">
+                    <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <span class="menu__item-title">Курсы</span>
+                </a>
+            </div>
         </div>
         <div class="header__nav-link">
             <a href="/kb">

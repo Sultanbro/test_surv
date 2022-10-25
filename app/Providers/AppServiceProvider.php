@@ -146,7 +146,9 @@ class AppServiceProvider extends ServiceProvider
                     'laravelToVue' => [
                         'csrfToken'   => csrf_token(),
                         'userId'      => auth()->id(),
-                        'avatar'      => isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url),
+                        'avatar'      => isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url)
+                            ? auth()->user()->img_url
+                            : 'https://cp.callibro.org/files/img/8.png',
                         'email'       => auth()->user()->email,
                         'is_admin'    => auth()->user()->is_admin == 1,
                         'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray() // Spatie permissions
