@@ -38,12 +38,10 @@ class TestController extends Controller {
   
 	public function test() { 
 
-		$user = User::find(10332);
 
-		dd($user->inGroups());
-		User::find(5)->update([
-			'password' => \Hash::make('jJyvhXYF')
-		]);
+		dd(auth()->user()->getAllPermissions()->pluck('name')->toArray());
+		dd(get_class_methods(get_class(auth()->user()->getAllPermissions())));
+		
 
 	}  
 

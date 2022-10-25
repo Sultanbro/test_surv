@@ -77,8 +77,6 @@ class AppServiceProvider extends ServiceProvider
 
                 $unread = $tec ? $tec->total : 0;
 
-
-               
                 $head_users = User::withTrashed()->select(DB::raw("CONCAT_WS(' ',ID, last_name, name) as name"), 'ID as id')->get()->toArray();
                
 
@@ -86,18 +84,12 @@ class AppServiceProvider extends ServiceProvider
                 $users = [];
                 $users = array_unique(array_merge($users, $superusers));
 
-
-                $corp_book_page_show = false;
-                $corp_book_page = null;
                 $reminder = false; // Уведомление о непрочитанных сообщениях, с 14-00 до 18-59
                
                 if($user->isStartedDay()) {
              
                     if(!$user->readCorpBook()) {
                        
-                        $corp_book_page_show = true;
-                        $corp_book_page = \App\KnowBase::getRandomPage();
-
                         $xuser = User::find($user->id);
 
                         $xuser->notified_at = now();
@@ -124,7 +116,7 @@ class AppServiceProvider extends ServiceProvider
                         
                     }
                 }
-               
+                
                 $view->with([
                     'reminder' => $reminder,
                     'unread_notifications' => $unread_notifications,
@@ -132,12 +124,37 @@ class AppServiceProvider extends ServiceProvider
                     'unread' => $unread,
                     'head_users' => $head_users,
                     'bonus_notification' => $bonus_notification,
+                    'laraveToVue' => json_encode([
+                        'csrfToken'   => csrf_token(),
+                        'userId'      => auth()->id(),
+                        'email'       => auth()->user() ? auth()->user()->email : '',
+                        'is_admin'    => auth()->user() ? auth()->user()->is_admin == 1 : false,
+                        'permissions' => auth()->user() ? auth()->user()->getAllPermissions()->pluck('name')->toArray() : [] 
+                    ], true)
                 ]);
 
 
             }
 
         });
+
+        \View::composer('layouts.app', function($view) {
+
+            if(!\Auth::guest()) {
+
+                $view->with([
+                    'laravelToVue' => [
+                        'csrfToken'   => csrf_token(),
+                        'userId'      => auth()->id(),
+                        'email'       => auth()->user() ? auth()->user()->email : '',
+                        'is_admin'    => auth()->user() ? auth()->user()->is_admin == 1 : false,
+                        'permissions' => auth()->user() ? auth()->user()->getAllPermissions()->pluck('name')->toArray() : [] 
+                    ]
+                ]);
+            }
+
+        });
+
         Response::macro('success', function ($data, $statusCode = HttpFoundation::HTTP_OK, $message = 'success',) {
             return response()->json([
                 'status'  => $statusCode,
