@@ -31,7 +31,7 @@
                 <span class="header__nav-name">Профиль</span>
             </a>
         </div>
-        <div class="header__nav-link">
+        <!-- <div class="header__nav-link">
             <a href="/news">
                 <span class="_icon-nav-2 header__nav-icon"></span>
                 <span class="header__nav-name">Новости</span>
@@ -42,7 +42,7 @@
                 <span class="_icon-nav-3 header__nav-icon"></span>
                 <span class="header__nav-name">Структура</span>
             </a>
-        </div>
+        </div> -->
         <div class="header__nav-link">
             <a>
                 <span class="_icon-nav-4 header__nav-icon"></span>
@@ -50,22 +50,22 @@
             </a>
             <div class="header__menu">
                 <div class="header__menu-title">
-                    Отчеты
+                    Обучение
                 </div>
                 <a href="/admin/upbooks" class="menu__item">
-                    <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <img src="/images/dist/icon-settings.svg" alt="settings icon">
                     <span class="menu__item-title">Читать книги</span>
                 </a>
                 <a href="/video_playlists" class="menu__item">
-                    <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <img src="/images/dist/icon-settings.svg" alt="settings icon">
                     <span class="menu__item-title">Смотреть видео</span>
                 </a>
                 <a href="/my-courses" class="menu__item">
-                    <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <img src="/images/dist/icon-settings.svg" alt="settings icon">
                     <span class="menu__item-title">Мои курсы</span>
                 </a>
-                <a href="/courses" class="menu__item" v-can="'courses_view'">
-                    <img src="images/dist/icon-settings.svg" alt="settings icon">
+                <a href="/courses" class="menu__item" v-if="$can('courses_view')">
+                    <img src="/images/dist/icon-settings.svg" alt="settings icon">
                     <span class="menu__item-title">Курсы</span>
                 </a>
             </div>
@@ -76,7 +76,15 @@
                 <span class="header__nav-name">База знаний</span>
             </a>
         </div>
-        <div class="header__nav-link">
+        <div class="header__nav-link"
+            v-if=" $can('top_view')
+                || $can('tabel_view')
+                || $can('entertime_view')
+                || $can('hr_view')
+                || $can('analytics_view')
+                || $can('salaries_view')
+                || $can('quality_view')
+            ">
             <a href="/timetracking/reports">
                 <span class="_icon-nav-6 header__nav-icon"></span>
                 <span class="header__nav-name">Отчеты</span>
@@ -85,47 +93,83 @@
                 <div class="header__menu-title">
                     Отчеты
                 </div>
-                    <a href="#" class="menu__item">
-                        <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <a href="/timetracking/top" class="menu__item" v-if="$can('top_view')">
+                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
                         <span class="menu__item-title">ТОП</span>
                     </a>
-                    <a href="#" class="menu__item">
-                        <img src="images/dist/icon-settings.svg" alt="settings icon">
-                        <span class="menu__item-title">Частые вопросы</span>
-                    </a>
-                    <a href="#" class="menu__item">
-                        <img src="images/dist/icon-settings.svg" alt="settings icon">
-                        <span class="menu__item-title">Депремирование</span>
-                    </a>
-                    <a class="menu__item">
-                        <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <a href="/timetracking/reports" class="menu__item" v-if="$can('tabel_view')">
+                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
                         <span class="menu__item-title">Табель</span>
                     </a>
-                    <a href="#" class="menu__item">
-                        <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <a href="/timetracking/reports/enter-report" class="menu__item" v-if="$can('entertime_view')">
+                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
                         <span class="menu__item-title">Время прихода</span>
                     </a>
-                    <a href="#"  class="menu__item">
-                        <img src="images/dist/icon-settings.svg" alt="settings icon">
+                    <a href="/timetracking/analytics"  class="menu__item" v-if="$can('hr_view')">
+                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
+                        <span class="menu__item-title">HR</span>
+                    </a>
+                    <a href="/timetracking/an"  class="menu__item" v-if="$can('analytics_view')">
+                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
                         <span class="menu__item-title">Аналитика</span>
+                    </a>
+                    <a href="/timetracking/salaries"  class="menu__item" v-if="$can('salaries_view')">
+                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
+                        <span class="menu__item-title">Начисления</span>
+                    </a>
+                    <a href="/timetracking/quality-control"  class="menu__item" v-if="$can('quality_view')">
+                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
+                        <span class="menu__item-title">Контроль качества</span>
                     </a>
             </div>
         </div>
 
         <div class="header__nav-link">
+            <a href="/maps" >
+                <span class="_icon-nav-7 header__nav-icon"></span>
+                <span class="header__nav-name">Карта</span>
+            </a>
+        </div>
+
+        <div class="header__nav-link">
+            <a href="/timetracking/info" >
+                <span class="_icon-nav-7 header__nav-icon"></span>
+                <span class="header__nav-name">Частые вопросы</span>
+            </a>
+        </div>
+
+        <div class="header__nav-link">
+            <a href="/timetracking/fines" >
+                <span class="_icon-nav-8 header__nav-icon"></span>
+                <span class="header__nav-name">Депре мирование</span>
+            </a>
+        </div>
+
+        <div class="header__nav-link"  v-if="$can('ucalls_view')">
+            <a href="/callibro/login">
+                <span class="_icon-nav-7 header__nav-icon"></span>
+                <span class="header__nav-name">U-calls</span>
+            </a>
+        </div>
+
+        <div class="header__nav-link"  v-if="$can('kpi_view')">
             <a href="/kpi" >
                 <span class="_icon-nav-7 header__nav-icon"></span>
                 <span class="header__nav-name">KPI</span>
             </a>
         </div>
-        <div class="header__nav-link">
-            <a href="/timetracking/fines" >
-                <span class="_icon-nav-8 header__nav-icon"></span>
-                <span class="header__nav-name">Депрем</span>
-            </a>
-        </div>
+
     </nav>
-    <div class="header__nav-link last">
+    <div class="header__nav-link last"
+        v-if=" $can('settings_view')
+            || $can('users_view')
+            || $can('positions_view')
+            || $can('groups_view')
+            || $can('fines_view')
+            || $can('notifications_view')
+            || $can('permissions_view')
+            || $can('checklists_view')
+        ">
         <a href="/timetracking/settings">
             <span class="_icon-nav-9 header__nav-icon"></span>
             <span class="header__nav-name">Настройка</span>
@@ -141,7 +185,7 @@ export default {
     data: function () {
         return {
             fields: [],
-            token: Laravel.csrfToken
+            token: Laravel.csrfToken,
         };
     },
     methods: {

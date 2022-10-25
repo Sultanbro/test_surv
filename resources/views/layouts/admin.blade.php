@@ -81,7 +81,9 @@
 </div>
 
 
-
+<script>
+    window.Laravel = [];
+</script>
 <!-- <script src="/js/manifest.js"></script>
 <script src="/js/vendor.js"></script>  -->
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>

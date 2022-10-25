@@ -13,7 +13,7 @@ window.collect = require('collect.js')// globally
 import BootstrapVue from 'bootstrap-vue'
 import JQuery from 'jquery'
 window.VJQuery = JQuery 
-
+ 
 
 import moment from 'moment'
 import Notifications from 'vue-notification'
@@ -317,12 +317,17 @@ Vue.directive("click-outside", {
 /**
  * permissions of auth user
  */
-Vue.directive('can', function (el, binding) {
-  console.log('WOWWWWW ABIK');
-  console.log(el);
-  console.log(binding);
-  return Laravel.is_admin && Laravel.permissions.indexOf(binding) !== -1;
-})
+
+Vue.prototype.$can = function (permission, authorId = false) {
+  if (Laravel.is_admin) {
+      return true;
+  }
+  if (Laravel.permissions.indexOf(permission) !== -1) {
+      return true;
+  }
+}
+
+
 
 const app = new Vue({
   el: '.right-panel-app'
