@@ -146,9 +146,17 @@ class AppServiceProvider extends ServiceProvider
                     'laravelToVue' => [
                         'csrfToken'   => csrf_token(),
                         'userId'      => auth()->id(),
-                        'email'       => auth()->user() ? auth()->user()->email : '',
-                        'is_admin'    => auth()->user() ? auth()->user()->is_admin == 1 : false,
-                        'permissions' => auth()->user() ? auth()->user()->getAllPermissions()->pluck('name')->toArray() : [] 
+                        'avatar'      => isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url),
+                        'email'       => auth()->user()->email,
+                        'is_admin'    => auth()->user()->is_admin == 1,
+                        'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray() // Spatie permissions
+                    ]
+                ]);
+
+            } else {
+                $view->with([
+                    'laravelToVue' => [
+                        'csrfToken'   => csrf_token(),
                     ]
                 ]);
             }

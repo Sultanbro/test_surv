@@ -19,7 +19,7 @@
                     <img src="/images/dist/icon-exit.svg" alt="settings icon">
                     <span class="menu__item-title">Выход</span>
                 </button>
-                <input type="hidden" :value="axios.defaults.headers.common['X-CSRF-TOKEN']" />
+                <input type="hidden" :value="token" />
             </form> 
         </div>
     </div>
@@ -119,7 +119,8 @@ export default {
     props: {},
     data: function () {
         return {
-            fields: [], 
+            fields: [],
+            token: Laravel.csrfToken
         };
     },
     methods: {
