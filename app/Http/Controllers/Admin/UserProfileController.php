@@ -155,7 +155,7 @@ class UserProfileController extends Controller
     {
         $response = $this->userService->getActivitiesToProfile($request);
 
-        return response()->success($response);
+        return response()->json($response);
     }
 
     /**

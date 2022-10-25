@@ -167,26 +167,17 @@ class UserService
     public function getActivitiesToProfile(Request $request): array
     {   
         $user = auth()->user();
-        $activities = '[]';
         $quality    = [];
         $gs         = $user->inGroups();
 
         if(count($gs) > 0) {
-            $request->group_id = $gs[0]->id;
-            $_activities = Activity::where('group_id', $gs[0]->id)->first();
-
-            $activities = UserStat::activities($gs[0]->id , date('Y-m-d'));
-            $activities = json_encode($activities);
-
             $users_ids = (new \App\Service\Department\UserService)->getEmployees($gs[0]->id, date('Y-m-d'));
-
-            $quality = $_activities ? QualityRecordWeeklyStat::table($users_ids, date('Y-m-d')) : [];
-
+            $quality = QualityRecordWeeklyStat::table($users_ids, date('Y-m-d'));
         }
 
         return [
-            'activities' => $activities,
-            'quality' => $quality
+            'activities' => UserStat::activities($gs[0]->id, date('Y-m-d')),
+            'quality'    => $quality
         ];
     }
 
