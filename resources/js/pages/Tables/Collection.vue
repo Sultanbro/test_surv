@@ -22,15 +22,15 @@
             </th>
             
             <th class="text-left" rowspan="2">
-                <div class="wd" v-if="is_admin">
+                <div class="" v-if="is_admin">
                     Итог к выдаче
                     <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('plan')"></i>
                 </div>
-                <div class="wd" v-else></div>
+                <div class="" v-else></div>
             </th>
 
             <th class="text-left" v-if="is_admin" rowspan="2">
-                <div class="wd">
+                <div class="">
                     Сборы
                     <i class="fa fa-sort ml-2" @click="sort('count')"></i>
                 </div>
@@ -62,8 +62,8 @@
                 </div>
             </td>
 
-            <td>{{ item.plan }}</td>
-            <td>{{ item.count }}</td>
+            <td class="px-2">{{ item.plan }}</td>
+            <td class="px-2">{{ item.count }}</td>
 
             <template v-for="day in month.daysInMonth">
                 <td v-if="item.editable"

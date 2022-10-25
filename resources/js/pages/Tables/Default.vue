@@ -140,14 +140,17 @@
                 <td v-else-if="holidays.includes(day) &&  item[day] > 0" @click="editMode(item)" :class="'text-center ' + item._cellVariants[day]">
 
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
+                    <div v-else></div>
                 </td>
                 <td v-else-if="holidays.includes(day)" @click="editMode(item)" :class="'text-center mywarning'">
 
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
+                    <div v-else></div>
                 </td>
                 <td v-else @click="editMode(item)" :class="[item[day] > 0 || holidays.includes(day) ? 'text-center ' + item._cellVariants[day] : 'text-center']">
 
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
+                    <div v-else></div>
                 </td>
             </template>
         </tr>
