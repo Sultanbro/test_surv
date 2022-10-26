@@ -663,8 +663,8 @@ class KpiStatisticService
             $user = User::withTrashed()->with('groups')->find($user_id);
             $position_id = $user->position_id;
             
-            $groups = $user->groups->pluck('id')->toArray();
-   
+            $groups = ($user->inGroups())->pluck('id')->toArray();
+
             $kpis->where(function($query) use ($user_id, $groups, $position_id) {
                     $query->where(function($q) use ($user_id) {
                             $q->where('targetable_id', $user_id)

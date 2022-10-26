@@ -615,18 +615,8 @@ class Salary extends Model
              * Exception: show DM1 users in both groups DM2
              */
             $ugroups = $user->inGroups();
-            if(in_array($user->id, [
-                6401,
-                5084,
-                5975,
-                9873,
-                7211,
-                6634,
-                7203,
-                10147
-            ])) {
 
-            } else if(count($ugroups) > 0 && $group_id != 93) {
+            if(count($ugroups) > 0 && $group_id != 93) {
                 if($ugroups[0]->id != $group_id && $user_types != -1) {
                     continue;
                 }
