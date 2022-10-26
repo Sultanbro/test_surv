@@ -7,6 +7,7 @@ use App\Models\Books\BookGroup;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Http\Request;
 use Spatie\Permission\Traits\HasRoles;
 
 class ProfileGroup extends Model
@@ -50,7 +51,9 @@ class ProfileGroup extends Model
         'time_exceptions', // сотрудники-исключения, которым часы не подтягиваются
         'paid_internship', // оплачиваемая стажировка 1 0
         'rentability_max', // предел рентабельности для спидометра
-        'show_payment_terms', // показывать в профиле условия оплаты труда
+        'show_payment_terms', // показывать в профиле условия оплаты труда,
+        'archived_date' // дата последнего архивирование
+
     ];
 
     // time_address
@@ -97,7 +100,40 @@ class ProfileGroup extends Model
     {
         return $this->hasOne('App\GroupPlan', 'group_id', 'id');
 	}
-		
+
+    /**
+     * Получаем активные и архивированные группы, которые попадают под фильтр.
+     * @param $query
+     * @param $year
+     * @param $month
+     * @return array
+     */
+    public function scopeProfileGroupsWithArchived($query, $year, $month): array
+    {
+        return $this->where([
+            ['has_analytics','=',1],
+            ['active','=',1]
+        ])
+            ->orWhere(fn ($query) => $query
+                ->whereYear('archived_date','<=', $year)
+                ->whereMonth('archived_date','>=', $month)
+            )
+            ->get()->pluck('id')->toArray();
+    }
+
+    /**
+     * Активные группы с аналитикой.
+     * @param $query
+     * @return array
+     */
+    public function scopeActiveProfileGroupsWithAnalytics($query): array
+    {
+        return $this->where([
+            ['active', 1],
+            ['has_analytics', 1]
+        ])->get()->pluck('id')->toArray();
+    }
+
     public function groupUsers(){
 
         $user_ids = json_decode($this->users);

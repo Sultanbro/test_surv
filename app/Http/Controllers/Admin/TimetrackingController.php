@@ -544,6 +544,7 @@ class TimetrackingController extends Controller
     {
         $group = ProfileGroup::where('id', $request->group)->first();
         $group->active = 0;
+        $group->archived_date = Carbon::now()->toDateString();
         $group->save();
         return 'true';
     }
@@ -2450,6 +2451,7 @@ class TimetrackingController extends Controller
        
         if($group) {
             $group->active = 1;
+            $group->archived_date = null;
             $group->save();
         }
     }

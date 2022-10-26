@@ -608,6 +608,7 @@ class AnalyticsController extends Controller
         $group = ProfileGroup::find($request->id);
         if($group) {
             $group->has_analytics = -1;
+            $group->archived_date = Carbon::now()->toDateString();
             $group->save();
         }
     }
@@ -620,6 +621,7 @@ class AnalyticsController extends Controller
         $group = ProfileGroup::find($request->id);
         if($group) {
             $group->has_analytics = 1;
+            $group->archived_date = null;
             $group->save();
         }
     }
