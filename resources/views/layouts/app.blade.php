@@ -49,13 +49,13 @@
                         <a href="#" class="header__top-button burger-left">Раскрыть меню</a>
                         <div class="header__top-wrapper">
                             <a href="#" class="header__top-button burger-right">Раскрыть меню</a>
-                            <a href="#" class="header__right-icon">
+                            <!-- <a href="#" class="header__right-icon">
                                 <img src="images/dist/header-right-3.svg" alt="nav icon" class="header__icon-img">
                             </a>
                             <a href="#" class="header__right-icon red">
                                 <img src="images/dist/header-right-2.svg" alt="nav icon" class="header__icon-img">
-                            </a>
-                        </div>
+                            </a>-->
+                        </div> 
                     </div>
 
                     @yield('content')

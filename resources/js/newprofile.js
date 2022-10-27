@@ -214,83 +214,96 @@ document.addEventListener('DOMContentLoaded', () => {
             popup.fadeOut(500);
         })
     }
-    const circle = document.querySelector('.progress-ring__circle');
-        const radius = circle.r.baseVal.value;
-        const circumference = 2 * Math.PI * radius;
+    
+    /**
+     * maybe animate circle 
+     */
+    
+    // const circle = document.querySelector('.progress-ring__circle');
 
-        circle.style.strokeDasharray = `${circumference} ${circumference}`;
-        circle.style.strokeDashoffset = circumference;
+    // const circleNum = null;
+    // const circleNumValue = 0;
+    // const radius = 0;
+    // const circumference = 0;
+    // const circleParent = null; 
 
-        const circleParent = circle.closest('.profile__progressbar');
-        const circleNum = circleParent.querySelector('.profile__progressbar-number span');
-        const circleNumValue = circleParent.querySelector('.profile__progressbar-number span').textContent;
-        animateValue(circleNum, 0, 0, 1);
+    // if(circle !== null) {
+    //     const radius = circle.r.baseVal.value;
+    //     const circumference = 2 * Math.PI * radius;
 
+    //     circle.style.strokeDasharray = `${circumference} ${circumference}`;
+    //     circle.style.strokeDashoffset = circumference;
 
-
-
-
-
-       VJQuery(document).on('mouseup',function(e){
-           if(VJQuery('.header__profile').hasClass('opened') && !(e.target.closest('.header__profile'))){
-               VJQuery('.header__profile').removeClass('opened');
-               VJQuery('.header__nav-link a[href$="profile"]').parent().removeClass('opened');
-               VJQuery(document.body).removeClass('modal-open')
-               VJQuery('html').removeClass('modal-open')
-           }
-           if(!(VJQuery('.header__left').hasClass('closed')) && !(e.target.closest('.header__profile')) && !(e.target.closest('.header__right')) && !(e.target.closest('.header__left')) && window.innerWidth < 900){
-               VJQuery('.header__left').addClass('closed');
-               VJQuery('.burger-left').removeClass('opened');
-           }
-           if(!(VJQuery('.header__right').hasClass('closed')) && !(e.target.closest('.header__left')) && !(e.target.closest('.header__right')) && window.innerWidth < 900){
-               VJQuery('.header__right').addClass('closed');
-               VJQuery('.header__arrow').addClass('show')
-               VJQuery('.burger-right').removeClass('opened');
-           }
-
-       })
+    //     const circleParent = circle.closest('.profile__progressbar');
+    //     const circleNum = circleParent.querySelector('.profile__progressbar-number span');
+    //     const circleNumValue = circleParent.querySelector('.profile__progressbar-number span').textContent;
+    //     animateValue(circleNum, 0, 0, 1);
+    // } 
 
 
-        function animateValue(obj, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const progressNum = Math.floor(progress * (end - start) + start);
-                obj.innerText = progressNum;
-                setProgress(progressNum);
 
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
-        }
-        function setProgress(percent){
-            const offset = circumference - percent / 100 * circumference;
-            circle.style.strokeDashoffset = offset;
-        }
 
-        if(window.innerWidth>1370){
-            if(!profileFlag){
-                animateValue(circleNum, 0, circleNumValue, 1500);
-                profileFlag = true;
-            }
-        }
+    //    VJQuery(document).on('mouseup',function(e){
+    //        if(VJQuery('.header__profile').hasClass('opened') && !(e.target.closest('.header__profile'))){
+    //            VJQuery('.header__profile').removeClass('opened');
+    //            VJQuery('.header__nav-link a[href$="profile"]').parent().removeClass('opened');
+    //            VJQuery(document.body).removeClass('modal-open')
+    //            VJQuery('html').removeClass('modal-open')
+    //        }
+    //        if(!(VJQuery('.header__left').hasClass('closed')) && !(e.target.closest('.header__profile')) && !(e.target.closest('.header__right')) && !(e.target.closest('.header__left')) && window.innerWidth < 900){
+    //            VJQuery('.header__left').addClass('closed');
+    //            VJQuery('.burger-left').removeClass('opened');
+    //        }
+    //        if(!(VJQuery('.header__right').hasClass('closed')) && !(e.target.closest('.header__left')) && !(e.target.closest('.header__right')) && window.innerWidth < 900){
+    //            VJQuery('.header__right').addClass('closed');
+    //            VJQuery('.header__arrow').addClass('show')
+    //            VJQuery('.burger-right').removeClass('opened');
+    //        }
 
-        VJQuery('.header__nav-link a[href$="profile"]').on('click', function(e){
-            e.preventDefault();
-            VJQuery('.header__profile').addClass('opened')
-            VJQuery(this).parent().addClass('opened')
-            if(!profileFlag){
-                animateValue(circleNum, 0, circleNumValue, 1500);
-                profileFlag = true;
-            }
-            if(window.innerWidth<440){
-                VJQuery(document.body).addClass('modal-open')
-                VJQuery('html').addClass('modal-open')
-            }
-        })
+    //    })
+
+
+    //     function animateValue(obj, start, end, duration) {
+    //         let startTimestamp = null;
+    //         const step = (timestamp) => {
+    //             if (!startTimestamp) startTimestamp = timestamp;
+    //             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    //             const progressNum = Math.floor(progress * (end - start) + start);
+    //             obj.innerText = progressNum;
+    //             setProgress(progressNum);
+
+    //             if (progress < 1) {
+    //                 window.requestAnimationFrame(step);
+    //             }
+    //         };
+    //         window.requestAnimationFrame(step);
+    //     }
+    //     function setProgress(percent){
+    //         const offset = circumference - percent / 100 * circumference;
+    //         circle.style.strokeDashoffset = offset;
+    //     }
+
+    //     if(window.innerWidth>1370){
+    //         if(!profileFlag){
+    //             animateValue(circleNum, 0, circleNumValue, 1500);
+    //             profileFlag = true;
+    //         }
+    //     }
+
+    //     VJQuery('.header__nav-link a[href$="profile"]').on('click', function(e){
+    //         e.preventDefault();
+    //         VJQuery('.header__profile').addClass('opened')
+    //         VJQuery(this).parent().addClass('opened')
+    //         if(!profileFlag){
+    //             animateValue(circleNum, 0, circleNumValue, 1500);
+    //             profileFlag = true;
+    //         }
+    //         if(window.innerWidth<440){
+    //             VJQuery(document.body).addClass('modal-open')
+    //             VJQuery('html').addClass('modal-open')
+    //         }
+    //     })
+        
     let switchTabs = (tab) => {
         // get all tab list items and remove the is-active class
         let tabs = tab.closest('.tabs').querySelectorAll('.tab__item');
