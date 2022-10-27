@@ -140,10 +140,9 @@ class AmoController extends Controller {
 
         printf('Hello, %s!', $ownerDetails->getName());
     }
-
-    public function api(Request $request) {
-        // TelegramBot::send('/api');
-        // TelegramBot::send($request->all());
+    
+    public function api(Request $request)
+    {
         return $request->all(); 
     }
     

@@ -84,10 +84,10 @@ class CountHours extends Command
                 ->get();
 
             $userGroups = DB::table('profile_groups')->get();
-//            TelegramBot::send($userGroups);
+
 
             foreach($timetrackingUsers as $user) {
-//                TelegramBot::send($user);
+
 
                 // вот здесь мне надо брать либо время профиля, либо время группы
                 $userProfile = DB::table('users')
@@ -101,7 +101,7 @@ class CountHours extends Command
                     if (!is_null($userProfile->work_start)) {
                         $workStart = $userProfile->work_start;
                         $this->line("ID пользователя ".$user->user_id);
-//                        TelegramBot::send("Время из профиля ".$workStart);
+
                     } else {
 
 
@@ -115,7 +115,7 @@ class CountHours extends Command
 
                             }
                         }
-                        // TelegramBot::send("Время из группы ". $workStart);
+
                     }
                     $timeStart = $user->enter;
                     $timeEnd = $user->exit;
@@ -127,7 +127,6 @@ class CountHours extends Command
                     if ($workStartInSeconds > strtotime($user->enter) && $user->updated == 0) {
                         $this->line("Время начала работы меньше чем время начала смены, значит считаем от начала смены");
                         $timeStart = $year.'-'.$month.'-'.$day.' '.$workStart;
-                        //TelegramBot::send('timeStart = '.$timeStart);
                     }
 
                     if($user->updated == 1) {
@@ -142,26 +141,24 @@ class CountHours extends Command
                     //                    $this->line("Отработано минут ". $diffInMinutes);
                     //                    $this->line("Отработано часов ". $diffInHours);
 
-                    //TelegramBot::send('diffInHours = '.$diffInHours);
+
 
                     $lunch = 1;
                     if ($user->updated === 0) {
                         if ($diffInHours > 5) {
                             $diffInHours = $diffInHours - $lunch;
-                            //TelegramBot::send('minus lunch = '.$diffInHours);
                         }
                     }
                     
                     if($user->updated == 1) {
                         if ($diffInHours > 5) {
                             $diffInHours = $diffInHours - $lunch;
-                            //TelegramBot::send('minus lunch = '.$diffInHours);
                         }
                     }
 
 
                     $diffInMinutes = $diffInHours * 60;
-                    //TelegramBot::send('diffInMinutes = '.$diffInMinutes);
+
                     if ($diffInMinutes <= 0) {
                         $diffInMinutes = 0;
                     }

@@ -64,7 +64,7 @@ class DeleteUser extends Command
 
 
             } catch (\Exception $e) {
-                TelegramBot::send('Сотрудник не уволен по крону: '. $plan->user_id);
+                // 'Сотрудник не уволен по крону: '. $plan->user_id
                 continue;
             }
             

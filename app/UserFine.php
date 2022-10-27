@@ -78,9 +78,9 @@ class UserFine extends Model
                         if (in_array($day, $onlyDaysWorking)) {
                             $fines[] = $fine;
                             if ($fine->fine_id == Fine::TYPE_LATE_MORE_5) {
-//                                TelegramBot::send("1000 для $name");
+
                             } elseif ($fine->fine_id == Fine::TYPE_LATE_LESS_5) {
-//                                TelegramBot::send("700 для $name");
+                                
                             }
 
                             $correctFines++;
@@ -88,12 +88,11 @@ class UserFine extends Model
                     }
                 } else {
                     $fines[] = $fine;
-//                    TelegramBot::send($fine->fine_id." для $name");
                 }
 
         }
 //        if ($correctFines > 1) {
-//            TelegramBot::send("Работал но опоздал $correctFines для $name");
+//           "Работал но опоздал $correctFines для $name"
 //        }
 
         return $fines;

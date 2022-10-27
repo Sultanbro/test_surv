@@ -88,10 +88,8 @@ class MonthHours extends Command
                         ->get();
 
                     $userGroups = DB::table('profile_groups')->get();
-        //            TelegramBot::send($userGroups);
 
                     foreach($timetrackingUsers as $user) {
-        //                TelegramBot::send($user);
 
                         // вот здесь мне надо брать либо время профиля, либо время группы
                         $userProfile = DB::table('users')
@@ -105,7 +103,6 @@ class MonthHours extends Command
                             if (!is_null($userProfile->work_start)) {
                                 $workStart = $userProfile->work_start;
                                 $this->line("ID пользователя ".$user->user_id);
-        //                        TelegramBot::send("Время из профиля ".$workStart);
                             } else {
 
 
@@ -119,7 +116,6 @@ class MonthHours extends Command
 
                                     }
                                 }
-        //                        TelegramBot::send("Время из группы ". $workStart);
                             }
                             $timeStart = $user->enter;
                             $timeEnd = $user->exit;

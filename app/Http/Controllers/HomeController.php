@@ -100,8 +100,6 @@ class HomeController extends Controller
                 '6' => $request->q6, // 5.2
             ];
 
-            TelegramBot::send($request->all());
-
             if($user) {
                 $lead = Lead::where('user_id', $user->id)->first();
 

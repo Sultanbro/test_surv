@@ -395,19 +395,20 @@ class IntellectController extends Controller {
         }
 
         } catch(\Exception $e) {
-            //TelegramBot::send($e);
+            
         } 
     }
 
-    public function editLead(Request $request) {
+    /**
+     * Запрос с bitrix edit lead
+     */
+    public function editLead(Request $request)
+    {
         
         History::bitrix('Edit lead', [
             $request->all(),
         ]);
 
-        // TelegramBot::send('Запрос с bitrix edit lead');
-        // TelegramBot::send($request->all());
-            
         $langs = [
             'Только Русский 100%' => 2, // Только Русский 100%
             'Русский 100% и Казахский 100%' => 3, // Русский 100% и Казахский 100%
@@ -472,7 +473,7 @@ class IntellectController extends Controller {
         }
 
         } catch(\Exception $e) {
-            //TelegramBot::send($e);
+
         } 
     }
 
@@ -527,10 +528,10 @@ class IntellectController extends Controller {
         return $this->curl_get($this->message_webhook . '?phone=' . $phone .'&message='. $message);
     }  
 
+    /**
+     * Запрос с intellect
+     */
 	public function save(Request $request) {
-        
-        //TelegramBot::send('Запрос с intellect');
-        //TelegramBot::send($request->all());
         
         if($request->has('phone')) {
 
@@ -638,12 +639,14 @@ class IntellectController extends Controller {
 
  	}
 
+    /**
+     * Запрос с intellect
+     */
     public function get_name(Request $request) {
         
         if($request->has('phone')) {
             $lead = Lead::where('phone', $request->phone)->latest()->first();
-            //TelegramBot::send('Запрос с intellect');
-		    //TelegramBot::send($lead);
+
             if($lead) {
 
                 if($request->has('save')) {
