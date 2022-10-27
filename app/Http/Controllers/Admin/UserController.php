@@ -59,7 +59,7 @@ class UserController extends Controller
     public function __construct(AdminUserService $userService)
     {
         $this->userService = $userService;
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -374,29 +374,21 @@ class UserController extends Controller
      * editPerson
      *
      * @param Request $request
+     * @param null $type
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function editPerson(Request $request,$type = null)
     {
-
-
-
-
-
         if(!Auth::user()) return redirect('/');
+
         View::share('title', 'Редактировать сотрудника');
         View::share('menu', 'timetrackingusercreate');
 
-        
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
 
-
-        return view('admin.users.create',
-                 $this->preparePersonInputs($request->id)
-
-        );
-        
+        return view('admin.users.create', $this->preparePersonInputs($request->id));
     }
 
     /**
@@ -409,7 +401,7 @@ class UserController extends Controller
         $corpbooks = [];
 
         $knowbase_models = DB::table('knowbase_model')
-            ->where('model_id', auth()->user()->getAuthIdentifier())
+            ->where('model_id', auth()->id() ?? 5)
             ->get()
             ->toArray();
 

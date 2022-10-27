@@ -475,32 +475,21 @@
                                                             </td>
                                                         </tr>
                                                         @if(isset($user))
-                                                            @if($user->applied_at != null && $user->is_trainee == 0)
-                                                                <tr>
-                                                                    <td>
-                                                                        <span>Дата принятия на работу</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <span>{{ \Carbon\Carbon::parse($user->applied_at)->format('d.m.Y')}}</span>
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
-                                                            @if($user->applied_at == null && $user->is_trainee == 0)
-                                                                <tr>
-                                                                    <td>
-                                                                        <span>Дата принятия на работу</span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <span>{{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}}</span>
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
+
+                                                            <tr>
+                                                                <td>
+                                                                    <span>Дата принятия на работу</span>
+                                                                </td>
+                                                                <td>
+                                                                    <span>@if($user->user_description->applied == null && $user->user_description->is_trainee == 0) {{ \Carbon\Carbon::parse($user->created_at)->format('d.m.Y')}} @else {{ \Carbon\Carbon::parse($user->user_description->applied)->format('d.m.Y')}} @endif</span>
+                                                                </td>
+                                                            </tr>
                                                             <tr>
                                                                 <td>
                                                                     <span>Успел стать частью команды ~</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span>@if($user->worked_with_us < 0) {{ 0 }} @else {{ $user->worked_with_us }} @endif</span>
+                                                                    <span>@if($user->user_description->applied == null) {{ 0 }} @else {{ \Carbon\Carbon::now()->diffInDays($user->user_description->applied) }} @endif дней</span>
                                                                 </td>
                                                             </tr>
 
