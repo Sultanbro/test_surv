@@ -17,7 +17,7 @@
 
         
         <profile-info></profile-info>
-        
+<!--         
         <div class="profile__point profile-box">
             <div class="profile__title">Цель на сегодня</div>
             <div class="profile__point-wrapper profile-slick">
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <img src="images/dist/close.svg" alt="close icon" class="point-close">
-        </div>
+        </div> -->
 
         <div class="profile__active profile-box">
             <div class="profile__title">График активности</div>
@@ -114,7 +114,8 @@ export default {
         currentBalance(balance) {
             this.balance = balance.sum
             this.currency = balance.currency
-        }
+        },
+
 
         
     }

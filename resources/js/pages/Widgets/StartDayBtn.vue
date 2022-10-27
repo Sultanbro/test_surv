@@ -44,7 +44,7 @@ export default {
   data() {
     return {
       data: {},
-      status: 'started',
+      status: 'stopped',
       // corp book
       corp_book_page: null,
       showCorpBookPage: false
@@ -104,15 +104,20 @@ export default {
             return;
           }
 
-          if(response.data.status == 'started' && response.data.corp_book.has) {
+          if(response.data.status == 'started') {
+
             this.status = 'started';
-            this.corp_book_page = response.data.corp_book.page
-            this.showCorpBookPage = this.corp_book_page != null; 
-            this.bookCounter();
+
+            if(response.data.corp_book.has) {
+              this.corp_book_page = response.data.corp_book.page
+              this.showCorpBookPage = this.corp_book_page != null; 
+              this.bookCounter();
+            }
+          
             this.$toast.info('День начат');
           } 
 
-          if(response.data.status != 'started') { // stopped
+          if(response.data.status == 'stopped') { // stopped
             this.status = response.data.status;
             this.$toast.info('День завершен');
           }
