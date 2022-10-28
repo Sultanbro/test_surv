@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Award;
+use App\Models\Tax;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -88,6 +89,11 @@ class User extends Authenticatable implements Authorizable
      * Валюты для профиля.
      */
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
+
+    public function taxes(): HasMany
+    {
+        return $this->hasMany(Tax::class, 'user_id');
+    }
 
     public function awards(): BelongsToMany
     {
