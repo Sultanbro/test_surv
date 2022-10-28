@@ -71,9 +71,9 @@
             <img src="images/dist/close.svg" alt="close icon" class="point-close">
         </div>
 
-        <a href="#" class="profile__more" v-if="$laravel.userId == 5 || $laravel.userId == 18" @click="addWidget">
+        <!-- <a href="#" class="profile__more" v-if="$laravel.userId == 5 || $laravel.userId == 18" @click="addWidget">
             <img src="/images/dist/logo-download.svg" alt="more download">
-        </a>
+        </a> -->
     </div>
 </div>
 </template>

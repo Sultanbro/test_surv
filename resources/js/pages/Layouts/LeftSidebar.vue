@@ -49,9 +49,9 @@
                 <span class="header__nav-name">Обучение</span>
             </a>
             <div class="header__menu">
-                <div class="header__menu-title">
+                <!-- <div class="header__menu-title">
                     Обучение
-                </div>
+                </div> -->
                 <a href="/admin/upbooks" class="menu__item">
                     <img src="/images/dist/icon-settings.svg" alt="settings icon">
                     <span class="menu__item-title">Читать книги</span>
@@ -59,10 +59,6 @@
                 <a href="/video_playlists" class="menu__item">
                     <img src="/images/dist/icon-settings.svg" alt="settings icon">
                     <span class="menu__item-title">Смотреть видео</span>
-                </a>
-                <a href="/my-courses" class="menu__item">
-                    <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                    <span class="menu__item-title">Мои курсы</span>
                 </a>
                 <a href="/courses" class="menu__item" v-if="$can('courses_view')">
                     <img src="/images/dist/icon-settings.svg" alt="settings icon">
@@ -90,9 +86,6 @@
                 <span class="header__nav-name">Отчеты</span>
             </a>
             <div class="header__menu">
-                <div class="header__menu-title">
-                    Отчеты
-                </div>
                     <a href="/timetracking/top" class="menu__item" v-if="$can('top_view')">
                         <img src="/images/dist/icon-settings.svg" alt="settings icon">
                         <span class="menu__item-title">ТОП</span>
