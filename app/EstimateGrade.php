@@ -23,5 +23,6 @@ class EstimateGrade extends Model
         'date', // месяц Y-m-d
         'grade', // оценка от 1 до 10
         'text', // почему вы поставили
+        'minus', // колонка для противо положной характеристики
     ];
 }
