@@ -7,6 +7,8 @@ use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\KnowBase;
+use App\Repositories\TaxRepository;
+use App\Service\TaxService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -440,7 +442,8 @@ class UserController extends Controller
             }    
 
             $user->cards = Card::where('user_id', $user->id)->get();
-            $user->delete_time = null;
+
+            $user->delete_time  = null;
             $head_in_groups = [];
        
             if($user) {
@@ -968,12 +971,12 @@ class UserController extends Controller
             
         } else {
             // Если нет другого аккаунта с новым email, то меняем уже сущ аккаунт в калибро
-            $old_account = Account::where('email', $user->id)->where('owner_uid', 5)->first();
-            if ($old_account) {
-                $old_account->email = strtolower($request['email']);
-                $old_account->status = Account::ACTIVE_STATUS;
-                $old_account->save();
-            }
+//            $old_account = Account::where('email', $user->id)->where('owner_uid', 5)->first();
+//            if ($old_account) {
+//                $old_account->email = strtolower($request['email']);
+//                $old_account->status = Account::ACTIVE_STATUS;
+//                $old_account->save();
+//            }
         }
 
 
@@ -1056,8 +1059,21 @@ class UserController extends Controller
                 ]);
             }
         }
-        
+        /**
+         * Сохранение налоговых начислений.
+         */
+        if($request->input('tax')) {
+            (new TaxRepository)->insertMultipleTaxes($request->input('tax'));
+        }else if($request->input('taxes')) {
+            $taxIds = [];
+            $taxes  = $request->input('taxes');
 
+            foreach ($taxes as $id => $tax)
+            {
+                $taxIds[] = $id;
+            }
+            (new TaxRepository)->updateOrDelete($taxIds, $taxes);
+        }
 
         /**
          *  Битрикс ID профиля
@@ -1324,7 +1340,6 @@ class UserController extends Controller
                 'jysan_cardholder' => $request->jysan_cardholder,
             ]);
         }
-
 
         //////////////////////
         /******************* */

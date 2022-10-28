@@ -933,8 +933,6 @@
                                                 <label for="zarplata"
 
                                                        @if(isset($user)) class="col-sm-3 col-form-label font-weight-bold" @else class="col-sm-2 col-form-label font-weight-bold mr-3"  @endif
-
-
                                                       >Оклад <span class="red">*</span></label>
 
                                                 <div @if(isset($user)) class="col-sm-3" @else class="col-sm-4 p-0 "  @endif>
@@ -1049,7 +1047,6 @@
                                             @endif
 
                                             <div class="cards">
-
                                                 @if(isset($user))
                                                     @foreach($user->cards as $card)
                                                         <div class="d-flex form-group m0 card-row">
@@ -1064,13 +1061,30 @@
                                                 @endif
                                             </div>
 
+                                            <div class="taxes">
+                                                @if(isset($user))
+                                                    @foreach($user->taxes as $tax)
+                                                        <div class="d-flex form-group m0 tax-row">
+                                                            <input  class="form-control mr-1 col-sm-2" type="text" name="taxes[{{$tax->id}}][name]" placeholder="Название" value="{{ $tax->name }}">
+                                                            <input  class="form-control mr-1 col-sm-2" type="text" name="taxes[{{$tax->id}}][amount]" placeholder="Сумма" value="{{ $tax->amount }}">
+                                                            <input  class="form-control mr-1 col-sm-2" type="text" name="taxes[{{$tax->id}}][percent]" placeholder="Процент" value="{{ $tax->percent }}">
+                                                            <button class="btn btn-danger btn-sm tax-delete rounded ml-5" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+
                                             <button class="btn btn-phone btn-rounded mb-2 mt-2" type="button"
                                                     onclick="addCard()">
                                                     <i class="fa fa-plus"></i> Добавить карту
                                             </button>
 
-
-
+                                            @if($user->zarplata && $user->zarplata->zarplata > 0)
+                                                <button class="btn btn-phone btn-rounded mb-2 mt-2" type="button"
+                                                        onclick="addTax({{$user->id}}, {{$user->zarplata->zarplata}})">
+                                                    <i class="fa fa-plus"></i> Добавить налог
+                                                </button>
+                                            @endif
 
                                             <!-- END OF OKLAD -->
                                         </div>
@@ -1866,9 +1880,26 @@ function addCard(e) {
     $(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
 }
 
+ var taxIndex = 1;
+ function addTax(userId, salary) {
+     var index = taxIndex++;
+
+     $('.taxes').append(`<div class="d-flex form-group m0 tax-row">
+        <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][name]" placeholder="Название налога">
+        <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][amount]" placeholder="Сумма">
+        <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][percent]" placeholder="Процент">
+        <input class="form-control mr-1 col-sm-2" type="hidden" name="tax[${index}][user_id]" value="${userId}">
+        <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
+    </div>`);
+ }
+
 function deleteCard(e) {
     if (confirm('Удалить карту?')) {
         $(e.target).parents('.card-row').remove();
+    }
+}function deleteTax(e) {
+    if (confirm('Удалить налог?')) {
+        $(e.target).parents('.tax-row').remove();
     }
 }
 
