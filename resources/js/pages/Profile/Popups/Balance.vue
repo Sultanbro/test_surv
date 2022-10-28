@@ -56,123 +56,125 @@
             </tbody>
         </table>    
         
-        <!--  history  -->
-        <div v-if="history">
-            <div class="balance__title mb-2">
-                    ИСТОРИЯ <span><b>Дата:</b> {{ this.currentDay }}</span>
-                </div>
-                <div class="balance__inner">
-
-                    <!-- item -->
-                    <div class="balance__item">
-                        <div class="balance__item-title">Начислено</div>
-                        <div class="balance__item-value">
-                            <div v-if="Number(history.value) > 0">{{ history.calculated }}</div>
-                            <div v-else>0</div>
-                        </div>
-                        <div v-if="history.training">
-                            <h6>Стажировка</h6>
-                            <p>Может быть пол суммы</p>
-                        </div>
-                    </div>
-
-                    <!-- item -->
-                    <div class="balance__item">
-                        <div class="balance__item-title">Депремирование</div>
-                        <div class="balance__item-value">
-                            <template v-for="item in history.fines">
-                                <p>{{item.name}}</p>
-                            </template>
-                            <p v-if="history.fines.length == 0">
-                                Нет штрафов
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- item -->
-                    <div class="balance__item">
-                        <div class="balance__item-title">Бонусы</div>
-                        <div class="balance__item-value">
-                            <div class="mb-9">
-                                <template v-for="item in history.bonuses">
-                                    <div>
-                                        <div>
-                                            <b>
-                                                {{ item.bonus }} KZT
-                                            </b>
-                                        </div>
-                                        <div>
-                                            {{ item.comment_bonus }}
-                                        </div>
-                                    </div>
-                                </template>
-                                <div v-if="history.bonuses.length == 0 && history.awards.length == 0 && history.test_bonus.length == 0">
-                                    Нет бонусов
-                                </div>
-                            </div>
-                            <div v-if="history.awards.length != 0"  class="mb-5">
-                                <template v-for="item in history.awards">
-                                    <div>
-                                        <div>
-                                            <b>
-                                                {{ item.amount }} KZT
-                                            </b>
-                                        </div>
-                                        <div>
-                                            {{ item.comment }}
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                            <div v-if="history.test_bonus.length != 0"  class="mb-5">
-                                <div>
-                                    За пройденные тесты
-                                </div>
-                                <template v-for="item in history.test_bonus">
-                                    <div>
-                                        <div>
-                                            <b>
-                                                {{ item.amount }} KZT
-                                            </b>
-                                        </div>
-                                        <div>
-                                            {{ item.comment }}
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- item -->
-                    <div class="balance__item">
-                        <div class="balance__item-title">Авансы</div>
-                        <div class="balance__item-value">
-                            <template v-for="item in history.avanses">
-                                <div>
-                                    
-                                    <div>
-                                        <b>
-                                            {{ item.paid }} KZT
-                                        </b>
-                                    </div>
-                                    <div>
-                                        {{ item.comment_paid }}
-                                    </div>
-                                    
-                                </div>
-                            </template>
-                            <p v-if="history.avanses.length == 0">
-                                Нет авансов
-                            </p>
-                        </div>
-                    </div>
-                </div>
-        </div>
+       
             						
     </div>
 
+    <!--  history  -->
+    <div v-if="history">
+           
+           <div class="balance__inner">
 
+               <div class="balance__title mb-2">
+                   История за {{ this.currentDay }} {{ this.dateInfo.currentMonth }}
+               </div>
+
+               <!-- item -->
+               <div class="balance__item">
+                   <div class="balance__item-title">Начислено</div>
+                   <div class="balance__item-value">
+                       <div v-if="Number(history.value) > 0">{{ history.calculated }}</div>
+                       <div v-else>0</div>
+                   </div>
+                   <div v-if="history.training">
+                       <h6>Стажировка</h6>
+                       <p>Может быть пол суммы</p>
+                   </div>
+               </div>
+
+               <!-- item -->
+               <div class="balance__item">
+                   <div class="balance__item-title">Депремирование</div>
+                   <div class="balance__item-value">
+                       <template v-for="item in history.fines">
+                           <p>{{item.name}}</p>
+                       </template>
+                       <p v-if="history.fines.length == 0">
+                           Нет штрафов
+                       </p>
+                   </div>
+               </div>
+
+               <!-- item -->
+               <div class="balance__item">
+                   <div class="balance__item-title">Бонусы</div>
+                   <div class="balance__item-value">
+                       <div class="mb-9">
+                           <template v-for="item in history.bonuses">
+                               <div>
+                                   <div>
+                                       <b>
+                                           {{ item.bonus }} KZT
+                                       </b>
+                                   </div>
+                                   <div>
+                                       {{ item.comment_bonus }}
+                                   </div>
+                               </div>
+                           </template>
+                           <div v-if="history.bonuses.length == 0 && history.awards.length == 0 && history.test_bonus.length == 0">
+                               Нет бонусов
+                           </div>
+                       </div>
+                       <div v-if="history.awards.length != 0"  class="mb-5">
+                           <template v-for="item in history.awards">
+                               <div>
+                                   <div>
+                                       <b>
+                                           {{ item.amount }} KZT
+                                       </b>
+                                   </div>
+                                   <div>
+                                       {{ item.comment }}
+                                   </div>
+                               </div>
+                           </template>
+                       </div>
+                       <div v-if="history.test_bonus.length != 0"  class="mb-5">
+                           <div>
+                               За пройденные тесты
+                           </div>
+                           <template v-for="item in history.test_bonus">
+                               <div>
+                                   <div>
+                                       <b>
+                                           {{ item.amount }} KZT
+                                       </b>
+                                   </div>
+                                   <div>
+                                       {{ item.comment }}
+                                   </div>
+                               </div>
+                           </template>
+                       </div>
+                   </div>
+               </div>
+
+               <!-- item -->
+               <div class="balance__item">
+                   <div class="balance__item-title">Авансы</div>
+                   <div class="balance__item-value">
+                       <template v-for="item in history.avanses">
+                           <div>
+                               
+                               <div>
+                                   <b>
+                                       {{ item.paid }} KZT
+                                   </b>
+                               </div>
+                               <div>
+                                   {{ item.comment_paid }}
+                               </div>
+                               
+                           </div>
+                       </template>
+                       <p v-if="history.avanses.length == 0">
+                           Нет авансов
+                       </p>
+                   </div>
+               </div>
+           </div>
+   </div>
 
 
 

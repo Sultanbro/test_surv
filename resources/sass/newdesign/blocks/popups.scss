@@ -386,16 +386,21 @@ max-width: 100%;}
 }
 
 .balance__title{
-  margin-top: 4rem;
+  margin-top: 0rem;
   font-family: "Open Sans",sans-serif;
-  font-size:3.1rem;
+  font-size:2rem;
   color: rgba(64, 64, 64, 0.4);
   font-weight: 400;
+
+  span {
+    display: block;
+  }
 }
 
 .balance__inner{
-  padding: 4.5rem 20rem;
-  display: flex;
+  padding: 4rem 4rem;
+  margin-top: 2rem;
+  // display: flex;
   background: #F5F7FC;
   border-radius:1.5rem;
   justify-content: space-between;
@@ -405,9 +410,10 @@ max-width: 100%;}
 .balance__item{
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap:3rem;
   color:#62788B;
+  margin-bottom: 4rem;
   font-size:1.3rem;
 
   &-title{
