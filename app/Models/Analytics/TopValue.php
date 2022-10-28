@@ -114,8 +114,12 @@ class TopValue extends Model
     /**
      * Спидометры полезности
      */
-    public static function getUtilityGauges($date) {
-        $group_ids = ProfileGroup::activeProfileGroupsWithAnalytics();
+    public static function getUtilityGauges($date, $group_ids = []) {
+
+        if(count($group_ids) == 0) {
+            $group_ids = ProfileGroup::activeProfileGroupsWithAnalytics();
+        }
+        
         $gauge_groups = [];
 
         $activities = Activity::whereIn('group_id', $group_ids)->get();
@@ -445,9 +449,10 @@ class TopValue extends Model
     }
 
     /**
-     * Спидометры рентабельности
+     * Спидометры рентабельности all
      */
-    public static function getRentabilityGauges($date, $common_name = '') {
+    public static function getRentabilityGauges($date, $common_name = '')
+    {
         $gauges = [];
         $carbon = Carbon::createFromFormat('Y-m-d', $date);
 
@@ -458,54 +463,7 @@ class TopValue extends Model
         }
         
         foreach($groups as $group_id) {
-            $group = ProfileGroup::find($group_id);
-            
-            $tv = new TopValue();
-            $tv->options = '[]';
-            
-            $options = $tv->getOptions();
-            
-
-
-
-                if(Carbon::parse($date)->month  == date('m') && Carbon::parse($date)->year  == date('Y')) {
-                    $tdate = Carbon::parse($date)->day(date('d'))->format('Y-m-d');
-                } else {
-                    $tdate = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
-                }
-
-                $options['staticZones'] = [
-                    [ 'strokeStyle' => "#F03E3E", 'min' => 0, 'max' => 49 ], // Red
-                    [ 'strokeStyle' => "#fd7e14", 'min' => 50, 'max' => 74 ], // Orange
-                    [ 'strokeStyle' => "#FFDD00", 'min' => 75, 'max' => 99 ], // Yellow
-                    [ 'strokeStyle' => "#30B32D", 'min' => 100, 'max' => $group->rentability_max ], // Green
-                ];
-
-                $options['staticLabels']['labels'] = [0,50,100,$group->rentability_max];
-
-                $gauges[] = [
-                    'id' => 9991155,
-                    'name' => $common_name != '' ? $common_name : $group->name,
-                    'value' => (float)AnalyticStat::getRentability($group_id, $date),
-                    'group_id' => $group_id,
-                    'place' => 1,
-                    'unit' => '%',
-                    'editable' => false,
-                    'edit_value' => false,
-                    'activity_id' => 0,
-                    'key' => 999 * 1000,
-                    'min_value' => 0,
-                    'max_value' => $group->rentability_max,
-                    'round' => 2,
-                    'cell' => '',
-                    'is_main' => 0,
-                    'fixed' => 0,
-                    'value_type' => 'sum',
-                    'sections' => $options['staticLabels']['labels'], 
-                    'options' => $options,
-                    'diff' =>  AnalyticStat::getRentabilityDiff($group_id, $tdate)
-                ];
-            
+            $gauges[] = self::getRentabilityGauge($date, $group_id, $common_name);    
         }
 
         $values_asc = array_column($gauges, 'value');
@@ -513,6 +471,75 @@ class TopValue extends Model
         
 
         return $gauges;
+    }
+
+    /**
+     * Спидометры рентабельности of group
+     */
+    public static function getRentabilityGaugesOfGroup($date, $group_id, $common_name = '')
+    {
+        $gauges = [];
+     
+        if(!$date) {
+            $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
+        }
+        
+        $gauges[] = self::getRentabilityGauge($date, $group_id, $common_name);
+        
+        return $gauges;
+    }
+
+    /**
+     * one gauge of rentability
+     */
+    private static function getRentabilityGauge($date, $group_id, $common_name)
+    {
+        $group = ProfileGroup::find($group_id);
+            
+        $tv = new TopValue();
+        $tv->options = '[]';
+        
+        $options = $tv->getOptions();
+        
+        if(Carbon::parse($date)->month  == date('m') && Carbon::parse($date)->year  == date('Y')) {
+            $tdate = Carbon::parse($date)->day(date('d'))->format('Y-m-d');
+        } else {
+            $tdate = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        }
+
+        $options['staticZones'] = [
+            [ 'strokeStyle' => "#F03E3E", 'min' => 0, 'max' => 49 ], // Red
+            [ 'strokeStyle' => "#fd7e14", 'min' => 50, 'max' => 74 ], // Orange
+            [ 'strokeStyle' => "#FFDD00", 'min' => 75, 'max' => 99 ], // Yellow
+            [ 'strokeStyle' => "#30B32D", 'min' => 100, 'max' => $group->rentability_max ], // Green
+        ];
+
+        $options['staticLabels']['labels'] = [0,50,100, $group->rentability_max];
+
+        $gauge = [
+            'id' => 9991155,
+            'name' => $common_name != '' ? $common_name : $group->name,
+            'value' => (float)AnalyticStat::getRentability($group_id, $date),
+            'group_id' => $group_id,
+            'place' => 1,
+            'unit' => '%',
+            'editable' => false,
+            'edit_value' => false,
+            'activity_id' => 0,
+            'key' => 999 * 1000,
+            'min_value' => 0,
+            'max_value' => $group->rentability_max,
+            'round' => 2,
+            'cell' => '',
+            'is_main' => 0,
+            'fixed' => 0,
+            'value_type' => 'sum',
+            'sections' => $options['staticLabels']['labels'], 
+            'options' => $options,
+            'diff' =>  AnalyticStat::getRentabilityDiff($group_id, $tdate)
+        ];
+        
+        return $gauge;
     }
 
     /**

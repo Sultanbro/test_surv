@@ -144,7 +144,7 @@ class AnalyticsController extends Controller
 
         // utility and rentability
         $util = TopValue::getUtilityGauges($date->format('Y-m-d'), [$group_id]);
-        $rent = TopValue::getRentabilityGauges($date->format('Y-m-d'), [$group_id], 'Рентабельность');
+        $rent = TopValue::getRentabilityGaugesOfGroup($date->format('Y-m-d'), $group_id, 'Рентабельность');
         if(count($util) > 0) {
             $util[0]['gauges'] = array_merge($util[0]['gauges'], $rent);
         }   
