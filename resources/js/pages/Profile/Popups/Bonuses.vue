@@ -1,8 +1,5 @@
 <template>
 <div class="popup__content  mt-5">
-    <div class="popup__filter-title">
-        Зарабатывайте бонусы, выполняя дополнительные активности
-    </div>
 
     <div class="tabs ">
         <div class="popup__filter">

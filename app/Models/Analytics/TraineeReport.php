@@ -60,7 +60,7 @@ class TraineeReport extends Model
                         'day' => $date->day,
                         'date' => $date->format('d.m.Y'),
                         'group_id' => $group_id,
-                        'group' => array_key_exists($group_id, $groups_key_value) ? $groups_key_value[$group_id] : 'Группа №' . $group_id,
+                        'group' => array_key_exists($group_id, $groups_key_value) ? $groups_key_value[$group_id] : 'Отдел №' . $group_id,
                         'quiz' => self::formAnswers($tr->data),
                         'presence' => [
                             0 => $tr->leads,

@@ -134,7 +134,7 @@ export default {
             
             fieldsArray.push({
                 key: 'group_id',
-                name: 'Группа',
+                name: 'Отдел',
                 order: order++,
                 klass: ' text-left px-1 bg-blue w-200'
             }) 

@@ -15363,7 +15363,7 @@ var render = function() {
             _vm._v(" "),
             _vm.type == "individual"
               ? _c("th", { staticClass: "mark" }, [
-                  _vm._v("\r\n                Группа\r\n            ")
+                  _vm._v("\r\n                Отдел\r\n            ")
                 ])
               : _vm._e(),
             _vm._v(" "),
@@ -20786,8 +20786,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]); //Колличество выходных
         this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
         this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
-
-        //Текущая группа
 
         this.fetchData();
     },

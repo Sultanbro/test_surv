@@ -5,7 +5,7 @@
             <span>По сотрудникам</span>
         </button>
         <button class="btn btn-grey mr-2 rounded" :class="{'btn-primary': type == BY_GROUP}" @click="type = BY_GROUP">
-            <span>По группам</span>
+            <span>По отделам</span>
         </button>
     </div>  
        

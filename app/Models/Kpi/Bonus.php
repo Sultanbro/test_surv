@@ -563,7 +563,7 @@ class Bonus extends Model
         $bonuses = self::where('group_id', $group_id)->get();
 
         $html = '<b>';
-        $html .= $group ? $group->name : 'Группа';
+        $html .= $group ? $group->name : 'Отдел';
         $html .= '</b><br>';
 
         //me($bonuses);

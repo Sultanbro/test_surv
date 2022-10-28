@@ -80,7 +80,7 @@
         </div>
 
         <div class="d-flex mb-2 p-3 aic">
-            <p class="mb-0 mr-2">Группа</p>
+            <p class="mb-0 mr-2">Отдел</p>
             <v-select :options="groups" label="title" v-model="group" class="group-select w-full"></v-select>
         </div>
 

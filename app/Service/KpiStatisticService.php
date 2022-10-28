@@ -377,7 +377,7 @@ class KpiStatisticService
     }
 
     /**
-     * Получаем по группам.
+     * Получаем по Отделам.
      * @param $bonus
      * @param $request
      * @return Builder[]|Collection

@@ -110,7 +110,7 @@
                      title="Выполнение плана">
                   </i>
                 </template>
-                {{ field }}  <i class="fa fa-plus-square" v-if="field == 'Группа'" @click="addRow()"></i>
+                {{ field }}  <i class="fa fa-plus-square" v-if="field == 'Отдел'" @click="addRow()"></i>
               </th>
             </tr>
             </thead>
@@ -124,7 +124,7 @@
                     'weekend': isWeekend(field)
                   }">
 
-                <template v-if="!['%', 'План', 'Итого', '+/-', 'Группа'].includes(field)">
+                <template v-if="!['%', 'План', 'Итого', '+/-', 'Отдел'].includes(field)">
                   <div v-if="record['group_id'] < 0">
                     <input type="number"
                            class="input"
@@ -139,7 +139,7 @@
 
                 <template v-else>
 
-                  <template v-if="field == 'Группа'">
+                  <template v-if="field == 'Отдел'">
                     <a :href="'/timetracking/an?group='+ record['group_id'] + '&active=1&load=1'"
                        target="_blank" v-if="record['group_id'] >= 0">
                        {{ record[field] }}
@@ -177,11 +177,11 @@
       <b-tab title="Прогноз" key="4" card>
         <table class="table tops b-table table-striped table-bordered table-sm w-700">
           <thead>
-          <th class="text-left t-name table-title" style="background:#90d3ff">Группа
+          <th class="text-left t-name table-title" style="background:#90d3ff">Отдел
 
             <i class="fa fa-info-circle"
                v-b-popover.hover.right.html="'Прогноз по принятию сотрудников на месяц'"
-               title="Группа">
+               title="Отдел">
             </i>
 
           </th>
@@ -375,8 +375,8 @@ export default {
       axios.post('/timetracking/top/proceeds/update', {
         group_id: record['group_id'],
         value: record[field],
-        date: field == 'Группа' ?  this.proceeds.fields[5] : field,
-        name: record['Группа'],
+        date: field == 'Отдел' ?  this.proceeds.fields[5] : field,
+        name: record['Отдел'],
         type: type,
         year: this.currentYear,
       })

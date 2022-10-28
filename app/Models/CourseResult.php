@@ -373,7 +373,7 @@ class CourseResult extends Model
         $arr = [];
         $arr[] = [
             'key' => 'name',
-            'name' => 'Группа',
+            'name' => 'Отдел',
             'class' => 'text-left'
         ];
         $arr[] = [

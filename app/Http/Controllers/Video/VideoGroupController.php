@@ -34,7 +34,7 @@ class VideoGroupController extends Controller {
 		$group = Group::create([
 			'category_id' => $request->playlist_id,
 			'parent_id' => $request->parent_id,
-			'title' => 'Новая группа'
+			'title' => 'Новый отдел'
 		]);
 
 		return [

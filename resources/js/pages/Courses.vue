@@ -125,7 +125,7 @@ export default {
     },
 
     editAccess(i) {
-      alert('Видимость и назначение курса группам');
+      alert('Видимость и назначение курса отделам');
     },
 
     createCourse() {

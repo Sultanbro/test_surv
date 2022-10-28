@@ -50,7 +50,7 @@
             
             <div class="col-12 align-items-center mb-5 mt-5">
 
-                <h4 class="mb-5 text-center">Текучка по группам</h4>
+                <h4 class="mb-5 text-center">Текучка по отделам</h4>
                 <div class="my-table table-responsive">
                     <table class="table b-table table-striped table-bordered table-sm">
                         <thead>

@@ -65,7 +65,7 @@
            
            <div class="balance__inner">
 
-               <div class="balance__title mb-2">
+               <div class="balance__title">
                    История за {{ this.currentDay }} {{ this.dateInfo.currentMonth }}
                </div>
 

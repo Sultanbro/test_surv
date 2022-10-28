@@ -226,7 +226,7 @@ class GroupAnalyticsController extends Controller
             'absents_first' => $absence_causes['first_day'], 
             'absents_second' => $absence_causes['second_day'],
             'absents_third' => $absence_causes['third_day'],
-            'ratings' => RM::ratingsGroups($date), // Оценки операторов по группам
+            'ratings' => RM::ratingsGroups($date), // Оценки операторов по Отделам
             'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
             'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
             'staff_longevity' => RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения

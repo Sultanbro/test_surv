@@ -163,7 +163,7 @@
                 if (this.allValueArray.length > 0){
                   for (let i = 0; i < this.allValueArray.length;i ++){
                       if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                           this.$toast.error('Группа ранее добавлено');
+                           this.$toast.error('Отдел ранее добавлен');
                            this.flag_type = false;
                       }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
                            this.$toast.error('Должность ранее добавлено');

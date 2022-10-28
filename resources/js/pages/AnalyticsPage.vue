@@ -189,7 +189,7 @@
         
             <div class="row">
                 <div class="col-5">
-                    <p class="">Группа</p>
+                    <p class="">Отдел</p>
                 </div>
                 <div class="col-7">
                     <select v-model="restore_group" class="form-control form-control-sm">

@@ -163,7 +163,7 @@ class TraineeController extends Controller
         } else {
             $message = $group 
                 ? 'Не получилось отметиться. Видимо ссылка уже устарела...'
-                : 'Ошибка системы. Группа не найдена';
+                : 'Ошибка системы. Отдел не найден';
         }
 
 		return view('admin.autocheck.save')->with([

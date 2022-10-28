@@ -67,7 +67,7 @@
                 Вид плана
             </th>
             <th class="mark" v-if="type == 'individual'">
-                Группа
+                Отдел
             </th>
             <th class="mark" v-if="is_admin">
                 Показатели 

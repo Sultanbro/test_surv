@@ -336,7 +336,7 @@ export default {
             showSkypeFields: {},
             showSkypeFieldsDesc: {},
             fields: [], // поля таблицы
-            selected: { // группа для приглашения
+            selected: { // отдел для приглашения
                 group_id: 0,
                 date: null,
                 time: '09:30',
@@ -368,7 +368,7 @@ export default {
                 wishtime: 0,
                 segment: 0,
                 dates: [], // выбор нексольких дней 
-                currentInviteGroup: 0 // select приглашенная группа
+                currentInviteGroup: 0 // select приглашенная Отдел
             },
             user_types: {
                 'all' : 'Все типы',
@@ -382,7 +382,6 @@ export default {
                 1724: 'Tailor Suit',
                 1726: 'Евраз',
                 1728: 'Народный Банк',
-                1730: '1 группа',
                 1770: 'Ростелеком',
                 1794: 'Альфа/МТС',
                 1892: 'Сертификация',
@@ -544,7 +543,7 @@ export default {
                 net: 'Интернет',
                 wishtime: 'График',
                 invited_at: 'Приглашен на',
-                invite_group: 'Группа',
+                invite_group: 'Отдел',
                 country: 'Cтрана',
                 segment: 'Сегмент',
                 resp: 'Ответственный',
@@ -729,11 +728,11 @@ export default {
 
                     console.log(response)
                     if(response.data.code == 201) {
-                        this.$toast.error('Группа не найдена. Обратитесь к разработчику')
+                        this.$toast.error('Отдел не найден. Обратитесь к разработчику')
                     }
 
                     if(response.data.code == 202) {
-                        this.$toast.error('Не приглашены. В группе не указана ссылка на Zoom конференцию.')
+                        this.$toast.error('Не приглашены. В отделе не указана ссылка на Zoom конференцию.')
                     }
 
                     if(response.data.code == 200) {
@@ -816,7 +815,7 @@ export default {
                 wishtime: 0,
                 segment: 0,
                 dates: [], // выбор нексольких дней 
-                currentInviteGroup: 0 // select приглашенная группа
+                currentInviteGroup: 0 // select приглашенная Отдел
             }
             this.currentDay = 0
         },

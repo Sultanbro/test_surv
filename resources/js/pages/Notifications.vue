@@ -437,7 +437,7 @@ export default {
             newUser: null,
             types: {
                 0: 'Сотрудникам',
-                1:'Группам',
+                1: 'Отделам',
             },
             visible: {
                 user: true,

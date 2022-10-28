@@ -13,7 +13,7 @@
 
     <popup v-if="popBalance"
         title="Баланс оклада"
-        desc="Дополнительное поле с описанием функционала данного окна"
+        desc="Заработанная сумма именно от окладной части"
         :open="popBalance" 
         @close="popBalance=false"
         width="75%">
@@ -22,7 +22,7 @@
 
     <popup v-if="popKpi"
         title="Kpi"
-        desc="Дополнительное поле с описанием функционала данного окна"
+        desc="Выполняя дополнительные активности, заработайте больше денег"
         :open="popKpi" 
         @close="popKpi=false"
         width="75%">
@@ -31,7 +31,7 @@
 
     <popup v-if="popBonuses"
         title="Бонусы"
-        desc="Дополнительное поле с описанием функционала данного окна"
+        desc="Зарабатывайте бонусы, выполняя дополнительные активности"
         :open="popBonuses" 
         @close="popBonuses=false"
         width="75%">
@@ -40,7 +40,7 @@
 
     <popup v-if="popQuartalPremiums"
         title="Квартальные премии"
-        desc="Дополнительное поле с описанием функционала данного окна"
+        desc=""
         :open="popQuartalPremiums" 
         @close="popQuartalPremiums=false"
         width="75%">

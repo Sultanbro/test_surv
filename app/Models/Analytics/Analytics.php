@@ -34,7 +34,7 @@ class Activity extends Model
         if($unit == self::UNIT_PERCENTS) {
             $headings = [
                 'Имя сотрудника', // 0
-                'Группа', // 1
+                'Отдел', // 1
              //   '', // 2
                 'План', // 2
                 'Сред', // 1
@@ -42,7 +42,7 @@ class Activity extends Model
         } else {
             $headings = [
                 'Имя сотрудника', // 0
-                'Группа', // 1
+                'Отдел', // 1
                // '', // 2
                 'План', // 2
                 'Вып', // 3
@@ -54,7 +54,7 @@ class Activity extends Model
         if($is_kaspi_sum) {
             $headings = [
                 'Имя сотрудника', // 0
-                'Группа', // 1
+                'Отдел', // 1
                 'К выдаче', // 2
                 'Вып', // 3
                 'Сред', // 1
@@ -80,7 +80,7 @@ class Activity extends Model
             $row = [];
 
             $row['Имя сотрудника'] = $record['lastname'] . ' ' . $record['name'];
-            $row['Группа'] = $record['group'];
+            $row['Отдел'] = $record['group'];
             
 
             // if($unit == self::UNIT_PERCENTS) {

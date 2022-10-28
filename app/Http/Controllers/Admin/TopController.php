@@ -134,7 +134,7 @@ class TopController extends Controller
             
             
             $total_row = [];
-            $total_row['Группа'] = 'Итого';
+            $total_row['Отдел'] = 'Итого';
             $total_row['План'] = 0;
             $total_row['Итого'] = 0;
 
@@ -161,7 +161,7 @@ class TopController extends Controller
 
                     
                     $row = [];
-                    $row['Группа'] = $group->name;
+                    $row['Отдел'] = $group->name;
                     $row['group_id'] = $group->id;
     
                     $sum = 0;
@@ -239,7 +239,7 @@ class TopController extends Controller
             foreach ($cps as $order => $cpo) {
                 // editable row with inputs
                 $editable_row = [];
-                $editable_row['Группа'] = $cpo->first() ? $cpo->first()->name : '';
+                $editable_row['Отдел'] = $cpo->first() ? $cpo->first()->name : '';
                 $editable_row['План'] = 0;
                 $editable_row['Итого'] = 0;
                 
@@ -346,7 +346,7 @@ class TopController extends Controller
 
     private function getProceedFields($days) {
         $fields = [];
-        array_push($fields, 'Группа');
+        array_push($fields, 'Отдел');
         array_push($fields, '%');
         array_push($fields, 'План');
         array_push($fields, 'Итого');

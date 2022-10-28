@@ -60,7 +60,7 @@
                                 <b-tab title="Сводная" key="1" card>
                                     <table class="table b-table table-striped table-bordered table-sm"  style="width:900px">
                                         <thead>
-                                            <th class="text-left t-name table-title" style="background:#90d3ff;width:250px;">Группа</th>
+                                            <th class="text-left t-name table-title" style="background:#90d3ff;width:250px;">Отдел</th>
                                             <th class="text-center t-name table-title">Требуется нанять</th>
                                             <th class="text-center t-name table-title">Кол-во <br>переданных <br> стажеров</th>
                                             <th class="text-center t-name table-title">Кол-во <br>приступивших <br>к работе</th>
