@@ -16,12 +16,12 @@
 
 
 .header__left{
-  width:8rem;
+  width:7rem;
   min-height: inherit;
   max-height: inherit;
   background-color: #F6F7FC;
-  padding-top: 25px;
-  padding-bottom: 30px;
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,7 +39,7 @@
 
 .header__avatar{
   cursor:pointer;
-  margin-bottom: 3rem;
+  margin-bottom: 0.5rem;
   display: block;
   max-width: 6rem;
   width: 100%;
@@ -48,7 +48,7 @@
   z-index: 1003;
   .header__menu{
     max-width: 24rem;
-    top: 2rem;
+    top: 0.5rem;
   }
 
 
@@ -109,7 +109,7 @@
   }
 
   .header__nav-icon {
-    font-size:2.5rem;
+    font-size:2rem;
     &::before{
       transition:.2s;
     }
@@ -139,7 +139,7 @@
 .header__menu{
   position:fixed;
   z-index: 1005;
-  left: 8rem;
+  left: 7rem;
   width: 25rem;
   background: #F8FAFB;
   display: flex;
@@ -182,6 +182,7 @@
   height: 3.4rem;
   padding-right: 3rem;
   padding-left: 2rem;
+  background: #f6f7fd;
 
   &:hover{
     background: #EBF1FF;
@@ -325,12 +326,12 @@
 
 .header__profile{
   margin: 0 auto;
-  padding: 4rem 2rem 1rem;
+  padding: 2rem 2rem 1rem;
   overflow-y:auto;
   overflow-x:hidden;
   height: 100%;
   position:fixed;
-  left: 8rem;
+  left: 7rem;
   top: 0;
   width: 32rem;
   background: #F6F7FC;
