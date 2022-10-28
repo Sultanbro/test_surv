@@ -341,7 +341,7 @@ class UserController extends Controller
             'auth_token' => Auth::user()->remember_token,
             'currentUser' => Auth::user()->id,
             'segments' => Segment::pluck('name', 'id'),
-            'groups' => [0 => 'Выберите группу'] + $groups,
+            'groups' => [0 => 'Выберите отдел'] + $groups,
             'start_date' => Carbon::now()->startOfMonth()->format('Y-m-d'),
             'end_date' => Carbon::now()->endOfMonth()->format('Y-m-d'),
         ];
@@ -861,7 +861,7 @@ class UserController extends Controller
         ]);
 
         /*==============================================================*/
-        /*******  Зачисление пользователя в группу */
+        /*******  Зачисление пользователя в отдел */
         /*==============================================================*/
         
         $group = ProfileGroup::find($request['group']);
@@ -877,7 +877,7 @@ class UserController extends Controller
             $group->users = json_encode($users_array);
 
             if($request->increment_provided == 'true' && $group)  { 
-                $group->provided = $group->provided + 1; /*******  Увеличиваем принятых в группу */
+                $group->provided = $group->provided + 1; /*******  Увеличиваем принятых в отдел */
             }
             $group->save();
         }
@@ -1347,7 +1347,7 @@ class UserController extends Controller
 
             $group = ProfileGroup::find($_groups[0]);
             if($group) {
-                $group->provided = $group->provided + 1; /*******  Увеличиваем принятых в группу */
+                $group->provided = $group->provided + 1; /*******  Увеличиваем принятых в отдел */
                 $group->save(); 
             }
             

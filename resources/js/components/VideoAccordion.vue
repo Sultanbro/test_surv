@@ -6,9 +6,9 @@
         <div class="g-title"  v-if="group.title != 'Без группы'" @click="toggleGroup(g_index)" >
             <input type="text" class="group-input" v-model="group.title" :disabled="mode == 'read'" @change="saveGroup(g_index)" />
             <div class="btns" > 
-                <i class="fa fa-folder-plus" @click.stop="addGroup(g_index)" title="Добавить группу" v-if="mode == 'edit'"></i>
+                <i class="fa fa-folder-plus" @click.stop="addGroup(g_index)" title="Добавить отдел" v-if="mode == 'edit'"></i>
                 <i class="fa fa-upload" @click.stop="uploadVideo(g_index)"  title="Загрузить видео" v-if="mode == 'edit'"></i>
-                <i class="fa fa-trash"  @click.stop="deleteGroup(g_index)"  title="Удалить группу" v-if="mode == 'edit'"></i>
+                <i class="fa fa-trash"  @click.stop="deleteGroup(g_index)"  title="Удалить отдел" v-if="mode == 'edit'"></i>
                 <i class="fa fa-chevron-down chevron" v-if="group.children.length > 0 || group.videos.length > 0"></i>
             </div>
         </div> 
@@ -74,7 +74,7 @@ export default {
 
         addVideoToPlaylist(video) {
             let i = this.groups.findIndex(el => el.id == this.group_id)
-            if(i == -1) return this.$toast.error('Ошибка при добавлении в группу в браузере');
+            if(i == -1) return this.$toast.error('Ошибка при добавлении в отдел в браузере');
             this.groups[i].videos.push(video);
         },
 
@@ -189,7 +189,7 @@ export default {
         
         deleteGroup(i) {
             var arrStr = [
-                'Вы точно хотите удалить группу?', ' Думаю, вы случайно нажали удалить группу. Удалить группу?', 'Удалить группу не смотря ни на что?'
+                'Вы точно хотите удалить отдел?', ' Думаю, вы случайно нажали удалить отдел. Удалить отдел?', 'Удалить отдел не смотря ни на что?'
             ]
             var randElement = arrStr[Math.floor(Math.random() * arrStr.length)];
             console.log(randElement);

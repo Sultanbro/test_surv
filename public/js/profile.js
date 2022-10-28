@@ -9994,7 +9994,7 @@ var render = function() {
                             "col-sm-4 col-form-label font-weight-bold",
                           attrs: { for: "firstName" }
                         },
-                        [_vm._v("Выберите группу")]
+                        [_vm._v("Выберите отдел")]
                       ),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-sm-12 relative mb-2" }, [

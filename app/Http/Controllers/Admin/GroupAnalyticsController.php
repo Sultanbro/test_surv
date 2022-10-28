@@ -447,7 +447,7 @@ class GroupAnalyticsController extends Controller
             }
 
             /*==============================================================*/
-            /*******  Зачисление пользователя в группу */
+            /*******  Зачисление пользователя в отдел */
             /*==============================================================*/
             
             /* Удаление стажера из всех груп */
@@ -458,7 +458,7 @@ class GroupAnalyticsController extends Controller
                     'status' => 'drop',
                 ]);
             
-            /* Зачисление в выбранную группу */
+            /* Зачисление в выбранную отдел */
             GroupUser::create([
                 'user_id'  => $user->id,
                 'group_id' => $group->id,
@@ -509,7 +509,7 @@ class GroupAnalyticsController extends Controller
         /*******  Уведомление руководителю группы */
         /*==============================================================*/
 
-        $msg_for_group_leader .= 'Приглашение в группу "' . $group->name . '" на ' . date('d.m.Y', strtotime($request->date)) . ' в 9:30';
+        $msg_for_group_leader .= 'Приглашение в отдел "' . $group->name . '" на ' . date('d.m.Y', strtotime($request->date)) . ' в 9:30';
         
         $heads = json_decode($group->head_id); 
 

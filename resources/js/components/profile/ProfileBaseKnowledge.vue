@@ -79,7 +79,7 @@ export default {
         action: 'add',
       };
 
-      let msg = 'Сотрудник добавлен в группу "' + selectedOption.name + '"';
+      let msg = 'Сотрудник добавлен в отдел "' + selectedOption.name + '"';
 
       this.request(data, msg);
 

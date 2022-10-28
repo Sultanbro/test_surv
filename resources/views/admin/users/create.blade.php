@@ -553,7 +553,7 @@
                                                 <profile-groups :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />
                                                 @else
                                                 <select name="group" id="group" class="form-control">
-                                                    <option>Выберите группу</option>
+                                                    <option>Выберите отдел</option>
                                                     @foreach ($groups as $group)
                                                     <option value="{{$group->id}}">{{$group->name}}</option>
                                                     @endforeach

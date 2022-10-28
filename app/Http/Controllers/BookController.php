@@ -34,7 +34,7 @@ class BookController extends Controller
 
     // Удалить книгу
 
-    // Удалить группу
+    // Удалить отдел
 
     public function index()
     {

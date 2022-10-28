@@ -17,7 +17,7 @@ class ProfileGroupMigration extends Model
     protected $fillable = [
         'group_id', // 
         'user_id', // 
-        'enter', // Вход в группу Дата
+        'enter', // Вход в отдел Дата
         'resign', // Выход из группы Дата
         'step', // Этап 
     ];

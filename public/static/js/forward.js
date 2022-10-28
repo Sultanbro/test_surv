@@ -123,7 +123,7 @@ $(function () {
         })
 
         if (group_name_array == '') {
-            $('.selecthref').html('Выбрать группу контактов');
+            $('.selecthref').html('Выбрать отдел контактов');
         } else {
             $('.selecthref').html(group_name_array.join(","))
         }

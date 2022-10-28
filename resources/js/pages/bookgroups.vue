@@ -7,7 +7,7 @@
             <div class="col-lg-3">
                 <b-form-select :options="selectGroups" size="md" @change="groupselect" class="group-select col-lg-6 d-flex">
                     <template #first>
-                        <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>
+                        <b-form-select-option :value="null" disabled>Выберите отдел из списка</b-form-select-option>
                     </template>
                 </b-form-select>
             </div>
@@ -71,7 +71,7 @@ export default {
             })
         },
         deleteGroup() {
-            if (confirm('Вы уверены что хотите удалить группу?')) {
+            if (confirm('Вы уверены что хотите удалить отдел?')) {
                 axios.post('/bp_books/groups/delete', {
                     id: this.group_id,
                 }).then(response => {

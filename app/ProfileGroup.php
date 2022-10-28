@@ -31,7 +31,7 @@ class ProfileGroup extends Model
         'work_start', // Начало
         'work_end', // Конец рабочего времени
         'workdays', // Рабочие дни в неделе
-        'editors_id', // Кто может редактировать группу
+        'editors_id', // Кто может редактировать отдел
         'required', // Колво требуемых сотрудников
         'provided', // Колво предоставленных
         'head_id', // Руководители

@@ -842,7 +842,7 @@ $(function() {
 
 
         if (group_name_array == '') {
-            $('.selectContactGroup').html('Выбрать группу контактов');
+            $('.selectContactGroup').html('Выбрать отдел контактов');
         } else {
             $('.selectContactGroup').html(group_name_array.join(","))
         }

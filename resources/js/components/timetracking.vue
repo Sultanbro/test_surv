@@ -99,7 +99,7 @@
             <label
               for="firstName"
               class="col-sm-4 col-form-label font-weight-bold"
-              >Выберите группу</label
+              >Выберите отдел</label
             >
             <div class="col-sm-12 relative mb-2">
               <select
