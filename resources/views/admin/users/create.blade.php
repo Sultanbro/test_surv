@@ -1079,12 +1079,12 @@
                                                     <i class="fa fa-plus"></i> Добавить карту
                                             </button>
 
-                                            @if($user->zarplata && $user->zarplata->zarplata > 0)
+                                            @isset($user->zarplata)
                                                 <button class="btn btn-phone btn-rounded mb-2 mt-2" type="button"
                                                         onclick="addTax({{$user->id}}, {{$user->zarplata->zarplata}})">
                                                     <i class="fa fa-plus"></i> Добавить налог
                                                 </button>
-                                            @endif
+                                            @endisset
 
                                             <!-- END OF OKLAD -->
                                         </div>
