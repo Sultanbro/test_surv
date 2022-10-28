@@ -79,7 +79,10 @@ export default {
     props: {},
     data: function () {
         return {
-            data: {},
+            data: {
+                oklad: 80000,
+                kpiMax: 20000
+            },
             has_quartal_premiums: false,
         };
     },
@@ -110,10 +113,10 @@ export default {
          * animate opacity in blocks
          */
         OpacityStats() { 
-                let     MAXBALANCE = 80000,
-                        MAXKPI = 20000,
-                        MAXBONUSES = 10000,
-                        MAXKVARTAL = 50000,
+                let     MAXBALANCE = this.data.oklad,
+                        MAXKPI = this.data.kpiMax,
+                        MAXBONUSES = 1,
+                        MAXKVARTAL = 1,
                         MAXNOMINATIONS = 1,
                         maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
 

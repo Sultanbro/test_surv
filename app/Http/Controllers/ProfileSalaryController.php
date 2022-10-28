@@ -149,6 +149,7 @@ class ProfileSalaryController extends Controller
             'salary_percent' => $oklad > 0 ? $salary / $oklad * 100 : 0,
             'kpi_percent' => $kpi / 400, // kpi / 40000 * 100
             'kpi' => number_format((float)$kpi * $currency_rate,  0, '.', '\''). ' ' . strtoupper($user->currency),
+            'kpiMax' => 30000,
             'sumKpi' => $editedKpi ? $editedKpi->amount : $kpi,
             'sumSalary' => $salary,
             'sumBonuses' => $editedBonus ? $editedBonus->amount : $bonus,

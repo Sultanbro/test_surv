@@ -49,8 +49,8 @@
         </div> -->
 
         <div class="profile__active profile-box">
-            <div class="profile__title">График активности</div>
-            <div class="tabs__include profile-slick">
+            <div class="profile__title _slicked">График активности</div>
+            <div class="tabs__include profile-slick" style="display: none;">
                 <div class="tab__content-include">
                     <div class="tab__content-item-include is-active"  data-content="1">
                         <img src="images/dist/schedule.png" alt="schedule image">
