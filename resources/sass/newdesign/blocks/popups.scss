@@ -387,10 +387,13 @@ max-width: 100%;}
 
 .balance__title{
   margin-top: 0rem;
+  margin-bottom: 3rem;
   font-family: "Open Sans",sans-serif;
   font-size:2rem;
   color: rgba(64, 64, 64, 0.4);
   font-weight: 400;
+  border-bottom: 1px solid #aebde0;
+  padding-bottom: 1rem;
 
   span {
     display: block;
@@ -400,6 +403,7 @@ max-width: 100%;}
 .balance__inner{
   padding: 4rem 4rem;
   margin-top: 2rem;
+  margin-bottom: 2rem;
   // display: flex;
   background: #F5F7FC;
   border-radius:1.5rem;
