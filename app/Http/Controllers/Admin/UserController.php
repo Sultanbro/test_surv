@@ -924,6 +924,7 @@ class UserController extends Controller
      * Update user profile from settings
      *
      * @param Request $request
+     * @throws \Exception
      */
     public function updatePerson(Request $request)
     {
@@ -1062,17 +1063,10 @@ class UserController extends Controller
         /**
          * Сохранение налоговых начислений.
          */
-        if($request->input('tax')) {
-            (new TaxRepository)->insertMultipleTaxes($request->input('tax'));
-        }else if($request->input('taxes')) {
-            $taxIds = [];
-            $taxes  = $request->input('taxes');
-
-            foreach ($taxes as $id => $tax)
-            {
-                $taxIds[] = $id;
-            }
-            (new TaxRepository)->updateOrDelete($taxIds, $taxes);
+        try {
+            (new TaxService)->userTax($request);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
         }
 
         /**
