@@ -40,17 +40,27 @@ class TaxRepository extends CoreRepository
     }
 
     /**
+     * @param $id
      * @param array $ids
      * @param array $data
      * @return void
      */
-    public function updateOrDelete(array $ids, array $data): void
+    public function updateOrDelete($id, array $ids, array $data): void
     {
-        $this->model()->whereNotIn('id', $ids)->delete();
+        $this->model()->where('user_id', $id)->whereNotIn('id', $ids)->delete();
 
         foreach ($data as $id => $record)
         {
             $this->model()->where('id', $id)->update($record);
         }
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function deleteAll($id): void
+    {
+        $this->model()->where('user_id', $id)->delete();
     }
 }
