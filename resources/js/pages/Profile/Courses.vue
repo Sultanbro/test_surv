@@ -14,12 +14,14 @@
                 <img v-if="course.img !== null && course.img !== ''" :src="course.img" alt="курс" class="courses__image" @click="selectCourse(index)" >
                 <img v-else src="/images/dist/courses-image.png" alt="" class="courses__image" @click="selectCourse(index)" >
 
-                <!-- <div class="courses__progress">
+                <div class="courses__progress">
                     <div class="courses__line"></div>
-                </div> -->
+                </div>
                 <!-- Линия зависит от процентов в span-->
                 <div class="courses__percent">
-                    <!-- Пройдено: <span>99%</span> -->
+                    Пройдено: <span>99%</span>
+                </div>
+                <div>
                     {{ course.name }}
                 </div>
                 <a :href="'/my-courses?id=' + course.id" class="courses__button">
@@ -71,14 +73,9 @@
                             </a>
                             <div class="info__item-value">7%</div>
                         </div>
-
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="info__tip">
-            Курс доступен до 24.01
         </div>
     </div>
 
@@ -117,7 +114,6 @@ export default {
          * select active course info
          */
         selectCourse(index) {
-            return ;
             console.log('clicked ' + index)
             this.activeCourse = this.data[index]
             // this.$nextTick(() => this.initInnerSlider())

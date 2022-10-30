@@ -29,15 +29,15 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Дата</th>
-                            <th>Сумма</th>
-                            <th>Комментарии</th>
+                            <th class="text-center">Дата</th>
+                            <th class="text-center">Сумма</th>
+                            <th class="text-center">Комментарии</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="item in history">
-                            <td>{{ (new Date(item.date)).addHours(6).toLocaleString('ru-RU') }}</td>
-                            <td>{{ item.sum }}</td>
+                            <td class="text-center">{{ (new Date(item.date)).addHours(6).toLocaleString('ru-RU') }}</td>
+                            <td class="text-center">{{ item.sum }}</td>
                             <td>
                                 <p class="fz14 mb-0" v-html="item.comment"></p>
                             </td>
