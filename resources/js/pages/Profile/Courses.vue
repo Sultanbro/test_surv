@@ -1,6 +1,6 @@
 <template>
 <div class="courses__wrapper block _anim _anim-no-hide" id="courses__anchor">
-    <div class="courses__content" v-if="activeCourse === null">
+    <div class="courses__content" :class="{'hidden': activeCourse !== null}">
         <div class="courses__title">
             Ваши курсы
         </div>
@@ -14,15 +14,15 @@
                 <img v-if="course.img !== null && course.img !== ''" :src="course.img" alt="курс" class="courses__image" @click="selectCourse(index)" >
                 <img v-else src="/images/dist/courses-image.png" alt="" class="courses__image" @click="selectCourse(index)" >
 
+                <div class="courses__name">
+                    {{ course.name }}
+                </div>
                 <div class="courses__progress">
                     <div class="courses__line"></div>
                 </div>
                 <!-- Линия зависит от процентов в span-->
                 <div class="courses__percent">
                     Пройдено: <span>99%</span>
-                </div>
-                <div>
-                    {{ course.name }}
                 </div>
                 <a :href="'/my-courses?id=' + course.id" class="courses__button">
                     <span>Продолжить курс</span>
@@ -33,8 +33,8 @@
 
     </div>
 
-    <div class="profit__info active" v-else>
-        <div class="profit__info-title">
+    <div class="profit__info active" v-if="activeCourse !== null">
+        <div class="profit__info-title" >
             Информация о курсе: {{ activeCourse.name }}
         </div>
         <div class="profit__info-back" @click="back">
