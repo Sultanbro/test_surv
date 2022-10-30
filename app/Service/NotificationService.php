@@ -27,15 +27,6 @@ class NotificationService
             ->take(150)
             ->get();
 
-        foreach($unread_notifications as $item) {
-
-            $message = $item->message;
-
-            $message = str_replace('admin.u-marketing.org', 'bp.jobtron.org', $message);
-
-            $item->message = $message;
-        }
-
         return $unread_notifications;
     }
 

@@ -7,8 +7,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Mail;
-use App\Mail as Mailable;
 use App\Notification;
 
 class ProcessEmail implements ShouldQueue
@@ -50,7 +48,7 @@ class ProcessEmail implements ShouldQueue
             'image' => $image,
         ];
 
-        Mail::to($email)->send(new Mailable($template, $subject, $data));
+        \Mail::to($email)->send(new \App\Mail\Mail($template, $subject, $data));
 
         Notification::find($id)->increment('emails_sent');
     }

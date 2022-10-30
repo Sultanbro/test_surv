@@ -42,14 +42,7 @@ class AppServiceProvider extends ServiceProvider
                     ->take(150)
                     ->get();
 
-                foreach($unread_notifications as $item) {
-                    $message = $item->message;
-
-                    $message = str_replace('admin.u-marketing.org', 'bp.jobtron.org', $message);
-
-                    $item->message = $message;
-                }
-
+            
                 if($unread_notifications->count() > 0) {
                     $bonus_notification = UserNotification::where('user_id', $user_id)
                         ->where('title', 'Сегодня получили бонусы')

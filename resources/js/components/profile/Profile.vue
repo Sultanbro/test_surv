@@ -1,20 +1,6 @@
 <template>
     <div class="profile-buttons">
-        <!--
-        <a href="/"
-            class="email d-flex align-items-center mr-2"
-            title="Мой профиль"
-            >
-            
-            <div class="d-flex align-items-center flex-column u-2">
-                <div class="u-email">{{ u.email }}</div>
-                <div class="u-name">{{ u.last_name + ' ' + u.name }}</div>        
-            </div>
-        </a>
-        <a class="nav-link exit" title="Выход" href="/logout">
-            <img src="https://cp.u-marketing.org/static/new/img/ico-exit.png" />
-        </a>
-        -->
+    
 
     </div>
 </template>

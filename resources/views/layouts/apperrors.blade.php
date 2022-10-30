@@ -62,8 +62,7 @@
         <div id="wrapper">
             <div id="sidebar" class="active active_no_transition">
               <a href="/" class="logo">
-                <span class="name">u-marketing<span>.org</span></span>
-                <span class="slogan">Simplify your marketing!</span>
+                <span class="name">jobtron.org<span>.org</span></span>
               </a>
                 <h1>Меню</h1>
 
@@ -152,7 +151,7 @@
         }
         $('.send-btn').click(function(e){
           e.preventDefault();
-          window.open('https://cp.u-marketing.org/sms/update?message_text='+$(this).parent().find('p').text(), '_self');
+          window.open('https://cp.jobtron.org.org/sms/update?message_text='+$(this).parent().find('p').text(), '_self');
         });
         </script>
 

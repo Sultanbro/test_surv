@@ -17,7 +17,7 @@ class OauthClientToken extends Model
     
     // const AMOCRM_CLIENT_ID = '4214e582-78d3-4880-8aba-4d0ae8c6c1e4';
     // const AMOCRM_CLIENT_SECRET = 'nhmq7q3JtZs68YdZmeon7E9Dx52lJKriTLRiwUxdEldZXA3rDzD48FyvKpSZ04rf';
-    const AMOCRM_REDIRECT_URI = 'https://admin.u-marketing.org/api/apix';
+    const AMOCRM_REDIRECT_URI = 'https://jobtron.org/api/apix';
     const AMOCRM_GRANT_TYPES = ['authorization_code', 'refresh_token'];
 
     const AMOCRM_CLIENT_ID = '69b6bca1-2ac1-4b1b-b06a-6de341588cb5';

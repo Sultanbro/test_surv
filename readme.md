@@ -1,4 +1,4 @@
-<img src="https://u-marketing.org/public/images/logotwo.png" height="50">
+<img src="https://bp.jobtron.org/images/logo.png" height="50">
 
 ## Stack
 
@@ -9,6 +9,8 @@
 - Node v16.15
 - npm v8.11
 - Vue 2.6
+- Bootstrap 4
+
 ## Installation
 
 * git clone https://github.com/mediasend/surv

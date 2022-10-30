@@ -12,7 +12,6 @@ use App\Service\TaxService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
-use App\Mail as Mailable;
 use Illuminate\Mail\Mailer;
 use Swift_Mailer;
 use Swift_SmtpTransport;
@@ -591,7 +590,7 @@ class UserController extends Controller
         ];
 
         /*==============================================================*/
-        /*******  Проверка существует ли пользователь в U-marketing.org */
+        /*******  Проверка существует ли пользователь в *.Jobtron.org */
         /*==============================================================*/
         
         
@@ -637,14 +636,11 @@ class UserController extends Controller
       
 
         /*==============================================================*/
-        /*******  Создание пользователя в U-marketing.org  */
+        /*******  Создание пользователя в *.Jobtron.org  */
         /*==============================================================*/
 
 
-        
-
-
-        if($user) { // Если пользователь был ранее зарестрирован в cp.u-marketing.org
+        if($user) { // Если пользователь был ранее зарестрирован 
             $user->update([
                 'name' => $request['name'],
                 'last_name' => $request['last_name'],
@@ -809,7 +805,7 @@ class UserController extends Controller
         }
 
         /*==============================================================*/
-        /*******  Документы пользователя в U-marketing.org  */
+        /*******  Документы пользователя в *.Jobtron.org  */
         /*==============================================================*/
 
         if ($request->hasFile('file1')) {
@@ -1669,27 +1665,6 @@ class UserController extends Controller
 
       
         return view('admin.users.create', $this->preparePersonInputs($request->id));
-    }
-
-    /**
-     * send mail Maybe not working
-     */
-    protected function mail($to, $template, $subject, $data)
-    {
-        $from = [
-            'address' => 'no-reply@jobtron.org', // env('MAIL_FROM_ADDRESS', 'no-reply@u-marketing.org'),
-            'name' => env('MAIL_FROM_NAME', 'Jobtron'),
-        ];
-
-        $transport = (new Swift_SmtpTransport('smtp.timeweb.ru', '465'))
-            ->setEncryption('ssl')
-            //->setUsername(env('MAIL_FROM_ADDRESS', 'no-reply@u-marketing.org'))
-            ->setUsername('no-reply@jobtron.org')
-            ->setPassword('FgzNZ7Cj!'); //env('MAIL_password', 'Asd123102030!!'));
-
-        $mailer = app(Mailer::class);
-        $mailer->setSwiftMailer(new Swift_Mailer($transport));
-        $mailer->to($to)->send(new Mailable($template, $subject, $data, $from));
     }
 
     /**

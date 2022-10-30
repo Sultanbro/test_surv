@@ -25,7 +25,7 @@
                                 <span class="label-wrapper_text" v-else></span>
                             </div>
                             <span class="notification-date">{{ noti.created_at }}</span>
-                            <span class="notification-projectId">U-marketing</span>
+                            <span class="notification-projectId">Jobtron.org</span>
                         </div>
                         <div class="notification-title">{{ noti.title }}</div>
                         <div class="notification-text" v-html="noti.message"></div>
@@ -38,21 +38,7 @@
             </div>
             <div class="panel_out " data-id="2">
                 <div class="notification_list">
-                    <!-- @foreach ($read_notifications as $item)
-                        <div class="notification_item">
-                            <div class="notifi_top">
-                                <div class="label-wrapper {{$item->type=='important'?'':'hidden'}}"><span
-                                            class="label-wrapper_text">{{$item->type=='important'?'ВАЖНОЕ':''}}</span>
-                                </div>
-                                <span class="notification-date">{{$item->formattedDate()}}</span>
-                                <span class="notification-projectId">U-marketing</span>
-                            </div>
-                            <div class="notification-title">{{$item->title}}</div>
-                            <div class="notification-text">
-                                {!!$item->message!!}
-                            </div>
-                        </div>
-                    @endforeach -->
+              
 
                 </div>
             </div>

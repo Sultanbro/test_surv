@@ -22,7 +22,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TraineeController;
 use App\Http\Controllers\Admin\QuartalBonusController;
-use App\Http\Controllers\Admin\IndexController;
 use App\Http\Controllers\Admin\TimetrackingController;
 use App\Http\Controllers\Admin\KpiController as OldKpiController;
 use App\Http\Controllers\Admin\BpartnersController;
@@ -47,7 +46,6 @@ use App\Http\Controllers\Video\VideoPlaylistController;
 use App\Http\Controllers\Video\VideoCategoryController;
 use App\Http\Controllers\Video\VideoGroupController;
 use App\Http\Controllers\Video\VideoController;
-use App\Http\Controllers\Video\VideolearningController;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FileUploadController;
@@ -68,9 +66,6 @@ use App\Http\Controllers\ProfileSalaryController;
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\CallibroController;
-use Eddir\Messenger\Http\Controllers\ChatsController;
-use Eddir\Messenger\Http\Controllers\MessagesController;
-use Eddir\Messenger\Http\Controllers\Api\MessagesController as ApiMessagesController;
 use \App\Http\Controllers\Department\UserController as DepartmentUserController;
 use App\Http\Controllers\NotificationControlller;
 
@@ -329,10 +324,6 @@ Route::middleware([
 
     Route::get('/test', [TestController::class, 'test'])->name('test');
     Route::get('/wami', [TestController::class, 'send_whatsapp']);
-
-
-    Route::get('/user/delete/{id}', [IndexController::class, 'deleteUser']);
-
 
     Route::post('/timetracking/settings/groups/importexcel', [GroupsController::class, 'import']);
     Route::post('/timetracking/settings/groups/importexcel/save', [GroupsController::class, 'saveTimes']);

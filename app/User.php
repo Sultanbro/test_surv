@@ -68,7 +68,7 @@ class User extends Authenticatable implements Authorizable
         'working_city',
         'work_start',
         'work_end',
-        'birthday', // admin.u-marketing
+        'birthday', 
         'last_group',
         'read_corp_book_at',
         'has_noti',

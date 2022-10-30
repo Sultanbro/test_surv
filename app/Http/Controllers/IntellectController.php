@@ -39,8 +39,7 @@ class IntellectController extends Controller {
 
     public $bot_webhook = 'https://connect.intellectdialog.com/api/w/event/4904bb39-90f4-460e-b6a7-cafc87a99c9d';
     public $message_webhook = 'https://connect.intellectdialog.com/api/w/event/c10977c8-2b3b-400b-b870-b21c8953cd2e';
-    // public $contract_link = 'https://admin.u-marketing.org/bpr/';
-    // public $time_link = 'https://admin.u-marketing.org/bp/choose_time?hash=';
+
     public $contract_link = 'https://bpartners.kz/bcontract?hash=';
     public $time_link = 'https://bpartners.kz/btime?hash=';
 
@@ -631,7 +630,7 @@ class IntellectController extends Controller {
                 //////
                 return $this->updateFields($lead->lead_id, $req);
             } else {
-                return 'Лид не найден в u-marketing.org!';
+                return 'Лид не найден в jobtron.org!';
             }
         } else {
             return 'Телефон не указан!';

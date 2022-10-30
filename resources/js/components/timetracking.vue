@@ -37,33 +37,6 @@
           </template>
         </div>
       </div>
-
-      <!--  <div class="d-flex justify-content-between">
-        <div class="zarplata d-flex">
-          <div>
-            <img src="https://cp.u-marketing.org/static/images/ico-balanse.png"/>
-          </div>
-          <div>
-            <p v-b-tooltip="'Баланс + KPI + Бонусы'" >
-              <a class="linksa" title="Баланс + KPI + Бонусы">
-                Итого заработано: 
-              </a>
-              <a class="linksa" title="Баланс + KPI + Бонусы">
-                {{ total_earned }}
-              </a>
-            </p>
-          </div>
-        </div>
-        <div v-if="position_id == 45 || position_id == 46">
-          <a
-            class="btn btn-orders"
-            @click="ordersShow = !ordersShow"
-            title="Заказы руководителей"
-            >
-            <i class="fa fa-briefcase"></i>
-            </a>
-        </div> 
-      </div>-->
     </div>
 
     

@@ -23,8 +23,6 @@ mix.webpackConfig({
 });
 
 // mix.js('resources/assets/js/app.js', 'public/js')
-//     //.js('resources/assets/js/profile.js', 'public/js')
-//     //.js('resources/assets/js/surv.js', 'public/js')
 //     // .extract([
 //     //     'vue',
 //     //     //'jquery',
