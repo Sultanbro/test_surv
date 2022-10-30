@@ -124,7 +124,6 @@ export default {
          */
         back() {
             this.activeCourse = null;
-            this.$nextTick(() => this.initSlider())
         },
 
         /**

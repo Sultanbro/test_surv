@@ -4,7 +4,6 @@
     <div class="intro__top-buttons">
         <a href="#courses__anchor"	class="intro__button button-blue" v-if="courses">Вашиу курсы</a>
         <a href="#profit"	class="intro__button button-blue" v-if="profit">Как можно зарабатывать больше</a>
-        <a href="#profitInfo" class="intro__button button-blue">Ваша личная информация</a>
         <a href="#trainee" class="intro__button button-blue" v-if="estimation">Вот как стажеры оценили ваше обучение</a>
         <a href="#index" class="intro__button button-blue" v-if="indicators">Ваши показатели</a>
     </div>
