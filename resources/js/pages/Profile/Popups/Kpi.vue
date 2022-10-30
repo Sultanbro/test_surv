@@ -188,7 +188,7 @@ export default {
                     year: new Date().getFullYear(),
                     month: this.$moment(this.currentMonth, 'MMMM').format('M')
                 },
-                user_id: this.$userId
+                user_id: this.$laravel.userId
             })
         },
 

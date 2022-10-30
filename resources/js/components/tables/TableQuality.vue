@@ -696,10 +696,10 @@
 </template>
 
 <script>
-import Template from "../../../../public/static/partner/templates/template.html";
+// import Template from "../../../../public/static/partner/templates/template.html";
 export default {
   name: "TableQuality",
-  components: {Template},
+  // components: {Template},
   props: {
     groups: Array,
     individual_type:{
