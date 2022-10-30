@@ -1,5 +1,5 @@
 <template>
-<div class="courses__wrapper block _anim _anim-no-hide">
+<div class="courses__wrapper block _anim _anim-no-hide" id="courses__anchor">
     <div class="courses__content" v-if="activeCourse === null">
         <div class="courses__title">
             Ваши курсы

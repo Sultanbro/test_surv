@@ -176,6 +176,7 @@ export default {
         };
     },
     created(){
+        this.$emit('init')
         this.fetchData()
     },
     methods: {

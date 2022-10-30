@@ -1,15 +1,20 @@
 <template>
 <div class="">
     <div class="intro content">
-        <new-intro-top></new-intro-top>
+        <new-intro-top
+            :courses="intro['courses']"
+            :profit="intro['profit']"
+            :estimation="intro['estimation']"
+            :indicators="intro['indicators']"
+        ></new-intro-top>
         <new-intro-stats @pop="pop"></new-intro-stats>
         <!-- <new-intro-smart-table></new-intro-smart-table> -->
     </div>
 
-    <new-courses></new-courses>
-    <new-profit></new-profit> 
-    <new-trainee-estimation></new-trainee-estimation>
-    <new-compare-indicators></new-compare-indicators>
+    <new-courses @init="intro['courses'] = true"></new-courses>
+    <new-profit @init="intro['profit'] = true"></new-profit> 
+    <new-trainee-estimation @init="intro['estimation'] = true"></new-trainee-estimation>
+    <new-compare-indicators @init="intro['indicators'] = true"></new-compare-indicators>
 
     <popup v-if="popBalance"
         title="Баланс оклада"
@@ -71,6 +76,12 @@ export default {
             popBonuses: false,
             popQuartalPremiums: false,
             popNominations: false,
+            intro: {
+                courses: false,
+                profit: false,
+                estimation: false,
+                indicators: false,
+            }
         };
     },
     methods: {

@@ -103,6 +103,7 @@ export default {
         };
     },
     created() {
+        this.$emit('init')
         this.setMonthInfo()
         this.createConsts()
         this.fetchData()
