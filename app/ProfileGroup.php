@@ -115,8 +115,8 @@ class ProfileGroup extends Model
             ['active','=',1]
         ])
             ->orWhere(fn ($query) => $query
-                ->whereYear('archived_date','<=', $year)
-                ->whereMonth('archived_date','>=', $month)
+                ->whereYear('archived_date','=', $year)
+                ->whereMonth('archived_date','=', $month)
             )
             ->get()->pluck('id')->toArray();
     }
