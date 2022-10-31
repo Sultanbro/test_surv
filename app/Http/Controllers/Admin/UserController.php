@@ -6,9 +6,11 @@ use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SetHeadToGroupRequest;
 use App\KnowBase;
 use App\Repositories\TaxRepository;
 use App\Service\TaxService;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -924,6 +926,7 @@ class UserController extends Controller
      */
     public function updatePerson(Request $request)
     {
+        dd($request->all());
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
@@ -1437,29 +1440,36 @@ class UserController extends Controller
     }
 
     /**
-     * set user in groups as head
+     * Назначить руководителя группы.
      *
+     * @param SetHeadToGroupRequest $request
      * @return void
+     * @throws Exception
      */
-    public function setUserHeadInGroups(Request $request) : void
+    public function setUserHeadInGroups(SetHeadToGroupRequest $request) : void
     {
         $group = ProfileGroup::find($request['group_id']);
-        $users = json_decode($group->head_id);
- 
-        if($request['action'] == 'add') {
-            array_push($users, $request['user_id']); 
-            $users = array_unique($users);
-        }
+        $exist = $group->users()->where([
+            ['user_id', $request['user_id']],
+            ['status', 'active'],
+            ['is_head', true]
+        ])->whereNull('to')->exists();
 
-        if($request['action'] == 'delete') {
-            if (($key = array_search($request['user_id'], $users)) !== false) {
-                unset($users[$key]);
+        try {
+            if($request['action'] == 'add' && !$exist) {
+                $group->users()->where('user_id', $request['user_id'])->update([
+                    'is_head' => true
+                ]);
             }
-        }
 
-        $users = array_values($users);
-        $group->head_id = json_encode($users);
-        $group->save();
+            if($request['action'] == 'delete') {
+                $group->users()->where('user_id', $request['user_id'])->update([
+                    'is_head' => false
+                ]);
+            }
+        }catch (\Exception $exception) {
+            throw new \Exception($exception);
+        }
     }
 
     /**

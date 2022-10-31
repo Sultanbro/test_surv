@@ -62,7 +62,8 @@ class NpsController extends Controller
 
 
             if($user->position_id == 45) {
-                $groups = ProfileGroup::headIn($user->id, false);
+                $user = User::query()->find($user->id);
+                $groups = $user->inGroups(true);
                 $group = count($groups) > 0 ? $groups[0]->name : '.Без группы';
             } else {
                 $_user = User::withTrashed()->find($user->id);
