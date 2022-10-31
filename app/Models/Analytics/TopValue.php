@@ -117,9 +117,11 @@ class TopValue extends Model
     public static function getUtilityGauges($date, $group_ids = []) {
 
         if(count($group_ids) == 0) {
-            $group_ids = ProfileGroup::activeProfileGroupsWithAnalytics();
+            $carbon = Carbon::createFromFormat('Y-m-d', $date);
+
+            $group_ids = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month);
         }
-        
+
         $gauge_groups = [];
 
         $activities = Activity::whereIn('group_id', $group_ids)->get();
