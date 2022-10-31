@@ -39,6 +39,13 @@ class MessagesController {
             $lastMessage->readers = $lastMessage->readers->filter(function ($reader) {
                 return $reader->id !== Auth::user()->id;
             });
+            // set default avatar if user has no img_url
+            $lastMessage->readers->transform(function ($reader) {
+                if (!$reader->img_url) {
+                    $reader->img_url = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
+                }
+                return $reader;
+            });
         }
 
         return response()->json($messages);

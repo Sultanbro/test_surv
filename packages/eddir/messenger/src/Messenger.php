@@ -8,8 +8,9 @@
 
 namespace Eddir\Messenger;
 
-use App\User;
+use App\Models\User;
 use Eddir\Messenger\Models\MessengerChat;
+use Eddir\Messenger\Models\MessengerFile;
 use Eddir\Messenger\Models\MessengerMessage;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
@@ -73,10 +74,10 @@ class Messenger {
      *
      * @param MessengerChat $chat
      * @param User $user
+     *
      * @return MessengerChat
      */
-    public function getChatAttributesForUser(MessengerChat $chat, User $user): MessengerChat
-    {
+    public function getChatAttributesForUser( MessengerChat $chat, User $user ): MessengerChat {
         $chat->unread_messages_count = $chat->getUnreadMessagesCount( $user );
         // last message with sender
         $chat->last_message = $chat->getLastMessage();
@@ -84,20 +85,15 @@ class Messenger {
             $chat->last_message->sender = $chat->last_message->sender;
         }
 
-        if ($chat->private) {
+        if ( $chat->private ) {
             // get second user in private chat
-            $second_user = $chat->users->firstWhere('id', '!=', $user->id);
-
-            $chat->title = $second_user ? $second_user->name . " " . $second_user->last_name : 'Уволен';
-            $chat->image = $second_user ? config('messenger.user_avatar.folder') . '/' . $second_user->img_url : '';
-
-            if($second_user && ($second_user->img_url == '' || $second_user->img_url == 'avatar.png')) {
-                $chat->image = '/images/avatar.png';
-            }
+            $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
+            $chat->title = $second_user->name . " " . $second_user->last_name;
+            $chat->image = $second_user->img_url;
 
         }
-        if (empty($chat->image)) {
-            $chat->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
+        if ( empty( $chat->image ) ) {
+            $chat->image = config( 'messenger.user_avatar.default' ) ?? asset( 'vendor/messenger/images/users.png' );
         }
 
 
@@ -135,9 +131,7 @@ class Messenger {
     public function searchUsers( string $name, int $limit = 100 ): Collection {
         return User::query()
                    ->where( 'name', 'like', "%$name%" )
-                   ->orWhere( 'last_name', 'like', "%$name%" )
                    ->limit( $limit )
-                   ->select('name', 'id', 'last_name', 'img_url') 
                    ->get();
     }
 
@@ -177,11 +171,11 @@ class Messenger {
         }
         // create new chat if it doesn't exist
         $chat = MessengerChat::query()
-                            ->create( [
-                                'owner_id' => $userId,
-                                'title' => '',
-                                'private' => true,
-                            ] );
+                             ->create( [
+                                 'owner_id' => $userId,
+                                 'title'    => '',
+                                 'private'  => true,
+                             ] );
 
         // attach each user
         $chat->users()->attach( $userId );
@@ -203,8 +197,9 @@ class Messenger {
      */
     public function fetchMessages( int $chatId, int $page = 0, int $perPage = 10 ): Collection {
         return MessengerMessage::query()
+                               ->with( 'files' )
                                ->where( 'chat_id', $chatId )
-                               ->where( 'deleted' , false)
+                               ->where( 'deleted', false )
                                ->orderBy( 'created_at', 'desc' )
                                ->skip( $page * $perPage )
                                ->take( $perPage )
@@ -226,13 +221,14 @@ class Messenger {
             # get all users in chat
             $users = $message->chat->users;
             # send notification to all users in chat
-            $users->each(function (User $user) use ($message) {
+            $users->each( function ( User $user ) use ( $message ) {
                 $this->pusher->trigger( 'messages.' . $user->id, 'readMessage', [
                     'message' => $message->toArray(),
-                    'user' => $user->toArray(),
+                    'user'    => $user->toArray(),
                 ] );
-            });
+            } );
         } );
+
         return $messages;
     }
 
@@ -244,17 +240,18 @@ class Messenger {
      *
      * @return MessengerMessage
      */
-    public function setMessageAsRead(MessengerMessage $message, User $user): MessengerMessage {
-        $message->readers()->syncWithoutDetaching($user);
+    public function setMessageAsRead( MessengerMessage $message, User $user ): MessengerMessage {
+        $message->readers()->syncWithoutDetaching( $user );
         # get all users in chat
         $users = $message->chat->users;
         # send notification to all users in chat
-        $users->each(function (User $user) use ($message) {
+        $users->each( function ( User $user ) use ( $message ) {
             $this->pusher->trigger( 'messages.' . $user->id, 'readMessage', [
                 'message' => $message->toArray(),
-                'user' => $user->toArray(),
+                'user'    => $user->toArray(),
             ] );
-        });
+        } );
+
         return $message;
     }
 
@@ -283,7 +280,7 @@ class Messenger {
      * @return Collection
      */
     public function getMessages( int $chat_id ): Collection {
-        return MessengerMessage::where( 'chat_id', $chat_id )->where('deleted', false)->get();
+        return MessengerMessage::where( 'chat_id', $chat_id )->where( 'deleted', false )->get();
     }
 
     /**
@@ -311,19 +308,24 @@ class Messenger {
      * @throws PusherException
      * @throws Exception
      */
-    public function sendMessage( int $chatId, int $userId, string $body ): MessengerMessage {
-        $message = new MessengerMessage();
-        $message->chat_id = $chatId;
+    public function sendMessage( int $chatId, int $userId, string $body, $file = null ): MessengerMessage {
+        $message            = new MessengerMessage();
+        $message->chat_id   = $chatId;
         $message->sender_id = $userId;
-        $message->body = $body;
+        $message->body      = $body;
         $message->save();
 
         // for every user in chat send message to pusher
         $chat = MessengerChat::find( $chatId );
 
         // check if user is member of chat
-        if ( !$chat->hasMember(User::find($userId)) ) {
+        if ( ! $chat->hasMember( User::find( $userId ) ) ) {
             throw new Exception( 'User is not member of chat ' . $chatId );
+        }
+
+        if ( $file ) {
+            $file->message_id = $message->id;
+            $file->save();
         }
 
         // todo: for every online user
@@ -332,6 +334,7 @@ class Messenger {
                 'message' => $message->toArray(),
             ] );
         } );
+
         return $message;
     }
 
@@ -360,9 +363,10 @@ class Messenger {
      */
     public function editMessage( int $messageId, string $body ): MessengerMessage {
         /** @var MessengerMessage $message */
-        $message = MessengerMessage::find( $messageId );
+        $message       = MessengerMessage::find( $messageId );
         $message->body = $body;
         $message->save();
+
         return $message;
     }
 
@@ -375,9 +379,10 @@ class Messenger {
      */
     public function deleteMessage( int $messageId ): bool {
         /** @var MessengerMessage $message */
-        $message = MessengerMessage::find( $messageId );
+        $message          = MessengerMessage::find( $messageId );
         $message->deleted = true;
         $message->save();
+
         return true;
     }
 
@@ -393,7 +398,7 @@ class Messenger {
      */
     public function pinMessage( int $messageId ): MessengerMessage {
         /** @var MessengerMessage $message */
-        $message = MessengerMessage::find( $messageId );
+        $message         = MessengerMessage::find( $messageId );
         $message->pinned = true;
         $message->save();
 
@@ -429,7 +434,7 @@ class Messenger {
      */
     public function unpinMessage( int $messageId ): MessengerMessage {
         /** @var MessengerMessage $message */
-        $message = MessengerMessage::find( $messageId );
+        $message         = MessengerMessage::find( $messageId );
         $message->pinned = false;
         $message->save();
 
@@ -464,8 +469,8 @@ class Messenger {
      * @return MessengerChat
      */
     public function createChat( int $userId, string $title, string $description, array $members ): MessengerChat {
-        $chat = new MessengerChat();
-        $chat->title = $title;
+        $chat              = new MessengerChat();
+        $chat->title       = $title;
         $chat->description = $description;
         $chat->owner()->associate( User::find( $userId ) );
         $chat->save();
@@ -490,6 +495,7 @@ class Messenger {
     public function addUserToChat( int $chatId, int $userId ): MessengerChat {
         $chat = MessengerChat::find( $chatId );
         $chat->users()->attach( $userId );
+
         return $chat;
     }
 
@@ -504,6 +510,7 @@ class Messenger {
     public function removeUserFromChat( int $chatId, int $userId ): MessengerChat {
         $chat = MessengerChat::find( $chatId );
         $chat->users()->detach( $userId );
+
         return $chat;
     }
 
@@ -517,6 +524,7 @@ class Messenger {
     public function deleteChat( int $chatId ): MessengerChat {
         $chat = MessengerChat::find( $chatId );
         $chat->delete();
+
         return $chat;
     }
 
@@ -531,10 +539,11 @@ class Messenger {
      */
     public function updateChat( int $chatId, string $title, string $description ): MessengerChat {
         /* @var MessengerChat $chat */
-        $chat = MessengerChat::find( $chatId );
-        $chat->title = $title;
+        $chat              = MessengerChat::find( $chatId );
+        $chat->title       = $title;
         $chat->description = $description;
         $chat->save();
+
         return $chat;
     }
 

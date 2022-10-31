@@ -8,7 +8,7 @@
 
 namespace Eddir\Messenger\Http\Controllers;
 
-use App\User;
+use App\Models\User;
 use Eddir\Messenger\Facades\MessengerFacade;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -95,19 +95,8 @@ class ChatsController extends Controller
 
         foreach ($users as $user) {
             // set default image if user has no image
-            if (empty($user->img_url)) {
-                if (empty($user->image)) {
-                    $user->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
-                }
-                
-                
-                if($user->img_url == '' || $user->img_url == 'avatar.png') {
-                    $user->image = '/images/avatar.png';
-                } else {
-                    $user->image = '/users_img/' . $user->img_url;
-                }
-    
-                $user->name = $user->name . ' ' . $user->last_name;
+            if (empty($user->image)) {
+                $user->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
             }
         }
 

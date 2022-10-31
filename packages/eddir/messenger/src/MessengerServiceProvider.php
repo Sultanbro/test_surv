@@ -60,7 +60,7 @@ class MessengerServiceProvider extends ServiceProvider
 
         // Publishing Vue components.
         $this->publishes([
-            __DIR__ . '/../resources/js/Components/Chat/' => resource_path("js/Components/Chat/"),
+            __DIR__ . '/../resources/js/components/chat/' => resource_path("js/components/chat/"),
         ], 'messenger-vue-components');
 
         $this->publishes([
