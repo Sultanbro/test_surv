@@ -15,7 +15,7 @@
 
         <template v-for="item in items">
             <div class="award__title popup__content-title">
-                За период с {{ item.items.from }} до {{ item.items.to }}
+                За период с {{ new Date(item.items.from).toLocaleDateString('RU')  }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
             </div>
             <table class="award__table">
                 <tr>
@@ -24,13 +24,15 @@
                 </tr>
                 <tr v-if="item.items.activity">
                     <td class="blue">План</td>
-                    <div>
-                        <b>{{ item.items.activity.name }}</b>
-                    </div>
-                    <div>{{ item.items.plan }}</div>
+                    <td>
+                        <div>
+                            <b>Активность: {{ item.items.activity.name }}</b>
+                        </div>
+                        <div>{{ item.items.plan }}</div>
+                    </td>
                 </tr>
                 <tr>
-                    <td class="blue">Комментарии</td>
+                    <td class="blue">Условия</td>
                     <td>{{ item.items.text }}</td>
                 </tr>
             </table>

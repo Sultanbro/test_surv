@@ -443,6 +443,7 @@ class KpiStatisticService
                     'name' => $user->full_name,
                     'items' => [
                         'activity_id' => $user->activity_id,
+                        'activity' => $quartalPremium->activity,
                         'title' => $quartalPremium->title,
                         'text'  => $quartalPremium->text,
                         'plan'  => $quartalPremium->plan,
