@@ -18,7 +18,7 @@ window.VJQuery = JQuery
 import moment from 'moment'
 import Notifications from 'vue-notification'
 import VueMask from 'v-mask' 
-import VGauge from 'vgauge';   
+import VGauge from 'vgauge';    
 import draggable from 'vuedraggable'  
 import Multiselect from 'vue-multiselect'
 import Vue from 'vue'

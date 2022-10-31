@@ -7,12 +7,8 @@ use App\Http\Requests\QuartalPremiumSaveRequest;
 use App\Http\Requests\QuartalPremiumUpdateRequest;
 use App\Models\QuartalPremium;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use App\Models\Analytics\Activity;
-use Exception;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\ProfileGroup;
 use App\Traits\KpiHelperTrait;
 

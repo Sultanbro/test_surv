@@ -1,7 +1,7 @@
 <template>
 <div class="popup__content mt-3">
     <div class="popup__filter">
-        <select class="select-css" v-model="currentMonth" @change="fetchData()">
+        <select class="select-css" v-model="currentMonth" @change="fetchBefore()">
             <option
                 v-for="month in $moment.months()"
                 :value="month"
@@ -12,19 +12,31 @@
         </select>
     </div>
     <div class="popup__award">
-        <div class="award__title popup__content-title">
-            За период с 01.03.2020 до 31.06.2022
-        </div>
-        <table class="award__table">
-            <tr>
-                <td class="blue">Сумма</td>
-                <td>400.000</td>
-            </tr>
-            <tr>
-                <td class="blue">Комментарии</td>
-                <td>Нужно выполнить условие: 1.хх 2.хх</td>
-            </tr>
-        </table>
+
+        <template v-for="item in items">
+            <div class="award__title popup__content-title">
+                За период с {{ item.items.from }} до {{ item.items.to }}
+            </div>
+            <table class="award__table">
+                <tr>
+                    <td class="blue">Сумма премии</td>
+                    <td>{{ item.items.sum }}</td>
+                </tr>
+                <tr v-if="item.items.activity">
+                    <td class="blue">План</td>
+                    <div>
+                        <b>{{ item.items.activity.name }}</b>
+                    </div>
+                    <div>{{ item.items.plan }}</div>
+                </tr>
+                <tr>
+                    <td class="blue">Комментарии</td>
+                    <td>{{ item.items.text }}</td>
+                </tr>
+            </table>
+        </template>
+
+       
     </div>
 </div>
 </template>
@@ -35,7 +47,9 @@ export default {
     props: {},
     data: function () {
         return {
-            fields: [], 
+            items: [], 
+            activities: [], 
+            groups: [], 
             currentMonth: null,
             dateInfo: {
                 currentMonth: null,
@@ -48,7 +62,7 @@ export default {
     },
     created(){
         this.setMonth()
-        this.fetchData()
+        this.fetchBefore()
     },
     methods: {
         /**
@@ -69,9 +83,53 @@ export default {
             this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
         },
 
-        fetchData() {
+        fetchBefore() {
+            this.fetchData({
+                data_from: {
+                    year: new Date().getFullYear(),
+                    month: this.$moment(this.currentMonth, 'MMMM').format('M')
+                },
+                user_id: this.$laravel.userId
+            })
+        },
 
-        }
+        fetchData(filters = null) {
+            let loader = this.$loading.show();
+
+            axios.post('/statistics/quartal-premiums', {
+                filters: filters 
+            }).then(response => {
+                    
+                this.items = response.data[0];
+
+                // this.defineSourcesAndGroups('t');
+
+                this.items.forEach(el => el.expanded = true);
+
+                loader.hide()
+            }).catch(error => {
+                loader.hide()
+                alert(error)
+            });
+        },
+
+        defineSourcesAndGroups(t) {
+            this.items.forEach(p => {
+                p.items.forEach(el => {
+                    el.source = 0;
+                    el.group_id = 0;
+
+                    if(el.activity_id != 0) {
+                        let i = this.activities.findIndex(a => a.id == el.activity_id);
+                        if(i != -1) {
+                            el.source = this.activities[i].source
+                            if(el.source == 1) el.group_id = this.activities[i].group_id
+                        }
+                    }
+                });
+            })
+           
+        },
     }
 };
 </script>

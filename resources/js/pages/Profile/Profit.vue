@@ -55,7 +55,6 @@ export default {
         };
     },
     created() {
-        this.$emit('init')
         this.fetchData()
     },
 
@@ -67,10 +66,23 @@ export default {
             let loader = this.$loading.show();
 
             axios.post('/profile/payment-terms').then(response => {
+
+                this.showBtn(response.data)
+                
+
                 this.data = response.data
                 this.form();
                 loader.hide()
             }).catch((e) => console.log(e))
+        },
+
+        /**
+         * private: show btn in introTop 
+         */
+        showBtn(data) {
+            if(data.groups.length != 0 || data.position !== null) {
+                this.$emit('init')
+            }
         },
 
         /**

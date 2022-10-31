@@ -103,7 +103,6 @@ export default {
         };
     },
     created() {
-        this.$emit('init')
         this.setMonthInfo()
         this.createConsts()
         this.fetchData()
@@ -118,10 +117,21 @@ export default {
 
             axios.post('/profile/activities').then(response => {
 
+                this.showBtn(response.data)
+
                 this.activities = response.data.activities
 
                 loader.hide()
             }).catch((e) => console.log(e))
+        },
+
+        /**
+         * private: show btn in introTop 
+         */
+        showBtn(data) {
+            if(data.activities.length > 0) {
+                this.$emit('init')
+            }
         },
 
         /**

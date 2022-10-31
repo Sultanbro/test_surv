@@ -176,7 +176,6 @@ export default {
         };
     },
     created(){
-        this.$emit('init')
         this.fetchData()
     },
     methods: {
@@ -185,13 +184,27 @@ export default {
             
             axios.post("/profile/trainee-report", {})
                 .then((response) => {
+                    
+                    this.showBtn(response.data)
+
                     this.data = response.data
+
                     this.$nextTick(() => this.fill())
+
                     loader.hide();
                 }).catch(e => {
                     console.log(e)
                     loader.hide();
                 });
+        },
+
+        /**
+         * private: show btn in introTop 
+         */
+        showBtn(data) {
+            if(Object.keys(data).length > 0) {
+                this.$emit('init')
+            }
         },
 
         /**

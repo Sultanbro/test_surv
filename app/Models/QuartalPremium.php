@@ -41,4 +41,13 @@ class QuartalPremium extends Model
         'created_at',
         'updated_at',
     ];
+
+    /**
+     * 
+     */
+    public function activity()
+    {
+        return $this->belongsTo( 'App\Models\Analytics\Activity', 'activity_id', 'id')
+            ->withTrashed();
+    }
 }
