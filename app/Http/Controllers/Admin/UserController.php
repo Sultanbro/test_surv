@@ -390,7 +390,6 @@ class UserController extends Controller
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
-
         return view('admin.users.create', $this->preparePersonInputs($request->id));
     }
 
@@ -506,7 +505,7 @@ class UserController extends Controller
 
 
 
-                $groups = $user->headInGroups();
+                $groups = $user->inGroups(true);
             
                 foreach($groups as $gr) {
                     array_push($head_in_groups, $gr);
@@ -926,7 +925,6 @@ class UserController extends Controller
      */
     public function updatePerson(Request $request)
     {
-        dd($request->all());
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
