@@ -1,5 +1,5 @@
 <template>
-<div class="courses__wrapper block _anim _anim-no-hide" id="courses__anchor">
+<div class="courses__wrapper block _anim _anim-no-hide mt-4" id="courses__anchor">
     <div class="courses__content" :class="{'hidden': activeCourse !== null}">
         <div class="courses__title">
             Ваши курсы
@@ -11,8 +11,8 @@
                 :key="index"
                 :class="{'current': index == 0}"
             >
-                <img v-if="course.img !== null && course.img !== ''" :src="course.img" alt="курс" class="courses__image" @click="selectCourse(index)" >
-                <img v-else src="/images/dist/courses-image.png" alt="" class="courses__image" @click="selectCourse(index)" >
+                <img v-if="course.img !== null && course.img !== ''" :src="course.img" alt="курс" class="courses__image" @click="selectCourse(index)"  onerror="this.src = '/images/course.jpg';">
+                <img v-else src="/images/dist/courses-image.png" alt="" class="courses__image" @click="selectCourse(index)" onerror="this.src = '/images/course.jpg';">
 
                 <div class="courses__name">
                     {{ course.name }}
@@ -52,27 +52,23 @@
                     <div class="profit__info-text" v-html="activeCourse.text"></div>
                     <div class="profit__info-text mobile" v-html="activeCourse.text"></div>
                     <div class="profit__info__wrapper">
-                        <div class="info__wrapper-item done">
-                            <a href='#' class="info__item-box">
-                                <img src="/images/dist/info-circle.png" alt="play image">
-                                <p>01 / 10</p>
+
+                        <div v-for="(item, index) in items" 
+                            :key="index"
+                            class="info__wrapper-item"
+                            :class="{'done': item.status == 1}"
+                        >
+                            <a class="info__item-box">
+                                <img src="/images/dist/info-circle.png" alt="play image" onerror="this.src = '/images/course.jpg';">
+                                <p>{{ item.completed_stages }} / {{ item.all_stages }}</p>
                             </a>
-                            <div class="info__item-value">100%</div>
+                            <div class="info__item-value">{{ itemProgress(item) }}%</div>
+                            <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Books\\Book'">Книга</div>
+                            <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Videos\\VideoPlaylist'">Видеоплейлист</div>
+                            <div class="info__item-value" v-if="item.item_model == 'App\\KnowBase'">База знаний</div>
+                            <div class="info__item-value">{{ item.title }}</div>
                         </div>
-                        <div class="info__wrapper-item ">
-                            <a href='#' class="info__item-box">
-                                <img src="/images/dist/info-circle.png" alt="play image">
-                                <p>02 / 10</p>
-                            </a>
-                            <div class="info__item-value">14%</div>
-                        </div>
-                        <div class="info__wrapper-item ">
-                            <a href='#' class="info__item-box">
-                                <img src="/images/dist/info-circle.png" alt="play image">
-                                <p>03 / 10</p>
-                            </a>
-                            <div class="info__item-value">7%</div>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -89,7 +85,7 @@ export default {
     data: function () {
         return {
             data: [], 
-            course: null,
+            items: [],
             activeCourse: null
         };
     },
@@ -116,22 +112,21 @@ export default {
          */
         selectCourse(index) {
             console.log('clicked ' + index)
-
+            this.activeCourse = this.data[index]
             this.fetchCourse();
 
-            this.activeCourse = this.data[index]
+          
             // this.$nextTick(() => this.initInnerSlider())
         },
 
         fetchCourse() {
             let loader = this.$loading.show();
 
-            axios.post('/my-courses/get/' . this.activeCourse.id).then(response => {
-                this.course = response.data
-                console.log(this.course);
-                this.$nextTick(() => this.initSlider())
+            axios.get('/my-courses/get/' + this.activeCourse.id).then(response => {
+                this.items = response.data.items
+                // this.$nextTick(() => this.initSlider())
                 loader.hide()
-            }).catch((e) 
+            }).catch((e) => console.log(e));
             
         },
 
@@ -140,6 +135,7 @@ export default {
          */
         back() {
             this.activeCourse = null;
+            this.items = [];
         },
 
         /**
@@ -230,7 +226,17 @@ export default {
                 ]
 
             });
-        }
+        },
+
+        /**
+         * private: helper for template
+         * count progress of course item
+         */
+        itemProgress(item) {
+            return item.all_stages > 0 
+                ? Number(item.completed_stages / item.all_stages).toFixed(1)
+                : 0;
+        } 
     }
 };
 </script>

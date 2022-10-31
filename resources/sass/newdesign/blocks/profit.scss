@@ -132,7 +132,6 @@
 
 }
 .courses__content{
-  margin-top: 4rem;
   position:relative;
   transition:.5s;
 
@@ -345,8 +344,7 @@
 .profit__info__item{
   display: flex;
   gap:1.6rem;
-  align-items: center;
-  margin-bottom: 5rem;
+  align-items: flex-start;
 
   img {
     max-width: 250px;
@@ -366,8 +364,21 @@
 .profit__info__wrapper{
   width: 100%;
   max-width: 100vw;
-  overflow:hidden;
+  overflow-y:hidden;
+  overflow-x: auto;
 
+  &::-webkit-scrollbar {
+    width: 8px; /* высота для горизонтального скролла */
+    height: 8px;
+    background-color: #ECF0F9;
+    border-radius: 1rem;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #AEBEE0;
+    border-radius: 1rem;
+  }
+  
   & .slick-track{
     display: flex;
     min-width:0;
@@ -405,7 +416,7 @@
 
 .profit__info-text{
   font-family: "Open Sans", sans-serif;
-  font-size:1.1rem;
+  font-size:1.3rem;
   color:#5B6166;
   line-height: 155%;
   margin-bottom: 2rem;
@@ -453,9 +464,10 @@
 }
 
 .info__item-value{
-  font-size:1.4rem;
+  font-size:1.3rem;
   font-family: "Open Sans",sans-serif;
   color: #5B6166;
+  text-align: center;
 }
 .info__page-status{
   position:absolute;

@@ -3,16 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Auth;
 use Carbon\Carbon;
 use App\User;
 use App\ProfileGroup;
 use App\Models\Course;
-use App\Models\TestResult;
-use App\Models\UserCourse;
-use App\Models\CourseItem;
 use App\Models\CourseModel;
-use App\Models\TestQuestion;
 
 class CourseResult extends Model
 {
@@ -562,9 +557,9 @@ class CourseResult extends Model
                 if($text == '') $text = 'Нет описания';
 
                 // cut text if too long
-                $text = strlen($text) >= 100
-                    ? mb_substr($text, 0, 100) . '...'
-                    : $text;
+                // $text = strlen($text) >= 100
+                //     ? mb_substr($text, 0, 100) . '...'
+                //     : $text;
 
                 $course->text = $text;
 
