@@ -3,7 +3,7 @@
 
 namespace Eddir\Messenger\Models;
 
-use App\User;
+use App\Models\User;
 use Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,6 +34,11 @@ class MessengerMessage extends Model {
     // users who read this message
     public function readers(): BelongsToMany {
         return $this->belongsToMany( User::class, 'messenger_message_users_read', 'message_id', 'user_id' );
+    }
+
+    # files belongs to one message no file_id field
+    public function files(): BelongsTo {
+        return $this->belongsTo( MessengerFile::class, 'id', 'message_id' );
     }
 
 }

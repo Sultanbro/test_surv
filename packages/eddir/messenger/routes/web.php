@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/chat', function () {
-    return Inertia::render('Chat/ChatWindow', [
+    return Inertia::render('chat/ChatWindow', [
         'phpVersion' => PHP_VERSION,
     ]);
 });
@@ -103,3 +103,8 @@ Route::post('/v2/chat/{chat_id}/removeUser/{user_id}', 'ChatsController@removeUs
  * Set messages as read
  */
 Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
+
+/**
+ * Upload file
+ */
+Route::post('/v2/chat/{chat_id}/upload', 'FilesController@upload')->name('api.v2.upload');

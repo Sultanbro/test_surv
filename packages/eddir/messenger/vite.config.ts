@@ -36,7 +36,7 @@ export default defineConfig(async ({ mode }): Promise<UserConfig> => {
         template: {
           transformAssetUrls: {
             // The Vue plugin will re-write asset URLs, when referenced
-            // in Single File Components, to point to the Laravel web
+            // in Single File components, to point to the Laravel web
             // server. Setting this to `null` allows the Laravel plugin
             // to instead re-write asset URLs to point to the Vite
             // server instead.

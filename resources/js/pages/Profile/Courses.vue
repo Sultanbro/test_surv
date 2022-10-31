@@ -1,5 +1,5 @@
 <template>
-<div class="courses__wrapper block _anim _anim-no-hide mt-4" id="courses__anchor">
+<div class="courses__wrapper block _anim _anim-no-hide mt-4" id="courses__anchor" :class="{'hidden': data.length == 0}">
     <div class="courses__content" :class="{'hidden': activeCourse !== null}">
         <div class="courses__title">
             Ваши курсы
