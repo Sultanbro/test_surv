@@ -24,6 +24,7 @@ use App\PositionDescription;
 use App\ProfileGroup;
 use App\QualityRecordWeeklyStat;
 use App\Service\Admin\UserService as AdminUserService;
+use App\Service\Courses\CourseResultService;
 use App\Service\Department\UserService;
 use App\UserExperience;
 use App\Zarplata;
@@ -168,6 +169,21 @@ class UserProfileController extends Controller
         return response()->json($user->getActiveCourses());
     }
 
+    /**
+     * Get course by id
+     * 
+     * @return JsonResponse
+     */
+    public function course(Request $request, CourseResultService $service): JsonResponse
+    {
+        $response = $service->getCourseWithResults($request->id, auth()->id());
+
+        return response()->json($response);
+    }
+
+    /**
+     * old func
+     */
     public function getProfile(Request $request)
     {
         $user = User::find(auth()->id());

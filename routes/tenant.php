@@ -125,6 +125,7 @@ Route::middleware([
         Route::any('/recruter-stats', [UserProfileController::class, 'recruterStatsRates']);
         Route::any('/activities', [UserProfileController::class, 'activities']);
         Route::any('/courses', [UserProfileController::class, 'courses']);
+        Route::any('/courses/{id}', [UserProfileController::class, 'course']);
         Route::any('/trainee-report', [UserProfileController::class, 'traineeReport']);
         Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
     });

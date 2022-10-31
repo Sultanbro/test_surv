@@ -118,4 +118,17 @@ class CourseResultService
         }
     }
 
+    /**
+     * Get course with items with results
+     * 
+     * @param int $course_id
+     * @param int $user_id
+     * 
+     * @return array
+     */
+    public function getCourseWithResults(int $course_id, $user_id) : array
+    {
+        
+    }
+
 }

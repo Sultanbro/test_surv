@@ -400,65 +400,33 @@ class CourseResult extends Model
      */
     public static function activeCourse($id = 0)
     {
-        // prepare
-        $user = auth()->user();
-        $user_id = $user->id;
-        $position_id = $user->position_id;
+        $user_id = auth()->id();
         
-        $groups = $user->inGroups();
-        $group_ids = [];
-        foreach ($groups as $key => $group) {
-            $group_ids[] = $group->id;
-        }
-
-        // find course
-        $courses = CourseModel::where(function($query) use ($user_id) {
-                $query->where('item_model', 'App\\User')
-                    ->where('item_id', $user_id);
-            })
-            ->orWhere(function($query) use ($group_ids) {
-                $query->where('item_model', 'App\\ProfileGroup')
-                    ->whereIn('item_id', $group_ids);
-            })
-            ->orWhere(function($query) use ($position_id) {
-                $query->where('item_model', 'App\\Position')
-                    ->where('item_id', $position_id);
-            })
-            ->orWhere(function($query) {
-                $query->where('item_model', 0)
-                    ->where('item_id', 0);
-            })
-            ->get()
-            ->pluck('course_id')
-            ->toArray();
-
-        $courses = array_unique($courses);
-
+        /**
+         * find course
+         */
         $active_course_id = 0;
-
-        $results = self::where('user_id', $user_id)
-            ->whereIn('status', [1])
-            ->get()
-            ->pluck('course_id')
-            ->toArray();
-        
-        $results = array_unique($results);
-
-        $diff = array_values(array_diff($courses, $results));
-        
         $active_course = null;
 
-        // if exists active course
-        if(count($diff) > 0) {
+        $courseIds = self::notFinishedCourses($user_id);
+        
+        /**
+         * exists not finished course
+         */
+        if(count($courseIds) > 0) {
 
-            $course = Course::whereIn('id', $diff)
+            $course = Course::whereIn('id', $courseIds)
                 ->orderBy('order')    
                 ->first();
 
             $course_id = $course ? $course->id : 0;
             $active_course_id = $course_id;
+
             if($id != 0) $course_id = $id;
 
+            /**
+             * active course
+             */
             $active_course = self::where('user_id', $user_id)
                 //->whereIn('status', [0,2])
                 ->where('course_id', $course_id)
@@ -466,7 +434,6 @@ class CourseResult extends Model
                 ->first();
             
             if($active_course) {
-              
                 if($active_course->status == self::COMPLETED) {
                     $active_course = null;
                 }
@@ -486,7 +453,9 @@ class CourseResult extends Model
 
         $course = null;
 
-        // img poster
+        /**
+         * get poster from S3 Cloud
+         */
         if($active_course) {
             $course = Course::with('items')->find($active_course->course_id);
 
@@ -505,6 +474,9 @@ class CourseResult extends Model
             }
         }
 
+        /**
+         * active or not
+         */
         if($course) {
             $course->is_active = $course->id == $active_course_id || $id == 0;
         } 
@@ -566,35 +538,40 @@ class CourseResult extends Model
      */
     public static function activeCourses() : array
     {
+        $courseIds = self::notFinishedCourses(auth()->id());
         
-        $user_id = auth()->id();
-        $courses = self::getCourseIds($user_id);
-    
-        $results = self::where('user_id', $user_id)
-            ->whereIn('status', [1])
-            ->get()
-            ->pluck('course_id')
-            ->toArray();
-     
-        $results = array_unique($results);
-
-        $diff = array_values(array_diff($courses, $results));
-        
+        /**
+         * Has active courses
+         */
         $active_courses = [];
 
-        if(count($diff) > 0) {
-            $active_courses = Course::whereIn('id', $diff)->orderBy('order', 'asc')->get();
+        if(count($courseIds) > 0) {
+            $active_courses = Course::whereIn('id', $courseIds)
+                ->orderBy('order', 'asc')
+                ->get();
             
             $disk = \Storage::disk('s3');
 
             foreach ($active_courses as $key => $course) {
 
+                /**
+                 * text manipulations
+                 */
                 $text = trim($course->text);
+                
                 if($text == '') $text = 'Нет описания';
-                $text = strlen($text) >= 100 ? mb_substr($text, 0, 100) . '...' : $text;
+
+                // cut text if too long
+                $text = strlen($text) >= 100
+                    ? mb_substr($text, 0, 100) . '...'
+                    : $text;
+
                 $course->text = $text;
 
 
+                /**
+                 * get image from S3 Cloud
+                 */
                 try {
                     if($course->img != null && $disk->exists($course->img)) {
                         $course->img = $disk->temporaryUrl(
@@ -605,15 +582,42 @@ class CourseResult extends Model
                     // League \ Flysystem \ UnableToCheckDirectoryExistence
                 }
 
-                
             }
         }
 
         if(is_array($active_courses)){
             return $active_courses;
-        }
-        else{
+        } else {
             return $active_courses->toArray();
         }
+    }
+
+    /**
+     * not finished courses' IDs of user
+     * @param int $user_id
+     * @return array
+     */
+    private static function notFinishedCourses($user_id) : array
+    {
+        /**
+         * get all user courses
+         */
+        $courses = self::getCourseIds($user_id);
+        
+        /**
+         * user completed courses
+         */
+        $results = self::where('user_id', $user_id)
+            ->whereIn('status', [self::COMPLETED])
+            ->get()
+            ->pluck('course_id')
+            ->toArray();
+     
+        $results = array_unique($results);
+
+        /**
+         * remove completed courses from all courses
+         */
+        return array_values(array_diff($courses, $results));
     }
 }

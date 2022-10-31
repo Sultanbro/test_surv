@@ -89,6 +89,7 @@ export default {
     data: function () {
         return {
             data: [], 
+            course: null,
             activeCourse: null
         };
     },
@@ -115,8 +116,23 @@ export default {
          */
         selectCourse(index) {
             console.log('clicked ' + index)
+
+            this.fetchCourse();
+
             this.activeCourse = this.data[index]
             // this.$nextTick(() => this.initInnerSlider())
+        },
+
+        fetchCourse() {
+            let loader = this.$loading.show();
+
+            axios.post('/my-courses/get/' . this.activeCourse.id).then(response => {
+                this.course = response.data
+                console.log(this.course);
+                this.$nextTick(() => this.initSlider())
+                loader.hide()
+            }).catch((e) 
+            
         },
 
         /**
