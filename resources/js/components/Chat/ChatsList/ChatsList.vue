@@ -1,6 +1,6 @@
 <template>
   <div ref="messengerChats"
-    :class="!isOpen ? 'messenger__chats-container messenger__collapsed' : 'messenger__chats-container'">
+       :class="!isOpen ? 'messenger__chats-container messenger__collapsed' : 'messenger__chats-container'">
     <ContextMenu
       :show="contextMenuVisible"
       :x="contextMenuX"
@@ -13,7 +13,7 @@
       <div
         v-if="!isSearchMode"
         v-for="item in sortedChats"
-        :class="(chat?.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
+        :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
         :data-test-id="item.id"
         @click="openChat(item)"
         @contextmenu.prevent="showChatContextMenu($event, item)"
@@ -23,7 +23,7 @@
       <div
         v-if="isSearchMode || (contacts.length && isOpen)"
         v-for="item in contacts"
-        :class="(chat?.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
+        :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
         :data-test-id="item.id"
         @click="openChat(item)"
         @contextmenu.prevent="showChatContextMenu($event, item)"
@@ -32,7 +32,6 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -58,7 +57,7 @@ export default {
     ...mapActions(['loadChat', 'toggleMessenger', 'leftChat']),
     openChat(chat) {
       this.contextMenuVisible = false;
-      if (this.chat?.id !== chat.id) {
+      if (!this.chat || this.chat.id !== chat.id) {
         this.loadChat(chat.id);
       }
       if (!this.isOpen) {
@@ -75,7 +74,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 
 .messenger__chats-container {
   display: flex;
