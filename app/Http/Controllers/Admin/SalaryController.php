@@ -7,6 +7,7 @@ use App\Fine;
 use App\Exam;
 use App\DayType;
 use App\Http\Controllers\Controller;
+use App\Models\Tax;
 use App\ProfileGroup;
 use App\ProfileGroupUser;
 use App\Salary; 
@@ -936,7 +937,7 @@ class SalaryController extends Controller
 
             $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
 
-            $taxes = User::query()->find($user->id)->taxes();
+            $taxes = Tax::query()->select(DB::raw("SUM(amount) as total"))->where('user_id', $user->id)->first()->total ?? null;
 
             // Строка в экселе
             try {
@@ -965,8 +966,7 @@ class SalaryController extends Controller
                         18 => 0, // итого расход
                         19 => $this->space($edited_salary->amount, 3, true), // к выдаче
                         20 => $this->space($on_currency, 3, true), // в валюте,
-                        21 => $taxes != null ?
-                            $taxes->select(DB::raw("SUM(amount) as total"))->first()->total : null
+                        21 => $taxes
                     ];
                 } else {
                   
@@ -992,8 +992,7 @@ class SalaryController extends Controller
                         18 => $expense, // итого расход
                         19 => $this->space($total_payment, 3, true), // к выдаче
                         20 => $this->space($on_currency, 3, true), // в валюте
-                        21 => $taxes != null ?
-                            $taxes->select(DB::raw("SUM(amount) as total"))->first()->total : null
+                        21 => $taxes
                     ];
                 }
             } catch (\Exception $e) {
