@@ -119,13 +119,13 @@
 
         <div class="header__nav-link">
             <a href="/maps" >
-                <span class="_icon-nav-7 header__nav-icon"></span>
+                <span class="_ico-nav- header__nav-icon fas fa-map-signs"></span>
                 <span class="header__nav-name">Карта</span>
             </a>
         </div>
 
         <div class="header__nav-link">
-            <a href="/timetracking/info" >
+            <a href="/timetracking/info" > 
                 <span class="_icon-nav-7 header__nav-icon"></span>
                 <span class="header__nav-name">Частые вопросы</span>
             </a>
@@ -140,7 +140,10 @@
 
         <div class="header__nav-link"  v-if="$can('ucalls_view')">
             <a href="/callibro/login">
-                <span class="_icon-nav-7 header__nav-icon"></span>
+                <!-- <span class="_icon-nav-7 header__nav-icon"></span> -->
+                <img class="_ico-nav- header__nav-icon fas fa-question"
+                    src="https://cp.callibro.org/files/img/item-8h.png"
+                    style="filter: grayscale(1) hue-rotate(290deg);opacity: 0.6;"/>
                 <span class="header__nav-name">U-calls</span>
             </a>
         </div>

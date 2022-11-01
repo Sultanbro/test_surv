@@ -1,9 +1,21 @@
 <template>
 <div class="mt-3">
-    <div class="mb-0">
+    <div class="mb-0" :key="myTable">
       
 
-        <b-table v-if="dataLoaded" responsive striped :sticky-header="true" class="text-nowrap text-right my-table mb-0" id="tabelTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
+        <b-table v-if="dataLoaded"
+            responsive
+            striped
+            :sticky-header="true"
+            class="text-nowrap text-right my-table mb-0"
+            id="tabelTable"
+            :small="true"
+            :bordered="true"
+            :items="items"
+            :fields="fields"
+            show-empty
+            emptyText="Нет данных"
+            >
           <template #head(avanses)="data">
 
               <i class="fa fa-info-circle"
@@ -150,10 +162,11 @@ export default {
     watch: {
         month: {
             handler: function (val) {
+                this.dateInfo.currentMonth = val
                 this.fetchData()
             },
         },
-    },
+    }, 
 
     data() {
         return {
@@ -179,6 +192,7 @@ export default {
                 daysInMonth: 0
             },
             dataLoaded: false,
+            myTable: 1
         }
     },
 
@@ -243,13 +257,20 @@ export default {
                 month: this.$moment(this.month, 'MMMM').format('M'),
             }).then(response => {
 
+                this.myTable++
+                
+                this.setMonth()
+                this.setFields()
+
                 this.data = response.data.data
                 this.totalFines = response.data.totalFines
                 this.total_avanses = response.data.total_avanses
                 
-                this.setMonth()
+             
                 this.loadItems()
                 this.dataLoaded = true
+                this.myTable++
+                
                 
                 loader.hide()
             })
