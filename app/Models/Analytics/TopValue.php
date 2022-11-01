@@ -606,7 +606,7 @@ class TopValue extends Model
                     foreach( $data['users'] as $user) {
                         $sum += array_sum(array_values($user['earnings']));
                         if($user['edited_bonus']) {
-                            $sum += $user['edited_bonus'];
+                            $sum += (float) $user['edited_bonus'];
                         } else {
                             $sum += array_sum(array_values($user['bonuses']));
                             $sum += array_sum(array_values($user['awards']));
