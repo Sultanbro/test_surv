@@ -28,6 +28,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\QualityRecordWeeklyStat;
 use App\Http\Controllers\IntellectController;
+use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\RecruiterStat;
 use App\Models\Bitrix\Lead;
 use App\Models\GroupUser;
@@ -38,10 +39,49 @@ class TestController extends Controller {
   
 	public function test() { 
 
+		$groups = ProfileGroup::where('has_analytics', 1)->get();
 
-		dd(auth()->user()->getAllPermissions()->pluck('name')->toArray());
-		dd(get_class_methods(get_class(auth()->user()->getAllPermissions())));
+		foreach ($groups as $key => $group) {
+			
+
+			$columns30 = AnalyticColumn::whereIn('name', ['30'])
+				->where('date', '2022-10-01')
+				->where('group_id', $group->id)
+				->get()
+				->pluck('id')
+				->toArray();
+
+			$columns31 = AnalyticColumn::whereIn('name', ['31'])
+				->where('date', '2022-10-01')
+				->where('group_id', $group->id)
+				->get()
+				->pluck('id')
+				->toArray();
+
+			$cols = array_merge($columns30, $columns31);
+
+			$stats = AnalyticStat::whereIn('column_id', $cols)->where('date', '2022-10-01')->where('group_id', $group->id)->get();
+
+			foreach ($stats as $key => $stat) {
+				if(in_array($stat->column_id, $columns31) && count($columns30) > 0) {
+					
+					$el = $stats->where('column_id', $columns30[0])->where('row_id', $stat->row_id)->first();
+					if($el) {
+						dump($el->toArray());
+						$stat->type = $el->type;
+						$stat->activity_id = $el->activity_id;
+						$stat->value = $el->value;
+						$stat->class = $el->class;
+						$stat->decimals = $el->decimals;
+						$stat->save();
+
+					}
+				}
+			}
+
+		}
 		
+
 
 	}  
 
