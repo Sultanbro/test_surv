@@ -1,5 +1,4 @@
 import API from "../../API.vue";
-import {dispatch} from "alpinejs/src/utils/dispatch";
 
 export default {
   state: {

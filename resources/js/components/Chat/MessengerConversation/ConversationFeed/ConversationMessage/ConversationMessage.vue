@@ -10,7 +10,7 @@
               <div class="messenger__message-files">
                 <div class="messenger__message-file" v-for="file in [message.files]">
                   <template v-if="isImage(file)">
-                    <div class="">
+                    <div class="messenger__message-file-image" @click="openImage(file)">
                       <img :src="file.file_path" alt="">
                     </div>
                   </template>
@@ -68,6 +68,9 @@ export default {
       const ext = file.file_path.split('.').pop();
       return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);
     },
+    openImage(image) {
+      window.open(image.file_path, '_blank').focus();
+    }
   },
   filters: {
     moment: function (date) {
@@ -173,5 +176,12 @@ export default {
   color: rgba(0, 9, 72, 0.94);
 }
 
+.messenger__message-file-image {
+  cursor: pointer;
+}
+
+.messenger__message-file-image img {
+  max-width: 100%;
+}
 
 </style>

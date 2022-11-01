@@ -5,7 +5,7 @@
       <div class="messenger__title_container">
         <div class="messenger__chat-name messenger__text-ellipsis" v-text="item.title"></div>
       </div>
-      <div class="messenger__last-message" v-text="item.last_message?.body"></div>
+      <div class="messenger__last-message" v-text="item.last_message ? item.last_message.body : ''"></div>
     </div>
     <div class="messenger__short-name-container" v-if="!isOpen">
       <div class="messenger__chat-name messenger__text-ellipsis messenger__text-center" v-text="item.title[0]"></div>

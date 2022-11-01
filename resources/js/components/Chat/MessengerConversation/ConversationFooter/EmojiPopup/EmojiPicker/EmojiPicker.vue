@@ -22,17 +22,7 @@
 import emojis from './emojis.ts'
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
-type Data = {
-  display: {
-    x: number
-    y: number
-    visible: boolean
-  }
-}
-
-type ClickOutsideElement = HTMLElement & { __vueClickOutside__: ((e: MouseEvent) => void) | null }
+// const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 export default /*#__PURE__*/{
   name: 'EmojiPicker',
@@ -50,7 +40,7 @@ export default /*#__PURE__*/{
       },
     },
   },
-  data(): Data {
+  data() {
     return {
       display: {
         x: 0,
@@ -62,16 +52,16 @@ export default /*#__PURE__*/{
   computed: {
     emojis() {
       if (this.search) {
-        const obj: Record<string, Record<string, string>> = {}
+        const obj = {}
 
         for (const category in this.emojiTable) {
           obj[category] = {}
 
-          for (const emoji in this.emojiTable[category]) {
-            if (new RegExp(`.*${escapeRegExp(this.search)}.*`).test(emoji)) {
-              obj[category][emoji] = this.emojiTable[category][emoji]
-            }
-          }
+          // for (const emoji in this.emojiTable[category]) {
+            // if (new RegExp(`.*${escapeRegExp(this.search)}.*`).test(emoji)) {
+            //   obj[category][emoji] = this.emojiTable[category][emoji]
+            // }
+          // }
 
           if (Object.keys(obj[category]).length === 0) {
             delete obj[category]
@@ -85,10 +75,10 @@ export default /*#__PURE__*/{
     },
   },
   methods: {
-    insert(emoji: string): void {
+    insert(emoji) {
       this.$emit('emoji', emoji)
     },
-    toggle(e: MouseEvent): void {
+    toggle(e) {
       this.display.visible = ! this.display.visible
 
       // const messengerWindowRect = document.getElementById('messengerInput').getBoundingClientRect()
@@ -99,10 +89,10 @@ export default /*#__PURE__*/{
       // this.display.x = x
       // this.display.y = y
     },
-    hide(): void {
+    hide() {
       this.display.visible = false
     },
-    escape(e: KeyboardEvent): void {
+    escape(e) {
       if (this.display.visible === true && e.keyCode === 27) {
         this.display.visible = false
       }
@@ -110,13 +100,13 @@ export default /*#__PURE__*/{
   },
   directives: {
     'click-outside': {
-      bind(el: ClickOutsideElement, binding: any) {
+      bind(el, binding) {
         if (typeof binding.value !== 'function') {
           return
         }
 
         const bubble = binding.modifiers.bubble
-        const handler = (e: any) => {
+        const handler = e => {
           if (bubble || (! el.contains(e.target) && el !== e.target)) {
             binding.value(e)
           }
@@ -125,14 +115,14 @@ export default /*#__PURE__*/{
 
         document.addEventListener('click', handler)
       },
-      unbind(el: ClickOutsideElement) {
+      unbind(el) {
         if (el.__vueClickOutside__ !== null) {
           document.removeEventListener('click', el.__vueClickOutside__)
 
           el.__vueClickOutside__ = null
         }
       },
-    } as any,
+    },
   },
   mounted() {
     document.addEventListener('keyup', this.escape)

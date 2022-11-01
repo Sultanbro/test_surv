@@ -764,7 +764,13 @@ Route::middleware([
          * Set messages as read
          */
         Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
-                
+
+        /**
+         * Upload file
+         */
+        Route::post('/v2/chat/{chat_id}/upload', 'FilesController@upload')->name('api.v2.upload');
+
+                        
     });
 });
 
