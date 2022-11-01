@@ -965,7 +965,7 @@ class SalaryController extends Controller
                         19 => $this->space($edited_salary->amount, 3, true), // к выдаче
                         20 => $this->space($on_currency, 3, true), // в валюте,
                         21 => User::query()->find($user->id)->taxes()
-                            ->select(DB::raw("SUM(amount) as total"))->first()->total
+                            ->select(DB::raw("SUM(amount) as total"))->first()->total ?? null
                     ];
                 } else {
                   
