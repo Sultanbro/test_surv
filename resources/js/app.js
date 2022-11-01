@@ -42,6 +42,9 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 Vue.use(Toast, {timeout: 1500, pauseOnHover: false, rtl: true, position: "top-left",}); 
 
+import store from "./components/Chat/Store/index.js";
+Vue.prototype.$store = store
+
 // Require dependencies
 var VueCookie = require('vue-cookie');
 // Tell Vue to use the plugin 

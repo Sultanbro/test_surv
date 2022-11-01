@@ -19,7 +19,8 @@
     </div>
 
     <div class="header__right-messages">
-        <a href="#" class="header__message-item new">
+        <chat-app></chat-app>
+        <!-- <a href="#" class="header__message-item new">
             <img src="/images/dist/header-right-avatar-1.png" alt="header avatar">
         </a>
         <a href="#" class="header__message-item new">
@@ -36,7 +37,7 @@
         </a>
         <a href="#" class="header__message-item read">
             <img src="/images/dist/header-right-avatar-6.png" alt="header avatar">
-        </a>
+        </a> -->
     </div>
 
     <div class="header__right-arrow">
