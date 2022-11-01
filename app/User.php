@@ -300,10 +300,13 @@ class User extends Authenticatable implements Authorizable
      * В каких группах находится user 
      * @return array
      */
-    public function inGroups()
+    public function inGroups($is_head = false)
     {
         $groups = GroupUser::where('user_id', $this->id)
-            ->where('status', 'active')
+            ->where([
+                ['status', 'active'],
+                ['is_head', $is_head]
+            ])
             ->whereNull('to')
             ->get()
             ->pluck('group_id')

@@ -60,15 +60,9 @@ class NpsController extends Controller
 
         foreach($_users as $user) {
 
-
-            if($user->position_id == 45) {
-                $groups = ProfileGroup::headIn($user->id, false);
-                $group = count($groups) > 0 ? $groups[0]->name : '.Без группы';
-            } else {
-                $_user = User::withTrashed()->find($user->id);
-                $groups = $_user->inGroups();
-                $group = count($groups) > 0 ? $groups[0]->name : '.Без группы';
-            }
+            $user = User::withTrashed()->find($user->id);
+            $groups = $user->position_id == 45 ? $user->inGroups(true) : $user->inGroups();
+            $group = count($groups) > 0 ? $groups[0]->name : '.Без группы';
 
 
             $arr = [
