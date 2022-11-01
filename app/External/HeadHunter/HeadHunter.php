@@ -22,7 +22,7 @@ class HeadHunter {
 	CONST CLIENT_SECRET = 'U417PFE80B6VFG39NJHP5M286FEM5SMUOLVLCDQ0UGRALDSTL61HUUAUS9G4FRQK';
 	CONST ACCESS_TOKEN = 'OJ9KDUFVAOMP1S011H8O8V70G8BLVE46F78PGGB74KE7LLIMUR2MG4N80OO9MBFE'; // Костыль, менять при новом токене
 	CONST BASE_URL = 'https://api.hh.ru/'; 
-	CONST REDIRECT_URI = 'https://bpartners.kz/';  
+	CONST REDIRECT_URI = 'https://bpartners.kz/token';  
 
 	CONST COMPANY_ID = 2520517;   // TOO OKtrening  ID в HeadHuntere
 	CONST MANAGER_ID = 7618556;   // Искомый менеджер. Амиров Олжас o_amir4@mail.ru. Подтягиваем только его вакансии
@@ -32,10 +32,16 @@ class HeadHunter {
     CONST SEGMENT = '1462'; // Сегмент в битриксе
 
     /**
-     * Ссылка авторизации вручную, нужно войти в hh аккаунт, потом перейти по ссылке
-     * Получает код авторизации, для refreshAccessToken
+     * Grant types
      */
-    CONST AUTH_CODE_LINK = 'https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/'; 
+    CONST AUTH_CODE = 'authorization_code';
+    CONST REFRESH_TOKEN = 'refresh_token';
+
+    /**
+     * Ссылка авторизации вручную, нужно войти в hh аккаунт, потом перейти по ссылке
+     * Получает код авторизации
+     */
+    CONST AUTH_CODE_LINK = 'https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/token'; 
     
     /**
      * OauthClientToken $oauth
@@ -50,13 +56,18 @@ class HeadHunter {
     protected $client;
 
     /**
-     * String 
      * Код авторизации
      */
-
     public $auth_code;
 
+    /**
+     * Refresh token
+     */
+    public $refreshToken;
 
+    /**
+     * BP
+     */
     protected $company_id = 2520517;
 
     /**
@@ -154,21 +165,51 @@ class HeadHunter {
         //$this->auth_code;
         return $this;
     }
-    /**
-     * @refresh OauthClientToken
-     */
 
-    public function refreshAccessToken()
+    /**
+     * Refresh access token
+     * 
+     * @return array|null
+     */
+    public function refresh($auth_code = '') 
     {
+        $record = OauthClientToken::where('domain', 'api.hh.ru')->first();
+
+        if($record) {
+            $this->auth_code    = $auth_code;
+            $this->refreshToken = $record->refresh_token;
+
+            $grant_type = $auth_code == '' ? self::REFRESH_TOKEN : self::AUTH_CODE;
+
+            return $this->refreshAccessToken($grant_type);
+        }
+    }   
+
+    /**
+     * Refresh Access token request
+     * 
+     * @return array
+     */
+    private function refreshAccessToken($grant_type = self::AUTH_CODE)
+    {   
+        $params = [
+            'grant_type'    => $grant_type,
+            'redirect_uri'  => self::REDIRECT_URI,
+            'code'          => $grant_type == self::REFRESH_TOKEN ? $this->refreshToken : $this->auth_code,
+            'client_id'     => self::CLIENT_ID,
+            'client_secret' => self::CLIENT_SECRET,
+        ];
+
+        if($grant_type == self::REFRESH_TOKEN) {
+            $params = [
+                'grant_type'    => self::REFRESH_TOKEN,
+                'refresh_token' => $this->refreshToken
+            ];
+        }
+
         try {
 			$response = $this->client->request('POST', 'https://hh.ru/oauth/token', [
-                'form_params' => [
-                    'grant_type' => 'authorization_code',
-                    'redirect_uri' => self::REDIRECT_URI,
-                    'code' => $this->auth_code,
-                    'client_id' => self::CLIENT_ID,
-                    'client_secret' => self::CLIENT_SECRET,
-                ]
+                'form_params' => $params
             ]);
 		} catch (ClientException $e) {
 			dump(Psr7\Message::toString($e->getRequest()));
@@ -178,11 +219,49 @@ class HeadHunter {
 		//dd($res->getStatusCode());// "200"
 		//dd($res->getHeader('content-type')[0]); // 'application/json; charset=utf8'
 		
+        
+
 		$arr = json_decode($response->getBody());
+
+        $this->saveToken($arr);
 
         return $arr;
     }
 
+    /**
+     * save token to OauthClientToken
+     */
+    private function saveToken($data)
+    {   
+        /**
+           $data = {
+            "access_token": "P3OBQURPAQSA5PKS49SFA3HEC6DSSSH1KP2J5KV4R23U7DQUB8GLBAIQV5PQ7HNM"
+            "token_type": "bearer"
+            "refresh_token": "RQ6GP8ECPPH7FH302DHGGVLL6QFM2N226V36SQG61T2795IGLF4J516K79PE1TK7"
+            "expires_in": 1209599
+            }
+         */
+        $data = [
+            'user_id'      => 5,
+            'auth_code'    => $this->auth_code,
+            'access_token' => $data->access_token,
+            'refresh_token'=> $data->refresh_token,
+            'server'       => 'hh', 
+            'grant_type'   => $this->auth_code == null ? self::REFRESH_TOKEN : self::AUTH_CODE, 
+            'scope'        => 'bearer', 
+            'domain'       => 'api.hh.ru', 
+            'expires_at'   => Carbon::createFromTimestamp(time() + $data->expires_in), 
+        ];
+
+        $token = OauthClientToken::where('domain', 'api.hh.ru')->first();
+        
+        if($token) {
+            $token->update($data);
+        } else {
+            OauthClientToken::create($data);
+        }
+    }
+    
     /**
      * Получить отклик на вакансию по id
      */
