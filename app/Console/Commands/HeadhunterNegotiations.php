@@ -261,7 +261,15 @@ class HeadhunterNegotiations extends Command
     }
 
     public function updateNegotiations($vacancy) {
-        $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
+
+        try {
+            $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
+        } catch (\Throwable $e) {
+            if($e->getCode() == 403) {
+                $this->hh->refresh();
+                $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
+            }
+        }
 
         $this->line('updateNegotiations: '. count($negotiations));
 

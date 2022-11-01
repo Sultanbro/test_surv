@@ -34,54 +34,16 @@ use App\Models\Bitrix\Lead;
 use App\Models\GroupUser;
 use App\Salary;
 use App\Service\Department\UserService;
+use Illuminate\Support\Facades\Http;
 
 class TestController extends Controller { 
   
+	
+ 
+
+
 	public function test() { 
-
-		$groups = ProfileGroup::where('has_analytics', 1)->get();
-
-		foreach ($groups as $key => $group) {
-			
-
-			$columns30 = AnalyticColumn::whereIn('name', ['30'])
-				->where('date', '2022-10-01')
-				->where('group_id', $group->id)
-				->get()
-				->pluck('id')
-				->toArray();
-
-			$columns31 = AnalyticColumn::whereIn('name', ['31'])
-				->where('date', '2022-10-01')
-				->where('group_id', $group->id)
-				->get()
-				->pluck('id')
-				->toArray();
-
-			$cols = array_merge($columns30, $columns31);
-
-			$stats = AnalyticStat::whereIn('column_id', $cols)->where('date', '2022-10-01')->where('group_id', $group->id)->get();
-
-			foreach ($stats as $key => $stat) {
-				if(in_array($stat->column_id, $columns31) && count($columns30) > 0) {
-					
-					$el = $stats->where('column_id', $columns30[0])->where('row_id', $stat->row_id)->first();
-					if($el) {
-						dump($el->toArray());
-						$stat->type = $el->type;
-						$stat->activity_id = $el->activity_id;
-						$stat->value = $el->value;
-						$stat->class = $el->class;
-						$stat->decimals = $el->decimals;
-						$stat->save();
-
-					}
-				}
-			}
-
-		}
-		
-
+		$this->hhRefresher();
 
 	}  
 
@@ -114,10 +76,11 @@ class TestController extends Controller {
 	}  
 
 	public function hhRefresher() {
-		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/
-		$hh = new HeadHunter();
-		$hh->auth_code = 'TCH5D6U72JSK1NS6UJNSKR55ESU2IVKQ5C7NSVFGMRE3A13DBUQ6QGA8IR3ORBDM';
-		dd($hh->refreshAccessToken());
+		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/token
+
+		$auth_code = 'LLEDI76NNKVNA5GG3883QU4V82U8LKOJMQ1CTIFVVHG5TJ5A7NBS1RDMOSFT5RPN';
+
+		dd((new HeadHunter)->refresh($auth_code));
 
 	}
 
