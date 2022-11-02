@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Repositories\Timetrack\TimetrackRepository;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -46,14 +47,8 @@ class Timetracking extends Model
 
     public function scopeRunning($query)
     {
-        $user = User::bitrixUser();
-        $user_timezone = ($user->timezone >= 0) ? $user->timezone : 6;
-        $tz = Setting::TIMEZONES[$user_timezone];
-        $userWorkTime = $user->work_start ?? self::DEFAULT_WORK_START_TIME;
-        $dt = Carbon::now($tz)->format('d.m.Y');
-        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz);
-
-        return $query->whereDate('enter', $worktime_start->toDateString())->where('exit', null);
+        $enter = app(TimetrackRepository::class);
+        return $query->whereDate('enter', $enter->getWorkStartTime())->where('exit', null);
     }
 
     public static function getSumHoursPerDayByUsersIds($from_date, $to_date, $users_ids)
