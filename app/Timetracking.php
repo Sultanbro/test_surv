@@ -44,10 +44,16 @@ class Timetracking extends Model
         return $this->belongsTo('App\User', 'user_id', 'id')->withTrashed();
     }
 
-    public function scopeRunning($query, $enterDateTime)
+    public function scopeRunning($query)
     {
-        $enterDateTime = now();
-        return $query->whereDate('enter', $enterDateTime->toDateString())->where('exit', null);
+        $user = User::bitrixUser();
+        $user_timezone = ($user->timezone >= 0) ? $user->timezone : 6;
+        $tz = Setting::TIMEZONES[$user_timezone];
+        $userWorkTime = $user->work_start ?? self::DEFAULT_WORK_START_TIME;
+        $dt = Carbon::now($tz)->format('d.m.Y');
+        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz);
+
+        return $query->whereDate('enter', $worktime_start->toDateString())->where('exit', null);
     }
 
     public static function getSumHoursPerDayByUsersIds($from_date, $to_date, $users_ids)

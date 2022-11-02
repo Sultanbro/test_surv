@@ -389,13 +389,6 @@ class TimetrackingController extends Controller
     public function trackerstatus(Request $request)
     {
         $user = User::bitrixUser();
-        $userWorkTime = $user->work_start ?? Timetracking::DEFAULT_WORK_START_TIME;
-
-        $user_timezone = ($user->timezone >= 0) ? $user->timezone : 6;
-        $tz = Setting::TIMEZONES[$user_timezone];
-        $dt = Carbon::now($tz)->format('d.m.Y');
-
-        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz);
 
         $running = $user->timetracking()->running()->first();
 
