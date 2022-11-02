@@ -79,24 +79,12 @@ class GetWorkedHours extends Command
         foreach($groups as $group_id) {
             $this->group  = ProfileGroup::find($group_id);
             $this->dialer = CallibroDialer::where('group_id', $group_id)->first();
+            $this->currentDepartment = $group_id;
 
             $this->fetch($group_id);
             $this->line('Fetch completed for group_id: ' . $group_id);
         }
         
-    }
-
-    /**
-     * Set date
-     * 
-     * @return void
-     */
-    private function setDate() 
-    {
-        $date = $this->argument('date') ? Carbon::parse($this->argument('date')) : Carbon::now();
-        $this->date = $this->argument('date') ? $this->argument('date') : date('Y-m-d');
-        $this->day = $date->day;
-        $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
     }
 
     /**
@@ -110,9 +98,7 @@ class GetWorkedHours extends Command
      */
     private function fetch($group_id) 
     {
-        $this->currentDepartment = $group_id;
-
-        $this->getUsers($group_id);
+        $users = $this->getUsers($group_id);
 
         foreach($users as $user) {
             
@@ -158,6 +144,19 @@ class GetWorkedHours extends Command
 
         }
 
+    }
+    
+    /**
+     * Set date
+     * 
+     * @return void
+     */
+    private function setDate() 
+    {
+        $date = $this->argument('date') ? Carbon::parse($this->argument('date')) : Carbon::now();
+        $this->date = $this->argument('date') ? $this->argument('date') : date('Y-m-d');
+        $this->day = $date->day;
+        $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
     }
 
     /**
