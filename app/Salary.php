@@ -908,16 +908,15 @@ class Salary extends Model
             /**
              * If user has edited Bonus for month take it
              */
-            $editedBonus = EditedBonus::where('user_id', $user->id)
-                ->whereYear('date', $date->year)
-                ->whereMonth('date', $date->month)
+            $editedBonus = EditedBonus::where('user_id', 157)
+                ->whereYear('date', 2022)
+                ->whereMonth('date', 2)
                 ->first();
 
             $user->edited_bonus = null;
             if($editedBonus) {
                 $ku = User::withTrashed()->find($editedBonus->author_id);
                 $editedBonus->user = $ku ? $ku->last_name . ' ' . $ku->name : 'Неизвестно';
-
                 $user->edited_bonus = $editedBonus;
             } 
             
