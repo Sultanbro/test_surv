@@ -11,6 +11,9 @@ use App\TimetrackingHistory;
 
 class Timetracking extends Model
 {
+    const DEFAULT_WORK_START_TIME = '09:00';
+    const DEFAULT_WORK_END_TIME   = '19:00';
+
     protected $table = 'timetracking';
 
     public $timestamps = true;
@@ -41,11 +44,9 @@ class Timetracking extends Model
         return $this->belongsTo('App\User', 'user_id', 'id')->withTrashed();
     }
 
-    public function scopeRunning($query)
+    public function scopeRunning($query, $enterDateTime)
     {
-
-        return $query->where('exit', null);
-
+        return $query->whereDate('enter', $enterDateTime->toDateString())->where('exit', null);
     }
 
     public static function getSumHoursPerDayByUsersIds($from_date, $to_date, $users_ids)

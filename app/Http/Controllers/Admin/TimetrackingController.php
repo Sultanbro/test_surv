@@ -289,47 +289,40 @@ class TimetrackingController extends Controller
         $user_timezone = ($user->timezone >= 0) ? $user->timezone : 6;
         $tz = Setting::TIMEZONES[$user_timezone];
 
-        $groups = ProfileGroup::where('active', 1)->get();
-
         $message = '';
         $action = '';
 
-        $user_groups = $user->profileGroups();
-
+        $user_groups = $user->inGroups();
         $work_end_max = $user_groups->max('work_end');
-      
+
         if($work_end_max == null) {
-            $work_end_max = $user->work_end;
+            $work_end_max = $user->work_end ?? Timetracking::DEFAULT_WORK_END_TIME;
         }
+
+        $userWorkTime = $user->work_start ?? Timetracking::DEFAULT_WORK_START_TIME;
 
         $dt = Carbon::now($tz)->format('d.m.Y');
 
-        $worktime_start = Carbon::parse($dt . ' 08:00', $tz);
+        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz);
         $worktime_end = Carbon::parse($dt . ' ' . $work_end_max, $tz);
+        $running = $user->timetracking()->running($worktime_start)->first();
 
-        $running = $user->timetracking()->running()->first();
-
-      
         if (!is_null($running)) {
             $action = 'started';
 
             if ($worktime_end->isPast()) {
-
                 $running->exit = $worktime_end;
                 $running->save();
                 $action = 'stopped';
 
             } elseif ($request->stop) {
-
                 $running->exit = Carbon::now($tz);
                 $running->save();
                 $action = 'stopped';
 
             }
-
         } else {
             if ($request->start) {
-
                 if ($user->canWorkThisDay()) {
                     $message = 'Вы не можете работать в выходной день';
                 } else if ($worktime_start->isFuture()) {
@@ -338,17 +331,15 @@ class TimetrackingController extends Controller
                     $message = 'Вы не можете работать после ' . $worktime_end->format('H:i');
                 } else {
                     $tt = Timetracking::where('user_id', $user->id)->whereDate('enter', date('Y-m-d'))->first();
-                    if($tt && $user->program_id == 1) {
+                    if($tt) {
                         $message = 'Вы уже начали день!';
                     } else {
-                        
                         $running = Timetracking::create([
                             'enter' => Carbon::now($tz),
                             'user_id' => $user->id,
                         ]);
                         $action = 'started'; 
                     }
-                    
                 }
 
             }
