@@ -918,7 +918,7 @@ class Salary extends Model
                 $ku = User::withTrashed()->find($editedBonus->author_id);
                 $editedBonus->user = $ku ? $ku->last_name . ' ' . $ku->name : 'Неизвестно';
 
-                $user->edited_bonus = (float) $editedBonus->amount;
+                $user->edited_bonus = $editedBonus->amount;
             } 
             
             // add to array
