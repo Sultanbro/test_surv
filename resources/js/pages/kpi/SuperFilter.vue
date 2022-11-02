@@ -222,4 +222,8 @@ export default {
     right: 20px;
     top: 12px;
 }
+.block {
+  transform: translateY(20px);
+  transition: 1.5s;
+}
 </style>

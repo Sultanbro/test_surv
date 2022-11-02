@@ -305,7 +305,7 @@ class TimetrackingController extends Controller
 
         $worktime_start = Carbon::parse($dt . $userWorkTime, $tz);
         $worktime_end = Carbon::parse($dt . ' ' . $work_end_max, $tz);
-        $running = $user->timetracking()->running($worktime_start)->first();
+        $running = $user->timetracking()->running()->first();
 
         if (!is_null($running)) {
             $action = 'started';
