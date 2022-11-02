@@ -434,25 +434,14 @@ class Salary extends Model
        // $group_users = $group->users()->pluck('id')->toArray();
         $group_users = json_decode($group->users, true);
 
-       
-         $x_users = User::withTrashed()
-                ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
-                ->get(['id','last_group']);
+        $working = (new UserService)->getEmployees($group_id, $date->format('Y-m-d')); 
+        $working = collect($working)->pluck('id')->toArray();
 
-        $fired_users = [];
-        foreach($x_users as $d_user) {
-            if($d_user->last_group) {
-                $lg = json_decode($d_user->last_group);
-                if(in_array($group_id, $lg)) {
-                    array_push($fired_users, $d_user->id);
-                }
-            } 
-        }
+        $fired = (new UserService)->getFiredEmployees($group_id, $date->format('Y-m-d')); 
+        $fired = collect($fired)->pluck('id')->toArray();
 
-        
-        $user_ids = array_unique(array_values($fired_users));
-        
-        $group_users = array_merge($group_users, $fired_users);
+  
+        $group_users = array_merge($fired, $working);
 
             ////
             /**
