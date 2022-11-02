@@ -2,19 +2,12 @@
 
 namespace App\Console\Commands\Callibro;
 
-use App\User;
 use App\Timetracking;
 use App\TimetrackingHistory;
 use App\ProfileGroup;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Eurasian;
-use App\Classes\Analytics\Kaztel;
-use App\Classes\Analytics\Euras2;
-use App\Classes\Analytics\HomeCredit;
 use App\Models\Analytics\UserStat;
 use App\Classes\Callibro;
 use App\Models\CallibroDialer;
@@ -55,6 +48,9 @@ class GetWorkedHours extends Command
     
     protected $dialer;
 
+    protected $currentUser;
+
+    protected $currentDepartment;
 
 
     protected $group;
@@ -90,6 +86,11 @@ class GetWorkedHours extends Command
         
     }
 
+    /**
+     * Set date
+     * 
+     * @return void
+     */
     private function setDate() 
     {
         $date = $this->argument('date') ? Carbon::parse($this->argument('date')) : Carbon::now();
@@ -98,46 +99,48 @@ class GetWorkedHours extends Command
         $this->startOfMonth = $date->startOfMonth()->format('Y-m-d');
     }
 
+    /**
+     * Fetch data from callibro
+     * 
+     * every group has dialer 
+     * 
+     * dialers have script_ids
+     * 
+     * @return void
+     */
     private function fetch($group_id) 
     {
-        $users = (new UserService)->getEmployees(
-            $group_id,
-            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
-        ); 
+        $this->currentDepartment = $group_id;
 
-        $users = collect($users);
+        $this->getUsers($group_id);
 
-        if($this->argument('fired')) {
-            $fired = (new UserService)->getFiredEmployees(
-                $group_id,
-                Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
-            ); 
-            
-            $users = $users->merge(collect($fired));
-        }
-        
         foreach($users as $user) {
+            
+            $this->currentUser = $user->id;
 
             if($group_id == 53) { // Euras
 
-                $minutes = Eurasian::getWorkedMinutes($user->email, $this->date);
-
-                if($minutes == 0) {
-                    continue;  // Не записывать ноль
-                }
-
-                $aggrees         = Eurasian::getAggrees($user->email, $this->date);
-                $correct_minutes = Eurasian::getCallCounts($user->email, $this->date);
-
-                $fields = [
-                    'date'        => $this->startOfMonth,
-                    'employee_id' => $user->id,
-                    'group_id'    => $group_id,
+                $args = [
+                    $user->email,
+                    $this->date,
+                    [
+                        'dialer_id' => 398,
+                        'aggrees_scripts' => [2519]
+                    ]
                 ];
+
+                $minutes = Callibro::getMinutes(...$args);
+
+                if($minutes == 0) continue; // Не записывать ноль
+
+                $aggrees         = Callibro::getAggrees(...$args);
+                $correct_minutes = Callibro::getCallCounts(...$args);
+
                 
-                $this->saveUserStat(16, $minutes, $fields); // минуты
-                $this->saveUserStat(18, $aggrees, $fields); // согласия
-                $this->saveUserStat(208, $correct_minutes, $fields); // звонки от 10 секунд
+                
+                $this->saveUserStat(16, $minutes); // минуты
+                $this->saveUserStat(18, $aggrees); // согласия
+                $this->saveUserStat(208, $correct_minutes); // звонки от 10 секунд
                 
                 if($minutes > 0 && $user->program_id == 1) {
                     $hours = Callibro::getWorkedHours($user->email, $this->date);
@@ -157,6 +160,37 @@ class GetWorkedHours extends Command
 
     }
 
+    /**
+     * Get users in Department
+     * 
+     * @return Collection
+     */
+    private function getUsers($group_id) 
+    {
+        $users = (new UserService)->getEmployees(
+            $group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        ); 
+
+        $users = collect($users);
+
+        if($this->argument('fired')) {
+            $fired = (new UserService)->getFiredEmployees(
+                $group_id,
+                Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+            ); 
+            
+            $users = $users->merge(collect($fired));
+        }
+        
+        return $users;
+    }
+
+    /**
+     * Update worked hours in Timetracking::class
+     * 
+     * @return void
+     */
     private function updateHours($user_id, $minutes, $worked_minutes) 
     {
    
@@ -220,13 +254,18 @@ class GetWorkedHours extends Command
         
     }
 
-    private function saveUserStat($activity_id, $value, array $fields) 
+    /**
+     * Save user's activity value to UserStat::class
+     * 
+     * @return void
+     */
+    private function saveUserStat($activity_id, $value) 
     {
+        $date = Carbon::parse($this->startOfMonth)->day($this->day)->format('Y-m-d');
         
-        $date = Carbon::parse($fields['date'])->day($this->day)->format('Y-m-d');
         $us = UserStat::where([
-            'date' => $date,
-            'user_id' => $fields['employee_id'],
+            'date'        => $date,
+            'user_id'     => $this->currentUser,
             'activity_id' => $activity_id
         ])->first();
 
@@ -236,7 +275,7 @@ class GetWorkedHours extends Command
         } else {
             UserStat::create([
                 'date' => $date,
-                'user_id' => $fields['employee_id'],
+                'user_id' => $this->currentUser,
                 'activity_id' => $activity_id,
                 'value' => $value
             ]);
@@ -245,7 +284,9 @@ class GetWorkedHours extends Command
     }
 
     /**
-     * update Timetracking
+     * update enter in Timetracking::class
+     * 
+     * @return void
      */
     private function updateUserEnterTime($user_id, $enter)
     {

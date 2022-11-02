@@ -4,12 +4,17 @@ namespace App\Classes;
 
 use DB;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class Callibro 
 {   
+    /**
+     * Callibro account of user in jobtron
+     */
     public $account;
 
-    public function __construct($email) {
+    public function __construct($email)
+    {
         $this->account = DB::connection('callibro')->table('call_account')
             ->where('owner_uid', 5)
             ->where('email', $email)
@@ -18,7 +23,8 @@ class Callibro
     /**
      * Call account
      */
-    public static function account($email) {
+    public static function account($email)
+    {
         return  DB::connection('callibro')->table('call_account')
             ->where('owner_uid', 5)
             ->where('email', $email)
@@ -27,8 +33,14 @@ class Callibro
 
     /**
      * Call grades for day
+     * 
+     * @param array $params
+     * @param array $script_grades
+     * 
+     * @return Collection
      */
-    public function call_grades(array $params, array $script_grades) {
+    public function call_grades(array $params, array $script_grades)
+    {
         return DB::connection('callibro')->table('calls')
             ->leftJoin('call_grades as cg', 'cg.call_id', '=', 'calls.id')
             ->select('cg.value', 'cg.call_id')
@@ -40,9 +52,13 @@ class Callibro
 
     /**
      * Id оценок скрипта диалера
+     * 
+     * @param int $script_id
+     * 
      * @return array
      */
-    public static function script_grades(int $script_id) {
+    public static function script_grades(int $script_id)
+    {
         return DB::connection('callibro')->table('script_grades')
             ->where('script_id', $script_id)
             ->where('status', 1)
@@ -52,7 +68,18 @@ class Callibro
     }
 
 
-    public static function getWorkedHours($user_email, $day) {
+    /**
+     * Get worked hours of operator
+     * 
+     * Sum of ready time, fill time and call time
+     * 
+     * @param mixed $user_email
+     * @param mixed $day
+     * 
+     * @return [type]
+     */
+    public static function getWorkedHours($user_email, $day)
+    {
 
         $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
         
@@ -132,7 +159,16 @@ class Callibro
         return $full_time;
     }
 
-    public static function startedDay($user_email, $day) {
+    /**
+     * Get start working time of user
+     * 
+     * @param mixed $user_email
+     * @param mixed $day
+     * 
+     * @return [type]
+     */
+    public static function startedDay($user_email, $day)
+    {
 
         $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
         
@@ -158,5 +194,134 @@ class Callibro
         } 
 
         return null;
+    }
+
+    /**
+     * Operator's call minutes 
+     * 
+     * @param String $user_email
+     * @param String $date
+     * @param array $params
+     * 
+     * @return int
+     */
+    public static function getMinutes(
+        String $user_email,
+        String $date,
+        array $params = []
+    ) {
+        $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
+        
+        $full_time = 0; // общее отработанное время
+
+        if($account) {
+            
+            /**
+             * Get billsec_sum = talking seconds
+             */
+            $calls = DB::connection('callibro')->table('calls')
+                    ->select('call_account_id', DB::raw('SUM(calls.billsec) as billsec_sum'))
+                    ->whereDate('start_time', $date)
+                    ->where('billsec', '>=', 10) // calls from 10 second talking
+                    ->where('call_account_id', $account->id)
+                    ->where('cause', '!=', 'SYSTEM_SHUTDOWN');
+
+            if(Arr::exists($params, 'dialer_id')) {
+                $calls->where('call_dialer_id', $params['dialer_id']);
+            }
+               
+            $calls = $calls->first();
+
+            /**
+             * convert to minutes
+             */
+            $full_time = (int) ceil(($calls->billsec_sum) / 60); // отработанное время в минутах
+            
+        } 
+
+        return $full_time;
+        
+    }
+
+    /**
+     * Получить корректные согласия по сотруднику
+     * 
+     * @param String $user_email
+     * @param String $date
+     * @param array $params
+     * 
+     * @return int
+     */
+    public static function getAggrees(
+        String $user_email,
+        String $date,
+        array $params = []
+    ) {
+        $account = DB::connection('callibro')->table('call_account')->where('email', $user_email)->first();
+        
+        $aggrees = 0; 
+       
+        if($account) {
+
+            $aggrees = DB::connection('callibro')->table('calls')
+                ->select(
+                    'id',
+                    DB::raw("DATE_FORMAT(start_time, '%d.%m.%Y %H:%i:%s') as start_time"),
+                    'correct_or_not'
+                )
+                ->whereDate('start_time', $date)
+                ->where('correct_or_not', '!=', 2) // незабракованы
+                ->where('call_account_id', $account->id);
+            
+            // диалер
+            if(Arr::exists($params, 'dialer_id')) {
+                $aggrees->where('call_dialer_id', $params['dialer_id']);
+            }
+            
+            // cкрипты диалера
+            if(Arr::exists($params, 'aggrees_scripts')) {
+                $aggrees->whereIn('script_status_id', $params['aggrees_scripts']);
+            }
+
+            $aggrees = $aggrees->get()->count();
+        } 
+
+        return $aggrees;
+    }
+
+    /**
+     * correct_minutes звонки от 10 секунд
+     * 
+     * @param String $user_email
+     * @param String $date
+     * @param array $params
+     * 
+     * @return int
+     */
+    public static function getCallCounts(
+        String $user_email,
+        String $date,
+        array $params = []
+    ) {
+        $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
+      
+        $calls = 0;
+
+        if($account) {
+            $calls = DB::connection('callibro')->table('calls')
+                    ->select('id')
+                    ->whereDate('start_time', $date)
+                    ->where('billsec', '>=', 10) // talking from 10 sec
+                    ->where('call_account_id', $account->id)
+                    ->where('cause', '!=', 'SYSTEM_SHUTDOWN');
+                    
+            if(Arr::exists($params, 'dialer_id')) {
+                $calls->where('call_dialer_id', $params['dialer_id']);
+            }
+
+            $calls = $calls->get()->count();
+        } 
+
+        return $calls;
     }
 }
