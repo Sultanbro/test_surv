@@ -13,7 +13,7 @@
         <i class="fa fa-search search-btn" @click="applyFilter()" ></i>
     </div>
 
-    <div class="block" :class="{'show': show}">
+    <div class="block _active" :class="{'show': show}">
         <!-- item -->
         <div class="item">
             <div class="label">Отдел</div>
