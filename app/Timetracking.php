@@ -46,6 +46,7 @@ class Timetracking extends Model
 
     public function scopeRunning($query, $enterDateTime)
     {
+        $enterDateTime = now();
         return $query->whereDate('enter', $enterDateTime->toDateString())->where('exit', null);
     }
 
