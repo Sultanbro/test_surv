@@ -8,6 +8,7 @@ use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
 use App\Models\QuartalPremium;
 use App\Position;
+use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -739,7 +740,8 @@ class KpiStatisticService
   
         // ProfileGroup::class
         if($type == 2) {
-            $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
+            $profileGroup = ProfileGroup::find($kpi->targetable_id) ?? null;
+            $_user_ids = (new UserService)->getEmployees($profileGroup->id, $date->toDateString());
             //if($user_id != 0)  $_user_ids = in_array($user_id, $_user_ids) ? [$user_id] : [];
             if($user_id != 0)  $_user_ids = [$user_id];
         }
