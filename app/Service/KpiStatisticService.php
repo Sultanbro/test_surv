@@ -8,6 +8,7 @@ use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
 use App\Models\QuartalPremium;
 use App\Position;
+use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -725,7 +726,6 @@ class KpiStatisticService
         int $user_id = 0
     ) : array
     {
-      
         // check target exists
         if(!$kpi->target) return [];
        
@@ -739,7 +739,8 @@ class KpiStatisticService
   
         // ProfileGroup::class
         if($type == 2) {
-            $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
+            $profileGroup = ProfileGroup::query()->findOrFail(96);
+            $_user_ids = collect((new UserService)->getEmployees($profileGroup->id, $date->toDateString()))->pluck('id')->toArray();
             //if($user_id != 0)  $_user_ids = in_array($user_id, $_user_ids) ? [$user_id] : [];
             if($user_id != 0)  $_user_ids = [$user_id];
         }
@@ -1311,7 +1312,7 @@ class KpiStatisticService
 			->whereYear('date', $date->year)
             ->where('value', '>', 0)
             ->whereIn('activity_id', $activities)
-			->groupBy('user_id', 'activity_id');
+			->groupBy('user_id', 'activity_id', 'date');
 
         // query
 		$users = User::withTrashed()
