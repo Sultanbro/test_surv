@@ -739,7 +739,7 @@ class KpiStatisticService
   
         // ProfileGroup::class
         if($type == 2) {
-            $profileGroup = ProfileGroup::query()->findOrFail(96);
+            $profileGroup = ProfileGroup::query()->findOrFail($kpi->targetable_id);
             $_user_ids = collect((new UserService)->getEmployees($profileGroup->id, $date->toDateString()))->pluck('id')->toArray();
             //if($user_id != 0)  $_user_ids = in_array($user_id, $_user_ids) ? [$user_id] : [];
             if($user_id != 0)  $_user_ids = [$user_id];
