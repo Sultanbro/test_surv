@@ -25,7 +25,8 @@ class CallibroController extends Controller
         if ($remember_token === null
          || $remember_token === '') {
             $remember_token = Str::random(60);
-            auth()->user()->setRememberToken($remember_token);
+            $user = User::find(auth()->id());
+            $user->setRememberToken($remember_token);
         }
 
         return redirect('https://cp.callibro.org/setting/bp/auth/' . $remember_token . '?route=/obzvon/dashboard');
