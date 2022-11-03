@@ -739,7 +739,6 @@ class KpiStatisticService
   
         // ProfileGroup::class
         if($type == 2) {
-            dump($date);
             $_user_ids = json_decode(ProfileGroup::find($kpi->targetable_id)->users);
             //if($user_id != 0)  $_user_ids = in_array($user_id, $_user_ids) ? [$user_id] : [];
             if($user_id != 0)  $_user_ids = [$user_id];
