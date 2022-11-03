@@ -303,7 +303,7 @@ class TimetrackingController extends Controller
 
         $dt = Carbon::now($tz)->format('d.m.Y');
 
-        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz);
+        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz)->subMinutes(30);
         $worktime_end = Carbon::parse($dt . ' ' . $work_end_max, $tz);
         $running = $user->timetracking()->running()->first();
 
