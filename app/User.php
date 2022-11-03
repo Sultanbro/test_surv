@@ -178,6 +178,18 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Проверка пользователя на стажера.
+     *
+     * @param $query
+     * @param $userId
+     * @return bool
+     */
+    public function scopeIsTrainee($query, $userId): bool
+    {
+        return $query->find($userId)->description()->first()->is_trainee == 1;
+    }
+
+    /**
      * Получает пользователя из системных таблицы Битрикса
      */
     public static function bitrixUser()
