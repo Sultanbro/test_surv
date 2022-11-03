@@ -24,7 +24,7 @@ class UserFineController extends Controller
      */
     public function update(Request $request)
     {
-       
+        $can_delete = in_array(Auth::user()->id, [5, 11741, 157, 3423]);
         
         $ud = UserDescription::where('user_id', $request->user_id)->first();
 
@@ -41,7 +41,7 @@ class UserFineController extends Controller
             ->toArray();
         $deleteFines = array_diff($fines, $request['fines']);
 
-        $can_delete = in_array(Auth::user()->id, [5, 11741, 157]);
+      
         DB::transaction(function () use (&$resultTransaction, $request, $currentUserFines, $deleteFines, $can_delete) {
             $this->addUserFines($request, $currentUserFines, $request['comment']);
 
