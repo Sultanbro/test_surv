@@ -326,7 +326,7 @@ class TimetrackingController extends Controller
                 if ($user->canWorkThisDay()) {
                     $message = 'Вы не можете работать в выходной день';
                 } else if ($worktime_start->isFuture()) {
-                    $message = 'Вы можете начать день до ' . $worktime_start->format('H:i');
+                    $message = 'Вы не можете начать день до ' . $worktime_start->format('H:i');
                 } else if ($worktime_end->isPast()) {
                     $message = 'Вы не можете работать после ' . $worktime_end->format('H:i');
                 } else {
