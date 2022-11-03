@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\View;
 use App\User;
 use App\Admin;
@@ -19,7 +20,15 @@ class CallibroController extends Controller
     {   
         // if(auth()->user()->id != 5) abort(404);
 
-        return redirect('https://cp.callibro.org/setting/bp/auth/' . auth()->user()->remember_token . '?route=/obzvon/dashboard');
+        $remember_token = auth()->user()->remember_token;
+
+        if ($remember_token === null
+         || $remember_token === '') {
+            $remember_token = Str::random(60);
+            auth()->user()->setRememberToken($remember_token);
+        }
+
+        return redirect('https://cp.callibro.org/setting/bp/auth/' . $remember_token . '?route=/obzvon/dashboard');
     }
 
 }
