@@ -2,6 +2,7 @@
 
 namespace App\Models\Analytics;
 
+use App\Repositories\ActivityRepository;
 use App\WorkingDay;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Analytics\Activity;
@@ -39,11 +40,9 @@ class UserStat extends Model
      */
     public static function activities($group_id, $date) {
         $activities = [];
-        
         $acts = Activity::where('group_id', $group_id)->whereIn('view', [Activity::VIEW_DEFAULT, Activity::VIEW_COLLECTION, Activity::VIEW_QUALITY])->orderBy('order', 'desc')->get();
 
         $group = ProfileGroup::find($group_id);
-      
         $carbon = Carbon::parse($date);
         foreach($acts as $activity) {
             if($activity) {
@@ -61,12 +60,14 @@ class UserStat extends Model
 		        for($i=0;$i<$activity->weekdays;$i++) array_pop($ignore);  // Какие дни не учитывать в месяце
                 $workdays = workdays($carbon->year, $carbon->month, $ignore);
 
+                $plan = (new ActivityRepository)->getDailyPlan($activity, $carbon->year, $carbon->month) ?? null;
+
                 // create item arr
                 $item = [
                     'id' => $activity->id,
                     'name' => $activity->name,
                     'editable' => $activity->editable,
-                    'daily_plan' => $activity->daily_plan,
+                    'daily_plan' => $plan == null ? $activity->daily_plan : $plan->plan,
                     'order' => $activity->order,
                     'group_id' => $activity->group_id,
                     'plan_unit' => $activity->plan_unit,

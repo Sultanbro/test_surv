@@ -4,6 +4,7 @@ namespace App\Models\Analytics;
 
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
@@ -81,6 +82,14 @@ class Activity extends Model
     const SOURCE_LOCAL     = 4; // другие
     const SOURCE_TIMEBOARD = 5; // вкладка табель
     const SOURCE_HR        = 6; // вкладка HR
+
+    /**
+     * @return HasMany
+     */
+    public function plans(): HasMany
+    {
+        return $this->hasMany(ActivityPlan::class);
+    }
 
     public static function getMethod(int $method_id) {
         $methods = [

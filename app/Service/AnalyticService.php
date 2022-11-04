@@ -9,6 +9,7 @@ use App\ProfileGroup;
 use App\Repositories\ProfileGroupRepository;
 use App\Service\Department\UserService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use App\User;
 
@@ -121,5 +122,38 @@ class AnalyticService
         $date = $date['year'] . '-' . $date['month'] . '-' . 1;
 
         return Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+    }
+
+    /**
+     * @param Activity $activity
+     * @param string $dailyPlan
+     * @param string $planUnit
+     * @param int $year
+     * @param string $month
+     * @return void
+     * @throws Exception
+     */
+    public function updatePlanPerMonth(
+        Activity $activity,
+        string $dailyPlan,
+        string $planUnit,
+        int $year,
+        string $month
+    )
+    {
+        try {
+            $activity->plans()->updateOrCreate(
+                [
+                    'year' => $year,
+                    'month' =>$month
+                ],
+                [
+                    'plan' => $dailyPlan,
+                    'plan_unit' => $planUnit
+                ]
+            );
+        } catch (Exception $exception) {
+            throw new Exception($exception->getMessage());
+        }
     }
 }
