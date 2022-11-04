@@ -354,7 +354,7 @@ class GroupAnalyticsController extends Controller
 
             $uname = strlen($lead->name) > 50 ? mb_substr($lead->name, 0, 49) : $lead->name;
             if(!$user) {
-                $user = DBconnection::table('users')->insert([
+                $user = User::query()->create([
                     'email' => $email,
                     'name' => $uname,
                     'last_name' => '',

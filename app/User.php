@@ -43,8 +43,6 @@ class User extends Authenticatable implements Authorizable
 
     public $timestamps = true;
 
-    protected $primaryKey = 'id';
-
     protected $fillable = [
         'name',
         'last_name',
