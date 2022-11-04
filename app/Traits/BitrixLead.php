@@ -10,7 +10,7 @@ trait BitrixLead
 {
     public function changeDeal(User $user): void
     {
-        $lead = Lead::userLeadByDesc($user) ?? null;
+        $lead = Lead::userLeadByDesc($user)->first() ?? null;
         dd($lead);
         if (isset($lead)) {
             if($lead  && $lead->deal_id != 0) {
