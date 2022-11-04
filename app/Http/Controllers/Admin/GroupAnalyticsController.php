@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use DB;
+use Illuminate\Support\Facades\DB as DBconnection;
 use View;
 use Auth;
 use Carbon\Carbon;
@@ -353,9 +354,7 @@ class GroupAnalyticsController extends Controller
 
             $uname = strlen($lead->name) > 50 ? mb_substr($lead->name, 0, 49) : $lead->name;
             if(!$user) {
-                
-                 
-                $user = User::create([
+                $user = DBconnection::table('users')->insert([
                     'email' => $email,
                     'name' => $uname,
                     'last_name' => '',
