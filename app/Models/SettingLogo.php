@@ -11,5 +11,13 @@ class SettingLogo extends Model
 
     protected $table = 'setting_logos';
 
+    public $timestamps = false;
+
     protected $guarded = [];
+
+    protected $fillable = [
+        'id',
+        'name',
+        'url',
+    ];
 }

@@ -23,7 +23,7 @@ class LogoController extends Controller
             'url' => $filePuth
        ]);
 
-       return response()->json($logo, 200);
+       return response()->json($logo, 201);
 
     }
 }
