@@ -363,7 +363,7 @@ class GroupAnalyticsController extends Controller
                     'position_id' => 32, // Оператор
                     'user_type' => $user_type,
                     'timezone' => 6,
-                    'bitrhday' => now(),
+                    'birthday' => now(),
                     'program_id' => 2,
                     'working_day_id' => 2,
                     'working_time_id' => 2,
