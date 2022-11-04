@@ -692,7 +692,7 @@ class UserController extends Controller
                 'working_city' =>$request['working_city'],
                 'role_id' => 1,
                 'is_admin' => 0,
-                'img_url' => $request['file_name']
+                'img_url' => $request['file_name'] ?? ''
             ]);
             if($request['program_type'] == 2){
                 Account::create([
