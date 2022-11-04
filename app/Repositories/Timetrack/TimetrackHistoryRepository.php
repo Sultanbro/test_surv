@@ -3,7 +3,7 @@
 namespace App\Repositories\Timetrack;
 
 use App\Repositories\CoreRepository;
-use App\Repositories\Interaces\TimeTrackHistoryForTrainee;
+use App\Repositories\Interfaces\TimeTrackHistoryForTrainee;
 use App\TimetrackingHistory as Model;
 use App\User;
 use Illuminate\Support\Facades\Auth;
