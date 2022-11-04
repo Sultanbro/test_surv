@@ -3,6 +3,7 @@
 namespace App\Models\Analytics;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
@@ -26,6 +27,14 @@ class Activity extends Model
     const UNIT_PERCENTS = 2;
     const UNIT_LESS_SUM = 3;
     const UNIT_LESS_AVG = 4;
+
+    /**
+     * @return HasMany
+     */
+    public function plans(): HasMany
+    {
+        return $this->hasMany(ActivityPlan::class);
+    }
 
     /**
      * Получить заголовки для эксель
