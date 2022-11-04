@@ -9,7 +9,7 @@ class SettingLogo extends Model
 {
     use HasFactory;
 
-    protected $table = 'setting_logos';
+    protected $table = 'images';
 
     public $timestamps = false;
 
