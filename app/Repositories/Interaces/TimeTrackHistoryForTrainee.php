@@ -4,7 +4,7 @@ namespace App\Repositories\Interaces;
 
 use App\User;
 
-interface TimeTrackForTrainee
+interface TimeTrackHistoryForTrainee
 {
     /**
      * Принятие на работу стажера.

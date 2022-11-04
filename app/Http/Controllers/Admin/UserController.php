@@ -12,6 +12,7 @@ use App\Repositories\TaxRepository;
 use App\Repositories\Timetrack\TimetrackRepository;
 use App\Repositories\UserDescriptionRepository;
 use App\Service\TaxService;
+use App\Service\UserProfileService;
 use App\Traits\BitrixLead;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -60,14 +61,12 @@ use PhpParser\Node\Stmt\GroupUse;
 
 class UserController extends Controller
 {
-    use BitrixLead;
-
     public AdminUserService $userService;
 
     public function __construct(AdminUserService $userService)
     {
         $this->userService = $userService;
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
@@ -1098,11 +1097,9 @@ class UserController extends Controller
         /*==============================================================*/
         $trainee = User::isTrainee($request->id);
 
-        if($request->is_trainee == 'false')  {
+        if($request->is_trainee)  {
             if($trainee) {
-                (new UserDescriptionRepository)->setEmployee($user->id);
-                (new TimetrackRepository)->createTrainee($user);
-                $this->changeDeal($user);
+                (new UserProfileService)->approveForTrainee($user);
             }
         }
 

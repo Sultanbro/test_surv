@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Timetrack;
 
-use App\Repositories\Interaces\TimeTrackForTrainee;
+use App\Repositories\Interaces\TimeTrackHistoryForTrainee;
 use App\Setting;
 use App\Timetracking as Model;
 use App\Repositories\CoreRepository;
@@ -12,7 +12,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class TimetrackRepository extends CoreRepository implements TimeTrackWorkTimeInterface, TimeTrackForTrainee
+class TimetrackRepository extends CoreRepository implements TimeTrackWorkTimeInterface
 {
     /**
      * Тайм зона для пользователя.
@@ -25,22 +25,6 @@ class TimetrackRepository extends CoreRepository implements TimeTrackWorkTimeInt
     protected function getModelClass(): string
     {
         return Model::class;
-    }
-
-    /**
-     * Принятие на работу стажера.
-     * @param User $user
-     * @return void
-     */
-    public function createTrainee(User $user): void
-    {
-        $this->model()->create([
-            'author_id' => Auth::user()->id,
-            'author' => Auth::user()->name .' '. Auth::user()->last_name,
-            'user_id' => $user->id,
-            'description' => 'Принятие на работу стажера',
-            'date' => date('Y-m-d')
-        ]);
     }
 
     /**
