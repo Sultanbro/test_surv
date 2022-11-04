@@ -502,9 +502,15 @@ class AnalyticsController extends Controller
     {
         $act = Activity::find($request->activity['id']);
         if($act) {
+            (new AnalyticService)->updatePlanPerMonth(
+                $act,
+                $request->activity['daily_plan'],
+                $request->activity['plan_unit'],
+                $request->year,
+                $request->month,
+            );
             $act->update([
-                'name'       => $request->activity['name'], 
-                'daily_plan' => $request->activity['daily_plan'], 
+                'name'       => $request->activity['name'],
                 'plan_unit'  => $request->activity['plan_unit'], 
                 'unit'       => $request->activity['unit'], 
                 'weekdays'   => $request->activity['weekdays'], 

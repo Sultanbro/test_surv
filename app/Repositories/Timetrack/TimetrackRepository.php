@@ -5,7 +5,7 @@ namespace App\Repositories\Timetrack;
 use App\Setting;
 use App\Timetracking as Model;
 use App\Repositories\CoreRepository;
-use App\Repositories\Interaces\TimeTrackWorkTimeInterface;
+use App\Repositories\Interfaces\TimeTrackWorkTimeInterface;
 use App\Traits\TimeZoneTrait;
 use App\User;
 use Carbon\Carbon;
