@@ -669,10 +669,6 @@ class UserController extends Controller
                 'working_city' => $request['working_city'],
             ]);    
         } else { // Не было никакого полльзователя с таким email
-
-
-
-            dd($request->all());
             $user = User::create([
                 'email' => strtolower($request['email']),
                 'name' => $request['name'],
