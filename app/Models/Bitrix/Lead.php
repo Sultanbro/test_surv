@@ -218,6 +218,6 @@ class Lead extends Model
      */
     public function scopeUserLeadByDesc($query, User $user)
     {
-        return $query->where('user_id', $user->id)->orderBy('id', 'desc')->first();
+        return $query->where('user_id', $user->id)->orderBy('id', 'desc')->first() ?? null;
     }
 }
