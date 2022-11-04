@@ -9,7 +9,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SetHeadToGroupRequest;
 use App\KnowBase;
 use App\Repositories\TaxRepository;
+use App\Repositories\Timetrack\TimetrackRepository;
+use App\Repositories\UserDescriptionRepository;
 use App\Service\TaxService;
+use App\Service\UserProfileService;
+use App\Traits\BitrixLead;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +66,7 @@ class UserController extends Controller
     public function __construct(AdminUserService $userService)
     {
         $this->userService = $userService;
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
@@ -1091,45 +1095,12 @@ class UserController extends Controller
         /*==============================================================*/
         /*******  Стажер или нет  */
         /*==============================================================*/
-        if($request->is_trainee == 'false')  {
-            $trainee = Trainee::whereNull('applied')->where('user_id', $request['id'])->first();
-            
+        $trainee = User::isTrainee($request->id);
+
+        if($request->is_trainee)  {
             if($trainee) {
-                $trainee->applied = DB::raw('NOW()');
-                $trainee->save();
-
-                $whatsapp = new IC();
-                $wphone = Phone::normalize($user->phone);
-                $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-                //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
-
-                $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
-                if($lead  && $lead->deal_id != 0) {
-                    $bitrix = new Bitrix();
-                    
-                    $bitrix->changeDeal($lead->deal_id, [
-                        'STAGE_ID' => 'C4:WON' // не присутствовал на обучении
-                    ]);
-                }
+                (new UserProfileService)->approveForTrainee($user);
             }
-
-            $ud = UserDescription::where('is_trainee', 1)
-                ->where('user_id', $user->id)
-                ->first();
-
-            if($ud) {
-                $ud->is_trainee = 0;
-                $ud->applied = DB::raw('NOW()');
-                $ud->save();
-            }
-
-            TimetrackingHistory::create([
-                'author_id' => Auth::user()->id,
-                'author' => Auth::user()->name.' '.Auth::user()->last_name,
-                'user_id' => $user->id,
-                'description' => 'Принятие на работу стажера',
-                'date' => date('Y-m-d')
-            ]);
         }
 
         /**

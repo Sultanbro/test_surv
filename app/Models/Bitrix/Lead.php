@@ -208,4 +208,16 @@ class Lead extends Model
     public function daytypes() {
         return $this->hasMany('App\DayType','user_id', 'user_id');
     }
+
+    /**
+     * Получить лид сотрудника.
+     *
+     * @param $query
+     * @param User $user
+     * @return mixed
+     */
+    public function scopeUserLeadByDesc($query, User $user)
+    {
+        return $query->where('user_id', $user->id)->orderBy('id', 'desc')->first();
+    }
 }
