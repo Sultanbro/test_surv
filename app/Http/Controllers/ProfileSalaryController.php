@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Analytics\UpdatedUserStat;
-use App\Repositories\UpdateUserStatisticRepository;
+use App\Repositories\UpdatedUserStatRepository;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\User;
@@ -124,7 +124,7 @@ class ProfileSalaryController extends Controller
 
             $kpi = $sk ? $sk->total : 0;
         }
-        $updatedUserStatistics = (new UpdateUserStatisticRepository)->getUpdatedStatistics($user, $date);
+        $updatedUserStatistics = (new UpdatedUserStatRepository)->getUpdatedStatistics($user, $date);
         $kpi += (float)$updatedUserStatistics;
 
         $salary = $user->getCurrentSalary();

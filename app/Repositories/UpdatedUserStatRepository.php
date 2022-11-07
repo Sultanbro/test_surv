@@ -3,11 +3,11 @@
 namespace App\Repositories;
 
 use App\Models\Analytics\UpdatedUserStat as Model;
-use App\Repositories\Interfaces\UpdateUserStatisticsInterface;
+use App\Repositories\Interfaces\UpdatedUserStatRepository;
 use App\User;
 use Carbon\Carbon;
 
-class UpdateUserStatisticRepository extends CoreRepository implements UpdateUserStatisticsInterface
+class UpdatedUserStatRepository extends CoreRepository implements UpdatedUserStatRepository
 {
     protected function getModelClass()
     {

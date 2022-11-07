@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Repositories\UpdateUserStatisticRepository;
+use App\Repositories\UpdatedUserStatRepository;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use DB;
@@ -895,7 +895,7 @@ class Salary extends Model
                 $user->kpi = Kpi::userKpi($user->id, $date);
             }   
 
-            $user->kpi += (new UpdateUserStatisticRepository)->getUpdatedStatistics($user, $date);
+            $user->kpi += (new UpdatedUserStatRepository)->getUpdatedStatistics($user, $date);
 
             /**
              * If user has edited Bonus for month take it
