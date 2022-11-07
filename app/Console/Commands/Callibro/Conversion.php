@@ -16,6 +16,7 @@ use App\Classes\Analytics\Kaztel;
 use App\Classes\Analytics\Euras2;
 use App\Classes\Analytics\HomeCredit;
 use App\Models\Analytics\UserStat;
+use App\Service\Department\UserService;
 
 class Conversion extends Command
 {
@@ -24,7 +25,7 @@ class Conversion extends Command
      *
      * @var string
      */
-    protected $signature = 'callibro:conversion {date?}';
+    protected $signature = 'callibro:conversion {date?} {fired?}';
 
     /**
      * The console command description.
@@ -79,8 +80,10 @@ class Conversion extends Command
 
     public function fetch($group_id) {
 
-        $users_ids = json_decode(ProfileGroup::find($group_id)->users);
-        $users = User::whereIn('id', $users_ids)->get();
+        // $users_ids = json_decode(ProfileGroup::find($group_id)->users);
+        // $users = User::whereIn('id', $users_ids)->get();
+
+        $users = $this->getUsers($group_id);
 
         foreach($users as $user) {
            
@@ -115,6 +118,32 @@ class Conversion extends Command
 
         }
 
+    }
+
+    /**
+     * Get users in Department
+     * 
+     * @return Collection
+     */
+    private function getUsers($group_id) 
+    {
+        $users = (new UserService)->getEmployees(
+            $group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        ); 
+
+        $users = collect($users);
+
+        if($this->argument('fired')) {
+            $fired = (new UserService)->getFiredEmployees(
+                $group_id,
+                Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+            ); 
+            
+            $users = $users->merge(collect($fired));
+        }
+        
+        return $users;
     }
 
     public function saveASI(array $fields, $value) {
