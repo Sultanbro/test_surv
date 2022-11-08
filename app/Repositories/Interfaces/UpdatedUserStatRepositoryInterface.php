@@ -7,5 +7,5 @@ use Carbon\Carbon;
 
 interface UpdatedUserStatRepositoryInterface
 {
-    public function getUpdatedStatistics(User $user, Carbon $date): int;
+    public function retrieveLastRecordUpdatedStatisticsForEachKpi(User $user, Carbon $date);
 }

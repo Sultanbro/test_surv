@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Kpi;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Http\Requests\ShowKpiStatisticsRequest;
+use App\Http\Requests\UpdatedUserStatUpdateRequest;
+use App\Repositories\UpdatedUserStatRepository;
 use App\Service\KpiStatisticService;
+use App\Service\UpdatedUserStatService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use App\User;
@@ -124,17 +127,20 @@ class KpiStatController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param UpdatedUserStatUpdateRequest $request
+     * @return mixed
      */
-    public function updateStat(Request $request)
+    public function updateStat(UpdatedUserStatUpdateRequest $request)
     {
-        UpdatedUserStat::create([
-            'user_id' => $request->user_id,
-            'date' => $request->date,
-            'activity_id' => $request->activity_id,
-            'kpi_item_id' => $request->kpi_item_id,
-            'value' => $request->value,
-        ]);
+        $response = (new UpdatedUserStatService)->updateOrCreate(
+            $request->user_id ?? null,
+            $request->activity_id ?? null,
+            $request->kpi_item_id ?? null,
+            $request->date ?? null,
+            $request->value ?? null
+        );
+
+        return response()->success($response);
     }
 
         /**

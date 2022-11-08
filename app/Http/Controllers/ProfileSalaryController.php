@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Analytics\UpdatedUserStat;
+use App\Repositories\SavedKpiRepository;
 use App\Repositories\UpdatedUserStatRepository;
+use App\Service\UpdatedUserStatService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\User;
@@ -117,15 +119,13 @@ class ProfileSalaryController extends Controller
             $kpi = $editedKpi->amount;
         } else {
 
-            $sk = SavedKpi::where('user_id', $user->id)
-                ->whereYear('date', $date->year)
-                ->whereMonth('date', $date->month)
-                ->first();
+            $sk = (new SavedKpiRepository)->getSavedKpiForMonth($user, $date)->first();
 
             $kpi = $sk ? $sk->total : 0;
         }
-        $updatedUserStatistics = (new UpdatedUserStatRepository)->getUpdatedStatistics($user, $date);
-        $kpi += (float)$updatedUserStatistics;
+        $updatedUserStatistics = (new UpdatedUserStatService)->calculateStat($user, $date);
+
+        $kpi += $updatedUserStatistics;
 
         $salary = $user->getCurrentSalary();
         
