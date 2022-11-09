@@ -29,6 +29,7 @@ class CalculateCarried
     {
         try {
             $amountOfExecutingPlan = $kpi->completed_100 * ((int)$kpi->share / 100);
+            dump($amountOfExecutingPlan);
             $percent =  (new CalculateKpiService)->getCompletePercent([
                 'days_from_user_applied' => 0,
                 'workdays'               => $user->working_day_id == 1 ? 5 : 6,
