@@ -25,7 +25,7 @@ class UpdatedUserStatUpdateRequest extends FormRequest
     {
         return [
             'user_id'       => ['required', 'numeric', 'exists:users,id'],
-            'activity_id'   => ['required', 'numeric', 'exists:activities,id'],
+            'activity_id'   => ['required', 'numeric'],
             'date'          => ['required', 'string'],
             'kpi_item_id'   => ['required', 'numeric', 'exists:kpi_items,id'],
             'value'         => ['required', 'numeric']
