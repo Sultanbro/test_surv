@@ -173,6 +173,13 @@ class GetWorkedHours extends Command
 
         $users = collect($users);
 
+        $trainees = (new UserService)->getTrainees(
+            $group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        ); 
+
+        $users = $users->merge(collect($trainees));
+
         if($this->argument('fired')) {
             $fired = (new UserService)->getFiredEmployees(
                 $group_id,
