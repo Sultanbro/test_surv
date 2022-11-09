@@ -123,6 +123,7 @@ class ProfileSalaryController extends Controller
 
             $kpi = $sk ? $sk->total : 0;
         }
+        dd($kpi);
         $updatedUserStatistics = (new UpdatedUserStatService)->calculateStat($user, $date);
 
         $kpi += $updatedUserStatistics;
