@@ -29,7 +29,7 @@ class UpdatedUserStatService
                 $amount  += CalculateCarried::calculate($kpiItem, $statistic, $user);
             }
         }
-
+        dd($amount);
         return $amount;
 
     }
