@@ -39,7 +39,7 @@ class CalculateCarried
             ], $kpi->method);
 
             if ($percent > self::COMPLETE_80 && $percent < self::COMPLETE_100) {
-                $amountOfExecutingPlan = abs((($percent - self::COMPLETE_80) / (self::COMPLETE_100 - self::COMPLETE_80)) * $kpi->completed_100 * (self::getShare($kpi)));
+                $amountOfExecutingPlan = abs((($percent - self::COMPLETE_80) / (self::COMPLETE_100 - self::COMPLETE_80)) * $kpi->completed_80 * (self::getShare($kpi)));
             } else if ($percent < self::COMPLETE_80) {
                 $amountOfExecutingPlan = 0;
             }
