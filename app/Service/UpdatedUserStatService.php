@@ -28,10 +28,12 @@ class UpdatedUserStatService
                 $activity = (new ActivityRepository)->getById($statistic->activity_id);
                 $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id);
                 if ($activity != null) {
-                    $amount  += CalculateCarried::calculate($kpiItem, $statistic, $user, $activity);
+                    $amount  = CalculateCarried::calculate($kpiItem, $statistic, $user, $activity);
+                    dump($amount);
                 }
             }
         }
+        dd();
         return $amount;
 
     }
