@@ -26,7 +26,9 @@ class UpdatedUserStatService
         foreach ($statistics as $statistic) {
             if ($statistic != null) {
                 $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id);
-                $amount  += CalculateCarried::calculate($kpiItem, $statistic, $user);
+                if ($kpiItem != null) {
+                    $amount  += CalculateCarried::calculate($kpiItem, $statistic, $user);
+                }
             }
         }
         return $amount;
