@@ -28,6 +28,8 @@ class CalculateCarried
     public static function calculate($kpi, $stat, $user): float|int
     {
         try {
+            dump($kpi);
+            dump($stat);
             $amountOfExecutingPlan = $kpi->completed_100 * ((int)$kpi->share / 100);
             dump($amountOfExecutingPlan);
             $percent =  (new CalculateKpiService)->getCompletePercent([
