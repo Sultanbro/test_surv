@@ -35,7 +35,8 @@ class CalculateCarried
                 'workdays'               => $user->working_day_id == 1 ? 5 : 6,
                 'full_time'              => $user->full_time ?? 1,
                 'fact'                   => $stat->value,
-                'daily_plan'             => $kpi->plan
+                'daily_plan'             => $kpi->plan,
+                'avg'                    => $stat->value
             ], $activity->method);
 
             if ($percent > self::COMPLETE_80 && $percent < self::COMPLETE_100) {

@@ -23,7 +23,6 @@ class UpdatedUserStatService
     {
         $statistics = $this->repository->retrieveLastRecordUpdatedStatisticsForEachKpi($user, $date)->get();
         $amount = 0;
-
         foreach ($statistics as $statistic) {
             if ($statistic != null) {
                 $activity = (new ActivityRepository)->getById($statistic->activity_id);
