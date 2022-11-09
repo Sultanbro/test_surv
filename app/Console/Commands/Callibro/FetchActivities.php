@@ -12,15 +12,16 @@ use App\Models\Analytics\UserStat;
 use App\Classes\Callibro;
 use App\Models\CallibroDialer;
 use App\Service\Department\UserService;
+use App\User;
 
-class GetWorkedHours extends Command
+class FetchActivities extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'callibro:minutes_aggrees {date?} {fired?}';
+    protected $signature = 'callibro:fetch {date?} {fired?}';
 
     /**
      * The console command description.
@@ -30,7 +31,7 @@ class GetWorkedHours extends Command
     protected $description = 'Отработанное время сотрудников и согласия Евраз Home';
     
     /**
-     * 
+     * day
      */
     protected $day;
 
@@ -44,16 +45,24 @@ class GetWorkedHours extends Command
      */
     protected $startOfMonth;
 
-
-    
+    /**
+     * dialer
+     */
     protected $dialer;
 
+    /**
+     * user in loop
+     */
     protected $currentUser;
 
+    /**
+     * group in loop
+     */
     protected $currentDepartment;
 
-    protected $activities;
-
+    /**
+     * group configs in loop
+     */
     protected $group;
 
     /**
@@ -66,7 +75,6 @@ class GetWorkedHours extends Command
         parent::__construct();
     }
 
-    
     /**
      * Execute the console command.
      *
@@ -107,16 +115,56 @@ class GetWorkedHours extends Command
     private function getGroupsWithConfig() 
     {
         return [
+
+            //  Евразийский банк
             [
-                'id' => 53, //  Eurasian
+                'id' => 53, 
                 'activities' => [
                     'minutes' => 16,
                     'aggrees' => 18,
                     'correct_minutes' => 208,
+                    'conversion' => 65
                 ],
                 'dialer_id' => 398,
                 'aggrees_scripts' => [2519],
+                'closed_card_scripts'  => [
+                    2519, // Дата визита
+                    2521, // В декрете
+                    2529, // Низкий доход
+                    2532, // Есть просрочка
+                    2533, // Нет пенсионных отчислений
+                    2534, // Инвалидность 1, 2 группы
+                    2536, // Военные Алматы/Алматинская обл
+                    2538, // Не интересует
+                    2539, // Негатив к Банку
+                    2540, // Не устраивают условия
+                    2541, // Подумает
+                    2542, // Интересует другой продукт (Автокредит)
+                    2543, // Интересует другой продукт (Рефинансирование)
+                    2544, // Интересует другой продукт (Ипотека)
+                    2545, // Интересует другой продукт (Депозит)
+                    2549, // Уточненный номер
+                    2551, // Клиент умер
+                    2552, // Не гражданин РК
+                    12275, // Неверный номер
+                    13015, // Согласился онлайн
+                ],
                 'time_exceptions' => []
+            ],
+
+            // Яндекс доставка 
+            [
+                'id' => 97, 
+                'activities' => [
+                    'minutes' => 217,
+                    'aggrees' => 219,
+                    'correct_minutes' => 222,
+                    'conversion' => 224,
+                ],
+                'dialer_id' => 448,
+                'aggrees_scripts' => [],
+                'closed_card_scripts' => [],
+                'time_exceptions' => [],
             ],
         ];
     }
@@ -138,35 +186,48 @@ class GetWorkedHours extends Command
             
             $this->currentUser = $user->id;
 
-            // prepare args for callibro methods
-            $args = [
+            $results = $this->getResults([
                 $user->email,
                 $this->date,
                 [
-                    'dialer_id'       => $this->group['dialer_id'],
-                    'aggrees_scripts' => $this->group['aggrees_scripts'],
+                    'dialer_id'           => $this->group['dialer_id'],
+                    'aggrees_scripts'     => $this->group['aggrees_scripts'],
+                    'closed_card_scripts' => $this->group['closed_card_scripts'],
                 ]
-            ];
+            ]);
 
-            $results = $this->getResults($args);
+            $this->saveWorkedHoursAndTime($user, $results['minutes']);
 
-            // если есть минуты обновить часы в табели
-            if($results['minutes'] > 0 && $user->program_id == 1) {
-                $hours = Callibro::getWorkedHours($user->email, $this->date);
-                $this->updateHours($user->id, $results['minutes'], $hours);
-            }
-
-            // время начала рабочего дня
-            $startedDay = Callibro::startedDay($user->email, $this->date);
-                
-            if($startedDay) {
-                $this->updateUserEnterTime($user->id, $startedDay);
-            } 
         }
 
         $this->line('Fetch completed for group_id: ' . $group_id);
     }
-    
+
+    /**
+     * Обновить отработанное время и время начала рабочего дня в табели в Timetracking::class
+     * 
+     * @param $user
+     * @param int $minutes
+     * @return array
+     */
+    private function saveWorkedMinutesAndEnterTime(User $user, int $minutes)
+    {   
+        // если есть минуты обновить часы в табели
+        if($minutes > 0 && $user->program_id == 1) {
+
+            $hours = Callibro::getWorkedHours($user->email, $this->date);
+            
+            $this->updateHours($user->id, $minutes, $hours);
+        }
+
+        // время начала рабочего дня
+        $startedDay = Callibro::startedDay($user->email, $this->date);
+            
+        if($startedDay) {
+            $this->updateUserEnterTime($user->id, $startedDay);
+        } 
+    }
+
     /**
      * Получаем Минуты согласия и звонки от 10 сек
      * и Cохраняем в активности в Аналитике - подробной
@@ -180,6 +241,7 @@ class GetWorkedHours extends Command
             'minutes' => 0,
             'aggrees' => 0,
             'correct_minutes' => 0,
+            'conversion' => 0,
         ];
 
         $minutes = Callibro::getMinutes(...$args);
@@ -189,10 +251,28 @@ class GetWorkedHours extends Command
         
         $aggrees         = Callibro::getAggrees(...$args);
         $correct_minutes = Callibro::getCallCounts(...$args);
+        $closed_cards    = Callibro::getClosedCards(...$args);
 
+        // расчет конверсии согласий на диалоги
+        $conversion = 0; 
+
+        if($closed_cards != 0) {
+            $conversion = $aggrees / $closed_cards * 100;
+            $conversion = number_format($conversion, 1);
+        }
+
+        // сохранить показатели
         $this->saveUserStat($this->group['activities']['minutes'], $minutes); // минуты
         $this->saveUserStat($this->group['activities']['aggrees'], $aggrees); // согласия
         $this->saveUserStat($this->group['activities']['correct_minutes'], $correct_minutes); // звонки от 10 секунд
+        $this->saveUserStat($this->group['activities']['conversion'], $conversion); // конверсия согласий на диалоги
+
+        $results = [
+            'minutes' => $minutes,
+            'aggrees' => $aggrees,
+            'correct_minutes' => $correct_minutes,
+            'conversion' => $conversion,
+        ];
 
         return $results;
     }
@@ -376,6 +456,7 @@ class GetWorkedHours extends Command
         } 
     }
 
+    
 
     
 }
