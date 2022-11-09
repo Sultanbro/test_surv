@@ -28,6 +28,7 @@ class CalculateCarried
      */
     public static function calculate($kpi, $stat, $user, $activity): float|int
     {
+        dump($activity);
         try {
             $amountOfExecutingPlan = $kpi->completed_100 * ((int)$kpi->share / 100);
             $percent =  (new CalculateKpiService)->getCompletePercent([
@@ -38,7 +39,6 @@ class CalculateCarried
                 'daily_plan'             => $kpi->plan,
                 'avg'                    => $stat->value
             ], $activity->method);
-
             if ($percent > self::COMPLETE_80 && $percent < self::COMPLETE_100) {
                 $amountOfExecutingPlan = abs((($percent - self::COMPLETE_80) / (self::COMPLETE_100 - self::COMPLETE_80)) * $kpi->completed_100 * (self::getShare($kpi)));
             } else if ($percent < self::COMPLETE_80) {
@@ -46,7 +46,7 @@ class CalculateCarried
             }
 
             return $amountOfExecutingPlan;
-        }catch (Exception $exception) {
+        } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
     }
