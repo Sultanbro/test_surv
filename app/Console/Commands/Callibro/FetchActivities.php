@@ -211,20 +211,20 @@ class FetchActivities extends Command
      * @return array
      */
     private function saveWorkedMinutesAndEnterTime(User $user, int $minutes)
-    {   
+    {     
         // если есть минуты обновить часы в табели
         if($minutes > 0 && $user->program_id == 1) {
 
             $hours = Callibro::getWorkedHours($user->email, $this->date);
             
-            $this->updateHours($user->id, $minutes, $hours);
+            $minutes = $this->updateHours($user->id, $minutes, $hours);
         }
 
         // время начала рабочего дня
         $startedDay = Callibro::startedDay($user->email, $this->date);
             
         if($startedDay) {
-            $this->updateUserEnterTime($user->id, $startedDay);
+            $this->updateUserEnterTime($user->id, $startedDay, $minutes);
         } 
     }
 
@@ -326,7 +326,7 @@ class FetchActivities extends Command
     /**
      * Update worked hours in Timetracking::class
      * 
-     * @return void
+     * @return int
      */
     private function updateHours($user_id, $minutes, $worked_minutes) 
     {
@@ -389,6 +389,7 @@ class FetchActivities extends Command
             ]);
         }   
         
+        return $minutes;
     }
 
     /**
@@ -425,7 +426,7 @@ class FetchActivities extends Command
      * 
      * @return void
      */
-    private function updateUserEnterTime($user_id, $enter)
+    private function updateUserEnterTime($user_id, $enter, $minutes)
     {
         $userInExceptions = in_array($user_id, 
             $this->group['time_exceptions']
@@ -446,7 +447,7 @@ class FetchActivities extends Command
             Timetracking::create([
                 'enter'       => $enter,
                 'exit'        => Carbon::parse($this->date),
-                'total_hours' => 0,
+                'total_hours' => $minutes,
                 'updated'     => 2,
                 'user_id'     => $user_id
             ]);
@@ -455,6 +456,7 @@ class FetchActivities extends Command
 
             $timetracking->enter   = $enter;
             $timetracking->updated = 2;
+            $timetracking->total_hours = $minutes;
             $timetracking->save();
 
         } 
