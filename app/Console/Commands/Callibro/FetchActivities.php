@@ -427,7 +427,11 @@ class FetchActivities extends Command
      */
     private function updateUserEnterTime($user_id, $enter)
     {
-        $userInExceptions = in_array($user_id, $this->group['time_exceptions']);
+        $userInExceptions = in_array($user_id, 
+            $this->group['time_exceptions']
+            ? $this->group['time_exceptions']
+            : []
+        );
 
         if($userInExceptions) return false;
 
