@@ -31,7 +31,7 @@ class UpdatedUserStatService
                 }
             }
         }
-        dd();
+
         return $amount;
 
     }
