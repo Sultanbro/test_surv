@@ -28,23 +28,24 @@ class CalculateCarried
     public static function calculate($kpi, $stat, $user): float|int
     {
         try {
-            $amountOfExecutingPlan = $kpi->completed_100 * ((int)$kpi->share / 100);
-            $percent =  (new CalculateKpiService)->getCompletePercent([
-                'days_from_user_applied' => 0,
-                'workdays'               => $user->working_day_id == 1 ? 5 : 6,
-                'full_time'              => $user->full_time ?? 1,
-                'fact'                   => $stat->value,
-                'daily_plan'             => $kpi->plan,
-                'avg'                    => $stat->value
-            ], $kpi->method);
+            if ($kpi != null) {
+                $amountOfExecutingPlan = $kpi->completed_100 * ((int)$kpi->share / 100);
+                $percent =  (new CalculateKpiService)->getCompletePercent([
+                    'days_from_user_applied' => 0,
+                    'workdays'               => $user->working_day_id == 1 ? 5 : 6,
+                    'full_time'              => $user->full_time ?? 1,
+                    'fact'                   => $stat->value,
+                    'daily_plan'             => $kpi->plan,
+                    'avg'                    => $stat->value
+                ], $kpi->method);
 
-            if ($percent > self::COMPLETE_80 && $percent < self::COMPLETE_100) {
-                $amountOfExecutingPlan = abs((($percent - self::COMPLETE_80) / (self::COMPLETE_100 - self::COMPLETE_80)) * $kpi->completed_100 * (self::getShare($kpi)));
-            } else if ($percent < self::COMPLETE_80) {
-                $amountOfExecutingPlan = 0;
+                if ($percent > self::COMPLETE_80 && $percent < self::COMPLETE_100) {
+                    $amountOfExecutingPlan = abs((($percent - self::COMPLETE_80) / (self::COMPLETE_100 - self::COMPLETE_80)) * $kpi->completed_100 * (self::getShare($kpi)));
+                } else if ($percent < self::COMPLETE_80) {
+                    $amountOfExecutingPlan = 0;
+                }
+                return $amountOfExecutingPlan;
             }
-
-            return $amountOfExecutingPlan;
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
