@@ -55,7 +55,7 @@ class CalculateKpiService
             }
         }
 
-//        throw new Exception('The kpi calculation method doesn\'t exist');
+        throw new Exception('The kpi calculation method doesn\'t exist');
     }
 
     /**
