@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Helpers\CalculateCarried;
+use App\Models\Analytics\Activity;
 use App\Repositories\ActivityRepository;
 use App\Repositories\KpiItemRepository;
 use App\Repositories\UpdatedUserStatRepository;
@@ -22,10 +23,12 @@ class UpdatedUserStatService
     {
         $statistics = $this->repository->retrieveLastRecordUpdatedStatisticsForEachKpi($user, $date)->get();
         $amount = 0;
+
         foreach ($statistics as $statistic) {
             if ($statistic != null) {
-                $kpiItem = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id);
-                $amount += CalculateCarried::calculate($kpiItem, $statistic);
+                $activity = (new ActivityRepository)->getById($statistic->activity_id);
+                $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id);
+                $amount  += CalculateCarried::calculate($kpiItem, $statistic, $user, $activity);
             }
         }
 
