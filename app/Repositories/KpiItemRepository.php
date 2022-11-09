@@ -29,6 +29,10 @@ class KpiItemRepository extends CoreRepository
      */
     public function joinKpiItemsWithKpi($id)
     {
-        return $this->model()->join('kpis as k', 'k.id', '=', 'kpi_items.kpi_id')->where('kpi_items.id', $id)->first();
+        return $this->model()
+            ->select('k.completed_100', 'k.completed_80', 'a.method', 'kpi_items.plan', 'kpi_items.share')
+            ->join('kpis as k', 'k.id', '=', 'kpi_items.kpi_id')
+            ->join('activities as a', 'kpi_items.activity_id', '=', 'a.id')
+            ->where('kpi_items.id', $id)->first();
     }
 }
