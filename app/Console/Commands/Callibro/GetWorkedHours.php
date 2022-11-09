@@ -52,6 +52,7 @@ class GetWorkedHours extends Command
 
     protected $currentDepartment;
 
+    protected $activities;
 
     protected $group;
 
@@ -74,17 +75,50 @@ class GetWorkedHours extends Command
     public function handle()
     {
         $this->setDate();
-        $groups = [53];
 
-        foreach($groups as $group_id) {
-            $this->group  = ProfileGroup::find($group_id);
+        $groups = $this->getGroupsWithConfig();
+
+        foreach($groups as $group) {
+
+            $group_id = $group['id'];
+
+            $department  = ProfileGroup::find($group_id);
+
+            if(!$department) continue;
+
+            $group['time_exceptions'] = $department->time_exceptions;
+
+            $this->group = $group;
+           
             $this->dialer = CallibroDialer::where('group_id', $group_id)->first();
+
             $this->currentDepartment = $group_id;
 
             $this->fetch($group_id);
-            $this->line('Fetch completed for group_id: ' . $group_id);
         }
         
+    }
+
+    /**
+     * Fetch groups with config for callibro 
+     * 
+     * @return array
+     */
+    private function getGroupsWithConfig() 
+    {
+        return [
+            [
+                'id' => 53, //  Eurasian
+                'activities' => [
+                    'minutes' => 16,
+                    'aggrees' => 18,
+                    'correct_minutes' => 208,
+                ],
+                'dialer_id' => 398,
+                'aggrees_scripts' => [2519],
+                'time_exceptions' => []
+            ],
+        ];
     }
 
     /**
@@ -104,48 +138,65 @@ class GetWorkedHours extends Command
             
             $this->currentUser = $user->id;
 
-            if($group_id == 53) { // Euras
+            // prepare args for callibro methods
+            $args = [
+                $user->email,
+                $this->date,
+                [
+                    'dialer_id'       => $this->group['dialer_id'],
+                    'aggrees_scripts' => $this->group['aggrees_scripts'],
+                ]
+            ];
 
-                $args = [
-                    $user->email,
-                    $this->date,
-                    [
-                        'dialer_id' => 398,
-                        'aggrees_scripts' => [2519]
-                    ]
-                ];
+            $results = $this->getResults($args);
 
-                $minutes = Callibro::getMinutes(...$args);
-
-                if($minutes == 0) continue; // Не записывать ноль
-
-                $aggrees         = Callibro::getAggrees(...$args);
-                $correct_minutes = Callibro::getCallCounts(...$args);
-
-                
-                
-                $this->saveUserStat(16, $minutes); // минуты
-                $this->saveUserStat(18, $aggrees); // согласия
-                $this->saveUserStat(208, $correct_minutes); // звонки от 10 секунд
-                
-                if($minutes > 0 && $user->program_id == 1) {
-                    $hours = Callibro::getWorkedHours($user->email, $this->date);
-                    $this->updateHours($user->id, $minutes, $hours);
-                }
-
-                //запишем посещения для Euras
-                $startedDay = Callibro::startedDay($user->email, $this->date);
-                    
-                if($startedDay) {
-                    $this->updateUserEnterTime($user->id, $startedDay);
-                } 
-
+            // если есть минуты обновить часы в табели
+            if($results['minutes'] > 0 && $user->program_id == 1) {
+                $hours = Callibro::getWorkedHours($user->email, $this->date);
+                $this->updateHours($user->id, $results['minutes'], $hours);
             }
 
+            // время начала рабочего дня
+            $startedDay = Callibro::startedDay($user->email, $this->date);
+                
+            if($startedDay) {
+                $this->updateUserEnterTime($user->id, $startedDay);
+            } 
         }
 
+        $this->line('Fetch completed for group_id: ' . $group_id);
     }
     
+    /**
+     * Получаем Минуты согласия и звонки от 10 сек
+     * и Cохраняем в активности в Аналитике - подробной
+     * 
+     * @param array $args 
+     * @return array
+     */
+    private function getResults(array $args) 
+    {   
+        $results = [
+            'minutes' => 0,
+            'aggrees' => 0,
+            'correct_minutes' => 0,
+        ];
+
+        $minutes = Callibro::getMinutes(...$args);
+
+        // Не записывать ноль
+        if($minutes == 0) return $results; 
+        
+        $aggrees         = Callibro::getAggrees(...$args);
+        $correct_minutes = Callibro::getCallCounts(...$args);
+
+        $this->saveUserStat($this->group['activities']['minutes'], $minutes); // минуты
+        $this->saveUserStat($this->group['activities']['aggrees'], $aggrees); // согласия
+        $this->saveUserStat($this->group['activities']['correct_minutes'], $correct_minutes); // звонки от 10 секунд
+
+        return $results;
+    }
+
     /**
      * Set date
      * 
@@ -296,7 +347,7 @@ class GetWorkedHours extends Command
      */
     private function updateUserEnterTime($user_id, $enter)
     {
-        $userInExceptions = ! ( $this->group && !in_array($user_id, $this->group->time_exceptions) );
+        $userInExceptions = in_array($user_id, $this->group['time_exceptions']);
 
         if($userInExceptions) return false;
 
