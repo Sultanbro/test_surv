@@ -37,7 +37,6 @@ class CalculateCarried
                 'daily_plan'             => $kpi->plan,
                 'avg'                    => $stat->value
             ], $kpi->method);
-            dump($percent);
             if ($percent > self::COMPLETE_80 && $percent < self::COMPLETE_100) {
                 $amountOfExecutingPlan = abs((($percent - self::COMPLETE_80) / (self::COMPLETE_100 - self::COMPLETE_80)) * $kpi->completed_80 * (self::getShare($kpi)));
             } else if ($percent < self::COMPLETE_80) {
