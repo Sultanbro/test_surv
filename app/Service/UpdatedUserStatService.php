@@ -22,18 +22,17 @@ class UpdatedUserStatService
     public function calculateStat(User $user, Carbon $date): float|int
     {
         $statistics = $this->repository->retrieveLastRecordUpdatedStatisticsForEachKpi($user, $date)->get();
+        dd($statistics);
         $amount = 0;
         foreach ($statistics as $statistic) {
             if ($statistic != null) {
                 $activity = (new ActivityRepository)->getById($statistic->activity_id);
                 $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id);
                 if ($activity != null) {
-                    $amount  = CalculateCarried::calculate($kpiItem, $statistic, $user, $activity);
-                    dump($amount);
+                    $amount  += CalculateCarried::calculate($kpiItem, $statistic, $user, $activity);
                 }
             }
         }
-        dd();
         return $amount;
 
     }
