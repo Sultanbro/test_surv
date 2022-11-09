@@ -196,7 +196,7 @@ class FetchActivities extends Command
                 ]
             ]);
 
-            $this->saveWorkedHoursAndTime($user, $results['minutes']);
+            $this->saveWorkedMinutesAndEnterTime($user, $results['minutes']);
 
         }
 
