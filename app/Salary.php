@@ -2,7 +2,9 @@
 
 namespace App;
 
+use App\Repositories\SavedKpiRepository;
 use App\Repositories\UpdatedUserStatRepository;
+use App\Service\UpdatedUserStatService;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use DB;
@@ -895,7 +897,11 @@ class Salary extends Model
                 $user->kpi = Kpi::userKpi($user->id, $date);
             }
 
-            $user->kpi += (new UpdatedUserStatRepository)->getUpdatedStatistics($user, $date);
+            /**
+             * Добавляем в KPI переменную значения с таблицы saved_kpi, updated_user_stats
+             */
+            $user->kpi += (new SavedKpiRepository)->getSavedKpiForMonth($user, $date)->sum('total');
+            $user->kpi += (new UpdatedUserStatService)->calculateStat($user, $date);
 
             /**
              * If user has edited Bonus for month take it
