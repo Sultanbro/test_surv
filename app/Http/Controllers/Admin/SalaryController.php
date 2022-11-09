@@ -50,7 +50,7 @@ class SalaryController extends Controller
     {
         View::share('title', 'Начисления');
         View::share('menu', 'timetrackingaccruals');
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function index()
@@ -124,11 +124,11 @@ class SalaryController extends Controller
      */
     public function salaries(Request $request)
     {       
-//        if(!auth()->user()->can('salaries_view')) {
-//            return [
-//                'error' => 'access'
-//            ];
-//        }
+        if(!auth()->user()->can('salaries_view')) {
+            return [
+                'error' => 'access'
+            ];
+        }
         
         $year  = $request->year;
         $month = $request->month;
@@ -162,18 +162,18 @@ class SalaryController extends Controller
             // if($request->user_types == 2) 
         }
 
-//        $group_editors = is_array(json_decode($group->editors_id))
-//            ? json_decode($group->editors_id)
-//            : [];
+        $group_editors = is_array(json_decode($group->editors_id))
+            ? json_decode($group->editors_id)
+            : [];
 
-//        // Доступ к группе
-//        if(auth()->user()->is_admin == 1) {
-//
-//        } else if (!in_array($currentUser->id, $group_editors)) {
-//            return [
-//                'error' => 'access',
-//            ];
-//        }
+        // Доступ к группе
+        if(auth()->user()->is_admin == 1) {
+
+        } else if (!in_array($currentUser->id, $group_editors)) {
+            return [
+                'error' => 'access',
+            ];
+        }
 
         //////////////////////
 
