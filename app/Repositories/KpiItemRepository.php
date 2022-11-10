@@ -31,6 +31,7 @@ class KpiItemRepository extends CoreRepository
      */
     public function joinKpiItemsWithKpi($id, $date)
     {
+        dd($date->toDateString());
         return $this->model()
             ->with(
                 [
