@@ -9,8 +9,10 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Mail;
+use function React\Promise\Stream\first;
 
 class SettingController extends Controller
 {
@@ -65,15 +67,25 @@ class SettingController extends Controller
      * 
      */
     public function getSettings(Request $request)
-    {    
+    {
         $keys = $this->setting_names($request->type);
 
         $settings = []; // array to return
+        $disk = \Storage::disk('s3');
 
         foreach ($keys as $key => $value) {
             $setting = Setting::where('name', $key)->first();
 
-            $settings[$key] = $setting && $setting->value == 1 ? true : false;
+            if ($setting){
+                $settings[$key] = $setting->value == 1;
+
+                if ($request->type == 'company'){
+                    $settings['logo'] = $disk->temporaryUrl(
+                        $setting->value, now()->addMinutes(360)
+                    );
+                }
+            }
+
             if(!$setting) {
                 Setting::create([
                     'name' => $key,
@@ -91,20 +103,30 @@ class SettingController extends Controller
 
     /**
      * @param Request $request
-     * 
-     * @return void
      */
     public function saveSettings(Request $request)
-    {   
+    {
         $keys = $this->setting_names($request->type);
 
+        $settings = [];
         foreach ($keys as $key => $value) {
-            $setting = Setting::where('name', $key)
+            $settings[$key] = $request[$key];
+
+            if ($request->hasFile('file')){
+                $links = $this->upload_image($request->file('file'), $key);
+                $request[$key] = $links['relative'];
+                $settings[$key] = $links['temp'];
+
+            }
+
+            Setting::where('name', $key)
                 ->update([
                     'value' => $request[$key]
                 ]);
         }
+        return $settings;
     }
+
 
     private function setting_names($type)
     {
@@ -123,8 +145,47 @@ class SettingController extends Controller
             'show_page_from_kb_everyday' => 'Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"',
             'allow_save_kb_without_test'=> 'Разрешить вносить изменения без тестовых вопросов в разделах базы знаний',
         ];
-        
+        if($type == 'company') $arr = [
+            'logo' => 'Логотип компании',
+        ];
+
         return $arr;
     }
+
+    /**
+     * @param $file
+     * @param $key
+     */
+    public function upload_image($file, $key): array
+    {
+        $setting = Setting::where('name', $key)->first();
+
+        $disk = \Storage::disk('s3');
+
+        try {
+            if($setting['logo'] != '' && $setting['logo'] != null && $setting['logo'] != 0) {
+                if($disk->exists($setting['logo'])) {
+                    $disk->delete($setting['logo']);
+                }
+            }
+        } catch (\Throwable $e) {
+            // League \ Flysystem \ UnableToCheckDirectoryExistence
+        }
+
+        $extension = $file->getClientOriginalExtension();
+        $fileName = uniqid() . '_' . md5(time()) . '.' . $extension;
+
+        $path = $disk->putFileAs('company/logo', $file, $fileName); // загрузить
+
+        return [
+            'relative' => $path,
+            'temp' => $disk->temporaryUrl(
+                $path, now()->addMinutes(360)
+            )
+        ];
+    }
+
+
+
 
 }

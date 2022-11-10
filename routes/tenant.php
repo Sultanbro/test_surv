@@ -68,7 +68,6 @@ use App\Http\Controllers\GlossaryController;
 use App\Http\Controllers\CallibroController;
 use \App\Http\Controllers\Department\UserController as DepartmentUserController;
 use App\Http\Controllers\NotificationControlller;
-use App\Http\Controllers\Admin\LogoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,7 +93,6 @@ Route::middleware([
 
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
 
-    Route::post('/logo',  [LogoController::class, 'upload']);
 
     Route::get('/send-mail', function() {
         $mailData = [
