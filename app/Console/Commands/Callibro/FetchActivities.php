@@ -222,7 +222,8 @@ class FetchActivities extends Command
 
         // время начала рабочего дня
         $startedDay = Callibro::startedDay($user->email, $this->date);
-            
+        
+        $this->line($user->id .'= '.  $startedDay . ' = ' . $minutes);
         if($startedDay) {
             $this->updateUserEnterTime($user->id, $startedDay, $minutes);
         } 
@@ -243,7 +244,7 @@ class FetchActivities extends Command
             'correct_minutes' => 0,
             'conversion' => 0,
         ];
-
+        dump($this->group['dialer_id']);
         $minutes = Callibro::getMinutes(...$args);
 
         // Не записывать ноль

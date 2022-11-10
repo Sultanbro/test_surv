@@ -43,7 +43,7 @@ class TestController extends Controller {
 
 
 	public function test() { 
-		$this->hhRefresher();
+		return config('tenancy.central_domains');
 
 	}  
 
