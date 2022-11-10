@@ -4,12 +4,21 @@
             <a 
                 href="#" 
                 class="profile__logo" 
-                v-if="$laravel.is_admin == 1 || $laravel.is_admin == 18"
+                v-if="($laravel.is_admin == 1 || $laravel.is_admin == 18) && !logo.image "
                 @click.prevent="modalLogo"
             >
                 <img src="/images/dist/logo-download.svg" alt="logo download">
                 Загрузить логотип
             </a>
+            <a
+                href="#"
+                class="profile__logo"
+                v-if="logo.image "
+                @click.prevent="modalLogo"
+            >
+              <img :src="logo.image" style="max-width:100%" class="rounded">
+            </a>
+
             <start-day-btn @currentBalance="currentBalance"></start-day-btn>
 
             <div class="profile__balance">
@@ -23,7 +32,15 @@
                         <input type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" ref="file" accept="image/*" v-on:change="handleFileUpload()">
                         <label class="custom-file-label" for="inputGroupFile04">Загрузить логотип</label>
                     </div>
-                    <img v-bind:src="imagePreview" v-show="showPreview" width="30%" height="10%"/>
+                  <cropper
+                      ref="mycrop"
+                      class="cropper"
+                      :src="imagePreview"
+                      :stencil-props="{
+        aspectRatio: 21/9
+      }"
+                      @change="change"
+                  />
                     <div class="clearfix">
                        <button class="btn btn-success float-right"  v-on:click.prevent="uploadLogo()">Добавить</button>
                     </div>           
@@ -106,12 +123,38 @@ export default {
             file: '',
             showPreview: false,
             imagePreview: '',
+            logo:{
+              image: '',
+              canvas: null
+            }
         };
     },
+  mounted(){
+     this.getLogo();
+  },
     created() {
         
     },
     methods: {
+      getLogo(){
+        const _this = this;
+        axios
+            .post("/settings/get", {
+              type: 'company'
+            })
+            .then((response) => {
+              const settings = response.data.settings;
+              if (settings.logo){
+                _this.logo.image =  settings.logo;
+              }
+              console.log(settings)
+              console.log(settings.logo)
+              console.log(_this.logo.image)
+            })
+            .catch((error) => {
+              alert(error);
+            });
+      },
         /**
          * Загрузить лого открыть модальный окно
          */
@@ -121,28 +164,40 @@ export default {
         modalHideLogo() {
             this.$bvModal.hide('modal-sm');
         },
+      change({ coordinates, canvas }) {
+        this.logo.canvas = canvas;
+        console.log(coordinates, canvas)
+      },
         /**
          * Загрузить лого
          */
         uploadLogo(){
-            let formData = new FormData();
-            formData.append('file', this.file);
-            axios.post( '/logo',
+          const _this = this;
+          _this.logo.canvas.toBlob(function(blob) {
+            const formData = new FormData();
+            formData.append("file", blob);
+            formData.append("type", 'company');
+
+            axios.post('/settings/save',
                 formData,
                 {
-                headers: {
+                  headers: {
                     'Content-Type': 'multipart/form-data',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'X-Requested-With': 'XMLHttpRequest'
+                  }
                 }
-            }
-            ).then(function(){
-                console.log('success!!');
-                
+            ).then((response) => {
+
+              console.log('success')
+              console.log(response)
+              _this.logo.image = response.data.logo;
+
             })
-            .catch(function(){
-                console.log('failure!!');
-            });
+                .catch((response)=> {
+                  console.log('failure!!');
+                  console.log(response)
+
+                });
+          })
             this.modalHideLogo();
             this.imagePreview = '';
             this.showPreview = false;
