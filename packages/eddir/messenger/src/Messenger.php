@@ -8,7 +8,7 @@
 
 namespace Eddir\Messenger;
 
-use App\User;
+use Illuminate\Foundation\Auth\User;
 use Eddir\Messenger\Models\MessengerChat;
 use Eddir\Messenger\Models\MessengerFile;
 use Eddir\Messenger\Models\MessengerMessage;
@@ -52,7 +52,7 @@ class Messenger {
     /**
      * Get user's chats with last message and unread messages count for each chat.
      *
-     * @param User $user
+     * @param Authenticatable $user
      *
      * @return Collection
      */
@@ -88,11 +88,9 @@ class Messenger {
         if ( $chat->private ) {
             // get second user in private chat
             $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
+            $chat->title = $second_user->name . " " . $second_user->last_name;
+            $chat->image = $second_user->img_url;
 
-            if($second_user) {
-                $chat->title = $second_user->name . " " . $second_user->last_name;
-                $chat->image = $second_user->img_url;
-            }
         }
         if ( empty( $chat->image ) ) {
             $chat->image = config( 'messenger.user_avatar.default' ) ?? asset( 'vendor/messenger/images/users.png' );

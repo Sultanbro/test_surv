@@ -1,5 +1,4 @@
 import API from "../../API.vue";
-import {dispatch} from "alpinejs/src/utils/dispatch";
 
 export default {
   state: {
@@ -18,9 +17,29 @@ export default {
     },
     updateChatLastMessage(state, {chat, message}) {
       chat.last_message = message;
+      chat.unread_messages_count++;
     },
     removeChat(state, chat) {
       state.chats = state.chats.filter(c => c.id !== chat.id);
+    },
+    markChatAsSeen(state) {
+      state.chat.unread_messages_count = 0;
+      state.chats = state.chats.map(chat => {
+        if (chat.id === state.chat.id) {
+          chat.unread_messages_count = 0;
+        }
+        return chat;
+      });
+    },
+    addMembers(state, members) {
+      // update via Vue.set to make it reactive
+      Vue.set(state.chat, 'users', state.chat.users.concat(members));
+    },
+    removeMembers(state, members) {
+      // update via Vue.set to make it reactive
+      Vue.set(state.chat, 'users', state.chat.users.filter(member => {
+        return !members.includes(member);
+      }));
     }
   },
   getters: {
@@ -54,7 +73,7 @@ export default {
         dispatch('cancelEditMessage');
       });
     },
-    async escapeChat({commit}) {
+    async escapeChat({commit, getters, dispatch}) {
       commit('setChat', null);
       commit('setMessages', []);
       dispatch('cancelEditMessage');
@@ -82,6 +101,18 @@ export default {
         }
         commit('removeChat', chat);
       });
+    },
+    async addMembers({commit, getters, dispatch}, members) {
+      for (let member of members) {
+        await API.addUserToChat(getters.chat.id, member.id);
+      }
+      commit('addMembers', members);
+    },
+    async removeMembers({commit, getters, dispatch}, members) {
+      for (let member of members) {
+        await API.removeUserFromChat(getters.chat.id, member.id);
+      }
+      commit('removeMembers', members);
     }
   }
 }

@@ -7,49 +7,16 @@
 ### Предварительные требования
 
 * Laravel 9
-* Vue 2
+* Vue 2.6
 * MySQL 8
 
-Можно использовать шаблон [laravel9-vite-vue2-starter](https://github.com/logue/laravel9-vite-vue2-starter):
-```bash
-git clone https://github.com/logue/laravel9-vite-vue2-starter.git spa-with-messenger
-cd spa-with-messenger
-composer install
-composer update
-cp .env.example .env
-echo "Укажите данные для подключения к БД" && sleep 2
-vim .env
-php artisan key:generate
-php artisan migrate --seed
-```
-
-Для работы с hot module replacement при необходимости указать origin в vite.config.js:
-```js
-export default defineConfig({
-    server: {
-        fs: {
-            // Allow serving files from one level up to the project root
-            allow: ['..'],
-        },
-        origin: 'http://your-laravel-domain.com/',
-        hmr: {
-            host: 'your-laravel-domain.com',
-        },
-    },
-    ...
-});
-```
-
-Выполнить настройки веб-сервера Apache / Nginx или запускать встроенный сервер:
-```bash
-php artisan serve
-```
+Можно использовать шаблон [mazfreelance/laravel-9-boilerplate](https://github.com/mazfreelance/laravel-9-boilerplate):
 
 ### Настройка сокета
 
 Установка Laravel-websockets:
 ```bash
-composer require pusher/pusher-php-server beyondcode/laravel-websockets
+composer require pusher/pusher-php-server:7.0.2 beyondcode/laravel-websockets
 php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="migrations"
 php artisan migrate
 php artisan vendor:publish --provider="BeyondCode\LaravelWebSockets\WebSocketsServiceProvider" --tag="config"
@@ -164,6 +131,11 @@ composer dump-autoload
 php artisan messenger:install
 ```
 
+Для файлов выполнить:
+```bash
+php artisan storage:link
+```
+
 # Клиентская часть
 
 Выполнить установку зависимостей и запустить приложение:
@@ -173,7 +145,7 @@ npm install && npm run dev
 
 Добавить компонент чата в существующий компонент приложения:
 ```js
-import ChatApp from '@/Components/Chat/ChatApp.vue';
+import ChatApp from '@/components/Chat/ChatApp.vue';
 ```
 ```vue
 <template>

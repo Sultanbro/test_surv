@@ -7,10 +7,10 @@
       :parent-element="$refs.messengerContainer"
     >
       <a href="javascript:" @click="startEditMessage(contextMenuMessage)"
-         v-if="contextMenuMessage?.sender_id === user?.id">Отредактировать</a>
+         v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id">Отредактировать</a>
       <a href="javascript:" @click="pinMessage(contextMenuMessage)">Закрепить</a>
       <a href="javascript:" @click="deleteMessage(contextMenuMessage)"
-         v-if="contextMenuMessage?.sender_id === user?.id">Удалить</a>
+         v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id">Удалить</a>
     </ContextMenu>
     <div class="messenger__messages-container" id="messenger__messages">
       <ConversationMessage v-for="message in messages"

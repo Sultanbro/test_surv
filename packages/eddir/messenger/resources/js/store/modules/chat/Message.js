@@ -11,6 +11,11 @@ export default {
     async loadMessages({commit, getters, dispatch}) {
       return API.fetchMessages(getters.chat.id, messages => {
         commit('setMessages', messages.reverse());
+        dispatch('markMessagesAsRead', messages);
+
+        if (getters.chat.unread_messages_count > 0 && getters.chat.unread_messages_count <= messages.length) {
+          commit('markChatAsSeen');
+        }
       });
     },
     async sendMessage({commit, getters, dispatch}, message) {
@@ -59,8 +64,13 @@ export default {
         });
       }
     },
+    async markMessagesAsRead({commit, getters, dispatch}, messages) {
+      if (messages.length > 0) {
+        await API.setMessagesAsRead(messages.map(message => message.id));
+      }
+    },
     async deleteMessage({commit, getters, dispatch}, message) {
-      return API.deleteMessage(message.id, response => {
+      return API.deleteMessage(message.id, () => {
         commit('deleteMessage', message);
       });
     },
@@ -71,12 +81,12 @@ export default {
       commit('setEditMessage', null);
     },
     async pinMessage({commit, getters, dispatch}, message) {
-      return API.pinMessage(message.id, response => {
+      return API.pinMessage(message.id, () => {
         commit('setPinnedMessage', message);
       });
     },
     async unpinMessage({commit, getters, dispatch}) {
-      return API.unpinMessage(getters.pinnedMessage.id, response => {
+      return API.unpinMessage(getters.pinnedMessage.id, () => {
         commit('setPinnedMessage', null);
       });
     },
@@ -121,5 +131,6 @@ export default {
     messagesCount: (state, getters) => getters.validMessages.length,
     editMessage: state => state.editMessage,
     pinnedMessage: state => state.pinnedMessage,
+    unreadCount: (state, getters) => getters.chats.reduce((sum, chat) => sum + chat.unread_messages_count, 0),
   }
 }

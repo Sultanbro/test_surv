@@ -1,11 +1,18 @@
 <template>
   <div class="messenger__chat-item-container messenger__text-ellipsis">
-    <div class="messenger__avatar-list messenger__filter-blue"></div>
+    <div class="messenger__avatar-list messenger__filter-blue" v-if="item.unread_messages_count > 0"></div>
+    <div class="messenger__avatar-list" v-else></div>
     <div class="messenger__name-container messenger__text-ellipsis" v-if="isOpen">
       <div class="messenger__title_container">
         <div class="messenger__chat-name messenger__text-ellipsis" v-text="item.title"></div>
       </div>
-      <div class="messenger__last-message" v-text="item.last_message ? item.last_message.body : ''"></div>
+      <template v-if="item.unread_messages_count > 0">
+        <div class="messenger__last-message messenger__last-message__marked"
+             v-text="item.last_message ? item.last_message.body : ''"></div>
+      </template>
+      <template v-else>
+        <div class="messenger__last-message" v-text="item.last_message ? item.last_message.body : ''"></div>
+      </template>
     </div>
     <div class="messenger__short-name-container" v-if="!isOpen">
       <div class="messenger__chat-name messenger__text-ellipsis messenger__text-center" v-text="item.title[0]"></div>
@@ -56,6 +63,7 @@ export default {
   filter: invert(78%) sepia(92%) saturate(2055%) hue-rotate(168deg) brightness(95%) contrast(96%);
 }
 
+
 .messenger__name-container {
   flex: 1;
 }
@@ -102,7 +110,12 @@ export default {
   align-items: center;
   font-size: 12px;
   line-height: 19px;
-  color: #67717a;
+  color: #8b8b8b;
+}
+
+.messenger__last-message__marked {
+  color: #1883b2;
+  font-weight: 600;
 }
 
 </style>
