@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Kpi\KpiItem as Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class KpiItemRepository extends CoreRepository
 {
@@ -25,14 +26,17 @@ class KpiItemRepository extends CoreRepository
 
     /**
      * @param $id
-     * @return mixed
+     * @param $date
+     * @return Builder|\Illuminate\Database\Eloquent\Model|object|null
      */
-    public function joinKpiItemsWithKpi($id)
+    public function joinKpiItemsWithKpi($id, $date)
     {
         return $this->model()
-            ->select('k.completed_100', 'k.completed_80', 'a.method', 'kpi_items.plan', 'kpi_items.share')
-            ->join('kpis as k', 'k.id', '=', 'kpi_items.kpi_id')
-            ->join('activities as a', 'kpi_items.activity_id', '=', 'a.id')
-            ->where('kpi_items.id', $id)->first();
+            ->with(
+                [
+                    'histories' => fn($q) => $q->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year),
+                    'kpi'
+                ]
+            )->where('id', $id)->first();
     }
 }

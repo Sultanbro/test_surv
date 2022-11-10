@@ -63,8 +63,7 @@ class Kernel extends ConsoleKernel
         $schedule->command("check:late")->hourly(); // Опоздание
         $schedule->command("bonus:update")->hourly(); // Бонусы сотрудников
         $schedule->command("recruiter:attendance")->hourly(); // Рекрутеры 1 и 2 день стажировки присутствовавших
-        $schedule->command("callibro:minutes_aggrees")->everyFiveMinutes(); // Отработанное время сотрудников Евраз 1 Хоум
-       // $schedule->command("callibro:minutes_aggrees")->hourlyAt(40); // Отработанное время сотрудников Евраз 1 Хоум
+
         $schedule->command('whatsapp:estimate_first_day')->hourly()->between('11:00', '13:00'); // Ссылка на ватсап для стажеров на первый день обучения
         $schedule->command('recruiting:trainee_report')->hourlyAt(56); // Отчет, сколько пристутствовал на обучении в течении семи дней
         $schedule->command('user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
@@ -72,7 +71,8 @@ class Kernel extends ConsoleKernel
         
         $schedule->command("bitrix:stats")->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
         $schedule->command("quality:totals")->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
-        
+        $schedule->command("callibro:fetch")->hourly(); // Отработанное время сотрудников Евраз 1 Хоум
+
 	    $schedule->command('recruiter:stats 1')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса 
 	    $schedule->command('recruiter:stats')->hourlyAt(14); // Данные почасовой таблицы рекрутинга из битрикса  
 	    $schedule->command('recruiter:stats')->hourlyAt(29); // Данные почасовой таблицы рекрутинга из битрикса 
@@ -95,7 +95,6 @@ class Kernel extends ConsoleKernel
         $schedule->command("salary:indexation")->dailyAt('17:02'); // Индексация зарплаты
         $schedule->command("callibro:grades")->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
         $schedule->command("timetracking:salary_trainees")->dailyAt('17:30'); // Расчет оплаты стажерам
-        $schedule->command('callibro:conversion')->dailyAt('17:35'); // Конверсия согласий сотрудников Евраз 1 Хоум
         
         $schedule->command("check:timetrackers")->dailyAt('20:00'); // Автоматически завершать день в 2 часа ночи, тем кто забыл завершить
         //$schedule->command("checklist:update")->dailyAt('00:00'); //Ставить чек листы каждый день для сотрудников

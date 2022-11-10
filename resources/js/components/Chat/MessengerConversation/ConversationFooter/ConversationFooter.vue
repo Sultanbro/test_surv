@@ -1,7 +1,8 @@
 <template>
   <div class="messenger__chat-footer">
     <div class="messenger__box-footer messenger__box-footer-border">
-      <textarea v-model="body" @keydown.enter="performMessage" id="messengerMessageInput"
+      <textarea v-model="body" @keydown.enter="performMessage" @paste="pasteMessage"
+                id="messengerMessageInput"
                 cols="30" rows="10" class="messenger__textarea" placeholder="Ввести сообщение"></textarea>
       <div class="messenger__message-input" id="messengerInput">
         <div class="messenger__attachment">
@@ -57,6 +58,16 @@ export default {
   },
   methods: {
     ...mapActions(["sendMessage", "editMessageAction", "uploadFile"]),
+    pasteMessage(e) {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (let index in items) {
+        let item = items[index];
+        if (item.kind === 'file') {
+          let blob = item.getAsFile();
+          this.uploadFile(blob);
+        }
+      }
+    },
     performMessage(e) {
       let text = this.body.trim();
       if (text && this.chat) {
@@ -91,14 +102,13 @@ export default {
   width: 100%;
   border-bottom-right-radius: 4px;
   border-top: 2px solid #5ebee9;
-  z-index: 10;
-  margin: 0 10px;
 }
 
 .messenger__box-footer {
   display: flex;
   position: relative;
   padding: 5px 8px 10px 8px;
+  background-color: #fff;
 }
 
 .messenger__textarea {
@@ -116,7 +126,7 @@ export default {
   background: #fff;
   color: #0a0a0a;
   caret-color: #1976d2;
-  padding: 0;
+  padding: 5px 10px 0 5px;
 }
 
 .messenger__textarea:focus {

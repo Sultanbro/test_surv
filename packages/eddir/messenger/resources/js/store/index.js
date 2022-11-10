@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import message from './modules/chat/Message.js'
-import contact from "./modules/chat/Contact.js";
+import search from "./modules/chat/Search.js";
 import user from "./modules/chat/User.js";
 import chat from "./modules/chat/Chat.js";
 import messenger from "./modules/chat/Messenger.js";
@@ -13,7 +13,7 @@ const store = new Vuex.Store({
     messenger,
     message,
     chat,
-    contact,
+    search,
     user
   },
 })

@@ -324,4 +324,40 @@ class Callibro
 
         return $calls;
     }
+
+     /**
+     * Получить корректные согласия по сотруднику
+     * 
+     * @param String $user_email
+     * @param String $date
+     * @param array $params
+     * 
+     * @return int
+     */
+    public static function getClosedCards(
+        String $user_email,
+        String $date,
+        array $params = []
+    ) {
+        $cards = 0; // общее отработанное время
+
+        $cards = DB::connection('callibro')->table('calls')
+            ->select(
+                'id',
+                DB::raw("DATE_FORMAT(start_time, '%d.%m.%Y %H:%i:%s') as start_time")
+            )
+            ->whereDate('start_time', $date)
+            ->where('call_dialer_id', $params['dialer_id'])
+            ->whereIn('script_status_id', $params['closed_card_scripts'])
+            ->where('cause', '!=', 'NORMAL_TEMPORARY_FAILURE');
+        
+        if($user_email != '') {
+            $account = DB::connection('callibro')->table('call_account')->where('email', $user_email)->first();
+            if(!$account) return 0;
+            $cards->where('call_account_id', $account->id);
+        }
+        
+        return $cards->get()->count();
+    }
+
 }

@@ -21,16 +21,17 @@ class UpdatedUserStatService
 
     public function calculateStat(User $user, Carbon $date): float|int
     {
-        $statistics = $this->repository->retrieveLastRecordUpdatedStatisticsForEachKpi($user, $date)->get();
+        $statistics = $this->repository->retrieveLastRecordUpdatedStatisticsForEachKpi($user, $date)->get() ?? [];
         $amount = 0;
         foreach ($statistics as $statistic) {
             if ($statistic != null) {
-                $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id);
+                $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id, $date);
                 if ($kpiItem != null) {
                     $amount  += CalculateCarried::calculate($kpiItem, $statistic, $user);
                 }
             }
         }
+
         return $amount;
 
     }

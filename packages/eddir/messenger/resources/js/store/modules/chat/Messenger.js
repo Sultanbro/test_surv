@@ -2,7 +2,7 @@
 export default {
   actions: {
     async boot({commit, getters, dispatch}) {
-      let debug = window.location.href.indexOf("http://chat.f.rostkov.me/") !== -1;
+      let debug = window.location.href.indexOf("rostkov.me") !== -1;
       commit('setDebugMode', debug);
       dispatch('loadChats');
 
