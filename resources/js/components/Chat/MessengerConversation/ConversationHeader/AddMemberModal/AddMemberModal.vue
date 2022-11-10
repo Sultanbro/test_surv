@@ -1,10 +1,11 @@
 <template>
   <ModalWindow v-on="$listeners" :closeButton="false">
     <template v-slot:header>
-      Добавить участника
+      <template v-if="chat && chat.private">Создать групповой чат</template>
+      <template v-else>Пригласить в чат</template>
     </template>
     <template v-slot:body>
-      <div class="form-group">
+      <div class="form-group" v-if="chat.private">
         <label for="name">Название</label>
         <input type="text" class="form-control" id="name" v-model="title" placeholder="Название чата">
       </div>
@@ -46,12 +47,7 @@ export default {
     Multiselect,
   },
   computed: {
-    ...mapGetters(['contacts', 'newChatContacts'])
-  },
-  watch: {
-    newChatContacts() {
-      this.members = this.newChatContacts
-    }
+    ...mapGetters(['contacts', 'newChatContacts', 'chat', 'user'])
   },
   data() {
     return {
@@ -59,18 +55,40 @@ export default {
       members: []
     };
   },
+  created() {
+    if (!this.chat.private) {
+      this.title = this.chat.title;
+      this.members = this.chat.users.filter(user => user.id !== this.user.id);
+    }
+  },
   methods: {
-    ...mapActions(['createChat']),
+    ...mapActions(['createChat', 'addMembers', 'removeMembers']),
     submitForm() {
       if (!this.title) {
         return;
       }
-      console.log("create chat", this.members);
-      this.createChat({
-        title: this.title,
-        description: '',
-        members: this.members.map(member => member.id)
-      });
+      if (this.chat.private) {
+        console.log("create chat", this.members);
+        this.createChat({
+          title: this.title,
+          description: '',
+          members: this.members.map(member => member.id)
+        });
+      } else {
+        // find diff between members and chat.users
+        // add new members
+        // remove old members
+        this.members.push(this.user);
+        let add_members = this.members.filter(member => !this.chat.users.find(user => user.id === member.id));
+        let remove_members = this.chat.users.filter(user => !this.members.find(member => member.id === user.id));
+
+        if (add_members.length > 0) {
+          this.addMembers(add_members);
+        }
+        if (remove_members.length > 0) {
+          this.removeMembers(remove_members);
+        }
+      }
       this.$emit('close');
     },
   },

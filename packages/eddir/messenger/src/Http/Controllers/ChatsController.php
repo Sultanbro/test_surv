@@ -8,7 +8,7 @@
 
 namespace Eddir\Messenger\Http\Controllers;
 
-use App\User;
+use Illuminate\Foundation\Auth\User;
 use Eddir\Messenger\Facades\MessengerFacade;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -257,7 +257,7 @@ class ChatsController extends Controller
             return response()->json([ 'message' => 'Unauthorized' ], 401);
         }
         // check if user is member of chat
-        if (!MessengerFacade::isMember($chat_id)) {
+        if (!MessengerFacade::isMember($chat_id, Auth::user()->id)) {
             return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
         }
         // check if user exists
@@ -284,7 +284,7 @@ class ChatsController extends Controller
             return response()->json([ 'message' => 'Unauthorized' ], 401);
         }
         // check if user is member of chat
-        if (!MessengerFacade::isMember($chat_id)) {
+        if (!MessengerFacade::isMember($chat_id, Auth::user()->id)) {
             return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
         }
         // remove user from chat

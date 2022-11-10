@@ -3,7 +3,7 @@
 
 namespace Eddir\Messenger\Models;
 
-use App\User;
+use Illuminate\Foundation\Auth\User;
 use Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

@@ -14,22 +14,33 @@
         v-if="!isSearchMode"
         v-for="item in sortedChats"
         :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-        :data-test-id="item.id"
         @click="openChat(item)"
         @contextmenu.prevent="showChatContextMenu($event, item)"
       >
         <ContactItem :item="item"></ContactItem>
       </div>
-      <div
-        v-if="isSearchMode || (contacts.length && isOpen)"
-        v-for="item in contacts"
-        :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-        :data-test-id="item.id"
-        @click="openChat(item)"
-        @contextmenu.prevent="showChatContextMenu($event, item)"
-      >
-        <ContactItem :item="item"></ContactItem>
-      </div>
+      <template v-if="isSearchMessagesMode">
+        <div
+          v-if="isSearchMode"
+          v-for="item in searchMessagesChatsResults"
+          :class="'messenger__chat-item'"
+          @click="openChat(item)"
+        >
+          <ContactItem :item="item"></ContactItem>
+        </div>
+      </template>
+      <template v-if="isSearchContactsMode">
+        <div
+          v-if="isSearchMode"
+          v-for="item in contacts"
+          :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
+          :data-test-id="item.id"
+          @click="openChat(item)"
+          @contextmenu.prevent="showChatContextMenu($event, item)"
+        >
+          <ContactItem :item="item"></ContactItem>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -43,7 +54,10 @@ export default {
   name: "ChatsList",
   components: {ContextMenu, ContactItem},
   computed: {
-    ...mapGetters(['sortedChats', 'chat', 'isOpen', 'contacts', 'isSearchMode'])
+    ...mapGetters(['sortedChats', 'chat', 'isOpen',
+      'contacts', 'searchMessagesChatsResults',
+      'isSearchMessagesMode', 'isSearchContactsMode',
+      'isSearchMode'])
   },
   data() {
     return {

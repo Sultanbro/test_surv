@@ -55,6 +55,10 @@ export default {
 .messenger__side-panel {
     max-height: 1000px;
     max-width: 300px;
+    position: fixed;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     height: calc(100vh - 100px);
     background: #ffffff;
     color: #0a0a0a;
@@ -75,6 +79,7 @@ export default {
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
+    width: 90%;
     height: calc(100vh - 100px);
     background: #ffffff;
     color: #0a0a0a;
@@ -82,19 +87,8 @@ export default {
     white-space: normal;
     border: none;
     border-radius: 4px;
-    
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
     -webkit-tap-highlight-color: transparent;
-}
-
-.messenger__side-panel .messenger__box-search {
-    display:none;
-}
-.messenger__filter-blue {
-    position: absolute;
-    right: -10px;
-}
-.messenger__chats-list {
-    right: -10px
 }
 
 </style>

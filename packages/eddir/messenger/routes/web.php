@@ -32,7 +32,12 @@ Route::get('/v2/users', 'ChatsController@fetchUsers')->name('api.users.fetch');
 /**
  * Search chat by name
  */
-Route::get('/v2/search', 'ChatsController@search')->name('api.chats.search');
+Route::get('/v2/search/chats', 'ChatsController@search')->name('api.chats.search');
+
+/**
+ * Search messages by text
+ */
+Route::get('/v2/search/messages', 'MessagesController@searchMessages')->name('api.messages.search');
 
 /**
  * Get chat messages

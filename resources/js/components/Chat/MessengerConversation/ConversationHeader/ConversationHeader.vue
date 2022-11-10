@@ -15,7 +15,7 @@
       </div>
     </div>
     <ConversationPinned></ConversationPinned>
-    <AddMemberModal v-show="showAddMemberModal" @close="showAddMemberModal = false"></AddMemberModal>
+    <AddMemberModal v-if="showAddMemberModal" @close="showAddMemberModal = false"></AddMemberModal>
   </div>
 </template>
 

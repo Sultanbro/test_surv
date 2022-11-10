@@ -33,7 +33,23 @@ export default {
    * @return {Promise}
    */
   searchChats(search, callback) {
-    return axios.get(REST_URI + 'search', {
+    return axios.get(REST_URI + 'search/chats', {
+      params: {
+        q: search,
+      }
+    }).then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
+   * Search messages
+   * @param {String} search
+   * @param {Function} callback
+   * @return {Promise}
+   */
+  searchMessages(search, callback) {
+    return axios.get(REST_URI + 'search/messages', {
       params: {
         q: search,
       }
@@ -193,7 +209,7 @@ export default {
    * @param {Function} callback
    * @return {Promise}
    */
-  addUserToChat(chatId, userId, callback) {
+  addUserToChat(chatId, userId, callback = () => {}) {
     return axios.post(REST_URI + 'chat/' + chatId + '/addUser', {
       user_id: userId,
     }).then(response => {
@@ -208,7 +224,7 @@ export default {
    * @param {Function} callback
    * @return {Promise}
    */
-  removeUserFromChat(chatId, userId, callback) {
+  removeUserFromChat(chatId, userId, callback = () => {}) {
     return axios.post(REST_URI + 'chat/' + chatId + '/removeUser/' + userId).then(response => {
       callback(response.data);
     });

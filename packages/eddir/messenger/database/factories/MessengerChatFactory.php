@@ -2,7 +2,7 @@
 
 namespace Eddir\Messenger\database\factories;
 
-use App\Models\User;
+use App\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

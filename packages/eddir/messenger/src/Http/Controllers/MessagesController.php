@@ -52,6 +52,26 @@ class MessagesController {
     }
 
     /**
+     * Search messages by text
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function searchMessages(Request $request): JsonResponse
+    {
+        $search = $request->get('q');
+        // select where user is member of chat and message contains search text
+        $messages = MessengerMessage::whereHas('chat', function ($query) {
+            $query->whereHas('users', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+        })->where('body', 'like', "%{$search}%")->get();
+
+        return response()->json($messages);
+    }
+
+    /**
      * Send message to chat
      *
      * @param int $chatId
