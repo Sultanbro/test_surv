@@ -36,7 +36,7 @@ class KpiItemRepository extends CoreRepository
                 [
                     'histories' => fn($q) => $q->whereDate('created_at', '<=', $date),
                     'kpi'
-                ])
-            ->where('id', $id)->first();
+                ]
+            )->where('id', $id)->first();
     }
 }

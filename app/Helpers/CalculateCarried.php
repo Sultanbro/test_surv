@@ -30,6 +30,7 @@ class CalculateCarried
     {
         try {
             $limits = self::checkLimits($kpiItems->kpi);
+            $kpiHistory = [];
 
             if ($kpiItems->histories()->exists()) {
                 $kpiHistory = self::payload($kpiItems);
@@ -95,7 +96,6 @@ class CalculateCarried
     private static function payload($kpi)
     {
         $payload = $kpi->histories->first();
-        dump(json_decode($payload->payload, true));
         return json_decode($payload->payload, true);
     }
 }
