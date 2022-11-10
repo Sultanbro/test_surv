@@ -95,6 +95,7 @@ class CalculateCarried
     private static function getKpiItemsFromHistories($kpi)
     {
         $payload = $kpi->histories->first();
+        dump($payload);
         return json_decode($payload->payload, true);
     }
 }
