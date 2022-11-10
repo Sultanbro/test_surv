@@ -32,7 +32,7 @@ class CalculateCarried
             $limits = self::checkLimits($kpiItems->kpi);
 
             if ($kpiItems->histories()->exists()) {
-                $kpiHistory = self::getKpiItemsFromHistories($kpiItems);
+                $kpiHistory = self::payload($kpiItems);
             }
 
             $amountForExecutingPlan = $kpiItems->kpi->completed_100 * self::getShare($kpiHistory['share'] ?? $kpiItems->share);
@@ -92,10 +92,9 @@ class CalculateCarried
      * @param $kpi
      * @return mixed
      */
-    private static function getKpiItemsFromHistories($kpi)
+    private static function payload($kpi)
     {
         $payload = $kpi->histories->first();
-        dump($payload);
         return json_decode($payload->payload, true);
     }
 }
