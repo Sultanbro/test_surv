@@ -900,7 +900,6 @@ class Salary extends Model
             /**
              * Добавляем в KPI переменную значения с таблицы saved_kpi, updated_user_stats
              */
-            dd($user->kpi);
 //            $user->kpi += (new SavedKpiRepository)->getSavedKpiForMonth($user, $date)->sum('total');
             $user->kpi += (new UpdatedUserStatService)->calculateStat($user, $date);
 
