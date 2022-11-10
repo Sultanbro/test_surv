@@ -5,6 +5,8 @@ namespace App\Models\Kpi;
 use App\Models\History;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class KpiItem extends Model
@@ -40,12 +42,14 @@ class KpiItem extends Model
             ->withTrashed();
     }
 
-    /**
-     * 
-     */
-    public function histories()
+    public function histories(): MorphMany
     {
         return $this->morphMany(History::class, 'historable', 'reference_table', 'reference_id')
             ->orderBy('created_at', 'desc');
+    }
+
+    public function kpi(): BelongsTo
+    {
+        return $this->belongsTo(Kpi::class, 'kpi_id');
     }
 }

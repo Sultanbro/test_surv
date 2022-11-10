@@ -23,9 +23,10 @@ class UpdatedUserStatService
     {
         $statistics = $this->repository->retrieveLastRecordUpdatedStatisticsForEachKpi($user, $date)->get();
         $amount = 0;
+
         foreach ($statistics as $statistic) {
             if ($statistic != null) {
-                $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id);
+                $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id, $date->toDateString());
                 if ($kpiItem != null) {
                     $amount  += CalculateCarried::calculate($kpiItem, $statistic, $user);
                 }
