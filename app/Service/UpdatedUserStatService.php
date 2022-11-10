@@ -23,7 +23,7 @@ class UpdatedUserStatService
     {
         $statistics = $this->repository->retrieveLastRecordUpdatedStatisticsForEachKpi($user, $date)->get();
         $amount = 0;
-
+        dd($statistics);
         foreach ($statistics as $statistic) {
             if ($statistic != null) {
                 $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id, $date->toDateString());
