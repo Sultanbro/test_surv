@@ -82,7 +82,7 @@ class SaveUserKpi extends Command
         $this->workdays = [];
         $this->workdays[5] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [6,0]);
         $this->workdays[6] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [0]);
-        
+
         /**
          * working users not trainees
          */
@@ -93,7 +93,6 @@ class SaveUserKpi extends Command
                     ->orWhereNull('deleted_at');
             })
             ->where('is_trainee', 0);
-       
         
         if($this->argument('user_id')) {
             $users->where('users.id', $this->argument('user_id'));
@@ -108,7 +107,7 @@ class SaveUserKpi extends Command
          * Calc users kpi by order
          */
 
-        
+
         foreach ($users as $key => $user) {
 
             $this->line($key . ' '. $user->id);
@@ -124,31 +123,29 @@ class SaveUserKpi extends Command
                 ]
             ]));
 
+            $items = $this->calc($repo['items']);
 
-            // save
-            $this->updateSavedKpi([
-                'user_id' => $user->id,
-                'date'    => $date,
-                'total'   => $this->calc($repo['items']),
-            ]);
-
+            foreach ($items as $item) {
+                $this->updateSavedKpi([
+                    'user_id' => $user->id,
+                    'date'    => $date,
+                    'total'   => $item['earned'],
+                    'kpi_item_id' => $item['kpi_item']
+                ]);
+            }
         }
-
     }
 
     /**
      * calc kpis of user
      */
-    private function calc($kpis) : float
+    private function calc($kpis)
     {
         $earned = 0;
-        
+        $data   = [];
         foreach ($kpis as $key => $kpi) {
             if(!isset($kpi['users'][0])) continue;
-            
-           // dd($kpi['users'][0]['items'][0]);
             foreach ($kpi['users'][0]['items'] as $item) {
-               
                 $workdays = $item['activity'] && $item['activity']['weekdays'] != 0
                     ? $this->workdays[(int) $item['activity']['weekdays']]
                     : $this->workdays[5];
@@ -164,12 +161,11 @@ class SaveUserKpi extends Command
                 ], $item['method']);
                
                 if(
-                    //!$item['allow_overfulfillment'] 
                     $completed_percent > 100) {
                     $completed_percent = 100;
                 }
                 
-                $earned += $this->calculator->earned(
+                $earned = $this->calculator->earned(
                     $kpi['lower_limit'],
                     $kpi['upper_limit'],
                     $completed_percent,
@@ -178,18 +174,14 @@ class SaveUserKpi extends Command
                     $item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
                 );
 
-        
-                // dump($kpi['lower_limit'],
-                // $kpi['upper_limit'],
-                // $completed_percent,
-                // $item['share'],
-                // $kpi['completed_80'],
-                // $kpi['completed_100']);
-                 dump($earned);
+                $data[] = [
+                    'earned'    => $earned,
+                    'kpi_item'  => $item['id']
+                ];
 
             }
         }
-        return $earned;
+        return $data;
     }
 
     /**
