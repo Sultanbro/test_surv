@@ -88,8 +88,14 @@ class Messenger {
         if ( $chat->private ) {
             // get second user in private chat
             $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
-            $chat->title = $second_user->name . " " . $second_user->last_name;
-            $chat->image = $second_user->img_url;
+            if($second_user) {
+                $chat->title = $second_user->name . " " . $second_user->last_name;
+                $chat->image = config('messenger.user_avatar.folder') . '/' . $second_user->img_url;
+            } else {
+                $chat->title = 'Уволенный ???';
+                $chat->image = '';
+            }
+       
 
         }
         if ( empty( $chat->image ) ) {
@@ -196,14 +202,27 @@ class Messenger {
      * @return Collection
      */
     public function fetchMessages( int $chatId, int $page = 0, int $perPage = 10 ): Collection {
-        return MessengerMessage::query()
-                               ->with( 'files' )
-                               ->where( 'chat_id', $chatId )
-                               ->where( 'deleted', false )
-                               ->orderBy( 'created_at', 'desc' )
-                               ->skip( $page * $perPage )
-                               ->take( $perPage )
-                               ->get();
+
+        $disk = \Storage::disk('s3');
+        
+        $messages = MessengerMessage::query()
+            ->with( 'files' )
+            ->where( 'chat_id', $chatId )
+            ->where( 'deleted', false )
+            ->orderBy( 'created_at', 'desc' )
+            ->skip( $page * $perPage )
+            ->take( $perPage )
+            ->get();
+        
+        foreach ($messages as $key => $message) {
+            if($message->files && $message->files['file_path']) {
+                $message->files['file_path'] = $disk->temporaryUrl(
+                    $message->files['file_path'], now()->addMinutes(360)
+                );
+            }
+        }
+
+        return $messages;
     }
 
     /**

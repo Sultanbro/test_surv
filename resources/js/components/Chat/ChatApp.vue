@@ -75,11 +75,15 @@ export default {
     /*overflow: auto;*/
     max-height: 1000px;
     max-width: 1200px;
+    
+    /*custom */
+    width: 1200px;
+    /***/
+    
     position: fixed;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    width: 90%;
     height: calc(100vh - 100px);
     background: #ffffff;
     color: #0a0a0a;
