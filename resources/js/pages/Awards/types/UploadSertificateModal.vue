@@ -184,7 +184,5 @@ body {
   height: 100px;
   border: 1px solid #0515f0;
 }
-.modal-dialog {
-  max-width: 80%;
-}
+
 </style>
