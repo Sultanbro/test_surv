@@ -101,7 +101,9 @@ Vue.use(Notifications)
 
 // Vue.use(VueCoreVideoPlayer)
 
- 
+// Directive to lock scroll on html and body
+import VScrollLock from './plugins/VScrollLock'
+Vue.use(VScrollLock)
  
 Vue.component('svod-table', require('./components/SvodTable.vue').default);//сводная таблица для аналитики
 
