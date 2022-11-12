@@ -3,11 +3,8 @@
 namespace App\Service;
 
 use App\Helpers\CalculateCarried;
-use App\Models\Analytics\Activity;
-use App\Repositories\ActivityRepository;
 use App\Repositories\KpiItemRepository;
 use App\Repositories\UpdatedUserStatRepository;
-use App\SavedKpi;
 use App\User;
 use Carbon\Carbon;
 
@@ -23,12 +20,12 @@ class UpdatedUserStatService
     public function calculateStat(User $user, Carbon $date): float|int
     {
         $statistics = $this->repository->retrieveLastRecordUpdatedStatisticsForEachKpi($user, $date)->get() ?? [];
+
         $amount = 0;
         foreach ($statistics as $statistic) {
             if ($statistic != null) {
                 $kpiItem  = (new KpiItemRepository)->joinKpiItemsWithKpi($statistic->kpi_item_id, $date);
-                $existsInSavedKpi = $this->checkSavedKpi($statistic);
-                if ($kpiItem != null && !$existsInSavedKpi) {
+                if ($kpiItem != null) {
                     $amount  += CalculateCarried::calculate($kpiItem, $statistic, $user);
                 }
             }
@@ -57,19 +54,5 @@ class UpdatedUserStatService
     )
     {
         return $this->repository->updateOrCreateUpdatedUserStat($userId, $activityId, $kpiItemId, $date, $value);
-    }
-
-    /**
-     * @param $statistic
-     * @return boolean
-     */
-    private function checkSavedKpi($statistic): bool
-    {
-        $carbon = Carbon::parse($statistic->date);
-
-        return SavedKpi::query()->where([
-            'user_id' => $statistic->user_id,
-            'kpi_item_id' => $statistic->kpi_item_id
-        ])->whereYear('date', $carbon->year)->whereMonth('date', $carbon->month)->exists();
     }
 }
