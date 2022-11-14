@@ -6,6 +6,7 @@ use App\Events\BonusUpdated;
 use App\Http\Requests\BonusSaveRequest;
 use App\Http\Requests\BonusUpdateRequest;
 use App\Models\Analytics\Activity;
+use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
 use App\Traits\KpiHelperTrait;
 use Exception;
@@ -18,6 +19,26 @@ use App\Exceptions\Kpi\TargetDuplicateException;
 class BonusService
 {
     use KpiHelperTrait;
+
+    /**
+     * Получить бонусы пользователя
+     * @param int $user_id
+     * @return array
+     */
+    public function getUserBonuses(int $user_id): array
+    {
+        $groups =  GroupUser::where('user_id', $user_id)
+            ->where('status', 'active')
+            ->get()
+            ->pluck('group_id')
+            ->toArray();
+
+        $bonuses = Bonus::whereIn('targetable_id', $groups)
+            ->where('targetable_type', 'App\ProfileGroup')->get();
+        return [
+            'bonuses'    => $this->groupItems($bonuses),
+        ];
+    }
 
     /**
      * Получить бонус и активности и группы.
