@@ -6,7 +6,6 @@
   background: #F8F9FD;
   border-radius: 1.5rem 1.5rem 0 0;
   padding: 3rem 0 5rem 3.8rem;
-
 }
 .index__tab{
   white-space: nowrap;
@@ -121,11 +120,6 @@
         }
       }
     }
-    tr:first-child{
-      th,td{
-        width: 20rem;
-      }
-    }
     th{
       font-size:1.2rem;
       color:#62788B;
@@ -142,6 +136,67 @@
     }
   }
 
+}
+
+.indicators-table-fixed{
+  table-layout: fixed;
+  border-radius: 1.2rem 0 0 0;
+  th, td{
+    width: 5rem;
+    &[colspan="2"]{
+      width: 10rem;
+    }
+  }
+  th{
+    background: #F8F9FD;
+  }
+  .sticky-left{
+    outline: 1px solid #E7EAEA;
+  }
+  .indicators-table-fixed-name{
+    width: 20rem;
+    left: 0;
+  }
+  .indicators-table-fixed-hmonth,
+  .indicators-table-fixed-avg{
+    width: 8rem;
+    left: 20rem;
+  }
+  .indicators-table-fixed-hplan,
+  .indicators-table-fixed-month{
+    width: 8rem;
+    left: 28rem;
+  }
+  .indicators-table-fixed-plan{
+    width: 8rem;
+    left: 36rem;
+  }
+  .indicators-table-fixed-percent{
+    width: 8rem;
+    left: 44rem;
+  }
+}
+
+.cell-input {
+  background: none;
+  border: none;
+  text-align: center;
+  -moz-appearance: textfield;
+  font-size: .8rem;
+  font-weight: normal;
+  padding: 0;
+  color: #000;
+  border-radius: 0;
+
+  &:focus {
+      outline: none;
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+  }
 }
 
 @media(max-width:440px){

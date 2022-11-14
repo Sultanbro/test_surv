@@ -1,5 +1,5 @@
 <template>
-<div class="mb-3 index__content">
+<div class="mb-3 index__content custom-scroll">
     <div class="d-flex align-items-center mb-2" v-if="show_headers">
         
         <h4 class="mr-2">{{ activity.name }} <i class="fa fa-cogs show" @click="editActivity()"></i> </h4>
@@ -37,8 +37,7 @@
         </div>
 
         
-        <div >
-           
+        <div>
             <a @click='showExcelImport = !showExcelImport'  v-if="group_id == 42 || group_id == 88 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
                 class="btn btn-success btn-sm rounded mr-2 text-white">
                 <i class="fa fa-upload"></i>
@@ -54,39 +53,38 @@
 
     </div>
     
-    <table class="" :class="{'inverted' : color_invert}">
-
+    <table class="indicators-table-fixed" :class="{'inverted' : color_invert}">
         <tr>
-            <th class="b-table-sticky-column text-left max-content pl-4">
+            <th class="indicators-table-fixed-name sticky-left text-left max-content pl-4">
                 <div class="max-content">Сотрудник</div>
                  <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
             </th>
 
             <template v-if="activity.plan_unit == 'minutes'">
-                <th class="text-center "> 
+                <th class="indicators-table-fixed-avg sticky-left text-center"> 
                     <div>Ср.</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('avg')"></i>
                 </th>
-                <th class="text-center ">
+                <th class="indicators-table-fixed-month sticky-left text-center">
                     <div>План</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
                 </th>
-                <th class="text-center  plan">
+                <th class="indicators-table-fixed-plan sticky-left text-center plan">
                     <div>Вып.</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
                 </th>
-                <th class="text-center ">
+                <th class="indicators-table-fixed-percent sticky-left text-center">
                     <div>%</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('_percent')"></i>
                 </th>
             </template>
             
             <template v-else>
-                <th class="text-center ">
+                <th class="indicators-table-fixed-percent sticky-left text-center">
                     <div>План</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
                 </th>
-                <th class="text-center ">
+                <th class="indicators-table-fixed-percent sticky-left text-center">
                     <div>Вып.</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
                 </th>
@@ -102,11 +100,11 @@
         <tr v-for="(item, index) in filtered" :key="index">
             
 
-            <td v-if="item.name == 'SPECIAL_BTN'">
+            <td class="indicators-table-fixed-name sticky-left" v-if="item.name == 'SPECIAL_BTN'">
                 <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
             </td>
             
-            <td class="b-table-sticky-column text-left max-content"
+            <td class="indicators-table-fixed-name sticky-left text-left max-content"
                 :title="item.id + ' ' + item.email" 
                 :class="{
                     'prize first-place': item.show_cup == 1,
@@ -121,15 +119,15 @@
             </td>
 
             <template v-if="activity.plan_unit == 'minutes'">
-                <td class="class blue"><div>{{ item.avg }}</div></td>
-                <td class="class blue"><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
-                <td class="class blue plan"><div>{{ item.plan }}</div></td>
-                <td class="class blue"><div>{{ item.percent }}</div></td>
+                <td class="indicators-table-fixed-avg sticky-left class blue"><div>{{ item.avg }}</div></td>
+                <td class="indicators-table-fixed-month sticky-left class blue"><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
+                <td class="indicators-table-fixed-plan sticky-left class blue plan"><div>{{ item.plan }}</div></td>
+                <td class="indicators-table-fixed-percent sticky-left class blue"><div>{{ item.percent }}</div></td>
             </template>
 
             <template v-else>
-                <td class="class blue"><div>{{ item.month }}</div></td>
-                <td class="class blue"><div>{{ item.plan }}</div></td>
+                <td class="indicators-table-fixed-hmonth sticky-left class blue"><div>{{ item.month }}</div></td>
+                <td class="indicators-table-fixed-hplan sticky-left class blue"><div>{{ item.plan }}</div></td>
             </template>
             
 
@@ -904,30 +902,5 @@ export default {
 </script>
 
 <style lang="scss">
-.b-table-sticky-column{
-    position: sticky;
-    left: 0;
-    z-index: 2;
-}
-.cell-input {
-    background: none;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
- 
-    &:focus {
-        outline: none;
-    }
 
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-}
 </style>

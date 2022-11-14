@@ -1,15 +1,15 @@
 <template>
-  <div class="mt-5 index__content">
+  <div class="mt-5 index__content custom-scroll">
 
-      <div class="mb-3">
+      <div class="mb-3 sticky-left">
         Кол-во показателей: <b>{{total_count}}</b> ,
         Среднее значение: <b>{{ total_avg }}</b>
       </div>
 
       <div class="">
-          <table class="class">
+          <table class="class indicators-table-fixed">
               <tr>
-                  <th class="b-table-sticky-column text-left">
+                  <th class="indicators-table-fixed-name sticky-left text-left pl-4">
                       <div class="max-content">Сотрудник</div>  
                   </th>
                   <template v-for="(field, key) in fields">
@@ -19,9 +19,9 @@
                   </template>
               </tr>
               <tr v-for="(item, index) in users" :key="index"> 
-                  <td class="b-table-sticky-column text-left">
-                      <div class="d-flex max-content">{{ item.name }}
-                          
+                  <td class="indicators-table-fixed-name sticky-left text-left">
+                      <div class="d-flex max-content">
+                          {{ item.name }}
                       </div> 
                   </td>
                   <template v-for="(field, key) in fields"> 
@@ -108,8 +108,8 @@ export default {
               key: 'total',
               name: 'Итог',
               order: order++,
-              class: ' text-center t-total'
-          })  
+              class: 'indicators-table-fixed-hmonth sticky-left text-center t-total'
+          })
           
           for(let i = 1; i <= this.monthInfo.daysInMonth; i++) {
 
