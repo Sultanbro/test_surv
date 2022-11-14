@@ -21,7 +21,7 @@
         desc="Заработанная сумма именно от окладной части"
         :open="popBalance" 
         @close="popBalance=false"
-        width="75%">
+        width="50%">
         <popup-balance></popup-balance>
     </popup>
 
@@ -30,7 +30,7 @@
         desc="Выполняя дополнительные активности, заработайте больше денег"
         :open="popKpi" 
         @close="popKpi=false"
-        width="75%">
+        width="50%">
         <popup-kpi></popup-kpi>
     </popup>
 
@@ -39,7 +39,7 @@
         desc="Зарабатывайте бонусы, выполняя дополнительные активности"
         :open="popBonuses" 
         @close="popBonuses=false"
-        width="75%">
+        width="50%">
         <popup-bonuses></popup-bonuses>
     </popup>
 
@@ -48,7 +48,7 @@
         desc=""
         :open="popQuartalPremiums" 
         @close="popQuartalPremiums=false"
-        width="75%">
+        width="50%">
         <popup-quartal></popup-quartal>
     </popup>
 
@@ -57,7 +57,7 @@
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popNominations" 
         @close="popNominations=false"
-        width="75%">
+        width="50%">
         <popup-nominations></popup-nominations>
     </popup>
     

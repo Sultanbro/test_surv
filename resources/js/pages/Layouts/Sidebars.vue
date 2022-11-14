@@ -17,7 +17,7 @@
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popNotifications" 
         @close="popNotifications=false"
-        width="75%">
+        width="50%">
         <popup-notifications></popup-notifications>
     </popup>
 
@@ -27,7 +27,7 @@
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popChecklist" 
         @close="popChecklist=false"
-        width="75%">
+        width="50%">
         <popup-checklist></popup-checklist>
     </popup>
 
@@ -37,7 +37,7 @@
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popFAQ" 
         @close="popFAQ=false"
-        width="75%">
+        width="50%">
         <popup-faq></popup-faq>
     </popup>
 
@@ -47,7 +47,7 @@
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popSearch" 
         @close="popSearch=false"
-        width="75%">
+        width="50%">
         <popup-search></popup-search>
     </popup>
 
@@ -57,7 +57,7 @@
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popMail" 
         @close="popMail=false"
-        width="75%">
+        width="50%">
         <popup-mail></popup-mail>
     </popup>
 
