@@ -21,7 +21,7 @@
                 <div class="notifications__wrapper">
 
                     <div class="notifications__item" v-for="(item, i) in data.unread" :key="i">
-                        <div class="notifications__item-date">{{ item.created_at }}</div>
+                        <div class="notifications__item-date">{{ $moment(item.created_at).format(dateFormat) }}</div>
                         <div class="notifications__title">
                             {{ item.title }}
                         </div>
@@ -44,12 +44,12 @@
                 <div class="notifications__wrapper">
 
                     <div class="notifications__item" v-for="(item, i) in data.read" :key="i">
-                        <div class="notifications__item-date">{{ item.created_at }}</div>
+                        <div class="notifications__item-date">{{ $moment(item.created_at).format(dateFormat) }}</div>
                         <div class="notifications__title">
                             {{ item.title }}
                         </div>
                         <div class="notifications__text" v-html="item.message"></div>
-                        <div class="notifications__item-date absolute">{{ item.read_at }}</div>
+                        <div class="notifications__item-date absolute">{{ $moment(item.read_at).format(dateFormat) }}</div>
                     </div>
 
                     <div v-if="data.read.length == 0" class="mt-5">
@@ -65,10 +65,11 @@
 
 <script>
 export default {
-    name: "NotificationsPopup", 
+    name: 'NotificationsPopup', 
     props: {},
     data: function () {
         return {
+            dateFormat: 'DD.MM.YYYY',
             data: {
                 unreadQuantity: 0,
                 unread: [],
@@ -83,7 +84,7 @@ export default {
         fetchData() {
             let loader = this.$loading.show();
             
-            axios.post("/notifications", {})
+            axios.post('/notifications', {})
                 .then((response) => {
                     this.data = response.data
                     console.log(this.data)
@@ -101,7 +102,7 @@ export default {
 
             let loader = this.$loading.show();
             
-            axios.post("/notifications/set-read-all/", {})
+            axios.post('/notifications/set-read-all/', {})
                 .then((response) => {
                     if(response.data == '1') {
 
@@ -177,7 +178,7 @@ export default {
         req(i, payload) {
             let loader = this.$loading.show();
             
-            axios.post("/notifications/set-read", payload)
+            axios.post('/notifications/set-read', payload)
                 .then((response) => {
                     if(response.data == 1) {
 

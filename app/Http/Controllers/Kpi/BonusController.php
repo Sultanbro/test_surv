@@ -9,6 +9,7 @@ use App\Models\Kpi\Bonus;
 use App\Service\BonusService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use DB;
@@ -32,6 +33,13 @@ class BonusController extends Controller
     public function get(Request $request)
     {
         $response = $this->bonusService->fetch($request->filters);
+
+        return response()->json($response);
+    }
+
+    public function getUserBonuses()
+    {
+        $response = $this->bonusService->getUserBonuses(Auth::id());
 
         return response()->json($response);
     }

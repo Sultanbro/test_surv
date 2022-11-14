@@ -45,13 +45,43 @@
                     </tbody>
                 </table>
             </div>
-            <div class="kaspi__content custom-scroll-y tab__content-item"  data-content="2">
-                <div class="kaspi__wrapper">
-                    
-                    <div v-html="potential_bonuses"></div>
+          <div class="kaspi__content custom-scroll-y tab__content-item"  data-content="2">
+            <!--                <div class="kaspi__wrapper">-->
+            <!--                    -->
+            <!--                    <div v-html="potential_bonuses"></div>-->
 
-                </div>
-            </div>
+            <!--                </div>-->
+            <table>
+              <template v-for=" (bonus, i) in bonuses">
+                <thead>
+
+                <tr>
+                  <div class="popup__subtitle">
+                    {{ bonus.name }}
+
+                  </div>
+
+                </tr>
+                <tr>
+                  <th class="text-center">Название</th>
+                  <th class="text-center">За что</th>
+                  <th class="text-center">Сумма</th>
+                </tr>
+              </thead>
+              <tbody>
+              <tr v-for="item in bonus.items">
+                <td class="text-center">{{ item.title }}</td>
+                <td class="text-center">{{ item.text }}</td>
+                <td class="text-center">{{ item.sum }}</td>
+
+              </tr>
+              </tbody>
+
+              </template>
+
+            </table>
+          </div>
+
 
         </div>
     </div>
@@ -59,12 +89,15 @@
 </template>
 
 <script>
+import {fields} from "../../kpi/bonuses";
+
 export default {
     name: "PopupBonuses", 
     props: {},
     data: function () {
         return {
-            fields: [], 
+            fields: [],
+            bonuses: [],
             currentMonth: null,
             dateInfo: {
                 currentMonth: null,
@@ -80,6 +113,7 @@ export default {
     created(){
         this.setMonth()
         this.fetchData()
+        this.fetchBonuses()
     },
     methods: {
         /**
@@ -100,22 +134,33 @@ export default {
             this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
         },
 
-
         fetchData() {
             let loader = this.$loading.show();
-            
+
             axios
                 .post("/bonuses", {
                     month: this.$moment(this.currentMonth, 'MMMM').format('M'),
                     year: new Date().getFullYear(),
                 })
                 .then((response) => {
-                    this.potential_bonuses = response.data.data.potential_bonuses
+                    // this.potential_bonuses = response.data.data.potential_bonuses
                     this.history = response.data.data.history
-                   
+
                     loader.hide();
                 });
         },
+      fetchBonuses(){
+        let loader = this.$loading.show();
+        const _this = this;
+        axios
+            .post("/bonus/user")
+            .then((response) => {
+             console.log(response);
+             _this.bonuses = response.data.bonuses
+
+              loader.hide();
+            });
+      }
     }
 };
 </script>

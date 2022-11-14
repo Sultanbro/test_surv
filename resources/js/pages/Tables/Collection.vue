@@ -12,94 +12,89 @@
         </div>
     </h4>
     
-    <table class="" :id="'sticky-'+ activity.id">
-        <tr>
-            <th class="b-table-sticky-column" rowspan="2">
-                <div class="text-left pl-4">
-                    ФИО
-                    <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
-                </div>
-            </th>
-            
-            <th class="text-left" rowspan="2">
-                <div class="" v-if="is_admin">
-                    Итог к выдаче
-                    <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('plan')"></i>
-                </div>
-                <div class="" v-else></div>
-            </th>
-
-            <th class="text-left" v-if="is_admin" rowspan="2">
-                <div class="">
-                    Сборы
-                    <i class="fa fa-sort ml-2" @click="sort('count')"></i>
-                </div>
-            </th>
-            
-            <th class="text-center" colspan="2" v-for="day in month.daysInMonth">
-                <div>{{ day }}</div>
-            </th>
-            
-        </tr>
-
-        <tr>
-            <template v-for="day in month.daysInMonth">
-                <th class="stickyy-h2">сборы</th>
-                <th class="stickyy-h2">тенге</th>
-            </template>
-        </tr>
-
-        <tr v-for="(item, index) in items" :key="index"
-            :class="{
-                'prize first-place': item.show_cup == 1,
-                'prize second-place':item.show_cup == 2,
-                'prize third-place': item.show_cup == 3,
-            }"
-        >
-            <td class="b-table-sticky-column text-left" :title="item.id + ' ' + item.email">
-                <div class="d-flex align-items-center max-content">
-                    {{ item.lastname }} {{ item.name }}
-                </div>
-            </td>
-
-            <td class="px-2">{{ item.plan }}</td>
-            <td class="px-2">{{ item.count }}</td>
-
-            <template v-for="day in month.daysInMonth">
-                <td v-if="item.editable"
-                    :class="'text-center ' + item._cellVariants[day]"
-                    :title="day + ': сборы'"
-                >
-                    <div>
-                        <input type="number"
-                            v-model="item[day]"
-                            @change="updateSettings($event, item, index, day)"
-                            class="form-control cell-input">
+    <div class="custom-scroll">
+        <table class="indicators-table-fixed" :id="'sticky-'+ activity.id">
+            <tr>
+                <th class="indicators-table-fixed-name sticky-left" rowspan="2">
+                    <div class="text-left pl-4">
+                        ФИО
+                        <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
+                    </div>
+                </th>
+        
+                <th class="indicators-table-fixed-hmonth sticky-left" rowspan="2">
+                    <div class="text-left pl-4" v-if="is_admin">
+                        Итог к выдаче
+                        <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('plan')"></i>
+                    </div>
+                    <div class="" v-else></div>
+                </th>
+                <th class="indicators-table-fixed-hplan sticky-left" v-if="is_admin" rowspan="2">
+                    <div class="text-left pl-4">
+                        Сборы
+                        <i class="fa fa-sort ml-2" @click="sort('count')"></i>
+                    </div>
+                </th>
+        
+                <th class="text-center" colspan="2" v-for="day in month.daysInMonth">
+                    <div>{{ day }}</div>
+                </th>
+        
+            </tr>
+            <tr>
+                <template v-for="day in month.daysInMonth">
+                    <th class="stickyy-h2">сборы</th>
+                    <th class="stickyy-h2">тенге</th>
+                </template>
+            </tr>
+            <tr v-for="(item, index) in items" :key="index"
+                :class="{
+                    'prize first-place': item.show_cup == 1,
+                    'prize second-place':item.show_cup == 2,
+                    'prize third-place': item.show_cup == 3,
+                }"
+            >
+                <td class="indicators-table-fixed-name sticky-left text-left" :title="item.id + ' ' + item.email">
+                    <div class="d-flex align-items-center max-content">
+                        {{ item.lastname }} {{ item.name }}
                     </div>
                 </td>
-
-                <td v-else
-                    :title="day + ': сборы'"
-                    @click="editMode(item)"
-                    :class="'text-center ' + item._cellVariants[day]"
-                >
-                    <div>{{ item[day] }}</div>
-                </td>
-                
-                <td v-if="!isNaN(Number(item[day]) * price)"
-                    :title="day + ': тенге'"
-                    class=""
-                >
-                    {{ Number(item[day]) * price }}
-                </td>
-
-                <td v-else
-                    :title="day + ': тенге'"
-                    class=""
-                ></td>
-            </template>
-        </tr>
-    </table>
+                <td class="indicators-table-fixed-hmonth sticky-left px-2">{{ item.plan }}</td>
+                <td class="indicators-table-fixed-hplan sticky-left px-2">{{ item.count }}</td>
+                <template v-for="day in month.daysInMonth">
+                    <td v-if="item.editable"
+                        :class="'text-center ' + item._cellVariants[day]"
+                        :title="day + ': сборы'"
+                    >
+                        <div>
+                            <input type="number"
+                                v-model="item[day]"
+                                @change="updateSettings($event, item, index, day)"
+                                class="form-control cell-input">
+                        </div>
+                    </td>
+                    <td v-else
+                        :title="day + ': сборы'"
+                        @click="editMode(item)"
+                        :class="'text-center ' + item._cellVariants[day]"
+                    >
+                        <div>{{ item[day] }}</div>
+                    </td>
+        
+                    <td v-if="!isNaN(Number(item[day]) * price)"
+                        :title="day + ': тенге'"
+                        class=""
+                    >
+                        {{ Number(item[day]) * price }}
+                    </td>
+                    <td v-else
+                        :title="day + ': тенге'"
+                        class=""
+                    ></td>
+                </template>
+            </tr>
+        </table>
+    </div>
 
     <sidebar title="Импорт EXCEL"
         :open="showExcelImport"
@@ -403,20 +398,13 @@ export default {
                                 sumForOne += account[key]; // horizontal sum
                                 countWorkedDays++;
                                 this.totalCountDays++;
-
-                                
                             }
                         }
                     }
-           
-                        
                     
                     cellValues["plan_unit"] = this.activity.plan_unit;
                     cellValues["plan"] = sumForOne * this.price;
                     cellValues["count"] = sumForOne;
-                   
-
-                    
                 }
 
                 
@@ -476,31 +464,5 @@ export default {
 </script>
 
 <style lang="scss">
-.b-table-sticky-column{
-    position: sticky;
-    left: 0;
-    z-index: 2;
-}
 
-.cell-input {
-    background: none;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
- 
-    &:focus {
-        outline: none;
-    }
-
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-}
 </style>

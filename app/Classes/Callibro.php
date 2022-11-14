@@ -91,12 +91,12 @@ class Callibro
             $ready_sec = 0; // время в статусе Готов
             $fill_sec = 0;  // время заполнения анкеты
             $call_sec = 0;  // время разговора
-            $away_sec = 0;
+            $pause_sec = 0;
             
             $calls = DB::connection('callibro')->table('calls')
                     ->select('call_account_id', DB::raw('SUM(calls.billsec) as billsec_sum'))
                     ->whereDate('start_time', $day)
-                    //->where('billsec', '>=', 10)
+                    ->where('billsec', '<', 1000)
                     ->where('call_account_id', $call_account_id)
                    // ->where('cause', '!=', 'SYSTEM_SHUTDOWN')
                     ->first();
@@ -148,10 +148,14 @@ class Callibro
                     $away_sec = $report->state_duration;
                 }
 
-                $additional_minutes += $report->count * 7;
+                if($report->state == 'pause') { 
+                    $pause_sec = $report->state_duration;
+                }
+
+                //$additional_minutes += $report->count * 7;
             }
           
-           $full_time = (int) round(($fill_sec + $ready_sec + $call_sec + $additional_minutes) / 60); // отработанное время в минутах
+           $full_time = (int) round(($fill_sec + $ready_sec + $call_sec + $pause_sec + $additional_minutes) / 60); // отработанное время в минутах
             //$full_time = (int) round(($all_minutes) / 60); // отработанное время в минутах
             
         } 
