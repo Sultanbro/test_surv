@@ -8,7 +8,7 @@
     </div>
 
     <div class="index__table">
-        <div class="tabs custom-scroll">
+        <div class="tabs">
             <div class="index__tabs tabs__wrapper">
                 <div class="index__tab tab__item"
                     v-for="(act, index) in activities"
@@ -77,14 +77,12 @@
 
         </div>
     </div>
-
-
 </div>
 </template>
 
 <script>
 export default {
-    name: "CompareIndicators", 
+    name: 'CompareIndicators', 
     props: {},
     data: function () {
         return {
