@@ -27,6 +27,9 @@ body.modal-open {
 html.modal-open {
   overflow: hidden;
 }
+.v-scroll-locked{
+  overflow: hidden;
+}
 .popup {
   min-height:100%;
   margin: auto 0 auto auto;
