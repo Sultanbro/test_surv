@@ -3,8 +3,6 @@
 namespace App\Service;
 
 use App\Helpers\CalculateCarried;
-use App\Models\Analytics\Activity;
-use App\Repositories\ActivityRepository;
 use App\Repositories\KpiItemRepository;
 use App\Repositories\UpdatedUserStatRepository;
 use App\User;
@@ -22,6 +20,7 @@ class UpdatedUserStatService
     public function calculateStat(User $user, Carbon $date): float|int
     {
         $statistics = $this->repository->retrieveLastRecordUpdatedStatisticsForEachKpi($user, $date)->get() ?? [];
+
         $amount = 0;
         foreach ($statistics as $statistic) {
             if ($statistic != null) {
