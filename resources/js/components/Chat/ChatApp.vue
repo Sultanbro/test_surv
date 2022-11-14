@@ -54,6 +54,7 @@ export default {
 
 .messenger__side-panel {
     max-height: 1000px;
+    display: none;
     max-width: 300px;
     position: fixed;
     right: 10px;
