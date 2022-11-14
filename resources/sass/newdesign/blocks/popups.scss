@@ -735,12 +735,14 @@ max-width: 100%;}
 
 .notifications__read {
   position: absolute;
-  background-color: #B7E100;
+  background: #B7E100;
   right: 0;
   top: 0;
   z-index: 1;
   height: 100%;
   width: 6.4rem;
+  cursor: pointer;
+  transition: background .3s 0s;
 
   &:after {
     content: "";
@@ -752,6 +754,10 @@ max-width: 100%;}
     z-index: 1;
     width: 2.4rem;
     height: 2.4rem;
+  }
+  
+  &:hover{
+    background: darken(#B7E100, 10%);
   }
 }
 
