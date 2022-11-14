@@ -37,6 +37,7 @@ class UpdateUserStatObserver
      */
     public function updated(UpdatedUserStat $updateUserStat)
     {
+        dd($updateUserStat);
         $this->updateOrCreate($updateUserStat);
     }
 }
