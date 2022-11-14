@@ -429,7 +429,7 @@ class AnalyticsController extends Controller
             if($user->user_type != $user_type) continue;
 
             if(!in_array($tt->user_id, $marked_users)) {
-
+                $old_value = is_numeric($old_value) ? (int) $old_value : 0;
                 $new_value = $tt->total_hours + $value - $old_value;
                 if($new_value < 0) $new_value = 0;
                 $tt->total_hours = $new_value; 
