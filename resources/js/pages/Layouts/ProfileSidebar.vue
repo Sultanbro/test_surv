@@ -4,20 +4,19 @@
             <a 
                 href="#" 
                 class="profile__logo" 
-                v-if="($laravel.is_admin == 1 || $laravel.is_admin == 18) && !logo.image "
+                v-if="($laravel.is_admin == 1 || $laravel.is_admin == 18) && !logo.image  "
                 @click.prevent="modalLogo"
             >
                 <img src="/images/dist/logo-download.svg" alt="logo download">
                 Загрузить логотип
             </a>
-            <a
-                href="#"
-                class="profile__logo"
+            <div
+                class="profile__logo logo-img-wrap"
                 v-if="logo.image "
                 @click.prevent="modalLogo"
             >
-              <img :src="logo.image" style="max-width:100%" class="rounded">
-            </a>
+              <img :src="logo.image" class="logo-img">
+            </div>
 
             <start-day-btn @currentBalance="currentBalance"></start-day-btn>
 
@@ -26,24 +25,29 @@
                 <p>{{ balance }} <span>{{ currency }}</span></p>
             </div>
 
-            <b-modal id="modal-sm" title="Загрузить логотип" size="sm" hide-footer>
-                <form>
+            <b-modal :headerClass="{'border-radius':'1rem'}" id="modal-sm" title="Загрузить логотип" size="lg"  hide-footer >
+                <form class="logo-upload-modal">
                     <div class="custom-file mb-5">
                         <input type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" ref="file" accept="image/*" v-on:change="handleFileUpload()">
-                        <label class="custom-file-label" for="inputGroupFile04">Загрузить логотип</label>
+                        <label class="custom-file-label profile-border" for="inputGroupFile04">Загрузить логотип</label>
                     </div>
                   <cropper
                       ref="mycrop"
                       class="cropper"
                       :src="imagePreview"
                       :stencil-props="{
-        aspectRatio: 21/9
+        aspectRatio: 32/10
       }"
                       @change="change"
                   />
-                    <div class="clearfix">
-                       <button class="btn btn-success float-right"  v-on:click.prevent="uploadLogo()">Добавить</button>
-                    </div>           
+
+                    <div class="clearfix mt-3">
+                      <a href="#"
+                         class="add-btn float-right"
+                         v-on:click.prevent="uploadLogo()"
+                      >
+                        <p >Добавить</p>
+                      </a>                    </div>
                 </form>
             </b-modal>
 
@@ -174,6 +178,8 @@ export default {
         uploadLogo(){
           const _this = this;
           _this.logo.canvas.toBlob(function(blob) {
+            let loader = _this.$loading.show();
+
             const formData = new FormData();
             formData.append("file", blob);
             formData.append("type", 'company');
@@ -190,6 +196,8 @@ export default {
               console.log('success')
               console.log(response)
               _this.logo.image = response.data.logo;
+              loader.hide();
+
 
             })
                 .catch((response)=> {
@@ -237,3 +245,38 @@ export default {
     }
 };
 </script>
+<style>
+.logo-img{
+  object-fit: cover;
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+.logo-img-wrap{
+  width: 100%;
+  max-width: 30rem;
+}
+
+.logo-upload-modal{
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1.7rem 1rem;
+}
+.add-btn{
+  background: #8FAF00;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+.modal-title{
+  color: #62788B;
+}
+.custom-file-label::after{
+  color:inherit;
+}
+.modal-content{
+  border-radius: 0.5rem;
+}
+</style>
