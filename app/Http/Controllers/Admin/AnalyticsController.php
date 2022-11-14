@@ -488,7 +488,8 @@ class AnalyticsController extends Controller
             'plan_unit'  => $request->activity['plan_unit'], 
             'unit'       => $request->activity['unit'], 
             'weekdays'   => $request->activity['weekdays'], 
-            'ud_ves'     => 0
+            'ud_ves'     => 0,
+            'source'     => Activity::SOURCE_GROUP
         ]);
 
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
