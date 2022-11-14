@@ -24,7 +24,7 @@
     <!-- popup -->
     <popup v-if="popChecklist"
         title="Чек лист"
-        desc="Дополнительное поле с описанием функционала данного окна"
+        desc="Важно в течении дня выполнить все пункты чек листа"
         :open="popChecklist" 
         @close="popChecklist=false"
         width="50%">

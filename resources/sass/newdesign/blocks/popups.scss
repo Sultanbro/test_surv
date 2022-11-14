@@ -815,55 +815,7 @@ max-width: 100%;}
  }
 }
 
-.check__title{
-  font-size:2.7rem;
-  font-weight:600;
-  text-transform: uppercase;
-  padding-bottom: 2rem;
 
-  border-bottom: 1px solid #E6E6E6;
-
-}
-
-.check__item{
-  display: flex;
-  min-height: 4rem;
-  height: 4rem;
-  align-items: center;
-  margin-bottom: 2rem;
-
-
-  .check__url{
-    border: 1px solid #E7EAEA;
-    border-radius:1.5rem;
-    padding-left: 1.5rem;
-    max-width: 100%;
-    width: 100%;
-    font-size:1.3rem;
-    font-family:"Inter",sans-serif;
-    height: 100%;
-    display: block;
-
-  }
-}
-
-
-
-.check__checkbox{
-  margin-right: 8rem;
-  display: flex;
-  gap: 1.5rem;
-  color:#5b6166;
-  font-size: 1.5rem;
-  max-width: 12.5rem;
-  width: 100%;
-  height: 100%;
-  align-items: center;
-
-  p{
-    white-space:nowrap;
-  }
-}
 
 
 @media(max-width:370px){
@@ -893,7 +845,7 @@ max-width: 100%;}
 
 }
 
-.notifications__button, .check__button{
+.notifications__button{
   display: flex;
   justify-content: center;
   align-items: center;
