@@ -120,13 +120,8 @@ class ProfileSalaryController extends Controller
         } else {
 
             $sk = (new SavedKpiRepository)->getSavedKpiForMonth($user, $date)->first();
-
             $kpi = $sk ? $sk->total : 0;
         }
-
-        $updatedUserStatistics = (new UpdatedUserStatService)->calculateStat($user, $date);
-
-        $kpi += $updatedUserStatistics;
 
         $salary = $user->getCurrentSalary();
         

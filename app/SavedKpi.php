@@ -16,6 +16,6 @@ class SavedKpi extends Model
         'user_id',
         'date',
         'total',
+        'kpi_item_id'
     ];
-
 }
