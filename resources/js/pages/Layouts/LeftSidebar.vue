@@ -38,11 +38,23 @@
                 :menu="item.menu"
             />
         </template>
+        <template v-if="filteredItems.more.length === 1">
+            <LeftSidebarItem
+                :key="filteredItems.more[0].name"
+                v-if="!filteredItems.more[0].hide"
+                :name="filteredItems.more[0].name"
+                :class="filteredItems.more[0].className"
+                :href="filteredItems.more[0].href"
+                :icon="filteredItems.more[0].icon"
+                :img="filteredItems.more[0].img"
+                :menu="filteredItems.more[0].menu"
+            />
+        </template>
         <LeftSidebarItem
-            v-if="filteredItems.more.length"
+            v-if="filteredItems.more.length > 1"
             name="Еще"
             class="header__nav-link-more"
-            :img="{ src: '/images/dist/icon-settings.svg' }"
+            icon="icon-nd-more"
             :menu="filteredItems.more"
         />
     </nav>
@@ -92,21 +104,18 @@ export default {
                     height: 0,
                     menu: [
                         {
-                            title: 'Читать книги',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'Читать книги',
+                            icon: 'icon-nd-books',
                             href: '/admin/upbooks'
                         },
                         {
-                            title: 'Смотреть видео',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'Смотреть видео',
+                            icon: 'icon-nd-video',
                             href: '/video_playlists'
                         },
                         {
-                            title: 'Курсы',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'Курсы',
+                            icon: 'icon-nd-courses',
                             href: '/courses',
                             hide: !this.$can('courses_view')
                         }
@@ -126,51 +135,44 @@ export default {
                     height: 0,
                     menu: [
                         {
-                            title: 'ТОП',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'ТОП',
+                            icon: 'icon-nd-dashboard',
                             href: '/timetracking/top',
                             hide: !this.$can('top_view')
                         },
                         {
-                            title: 'Табель',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'Табель',
+                            icon: 'icon-nd-tabel',
                             href: '/timetracking/reports',
                             hide: !this.$can('tabel_view')
                         },
                         {
-                            title: 'Время прихода',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'Время прихода',
+                            icon: 'icon-nd-enter-time',
                             href: '/timetracking/reports/enter-report',
                             hide: !this.$can('entertime_view')
                         },
                         {
-                            title: 'HR',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'HR',
+                            icon: 'icon-nd-hr',
                             href: '/timetracking/analytics',
                             hide: !this.$can('hr_view')
                         },
                         {
-                            title: 'Аналитика',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'Аналитика',
+                            icon: 'icon-nd-analytics',
                             href: '/timetracking/an',
                             hide: !this.$can('analytics_view')
                         },
                         {
-                            title: 'Начисления',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'Начисления',
+                            icon: 'icon-nd-salary',
                             href: '/timetracking/salaries',
                             hide: !this.$can('salaries_view')
                         },
                         {
-                            title: 'Контроль качества',
-                            img: '/images/dist/icon-settings.svg',
-                            alt: 'settings icon',
+                            name: 'Контроль качества',
+                            icon: 'icon-nd-quality',
                             href: '/timetracking/quality-control',
                             hide: !this.$can('quality_view')
                         },
@@ -252,13 +254,7 @@ export default {
                     res.visible.push(item)
                 }
                 else{
-                    res.more.push({
-                        title: item.name,
-                        img: '/images/dist/icon-settings.svg',
-                        alt: 'settings icon',
-                        href: item.href,
-                        hide: item.hide
-                    })
+                    res.more.push(item)
                 }
                 return res;
             }, {
@@ -330,6 +326,7 @@ export default {
     flex-direction: column;
     flex: 0 1 100%;
     gap:.5rem;
+    overflow-y: auto;
     &::-webkit-scrollbar {
         width: 0; /* высота для горизонтального скролла */
         height: 0; 
@@ -400,7 +397,7 @@ export default {
     padding-top: 0;
     border-radius: 0.3rem;
 
-    position: absolute;
+    position: fixed;
     z-index: 1005;
     left: 8rem;
 
@@ -443,17 +440,24 @@ export default {
 
         &:hover{
             background: #EBF1FF;
+            // .menu__item-icon{
+            //     color: #156AE8;
+            // }
         }
         &-title{
             color:#62788B;
             padding: 1rem 0;
         }
     }
+
+    .menu__item-icon{
+        color: #62788B;
+    }
 }
 
 .header__nav-link-more{
     .header__menu{
-        bottom: 0;
+        transform: translateY(calc(-100% + 5rem));
     }
 }
 </style>
