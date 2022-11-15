@@ -90,8 +90,15 @@ class Messenger {
         if ( $chat->private ) {
             // get second user in private chat
             $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
-            $chat->title = $second_user->name . " " . $second_user->last_name;
-            $chat->image = $second_user->img_url;
+            
+
+            $chat->title = 'Безымянный';
+            $chat->image = '';
+
+            if($second_user) {
+                $chat->title = $second_user->name . " " . $second_user->last_name;
+                $chat->image = $second_user->img_url;
+            }
 
         }
         if ( empty( $chat->image ) ) {
@@ -133,6 +140,7 @@ class Messenger {
     public function searchUsers( string $name, int $limit = 100 ): Collection {
         return User::query()
                    ->where( 'name', 'like', "%$name%" )
+                   ->orWhere( 'last_name', 'like', "%$name%" )
                    ->limit( $limit )
                    ->get();
     }
