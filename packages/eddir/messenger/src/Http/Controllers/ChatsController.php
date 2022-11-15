@@ -163,7 +163,7 @@ class ChatsController extends Controller
         }
 
         // chat title should be less than 50 characters
-        if (strlen($request->title) > 50) {
+        if (strlen($request->title) > 255) {
             return response()->json([ 'message' => 'Title is too long' ], 400);
         }
 
@@ -177,7 +177,7 @@ class ChatsController extends Controller
         }
 
         // create chat
-        $chat = MessengerFacade::createChat(Auth::user()->id, $request->title, $request->description ?? "", $request->members);
+        $chat = MessengerFacade::createChat(Auth::user(), $request->title, $request->description ?? "", $request->members);
         return response()->json($chat);
     }
 
@@ -216,7 +216,7 @@ class ChatsController extends Controller
             return response()->json([ 'message' => 'Description is too long' ], 400);
         }
         // update chat
-        $chat = MessengerFacade::updateChat($chat_id, $request->title, $request->description);
+        $chat = MessengerFacade::updateChat($chat_id, $request->title, $request->description, Auth::user());
         return response()->json($chat);
     }
 
@@ -238,7 +238,7 @@ class ChatsController extends Controller
             return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
         }
         // delete chat
-        $chat = MessengerFacade::deleteChat($chat_id);
+        $chat = MessengerFacade::deleteChat($chat_id, Auth::user());
         return response()->json($chat);
     }
 
@@ -265,7 +265,7 @@ class ChatsController extends Controller
             return response()->json([ 'message' => 'User not found' ], 404);
         }
         // add user to chat
-        $chat = MessengerFacade::addUserToChat($chat_id, $request->user_id);
+        $chat = MessengerFacade::addUserToChat($chat_id, $request->user_id, Auth::user());
         return response()->json($chat);
     }
 
@@ -288,7 +288,7 @@ class ChatsController extends Controller
             return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
         }
         // remove user from chat
-        $chat = MessengerFacade::removeUserFromChat($chat_id, $user_id);
+        $chat = MessengerFacade::removeUserFromChat($chat_id, $user_id, Auth::user());
         return response()->json($chat);
     }
 
@@ -306,7 +306,45 @@ class ChatsController extends Controller
             return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
         }
         // leave chat
-        $chat = MessengerFacade::removeUserFromChat($chat_id, Auth::user()->id);
+        $chat = MessengerFacade::removeUserFromChat($chat_id, Auth::user()->id, Auth::user());
+        return response()->json($chat);
+    }
+
+    /**
+     * Edit chat
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function editChat(Request $request, int $chat_id): JsonResponse
+    {
+        // check if user is authorized
+        if (!Auth::check()) {
+            return response()->json([ 'message' => 'Unauthorized' ], 401);
+        }
+        // check if user is member of chat
+        if (!MessengerFacade::isMember($chat_id, Auth::user()->id)) {
+            return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
+        }
+        // check if chat exists
+        if (!MessengerFacade::getChat($chat_id)) {
+            return response()->json([ 'message' => 'Chat not found' ], 404);
+        }
+        // check if title is empty
+        if (empty($request->title)) {
+            return response()->json([ 'message' => 'Title is empty' ], 400);
+        }
+        // check if title is too long
+        if (strlen($request->title) > 50) {
+            return response()->json([ 'message' => 'Title is too long' ], 400);
+        }
+        // check if description is too long
+        if (strlen($request->description) > 255) {
+            return response()->json([ 'message' => 'Description is too long' ], 400);
+        }
+        // update chat
+        $chat = MessengerFacade::updateChat($chat_id, $request->title, $request->description ?? "", Auth::user());
         return response()->json($chat);
     }
 

@@ -231,14 +231,32 @@ export default {
   },
 
   /**
+   * Edit chat
+   * @param {Number} chatId
+   * @param {String} title
+   * @param {String} description
+   * @param {Function} callback
+   * @return {Promise}
+   */
+  editChat(chatId, title, description, callback = () => {}) {
+    return axios.post(REST_URI + 'chat/' + chatId + '/edit', {
+      title: title,
+      description: description,
+    }).then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
    * Upload file
    * @param chatId
    * @param caption
    * @param {File} file
    * @param {Function} callback
+   * @param callback_error
    * @return {Promise}
    */
-  uploadFile(chatId, caption, file, callback) {
+  uploadFile(chatId, caption, file, callback, callback_error) {
     let formData = new FormData();
     formData.append('file', file);
     formData.append('message', caption);
@@ -249,6 +267,8 @@ export default {
       }
     }).then(response => {
       callback(response.data);
+    }).catch(error => {
+      callback_error(error.response.data);
     });
   }
 }

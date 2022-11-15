@@ -65,7 +65,7 @@ class UserService
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()->where('group_id','=',$group->id)
-                ->where('status', 'active')
+                ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_ACTIVE])
                 ->whereDate('from','<=', $last_date)
                 ->where(fn ($query) => $query->whereNull('to')->orWhere(
                     fn ($query) => $query->whereYear('to','<=',$this->getYear($date))->whereMonth('to','>',$this->getMonth($date)))
@@ -138,6 +138,7 @@ class UserService
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
+                ->where('status', GroupUser::STATUS_FIRED)
                 ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
             
             $data = $this->getGroupEmployees($groupUser->get());
@@ -245,7 +246,7 @@ class UserService
         $userData = [];
         foreach ($groupUsers as $groupUser)
         {
-            $user = User::withTrashed()->where('id', $groupUser->user_id)
+            $user = User::withTrashed()->with('groups')->where('id', $groupUser->user_id)
                 ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
                 ->first();
 

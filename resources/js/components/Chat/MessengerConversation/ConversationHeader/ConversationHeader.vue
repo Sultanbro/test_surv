@@ -2,8 +2,8 @@
   <div class="messenger__chat-header">
     <div class="messenger__chat-wrapper">
       <div class="messenger__info-wrapper" v-if="chat">
-        <div class="messenger__avatar" :style="'background-image: url(\'' + chat.image + '\');'"></div>
-        <div class="messenger__text-ellipsis">
+        <div class="messenger__avatar messenger__clickable" @click="toggleInfoPanel" :style="'background-image: url(\'' + chat.image + '\');'"></div>
+        <div class="messenger__text-ellipsis messenger__clickable" @click="toggleInfoPanel">
           <div class="messenger__chat-name" v-text="chat.title"></div>
           <div class="messenger__chat-info" v-text="chat.role"></div>
         </div>
@@ -39,7 +39,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['getUsers', 'setCurrentChatContacts']),
+    ...mapActions(['getUsers', 'setCurrentChatContacts', 'toggleInfoPanel']),
     openAddMemberModal() {
       this.getUsers();
       this.setCurrentChatContacts(this.chat.users.filter(user => user.id !== this.user.id));
@@ -102,6 +102,10 @@ export default {
   min-width: 42px;
   margin-right: 15px;
   border-radius: 50%;
+}
+
+.messenger__clickable {
+  cursor: pointer;
 }
 
 .messenger__chat-name {

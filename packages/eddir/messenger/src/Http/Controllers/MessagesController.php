@@ -48,6 +48,13 @@ class MessagesController {
             });
         }
 
+        $events = collect(MessengerFacade::fetchEvents($chatId));
+        $messages = collect($messages)->merge($events)->toArray();
+
+        usort($messages, function ($a, $b) {
+            return strtotime($b['created_at']) - strtotime($a['created_at']);
+        });
+
         return response()->json($messages);
     }
 
@@ -148,7 +155,7 @@ class MessagesController {
             return response()->json([ 'message' => 'You are not sender of this message' ], 403);
         }
         // delete message
-        $message = MessengerFacade::deleteMessage($messageId);
+        $message = MessengerFacade::deleteMessage($messageId, Auth::user());
         return response()->json($message);
     }
 
@@ -194,7 +201,7 @@ class MessagesController {
             return response()->json([ 'message' => 'You are not member of this chat' ], 403);
         }
         // pin message
-        $message = MessengerFacade::pinMessage($messageId);
+        $message = MessengerFacade::pinMessage($messageId, Auth::user());
         return response()->json($message);
     }
 
@@ -215,7 +222,7 @@ class MessagesController {
             return response()->json([ 'message' => 'You are not member of this chat' ], 403);
         }
         // unpin message
-        $message = MessengerFacade::unpinMessage($messageId);
+        $message = MessengerFacade::unpinMessage($messageId, Auth::user());
         return response()->json($message);
     }
 

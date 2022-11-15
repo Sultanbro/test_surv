@@ -91,6 +91,7 @@ export default {
   height: 64px;
   padding: 0 5px;
   border-bottom: 1px solid #c6c6c6;
+  font-size: 16px;
 }
 
 .messenger__box-search__input {
@@ -125,6 +126,8 @@ export default {
 
 .messenger__box-search__indicators {
   display: flex;
+  justify-content: space-around;
+  max-width: 100%;
 }
 
 .messenger__icon {

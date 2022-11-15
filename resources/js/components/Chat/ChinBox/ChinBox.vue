@@ -1,6 +1,6 @@
 <template>
-  <div class="messenger__chin">
-    <button class="messenger__chin-button" @click="toggleMessenger">
+  <div class="messenger__chin" @click="toggleMessenger">
+    <button class="messenger__chin-button">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
            :class="!isOpen ? 'messenger__chin-button__rotate' : ''">
         <path
@@ -37,6 +37,7 @@ export default {
   align-items: center;
   justify-content: flex-start;
   z-index: 1;
+  cursor: pointer;
 }
 
 .messenger__chin-button {
@@ -49,7 +50,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
 
 .messenger__chin-button:hover {

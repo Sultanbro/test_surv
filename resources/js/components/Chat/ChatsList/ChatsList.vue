@@ -1,6 +1,6 @@
 <template>
   <div ref="messengerChats"
-       :class="!isOpen ? 'messenger__chats-container messenger__collapsed' : 'messenger__chats-container'">
+       :class="!fullscreen ? 'messenger__chats-container messenger__collapsed' : 'messenger__chats-container'">
     <ContextMenu
       :show="contextMenuVisible"
       :x="contextMenuX"
@@ -10,36 +10,41 @@
       <a href="javascript:" @click="leftChat(contextMenuChat)">Покинуть чат</a>
     </ContextMenu>
     <div class="messenger__chats-list">
-      <div
-        v-if="!isSearchMode"
-        v-for="item in sortedChats"
-        :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-        @click="openChat(item)"
-        @contextmenu.prevent="showChatContextMenu($event, item)"
-      >
-        <ContactItem :item="item"></ContactItem>
-      </div>
-      <template v-if="isSearchMessagesMode">
+      <template v-if="!isSearchMode || !fullscreen">
         <div
-          v-if="isSearchMode"
-          v-for="item in searchMessagesChatsResults"
-          :class="'messenger__chat-item'"
-          @click="openChat(item)"
-        >
-          <ContactItem :item="item"></ContactItem>
-        </div>
-      </template>
-      <template v-if="isSearchContactsMode">
-        <div
-          v-if="isSearchMode"
-          v-for="item in contacts"
+          v-if="!isSearchMode || !fullscreen"
+          v-for="item in sortedChats"
           :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-          :data-test-id="item.id"
           @click="openChat(item)"
           @contextmenu.prevent="showChatContextMenu($event, item)"
         >
-          <ContactItem :item="item"></ContactItem>
+          <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
         </div>
+      </template>
+      <template v-else>
+        <template v-if="isSearchMessagesMode">
+          <div
+            v-if="isSearchMode"
+            v-for="(item, index) in searchMessagesChatsResults"
+            v-bind:key="index"
+            :class="'messenger__chat-item'"
+            @click="openChat(item)"
+          >
+            <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
+          </div>
+        </template>
+        <template v-if="isSearchContactsMode">
+          <div
+            v-if="isSearchMode"
+            v-for="item in contacts"
+            :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
+            :data-test-id="item.id"
+            @click="openChat(item)"
+            @contextmenu.prevent="showChatContextMenu($event, item)"
+          >
+            <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
+          </div>
+        </template>
       </template>
     </div>
   </div>
@@ -54,10 +59,16 @@ export default {
   name: "ChatsList",
   components: {ContextMenu, ContactItem},
   computed: {
-    ...mapGetters(['sortedChats', 'chat', 'isOpen',
+    ...mapGetters(['sortedChats', 'chat',
       'contacts', 'searchMessagesChatsResults',
       'isSearchMessagesMode', 'isSearchContactsMode',
       'isSearchMode'])
+  },
+  props: {
+    fullscreen: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -74,7 +85,7 @@ export default {
       if (!this.chat || this.chat.id !== chat.id) {
         this.loadChat(chat.id);
       }
-      if (!this.isOpen) {
+      if (!this.fullscreen) {
         this.toggleMessenger();
       }
     },
@@ -137,9 +148,8 @@ export default {
   display: flex;
   flex: 1 1 100%;
   margin-bottom: 5px;
-  padding: 0 14px;
+  padding: 10px 14px;
   position: relative;
-  min-height: 71px;
   transition: background-color .3s cubic-bezier(.25, .8, .5, 1);
 }
 
@@ -168,6 +178,11 @@ export default {
 
 /* set button(top and bottom of the scrollbar) */
 .messenger__chats-list::-webkit-scrollbar-button {
+  display: none;
+}
+
+.messenger__collapsed .messenger__chats-list::-webkit-scrollbar {
+  width: 0;
   display: none;
 }
 

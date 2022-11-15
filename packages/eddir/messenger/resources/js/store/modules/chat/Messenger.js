@@ -15,19 +15,11 @@ export default {
     async init({commit, getters, dispatch}) {
       // new message notification
       window.Echo.channel(`messages.${getters.user.id}`).listen('.newMessage', e => {
-        dispatch('newMessage', e.message);
-      });
-
-      // pin message notification
-      window.Echo.channel(`messages.${getters.user.id}`).listen('.pinMessage', e => {
-        //this.handlePinnedMessage(e.message);
-      });
-
-      // read message notification
-      window.Echo.channel(`messages.${getters.user.id}`).listen('.readMessage', e => {
-        // if (e.user.id !== this.user.id) {
-          //this.handleReadMessage(e.message);
-        // }
+        if (e.message.type) {
+          dispatch('newServiceMessage', e.message);
+        } else {
+          dispatch('newMessage', e.message);
+        }
       });
 
       commit('setInitialize', true);
@@ -41,6 +33,9 @@ export default {
     async toggleMessenger({commit}) {
       commit('toggleMessenger');
     },
+    async toggleInfoPanel({commit}) {
+      commit('toggleInfoPanel');
+    }
   },
   mutations: {
     setInitialize(state, initialized) {
@@ -48,6 +43,9 @@ export default {
     },
     toggleFullscreen(state) {
       state.fullscreen = !state.fullscreen;
+    },
+    toggleInfoPanel(state) {
+      state.infoPanel = !state.infoPanel;
     },
     setOnline(state) {
       // todo
@@ -69,13 +67,15 @@ export default {
     initialized: false,
     fullscreen: false,
     open: false,
+    infoPanel: false,
     debug: false,
-    searchMode: false
+    searchMode: false,
   },
   getters: {
     isInitialized: state => state.initialized,
     isFullscreen: state => state.fullscreen,
     isOpen: state => state.open,
+    isInfoPanel: state => state.infoPanel,
     isDebug: state => state.debug,
     isSearchMode: state => state.searchMode
   }

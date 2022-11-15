@@ -1,44 +1,42 @@
 <template>
-  <div class="messenger__message-wrapper" @contextmenu.prevent="$emit('clicked', $event)">
-    <div :class="message.sender_id === user.id ?
+  <div v-else :class="message.sender_id === user.id ?
     'messenger__message-box-right' :
     'messenger__message-box-left'">
-      <div class="messenger__message-container">
-        <div :class="messageCardClass">
-          <div class="messenger__format-message-wrapper">
-            <template v-if="message.files">
-              <div class="messenger__message-files">
-                <div class="messenger__message-file" v-for="file in [message.files]">
-                  <template v-if="isImage(file)">
-                    <div class="messenger__message-file-image" @click="openImage(file)">
-                      <img :src="file.file_path" alt="">
-                    </div>
-                  </template>
-                  <template v-else>
-                    <div class="messenger__message-file-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="30" height="30">
-                        <path
-                          d="M0 64C0 28.65 28.65 0 64 0H229.5C246.5 0 262.7 6.743 274.7 18.75L365.3 109.3C377.3 121.3 384 137.5 384 154.5V448C384 483.3 355.3 512 320 512H64C28.65 512 0 483.3 0 448V64zM336 448V160H256C238.3 160 224 145.7 224 128V48H64C55.16 48 48 55.16 48 64V448C48 456.8 55.16 464 64 464H320C328.8 464 336 456.8 336 448z"/>
-                      </svg>
-                    </div>
-                    <div class="messenger__message-file-name">
-                      <a :href="file.file_path" download>{{ file.name }}</a>
-                    </div>
-                  </template>
-                </div>
+    <div class="messenger__message-container">
+      <div :class="messageCardClass">
+        <div class="messenger__format-message-wrapper">
+          <template v-if="message.files">
+            <div class="messenger__message-files">
+              <div class="messenger__message-file" v-for="file in [message.files]">
+                <template v-if="isImage(file)">
+                  <div class="messenger__message-file-image" @click="openImage(file)">
+                    <img :src="file.thumbnail_path ? file.thumbnail_path : file.file_path" alt="file.name">
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="messenger__message-file-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="30" height="30">
+                      <path
+                        d="M0 64C0 28.65 28.65 0 64 0H229.5C246.5 0 262.7 6.743 274.7 18.75L365.3 109.3C377.3 121.3 384 137.5 384 154.5V448C384 483.3 355.3 512 320 512H64C28.65 512 0 483.3 0 448V64zM336 448V160H256C238.3 160 224 145.7 224 128V48H64C55.16 48 48 55.16 48 64V448C48 456.8 55.16 464 64 464H320C328.8 464 336 456.8 336 448z"/>
+                    </svg>
+                  </div>
+                  <div class="messenger__message-file-name">
+                    <a :href="file.file_path" download>{{ file.name }}</a>
+                  </div>
+                </template>
               </div>
-            </template>
-            <template v-else>
-              <div class="messenger__format-container">
-                <span v-text="message.body"></span>
-              </div>
-            </template>
-          </div>
-          <div class="messenger__text-timestamp">
+            </div>
+          </template>
+          <template v-else>
+            <div class="messenger__format-container">
+              <span v-text="message.body"></span>
+            </div>
+          </template>
+        </div>
+        <div class="messenger__text-timestamp">
             <span>
               {{ message.created_at | moment }}
             </span>
-          </div>
         </div>
       </div>
     </div>
@@ -52,10 +50,13 @@ import moment from "moment";
 export default {
   name: "ConversationMessage",
   props: {
-    message: {},
+    message: {
+      type: Object,
+      required: true,
+    }
   },
   computed: {
-    ...mapGetters(['user']),
+    ...mapGetters(['user', 'chat']),
     messageCardClass() {
       return {
         'messenger__message-card': true,
@@ -70,7 +71,7 @@ export default {
     },
     openImage(image) {
       window.open(image.file_path, '_blank').focus();
-    }
+    },
   },
   filters: {
     moment: function (date) {
@@ -84,23 +85,25 @@ export default {
       }
       // if older than yesterday show hour, minutes, day and month
       return moment(date).format('DD.MM, HH:mm');
-    }
+    },
   }
 }
 </script>
 
 <style>
-
+/*noinspection CssUnusedSymbol*/
 .messenger__message-box-right, .messenger__message-box-left {
   display: flex;
   flex: 0 0 50%;
   line-height: 1.4;
 }
 
+/*noinspection CssUnusedSymbol*/
 .messenger__message-box-left {
   justify-content: flex-start;
 }
 
+/*noinspection CssUnusedSymbol*/
 .messenger__message-box-right {
   justify-content: flex-end;
 }
@@ -113,6 +116,7 @@ export default {
   box-sizing: content-box;
 }
 
+/*noinspection CssUnusedSymbol*/
 .messenger__message-card {
   border-radius: 8px;
   font-size: 14px;
@@ -126,16 +130,19 @@ export default {
   box-shadow: 0 1px 1px -1px #0000001a, 0 1px 1px -1px #0000001c, 0 1px 2px -1px #0000001c;
 }
 
+/*noinspection CssUnusedSymbol*/
 .messenger__message__failed {
   background-color: #ffcdd2 !important;
 }
 
+/*noinspection CssUnusedSymbol*/
 .messenger__message-box-right .messenger__message-card {
   background-color: #f5f5f5;
   color: #0a0a0a;
   float: right;
 }
 
+/*noinspection CssUnusedSymbol*/
 .messenger__message-box-left .messenger__message-card {
   background-color: #eff8fd;
   color: #0a0a0a;
@@ -157,11 +164,20 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 5px;
+  max-width: 100%;
 }
 
 .messenger__message-file-icon {
   font-size: 20px;
   margin-right: 5px;
+}
+
+.messenger__message-file-name {
+  font-size: 14px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .messenger__message-file-name a {

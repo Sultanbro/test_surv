@@ -44,7 +44,7 @@ class TestController extends Controller {
 
 
 	public function test() { 
-		return $this->hhRefresher();
+		return empty('ds');
 	}  
 
 	private function getSegmentAndSaveForLead($id) {
