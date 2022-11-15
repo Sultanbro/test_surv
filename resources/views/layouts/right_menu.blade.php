@@ -33,6 +33,6 @@
 
 </div>
 <div class="chat noscrollbar">
-    <chat-app />
+    
 </div>
 </aside>
