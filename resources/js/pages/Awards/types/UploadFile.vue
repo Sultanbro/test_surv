@@ -7,8 +7,11 @@
         placeholder="Выберите Файл"
         drop-placeholder="Перетащите файл сюда..."
         accept=".jpg, .png"
-        required
+        :required="image === null"
         multiple
+        type="file"
+        id="file"
+        ref="file"
       >
         <template slot="file-name" slot-scope="{ names }">
           <div class="file-name" v-for="(name, key) in names" :key="key">
@@ -57,6 +60,7 @@ export default {
   components: {},
   props: {
     fileType: Number,
+    uploadImage: Array | Boolean
   },
   data() {
     return {
@@ -66,10 +70,17 @@ export default {
   },
   computed: {
     hasImage() {
-      console.log("prop", this.fileType);
-      this.$emit("image-download", this.image);
-      return !!this.image;
+      // console.log("prop", this.fileType);
+      if(this.image){
+        this.$emit("image-download", this.image);
+        return !!this.image;
+      }
     },
+  },
+  mounted(){
+    if(this.uploadImage){
+     this.image = this.uploadImage;
+   }
   },
   watch: {
     image(newValue, oldValue) {
