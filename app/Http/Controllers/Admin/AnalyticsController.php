@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Service\AnalyticService;
+use App\Service\Department\UserService;
 use DB;
 use View;
 use Auth;
@@ -404,7 +405,7 @@ class AnalyticsController extends Controller
     public function addHours($group_id, $user_type, $value, $old_value, $date)
     {
         // TODO users
-        $group_users = json_decode(ProfileGroup::find($group_id)->users);
+        $group_users = collect((new UserService)->getEmployees($group_id, $date))->pluck('id')->toArray();
 
         if(tenant('id') === 'bp') {
             $user_ids = User::withTrashed()
