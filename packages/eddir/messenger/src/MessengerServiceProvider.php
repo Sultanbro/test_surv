@@ -3,23 +3,22 @@
 namespace Eddir\Messenger;
 
 use Eddir\Messenger\Console\InstallCommand;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
-class MessengerServiceProvider extends ServiceProvider
-{
+class MessengerServiceProvider extends ServiceProvider {
     /**
      * Register the application services.
      */
-    public function register()
-    {
+    public function register() {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'chat');
+        $this->mergeConfigFrom( __DIR__ . '/../config/config.php', 'chat' );
 
         // Register the main class to use with the facade
-        $this->app->singleton('messenger', function () {
+        $this->app->singleton( 'messenger', function () {
             return new Messenger();
-        });
+        } );
     }
 
     /**
@@ -27,17 +26,16 @@ class MessengerServiceProvider extends ServiceProvider
      *
      * @noinspection PhpCSValidationInspection
      */
-    public function boot()
-    {
-        Route::group([
-            'namespace' => config('messenger.routes.namespace'),
-            'middleware' => config('messenger.routes.middleware'),
-            'prefix' => config('messenger.routes.prefix'),
+    public function boot() {
+        Route::group( [
+            'namespace'  => config( 'messenger.routes.namespace' ),
+            'middleware' => config( 'messenger.routes.middleware' ),
+            'prefix'     => config( 'messenger.routes.prefix' ),
         ], function () {
-            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
-        });
+            $this->loadRoutesFrom( __DIR__ . '/../routes/web.php' );
+        } );
 
-        if ($this->app->runningInConsole()) {
+        if ( $this->app->runningInConsole() ) {
             $this->bootForConsole();
         }
     }
@@ -45,26 +43,25 @@ class MessengerServiceProvider extends ServiceProvider
     /**
      * Console-specific booting.
      */
-    public function bootForConsole()
-    {
-        // Registering package commands.
-        $this->commands([InstallCommand::class]);
+    public function bootForConsole() {
+            // Registering package commands.
+            $this->commands( [ InstallCommand::class ] );
 
-        // Messenger migrations.
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+            // Messenger migrations.
+            $this->loadMigrationsFrom( __DIR__ . '/../database/migrations' );
 
-        // Publishing the configuration file.
-        $this->publishes([
-            __DIR__ . '/../config/config.php' => config_path('messenger.php'),
-        ], 'messenger-config');
+            // Publishing the configuration file.
+            $this->publishes( [
+                __DIR__ . '/../config/config.php' => config_path( 'messenger.php' ),
+            ], 'messenger-config' );
 
-        // Publishing Vue components.
-        $this->publishes([
-            __DIR__ . '/../resources/js/components/Chat/' => resource_path("js/components/Chat/"),
-        ], 'messenger-vue-components');
+            // Publishing Vue components.
+            $this->publishes( [
+                __DIR__ . '/../resources/js/components/Chat/' => resource_path( "js/components/Chat/" ),
+            ], 'messenger-vue-components' );
 
-        $this->publishes([
-            __DIR__.'/../public' => public_path('vendor/messenger'),
-        ], 'messenger-assets');
-    }
+            $this->publishes( [
+                __DIR__ . '/../public' => public_path( 'vendor/messenger' ),
+            ], 'messenger-assets' );
+        }
 }

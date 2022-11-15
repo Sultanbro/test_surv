@@ -32,14 +32,27 @@ export default {
       });
     },
     addMembers(state, members) {
+      // check if members already exists
+      let newMembers = members.filter(member => !state.chat.users.find(m => m.id === member.id));
       // update via Vue.set to make it reactive
-      Vue.set(state.chat, 'users', state.chat.users.concat(members));
+      Vue.set(state.chat, 'users', state.chat.users.concat(newMembers));
     },
     removeMembers(state, members) {
       // update via Vue.set to make it reactive
       Vue.set(state.chat, 'users', state.chat.users.filter(member => {
-        return !members.includes(member);
+        // member id is not in members array
+        return !members.find(m => m.id === member.id);
       }));
+    },
+    updateChat(state, chat) {
+      // find chat and update it title and description without changing the reference
+      const chatFromList = state.chats.find(c => c.id === chat.id);
+      chatFromList.title = chat.title;
+      chatFromList.description = chat.description;
+      if (state.chat && state.chat.id === chat.id) {
+        state.chat.title = chat.title;
+        state.chat.description = chat.description;
+      }
     }
   },
   getters: {
@@ -55,7 +68,7 @@ export default {
         return new Date(b.last_message.created_at) - new Date(a.last_message.created_at);
       });
     },
-    chat: state => state.chat
+    chat: state => state.chat,
   },
   actions: {
     async loadChats({commit, getters, dispatch}) {
@@ -113,6 +126,10 @@ export default {
         await API.removeUserFromChat(getters.chat.id, member.id);
       }
       commit('removeMembers', members);
+    },
+    async editChatTitle({commit, getters, dispatch}) {
+      await API.editChat(getters.chat.id, getters.chat.title, getters.chat.description);
+      commit('updateChat', getters.chat);
     }
   }
 }

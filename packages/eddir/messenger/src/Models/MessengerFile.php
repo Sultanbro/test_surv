@@ -11,7 +11,8 @@ class MessengerFile extends Model {
 
     protected $fillable = [
         'name',
-        'file_path'
+        'file_path',
+        'thumbnail_path',
     ];
 
     public function message(): BelongsTo {

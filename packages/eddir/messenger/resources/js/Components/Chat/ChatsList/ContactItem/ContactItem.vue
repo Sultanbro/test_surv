@@ -1,8 +1,12 @@
 <template>
   <div class="messenger__chat-item-container messenger__text-ellipsis">
-    <div class="messenger__avatar-list messenger__filter-blue" v-if="item.unread_messages_count > 0"></div>
-    <div class="messenger__avatar-list" v-else></div>
-    <div class="messenger__name-container messenger__text-ellipsis" v-if="isOpen">
+
+    <template v-if="fullscreen">
+      <div class="messenger__avatar-list messenger__filter-blue" v-if="item.unread_messages_count > 0"></div>
+      <div class="messenger__avatar-list" v-else></div>
+    </template>
+
+    <div class="messenger__name-container messenger__text-ellipsis" v-if="fullscreen">
       <div class="messenger__title_container">
         <div class="messenger__chat-name messenger__text-ellipsis" v-text="item.title"></div>
       </div>
@@ -14,14 +18,28 @@
         <div class="messenger__last-message" v-text="item.last_message ? item.last_message.body : ''"></div>
       </template>
     </div>
-    <div class="messenger__short-name-container" v-if="!isOpen">
-      <div class="messenger__chat-name messenger__text-ellipsis messenger__text-center" v-text="item.title[0]"></div>
+
+    <div class="messenger__short-name-container" v-if="!fullscreen">
+
+
+      <div v-if="item.private && item.image" @click="toggleInfoPanel" class="messenger__avatar messenger__clickable"
+           :style="'background-image: url(\'' + item.image + '\');'"></div>
+      <div v-else class="messenger__chat-name_short messenger__text-ellipsis messenger__text-center"
+           v-text="item.title[0]"></div>
+
+      <div class="messenger__chat-name-label">
+        <img v-if="item.unread_messages_count > 0"
+          src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAMAAAA4Nk+sAAAA+VBMVEUAAADv///////v9//39/f39//09Pr39//z8/vz9/v19f/y9fz1+fz09/z3+vzy9Pz09/rz9v319/33+f32+P319/z19/309fz19vz09/z29/z09v32+P319/z19/329/z19vyWuGScvG6dvG6dvW6iwHejwXejwXioxICoxIGpxYGpxoGtx4quyIqwyYqwyou0zJS3zpS50J260J290p6/06bA06bA1KbE16jF17DG2LDL27rR37vR38PR4LvR4MPX48zX5MTY5MXd59be6M7e6c7j69/j6+Dk7djl7djp7+ns8eLs8uLv8/Ly9uvy9uz19/z4+/X///86wAZwAAAAIXRSTlMAEBAgICAwP0BAT1BQX19gYG9/f4+fn6Cvv7/Pz9/f3++Oh2qrAAABHElEQVQYGVXBC1vBYBgG4DenlNLJISp5vrUoRfKRQ1Qk22r2rP//Y3LNiPuWlUgimUxGZFuqyEAhLf8SlyRnk8mM5HVMQsek01ZYUM8OmZbAATlQWOmRaVmIl9nDhh7LMRHJcYgtbyyIxEkThu3/BvwPA8plUjIcAuN5s7708woMeCpFPgC2bnSx0L3XFvDIgpSpAFvXvE/DmPo1bQGKZSEB2BoVb+5930JbAEghFWBr4GY0NgBtASClxCpga4S0BdzxQnJsA9MRQmMLaDMre/wCGr4X8uuAw32REl+ASlMvGUCLVyKSomtig+nyUBbydEysVR1mJJAn+yYCqk/mJHRG8r3z1OoMXTIja9EiQ4Vd2RQ9ypxnsyc7svQHUKlMqjz0UDEAAAAASUVORK5CYII=" alt="">
+        <img v-else
+            src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAMAAAA4Nk+sAAABF1BMVEUAAADv///////////v9/fv9//09Pr39//3+//z9/v1+f/y9fz3+vz09/z2+P309vr19/33+f309v319/z19/309fz19vz2+Pz09/z29/z1+P32+P319/z29/z29/309vz19vzCxMrFx83GyM3GyM7IytDJy9DJy9HKzNDLzdPNz9PNz9TO0NbP0dbP0dfR09nS1NnU1tzV19rV19vV19zV193Y2t3Y2t/Y2uDZ2t3Z2t7b3eLc3eHc3uPd3eHd3uHe4Obg4eXh4+ni5Onk5efk5ejl5+zo6Ovo6evo6u/o6vDr7fPs7O7u8PXu8Pbv8PHv8PLv8fbw8PLx8/jy9Pnz9PX19/z39/n3+Pj4+Pn7+/v7+/z////wvFnAAAAAIXRSTlMAEBAfICAwPz9AT1BfYG9wf3+Pn5+gr6+/v8/P39/f7+92KeMYAAABI0lEQVQoz13RX1sBYRCG8RFCUmqlJWUf7KrovxQRkkq1KbZH4vt/jg7etRfdZ/M7mmtGRBXZ0HQ9GV+VxSIpuu2ve7iyQ47aF+Xy2YNNbvtc3ePoLgfVjcO08gRtE16mzaSISGxJAdPhpogcsAKUam5F4JyGT2K0gavZ96dqdgn0uSa7rADDRxQAoIDOO3BLTdI8AobV+rgIlCbV2gAwmRESwLCKzvS+Pu2hNgBAeozW7LcBjw2ainF4DMU5GpLiicsAgMYAOKUuW2wDnfF878kz0GVcgnQs5F9+3Hp5WGRAJMk+lnqiJiJBg81FbTITEBGJkF1rjvkuGVIHjxr8urYAoNh0mI3O3xNMkXRe3z5I6oGFZ4YTWZLMaiH5lz8c9nvDHzsAT7v65f2xAAAAAElFTkSuQmCC" alt="">
+      </div>
+
     </div>
   </div>
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions} from "vuex";
 
 export default {
   name: "ContactItem",
@@ -29,10 +47,14 @@ export default {
     item: {
       type: Object,
       required: true
+    },
+    fullscreen: {
+      type: Boolean,
+      default: false
     }
   },
-  computed: {
-    ...mapGetters(['isOpen'])
+  methods: {
+    ...mapActions(['toggleInfoPanel'])
   }
 }
 </script>
@@ -63,22 +85,33 @@ export default {
   filter: invert(78%) sepia(92%) saturate(2055%) hue-rotate(168deg) brightness(95%) contrast(96%);
 }
 
-
 .messenger__name-container {
   flex: 1;
 }
 
 .messenger__short-name-container {
-  background: #f5f5f5;
   border-radius: 50%;
   height: 40px;
   width: 40px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   font-size: 20px;
   font-weight: 500;
-  color: #000000;
+  background-color: #7ccaed;
+  color: #fff;
+}
+
+.messenger__chat-name-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+}
+
+.messenger__chat-name-label img {
+  width: 17px;
+  vertical-align: top;
 }
 
 .messenger__text-center {
@@ -96,13 +129,13 @@ export default {
   display: flex;
   align-items: center;
   line-height: 25px;
+  font-weight: 600;
 }
 
-.messenger__chat-name {
+.messenger__chat-name_short {
   font-size: 17px;
   font-weight: 700;
   line-height: 22px;
-  color: #0a0a0a;
 }
 
 .messenger__last-message {

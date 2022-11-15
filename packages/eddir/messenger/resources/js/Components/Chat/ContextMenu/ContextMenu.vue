@@ -72,6 +72,8 @@ export default {
 .messenger__context-menu a {
   display: block;
   padding: 5px 15px;
+  text-decoration: none;
+  color: #0a0a0a;
 }
 
 .messenger__context-menu a:hover {

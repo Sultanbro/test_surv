@@ -105,6 +105,11 @@ Route::post('/v2/chat/{chat_id}/addUser', 'ChatsController@addUser')->name('api.
 Route::post('/v2/chat/{chat_id}/removeUser/{user_id}', 'ChatsController@removeUser')->name('api.v2.removeUser');
 
 /**
+ * Edit chat
+ */
+Route::post('/v2/chat/{chat_id}/edit', 'ChatsController@editChat')->name('api.v2.editChat');
+
+/**
  * Set messages as read
  */
 Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');

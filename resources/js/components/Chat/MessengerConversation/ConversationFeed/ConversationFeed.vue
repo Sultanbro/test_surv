@@ -13,11 +13,11 @@
          v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id">Удалить</a>
     </ContextMenu>
     <div class="messenger__messages-container" id="messenger__messages">
-      <ConversationMessage v-for="message in messages"
-                           :key="message.id"
-                           :message="message"
-                           @clicked="showChatContextMenu(message, ...arguments)"
-      ></ConversationMessage>
+      <div v-for="message in messages" :key="message.id" class="messenger__message-wrapper"
+           @contextmenu.prevent="!message.type && showChatContextMenu(message, ...arguments)">
+        <ConversationServiceMessage v-if="message.type" :message="message" />
+        <ConversationMessage v-else :message="message" />
+      </div>
     </div>
   </div>
 </template>
@@ -26,11 +26,13 @@
 import ConversationMessage from "./ConversationMessage/ConversationMessage.vue";
 import {mapActions, mapGetters} from "vuex";
 import ContextMenu from "../../ContextMenu/ContextMenu.vue";
+import ConversationServiceMessage from "./ConversationServiceMessage/ConversationServiceMessage.vue";
 
 export default {
   name: "ConversationFeed",
   components: {
     ConversationMessage,
+    ConversationServiceMessage,
     ContextMenu
   },
   computed: {
