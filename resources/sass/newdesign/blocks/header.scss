@@ -377,10 +377,7 @@
   font-size:1.5rem;
   font-weight: 600;
   text-transform: uppercase;
-
-  img{
-    margin-right: .5rem;
-  }
+  position: relative;
 }
 
 .profile__button{
@@ -1017,7 +1014,6 @@
     visibility: hidden;
     transform:translateY(10px);
     transition:1s;
-
   }
 
   .profile__button{
