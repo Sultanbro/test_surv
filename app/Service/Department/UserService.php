@@ -113,7 +113,6 @@ class UserService
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
-                ->where('status', 'fired')
                 ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
             $firedUsers = $this->getGroupFiredUsers($groupUser->get(), $date);
 
@@ -199,7 +198,7 @@ class UserService
         $firedUserData = [];
         foreach ($firedUsers as $firedUser)
         {
-            $user = User::withTrashed()->where('id', $firedUser->user_id)->first();
+            $user = User::withTrashed()->where('id', $firedUser->user_id)->whereNotNull('deleted_at')->first();
 
             if (empty($user)){
                 continue;
