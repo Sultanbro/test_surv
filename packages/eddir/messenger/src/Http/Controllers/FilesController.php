@@ -39,11 +39,12 @@ class FilesController {
             return response()->json( [ 'message' => 'File is not valid: ' ], 400 );
         }
 
+        $disk = \Storage::disk('s3');
+
         $fileModel            = new MessengerFile();
         $fileName             = time() . '_' . $request->file->getClientOriginalName();
-        $filePath             = $request->file( 'file' )->storeAs( 'uploads', $fileName, 'public' );
         $fileModel->name      = $fileName;
-        $fileModel->file_path = '/storage/' . $filePath;
+        $fileModel->file_path = $disk->putFileAs('messsages', $request->file, $fileName);
 
         // if file is image, create thumbnail
         if ( in_array( $file->getMimeType(), [ 'image/jpeg', 'image/png', 'image/gif' ] ) ) {
@@ -63,6 +64,10 @@ class FilesController {
         if ( ! $message->files ) {
             return response()->json( [ 'message' => 'File is not saved: ' ], 400 );
         }
+
+        $message->files['file_path'] = $disk->temporaryUrl(
+            $message->files['file_path'], now()->addMinutes(360)
+        );
 
         return response()->json( $message );
     }

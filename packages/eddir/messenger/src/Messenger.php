@@ -206,14 +206,27 @@ class Messenger {
      * @return Collection
      */
     public function fetchMessages( int $chatId, int $page = 0, int $perPage = 10 ): Collection {
-        return MessengerMessage::query()
-                               ->with( 'files' )
-                               ->where( 'chat_id', $chatId )
-                               ->where( 'deleted', false )
-                               ->orderBy( 'created_at', 'desc' )
-                               ->skip( $page * $perPage )
-                               ->take( $perPage )
-                               ->get();
+
+        $disk = \Storage::disk('s3');
+
+        $messages = MessengerMessage::query()
+                ->with( 'files' )
+                ->where( 'chat_id', $chatId )
+                ->where( 'deleted', false )
+                ->orderBy( 'created_at', 'desc' )
+                ->skip( $page * $perPage )
+                ->take( $perPage )
+                ->get();
+
+        foreach ($messages as $key => $message) {
+            if($message->files && $message->files['file_path']) {
+                $message->files['file_path'] = $disk->temporaryUrl(
+                    $message->files['file_path'], now()->addMinutes(360)
+                );
+            }
+        }
+
+        return $messages;
     }
 
     /**
