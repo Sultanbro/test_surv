@@ -198,7 +198,7 @@ class UserService
         $firedUserData = [];
         foreach ($firedUsers as $firedUser)
         {
-            $user = User::withTrashed()->where('id', $firedUser->user_id)->whereNotNull('deleted_at')->first();
+            $user = User::onlyTrashed()->where('id', $firedUser->user_id)->first();
 
             if (empty($user)){
                 continue;
