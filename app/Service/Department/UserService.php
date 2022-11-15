@@ -61,11 +61,11 @@ class UserService
         $data = [];
 
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
- 
+
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()->where('group_id','=',$group->id)
-                //->where(fn ($query) => $query->whereYear('from','<=', $this->getYear($date))->orWhereMonth('from','<=',$this->getMonth($date)))
+                ->where('status', 'active')
                 ->whereDate('from','<=', $last_date)
                 ->where(fn ($query) => $query->whereNull('to')->orWhere(
                     fn ($query) => $query->whereYear('to','<=',$this->getYear($date))->whereMonth('to','>',$this->getMonth($date)))
@@ -112,7 +112,9 @@ class UserService
         $data   = [];
         foreach ($groups as $group)
         {
-            $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
+            $groupUser = GroupUser::withTrashed()
+                ->where('group_id', $group->id)
+                ->where('status', GroupUser::STATUS_FIRED)
                 ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
             $firedUsers = $this->getGroupFiredUsers($groupUser->get(), $date);
 
@@ -198,7 +200,7 @@ class UserService
         $firedUserData = [];
         foreach ($firedUsers as $firedUser)
         {
-            $user = User::withTrashed()->where('id', $firedUser->user_id)->first();
+            $user = User::onlyTrashed()->where('id', $firedUser->user_id)->first();
 
             if (empty($user)){
                 continue;

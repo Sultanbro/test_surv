@@ -612,54 +612,64 @@ class User extends Authenticatable implements Authorizable
         return $this->salaries()->whereDate('date', '=', date('Y-m-d'))->orderBy('created_at', 'desc')->first();
     }
 
+    /**
+     * Получить баланс сотрудника на текуший месяц
+     * 
+     * @return int|float
+     */
     public function getCurrentSalary()
-    {
-       // $tz = Setting::TIMEZONES[$this->timezone];
-       // $tz = 'Asia\Almaty';
-        $date = \Carbon\Carbon::now();
-        $salaries = $this->getSalaryByMonth($date);
-        $user_applied_at = $this->applied_at();
+    {   
+        $sum = 0;
 
+        $date = \Carbon\Carbon::now();
+
+        // get user salary data
+        // return array with one element
         $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$this->id]);
         
-        $sum = 0;
+        // count total
         if(count($salary_table['users']) > 0) {
             $arr = $salary_table['users'][0];
             for($i =1;$i<=$date->daysInMonth;$i++) {
-             
+                
+                // earned
                 $sum += $arr->earnings[$i] ?? 0;
 
+                // subtract fines
                 $sum -= $arr->fines->where('date', $i)->sum('penalty_amount');
 
-
+                // subtract avans
                 $sum -= $arr->avanses[$i] ?? 0;
 
+                // // if user bonus not edited for month on salary page
                 // if($arr->edited_bonus == null) {
+                //     // bonuses added on salary page for days
                 //     $sum += $arr->bonuses[$i] ?? 0;
+
+                //     // bonuses by Department activities
+                //     $sum += $arr->awards[$i] ?? 0;
+
+                //     // bonuses for answers in Courses and tests
+                //     $sum += $arr->test_bonuses[$i] ?? 0;
+
+                // } else {
+                //     $sum += $arr->edited_bonus->amount;
                 // }
-            
-                //$sum += $arr->awards[$i] ?? 0;
-                //$sum += $arr->test_bonuses[$i] ?? 0;
                 
             }   
 
+            // kpi
             // if($arr->edited_kpi == null) {
             //     $sum += $arr->kpi;
-            // } 
-            // else {
+            // } else {
             //     $sum += $arr->edited_kpi->amount;
             // }  
 
-            // if($arr->edited_bonus) {
-            //     $sum += $arr->edited_bonus->amount;
-            // }
-
-            // if($arr->edited_salary) {
-            //     $sum = $arr->edited_salary->amount;
-            // }
+            // if salary for month edited on salary page
+            if($arr->edited_salary) {
+                $sum = $arr->edited_salary->amount;
+            }
         }
-        
-        
         
         return $sum; 
     }

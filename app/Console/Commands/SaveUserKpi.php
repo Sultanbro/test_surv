@@ -20,7 +20,7 @@ class SaveUserKpi extends Command
      * @var string
      */
     protected $signature = 'user:save_kpi {date?} {user_id?}';  //php artisan user:save_kpi 2022-08-01 // целый месяц , долго
-                                                             
+
 
     /**
      * The console command description.
@@ -30,31 +30,31 @@ class SaveUserKpi extends Command
     protected $description = 'Сохранить kpi';
 
     /**
-     * Variables that used 
+     * Variables that used
      *
      * @var mixed
      */
     public $date; // Дата пересчета 
-    
+
     /**
      * Вытащить кпи показатели сотрудника
      *
      * @var KpiStatisticService
      */
-    public $repo; 
+    public $repo;
 
     /**
      * Расчет выполнеия и суммы кпи
      *
      * @var CalculateKpiService
      */
-    public $calculator; 
+    public $calculator;
 
 
     /**
      * Рабочие дни
      */
-    public array $workdays; 
+    public array $workdays;
 
     /**
      * Create a new command instance.
@@ -67,7 +67,7 @@ class SaveUserKpi extends Command
         $this->repo = new KpiStatisticService();
         $this->calculator = new CalculateKpiService();
     }
-    
+
     /**
      * Execute the console command.
      *
@@ -82,7 +82,7 @@ class SaveUserKpi extends Command
         $this->workdays = [];
         $this->workdays[5] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [6,0]);
         $this->workdays[6] = workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [0]);
-        
+
         /**
          * working users not trainees
          */
@@ -93,22 +93,22 @@ class SaveUserKpi extends Command
                     ->orWhereNull('deleted_at');
             })
             ->where('is_trainee', 0);
-       
-        
+
+
         if($this->argument('user_id')) {
             $users->where('users.id', $this->argument('user_id'));
         }
 
         $users = $users->select(['users.id','users.last_name', 'users.name'])
-                    ->get(['users.id']);
-        
+            ->get(['users.id']);
+
         $this->comment($users->count());
-            
+
         /**
          * Calc users kpi by order
          */
 
-        
+
         foreach ($users as $key => $user) {
 
             $this->line($key . ' '. $user->id);
@@ -119,7 +119,7 @@ class SaveUserKpi extends Command
                     'data_from' => [
                         'month' => Carbon::parse($date)->month,
                         'year'  => Carbon::parse($date)->year,
-                    ], 
+                    ],
                     'user_id'   => $user->id
                 ]
             ]));
@@ -142,13 +142,13 @@ class SaveUserKpi extends Command
     private function calc($kpis) : float
     {
         $earned = 0;
-        
+
         foreach ($kpis as $key => $kpi) {
             if(!isset($kpi['users'][0])) continue;
-            
-           // dd($kpi['users'][0]['items'][0]);
+
+            // dd($kpi['users'][0]['items'][0]);
             foreach ($kpi['users'][0]['items'] as $item) {
-               
+
                 $workdays = $item['activity'] && $item['activity']['weekdays'] != 0
                     ? $this->workdays[(int) $item['activity']['weekdays']]
                     : $this->workdays[5];
@@ -162,13 +162,13 @@ class SaveUserKpi extends Command
                     'days_from_user_applied' => 0,
                     'workdays' => $workdays,
                 ], $item['method']);
-               
+
                 if(
-                    //!$item['allow_overfulfillment'] 
+                    //!$item['allow_overfulfillment']
                     $completed_percent > 100) {
                     $completed_percent = 100;
                 }
-                
+
                 $earned += $this->calculator->earned(
                     $kpi['lower_limit'],
                     $kpi['upper_limit'],
@@ -178,14 +178,14 @@ class SaveUserKpi extends Command
                     $item['full_time'] == 1 ? $kpi['completed_100'] : $kpi['completed_100'] / 2,
                 );
 
-        
+
                 // dump($kpi['lower_limit'],
                 // $kpi['upper_limit'],
                 // $completed_percent,
                 // $item['share'],
                 // $kpi['completed_80'],
                 // $kpi['completed_100']);
-                 dump($earned);
+                dump($earned);
 
             }
         }

@@ -386,6 +386,14 @@ class TimetrackingController extends Controller
         return $data;
     }
 
+    /**
+     * Наверное для того чтобы узнать начинал рабочий день или нет
+     * Еще вычисляет баланс к выдаче
+     * 
+     * @TODO Decompose this method
+     * 
+     * @return JsonResponse
+     */
     public function trackerstatus(Request $request)
     {
         $user = User::bitrixUser();
@@ -406,6 +414,7 @@ class TimetrackingController extends Controller
         
         $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
         
+        // count bonuses
         $bonuses = Salary::where('user_id', $user->id)
             ->whereYear('date',  date('Y'))
             ->whereMonth('date', date('m'))
@@ -418,6 +427,11 @@ class TimetrackingController extends Controller
             
         $bonus = $bonuses->sum('bonus');
         $bonus += ObtainedBonus::onMonth($user->id, date('Y-m-d'));
+        $bonus += TestBonus::where('user_id', $user->id)
+            ->whereYear('date', date('Y'))
+            ->whereMonth('date', date('m'))
+            ->get()
+            ->sum('amount');
 
         $editedBonus = EditedBonus::where('user_id', $user->id)
                 ->whereYear('date',  date('Y'))
@@ -425,9 +439,7 @@ class TimetrackingController extends Controller
                 ->first();
         $bonus = $editedBonus ? $editedBonus->amount : $bonus;
 
-        /**
-         * EARNINGS COMPONENT
-         */
+        // count kpi
         $editedKpi = EditedKpi::where('user_id', $user->id)
             ->whereYear('date', date('Y'))
             ->whereMonth('date', date('m'))
@@ -436,14 +448,17 @@ class TimetrackingController extends Controller
         if($editedKpi) {
             $kpi = $editedKpi->amount;
         } else {
+            // @TODO here should be SavedKpi::class
             $kpi = Kpi::userKpi($user->id);
         }
             
+        // заработано по окладу за вычетом штрафов и авансов
         $salary = $user->getCurrentSalary();
+
+        // balance
         $total_earned = number_format(round(($salary + $kpi + $bonus) * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency);
 
-
-         // corp book page 
+        // corp book page 
         $page = [
             'title' => '',
             'description' => ''

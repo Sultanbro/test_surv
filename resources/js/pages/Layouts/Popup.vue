@@ -1,5 +1,10 @@
 <template>
-  <div class="overlay custom-scroll-y js-overlay" @click.self="$emit('close')" :class="[{'active': open}]">
+  <div
+    class="overlay custom-scroll-y js-overlay"
+    :class="{'active': open}"
+    @click.self="$emit('close')"
+    v-scroll-lock="open"
+  >
     <div class="popup award js-popup" :style="`width:${width}`">
       <div class="popup__content">
         <div class="popup-header">
@@ -38,8 +43,7 @@ export default {
     return {
 
     }
-  },
-
+  }
 }
 </script>
 

@@ -30,6 +30,7 @@ use App\QualityRecordWeeklyStat;
 use App\Http\Controllers\IntellectController;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\RecruiterStat;
+use App\Models\Analytics\TraineeReport;
 use App\Models\Bitrix\Lead;
 use App\Models\GroupUser;
 use App\Salary;
@@ -43,8 +44,7 @@ class TestController extends Controller {
 
 
 	public function test() { 
-		return config('tenancy.central_domains');
-
+		return $this->hhRefresher();
 	}  
 
 	private function getSegmentAndSaveForLead($id) {
@@ -78,7 +78,7 @@ class TestController extends Controller {
 	public function hhRefresher() {
 		// https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/token
 
-		$auth_code = 'LLEDI76NNKVNA5GG3883QU4V82U8LKOJMQ1CTIFVVHG5TJ5A7NBS1RDMOSFT5RPN';
+		$auth_code = 'LALTA3O65P5FCQ8HG1H1VTUCPGO4LFLTO1KLR9S59NVDS0F4A6IFRTA0F5GAFFP7';
 
 		dd((new HeadHunter)->refresh($auth_code));
 

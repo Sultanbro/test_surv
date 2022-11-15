@@ -200,36 +200,42 @@
           </div>
 
           <!-- profile image -->
-          <div class="col-4"> 
-            <div class="form-group mb-0"> 
+          <div class="col-3">
+            <div class="form-group mb-0 text-center">
              <!-- <canvas id="myCanvas" width="250" height="250" @click="chooseProfileImage()">
               </canvas>-->
-              <croppa
-                v-model="myCroppa"
-                :width="250"
-                :height="250"
-                :canvas-color="'default'"
-                :placeholder="'Выберите изображение'"
-                :placeholder-font-size="0"
-                :placeholder-color="'default'"
-                :accept="'image/*'"
-                :file-size-limit="0"
-                :quality="2"
-                :zoom-speed="20"
-                :initial-image="crop_image"
-                :disable-drag-to-move="true"
-                :disable-scroll-to-zoom="true"
-                @new-image-drawn="hasImage = true"
-                @image-remove="hasImage = false"
-                v-on="hasImage ? { click:chooseProfileImage } : {}"
-                
-              ></croppa>
+              <div class="profile-img-wrap" @click="chooseProfileImage()">
+               <img alt="Profile image" :src="!crop_image.hide ? crop_image.image: '/svg/500.svg'"  class="profile-img">
+              </div>
+
+
+
+
+              <!--              <croppa-->
+<!--                v-model="myCroppa"-->
+<!--                :width="250"-->
+<!--                :height="250"-->
+<!--                :canvas-color="'default'"-->
+<!--                :placeholder="'Выберите изображение'"-->
+<!--                :placeholder-font-size="0"-->
+<!--                :placeholder-color="'default'"-->
+<!--                :accept="'image/*'"-->
+<!--                :file-size-limit="0"-->
+<!--                :quality="2"-->
+<!--                :zoom-speed="20"-->
+<!--                :initial-image="crop_image"-->
+<!--                :disable-drag-to-move="true"-->
+<!--                :disable-scroll-to-zoom="true"-->
+<!--                @new-image-drawn="hasImage = true"-->
+<!--                @image-remove="hasImage = false"-->
+<!--                v-on="hasImage ? { click:chooseProfileImage } : {}"-->
+
+<!--              ></croppa>-->
               <button
-                style="width: 250px; display: block"
-                class="btn btn-success"
-                @click="saveCropped"
+                class="btn btn-success w-100 mt-2"
+                @click="chooseProfileImage()"
               >
-                Обрезать и сохранить
+                Выбрать фото
               </button>
             </div>
           </div>
@@ -335,11 +341,16 @@
         </div>
       </div>
     </div>
-    <b-modal v-model="showChooseProfileModal"  title="Изображение профиля" size="md" class="modalle" @ok="save_picture()">
+    <b-modal  v-model="showChooseProfileModal"  title="Изображение профиля" size="lg" class="modalle" @ok="save_picture()">
+
+      <div class="custom-file mb-5">
+        <input type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" ref="file" accept="image/*" v-on:change="handleFileUpload()">
+        <label class="custom-file-label" for="inputGroupFile04">Загрузить фото</label>
+      </div>
       <cropper
       ref="mycrop"
       class="cropper"
-      :src="my_crop_image"
+      :src="imagePreview"
       :stencil-props="{
         aspectRatio: 12/12
       }"
@@ -369,11 +380,16 @@ export default {
   },
   data() {
     return {
-      my_crop_image: "",
-      crop_image: "",
-      hasImage: true,
-      canvas_image: new Image(),
-      myCanvas: null,
+      // my_crop_image: "",
+      crop_image: {
+        canvas: "",
+        image: "",
+        hide: false
+      },
+      imagePreview: "",
+      file: '',
+      // hasImage: true,
+      // canvas_image: new Image(),
       showChooseProfileModal: false,
       test: "dsa",
       items: [],
@@ -412,16 +428,11 @@ export default {
     keywords(after, before) {
       this.fetch();
     },
-    myCanvas(after, before) {
-      if(after == null){
-        this.myCanvas = document.getElementById("myCanvas").getContext("2d");
-      }
-    }
+
   },
   mounted() {
-          this.initCanvas();
-          this.drawProfile();
-          this.hasImage = this.$root.$children[1].hasImage;
+          // this.drawProfile();
+          // this.hasImage = this.$root.$children[1].hasImage;
   },
   created() {
     this.fetchData();
@@ -432,26 +443,24 @@ export default {
       this.image = "/users_img/" + this.user.img_url;
     }
     console.log(this.user.cropped_img_url);
-    if(this.user.cropped_img_url != null){
-      this.crop_image = "/cropped_users_img/" + this.user.cropped_img_url;
+    if(this.user.cropped_img_url != null && this.user.cropped_img_url !== ''){
+      this.crop_image.image = "/cropped_users_img/" + this.user.cropped_img_url;
     }
-    else{
-      this.crop_image = "/users_img/" + this.user.img_url;
+    else if(this.user.img_url != null && this.user.img_url !== ''){
+      this.crop_image.image = "/users_img/" + this.user.img_url;
+    }else{
+      this.crop_image.hide = true;
     }
+
     console.log(this.$bvModal);
   },
   methods: {
-    initCanvas(){
-          var canvas = document.getElementById("myCanvas");
-          var ctx = canvas.getContext("2d");  
-          this.myCanvas = ctx;
-    },
     drawProfile(){
-      this.canvas_image.src = this.image;
+      // this.canvas_image.src = this.image;
       //this.myCanvas.drawImage(this.canvas_image, 0, 0, 250, 250);
     },
     change({ coordinates, canvas }) {
-      this.myCanvas = canvas;
+      this.crop_image.canvas = canvas;
       //this.canvas = canvas;
       //this.myCanvas.clearRect(0, 0, canvas.width, canvas.height);
       //var can = canvas;
@@ -459,13 +468,14 @@ export default {
       console.log(coordinates, canvas)
     },
     save_picture(){
-      this.myCanvas.toBlob(function(blob) {
+      this.crop_image.canvas.toBlob(function(blob) {
             const formData = new FormData();
             formData.append("file", blob);
             axios.post("/profile/upload/image/profile/", formData)
                 .then((response) => {
                   $(".img_url_sm").html(response.data.img);
                   $(".img_url_lg").html(response.data.img);
+
                 });
 
       });
@@ -474,22 +484,25 @@ export default {
     },
     chooseProfileImage(){
       //console.log(this.myCroppa);
-      this.my_crop_image = this.myCroppa.canvas.toDataURL();
+      // this.my_crop_image = this.myCroppa.canvas.toDataURL();
       /*axios.post("/getnewimage", {id : this.user.id}).then( (response) => {
         this.image = "/users_img/" + response.data;
       });*/
       this.showChooseProfileModal = true;
     },
     saveCropped() {
-      this.myCroppa.generateBlob(
-        (blob) => {
-            let loader = this.$loading.show();
+      const _this = this;
+      this.crop_image.canvas.toBlob(function(blob) {
+            let loader = _this.$loading.show();
             const formData = new FormData();
              formData.append("file", blob);
             axios
                 .post("/profile/save-cropped-image", formData)
                 .then(function (res) {
                   loader.hide();
+                  _this.crop_image.image = "/cropped_users_img/" + res.data.filename;
+                  _this.crop_image.hide=false;
+
                 })
                 .catch(function (err) {
                   console.log(err, "error");
@@ -498,6 +511,22 @@ export default {
         "image/jpeg",
         0.8
       ); // 80% compressed jpeg file
+    },
+    handleFileUpload(){
+
+      this.file = this.$refs.file.files[0];
+
+      let reader  = new FileReader();
+
+      reader.addEventListener("load", function () {
+        this.imagePreview = reader.result;
+      }.bind(this), false);
+
+      if( this.file ){
+        if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
+          reader.readAsDataURL( this.file );
+        }
+      }
     },
 
     selectedCountry(index, arr) {
@@ -836,5 +865,16 @@ a.lp-link {
     padding: 10px;
     border-bottom: 1px solid white;
   }
+}
+.profile-img{
+  object-fit: cover;
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+.profile-img-wrap{
+  width: 100%;
+  max-width: 30rem;
 }
 </style>

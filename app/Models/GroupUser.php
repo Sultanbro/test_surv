@@ -24,6 +24,10 @@ class GroupUser extends Model
         'deleted_at'
     ];
 
+    const STATUS_DROP = 'drop';
+    const STATUS_ACTIVE = 'active';
+    const STATUS_FIRED = 'fired';
+
     public function user()
     {
         return $this->hasMany('App\User', 'user_id');

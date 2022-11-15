@@ -2,23 +2,11 @@
 
 namespace App\Helpers;
 
-use App\Models\Analytics\UpdatedUserStat;
 use App\Service\CalculateKpiService;
 use Exception;
-use Illuminate\Support\Collection;
 
 class CalculateCarried
 {
-    /**
-     * Выполнено на 100%
-     */
-    const COMPLETE_100 = 100.0;
-
-    /**
-     * Выполнено на 80%
-     */
-    const COMPLETE_80 = 80.0;
-
     /**
      * @param $kpiItems
      * @param $stat
@@ -53,7 +41,6 @@ class CalculateCarried
             } else if ($percent <= $limits['lowerLimit']) {
                 $amountForExecutingPlan = 0;
             }
-
             return $amountForExecutingPlan;
 
         } catch (Exception $exception) {

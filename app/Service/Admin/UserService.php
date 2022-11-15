@@ -169,16 +169,27 @@ class UserService
     public function getActivitiesToProfile(Request $request): array
     {   
         $user = auth()->user();
-        $quality    = [];
         $gs         = $user->inGroups();
+        $activities = [];
 
-        if(count($gs) > 0) {
-            $users_ids = (new \App\Service\Department\UserService)->getEmployees($gs[0]->id, date('Y-m-d'));
-            $quality = QualityRecordWeeklyStat::table($users_ids, date('Y-m-d'));
+        /**
+         * костыль Корп универ должен не видеть этот блок
+         */
+        $userInCorpUniversity = tenant('id') == 'bp'
+            ? GroupUser::where('user_id', $user->id)
+                ->where('status', 'active')
+                ->where('group_id', 96)
+                ->first()
+            : null;
+
+        $hasGroup = count($gs) > 0;
+
+        if( ! $userInCorpUniversity && $hasGroup) {
+            $activities = UserStat::activities($gs[0]->id, date('Y-m-d'));
         }
 
         return [
-            'activities' => UserStat::activities($gs[0]->id, date('Y-m-d')),
+            'activities' => $activities,
         ];
     }
 

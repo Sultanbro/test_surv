@@ -151,7 +151,7 @@ function calcCompleted(el) {
     let plan = el.plan;
     let workdays = numberize(el.workdays);
 
-    if(plan <= 0) return 0;
+    // if(plan <= 0) return 0;
 
     if(el.method == 1) {
         res = (fact / plan * 100).toFixed(2); 

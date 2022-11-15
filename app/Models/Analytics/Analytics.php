@@ -20,7 +20,8 @@ class Activity extends Model
         'daily_plan',
         'plan_unit', // метод расчета
         'unit', // ед изм 
-        'ud_ves'
+        'ud_ves',
+        'source'
     ];
     
     const UNIT_MINUTES = 1;
