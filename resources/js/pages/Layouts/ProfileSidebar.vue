@@ -1,21 +1,27 @@
 <template>
     <div class="header__profile _anim _anim-no-hide custom-scroll-y">
         <div class="profile__content">
-            <a 
-                href="#" 
-                class="profile__logo" 
-                v-if="($laravel.is_admin == 1 || $laravel.is_admin == 18) && !logo.image  "
-                @click.prevent="modalLogo"
-            >
-                <img src="/images/dist/logo-download.svg" alt="logo download">
-                Загрузить логотип
-            </a>
             <div
                 class="profile__logo logo-img-wrap"
-                v-if="logo.image "
-                @click.prevent="modalLogo"
+                v-if="logo.image || canChangeLogo"
             >
-              <img :src="logo.image" class="logo-img">
+                <template v-if="canChangeLogo && !logo.image">
+                    <img src="/images/dist/logo-download.svg" alt="logo download">
+                    Загрузить логотип
+                </template>
+                <img v-if="logo.image" :src="logo.image" class="logo-img">
+                <template v-if="canChangeLogo">    
+                    <input
+                        type="file"
+                        class="hidden-file-input"
+                        id="inputGroupFile04"
+                        aria-describedby="inputGroupFileAddon04"
+                        ref="file"
+                        accept="image/*"
+                        v-on:change="handleFileUpload()"
+                    >
+                    <label class="hidden-file-label" for="inputGroupFile04"/>
+                </template>
             </div>
 
             <start-day-btn @currentBalance="currentBalance"></start-day-btn>
@@ -27,27 +33,22 @@
 
             <b-modal :headerClass="{'border-radius':'1rem'}" id="modal-sm" title="Загрузить логотип" size="lg"  hide-footer >
                 <form class="logo-upload-modal">
-                    <div class="custom-file mb-5">
-                        <input type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" ref="file" accept="image/*" v-on:change="handleFileUpload()">
-                        <label class="custom-file-label profile-border" for="inputGroupFile04">Загрузить логотип</label>
-                    </div>
-                  <cropper
-                      ref="mycrop"
-                      class="cropper"
-                      :src="imagePreview"
-                      :stencil-props="{
-        aspectRatio: 32/10
-      }"
-                      @change="change"
-                  />
+                    <cropper
+                        ref="mycrop"
+                        class="cropper"
+                        :src="imagePreview"
+                        :stencil-props="{ aspectRatio: 32/10 }"
+                        @change="change"
+                    />
 
                     <div class="clearfix mt-3">
-                      <a href="#"
-                         class="add-btn float-right"
-                         v-on:click.prevent="uploadLogo()"
-                      >
-                        <p >Добавить</p>
-                      </a>                    </div>
+                        <a href="#"
+                            class="add-btn float-right"
+                            v-on:click.prevent="uploadLogo()"
+                        >
+                            <p>Добавить</p>
+                        </a>
+                    </div>
                 </form>
             </b-modal>
 
@@ -117,8 +118,13 @@
 import axios from 'axios';
 
 export default {
-    name: "ProfileSidebar", 
+    name: 'ProfileSidebar', 
     props: {},
+    computed: {
+        canChangeLogo(){
+            return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
+        }
+    },
     data: function () {
         return {
             fields: [], 
@@ -133,32 +139,26 @@ export default {
             }
         };
     },
-  mounted(){
-     this.getLogo();
-  },
-    created() {
-        
+    mounted(){
+        this.getLogo();
     },
     methods: {
-      getLogo(){
-        const _this = this;
-        axios
-            .post("/settings/get", {
-              type: 'company'
-            })
-            .then((response) => {
-              const settings = response.data.settings;
-              if (settings.logo){
-                _this.logo.image =  settings.logo;
-              }
-              console.log(settings)
-              console.log(settings.logo)
-              console.log(_this.logo.image)
-            })
-            .catch((error) => {
-              alert(error);
+        getLogo(){
+            const _this = this;
+            axios.post('/settings/get', {
+                type: 'company'
+            }).then((response) => {
+                const settings = response.data.settings;
+                if (settings.logo){
+                    _this.logo.image =  settings.logo;
+                }
+                console.log(settings)
+                console.log(settings.logo)
+                console.log(_this.logo.image)
+            }).catch((error) => {
+                alert(error);
             });
-      },
+        },
         /**
          * Загрузить лого открыть модальный окно
          */
@@ -168,63 +168,61 @@ export default {
         modalHideLogo() {
             this.$bvModal.hide('modal-sm');
         },
-      change({ coordinates, canvas }) {
-        this.logo.canvas = canvas;
-        console.log(coordinates, canvas)
-      },
+        change({ coordinates, canvas }) {
+            this.logo.canvas = canvas;
+            console.log(coordinates, canvas)
+        },
         /**
          * Загрузить лого
          */
         uploadLogo(){
-          const _this = this;
-          _this.logo.canvas.toBlob(function(blob) {
-            let loader = _this.$loading.show();
+            const _this = this;
+            _this.logo.canvas.toBlob(function(blob) {
+                let loader = _this.$loading.show();
 
-            const formData = new FormData();
-            formData.append("file", blob);
-            formData.append("type", 'company');
+                const formData = new FormData();
+                formData.append('file', blob);
+                formData.append('type', 'company');
 
-            axios.post('/settings/save',
-                formData,
-                {
-                  headers: {
-                    'Content-Type': 'multipart/form-data',
-                  }
-                }
-            ).then((response) => {
+                axios.post('/settings/save',
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        }
+                    }
+                )
+                .then((response) => {
 
-              console.log('success')
-              console.log(response)
-              _this.logo.image = response.data.logo;
-              loader.hide();
-
-
-            })
+                    console.log('success')
+                    console.log(response)
+                    _this.logo.image = response.data.logo;
+                    loader.hide();
+                })
                 .catch((response)=> {
-                  console.log('failure!!');
-                  console.log(response)
+                    console.log('failure!!');
+                    console.log(response)
 
                 });
-          })
+            })
             this.modalHideLogo();
             this.imagePreview = '';
             this.showPreview = false;
         },
         handleFileUpload(){
-
             this.file = this.$refs.file.files[0];
+            let reader = new FileReader();
 
-            let reader  = new FileReader();
-
-            reader.addEventListener("load", function () {
-               this.showPreview = true;
-               this.imagePreview = reader.result;
+            reader.addEventListener('load', function () {
+                this.showPreview = true;
+                this.imagePreview = reader.result;
+                this.modalLogo();
             }.bind(this), false);
 
             if( this.file ){
-              if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
-                reader.readAsDataURL( this.file );
-              }
+                if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
+                    reader.readAsDataURL( this.file );
+                }
             }
         },
         /**
@@ -245,38 +243,52 @@ export default {
     }
 };
 </script>
+
 <style>
 .logo-img{
-  object-fit: cover;
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 1rem;
+    object-fit: cover;
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12%/18%;
 }
 .logo-img-wrap{
-  width: 100%;
-  max-width: 30rem;
+    width: 100%;
+    max-width: 30rem;
+}
+
+.hidden-file-input{
+    display: none;
+}
+.hidden-file-label{
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
 }
 
 .logo-upload-modal{
-  background: #fff;
-  border-radius: 1rem;
-  padding: 1.7rem 1rem;
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.7rem 1rem;
 }
 .add-btn{
-  background: #8FAF00;
-  color: #fff;
-  text-align: center;
-  padding: 1rem;
-  border-radius: 1rem;
+    background: #8FAF00;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 1rem;
 }
 .modal-title{
-  color: #62788B;
+    color: #62788B;
 }
 .custom-file-label::after{
-  color:inherit;
+    color:inherit;
 }
 .modal-content{
-  border-radius: 0.5rem;
+    border-radius: 0.5rem;
 }
 </style>
