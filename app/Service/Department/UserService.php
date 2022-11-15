@@ -246,7 +246,7 @@ class UserService
         $userData = [];
         foreach ($groupUsers as $groupUser)
         {
-            $user = User::onlyTrashed()->where('id', $groupUser->user_id)
+            $user = User::withTrashed()->where('id', $groupUser->user_id)
                 ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
                 ->first();
 
