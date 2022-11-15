@@ -140,6 +140,11 @@ class KpiStatController extends Controller
             $request->value ?? null
         );
 
+        \Artisan::call('user:save_kpi', [
+            'date' => $request->date,
+            'user_id' => $request->user_id
+        ]);
+
         return response()->success($response);
     }
 
