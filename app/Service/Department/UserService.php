@@ -112,7 +112,9 @@ class UserService
         $data   = [];
         foreach ($groups as $group)
         {
-            $groupUser = GroupUser::withTrashed()->where('group_id', $group->id)
+            $groupUser = GroupUser::withTrashed()
+                ->where('group_id', $group->id)
+                ->where('status', GroupUser::STATUS_FIRED)
                 ->whereYear('to', $this->getYear($date))->whereMonth('to', $this->getMonth($date));
             $firedUsers = $this->getGroupFiredUsers($groupUser->get(), $date);
 
