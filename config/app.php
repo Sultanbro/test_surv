@@ -198,10 +198,6 @@ return [
         App\Providers\TenancyServiceProvider::class, // <-- here
         Eddir\Messenger\MessengerServiceProvider::class,
 
-        /*
-         * Added Providers
-         */
-        UpdateUserStatProvider::class,
        // Spatie\Permission\PermissionServiceProvider::class,
 
     ],
