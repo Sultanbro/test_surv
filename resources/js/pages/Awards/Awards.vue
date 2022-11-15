@@ -117,10 +117,6 @@
 </script>
 
 <style lang="scss">
-    .chat.noscrollbar {
-        display: none !important;
-    }
-
     #awards-page {
         #awards-table {
             tbody {
