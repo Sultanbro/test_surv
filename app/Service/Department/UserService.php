@@ -65,7 +65,7 @@ class UserService
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()->where('group_id','=',$group->id)
-                ->where('status', 'active')
+                ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_ACTIVE])
                 ->whereDate('from','<=', $last_date)
                 ->where(fn ($query) => $query->whereNull('to')->orWhere(
                     fn ($query) => $query->whereYear('to','<=',$this->getYear($date))->whereMonth('to','>',$this->getMonth($date)))
