@@ -97,7 +97,7 @@ class Messenger {
 
             if($second_user) {
                 $chat->title = $second_user->name . " " . $second_user->last_name;
-                $chat->image = $second_user->img_url;
+                $chat->image = 'users_img/' . $second_user->img_url;
             }
 
         }

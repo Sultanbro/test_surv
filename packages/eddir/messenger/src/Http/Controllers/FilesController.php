@@ -44,18 +44,18 @@ class FilesController {
         $fileModel            = new MessengerFile();
         $fileName             = time() . '_' . $request->file->getClientOriginalName();
         $fileModel->name      = $fileName;
-        $fileModel->file_path = $disk->putFileAs('messsages', $request->file, $fileName);
-
+        $fileModel->file_path = $disk->putFileAs('messages', $request->file, $fileName);
+        $fileModel->thumbnail_path = $fileModel->file_path;
         // if file is image, create thumbnail
-        if ( in_array( $file->getMimeType(), [ 'image/jpeg', 'image/png', 'image/gif' ] ) ) {
-            $fileModel->thumbnail_path = '/storage/uploads/thumb_' . $fileName;
-            $this->resize_crop_image(
-                350,
-                200,
-                Storage::disk('public')->path('uploads/' . $fileName),
-                Storage::disk('public')->path('uploads/thumb_' . $fileName)
-            );
-        }
+        // if ( in_array( $file->getMimeType(), [ 'image/jpeg', 'image/png', 'image/gif' ] ) ) {
+        //     $fileModel->thumbnail_path = '/storage/uploads/thumb_' . $fileName;
+        //     $this->resize_crop_image(
+        //         350,
+        //         200,
+        //         Storage::disk('s3')->path($fileModel->file_path),
+        //         Storage::disk('s3')->path('messages/' . $fileName)
+        //     );
+        // }
 
         $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ), $fileModel );
         // set message as read
@@ -68,6 +68,8 @@ class FilesController {
         $message->files['file_path'] = $disk->temporaryUrl(
             $message->files['file_path'], now()->addMinutes(360)
         );
+
+        $message->files['thumbnail_path'] = $message->files['file_path'];
 
         return response()->json( $message );
     }
