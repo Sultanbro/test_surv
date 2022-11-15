@@ -71,17 +71,6 @@
             return {
                 showEditAwardSidebar: false,
                 item: false,
-                returnObjectValues: {
-                    id: 2,
-                    name: "New Sertificate",
-                    description: "lorem ipsum dolor",
-                    awardTypeId: 2,
-                    format: "png",
-                    path: "upload/sertificates/SL_012519_18110_94.jpg",
-                    visibleToOthers: false,
-                    user: "Адиль Каримов",
-                    date: "06.10.2022",
-                },
                 tableItems: [],
             };
         },
@@ -103,12 +92,9 @@
                         el.id = data.id;
                         el.name = data.name;
                         el.description = data.description;
-                        el.awardTypeId = data.awardTypeId;
-                        el.format = data.format;
                         el.fileType = data.fileType;
                         el.image = data.image;
                         el.imageData = data.imageData;
-                        el.path = data.path;
                         el.visibleToOthers = data.visibleToOthers;
                         el.user = data.user;
                         el.date = data.date;
@@ -118,10 +104,15 @@
             remove(item) {
                 this.tableItems = this.tableItems.filter(i => i.id !== item.id);
             },
-            loglog(){
+            loglog() {
                 console.log(this.tableItems);
             }
         },
+        watch: {
+            tableItems(val){
+                console.log(val);
+            }
+        }
     };
 </script>
 

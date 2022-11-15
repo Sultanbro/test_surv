@@ -12,6 +12,7 @@
         type="file"
         id="file"
         ref="file"
+        :state="true"
       >
         <template slot="file-name" slot-scope="{ names }">
           <div class="file-name" v-for="(name, key) in names" :key="key">
@@ -42,6 +43,9 @@
           <BImg :src="img" class="mb-3 img" fluid block rounded></BImg>
         </BModal>
       </div>
+    </div>
+    <div v-else>
+      <p class="text-danger">Выберите файл(ы)</p>
     </div>
   </BContainer>
 </template>
@@ -83,6 +87,9 @@ export default {
    }
   },
   watch: {
+    hasImage(val) {
+      console.log(val);
+    },
     image(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.imageSrc = [];

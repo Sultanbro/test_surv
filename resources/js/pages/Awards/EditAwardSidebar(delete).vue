@@ -58,6 +58,7 @@
                     >
                 </BDropdown>
             </BFormGroup>
+            <p class="text-danger" v-if="!selectFileType">Выберите тип награды*</p>
 
             <BFormGroup class="file-type">
                 <UploadFile
@@ -76,7 +77,12 @@
                         required
                 />
 
-                <FormUsers v-if="form.fileType === 3" required/>
+<!--                <FormUsers v-if="form.fileType === 3" required/>-->
+                <superselect
+                        v-if="form.fileType === 3"
+                        class="w-50 mb-4"
+                        :key="1"
+                        :select_all_btn="true" />
             </BFormGroup>
 
             <BFormGroup id="input-group-4" switches>
@@ -108,11 +114,11 @@
         data() {
             return {
                 userName: 'Тимур Хайруллин',
+                selectFileType: true,
                 form: {
                     id: null,
                     name: '',
                     description: '',
-                    awardTypeId: null,
                     fileType: null,
                     image: null,
                     imageData: [],
@@ -122,57 +128,63 @@
                 },
             };
         },
-        computed: {},
         methods: {
-            onSubmit() {
-                this.formFile;
-                if (this.item) {
-                    this.$emit('update-award', this.form);
+            async onSubmit() {
+                if (this.form.fileType) {
+                    let loader = this.$loading.show();
+                    this.formFile;
+                    await this.uploadFiles();
+                    if (this.item) {
+                        this.$emit('update-award', this.form);
+                    } else {
+                        this.$emit('save-award', this.form);
+                    }
+                    this.$emit('update:open', false);
+                    this.$refs.newSertificateForm.reset();
+                    loader.hide();
                 } else {
-                    this.$emit('save-award', this.form);
+                    this.selectFileType = false;
                 }
-                this.$emit('update:open', false);
-                this.$refs.newSertificateForm.reset();
             },
             setFileType(id) {
                 this.form.fileType = id;
-                this.form.awardTypeId = id;
+                this.selectFileType = true;
             },
             formFile(val) {
                 this.form.imageData = [];
-                if(JSON.stringify(this.form.image) !== JSON.stringify(val)){
-                    this.form.image = val;
-                    let formData = new FormData();
-                    for (let i = 0; i < this.form.image.length; i++) {
-                        formData.append("file[]", this.form.image[i]);
-                        const dataObj =  {
-                            path: '/upload/sertificates/' + this.form.image[i].name,
-                            format: this.form.image[i].type
-                        };
-                        this.form.imageData.push(dataObj);
-                    }
-                    this.axios
-                        .post("/upload.php", formData, {
-                            headers: {
-                                "Content-Type":
-                                    "multipart/form-data; charset=utf-8; boundary=" +
-                                    Math.random().toString().substr(2),
-                            },
-                        })
-                        .then(function (response) {
-                            if (!response.data) {
-                                console.log("File not uploaded.");
-                            } else {
-                                console.log("File uploaded successfully.");
-                                console.log(response.data, "data");
-                            }
-                        })
-                        .catch(function (error) {
-                            console.log("error");
-                            console.log(error);
-                        });
-                }
+                this.form.image = val;
+                return val;
             },
+            async uploadFiles(){
+                let formData = new FormData();
+                for (let i = 0; i < this.form.image.length; i++) {
+                    formData.append("file[]", this.form.image[i]);
+                    const dataObj = {
+                        path: '/upload/sertificates/' + this.form.image[i].name,
+                        format: this.form.image[i].type
+                    };
+                    this.form.imageData.push(dataObj);
+                }
+                await this.axios
+                    .post("/upload.php", formData, {
+                        headers: {
+                            "Content-Type":
+                                "multipart/form-data; charset=utf-8; boundary=" +
+                                Math.random().toString().substr(2),
+                        },
+                    })
+                    .then(function (response) {
+                        if (!response.data) {
+                            console.log("File not uploaded.");
+                        } else {
+                            console.log("File uploaded successfully.");
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log("error");
+                        console.log(error);
+                    });
+            }
         },
         mounted() {
             this.form.id = Date.now();
@@ -182,11 +194,9 @@
                 this.form.id = this.item.id;
                 this.form.name = this.item.name;
                 this.form.description = this.item.description;
-                this.form.format = this.item.format;
                 this.form.fileType = this.item.fileType;
                 this.form.image = this.item.image;
                 this.form.imageData = this.item.imageData;
-                this.form.path = this.item.path;
                 this.form.visibleToOthers = this.item.visibleToOthers;
                 this.form.user = this.item.user;
                 this.form.date = this.item.date;
