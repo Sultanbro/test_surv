@@ -6,40 +6,49 @@
     <div class="profit__subtitle subtitle">
         Информация, которая может быть полезна для Вашего карьерного роста
     </div>
-    <div class="profit__inner">
+  <div class="row  profit__inner mr-1 ml-1">
+    <div class="col col-md-6 profit__carousel">
+        <div  class="profit__inner-item left-slide" v-for="(slide, i) in data.groups" :key="i">
+          <div  class="profit__inner__left">
 
-
-        <div class="profit__inner-item" v-for="(slide, i) in slides" :key="i">
-            <div class="profit__inner__left">
-
-                <div class="profit__left-wrapper">
-                    <div class="profit__inner-title">
-                        {{ slide.left.title }}
-                    </div>
-                    <a href="#">
-                        <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
-                    </a>
-                </div>
-                <div class="profit__inner-text" v-html="slide.left.text"></div>
+            <div class="profit__left-wrapper">
+              <div class="profit__inner-title">
+                {{ slide.title }}
+              </div>
+              <a href="#">
+                <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
+              </a>
             </div>
+            <div class="profit__inner-text" v-html="slide.text"></div>
 
-            <div class="profit__inner-right">
-                <div class="profit__inner-title">
-                    {{ slide.right.title }}
-                    <a href="#">
-                        <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
-                    </a>
-                </div>
-                <div class="profit__inner-text profit-right" v-html="slide.right.text"></div>
-            </div>
-
-            <div class="profit__arrows">
-                <a href="#" class="profit__prev"></a>
-                <a href="#" class="profit__next"></a>
-            </div>
         </div>
+          <div class="profit__arrows">
+            <a href="#" class="profit__prev"></a>
+            <a href="#" class="profit__next"></a>
+          </div>
+      </div>
 
     </div>
+    <div class="col col-md-6 profit__carousel ">
+        <div  class="profit__inner-item right-slide" v-for="(slide, i) in data.positions" :key="i">
+          <div  class="profit__inner-right">
+            <div class="profit__inner-title">
+              {{ slide.title }}
+              <a href="#">
+                <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
+              </a>
+            </div>
+            <div class="profit__inner-text profit-right" v-html="slide.text"></div>
+          </div>
+          <div class="profit__arrows">
+            <a href="#" class="profit__prev"></a>
+            <a href="#" class="profit__next"></a>
+          </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 </template>
 
@@ -95,6 +104,7 @@ export default {
              * groups' terms
              */
             let to = Math.ceil(groups.length / 2);
+            console.log(groups)
 
             let lastKey = 0;
             let lastLeftBlock = null;
@@ -110,6 +120,7 @@ export default {
                     title: groups[lastKey].title,
                     text: groups[lastKey].text
                 }
+
 
                 lastKey++;
 
@@ -136,12 +147,12 @@ export default {
             /**
              * position terms
              */
-            if(this.data.position !== null) {
+            if (this.data.position !== null) {
                 this.addPositionSlides(lastLeftBlock)
-            } else if(lastLeftBlock !== null) {
+            } else if (lastLeftBlock !== null) {
                 this.slides.push({
                     left: lastLeftBlock,
-                    right: {title:'', text: ''},
+                    right: {title: '', text: ''},
                 });
             }
 
@@ -185,6 +196,7 @@ export default {
                     text: pos.knowledge,
                 },
             ];
+            this.data.positions = items;
 
             // if(lastLeftBlock !== null) items.unshift(lastLeftBlock);
             
@@ -210,7 +222,7 @@ export default {
          */
         initSlider() {
 
-            VJQuery('.profit__inner').slick({
+            VJQuery('.profit__carousel').slick({
                 infinite: true,
                 speed: 400,
                 fade: true,
@@ -225,8 +237,42 @@ export default {
                 VJQuery('.profit__inner').slick('slickNext');
             });
 
-           
+            /**
+             * set some style
+            *  */
+
+          let leftSlides = document.getElementsByClassName("left-slide");
+          let rightSlides = document.getElementsByClassName("right-slide");
+          let height = 0;
+
+          for(let i = 0; i < leftSlides.length; i++) {
+            for(let j = 0; j < rightSlides.length; j++) {
+              const leftHeight = leftSlides[i].offsetHeight;
+              const rightHeight = rightSlides[j].offsetHeight;
+              height = leftHeight > rightHeight ? leftHeight : rightHeight;
+            }
+          }
+
+            console.log('height');
+            console.log(height);
+            const arr = [1,1,1,2,3,4];
+            console.log(leftSlides);
+          [...leftSlides].forEach(data => {data.style.minHeight = height + "px"});
+          [...rightSlides].forEach(data => {data.style.minHeight = height + "px"});
+
+
+
+
+
+
+
         }
     }
 };
 </script>
+<style>
+.col-6, .col-md-6{
+  padding:0!important;
+}
+
+</style>
