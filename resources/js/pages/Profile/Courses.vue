@@ -1,36 +1,59 @@
 <template>
-<div class="courses__wrapper block _anim _anim-no-hide mt-4" id="courses__anchor" :class="{'hidden': data.length == 0}">
+<div
+    id="courses__anchor"
+    class="courses__wrapper block _anim _anim-no-hide mt-4"
+    :class="{'hidden': data.length == 0}"
+>
     <div class="courses__content" :class="{'hidden': activeCourse !== null}">
         <div class="courses__title">
             Ваши курсы
         </div>
         <div class="courses__content__wrapper">
-
             <div class="courses__item"
                 v-for="(course, index) in data"
                 :key="index"
                 :class="{'current': index == 0}"
             >
-                <img v-if="course.img !== null && course.img !== ''" :src="course.img" alt="курс" class="courses__image" @click="selectCourse(index)"  onerror="this.src = '/images/course.jpg';">
-                <img v-else src="/images/dist/courses-image.png" alt="" class="courses__image" @click="selectCourse(index)" onerror="this.src = '/images/course.jpg';">
+                <img
+                    v-if="course.img !== null && course.img !== ''"
+                    :src="course.img"
+                    alt="курс"
+                    class="courses__image"
+                    @click="selectCourse(index)"
+                    onerror="this.src = '/images/course.jpg';"
+                >
+                <img
+                    v-else src="/images/dist/courses-image.png"
+                    alt=""
+                    class="courses__image"
+                    @click="selectCourse(index)"
+                    onerror="this.src = '/images/course.jpg';"
+                >
 
                 <div class="courses__name">
                     {{ course.name }}
                 </div>
                 <div class="courses__progress">
-                    <div class="courses__line"></div>
+                    <div
+                        v-if="coursesMap[course.id]"
+                        class="courses__line"
+                        :style="`width: ${getResults(course.id).progress}%`"
+                    ></div>
                 </div>
                 <!-- Линия зависит от процентов в span-->
                 <div class="courses__percent">
-                    Пройдено: <span>99%</span>
+                    <template v-if="coursesMap[course.id]">
+                        Пройдено: <span>{{ getResults(course.id).progress }}%</span>
+                    </template>
+                    <template v-else>
+                        &nbsp;
+                    </template>
                 </div>
                 <a :href="'/my-courses?id=' + course.id" class="courses__button">
-                    <span>Продолжить курс</span>
+                    <span>{{ coursesMap[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
                 </a>
             </div>
-
         </div>
-
     </div>
 
     <div class="profit__info active" v-if="activeCourse !== null">
@@ -40,9 +63,7 @@
         <div class="profit__info-back" @click="back">
             Назад
         </div>
-        <div class="profit__info-back-mobile">
-
-        </div>
+        <div class="profit__info-back-mobile"></div>
         <div class="profit__info__inner">
             <div class="profit__info__item">
                 <img v-if="activeCourse.img !== null && activeCourse.img !== ''" :src="activeCourse.img" alt="info image" class="profit__info-image">
@@ -68,26 +89,33 @@
                             <div class="info__item-value" v-if="item.item_model == 'App\\KnowBase'">База знаний</div>
                             <div class="info__item-value">{{ item.title }}</div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 </template>
 
 <script>
 export default {
-    name: "Courses", 
+    name: 'Courses', 
     props: {},
     data: function () {
         return {
             data: [], 
             items: [],
+            courses: [],
             activeCourse: null
         };
+    },
+    computed: {
+        coursesMap(){
+            return this.courses.reduce((map, item) => {
+                map[item.id] = item
+                return map
+            }, {})
+        }
     },
     created() {
         this.fetchData()
@@ -105,6 +133,10 @@ export default {
                 this.$nextTick(() => this.initSlider())
                 loader.hide()
             }).catch((e) => console.log(e))
+
+            axios.get('/my-courses/get', {}).then(response => {
+                this.courses = response.data.courses
+            }).catch((e) => console.log(e))
         },
 
         /**
@@ -114,8 +146,6 @@ export default {
             console.log('clicked ' + index)
             this.activeCourse = this.data[index]
             this.fetchCourse();
-
-          
             // this.$nextTick(() => this.initInnerSlider())
         },
 
@@ -145,7 +175,7 @@ export default {
             VJQuery('.courses__content__wrapper').slick({
                 variableWidth: true,
                 infinite: false
-            });  
+            });
         },
 
         /**
@@ -154,8 +184,8 @@ export default {
         initInnerSlider() {
             VJQuery('.profit__info__wrapper').slick({
                 variableWidth: false,
-                infinite:false,
-                slidesToScroll:2,
+                infinite: false,
+                slidesToScroll: 2,
                 slidesToShow: 10,
                 responsive: [
                     {
@@ -236,7 +266,13 @@ export default {
             return item.all_stages > 0 
                 ? Number(item.completed_stages / item.all_stages).toFixed(1)
                 : 0;
-        } 
+        },
+
+        getResults(courseId){
+            const course = this.coursesMap[courseId]
+            if(!course.course_results || !course.course_results[0]) return null
+            return course.course_results[0]
+        }
     }
 };
 </script>
