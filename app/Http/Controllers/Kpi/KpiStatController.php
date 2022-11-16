@@ -15,6 +15,7 @@ use App\User;
 use App\Models\Analytics\UpdatedUserStat;
 use App\Models\Analytics\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class KpiStatController extends Controller
 {
@@ -140,7 +141,7 @@ class KpiStatController extends Controller
             $request->value ?? null
         );
 
-        \Artisan::call('user:save_kpi', [
+        Artisan::call('user:save_kpi', [
             'date' => $request->date,
             'user_id' => $request->user_id
         ]);
