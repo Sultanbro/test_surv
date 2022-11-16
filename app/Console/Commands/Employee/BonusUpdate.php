@@ -21,7 +21,7 @@ class BonusUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'bonus:update {date?} {group_id?}';
+    protected $signature = 'bonus:update {date?} {group_id?} {fired?}';
 
     /**
      * The console command description.
@@ -123,38 +123,8 @@ class BonusUpdate extends Command
              */
             $group = ProfileGroup::find($this->argument('group_id'));
 
-
-            //$user_ids = $this->userService->getEmployees($this->argument('group_id'), $this->date);
-
-            $user_ids = \DB::table('users')
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', json_decode($group->users))
-                ->where('is_trainee', 0)
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-
-
-        
-           
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            $this->userService->getEmployees(88, '2022-08-20');
-
+            $user_ids = $this->getUsers($group->id);
+            
             // Обнулить award
             $salaries = Salary::where('date', $this->date)
                 ->whereIn('user_id', $user_ids)
@@ -305,5 +275,34 @@ class BonusUpdate extends Command
 
 
 
+    }
+
+    /**
+     * Get users in Department
+     * 
+     * @return Collection
+     */
+    private function getUsers($group_id) 
+    {
+        $users = (new UserService)->getEmployees($group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        ); 
+
+        $users = collect($users);
+
+        $trainees = (new UserService)->getTrainees($group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        ); 
+
+        $users = $users->merge(collect($trainees));
+
+        if($this->argument('fired')) {
+             // get users
+            $users = (new UserService)->getUsersAll($group_id,
+                Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+            )->pluck('id')->toArray();
+        }
+        
+        return $users->pluck('id')->toArray();
     }
 }

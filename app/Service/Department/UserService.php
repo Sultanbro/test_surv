@@ -345,4 +345,38 @@ class UserService
                 'status' => 'fired',
             ]);
     }
+
+    /**
+     * Get all users in Department
+     * 
+     * @return Collection
+     */
+    public function getUsersAll($group_id) 
+    {   
+        // working users - employees
+        $users = $this->getEmployees(
+            $group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        ); 
+
+        $users = collect($users);
+
+        // trainees
+        $trainees = (new UserService)->getTrainees(
+            $group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        ); 
+
+        $users = $users->merge(collect($trainees));
+
+        // fired users
+        $fired = (new UserService)->getFiredEmployees(
+            $group_id,
+            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+        ); 
+        
+        $users = $users->merge(collect($fired));
+        
+        return $users;
+    }
 }
