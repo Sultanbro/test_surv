@@ -8,7 +8,7 @@
         <div class="header__menu">
             <div class="header__menu-title">
                 Пользователь <a href="#">#{{ $laravel.userId }}</a>
-                <p>{{ $laravel.email }}</p> 
+                <p>{{ $laravel.email }}</p>
             </div>
             <a href="/cabinet" class="menu__item">
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
@@ -24,148 +24,41 @@
         </div>
     </div>
 
-    <nav class="header__nav">
-        <div class="header__nav-link profile">
-            <a href="/">
-                <span class="_icon-nav-1 header__nav-icon"></span>
-                <span class="header__nav-name">Профиль</span>
-            </a>
-        </div>
-        <!-- <div class="header__nav-link">
-            <a href="/news">
-                <span class="_icon-nav-2 header__nav-icon"></span>
-                <span class="header__nav-name">Новости</span>
-            </a>
-        </div>
-        <div class="header__nav-link">
-            <a href="/struct">
-                <span class="_icon-nav-3 header__nav-icon"></span>
-                <span class="header__nav-name">Структура</span>
-            </a>
-        </div> -->
-        <div class="header__nav-link">
-            <a>
-                <span class="_icon-nav-4 header__nav-icon"></span>
-                <span class="header__nav-name">Обучение</span>
-            </a>
-            <div class="header__menu">
-                <!-- <div class="header__menu-title">
-                    Обучение
-                </div> -->
-                <a href="/admin/upbooks" class="menu__item">
-                    <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                    <span class="menu__item-title">Читать книги</span>
-                </a>
-                <a href="/video_playlists" class="menu__item">
-                    <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                    <span class="menu__item-title">Смотреть видео</span>
-                </a>
-                <a href="/courses" class="menu__item" v-if="$can('courses_view')">
-                    <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                    <span class="menu__item-title">Курсы</span>
-                </a>
-            </div>
-        </div>
-        <div class="header__nav-link">
-            <a href="/kb">
-                <span class="_icon-nav-5 header__nav-icon"></span>
-                <span class="header__nav-name">База знаний</span>
-            </a>
-        </div>
-        <div class="header__nav-link"
-            v-if=" $can('top_view')
-                || $can('tabel_view')
-                || $can('entertime_view')
-                || $can('hr_view')
-                || $can('analytics_view')
-                || $can('salaries_view')
-                || $can('quality_view')
-            ">
-            <a href="/timetracking/reports">
-                <span class="_icon-nav-6 header__nav-icon"></span>
-                <span class="header__nav-name">Отчеты</span>
-            </a>
-            <div class="header__menu">
-                    <a href="/timetracking/top" class="menu__item" v-if="$can('top_view')">
-                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                        <span class="menu__item-title">ТОП</span>
-                    </a>
-                    <a href="/timetracking/reports" class="menu__item" v-if="$can('tabel_view')">
-                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                        <span class="menu__item-title">Табель</span>
-                    </a>
-                    <a href="/timetracking/reports/enter-report" class="menu__item" v-if="$can('entertime_view')">
-                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                        <span class="menu__item-title">Время прихода</span>
-                    </a>
-                    <a href="/timetracking/analytics"  class="menu__item" v-if="$can('hr_view')">
-                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                        <span class="menu__item-title">HR</span>
-                    </a>
-                    <a href="/timetracking/an"  class="menu__item" v-if="$can('analytics_view')">
-                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                        <span class="menu__item-title">Аналитика</span>
-                    </a>
-                    <a href="/timetracking/salaries"  class="menu__item" v-if="$can('salaries_view')">
-                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                        <span class="menu__item-title">Начисления</span>
-                    </a>
-                    <a href="/timetracking/quality-control"  class="menu__item" v-if="$can('quality_view')">
-                        <img src="/images/dist/icon-settings.svg" alt="settings icon">
-                        <span class="menu__item-title">Контроль качества</span>
-                    </a>
-            </div>
-        </div>
-
-        <div class="header__nav-link">
-            <a href="/maps" >
-                <span class="_ico-nav- header__nav-icon fas fa-map-signs"></span>
-                <span class="header__nav-name">Карта</span>
-            </a>
-        </div>
-
-        <div class="header__nav-link">
-            <a href="/timetracking/info" > 
-                <span class="_icon-nav-7 header__nav-icon"></span>
-                <span class="header__nav-name">Частые вопросы</span>
-            </a>
-        </div>
-
-        <div class="header__nav-link">
-            <a href="/timetracking/fines" >
-                <span class="_icon-nav-8 header__nav-icon"></span>
-                <span class="header__nav-name">Депре мирование</span>
-            </a>
-        </div>
-
-        <div class="header__nav-link"  v-if="$can('ucalls_view')">
-            <a href="/callibro/login">
-                <!-- <span class="_icon-nav-7 header__nav-icon"></span> -->
-                <img class="_ico-nav- header__nav-icon fas fa-question"
-                    src="https://cp.callibro.org/files/img/item-8h.png"
-                    style="filter: grayscale(1) hue-rotate(290deg);opacity: 0.6;"/>
-                <span class="header__nav-name">U-calls</span>
-            </a>
-        </div>
-
-        <div class="header__nav-link"  v-if="$can('kpi_view')">
-            <a href="/kpi" >
-                <span class="_icon-nav-7 header__nav-icon"></span>
-                <span class="header__nav-name">KPI</span>
-            </a>
-        </div>
-
+    <nav class="header__nav" ref="nav">
+        <template v-for="item in filteredItems.visible">
+            <LeftSidebarItem
+                :key="item.name"
+                v-if="!item.hide"
+                @calcsize="item.height = $event.offsetHeight"
+                :name="item.name"
+                :class="item.className"
+                :href="item.href"
+                :icon="item.icon"
+                :img="item.img"
+                :menu="item.menu"
+            />
+        </template>
+        <template v-if="filteredItems.more.length === 1">
+            <LeftSidebarItem
+                :key="filteredItems.more[0].name"
+                v-if="!filteredItems.more[0].hide"
+                :name="filteredItems.more[0].name"
+                :class="filteredItems.more[0].className"
+                :href="filteredItems.more[0].href"
+                :icon="filteredItems.more[0].icon"
+                :img="filteredItems.more[0].img"
+                :menu="filteredItems.more[0].menu"
+            />
+        </template>
+        <LeftSidebarItem
+            v-if="filteredItems.more.length > 1"
+            name="Еще"
+            class="header__nav-link-more"
+            icon="icon-nd-more"
+            :menu="filteredItems.more"
+        />
     </nav>
-    <div class="header__nav-link last"
-        v-if=" $can('settings_view')
-            || $can('users_view')
-            || $can('positions_view')
-            || $can('groups_view')
-            || $can('fines_view')
-            || $can('notifications_view')
-            || $can('permissions_view')
-            || $can('checklists_view')
-        ">
+    <div class="header__nav-link last" v-if="showSettings">
         <a href="/timetracking/settings">
             <span class="_icon-nav-9 header__nav-icon"></span>
             <span class="header__nav-name">Настройка</span>
@@ -175,17 +68,396 @@
 </template>
 
 <script>
+import LeftSidebarItem from './LeftSidebarItem'
+
 export default {
-    name: "LeftSidebar", 
+    name: 'LeftSidebar', 
+    components: {
+        LeftSidebarItem
+    },
     props: {},
     data: function () {
         return {
+            items: [
+                {
+                    name: 'Профиль',
+                    className: 'profile',
+                    href: '/',
+                    icon: '_icon-nav-1',
+                    height: 0
+                },
+                {
+                    name: 'Новости',
+                    href: '/news',
+                    icon: '_icon-nav-2',
+                    height: 0
+                },
+                {
+                    name: 'Структура',
+                    href: '/struct',
+                    icon: '_icon-nav-3',
+                    height: 0
+                },
+                {
+                    name: 'Обучение',
+                    icon: '_icon-nav-4',
+                    height: 0,
+                    menu: [
+                        {
+                            name: 'Читать книги',
+                            icon: 'icon-nd-books',
+                            href: '/admin/upbooks'
+                        },
+                        {
+                            name: 'Смотреть видео',
+                            icon: 'icon-nd-video',
+                            href: '/video_playlists'
+                        },
+                        {
+                            name: 'Курсы',
+                            icon: 'icon-nd-courses',
+                            href: '/courses',
+                            hide: !this.$can('courses_view')
+                        }
+                    ]
+                },
+                {
+                    name: 'База знаний',
+                    href: '/kb',
+                    icon: '_icon-nav-5',
+                    height: 0
+                },
+                {
+                    hide: this.showReports,
+                    name: 'Отчеты',
+                    href: '/timetracking/reports',
+                    icon: '_icon-nav-6',
+                    height: 0,
+                    menu: [
+                        {
+                            name: 'ТОП',
+                            icon: 'icon-nd-dashboard',
+                            href: '/timetracking/top',
+                            hide: !this.$can('top_view')
+                        },
+                        {
+                            name: 'Табель',
+                            icon: 'icon-nd-tabel',
+                            href: '/timetracking/reports',
+                            hide: !this.$can('tabel_view')
+                        },
+                        {
+                            name: 'Время прихода',
+                            icon: 'icon-nd-enter-time',
+                            href: '/timetracking/reports/enter-report',
+                            hide: !this.$can('entertime_view')
+                        },
+                        {
+                            name: 'HR',
+                            icon: 'icon-nd-hr',
+                            href: '/timetracking/analytics',
+                            hide: !this.$can('hr_view')
+                        },
+                        {
+                            name: 'Аналитика',
+                            icon: 'icon-nd-analytics',
+                            href: '/timetracking/an',
+                            hide: !this.$can('analytics_view')
+                        },
+                        {
+                            name: 'Начисления',
+                            icon: 'icon-nd-salary',
+                            href: '/timetracking/salaries',
+                            hide: !this.$can('salaries_view')
+                        },
+                        {
+                            name: 'Контроль качества',
+                            icon: 'icon-nd-quality',
+                            href: '/timetracking/quality-control',
+                            hide: !this.$can('quality_view')
+                        },
+                    ]
+                },
+                {
+                    name: 'Карта',
+                    href: '/maps',
+                    icon: '_ico-nav- fas fa-map-signs',
+                    height: 0
+                },
+                {
+                    name: 'Частые вопросы',
+                    href: '/timetracking/info',
+                    icon: '_icon-nav-7',
+                    height: 0
+                },
+                {
+                    name: 'Депре мирование',
+                    href: '/timetracking/fines',
+                    icon: '_icon-nav-8',
+                    height: 0
+                },
+                {
+                    name: 'U-calls',
+                    href: '/callibro/login',
+                    img: {
+                        src: 'https://cp.callibro.org/files/img/item-8h.png',
+                        style: 'filter: grayscale(1) hue-rotate(290deg);opacity: 0.6;',
+                        className: '_ico-nav- header__nav-icon fas fa-question'
+                    },
+                    height: 0,
+                    hide: !this.$can('ucalls_view')
+                },
+                {
+                    name: 'KPI',
+                    href: '/kpi',
+                    icon: '_icon-nav-7',
+                    height: 0,
+                    hide: !this.$can('kpi_view')
+                },
+            ],
+            height: 300,
             fields: [],
             token: Laravel.csrfToken,
         };
     },
     methods: {
-
+        onResize(){
+            this.height = this.$refs.nav.offsetHeight
+        }
+    },
+    computed: {
+        showSettings(){
+            return this.$can('settings_view')
+            || this.$can('users_view')
+            || this.$can('positions_view')
+            || this.$can('groups_view')
+            || this.$can('fines_view')
+            || this.$can('notifications_view')
+            || this.$can('permissions_view')
+            || this.$can('checklists_view')
+        },
+        showReports(){
+            return this.$can('top_view')
+                || this.$can('tabel_view')
+                || this.$can('entertime_view')
+                || this.$can('hr_view')
+                || this.$can('analytics_view')
+                || this.$can('salaries_view')
+                || this.$can('quality_view')
+        },
+        filteredItems(){
+            let h = this.items[0].height
+            return this.items.reduce((res, item) => {
+                if(item.hide) return res;
+                h += item.height + 5
+                if(this.height - h > 0){
+                    res.visible.push(item)
+                }
+                else{
+                    res.more.push(item)
+                }
+                return res;
+            }, {
+                visible: [],
+                more: []
+            })
+        }
+    },
+    mounted(){
+        this.onResize()
+        new ResizeObserver(this.onResize).observe(this.$refs.nav)
     }
 };
 </script>
+
+<style lang="scss">
+.header__left{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width:7rem;
+    min-height: inherit;
+    max-height: inherit;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    background-color: #F6F7FC;
+    transform:translateX(0);
+    opacity:1;
+    visibility: visible;
+    transition: all 0.5s;
+
+    &.closed{
+        transform:translateX(-30px);
+        opacity:0;
+        visibility: hidden;
+    }
+}
+
+.header__avatar{
+    cursor:pointer;
+    margin-bottom: 0.5rem;
+    display: block;
+    max-width: 6rem;
+    width: 100%;
+    position:relative;
+    border-radius: 10px;
+    z-index: 1003;
+    .header__menu{
+        max-width: 24rem;
+        top: 0.5rem;
+    }
+
+    > img{
+        display: block;
+        height: auto;
+        border-radius: 10px;
+        width: 100%;
+        object-fit:cover;
+    }
+    &:hover{
+        .header__menu{
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+}
+.header__nav{
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 100%;
+    gap:.5rem;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+        width: 0; /* высота для горизонтального скролла */
+        height: 0; 
+    }
+}
+
+.header__nav-link{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: 1rem;
+    gap: 1rem;
+    font-weight: 400;
+    color: #8D9CA9;
+    position:relative;
+    z-index: auto;
+    transition:.3s;
+
+    & > a{
+        padding:  1.5rem 1.2rem .5rem;
+        width: 100%;
+        height: 100%;
+        font-size:inherit;
+        font-weight: inherit;
+        display: flex;
+        transition:.3s;
+
+        color:inherit;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap:.7rem;
+    }
+
+    .header__nav-icon {
+        font-size:2rem;
+        &::before{
+            transition:.2s;
+        }
+    }
+    &:hover,
+    &.opened{
+    & > a{
+        background: #608EE9;
+        font-weight:600;
+        color:#fff;
+    }
+        & .header__menu{
+            opacity:1;
+            visibility: visible;
+        }
+        .header__nav-icon::before{
+            color:#fff;
+        }
+    }
+
+    &.last{
+        margin-top: auto;
+    }
+}
+
+.header__menu{
+    display: flex;
+    flex-direction: column;
+    width: 25rem;
+    padding-top: 0;
+    border-radius: 0.3rem;
+
+    position: fixed;
+    z-index: 1005;
+    left: 8rem;
+
+    background: #F8FAFB;
+    color: #62788B;
+    font-size: 1.3rem;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,.25);
+    opacity: 0;
+    visibility: hidden;
+    transition: .5s;
+
+    .header__menu-title{
+        text-align: left;
+        padding-left: 2rem;
+        text-transform: uppercase;
+        padding-bottom: 1.2rem;
+        padding-right: 1.3rem;
+        p{
+            border-bottom: 1px solid #EDEFF3;
+            font-size:1.1rem;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            text-transform: none;
+        }
+
+        a{
+            color:#608EE9;
+        }
+    }
+
+    .menu__item{
+        display: flex;
+        gap:1rem;
+        align-items: center;
+        cursor:pointer;
+        height: 3.4rem;
+        padding-right: 3rem;
+        padding-left: 2rem;
+        background: #f6f7fd;
+
+        &:hover{
+            background: #EBF1FF;
+            // .menu__item-icon{
+            //     color: #156AE8;
+            // }
+        }
+        &-title{
+            color:#62788B;
+            padding: 1rem 0;
+        }
+    }
+
+    .menu__item-icon{
+        color: #62788B;
+    }
+}
+
+.header__nav-link-more{
+    .header__menu{
+        transform: translateY(calc(-100% + 5rem));
+    }
+}
+</style>
