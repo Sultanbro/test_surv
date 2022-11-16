@@ -433,7 +433,7 @@ class AnalyticsController extends Controller
                 dump($old_value);
                 $old_value = is_numeric($old_value) ? (int) $old_value : 0;
                 $new_value = ($tt->total_hours + $value) - $old_value;
-                dump($new_value);
+//                dump($new_value);
                 if($new_value < 0) $new_value = 0;
                 $tt->total_hours = $new_value; 
 
