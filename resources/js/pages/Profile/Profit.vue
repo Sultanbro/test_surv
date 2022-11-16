@@ -16,7 +16,7 @@
                 {{ slide.title }}
               </div>
               <a href="#">
-                <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
+                <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.'">
               </a>
             </div>
             <div class="profit__inner-text" v-html="slide.text"></div>
@@ -35,7 +35,7 @@
             <div class="profit__inner-title">
               {{ slide.title }}
               <a href="#">
-                <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'Описание того что это'">
+                <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.'">
               </a>
             </div>
             <div class="profit__inner-text profit-right" v-html="slide.text"></div>
