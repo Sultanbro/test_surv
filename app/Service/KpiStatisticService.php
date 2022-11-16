@@ -26,6 +26,7 @@ use App\Models\Analytics\UpdatedUserStat;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\History;
+use Illuminate\Support\Arr;
 
 class KpiStatisticService
 {
@@ -636,7 +637,7 @@ class KpiStatisticService
         $this->updatedValues = UpdatedUserStat::query()
                         ->whereMonth('date', $date->month)
                         ->whereYear('date', $date->year)
-                        ->orderBy('created_at', 'desc')
+                        ->orderBy('date', 'desc')
                         ->get();
         
         $this->asis = AnalyticsSettingsIndividually::query()
@@ -692,12 +693,15 @@ class KpiStatisticService
             ->get();
 
         foreach ($kpis as $key => $kpi) {
+
             $kpi->kpi_items = [];
+
             
+
             // remove items if it's not in history
             if($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
-
+           
                 if(isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
@@ -705,6 +709,7 @@ class KpiStatisticService
           
             //  
             $kpi->avg = 0; // avg percent from kpi_items' percent
+    
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
         }
 
@@ -793,17 +798,37 @@ class KpiStatisticService
         foreach ($_users as $key => $user) {
        
             $kpi_items = [];
-
+           
             foreach ($kpi->items as $key => $_item) {
-
+                
                 // to array because object changes every loop
                 $item = $_item->toArray();
                 
+                // get last History
+                $last_history = $_item->histories->map(function($item) use ($date) {
+
+                    $dateOk = $date->endOfMonth()->timestamp - Carbon::parse($item->created_at)->timestamp > 0;
+                    $item->order = $dateOk ? Carbon::parse($item->created_at)->timestamp : 0;
+
+                    return $item;
+                })->sortByDesc('order')->first();
+                
+                if($last_history) {
+                    $last_history = json_decode($last_history->payload, true);
+
+                    if( Arr::exists($last_history,'activity_id') ) $item['activity_id'] = $last_history['activity_id'];
+                    if( Arr::exists($last_history,'method') ) $item['method'] = $last_history['method'];
+                    if( Arr::exists($last_history,'share') ) $item['share'] = $last_history['share'];
+                    if( Arr::exists($last_history,'unit') ) $item['unit'] = $last_history['unit'];
+                    if( Arr::exists($last_history,'plan') ) $item['plan'] = $last_history['plan'];
+                    if( Arr::exists($last_history,'name') ) $item['name'] = $last_history['name'];
+                }
+
                 // check user stat exists
                 $exists = collect($user['items'])
                         ->where('activity_id', $item['activity_id'])
                         ->first();
-
+                       
                 // assign keys
                 if($exists) {
                     $item['fact']          = $exists->fact;
@@ -880,6 +905,7 @@ class KpiStatisticService
                  * take another activity values
                  */
                 $item['fact'] = $item['fact'] ?? 0;
+               
                 $this->takeCommonValue( $_item, $date, $item);
                 $this->takeCellValue(   $_item, $date, $item);
                 $this->takeRentability( $_item, $date, $item);
@@ -889,7 +915,13 @@ class KpiStatisticService
                 if($kpi->targetable_type == 'App\ProfileGroup' && $kpi->targetable_id == 48) {
                    // $this->takeRecruiterValues($_item, $date, $item, $user['id']);
                 }
-                $this->takeUpdatedValue($_item, $date, $item, $user['id']);
+
+                $this->takeUpdatedValue($_item->id,
+                    $item['activity_id'],
+                    $date,
+                    $item,
+                    $user['id']
+                );
                 
                 // plan
                 $item['full_time'] = $user['full_time'];
@@ -1177,6 +1209,15 @@ class KpiStatisticService
         
         if($kpi_item->activity 
         && $kpi_item->activity->view == Activity::VIEW_CELL) {
+           
+            // ->where('created_at', '<=', $date)->toArray());
+
+           
+            // if($kpi->histories->first()) {
+            //     $payload = json_decode($kpi->histories->first()->payload, true);
+                
+            // }
+            
             $item['fact'] = AnalyticStat::getCellValue(
                 $kpi_item->activity->group_id,
                 $kpi_item->cell,
@@ -1265,7 +1306,8 @@ class KpiStatisticService
      * @return float
      */
     private function takeUpdatedValue(
-        KpiItem $kpi_item,
+        $kpi_item_id,
+        $activity_id,
         Carbon $date,
         array &$item,
         int $user_id
@@ -1273,12 +1315,16 @@ class KpiStatisticService
     {
         $has = $this->updatedValues
                 ->where('user_id', $user_id)
-                ->where('kpi_item_id', $kpi_item->id);
+                ->where('kpi_item_id', $kpi_item_id);
 
-        if($kpi_item->activity_id != 0) $has = $has->where('activity_id', $kpi_item->activity_id);
-
+               
+        //if($activity_id != 0) 
+        $has = $has->where('activity_id', $activity_id);
+        
+      
         $has = $has->first();
 
+        
         if($has) {
             $item['fact'] = (float) $has->value;
             $item['avg']  = (float) $has->value;

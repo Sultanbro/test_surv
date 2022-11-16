@@ -78,47 +78,37 @@ class Bonus extends Model
      * count obtained bonuses of users in group
      */
     public static function obtained_in_group($group_id, $date)
-    {
-        $group = ProfileGroup::find($group_id);
-        
-         $user_ids = json_decode($group->users);
+    {   
         $bonuses = self::query()
             ->where('targetable_id', $group_id)
             ->where('targetable_type', 'App\ProfileGroup')
             ->get();
             
+        // get users
+        $users = (new UserService)->getUsersAll($group_id, $date)->pluck('id')->toArray();
 
-        $awards = []; // bonuses
-        $comments = []; // bonuses
-        
-        $users = \DB::table('users')
-            ->whereNull('deleted_at')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->whereIn('users.id', $user_ids)
-            ->where('is_trainee', 0)
-            ->get(['users.id'])
-            ->pluck('id')
-            ->toArray();
-        
-        // $users = (new UserService)->getEmployees($group_id, $date);
-
-        //if($group_id) $users = [15317];
-
-        foreach ($users as $user_id) { //  fill $awards array
+        //  fill $awards array
+        foreach ($users as $user_id) { 
             $awards[$user_id] = 0;
             $comments[$user_id] = '';
         }
         
-  
+        $awards = []; // bonuses
+        $comments = []; // bonuses
+
         foreach ($bonuses as $bonus) {
+
+            // если награда 0 и активность не указана пропускаем
             if($bonus->sum == 0) continue;
             if($bonus->activity_id == 0) continue;
             
+            // за первый
             if($bonus->unit == self::FOR_FIRST) {
         
                 $best_user = 0;
                 $best_value = 0;
 
+                // Если группа Евраз и Хоум  подтягивать с каллибро
                 if(in_array($group_id, [53,57])) {
 
                     $best_user = self::fetch_best_user_from_callibro($bonus, $group_id, $date);
@@ -141,12 +131,16 @@ class Bonus extends Model
 
             
                     foreach ($users as $user_id) {
+                        
+                        // Если группа Рекрутинг
+                        // @TODO должна быть только у BPartners
                         if($group_id == 48) {
                             $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
                         } else {
                             $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
                         }
                         
+                        // лучший результат
                         if((int)$val >= $bonus->quantity && (int)$val >= $best_value) {
                             $best_user = $user_id;
                             $best_value = (int)$val;
@@ -174,6 +168,7 @@ class Bonus extends Model
                 
             }
 
+            // за все
             if($bonus->unit == self::FOR_ALL) {
                 
                 // nullify awards if they are not actual
@@ -185,6 +180,8 @@ class Bonus extends Model
 
                     dump('*              '.$user_id);
 
+                    // Если группа Рекрутинг
+                    // @TODO должна быть только у BPartners
                     if($group_id == 48) {
                         $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
                     } else {
@@ -192,6 +189,8 @@ class Bonus extends Model
                     }
                     
                     dump('HH  '. $val . ' --- ' . $bonus->quantity);
+
+                    // план выполнен
                     if((int)$val >= $bonus->quantity) { 
 
                         $data = [
@@ -208,15 +207,16 @@ class Bonus extends Model
                 
             }
             
+            // за каждую единиу
             if($bonus->unit == self::FOR_ONE) {
 
                 foreach ($users as $user_id) {
                     
-                    if($group_id == 48) {
+                    if($group_id == 48) { // рекрутинг @TODO должна быть только у BPartners
 
                         $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
 
-                    } else if(
+                    } else if( // Если группа Евраз и Хоум  подтягивать с каллибро
                         in_array($group_id, [53,57,79])
                         && in_array($bonus->activity_id, [16,37,18,38,146,147])
                     ) { // Минуты и согласия
@@ -241,32 +241,12 @@ class Bonus extends Model
                 }
             }
 
-            // if($bonus->unit == self::FOR_FIRST && $group_id == 79) {
-
-            //     $euras_best_user = 0;
-
-            //     if($bonus->daxypart == 1) {
-            //         $euras_best_user = self::getEurasBestUser($date . ' 09:00:00', $date . ' 13:00:00');
-            //     }else if($bonus->daxypart == 2){
-            //         $euras_best_user = self::getEurasBestUser($date . ' 14:00:00', $date . ' 19:00:00');
-            //     }
-            //     if($euras_best_user != 0){
-            //         ObtainedBonus::createOrUphate([
-            //             'user_id' => $euras_best_user,
-            //             'date' => $date,
-            //             'bonus_id' => $bonus->id,
-            //             'amount' => $bonus->sum,
-            //             'comment' => $bonus->title . ' : ' . $bonus->sum . ';'
-            //         ]);
-            //     }
-            // }
-
-
         }
         
         return $awards;
     }
 
+    
     /**
      * Fetch value number from callibro
      */

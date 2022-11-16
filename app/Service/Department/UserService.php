@@ -61,14 +61,15 @@ class UserService
         $data = [];
 
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
         foreach ($groups as $group)
         {
-            $groupUser = GroupUser::withTrashed()->where('group_id','=',$group->id)
-                ->whereIn('status', [GroupUser::STATUS_FIRED, GroupUser::STATUS_ACTIVE])
+            $groupUser = GroupUser::withTrashed()
+                ->where('group_id','=',$group->id)
                 ->whereDate('from','<=', $last_date)
                 ->where(fn ($query) => $query->whereNull('to')->orWhere(
-                    fn ($query) => $query->whereYear('to','<=',$this->getYear($date))->whereMonth('to','>',$this->getMonth($date)))
+                    fn ($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
                 );
 
             $data = $this->getGroupEmployees($groupUser->get());
@@ -343,5 +344,41 @@ class UserService
                 'to'     => $date,
                 'status' => 'fired',
             ]);
+    }
+
+    /**
+     * Get all users in Department
+     * 
+     * @param int $group_d
+     * @param String $date
+     * @return Collection
+     */
+    public function getUsersAll(int $group_id, String $date) 
+    {   
+        // working users - employees
+        $users = $this->getEmployees(
+            $group_id,
+            Carbon::parse($date)->startOfMonth()->format('Y-m-d')
+        ); 
+
+        $users = collect($users);
+
+        // trainees
+        $trainees = $this->getTrainees(
+            $group_id,
+            Carbon::parse($date)->startOfMonth()->format('Y-m-d')
+        ); 
+
+        $users = $users->merge(collect($trainees));
+
+        // fired users
+        $fired = $this->getFiredEmployees(
+            $group_id,
+            Carbon::parse($date)->startOfMonth()->format('Y-m-d')
+        ); 
+        
+        $users = $users->merge(collect($fired));
+        
+        return $users;
     }
 }

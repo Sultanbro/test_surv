@@ -241,6 +241,8 @@ class UserService
 
         $groups = $user->inGroupsWithTerms();
 
+        error_log('groups');
+        error_log(json_encode($groups));
         $groupTerms = [];
 
         foreach ($groups as $gr) {
