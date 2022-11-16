@@ -349,30 +349,32 @@ class UserService
     /**
      * Get all users in Department
      * 
+     * @param int $group_d
+     * @param String $date
      * @return Collection
      */
-    public function getUsersAll($group_id) 
+    public function getUsersAll(int $group_id, String $date) 
     {   
         // working users - employees
         $users = $this->getEmployees(
             $group_id,
-            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+            Carbon::parse($date)->startOfMonth()->format('Y-m-d')
         ); 
 
         $users = collect($users);
 
         // trainees
-        $trainees = (new UserService)->getTrainees(
+        $trainees = $this->getTrainees(
             $group_id,
-            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+            Carbon::parse($date)->startOfMonth()->format('Y-m-d')
         ); 
 
         $users = $users->merge(collect($trainees));
 
         // fired users
-        $fired = (new UserService)->getFiredEmployees(
+        $fired = $this->getFiredEmployees(
             $group_id,
-            Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
+            Carbon::parse($date)->startOfMonth()->format('Y-m-d')
         ); 
         
         $users = $users->merge(collect($fired));
