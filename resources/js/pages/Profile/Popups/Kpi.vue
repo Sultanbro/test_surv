@@ -13,113 +13,133 @@
     </div>
 
     <div class="kpi__content">
-
-        <div v-for="(wrap_item, w) in items.slice().reverse()" class="mt-5 mb-5">
-
-            <div class="kpi__kaspi">
-                <div class="kpi__title popup__content-title">
-                    <template v-if="wrap_item.target != null">{{ wrap_item.target.name }}</template>
-                    <template v-else>---</template>
+        <div class="tabs">
+            <div class="tabs__wrapper custom-scroll">
+                <div
+                    v-for="(wrap_item, w) in items.slice().reverse()"
+                    :key="w"
+                    onclick="switchTabs(this)"
+                    :data-index="w"
+                    class="tab__item"
+                    :class="{'is-active': w == 0}"
+                >
+                    {{ wrap_item.target === null ? '---' : wrap_item.target.name }}
                 </div>
-                <div class="kpi__kaspi-wrapper">
-                    <div class="kpi__kaspi-left">
-                        <table>
-                            <tr>
-                                <td class="blue">Выполнение KPI от 80-99%</td>
-                                <td>{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
-                            </tr>
-                            <tr>
-                                <td class="blue">Выполнение KPI на 100%</td>
-                                <td >{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="kpi__kaspi-right">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Нижний порог отсечения премии, %</th>
-                                    <th>Верхний порог отсечения премии, %</th>
-                                </tr>
-                            </thead>
-                            <tr>
-                                <td>{{ wrap_item.lower_limit }}</td>
-                                <td>{{ wrap_item.upper_limit }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
             </div>
+            <div class="tab__content">
+                <div
+                    v-for="(wrap_item, w) in items.slice().reverse()"
+                    :key="w"
+                    :data-content="w" 
+                    class="tab__content-item"
+                    :class="{'is-active': w == 0}"
+                >
+                    <div class="kpi__kaspi">
+                        <div class="kpi__title popup__content-title">
+                            <template v-if="wrap_item.target != null">{{ wrap_item.target.name }}</template>
+                            <template v-else>---</template>
+                        </div>
+                        <div class="kpi__kaspi-wrapper">
+                            <div class="kpi__kaspi-left">
+                                <table>
+                                    <tr>
+                                        <td class="blue">Выполнение KPI от 80-99%</td>
+                                        <td>{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="blue">Выполнение KPI на 100%</td>
+                                        <td >{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="kpi__kaspi-right">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Нижний порог отсечения премии, %</th>
+                                            <th>Верхний порог отсечения премии, %</th>
+                                        </tr>
+                                    </thead>
+                                    <tr>
+                                        <td>{{ wrap_item.lower_limit }}</td>
+                                        <td>{{ wrap_item.upper_limit }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
 
-            <div class="kpi__activities">
-                <div class="kpi__title popup__content-title">
-                    Активности KPI
-                </div>
-                
-                       
+                    </div>
 
-                    <table>
+                    <div class="kpi__activities">
+                        <div class="kpi__title popup__content-title">
+                            Активности KPI
+                        </div>
+                        
+                            
 
-                        <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
-                            <tr class="collapsable" :class="{'active': wrap_item.expanded || !editable }" :key="w + 'a'">
-                                <td :colspan="editable ? 3 : 7">
-                                    <div class="table__wrapper">
-                                    <table class="child-table">
-                                        <template v-for="(user, i) in wrap_item.users">
-                                            <tr :key="i" class="child-row" v-if="editable">
-                                                <td  @click="user.expanded = !user.expanded" class="pointer px-2">
-                                                    <span class="ml-2 bg-transparent">{{ i + 1 }}</span>
-                                                </td>
-                                                <td class="px-2 py-1">{{ user.name }}</td>
+                            <table>
+
+                                <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
+                                    <tr class="collapsable" :class="{'active': wrap_item.expanded || !editable }" :key="w + 'a'">
+                                        <td :colspan="editable ? 3 : 7">
+                                            <div class="table__wrapper">
+                                            <table class="child-table">
+                                                <template v-for="(user, i) in wrap_item.users">
+                                                    <tr :key="i" class="child-row" v-if="editable">
+                                                        <td  @click="user.expanded = !user.expanded" class="pointer px-2">
+                                                            <span class="ml-2 bg-transparent">{{ i + 1 }}</span>
+                                                        </td>
+                                                        <td class="px-2 py-1">{{ user.name }}</td>
+                                                        
+                                                        <template v-if="user.items !== undefined">
+                                                            <td class="px-2" v-for="kpi_item in user.items">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
+                                                        </template>
+                                                        
+                                                    </tr>
+
+                                                    <template v-if="user.items !== undefined">
+                                                        <tr class="collapsable" :class="{'active': true}" :key="i + 'a'">
+                                                            <td :colspan="fields.length + 2">
+                                                                <div class="table__wrapper__second">
+                                                                    <kpi-items
+                                                                        :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
+                                                                        :kpi_id="user.id"
+                                                                        :items="user.items" 
+                                                                        :expanded="true"
+                                                                        :activities="activities"
+                                                                        :groups="groups"
+                                                                        :completed_80="wrap_item.completed_80"
+                                                                        :completed_100="wrap_item.completed_100"
+                                                                        :lower_limit="wrap_item.lower_limit"
+                                                                        :upper_limit="wrap_item.upper_limit"
+                                                                        :editable="false"
+                                                                        :kpi_page="false"
+                                                                        date="date"
+                                                                        @getSum="wrap_item.my_sum = $event"
+                                                                        @recalced="countAvg"
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                        </tr>                
+                                                    </template>
                                                 
-                                                <template v-if="user.items !== undefined"">
-                                                    <td class="px-2" v-for="kpi_item in user.items">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
                                                 </template>
-                                                
-                                            </tr>
+                                            </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
 
-                                            <template v-if="user.items !== undefined">
-                                                <tr class="collapsable" :class="{'active': true}" :key="i + 'a'">
-                                                    <td :colspan="fields.length + 2">
-                                                        <div class="table__wrapper__second">
-                                                            <kpi-items
-                                                                :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
-                                                                :kpi_id="user.id"
-                                                                :items="user.items" 
-                                                                :expanded="true"
-                                                                :activities="activities"
-                                                                :groups="groups"
-                                                                :completed_80="wrap_item.completed_80"
-                                                                :completed_100="wrap_item.completed_100"
-                                                                :lower_limit="wrap_item.lower_limit"
-                                                                :upper_limit="wrap_item.upper_limit"
-                                                                :editable="false"
-                                                                :kpi_page="false"
-                                                                date="date"
-                                                                @getSum="wrap_item.my_sum = $event"
-                                                                @recalced="countAvg"
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                </tr>                
-                                            </template>
-                                        
-                                        </template>
-                                    </table>
-                                    </div>
-                                </td>
-                            </tr>
-                        </template>
-
+                        
+                            </table>
                 
-                    </table>
-        
 
-                <div class="kpi__activities-tip">
-                    * сумма премии за выполнение показателей начнет меняться после достижения 80% от целевого значения на месяц
+                        <div class="kpi__activities-tip">
+                            * сумма премии за выполнение показателей начнет меняться после достижения 80% от целевого значения на месяц
+                        </div>
+
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
