@@ -602,17 +602,17 @@ class Salary extends Model
 
         foreach ($users as $key => $user) {
             
-            /**
-             * Show the user only in first group he assigned
-             * Exception: show DM1 users in both groups DM2
-             */
-            $ugroups = $user->inGroups();
-
-            if(count($ugroups) > 0) {
-                if($ugroups[0]->id != $group_id && $user_types != -1) {
-                    continue;
-                }
-            }
+//            /**
+//             * Show the user only in first group he assigned
+//             * Exception: show DM1 users in both groups DM2
+//             */
+//            $ugroups = $user->inGroups();
+//
+//            if(count($ugroups) > 0) {
+//                if($ugroups[0]->id != $group_id && $user_types != -1) {
+//                    continue;
+//                }
+//            }
             
             
             /**
