@@ -60,7 +60,7 @@
                     </div>
                 </td>
                 <td class="indicators-table-fixed-hmonth sticky-left px-2">{{ item.plan }}</td>
-                <td class="indicators-table-fixed-hplan sticky-left px-2">{{ item.count }}</td>
+                <td v-if="is_admin" class="indicators-table-fixed-hplan sticky-left px-2">{{ item.count }}</td>
                 <template v-for="day in month.daysInMonth">
                     <td v-if="item.editable"
                         :class="'text-center ' + item._cellVariants[day]"
