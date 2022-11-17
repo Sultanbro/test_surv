@@ -88,7 +88,7 @@ export default {
   },
   watch: {
     hasImage(val) {
-      console.log(val);
+
     },
     image(newValue, oldValue) {
       if (newValue !== oldValue) {
