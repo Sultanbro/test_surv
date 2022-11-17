@@ -430,7 +430,9 @@ class AnalyticsController extends Controller
             if($user->user_type != $user_type) continue;
 
             if(!in_array($tt->user_id, $marked_users)) {
-                dump('total_hours: ' . $tt->total_hours);
+                dump('total_hours: ' . $user->id . $user->name.  $tt->total_hours);
+                dump('old_value: ' . $user->id . $user->name . $old_value);
+                dump('value: ' . $user->id . $user->name . $value);
                 $new_value = $tt->total_hours + $value - $old_value;
                 if($new_value < 0) $new_value = 0;
                 $tt->total_hours = $new_value; 
