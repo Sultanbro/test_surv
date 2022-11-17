@@ -185,11 +185,21 @@ class UserService
         $hasGroup = count($gs) > 0;
 
         if( ! $userInCorpUniversity && $hasGroup) {
-            $activities = UserStat::activities($gs[0]->id, date('Y-m-d'));
+
+            foreach ($gs as $group) {
+                $activities[] = [
+                    'activities' => UserStat::activities($group->id, date('Y-m-d')),
+                    'group' => [
+                        'id'   => $group->id, 
+                        'name' => $group->name, 
+                    ],
+                ];
+            }
+
         }
 
         return [
-            'activities' => $activities,
+            'items' => $activities,
         ];
     }
 
