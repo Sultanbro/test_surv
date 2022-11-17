@@ -21,7 +21,7 @@
         desc="Заработанная сумма именно от окладной части"
         :open="popBalance" 
         @close="popBalance=false"
-        width="50%">
+        :width="popupWidth">
         <popup-balance></popup-balance>
     </popup>
 
@@ -30,7 +30,7 @@
         desc="Выполняя дополнительные активности, заработайте больше денег"
         :open="popKpi" 
         @close="popKpi=false"
-        width="50%">
+        :width="popupWidth">
         <popup-kpi></popup-kpi>
     </popup>
 
@@ -39,7 +39,7 @@
         desc="Зарабатывайте бонусы, выполняя дополнительные активности"
         :open="popBonuses" 
         @close="popBonuses=false"
-        width="50%">
+        :width="popupWidth">
         <popup-bonuses></popup-bonuses>
     </popup>
 
@@ -48,7 +48,7 @@
         desc=""
         :open="popQuartalPremiums" 
         @close="popQuartalPremiums=false"
-        width="50%">
+        :width="popupWidth">
         <popup-quartal></popup-quartal>
     </popup>
 
@@ -57,17 +57,24 @@
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popNominations" 
         @close="popNominations=false"
-        width="50%">
+        :width="popupWidth">
         <popup-nominations></popup-nominations>
     </popup>
-    
 </div>
 </template>
 
 <script>
 export default {
-    name: "ProfilePage", 
+    name: 'ProfilePage',
     props: {},
+    computed: {
+        popupWidth(){
+            const w = this.$viewportSize.width
+            if(w < 651) return '100%'
+            if(w < 1360) return '75%'
+            return w - (39 * this.$viewportSize.rem) + 'px'
+        }
+    },
     data: function () {
         return {
             fields: [], 

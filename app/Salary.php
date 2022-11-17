@@ -608,11 +608,11 @@ class Salary extends Model
              */
             $ugroups = $user->inGroups();
 
-//            if(count($ugroups) > 0 && $group_id != 93) {
-//                if($ugroups[0]->id != $group_id && $user_types != -1) {
-//                    continue;
-//                }
-//            }
+            if(count($ugroups) > 0) {
+                if($ugroups[0]->id != $group_id && $user_types != -1) {
+                    continue;
+                }
+            }
             
             
             /**

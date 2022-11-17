@@ -424,7 +424,7 @@ class AnalyticsController extends Controller
         $marked_users = [];
 
         foreach($tts as $tt) {
-            $user = User::find($tt->user_id);
+            $user = User::withTrashed()->find($tt->user_id);
             if(!$user)continue;
             if(!$user->user_type)continue;
             if($user->user_type != $user_type) continue;

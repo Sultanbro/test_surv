@@ -605,22 +605,22 @@ class SalaryController extends Controller
             $_user = User::withTrashed()->find($user->id);
             $ugroups = $_user->inGroups();
 
-            if(in_array($user->id, [
-                6401,
-                5084,
-                5975,
-                9873,
-                7211,
-                6634,
-                7203,
-                10147
-            ])) {
-
-            } else if(count($ugroups) > 0) {
-                if($ugroups[0]->id != $group_id) {
-                    continue;
-                }
-            }
+//            if(in_array($user->id, [
+//                6401,
+//                5084,
+//                5975,
+//                9873,
+//                7211,
+//                6634,
+//                7203,
+//                10147
+//            ])) {
+//
+//            } else if(count($ugroups) > 0) {
+//                if($ugroups[0]->id != $group_id) {
+//                    continue;
+//                }
+//            }
            
             
 
