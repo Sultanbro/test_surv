@@ -406,32 +406,6 @@ class SalaryController extends Controller
 
         $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d')); 
         $fired_users = collect($fired_users)->pluck('id')->toArray();
-
-        /**
-         * Костль на сентябрьские начисления по ДМё
-         * чтобы выводить нехваьающих юзеров пор каким то причинам
-         */
-        if($date->format('Y-m-d') == '2022-09-01' && $request->group_id == 31) {
-            $working_users = array_merge($working_users, [
-                6401,
-                5084,
-                5975,
-                9873,
-                7211,
-                6634,
-                7203,
-                10147,
-            ]);
-
-            $fired_users = array_merge($fired_users, [15936, 15691        ]);
-            
-        }
-
-        // $users_ids = [];
-        // if (!empty($group) && $group->users != null) {
-        //     // $users_ids = json_decode($group->users);
-        //     if($group) $users_ids = json_decode($group->users, true);
-        // }
   
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         
@@ -603,26 +577,6 @@ class SalaryController extends Controller
         foreach ($users as $user) { /** @var User $user */
 
             $_user = User::withTrashed()->find($user->id);
-            $ugroups = $_user->inGroups();
-
-//            if(in_array($user->id, [
-//                6401,
-//                5084,
-//                5975,
-//                9873,
-//                7211,
-//                6634,
-//                7203,
-//                10147
-//            ])) {
-//
-//            } else if(count($ugroups) > 0) {
-//                if($ugroups[0]->id != $group_id) {
-//                    continue;
-//                }
-//            }
-           
-            
 
             // Вычисление даты принятия
             $user_applied_at = $_user->applied_at();
