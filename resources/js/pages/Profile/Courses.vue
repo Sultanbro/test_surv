@@ -157,7 +157,6 @@ export default {
                 // this.$nextTick(() => this.initSlider())
                 loader.hide()
             }).catch((e) => console.log(e));
-            
         },
 
         /**
@@ -176,6 +175,18 @@ export default {
                 variableWidth: true,
                 infinite: false
             });
+
+            // https://github.com/kenwheeler/slick/issues/3694
+            // but it's better to replace slick with native for vue
+            const $slick_slider = VJQuery('.courses__content__wrapper')
+            $slick_slider.on('afterChange', function (e, slick) {
+                var lElRect = slick.$slides[slick.slideCount - 1].getBoundingClientRect()
+                var rOffset = lElRect.x + lElRect.width
+                var wraRect = $slick_slider.find('.slick-list').get(0).getBoundingClientRect()
+                if (rOffset < (wraRect.x + wraRect.width)) {
+                    $slick_slider.find('.slick-next').addClass('slick-disabled')
+                }
+            })
         },
 
         /**
@@ -276,3 +287,12 @@ export default {
     }
 };
 </script>
+
+<style lang="scss">
+// https://github.com/kenwheeler/slick/issues/3694
+.slick-disabled {
+    cursor: no-drop;
+    opacity: 0.5;
+    pointer-events: none;
+}
+</style>
