@@ -80,7 +80,43 @@ export default {
     props: {},
     data: function () {
         return {
-            items: [
+            height: 300,
+            fields: [],
+            token: Laravel.csrfToken,
+        };
+    },
+    methods: {
+        onResize(){
+            this.height = this.$refs.nav.offsetHeight
+        }
+    },
+    computed: {
+        showSettings(){
+            return this.$can('settings_view')
+            || this.$can('users_view')
+            || this.$can('positions_view')
+            || this.$can('groups_view')
+            || this.$can('fines_view')
+            || this.$can('notifications_view')
+            || this.$can('permissions_view')
+            || this.$can('checklists_view')
+        },
+        showReports(){
+            return this.$can('top_view')
+                || this.$can('tabel_view')
+                || this.$can('entertime_view')
+                || this.$can('hr_view')
+                || this.$can('analytics_view')
+                || this.$can('salaries_view')
+                || this.$can('quality_view')
+        },
+        showEducation(){
+            return this.$can('books_view')
+                || this.$can('videos_view')
+                || this.$can('courses_view')
+        },
+        items(){
+            return [
                 {
                     name: 'Профиль',
                     href: '/',
@@ -105,9 +141,11 @@ export default {
                     name: 'База знаний',
                     href: '/kb',
                     icon: 'icon-nd-kdb',
-                    height: 0
+                    height: 0,
+                    hide: !this.$can('kb_view')
                 },
                 {
+                    hide: !this.showEducation,
                     name: 'Обучение',
                     icon: 'icon-nd-education',
                     height: 0,
@@ -115,12 +153,14 @@ export default {
                         {
                             name: 'Читать книги',
                             icon: 'icon-nd-books',
-                            href: '/admin/upbooks'
+                            href: '/admin/upbooks',
+                            hide: !this.$can('books_view')
                         },
                         {
                             name: 'Смотреть видео',
                             icon: 'icon-nd-video',
-                            href: '/video_playlists'
+                            href: '/video_playlists',
+                            hide: !this.$can('videos_view')
                         },
                         {
                             name: 'Курсы',
@@ -131,7 +171,7 @@ export default {
                     ]
                 },
                 {
-                    hide: this.showReports,
+                    hide: !this.showReports,
                     name: 'Отчеты',
                     href: '/timetracking/reports',
                     icon: 'icon-nd-reports',
@@ -205,13 +245,15 @@ export default {
                     name: 'Частые вопросы',
                     href: '/timetracking/info',
                     icon: 'icon-nd-questions',
-                    height: 0
+                    height: 0,
+                    hide: !this.$can('faq_view')
                 },
                 {
                     name: 'Депре мирование',
                     href: '/timetracking/fines',
                     icon: 'icon-nd-deduction',
-                    height: 0
+                    height: 0,
+                    hide: !this.$can('penalties_view')
                 },
                 {
                     name: 'U-calls',
@@ -220,36 +262,7 @@ export default {
                     height: 0,
                     hide: !this.$can('ucalls_view')
                 },
-            ],
-            height: 300,
-            fields: [],
-            token: Laravel.csrfToken,
-        };
-    },
-    methods: {
-        onResize(){
-            this.height = this.$refs.nav.offsetHeight
-        }
-    },
-    computed: {
-        showSettings(){
-            return this.$can('settings_view')
-            || this.$can('users_view')
-            || this.$can('positions_view')
-            || this.$can('groups_view')
-            || this.$can('fines_view')
-            || this.$can('notifications_view')
-            || this.$can('permissions_view')
-            || this.$can('checklists_view')
-        },
-        showReports(){
-            return this.$can('top_view')
-                || this.$can('tabel_view')
-                || this.$can('entertime_view')
-                || this.$can('hr_view')
-                || this.$can('analytics_view')
-                || this.$can('salaries_view')
-                || this.$can('quality_view')
+            ]
         },
         filteredItems(){
             let h = this.items[0].height
@@ -272,6 +285,9 @@ export default {
     mounted(){
         this.onResize()
         new ResizeObserver(this.onResize).observe(this.$refs.nav)
+    },
+    created(){
+        console.log('items', this.items)
     }
 };
 </script>
