@@ -4,10 +4,6 @@
         >Создать награду
         </BButton
         >
-        <BButton variant="success" class="mb-2" @click="loglog"
-        >Консоль
-        </BButton
-        >
         <BTableSimple
                 id="awards-table"
                 class="mb-3"
@@ -35,7 +31,7 @@
                     <BTd v-if="item.awardTypeId === 1 || item.awardTypeId === 2">Картинка</BTd>
                     <BTd v-else>Данные начислений</BTd>
                     <BTd>{{ item.date }}</BTd>
-                    <BTd>{{ item.user }}</BTd>
+                    <BTd>{{ item.awardCreator }}</BTd>
                     <BTd @click.stop>
                         <bButton size="sm" pill variant="danger" @click="remove(item)"><i class="fa fa-trash"></i>
                         </bButton>
@@ -92,11 +88,11 @@
                         el.id = data.id;
                         el.name = data.name;
                         el.description = data.description;
-                        el.fileType = data.fileType;
-                        el.image = data.image;
-                        el.imageData = data.imageData;
+                        el.awardTypeId = data.awardTypeId;
+                        el.images = data.images;
+                        el.imagesData = data.imagesData;
                         el.visibleToOthers = data.visibleToOthers;
-                        el.user = data.user;
+                        el.awardCreator = data.awardCreator;
                         el.date = data.date;
                     }
                 });

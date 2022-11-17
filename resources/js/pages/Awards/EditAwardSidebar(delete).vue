@@ -63,23 +63,23 @@
             <BFormGroup class="file-type">
                 <UploadFile
                         @image-download="formFile"
-                        v-if="form.fileType === 1"
-                        :fileType="form.fileType"
-                        :uploadImage="form.image"
+                        v-if="form.awardTypeId === 1"
+                        :fileType="form.awardTypeId"
+                        :uploadImage="form.imagesData"
                         required
                 />
 
                 <UploadSertificate
                         @image-download="formFile"
-                        v-if="form.fileType === 2"
-                        :fileType="form.fileType"
+                        v-if="form.awardTypeId === 2"
+                        :fileType="form.awardTypeId"
                         :sertificate="form.formFile"
                         required
                 />
 
 <!--                <FormUsers v-if="form.fileType === 3" required/>-->
                 <superselect
-                        v-if="form.fileType === 3"
+                        v-if="form.awardTypeId === 3"
                         class="w-50 mb-4"
                         :key="1"
                         :select_all_btn="true" />
@@ -119,21 +119,21 @@
                     id: null,
                     name: '',
                     description: '',
-                    fileType: null,
-                    image: null,
-                    imageData: [],
+                    awardTypeId: null,
+                    images: [],
+                    imagesData: null,
                     visibleToOthers: false,
-                    user: '',
+                    awardCreator: '',
                     date: '',
                 },
             };
         },
         methods: {
             async onSubmit() {
-                if (this.form.fileType) {
+                if (this.form.awardTypeId) {
                     let loader = this.$loading.show();
                     this.formFile;
-                    await this.uploadFiles();
+                    // await this.uploadFiles();
                     if (this.item) {
                         this.$emit('update-award', this.form);
                     } else {
@@ -147,23 +147,23 @@
                 }
             },
             setFileType(id) {
-                this.form.fileType = id;
+                this.form.awardTypeId = id;
                 this.selectFileType = true;
             },
             formFile(val) {
-                this.form.imageData = [];
-                this.form.image = val;
+                this.form.images = [];
+                this.form.imagesData = val;
                 return val;
             },
             async uploadFiles(){
                 let formData = new FormData();
-                for (let i = 0; i < this.form.image.length; i++) {
-                    formData.append("file[]", this.form.image[i]);
+                for (let i = 0; i < this.form.imagesData.length; i++) {
+                    formData.append("file[]", this.form.imagesData[i]);
                     const dataObj = {
-                        path: '/upload/sertificates/' + this.form.image[i].name,
-                        format: this.form.image[i].type
+                        path: '/upload/sertificates/' + this.form.imagesData[i].name,
+                        format: this.form.imagesData[i].type
                     };
-                    this.form.imageData.push(dataObj);
+                    this.form.images.push(dataObj);
                 }
                 await this.axios
                     .post("/upload.php", formData, {
@@ -189,16 +189,16 @@
         mounted() {
             this.form.id = Date.now();
             this.form.date = new Date().toLocaleDateString();
-            this.form.user = this.userName;
+            this.form.awardCreator = this.userName;
             if (this.item) {
                 this.form.id = this.item.id;
                 this.form.name = this.item.name;
                 this.form.description = this.item.description;
-                this.form.fileType = this.item.fileType;
-                this.form.image = this.item.image;
-                this.form.imageData = this.item.imageData;
+                this.form.awardTypeId = this.item.awardTypeId;
+                this.form.images = this.item.images;
+                this.form.imagesData = this.item.imagesData;
                 this.form.visibleToOthers = this.item.visibleToOthers;
-                this.form.user = this.item.user;
+                this.form.awardCreator = this.item.awardCreator;
                 this.form.date = this.item.date;
             }
         }
