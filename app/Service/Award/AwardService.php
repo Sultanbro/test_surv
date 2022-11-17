@@ -92,6 +92,9 @@ class AwardService
             $success = Award::query()->create([
                 'award_type_id' => $request->input('award_type_id'),
                 'course_id' => $request->input('course_id'),
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'hide' => $request->input('hide'),
                 'format'    => $request->file('file')->extension(),
                 'icon'      => $request->input('icon'),
                 'path'      => $this->saveAwardFile($request)['relative']

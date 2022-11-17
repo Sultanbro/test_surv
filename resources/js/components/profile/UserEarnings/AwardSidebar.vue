@@ -119,6 +119,7 @@
 
 <script>
 import AwardsCard from "./AwardsCard";
+import axios from "axios";
 
 export default {
   name: "AwardSidebar",
@@ -230,6 +231,7 @@ export default {
     if (this.awards.length) {
       this.awardsClickHandler(0);
     }
+
   },
 };
 </script>
