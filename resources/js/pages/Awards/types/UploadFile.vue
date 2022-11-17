@@ -7,8 +7,12 @@
         placeholder="Выберите Файл"
         drop-placeholder="Перетащите файл сюда..."
         accept=".jpg, .png"
-        required
+        :required="image === null"
         multiple
+        type="file"
+        id="file"
+        ref="file"
+        :state="true"
       >
         <template slot="file-name" slot-scope="{ names }">
           <div class="file-name" v-for="(name, key) in names" :key="key">
@@ -40,6 +44,9 @@
         </BModal>
       </div>
     </div>
+    <div v-else>
+      <p class="text-danger">Выберите файл(ы)</p>
+    </div>
   </BContainer>
 </template>
 
@@ -57,6 +64,7 @@ export default {
   components: {},
   props: {
     fileType: Number,
+    uploadImage: Array | Boolean
   },
   data() {
     return {
@@ -66,12 +74,22 @@ export default {
   },
   computed: {
     hasImage() {
-      console.log("prop", this.fileType);
-      this.$emit("image-download", this.image);
-      return !!this.image;
+      // console.log("prop", this.fileType);
+      if(this.image){
+        this.$emit("image-download", this.image);
+        return !!this.image;
+      }
     },
   },
+  mounted(){
+    if(this.uploadImage){
+     this.image = this.uploadImage;
+   }
+  },
   watch: {
+    hasImage(val) {
+      console.log(val);
+    },
     image(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.imageSrc = [];
