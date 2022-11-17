@@ -10,7 +10,7 @@
         </div>
         <div class="courses__content__wrapper">
             <div class="courses__item"
-                v-for="(course, index) in data"
+                v-for="(course, index) in unfinished"
                 :key="index"
                 :class="{'current': index == 0}"
             >
@@ -115,6 +115,14 @@ export default {
                 map[item.id] = item
                 return map
             }, {})
+        },
+        unfinished(){
+            return this.data.reduce((list, item) => {
+                const results = this.getResults(item.id)
+                if(results && results.progress === 100) return list
+                list.push(item)
+                return list
+            }, [])
         }
     },
     created() {
@@ -281,7 +289,7 @@ export default {
 
         getResults(courseId){
             const course = this.coursesMap[courseId]
-            if(!course.course_results || !course.course_results[0]) return null
+            if(!course || !course.course_results || !course.course_results[0]) return null
             return course.course_results[0]
         }
     }
