@@ -402,7 +402,7 @@ class AnalyticsController extends Controller
     /**
      * Add hours for remote and inhouse users
      */
-    public function addHours($group_id, $user_type, $value, int $old_value, $date)
+    public function addHours($group_id, $user_type, $value, $old_value, $date)
     {
         // TODO users
         $group_users = collect((new UserService)->getEmployees($group_id, $date))->pluck('id')->toArray();
@@ -424,15 +424,13 @@ class AnalyticsController extends Controller
         $marked_users = [];
 
         foreach($tts as $tt) {
-            $user = User::find($tt->user_id);
+            $user = User::withTrashed()->find($tt->user_id);
             if(!$user)continue;
             if(!$user->user_type)continue;
             if($user->user_type != $user_type) continue;
 
             if(!in_array($tt->user_id, $marked_users)) {
-                dump('total_hours: ' . $user->id . $user->name.  $tt->total_hours);
-                dump('old_value: ' . $user->id . $user->name . $old_value);
-                dump('value: ' . $user->id . $user->name . $value);
+                $old_value = is_numeric($old_value) ? (int) $old_value : 0;
                 $new_value = $tt->total_hours + $value - $old_value;
                 if($new_value < 0) $new_value = 0;
                 $tt->total_hours = $new_value; 
