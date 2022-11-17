@@ -60,7 +60,7 @@
     </nav>
     <div class="header__nav-link last" v-if="showSettings">
         <a href="/timetracking/settings">
-            <span class="_icon-nav-9 header__nav-icon"></span>
+            <span class="icon-nd-settings header__nav-icon"></span>
             <span class="header__nav-name">Настройка</span>
         </a>
     </div>
@@ -83,7 +83,7 @@ export default {
                     name: 'Профиль',
                     className: 'profile',
                     href: '/',
-                    icon: '_icon-nav-1',
+                    icon: 'icon-nd-profile',
                     height: 0
                 },
                 {
@@ -95,12 +95,18 @@ export default {
                 {
                     name: 'Структура',
                     href: '/struct',
-                    icon: '_icon-nav-3',
+                    icon: 'icon-nd-struct',
+                    height: 0
+                },
+                {
+                    name: 'База знаний',
+                    href: '/kb',
+                    icon: 'icon-nd-kdb',
                     height: 0
                 },
                 {
                     name: 'Обучение',
-                    icon: '_icon-nav-4',
+                    icon: 'icon-nd-education',
                     height: 0,
                     menu: [
                         {
@@ -122,16 +128,10 @@ export default {
                     ]
                 },
                 {
-                    name: 'База знаний',
-                    href: '/kb',
-                    icon: '_icon-nav-5',
-                    height: 0
-                },
-                {
                     hide: this.showReports,
                     name: 'Отчеты',
                     href: '/timetracking/reports',
-                    icon: '_icon-nav-6',
+                    icon: 'icon-nd-reports',
                     height: 0,
                     menu: [
                         {
@@ -181,13 +181,26 @@ export default {
                 {
                     name: 'Карта',
                     href: '/maps',
-                    icon: '_ico-nav- fas fa-map-signs',
+                    icon: 'icon-nd-map',
+                    height: 0
+                },
+                {
+                    name: 'KPI',
+                    href: '/kpi',
+                    icon: '_icon-nav-7',
+                    height: 0,
+                    hide: !this.$can('kpi_view')
+                },
+                {
+                    name: 'KK',
+                    href: '/',
+                    icon: 'icon-nd-kk',
                     height: 0
                 },
                 {
                     name: 'Частые вопросы',
                     href: '/timetracking/info',
-                    icon: '_icon-nav-7',
+                    icon: 'icon-nd-questions',
                     height: 0
                 },
                 {
@@ -199,20 +212,9 @@ export default {
                 {
                     name: 'U-calls',
                     href: '/callibro/login',
-                    img: {
-                        src: 'https://cp.callibro.org/files/img/item-8h.png',
-                        style: 'filter: grayscale(1) hue-rotate(290deg);opacity: 0.6;',
-                        className: '_ico-nav- header__nav-icon fas fa-question'
-                    },
+                    icon: 'icon-nd-u-calls',
                     height: 0,
                     hide: !this.$can('ucalls_view')
-                },
-                {
-                    name: 'KPI',
-                    href: '/kpi',
-                    icon: '_icon-nav-7',
-                    height: 0,
-                    hide: !this.$can('kpi_view')
                 },
             ],
             height: 300,
