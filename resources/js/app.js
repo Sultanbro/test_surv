@@ -104,7 +104,11 @@ Vue.use(Notifications)
 // Directive to lock scroll on html and body
 import VScrollLock from './plugins/VScrollLock'
 Vue.use(VScrollLock)
- 
+
+// reactive viewport sizes vm.$viewportSize.width && vm.$viewportSize.height
+import ViewportSize from './plugins/ViewportSize'
+Vue.use(ViewportSize)
+
 Vue.component('svod-table', require('./components/SvodTable.vue').default);//сводная таблица для аналитики
 
 Vue.component('timetracking', require('./components/timetracking.vue').default); // шапка начать день

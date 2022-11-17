@@ -300,7 +300,7 @@ class BonusUpdate extends Command
              // get users
             $users = (new UserService)->getUsersAll($group_id,
                 Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')
-            )->pluck('id')->toArray();
+            );
         }
         
         return $users->pluck('id')->toArray();
