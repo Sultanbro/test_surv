@@ -36,6 +36,7 @@
                 :icon="item.icon"
                 :img="item.img"
                 :menu="item.menu"
+                :popover="item.popover"
             />
         </template>
         <template v-if="filteredItems.more.length === 1">
@@ -58,12 +59,13 @@
             :menu="filteredItems.more"
         />
     </nav>
-    <div class="header__nav-link last" v-if="showSettings">
-        <a href="/timetracking/settings">
-            <span class="icon-nd-settings header__nav-icon"></span>
-            <span class="header__nav-name">Настройка</span>
-        </a>
-    </div>
+    <LeftSidebarItem
+        v-if="showSettings"
+        name="Настройка"
+        class="last"
+        icon="icon-nd-settings"
+        href="/timetracking/settings"
+    />
 </div>
 </template>
 
@@ -87,14 +89,16 @@ export default {
                 },
                 {
                     name: 'Новости',
-                    href: '/news',
+                    // href: '/news',
                     icon: 'icon-nd-news',
+                    popover: 'Новости - Этот функционал в разработке',
                     height: 0
                 },
                 {
                     name: 'Структура',
-                    href: '/struct',
+                    // href: '/struct',
                     icon: 'icon-nd-struct',
+                    popover: 'Структура - Этот функционал в разработке',
                     height: 0
                 },
                 {
@@ -251,7 +255,7 @@ export default {
             let h = this.items[0].height
             return this.items.reduce((res, item) => {
                 if(item.hide) return res;
-                h += item.height + 5
+                h += item.height + 7
                 if(this.height - h > 0){
                     res.visible.push(item)
                 }
@@ -380,7 +384,7 @@ export default {
 
     width: 100%;
     height: 100%;
-    padding:  1.5rem 1.2rem .5rem;
+    padding:  1rem 1.2rem 1rem;
 
     text-align: center;
     font-size: 1.2rem;
@@ -389,6 +393,9 @@ export default {
 
     transition:.3s;
     cursor:pointer;
+    &:visited{
+        color:#8DA0C1;
+    }
 }
 .header__nav-icon {
     font-size:2rem;
