@@ -295,4 +295,10 @@ export default {
     opacity: 0.5;
     pointer-events: none;
 }
+
+.courses__item{
+    &:hover{
+        box-shadow: inset 0 0 5px #8FAF00;
+    }
+}
 </style>
