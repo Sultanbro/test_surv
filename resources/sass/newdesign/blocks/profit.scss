@@ -49,7 +49,7 @@
   z-index: 1;
 }
 .profit__inner__left{
-  flex: 0 0 57rem;
+  flex: 1 1 57rem;
   padding: 2.5rem;
   background-color: #EDF1F9;
   border-radius: 1.5rem 0 0 0;
@@ -69,7 +69,9 @@
 }
 .profit__inner-text{
   font-size:1.3rem;
+  line-height: 1.3;
   color:#5B6166;
+  white-space: pre-wrap;
 
   p{
     font-size:inherit;
@@ -115,7 +117,7 @@
 }
 
 .profit__inner-right{
-  flex: 0 0 57rem;
+  flex: 1 1 57rem;
   padding: 2.5rem 2rem 2.5rem 2.5rem;
   background-color: #F8F9FD;
   border-radius:0 1.5rem 0 0;
@@ -515,10 +517,10 @@
 
 @media(max-width:1250px){
   .profit__inner-right{
-    flex: 0 1 57rem
+    flex: 1 1 57rem
   }
   .profit__inner__left{
-    flex: 0 1 57rem;
+    flex: 1 1 57rem;
   }
 }
 

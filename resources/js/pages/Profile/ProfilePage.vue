@@ -1,5 +1,5 @@
 <template>
-<div class="">
+<div id="page-profile" class="">
     <div class="intro content">
         <new-intro-top
             :courses="intro['courses']"
@@ -103,3 +103,14 @@ export default {
     }
 };
 </script>
+
+<style lang="scss">
+#page-profile{
+    padding-right: 2rem;
+}
+@media(max-width:1910px){
+    #page-profile{
+        padding-right: 0;
+    }   
+}
+</style>
