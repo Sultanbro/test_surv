@@ -63,9 +63,11 @@
             <BFormGroup class="file-type">
                 <UploadFile
                         @image-download="formFile"
+                        @images-remove="getRemoveFiles"
                         v-if="form.awardTypeId === 1"
                         :fileType="form.awardTypeId"
                         :uploadImage="form.imagesData"
+                        :imagesPath="form.images"
                         required
                 />
 
@@ -73,16 +75,17 @@
                         @image-download="formFile"
                         v-if="form.awardTypeId === 2"
                         :fileType="form.awardTypeId"
-                        :sertificate="form.formFile"
+                        :sertificate="form.imagesData"
+                        :imagesPath="form.images"
                         required
                 />
 
-<!--                <FormUsers v-if="form.fileType === 3" required/>-->
+                <!--                <FormUsers v-if="form.fileType === 3" required/>-->
                 <superselect
                         v-if="form.awardTypeId === 3"
                         class="w-50 mb-4"
                         :key="1"
-                        :select_all_btn="true" />
+                        :select_all_btn="true"/>
             </BFormGroup>
 
             <BFormGroup id="input-group-4" switches>
@@ -115,6 +118,7 @@
             return {
                 userName: 'Тимур Хайруллин',
                 selectFileType: true,
+                removeImages: null,
                 form: {
                     id: null,
                     name: '',
@@ -133,7 +137,9 @@
                 if (this.form.awardTypeId) {
                     let loader = this.$loading.show();
                     this.formFile;
-                    // await this.uploadFiles();
+                    this.getRemoveFiles;
+                    await this.removeFiles();
+                    await this.uploadFiles();
                     if (this.item) {
                         this.$emit('update-award', this.form);
                     } else {
@@ -155,7 +161,39 @@
                 this.form.imagesData = val;
                 return val;
             },
-            async uploadFiles(){
+            getRemoveFiles(files) {
+                this.removeImages = null;
+                this.removeImages = files;
+                return files;
+            },
+            async removeFiles() {
+                if(this.removeImages !== null){
+                    const imagesObj = [];
+                    for (let i = 0; i < this.removeImages.length; i++) {
+                        const dataObj = {
+                            path: '/upload/sertificates/' + this.removeImages[i].name,
+                            format: this.removeImages[i].type
+                        };
+                        imagesObj.push(dataObj);
+                    }
+
+                    await this.axios
+                        .post("/delete.php", {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            data: JSON.stringify(imagesObj)
+                        })
+                        .then(function (response) {
+                            console.log('deleted');
+                        })
+                        .catch(function (error) {
+                            console.log("error");
+                            console.log(error);
+                        });
+                }
+            },
+            async uploadFiles() {
                 let formData = new FormData();
                 for (let i = 0; i < this.form.imagesData.length; i++) {
                     formData.append("file[]", this.form.imagesData[i]);
@@ -165,25 +203,27 @@
                     };
                     this.form.images.push(dataObj);
                 }
-                await this.axios
-                    .post("/upload.php", formData, {
-                        headers: {
-                            "Content-Type":
-                                "multipart/form-data; charset=utf-8; boundary=" +
-                                Math.random().toString().substr(2),
-                        },
-                    })
-                    .then(function (response) {
-                        if (!response.data) {
-                            console.log("File not uploaded.");
-                        } else {
-                            console.log("File uploaded successfully.");
-                        }
-                    })
-                    .catch(function (error) {
-                        console.log("error");
-                        console.log(error);
-                    });
+                if (JSON.stringify(this.form.images) !== JSON.stringify(this.item.images)) {
+                    await this.axios
+                        .post("/upload.php", formData, {
+                            headers: {
+                                "Content-Type":
+                                    "multipart/form-data; charset=utf-8; boundary=" +
+                                    Math.random().toString().substr(2),
+                            },
+                        })
+                        .then(function (response) {
+                            if (!response.data) {
+                                console.log("File not uploaded.");
+                            } else {
+                                console.log("File uploaded successfully.");
+                            }
+                        })
+                        .catch(function (error) {
+                            console.log("error");
+                            console.log(error);
+                        });
+                }
             }
         },
         mounted() {

@@ -45,6 +45,8 @@
             <h4>Пока нет ни одного сертификата.</h4>
         </div>
 
+<!--        <Draggable/>-->
+
         <EditAwardSidebar
                 v-if="showEditAwardSidebar"
                 :open.sync="showEditAwardSidebar"
@@ -67,7 +69,7 @@
             return {
                 showEditAwardSidebar: false,
                 item: false,
-                tableItems: [],
+                tableItems: []
             };
         },
         methods: {
@@ -97,17 +99,28 @@
                     }
                 });
             },
-            remove(item) {
+            async remove(item) {
+                let loader = this.$loading.show();
+                await this.removeFiles(item);
                 this.tableItems = this.tableItems.filter(i => i.id !== item.id);
+                loader.hide();
             },
-            loglog() {
-                console.log(this.tableItems);
-            }
-        },
-        watch: {
-            tableItems(val){
-                console.log(val);
-            }
+            async removeFiles(item) {
+                await this.axios
+                    .post("/delete.php", {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        data: JSON.stringify(item.images)
+                    })
+                    .then(function (response) {
+                        console.log('deleted');
+                    })
+                    .catch(function (error) {
+                        console.log("error");
+                        console.log(error);
+                    });
+            },
         }
     };
 </script>

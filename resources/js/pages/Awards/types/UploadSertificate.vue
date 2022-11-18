@@ -28,19 +28,11 @@
     </div>
     <div v-if="hasImage" class="sertificate-prewiev">
       <div class="sertificate-modal">
-        <BImg :src="imageSrc" class="mb-3 img" fluid block rounded></BImg>
-        <BModal id="modal-1" title="BootstrapVue" class="w-80%">
+        <BImg :src="imageSrc" v-b-modal="'modal-constructor'" class="mb-3 img" fluid block rounded></BImg>
+        <BModal id="modal-constructor" title="Контсруктор сертификата" size="xl" centered>
           <UploadSertificateModal :img="imageSrc" :sertificate="sertificate" />
         </BModal>
       </div>
-      <BButton
-        v-if="hasImage"
-        variant="primary"
-        class="ml-3 edit-sertificate-btn"
-        v-b-modal.modal-1
-        @click="uploadFile"
-        >Разметить</BButton
-      >
     </div>
   </BContainer>
 </template>
@@ -96,31 +88,6 @@ export default {
     },
   },
   methods: {
-    uploadFile() {
-      this.file = this.$refs.file.files[0];
-      let formData = new FormData();
-      formData.append("file", this.file);
-      this.axios
-        .post("/upload.php", formData, {
-          headers: {
-            "Content-Type":
-              "multipart/form-data; charset=utf-8; boundary=" +
-              Math.random().toString().substr(2),
-          },
-        })
-        .then(function (response) {
-          if (!response.data) {
-            alert("File not uploaded.");
-          } else {
-            alert("File uploaded successfully.");
-            console.log(response.data, "data");
-          }
-        })
-        .catch(function (error) {
-          console.log("error");
-          console.log(error);
-        });
-    },
     clearImage() {
       this.image = null;
     },
@@ -190,4 +157,15 @@ export default {
 .clear-btn {
   height: 40px;
 }
+.modal-body{
+  max-height: calc(100vh - 130px) !important;
+  min-height: calc(100vh - 130px) !important;
+  overflow: auto !important;
+}
+.modal-dialog{
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
 </style>
