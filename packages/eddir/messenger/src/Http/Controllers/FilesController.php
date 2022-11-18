@@ -39,23 +39,22 @@ class FilesController {
             return response()->json( [ 'message' => 'File is not valid: ' ], 400 );
         }
 
-        $disk = \Storage::disk('s3');
-
         $fileModel            = new MessengerFile();
-        $fileName             = time() . '_' . $request->file->getClientOriginalName();
-        $fileModel->name      = $fileName;
-        $fileModel->file_path = $disk->putFileAs('messages', $request->file, $fileName);
-        $fileModel->thumbnail_path = $fileModel->file_path;
+        $fileModel->name      = time() . '_' . $file->getClientOriginalName();
+        $fileModel->file_path = $file->storeAs( 'messenger', $fileModel->name );
+
         // if file is image, create thumbnail
-        // if ( in_array( $file->getMimeType(), [ 'image/jpeg', 'image/png', 'image/gif' ] ) ) {
-        //     $fileModel->thumbnail_path = '/storage/uploads/thumb_' . $fileName;
-        //     $this->resize_crop_image(
-        //         350,
-        //         200,
-        //         Storage::disk('s3')->path($fileModel->file_path),
-        //         Storage::disk('s3')->path('messages/' . $fileName)
-        //     );
-        // }
+        if ( in_array( $file->getMimeType(), [ 'image/jpeg', 'image/png', 'image/gif' ] ) ) {
+
+            $tmpFile = tempnam( sys_get_temp_dir(), $fileModel->name );
+            $this->resize_crop_image( 350, 200, $file->getRealPath(), $tmpFile );
+
+            // upload thumbnail to storage
+            $fileModel->thumbnail_path = 'messenger/thumbs/thumb_' . $fileModel->name;
+            Storage::put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents($tmpFile), 'thumbs' );
+
+            unlink( $tmpFile );
+        }
 
         $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ), $fileModel );
         // set message as read
@@ -64,12 +63,6 @@ class FilesController {
         if ( ! $message->files ) {
             return response()->json( [ 'message' => 'File is not saved: ' ], 400 );
         }
-
-        $message->files['file_path'] = $disk->temporaryUrl(
-            $message->files['file_path'], now()->addMinutes(360)
-        );
-
-        $message->files['thumbnail_path'] = $message->files['file_path'];
 
         return response()->json( $message );
     }
@@ -105,17 +98,17 @@ class FilesController {
         $dst_img = imagecreatetruecolor( $max_width, $max_height );
         $src_img = $image_create( $source_file );
 
-        $width_new  = $height * $max_width / $max_height;
-        $height_new = $width * $max_height / $max_width;
+        $width_new  = (int) ($height * $max_width / $max_height);
+        $height_new = (int) ($width * $max_height / $max_width);
         //if the new width is greater than the actual width of the image, then the height is too large and the rest cut off, or vice versa
         if ( $width_new > $width ) {
             //cut point by height
-            $h_point = ( ( $height - $height_new ) / 2 );
+            $h_point = (int) ( ( $height - $height_new ) / 2 );
             //copy image
             imagecopyresampled( $dst_img, $src_img, 0, 0, 0, $h_point, $max_width, $max_height, $width, $height_new );
         } else {
             //cut point by width
-            $w_point = ( ( $width - $width_new ) / 2 );
+            $w_point = (int) ( ( $width - $width_new ) / 2 );
             imagecopyresampled( $dst_img, $src_img, 0, 0, $w_point, 0, $max_width, $max_height, $width_new, $height );
         }
 

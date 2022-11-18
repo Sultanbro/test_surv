@@ -53,7 +53,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .messenger__modal-backdrop {
   position: fixed;
   top: 0;

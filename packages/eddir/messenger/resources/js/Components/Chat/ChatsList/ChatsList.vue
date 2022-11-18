@@ -108,7 +108,6 @@ export default {
   min-width: 280px;
   max-width: 500px;
   position: relative;
-  background: #fff;
   height: 100%;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
