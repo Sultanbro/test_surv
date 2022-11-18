@@ -37,7 +37,9 @@
 
 
         <sidebars></sidebars>
-       
+        
+        <chat-app></chat-app>
+
         <!-- Main -->
         <div class="wrapper">
 
