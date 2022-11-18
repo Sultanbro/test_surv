@@ -2,9 +2,12 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\ValidationException;
 
 class StoreAwardRequest extends FormRequest
 {
@@ -26,9 +29,23 @@ class StoreAwardRequest extends FormRequest
     public function rules()
     {
         return [
-            'award_type_id'  => 'required|integer',
-            'course_id'      => 'integer',
+            'award_type_id'  => 'integer|required',
+            'course_ids'      => 'array|required',
+            'name'      => 'required|string',
+            'description'      => 'required|string',
+            'hide'      => 'required|boolean',
+            'styles'      => 'string',
             'file'          => ['required', File::types(['jpg', 'png', 'pdf'])->max(2048)]
         ];
     }
+    protected function failedValidation(Validator $validator)
+    {
+        $response = new JsonResponse([
+            'success' => false,
+            'error' => $validator->errors()
+        ], 422);
+
+        throw new ValidationException($validator, $response);
+    }
+
 }

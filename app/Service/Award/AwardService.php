@@ -7,6 +7,7 @@ use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
 use App\Models\Award;
 use App\Models\AwardType;
+use App\Models\Course;
 use App\Repositories\AwardRepository;
 use App\Repositories\AwardTypeRepository;
 use App\Repositories\CoreRepository;
@@ -66,6 +67,8 @@ class AwardService
         }
     }
 
+
+
     /**
      * @param $request
      * @param AwardType $awardType
@@ -89,13 +92,20 @@ class AwardService
     public function storeAward(StoreAwardRequest $request)
     {
         try {
+
             $success = Award::query()->create([
                 'award_type_id' => $request->input('award_type_id'),
-                'course_id' => $request->input('course_id'),
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'hide' => $request->input('hide'),
+                'styles' => $request->input('styles'),
                 'format'    => $request->file('file')->extension(),
                 'icon'      => $request->input('icon'),
                 'path'      => $this->saveAwardFile($request)['relative']
             ]);
+
+            Course::whereIn('id', $request->input('course_ids'))
+                ->update(['award_id' => $success->id]);
 
             return response()->success($success);
         } catch (Exception $exception) {

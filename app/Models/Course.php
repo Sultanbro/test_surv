@@ -8,6 +8,7 @@ use App\Models\CourseModel;
 use App\Models\Videos\VideoPlaylist;
 use App\Models\Books\Book;
 use App\Models\Videos\Video;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,6 +24,7 @@ class Course extends Model
     protected $fillable = [
         'name',
         'user_id',
+        'award_id',
         'img',
         'text',
         'order',
@@ -31,15 +33,12 @@ class Course extends Model
     ];
 
     /**
-     * Отношение Один к одному.
-     * Главная таблица.
-     *
-     * course->awards.
-     * @return hasOne
+     * У курса есть одна награда
+     * @return BelongsTo
      */
-    public function award(): HasOne
+    public function award(): BelongsTo
     {
-        return $this->hasOne(Award::class, 'course_id');
+        return $this->belongsTo(Award::class, 'award_id');
     }
 
     public function items()
