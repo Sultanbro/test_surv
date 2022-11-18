@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Award extends Model
@@ -15,9 +16,13 @@ class Award extends Model
 
     protected $fillable = [
         'award_type_id',
-        'course_id',
         'format',
-        'path'
+        'icon',
+        'path',
+        'styles',
+        'hide',
+        'name',
+        'description',
     ];
 
     protected $dates = [
@@ -33,7 +38,14 @@ class Award extends Model
     {
         return $this->belongsTo(AwardType::class, 'award_type_id');
     }
-
+    /**
+     * Одна награда может принадлежать нескольким курсам
+     * @return HasMany
+     */
+    public function courses(): HasMany
+    {
+        return $this->hasMany(Award::class);
+    }
     /**
      * @return BelongsToMany
      */
