@@ -51,7 +51,7 @@ class FilesController {
 
             // upload thumbnail to storage
             $fileModel->thumbnail_path = 'messenger/thumbs/thumb_' . $fileModel->name;
-            Storage::put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents($tmpFile), 'thumbs' );
+            Storage::disk('s3')->put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents($tmpFile), 'thumbs' );
 
             unlink( $tmpFile );
         }

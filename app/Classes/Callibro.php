@@ -2,6 +2,7 @@
 
 namespace App\Classes;
 
+use App\User;
 use DB;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -80,70 +81,58 @@ class Callibro
      */
     public static function getWorkedHours($user_email, $day)
     {
-
+        // get account
         $account = DB::connection('callibro')->table('call_account')->where('owner_uid', 5)->where('email', $user_email)->first();
-        
-        $full_time = 0; // общее отработанное время
-      
-        if($account) {
-            $call_account_id = $account->id;
 
-            $ready_sec = 0; // время в статусе Готов
-            $fill_sec = 0;  // время заполнения анкеты
-            $call_sec = 0;  // время разговора
-            $pause_sec = 0;
-            
+        // get bonus seconds for System inaccuracy in timetracking
+        $user = User::withTrashed()->where('email', $user_email)->first();
+        
+        $bonusFactor = $user->full_time == 1 ? 10 : 5; 
+
+        // общее отработанное время
+        $workedMinutes = 0; 
+        
+        if($account) {
+
             $calls = DB::connection('callibro')->table('calls')
                     ->select('call_account_id', DB::raw('SUM(calls.billsec) as billsec_sum'))
                     ->whereDate('start_time', $day)
                     ->where('billsec', '<', 1000)
-                    ->where('call_account_id', $call_account_id)
+                    ->where('call_account_id', $account->id)
                    // ->where('cause', '!=', 'SYSTEM_SHUTDOWN')
                     ->first();
                     
-            $call_sec = $calls->billsec_sum;
-
             $reports = DB::connection('callibro')->table('call_account_actions')
                     ->select(
                         DB::raw('SUM(state_duration) as state_duration'),
                         DB::raw('COUNT(state_duration) as count'),
                         'account_id',
                         'operator_status_id',
-                        'state')
-                    ->where('account_id', $call_account_id)
+                        'state'
+                    )
+                    ->where('account_id', $account->id)
                     //->whereDate('created_at', $day)
                     ->where('created_at', '>=', $day . ' 09:00:00')
                     ->where('created_at', '<=', $day . ' 18:00:00')
-                    ->groupBy('state')->get();
+                    ->groupBy('state')
+                    ->get();
 
-            // $first_time = DB::connection('callibro')->table('call_account_actions')
-            //         ->select('created_at')
-            //         ->where('account_id', $call_account_id)
-            //         ->where('created_at', '>=', $day . ' 09:00:00')
-            //         ->where('created_at', '<=', $day . ' 18:00:00')
-            //         ->orderBy('created_at', 'asc')
-            //         ->first();
-
-            // $last_time = DB::connection('callibro')->table('call_account_actions')
-            //         ->select('created_at')
-            //         ->where('account_id', $call_account_id)
-            //         ->where('created_at', '>=', $day . ' 09:00:00')
-            //         ->where('created_at', '<=', $day . ' 18:00:00')
-            //         ->orderBy('created_at', 'desc')
-            //         ->first();
-
-
-            // $all_minutes = (Carbon::parse($last_time->created_at)->timestamp - Carbon::parse($first_time->created_at)->timestamp);
-
+            // count worked seconds
+            $ready_sec = 0; 
+            $fill_sec = 0; 
+            $pause_sec = 0;
             $additional_minutes = 0;
 
             foreach($reports as $report) {
+
                 if($report->state == 'ready') { 
                     $ready_sec = $report->state_duration;
                 }
+
                 if($report->state == 'fill') { 
                     $fill_sec = $report->state_duration;
                 }
+
                 if($report->state == 'away') { 
                     $away_sec = $report->state_duration;
                 }
@@ -152,15 +141,22 @@ class Callibro
                     $pause_sec = $report->state_duration;
                 }
 
-                //$additional_minutes += $report->count * 7;
+                $additional_minutes += $report->count * $bonusFactor;
             }
-          
-           $full_time = (int) round(($fill_sec + $ready_sec + $call_sec + $pause_sec + $additional_minutes) / 60); // отработанное время в минутах
-            //$full_time = (int) round(($all_minutes) / 60); // отработанное время в минутах
+            
+            $workedSeconds = (
+                $fill_sec +  // время заполнения анкеты
+                $ready_sec + // время в статусе Готов
+                $calls->billsec_sum + // время разговора
+                $pause_sec + // время в статусе Пауза
+                $additional_minutes
+            );
+
+            $workedMinutes = (int) round($workedSeconds / 60); // отработанное время в минутах
             
         } 
 
-        return $full_time;
+        return $workedMinutes;
     }
 
     /**

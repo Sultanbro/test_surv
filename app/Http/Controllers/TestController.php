@@ -44,7 +44,8 @@ class TestController extends Controller {
 
 
 	public function test() { 
-		return empty('ds');
+		$a = (new Bitrix)->getCalls(142876, 0 ,'ASC', 'all', 10, '2022-11-16', '2022-11-16');
+		dd($a);
 	}  
 
 	private function getSegmentAndSaveForLead($id) {
