@@ -268,7 +268,7 @@ export default {
             let h = this.items[0].height
             return this.items.reduce((res, item) => {
                 if(item.hide) return res;
-                h += item.height + 7
+                h += item.height + 6
                 if(this.height - h > 0){
                     res.visible.push(item)
                 }
@@ -285,9 +285,6 @@ export default {
     mounted(){
         this.onResize()
         new ResizeObserver(this.onResize).observe(this.$refs.nav)
-    },
-    created(){
-        console.log('items', this.items)
     }
 };
 </script>

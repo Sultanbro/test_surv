@@ -167,23 +167,23 @@ export default {
             
             this.currentYear = this.$moment().format('YYYY') //Установка выбранного года 
             this.monthInfo.currentYear = this.currentYear;
-        }, 
-
+        },
     }
 };
 </script>
 
 <style lang="scss">
 .index__table{
+    >.tabs{
+        margin-top: -3rem;
+    }
     .nav-tabs{
-        gap: 4rem;
-        padding-bottom: 2rem;
-        border-top: 0.1rem solid #ededed;
-        border-bottom: none;
+        gap: 0 4rem;
+        padding-bottom: 0.5rem;
+        border: none;
         .nav-link{
             &.active{
                 border: none;
-                border-top: 0.4rem solid #ED2353;
                 color: #ED2353;
                 background: none;
             }
@@ -208,6 +208,17 @@ export default {
 
         &:hover{
             color: #ED2353;
+        }
+    }
+    .index__tab{
+        padding-top: 0;
+    }
+}
+
+@media(max-width:440px){
+    .index__table{
+        >.tabs{
+            margin-top: -2rem;
         }
     }
 }
