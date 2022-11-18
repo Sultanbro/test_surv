@@ -5,6 +5,7 @@ namespace Eddir\Messenger\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class MessengerFile extends Model {
     use HasFactory;
@@ -17,5 +18,13 @@ class MessengerFile extends Model {
 
     public function message(): BelongsTo {
         return $this->belongsTo( MessengerMessage::class, 'message_id' );
+    }
+
+    public function getFilePathAttribute( $value ) {
+        return $value ? Storage::url( $value ) : null;
+    }
+
+    public function getThumbnailPathAttribute( $value ) {
+        return $value ? Storage::url( $value ) : null;
     }
 }

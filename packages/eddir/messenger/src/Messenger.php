@@ -90,7 +90,6 @@ class Messenger {
         if ( $chat->private ) {
             // get second user in private chat
             $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
-            
 
             $chat->title = 'Безымянный';
             $chat->image = '';
@@ -101,6 +100,7 @@ class Messenger {
             }
 
         }
+
         if ( empty( $chat->image ) ) {
             $chat->image = config( 'messenger.user_avatar.default' ) ?? asset( 'vendor/messenger/images/users.png' );
         }
@@ -206,27 +206,14 @@ class Messenger {
      * @return Collection
      */
     public function fetchMessages( int $chatId, int $page = 0, int $perPage = 10 ): Collection {
-
-        $disk = \Storage::disk('s3');
-
-        $messages = MessengerMessage::query()
-                ->with( 'files' )
-                ->where( 'chat_id', $chatId )
-                ->where( 'deleted', false )
-                ->orderBy( 'created_at', 'desc' )
-                ->skip( $page * $perPage )
-                ->take( $perPage )
-                ->get();
-
-        foreach ($messages as $key => $message) {
-            if($message->files && $message->files['file_path']) {
-                $message->files['file_path'] = $disk->temporaryUrl(
-                    $message->files['file_path'], now()->addMinutes(360)
-                );
-            }
-        }
-
-        return $messages;
+        return MessengerMessage::query()
+                               ->with( 'files' )
+                               ->where( 'chat_id', $chatId )
+                               ->where( 'deleted', false )
+                               ->orderBy( 'created_at', 'desc' )
+                               ->skip( $page * $perPage )
+                               ->take( $perPage )
+                               ->get();
     }
 
     /**
@@ -325,10 +312,9 @@ class Messenger {
      * @param int $chatId
      * @param int $userId
      * @param string $body
+     * @param null $file
      *
      * @return MessengerMessage
-     * @throws ApiErrorException
-     * @throws PusherException
      * @throws Exception
      */
     public function sendMessage( int $chatId, int $userId, string $body, $file = null ): MessengerMessage {

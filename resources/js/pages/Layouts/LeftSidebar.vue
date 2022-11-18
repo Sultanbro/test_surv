@@ -36,6 +36,7 @@
                 :icon="item.icon"
                 :img="item.img"
                 :menu="item.menu"
+                :popover="item.popover"
             />
         </template>
         <template v-if="filteredItems.more.length === 1">
@@ -58,12 +59,13 @@
             :menu="filteredItems.more"
         />
     </nav>
-    <div class="header__nav-link last" v-if="showSettings">
-        <a href="/timetracking/settings">
-            <span class="icon-nd-settings header__nav-icon"></span>
-            <span class="header__nav-name">Настройка</span>
-        </a>
-    </div>
+    <LeftSidebarItem
+        v-if="showSettings"
+        name="Настройка"
+        class="last"
+        icon="icon-nd-settings"
+        href="/timetracking/settings"
+    />
 </div>
 </template>
 
@@ -78,33 +80,72 @@ export default {
     props: {},
     data: function () {
         return {
-            items: [
+            height: 300,
+            fields: [],
+            token: Laravel.csrfToken,
+        };
+    },
+    methods: {
+        onResize(){
+            this.height = this.$refs.nav.offsetHeight
+        }
+    },
+    computed: {
+        showSettings(){
+            return this.$can('settings_view')
+            || this.$can('users_view')
+            || this.$can('positions_view')
+            || this.$can('groups_view')
+            || this.$can('fines_view')
+            || this.$can('notifications_view')
+            || this.$can('permissions_view')
+            || this.$can('checklists_view')
+        },
+        showReports(){
+            return this.$can('top_view')
+                || this.$can('tabel_view')
+                || this.$can('entertime_view')
+                || this.$can('hr_view')
+                || this.$can('analytics_view')
+                || this.$can('salaries_view')
+                || this.$can('quality_view')
+        },
+        showEducation(){
+            return this.$can('books_view')
+                || this.$can('videos_view')
+                || this.$can('courses_view')
+        },
+        items(){
+            return [
                 {
                     name: 'Профиль',
-                    className: 'profile',
                     href: '/',
                     icon: 'icon-nd-profile',
                     height: 0
                 },
                 {
                     name: 'Новости',
-                    href: '/news',
-                    icon: '_icon-nav-2',
+                    // href: '/news',
+                    icon: 'icon-nd-news',
+                    popover: 'Новости - Этот функционал в разработке',
                     height: 0
                 },
                 {
                     name: 'Структура',
-                    href: '/struct',
+                    // href: '/struct',
                     icon: 'icon-nd-struct',
+                    popover: 'Структура - Этот функционал в разработке',
                     height: 0
                 },
                 {
                     name: 'База знаний',
                     href: '/kb',
                     icon: 'icon-nd-kdb',
-                    height: 0
+                    height: 0,
+                    hide: !this.$can('kb_view')
                 },
                 {
+                    hide: !this.showEducation,
                     name: 'Обучение',
                     icon: 'icon-nd-education',
                     height: 0,
@@ -112,12 +153,14 @@ export default {
                         {
                             name: 'Читать книги',
                             icon: 'icon-nd-books',
-                            href: '/admin/upbooks'
+                            href: '/admin/upbooks',
+                            hide: !this.$can('books_view')
                         },
                         {
                             name: 'Смотреть видео',
                             icon: 'icon-nd-video',
-                            href: '/video_playlists'
+                            href: '/video_playlists',
+                            hide: !this.$can('videos_view')
                         },
                         {
                             name: 'Курсы',
@@ -128,7 +171,7 @@ export default {
                     ]
                 },
                 {
-                    hide: this.showReports,
+                    hide: !this.showReports,
                     name: 'Отчеты',
                     href: '/timetracking/reports',
                     icon: 'icon-nd-reports',
@@ -187,7 +230,7 @@ export default {
                 {
                     name: 'KPI',
                     href: '/kpi',
-                    icon: '_icon-nav-7',
+                    icon: 'icon-nd-kpi',
                     height: 0,
                     hide: !this.$can('kpi_view')
                 },
@@ -195,19 +238,22 @@ export default {
                     name: 'KK',
                     href: '/',
                     icon: 'icon-nd-kk',
-                    height: 0
+                    height: 0,
+                    hide: true
                 },
                 {
                     name: 'Частые вопросы',
                     href: '/timetracking/info',
                     icon: 'icon-nd-questions',
-                    height: 0
+                    height: 0,
+                    hide: !this.$can('faq_view')
                 },
                 {
                     name: 'Депре мирование',
                     href: '/timetracking/fines',
-                    icon: '_icon-nav-8',
-                    height: 0
+                    icon: 'icon-nd-deduction',
+                    height: 0,
+                    hide: !this.$can('penalties_view')
                 },
                 {
                     name: 'U-calls',
@@ -216,42 +262,13 @@ export default {
                     height: 0,
                     hide: !this.$can('ucalls_view')
                 },
-            ],
-            height: 300,
-            fields: [],
-            token: Laravel.csrfToken,
-        };
-    },
-    methods: {
-        onResize(){
-            this.height = this.$refs.nav.offsetHeight
-        }
-    },
-    computed: {
-        showSettings(){
-            return this.$can('settings_view')
-            || this.$can('users_view')
-            || this.$can('positions_view')
-            || this.$can('groups_view')
-            || this.$can('fines_view')
-            || this.$can('notifications_view')
-            || this.$can('permissions_view')
-            || this.$can('checklists_view')
-        },
-        showReports(){
-            return this.$can('top_view')
-                || this.$can('tabel_view')
-                || this.$can('entertime_view')
-                || this.$can('hr_view')
-                || this.$can('analytics_view')
-                || this.$can('salaries_view')
-                || this.$can('quality_view')
+            ]
         },
         filteredItems(){
             let h = this.items[0].height
             return this.items.reduce((res, item) => {
                 if(item.hide) return res;
-                h += item.height + 5
+                h += item.height + 6
                 if(this.height - h > 0){
                     res.visible.push(item)
                 }
@@ -287,6 +304,7 @@ export default {
     opacity:1;
     visibility: visible;
     transition: all 0.5s;
+    // box-shadow: -0.1rem 0px 0.5rem rgba(0, 0, 0, 0.25);
 
     &.closed{
         transform:translateX(-30px);
@@ -349,36 +367,16 @@ export default {
     z-index: auto;
     transition:.3s;
 
-    & > a{
-        padding:  1.5rem 1.2rem .5rem;
-        width: 100%;
-        height: 100%;
-        font-size:inherit;
-        font-weight: inherit;
-        display: flex;
-        transition:.3s;
-
-        color:inherit;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap:.7rem;
-    }
-
-    .header__nav-icon {
-        font-size:2rem;
-        &::before{
-            transition:.2s;
-        }
-    }
     &:hover,
     &.opened{
-    & > a{
-        background: #608EE9;
-        font-weight:600;
-        color:#fff;
-    }
-        & .header__menu{
+        .header__nav-link-a{
+            background: #608EE9;
+            color: #fff;
+        }
+        .header__nav-name{
+            color: #fff;
+        }
+        .header__menu{
             opacity:1;
             visibility: visible;
         }
@@ -391,22 +389,49 @@ export default {
         margin-top: auto;
     }
 }
+.header__nav-link-a{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:.7rem;
+
+    width: 100%;
+    height: 100%;
+    padding:  1rem 1.2rem 1rem;
+
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color:#8DA0C1;
+
+    transition:.3s;
+    cursor:pointer;
+    &:visited{
+        color:#8DA0C1;
+    }
+}
+.header__nav-icon {
+    font-size:2rem;
+    &::before{
+        transition:.2s;
+    }
+}
 
 .header__menu{
     display: flex;
     flex-direction: column;
     width: 25rem;
     padding-top: 0;
-    border-radius: 0.3rem;
+    border-radius: 0 1rem 1rem 0;
 
     position: fixed;
     z-index: 1005;
     left: 8rem;
 
-    background: #F8FAFB;
-    color: #62788B;
+    background: #fff;
+    color: #657A9F;
     font-size: 1.3rem;
-    box-shadow: 0 4px 4px 0 rgba(0,0,0,.25);
+    box-shadow: 1rem 0 2rem rgba(0, 0, 0, 0.15);
     opacity: 0;
     visibility: hidden;
     transition: .5s;
@@ -434,26 +459,37 @@ export default {
         display: flex;
         gap:1rem;
         align-items: center;
-        cursor:pointer;
+
         height: 3.4rem;
         padding-right: 3rem;
         padding-left: 2rem;
-        background: #f6f7fd;
+
+        background: #fff;
+        cursor:pointer;
+        
+        &:first-of-type{
+            border-radius: 0 1rem 0 0;
+        }
+        
+        &:last-of-type{
+            border-radius: 0 0 1rem 0;
+        }
 
         &:hover{
-            background: #EBF1FF;
-            // .menu__item-icon{
-            //     color: #156AE8;
-            // }
+            background: #FAFCFD;
+            .menu__item-title,
+            .menu__item-icon{
+                color: #156AE8;
+            }
         }
         &-title{
-            color:#62788B;
+            color:#657A9F;
             padding: 1rem 0;
         }
     }
 
     .menu__item-icon{
-        color: #62788B;
+        color: #A6B7D4;
     }
 }
 

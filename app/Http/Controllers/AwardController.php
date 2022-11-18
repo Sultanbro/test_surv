@@ -75,6 +75,7 @@ class AwardController extends Controller
      */
     public function store(StoreAwardRequest $request)
     {
+
         $this->access();
         return $this->awardService->storeAward($request);
     }

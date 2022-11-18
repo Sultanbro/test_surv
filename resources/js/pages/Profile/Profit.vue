@@ -6,49 +6,52 @@
     <div class="profit__subtitle subtitle">
         Информация, которая может быть полезна для Вашего карьерного роста
     </div>
-  <div class="row  profit__inner mr-1 ml-1">
-    <div class="col col-md-6 profit__carousel">
-        <div  class="profit__inner-item left-slide" v-for="(slide, i) in data.groups" :key="i">
-          <div  class="profit__inner__left">
-
-            <div class="profit__left-wrapper">
-              <div class="profit__inner-title">
-                {{ slide.title }}
-              </div>
-              <a href="#">
-                <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.'">
-              </a>
+    <div class="row profit__inner mr-1 ml-1">
+        <div class="col col-md-6 profit__carousel">
+            <div  class="profit__inner-item left-slide" v-for="(slide, i) in data.groups" :key="i">
+                <div  class="profit__inner__left">
+                    <div class="profit__left-wrapper">
+                        <div class="profit__inner-title">
+                            {{ slide.title }}
+                        </div>
+                        <a href="#">
+                            <img
+                                src="/images/dist/profit-info.svg"
+                                alt="info icon"
+                                v-b-popover.hover.right.html="'Тут описано именно то, за что в Вашем отделе оплачивается работа'"
+                            >
+                        </a>
+                    </div>
+                    <div class="profit__inner-text" v-html="slide.text"></div>
+                </div>
+                <div class="profit__arrows">
+                    <a href="#" class="profit__prev"></a>
+                    <a href="#" class="profit__next"></a>
+                </div>
             </div>
-            <div class="profit__inner-text" v-html="slide.text"></div>
-
         </div>
-          <div class="profit__arrows">
-            <a href="#" class="profit__prev"></a>
-            <a href="#" class="profit__next"></a>
-          </div>
-      </div>
-
-    </div>
-    <div class="col col-md-6 profit__carousel ">
-        <div  class="profit__inner-item right-slide" v-for="(slide, i) in data.positions" :key="i">
-          <div  class="profit__inner-right">
-            <div class="profit__inner-title">
-              {{ slide.title }}
-              <a href="#">
-                <img src="/images/dist/profit-info.svg" alt="info icon" v-b-popover.hover.right.html="'У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.'">
-              </a>
+        <div class="col col-md-6 profit__carousel ">
+            <div  class="profit__inner-item right-slide" v-for="(slide, i) in data.positions" :key="i">
+                <div  class="profit__inner-right">
+                    <div class="profit__inner-title">
+                        {{ slide.title }}
+                        <a href="#">
+                            <img
+                                src="/images/dist/profit-info.svg"
+                                alt="info icon"
+                                v-b-popover.hover.right.html="'У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.'"
+                            >
+                        </a>
+                    </div>
+                    <div class="profit__inner-text profit-right" v-html="slide.text"></div>
+                </div>
+                <div class="profit__arrows">
+                    <a href="#" class="profit__prev"></a>
+                    <a href="#" class="profit__next"></a>
+                </div>
             </div>
-            <div class="profit__inner-text profit-right" v-html="slide.text"></div>
-          </div>
-          <div class="profit__arrows">
-            <a href="#" class="profit__prev"></a>
-            <a href="#" class="profit__next"></a>
-          </div>
-      </div>
-
+        </div>
     </div>
-  </div>
-
 </div>
 </template>
 
@@ -209,7 +212,6 @@ export default {
                 this.slides.push({left: items[1], right: items[2]});
                 this.slides.push({left: items[3], right: items[4]});
                 this.slides.push({left: items[5], right: {title:'', text: ''}});
-
             } else {
                 this.slides.push({left: items[0], right: items[1]});
                 this.slides.push({left: items[2], right: items[3]});
@@ -241,24 +243,24 @@ export default {
              * set some style
             *  */
 
-          let leftSlides = document.getElementsByClassName("left-slide");
-          let rightSlides = document.getElementsByClassName("right-slide");
-          let height = 0;
+            let leftSlides = document.getElementsByClassName("left-slide");
+            let rightSlides = document.getElementsByClassName("right-slide");
+            let height = 0;
 
-          for(let i = 0; i < leftSlides.length; i++) {
-            for(let j = 0; j < rightSlides.length; j++) {
-              const leftHeight = leftSlides[i].offsetHeight;
-              const rightHeight = rightSlides[j].offsetHeight;
-              height = leftHeight > rightHeight ? leftHeight : rightHeight;
+            for(let i = 0; i < leftSlides.length; i++) {
+                for(let j = 0; j < rightSlides.length; j++) {
+                    const leftHeight = leftSlides[i].offsetHeight;
+                    const rightHeight = rightSlides[j].offsetHeight;
+                    height = leftHeight > rightHeight ? leftHeight : rightHeight;
+                }
             }
-          }
 
             console.log('height');
             console.log(height);
             const arr = [1,1,1,2,3,4];
             console.log(leftSlides);
-          [...leftSlides].forEach(data => {data.style.minHeight = height + "px"});
-          [...rightSlides].forEach(data => {data.style.minHeight = height + "px"});
+            [...leftSlides].forEach(data => {data.style.minHeight = height + "px"});
+            [...rightSlides].forEach(data => {data.style.minHeight = height + "px"});
 
 
 
@@ -270,9 +272,11 @@ export default {
     }
 };
 </script>
-<style>
-.col-6, .col-md-6{
-  padding:0!important;
-}
 
+<style lang="scss">
+.profit__inner{
+    .col-6, .col-md-6{
+        padding:0!important;
+    }
+}
 </style>

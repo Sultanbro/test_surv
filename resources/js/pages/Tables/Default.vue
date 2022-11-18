@@ -80,11 +80,11 @@
             </template>
             
             <template v-else>
-                <th class="indicators-table-fixed-percent sticky-left text-center">
+                <th class="indicators-table-fixed-hmonth sticky-left text-center">
                     <div>План</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
                 </th>
-                <th class="indicators-table-fixed-percent sticky-left text-center">
+                <th class="indicators-table-fixed-hplan sticky-left text-center">
                     <div>Вып.</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
                 </th>
@@ -98,8 +98,6 @@
         </tr>
 
         <tr v-for="(item, index) in filtered" :key="index">
-            
-
             <td class="indicators-table-fixed-name sticky-left" v-if="item.name == 'SPECIAL_BTN'">
                 <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
             </td>

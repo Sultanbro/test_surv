@@ -1,5 +1,5 @@
 <template>
-<div class="index block _anim _anim-no-hide content" id="index" :class="{'hidden': activities.length == 0}">
+<div class="index block _anim _anim-no-hide content" id="index" :class="{'hidden': items.length == 0}">
     <div class="title index__title mt-5">
         Сравнение показателей
     </div>
@@ -8,74 +8,76 @@
     </div>
 
     <div class="index__table">
-        <div class="tabs">
-            <div class="index__tabs tabs__wrapper">
-                <div class="index__tab tab__item"
-                    v-for="(act, index) in activities"
-                    :key="index"
-                    onclick="switchTabs(this)"
-                    :class="{'is-active': index == 0}"
-                    :data-index="index"
-                >
-                    {{ act.name }}
+        <b-tabs>
+            <b-tab
+                v-for="(item, itemIndex) in items"
+                :key="itemIndex"
+                :title="item.group.name"
+            >
+                <div class="tabs">
+                    <div class="index__tabs tabs__wrapper">
+                        <div
+                            v-for="(act, index) in item.activities"
+                            :key="index"
+                            onclick="switchTabs(this)"
+                            class="index__tab tab__item"
+                            :class="{'is-active': index == 0}"
+                            :data-index="index"
+                        >
+                            {{ act.name }}
+                        </div>
+                    </div>
+                    <select class="select-css trainee-select mobile-select">
+                        <option v-for="(act, index) in item.activities"
+                            :value="index"
+                            :key="index"
+                        >
+                            {{ act.name }}
+                        </option>
+                    </select>
+                    <div class="tab__content">
+                        <div v-for="(act, index) in item.activities"
+                            class="tab__content-item index__content"
+                            :class="{'is-active': index == 0}"
+                            :data-content="index"
+                            :key="index"
+                        >
+                            <t-collection v-if="act.type == 'collection'"
+                                :month="monthInfo"
+                                :activity="act"
+                                :is_admin="false"
+                                :key="act.id"
+                                :price="act.price"
+                            ></t-collection>
+                            <t-default  v-else-if="act.type == 'default'"
+                                :month="monthInfo"
+                                :activity="act"
+                                :key="act.id"
+                                :group_id="act.group_id"
+                                :work_days="act.workdays"
+                                :editable="false"
+                                :show_headers="false"
+                            ></t-default>
+                            <t-quality-new v-else-if="act.type == 'quality'"
+                                :monthInfo="monthInfo"
+                                :items="act.records"
+                            ></t-quality-new>
+                    
+                            <!-- <tr class="prize first-place">
+                            <tr class="prize second-place" >
+                            <tr class="prize third-place">
+                            <td><div class="large">Аппазова Карлыгаш</div></td>
+                            <td><div class="medium">233</div></td>
+                            <td><div class="medium">7020</div></td>
+                            <td><div class="small">43.11</div></td>
+                            <td class="red"><div>3026.00</div></td>
+                            <td class="green"><div>3026.00</div></td>
+                            <td class="blue"><div>3026.00</div></td> -->
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <select class="select-css trainee-select mobile-select">
-                <option v-for="(act, index) in activities"
-                    :value="index"
-                    :key="index"
-                >
-                    {{ act.name }}
-                </option>
-            </select>
-            <div class="tab__content">
-
-
-                <div v-for="(act, index) in activities" 
-                    class="tab__content-item index__content"
-                    :class="{'is-active': index == 0}"
-                    :data-content="index" 
-                    :key="index"
-                >   
-                    <t-collection v-if="act.type == 'collection'"
-                        :month="monthInfo"
-                        :activity="act"
-                        :is_admin="false"
-                        :key="act.id"
-                        :price="act.price"
-                    ></t-collection>
-
-                    <t-default  v-else-if="act.type == 'default'"
-                        :month="monthInfo"
-                        :activity="act"
-                        :key="act.id"
-                        :group_id="act.group_id"
-                        :work_days="act.workdays"
-                        :editable="false"
-                        :show_headers="false"
-                    ></t-default>
-
-                    <t-quality-new v-else-if="act.type == 'quality'"
-                        :monthInfo="monthInfo"
-                        :items="act.records"
-                    ></t-quality-new>
-            
-                    <!-- <tr class="prize first-place">
-                    <tr class="prize second-place" >
-                    <tr class="prize third-place">
-                    <td><div class="large">Аппазова Карлыгаш</div></td>
-                    <td><div class="medium">233</div></td>
-                    <td><div class="medium">7020</div></td>
-                    <td><div class="small">43.11</div></td>
-                    <td class="red"><div>3026.00</div></td>
-                    <td class="green"><div>3026.00</div></td>
-                    <td class="blue"><div>3026.00</div></td> -->
-
-                </div>
-
-            </div>
-
-        </div>
+            </b-tab>
+        </b-tabs>
     </div>
 </div>
 </template>
@@ -86,7 +88,7 @@ export default {
     props: {},
     data: function () {
         return {
-            activities: [], 
+            items: [], 
             currentYear: new Date().getFullYear(),
             monthInfo: {
                 currentMonth: null,
@@ -117,7 +119,7 @@ export default {
 
                 this.showBtn(response.data)
 
-                this.activities = response.data.activities
+                this.items = response.data.items
 
                 loader.hide()
             }).catch((e) => console.log(e))
@@ -127,7 +129,9 @@ export default {
          * private: show btn in introTop 
          */
         showBtn(data) {
-            if(data.activities.length > 0) {
+            console.log('daat', data)
+            const totalActivities = data.items.reduce((n, item) => n + item.activities.length, 0)
+            if(totalActivities > 0) {
                 this.$emit('init')
             }
         },
@@ -163,8 +167,59 @@ export default {
             
             this.currentYear = this.$moment().format('YYYY') //Установка выбранного года 
             this.monthInfo.currentYear = this.currentYear;
-        }, 
-
+        },
     }
 };
 </script>
+
+<style lang="scss">
+.index__table{
+    >.tabs{
+        margin-top: -3rem;
+    }
+    .nav-tabs{
+        gap: 0 4rem;
+        padding-bottom: 0.5rem;
+        border: none;
+        .nav-link{
+            &.active{
+                border: none;
+                color: #ED2353;
+                background: none;
+            }
+        }
+    }
+    .nav-item{
+        margin-top: -0.1rem;
+    }
+    .nav-link{
+        padding: 1.5rem 0 0;
+        border: none;
+        background: none;
+        border-radius: 0;
+
+        line-height: 2em;
+        color: #8D8D8D;
+        font-size: 1.7rem;
+        font-family: "Open Sans", sans-serif;
+        font-weight: 600;
+        transition: color 0.3s;
+        cursor: pointer;
+
+        &:hover{
+            color: #ED2353;
+        }
+    }
+    .index__tab{
+        padding-top: 0;
+    }
+}
+
+@media(max-width:440px){
+    .index__table{
+        >.tabs{
+            margin-top: -2rem;
+        }
+    }
+}
+</style>

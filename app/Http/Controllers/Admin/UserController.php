@@ -1088,16 +1088,17 @@ class UserController extends Controller
             $ud->save();
         }
 
-        /*==============================================================*/
-        /*******  Стажер или нет  */
-        /*==============================================================*/
-        $trainee = User::isTrainee($request->id);
-
-        if($request->is_trainee)  {
-            if($trainee) {
-                (new UserProfileService)->approveForTrainee($user);
-            }
-        }
+//         Не понятно зачем этот функционал здесь?
+//        /*==============================================================*/
+//        /*******  Стажер или нет  */
+//        /*==============================================================*/
+//        $trainee = User::isTrainee($request->id);
+//
+//        if($request->is_trainee)  {
+//            if($trainee) {
+//                (new UserProfileService)->approveForTrainee($user);
+//            }
+//        }
 
         /**
          * Оплатите внешнему рекрутеру за нового сотрудника
