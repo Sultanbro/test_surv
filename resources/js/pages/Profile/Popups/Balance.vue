@@ -1,5 +1,5 @@
 <template>
-<div class="popup__content  mt-3">
+<div class="popup__content  mt-3" :class="{'v-loading': loading}">
     <div class="popup__filter">
         <div class="popup__filter-title">
             Ваши начисления за период работы
@@ -213,7 +213,8 @@ export default {
             },
             currentMonth: null,
             currentDay: new Date().getDate(),
-            history: null
+            history: null,
+            loading: false
         };
     },
     created() {
@@ -266,7 +267,7 @@ export default {
          * Загрузка данных для таблицы
          */
         fetchData() {
-            let loader = this.$loading.show();
+            this.loading = true
 
             axios.post('/timetracking/zarplata-table', {
                 month: this.$moment(this.currentMonth, 'MMMM').format('M'),
@@ -278,7 +279,7 @@ export default {
                 
                 this.loadItems()
                 this.showHistory()
-                loader.hide()
+                this.loading = false
             }).catch((e) => console.log(e))
         },
 

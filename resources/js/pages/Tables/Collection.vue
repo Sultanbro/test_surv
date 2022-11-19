@@ -1,5 +1,5 @@
 <template>
-<div class="mb-3 index__content">
+<div class="mb-3 index__content" :class="{'v-loading': loading}">
     <h4 class="d-flex align-items-center justify-content-between">
         <div class="mr-2">{{ activity.name }} </div>
         <div>
@@ -137,6 +137,7 @@ export default {
             records: [],
             totalRowName: '',
             accountsNumber: 0,
+            loading: false
         };
     },
     watch: { 
@@ -172,7 +173,7 @@ export default {
             });
         },
         fetchData() {
-            let loader = this.$loading.show();
+            this.loading = true
             
             this.records = this.activity.records;
             this.accountsNumber = this.activity.records.length
@@ -186,10 +187,10 @@ export default {
 
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
-            loader.hide();    
+            this.loading = false
         },
         updateTable(items) {
-            let loader = this.$loading.show();
+            this.loading = true
             
             this.records = items;
             this.calculateRecordsValues();
@@ -205,7 +206,7 @@ export default {
             
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
-            loader.hide();
+            this.loading = false
         },
 
         setLeaders() {
@@ -324,7 +325,7 @@ export default {
     
             let items = this.items;
            
-            let loader = this.$loading.show();
+            this.loading = true
             let year = new Date().getFullYear();
 
             this.updateTable(items); 
@@ -340,7 +341,7 @@ export default {
                     value: value,
                 })
                 .then((response) => {
-                    loader.hide();
+                    this.loading = false
                 });
             
         },

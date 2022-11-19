@@ -1,5 +1,12 @@
 <template>
-<div class="index block _anim _anim-no-hide content" id="index" :class="{'hidden': items.length == 0}">
+<div
+    id="index"
+    class="index block _anim _anim-no-hide content"
+    :class="{
+        'hidden': items.length == 0,
+        'v-loading': loading
+    }"
+>
     <div class="title index__title mt-5">
         Сравнение показателей
     </div>
@@ -100,6 +107,7 @@ export default {
                 daysInMonth: 0,
                 year: new Date().getFullYear()
             },
+            loading: false
         };
     },
     created() {
@@ -113,7 +121,7 @@ export default {
          * Загрузка данных 
          */
         fetchData() {
-            let loader = this.$loading.show();
+            this.loading = true
 
             axios.post('/profile/activities').then(response => {
 
@@ -121,7 +129,7 @@ export default {
 
                 this.items = response.data.items
 
-                loader.hide()
+                this.loading = false
             }).catch((e) => console.log(e))
         },
 

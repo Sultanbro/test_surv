@@ -1,5 +1,5 @@
 <template>
-<div class="popup__con">
+<div class="popup__con" :class="{'v-loading': loading}">
     <div class="tabs">
         <div class="popup__filter">
             <div class="trainee__tabs tabs__wrapper">
@@ -75,6 +75,7 @@ export default {
                 unread: [],
                 read: [],
             },
+            loading: false
         };
     },
     created(){
@@ -82,16 +83,16 @@ export default {
     },
     methods: {
         fetchData() {
-            let loader = this.$loading.show();
+            this.loading = true
             
             axios.post('/notifications', {})
                 .then((response) => {
                     this.data = response.data
                     console.log(this.data)
-                    loader.hide();
+                    this.loading = false
                 }).catch(e => {
                     console.log(e)
-                    loader.hide();
+                    this.loading = false
                 });
         },
 
@@ -100,7 +101,7 @@ export default {
          */
         setAllRead() {
 
-            let loader = this.$loading.show();
+            this.loading = true
             
             axios.post('/notifications/set-read-all/', {})
                 .then((response) => {
@@ -116,10 +117,10 @@ export default {
 
                         this.$toast.success('Все уведомления отмечены прочитанными');
                     }
-                    loader.hide();
+                    this.loading = false
                 }).catch(e => {
                     console.log(e)
-                    loader.hide();
+                    this.loading = false
                 });
         },
 
@@ -176,7 +177,7 @@ export default {
          * set Read request 
          */
         req(i, payload) {
-            let loader = this.$loading.show();
+            this.loading = true
             
             axios.post('/notifications/set-read', payload)
                 .then((response) => {
@@ -193,10 +194,10 @@ export default {
                         // nullify(dateForTransfer);
                     }
 
-                    loader.hide();
+                    this.loading = false
                 }).catch(e => {
                     console.log(e)
-                    loader.hide();
+                    this.loading = false
                 });
         }
     }

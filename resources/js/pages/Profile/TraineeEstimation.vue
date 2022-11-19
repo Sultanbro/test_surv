@@ -1,18 +1,26 @@
 <template>
-<div class="trainee block _anim _anim-no-hide content" id="trainee"  :class="{'hidden': Object.keys(data).length == 0}">
+<div
+    id="trainee"
+    class="trainee block _anim _anim-no-hide content"
+    :class="{
+        'hidden': Object.keys(data).length == 0,
+        'v-loading': loading
+    }"
+>
     <div class="trainee__title title mt-5">
         Оценка стажеров
     </div>
     <div class="trainee__subtitle subtitle">
         Подробная информация об оценке стажерами вашего обучения
     </div>
-    <div class="trainee__table ">
-      
+    <div class="trainee__table">
         <div class="tabs custom-scroll">
             <div class="trainee__tabs tabs__wrapper">
 
-                <div class="trainee__tab tab__item"
+                <div
                     v-for="(key, index) in Object.keys(data)"
+                    :key="index"
+                    class="trainee__tab tab__item"
                     :class="{'is-active': index == 0}"
                     onclick="switchTabs(this)"
                     :data-index="index"
@@ -22,30 +30,34 @@
 
             </div>
             <select class="select-css trainee-select mobile-select">
-                <option :value="index" v-for="(key, index) in Object.keys(data)">
+                <option
+                    v-for="(key, index) in Object.keys(data)"
+                    :key="index"
+                    :value="index"
+                >
                     {{ key }}
                 </option>
             </select>
 
             <div class="tab__content">
-
                 <!-- Days loop -->
-                <div class="trainee__content tab__content-item" 
+                <div
                     v-for="(key, index) in Object.keys(data)"
-                    :data-content="index" 
+                    :key="index"
+                    class="trainee__content tab__content-item" 
                     :class="{'is-active': index == 0}"
+                    :data-content="index" 
                 >
 
                     <!-- Items in one day -->
                     <template v-for="(item, item_index) in data[key]">
-                        
                         <!-- group name -->
-                        <div class="trainee__table-name">
+                        <div class="trainee__table-name" :key="item_index">
                             {{ item.group }}
                         </div> 
 
                         <!-- table with answers -->
-                        <table class="trainee__quiz">
+                        <table class="trainee__quiz" :key="item_index">
                             <thead>
                                 <tr>
                                     <th>Суть работы</th>
@@ -128,7 +140,7 @@
                         </table>
 
                         <!-- invited table -->
-                        <table class="invite mb-5">
+                        <table class="invite mb-5" :key="item_index">
                             <thead>
                                 <tr>
                                     <th class="first-td">Приглашенные</th>
@@ -154,12 +166,8 @@
                                 </tr>
                             </tbody>
                         </table>
-
                     </template>
-
-                  
                 </div>
-
             </div>
         </div>
     </div>
@@ -172,7 +180,8 @@ export default {
     props: {},
     data: function () {
         return {
-            data: {}, 
+            data: {},
+            loading: false
         };
     },
     created(){
@@ -180,21 +189,20 @@ export default {
     },
     methods: {
         fetchData() {
-            let loader = this.$loading.show();
-            
+            this.loading = true
+
             axios.post("/profile/trainee-report", {})
                 .then((response) => {
-                    
                     this.showBtn(response.data)
 
                     this.data = response.data
 
                     this.$nextTick(() => this.fill())
 
-                    loader.hide();
+                    this.loading = false
                 }).catch(e => {
                     console.log(e)
-                    loader.hide();
+                    this.loading = false
                 });
         },
 
@@ -220,7 +228,7 @@ export default {
             VJQuery('.trainee__quiz').each(function(){
 
                 let starLength = VJQuery(this).find('.trainee__star-value span').text();
-                
+
                 if(starLength<=10 && starLength>=0){
                     for(let i=0; i<starLength;i++){
                         VJQuery(this).find('.trainee__star-wrapper .star__item')[i].classList.add('done');
