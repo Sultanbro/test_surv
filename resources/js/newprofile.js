@@ -336,15 +336,4 @@ document.addEventListener('DOMContentLoaded', () => {
         VJQuery(this).closest('.profile-box').find('.profile-slick').slideToggle(700, 'swing')
         VJQuery(this).closest('.profile-box').find('.profile__title').toggleClass('_slicked')
     })
-    let buttonText = VJQuery('.profile__button p').text();
-    VJQuery('.profile__button').click(function(e){
-        e.preventDefault();
-
-        VJQuery(this).toggleClass('active');
-        if(VJQuery(this).hasClass('active')){
-            VJQuery(this).find('p').text('Завершить рабочий день');
-        } else{
-            VJQuery(this).find('p').text(buttonText);
-        }
-    })
 })
