@@ -30,7 +30,7 @@ class StoreAwardRequest extends FormRequest
     {
         return [
             'award_type_id'  => 'integer|required',
-            'course_ids'      => 'array|required',
+            'course_ids'      => 'array',
             'name'      => 'required|string',
             'description'      => 'required|string',
             'hide'      => 'required|boolean',
