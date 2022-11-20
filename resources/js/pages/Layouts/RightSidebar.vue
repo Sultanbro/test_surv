@@ -12,19 +12,18 @@
             <img src="/images/dist/header-right-3.svg" alt="nav icon" class="header__icon-img">
         </a> -->
 
-        <chat-search-button></chat-search-button>
-
         <a href="#" class="header__right-icon" v-b-popover.hover.left.html="'Тикеты - Этот функционал в разработке'">
             <img src="/images/dist/header-right-5.svg" alt="nav icon" class="header__icon-img">
         </a>
         <a href="#" class="header__right-icon check" @click="$emit('pop', 'checklist')">
             <img src="/images/dist/header-right-6.svg" alt="nav icon" class="header__icon-img">
         </a>
+
+        <chat-search-button></chat-search-button>
     </div>
 
     <chat-sidepanel></chat-sidepanel>
     <!-- <div class="header__right-messages">
-        
         <a href="#" class="header__message-item new">
             <img src="/images/dist/header-right-avatar-1.png" alt="header avatar">
         </a>
@@ -48,10 +47,6 @@
     <div class="header__right-arrow">
         <a href="#"><img src="/images/dist/header-arrow.svg" alt="arrow icon"></a>
     </div>
-
-
-   
-
 </div>
 </template>
 
