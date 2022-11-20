@@ -6,11 +6,11 @@
       @click="startDay"
       :class="{
         'profile__button_error': status === 'error',
-        'profile__button_started': status === 'started',
+        'profile__button_started': workdayStatus === 'started',
         'profile__button_loading': status === 'loading'
       }"
-    >
-      <svg v-if="status === 'loading'" version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    > 
+      <svg :class="{'visible': status === 'loading'}" class="profile__loader" version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
         <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
           s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
           c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/>
@@ -26,9 +26,16 @@
             repeatCount="indefinite"/>
         </path>
       </svg>
-      <p v-if="status === 'stopped'" class="profile__button-text">Начать рабочий день</p>
-      <p v-if="status === 'started'" class="profile__button-text">Завершить рабочий день</p>
-      <p v-if="status === 'error'" class="profile__button-text">Ошибка сети</p>
+      
+      <template v-if="status === 'error'">
+        <p class="profile__button-text">Ошибка сети</p>
+      </template>
+
+      <template v-else>
+        <p v-if="workdayStatus === 'stopped'" class="profile__button-text">Начать рабочий день</p>
+        <p v-if="workdayStatus === 'started'" class="profile__button-text">Завершить рабочий день</p>
+      </template>
+      
     </a>
 
     <!-- Corp book page when day has started --> 
@@ -60,7 +67,9 @@ export default {
   data() {
     return {
       data: {},
-      status: 'loading',
+      status: 'init',
+      workdayStatus: 'stopped',
+
       // corp book
       corp_book_page: null,
       showCorpBookPage: false
@@ -78,18 +87,21 @@ export default {
      */
     workStatus() {
       this.status = 'loading'
+      
       axios.post('/timetracking/status', {})
         .then((response) => {
 
-            this.status = response.data.status
+            this.workdayStatus = response.data.status
 
-            if(this.status === 'started' && response.data.corp_book.has) {
+            if(this.workdayStatus === 'started' && response.data.corp_book.has) {
               this.corp_book_page = response.data.corp_book.page
               this.showCorpBookPage = this.corp_book_page !== null 
               this.bookCounter()
             } 
-
+            
             this.$emit('currentBalance', response.data.balance)
+
+            this.status = 'init'
         })
         .catch((error) => {
             this.status = 'error'
@@ -104,7 +116,7 @@ export default {
      */
     getParams() {
       let params = {start: moment().format('HH:mm:ss')};
-      if(this.status === 'started') params = {stop: moment().format('HH:mm:ss')};
+      if(this.workdayStatus === 'started') params = {stop: moment().format('HH:mm:ss')};
 
       return params;
     },
@@ -114,32 +126,38 @@ export default {
      */
     startDay() {
       if(this.status === 'loading') return
+
       this.status = 'loading'
+
       axios.post('/timetracking/starttracking', this.getParams())
         .then((response) => {
 
+          this.status = 'init'
+
           if (response.data.error) {
-            this.$toast.error(response.data.error.message);
+            this.$toast.info(response.data.error.message);
             return;
           }
 
           if(response.data.status == 'started') {
 
-            this.status = 'started';
+            this.workdayStatus = 'started';
 
             if(response.data.corp_book.has) {
               this.corp_book_page = response.data.corp_book.page
               this.showCorpBookPage = this.corp_book_page != null; 
               this.bookCounter();
             }
-          
+            
             this.$toast.info('День начат');
           } 
 
           if(response.data.status == 'stopped') { // stopped
-            this.status = response.data.status;
+            this.workdayStatus = response.data.status;
             this.$toast.info('День завершен');
           }
+
+          
 
         })
         .catch((error) => {
@@ -189,7 +207,8 @@ export default {
   max-width: 28rem;
   border-radius:1rem;
   margin-bottom: 1.5rem;
-  display: block;
+  display: flex;
+  align-items:center;
   text-transform: uppercase;
   transition: background .3s 0s;
 
@@ -206,11 +225,15 @@ export default {
 }
 .profile__button_loading{
   background-color: #555;
-  cursor: default;
+  cursor: default; 
+
+  .profile__button-text::before {
+    display: none;
+  }
 }
 
 .profile__button-text{
-  padding-left: 2rem;
+  padding-left: 3rem;
   font-size:1.4rem;
   font-weight: 600;
   position:relative;
@@ -228,6 +251,12 @@ export default {
   }
 }
 
+.profile__loader {
+  opacity: 0;
+  &.visible {
+    opacity: 1;
+  }
+}
 .aet {
   background: #608EE9 !important;
 }

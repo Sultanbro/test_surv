@@ -1,6 +1,6 @@
 <template>
     <div
-        class="intro__stats _anim _anim-no-hide block"
+        class="intro__stats _anim _anim-no-hide block _active"
         :class="{'v-loading': loading}"
     >
         <div class="stat__item" @click="$emit('pop', 'balance')">
