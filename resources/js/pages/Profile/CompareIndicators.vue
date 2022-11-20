@@ -10,7 +10,7 @@
     <div class="index__table">
         <b-tabs>
             <b-tab
-                v-for="(item, itemIndex) in items"
+                v-for="(item, itemIndex) in rightItems"
                 :key="itemIndex"
                 :title="item.group.name"
             >
@@ -49,7 +49,7 @@
                                 :key="act.id"
                                 :price="act.price"
                             ></t-collection>
-                            <t-default  v-else-if="act.type == 'default'"
+                            <t-default v-else-if="act.type == 'default'"
                                 :month="monthInfo"
                                 :activity="act"
                                 :key="act.id"
@@ -62,7 +62,7 @@
                                 :monthInfo="monthInfo"
                                 :items="act.records"
                             ></t-quality-new>
-                    
+
                             <!-- <tr class="prize first-place">
                             <tr class="prize second-place" >
                             <tr class="prize third-place">
@@ -88,7 +88,7 @@ export default {
     props: {},
     data: function () {
         return {
-            items: [], 
+            items: [],
             currentYear: new Date().getFullYear(),
             monthInfo: {
                 currentMonth: null,
@@ -100,7 +100,16 @@ export default {
                 daysInMonth: 0,
                 year: new Date().getFullYear()
             },
-        };
+        }
+    },
+    computed: {
+        rightItems(){
+            return this.items.reduce((items, item) => {
+                if(item.activities.length === 1 && item.activities[0].name === 'OKK') return items
+                items.push(item)
+                return items
+            }, [])
+        }
     },
     created() {
         this.setMonthInfo()
@@ -117,9 +126,9 @@ export default {
 
             axios.post('/profile/activities').then(response => {
 
-                this.showBtn(response.data)
-
                 this.items = response.data.items
+
+                this.showBtn(response.data)
 
                 loader.hide()
             }).catch((e) => console.log(e))
@@ -129,8 +138,10 @@ export default {
          * private: show btn in introTop 
          */
         showBtn(data) {
-            console.log('daat', data)
-            const totalActivities = data.items.reduce((n, item) => n + item.activities.length, 0)
+            const totalActivities = data.items.reduce((n, item) => {
+                if(item.activities.length === 1 && item.activities[0].name === 'OKK') return n
+                return n + item.activities.length
+            }, 0)
             if(totalActivities > 0) {
                 this.$emit('init')
             }
@@ -164,7 +175,7 @@ export default {
             this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
             this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
             this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
-            
+
             this.currentYear = this.$moment().format('YYYY') //Установка выбранного года 
             this.monthInfo.currentYear = this.currentYear;
         },
