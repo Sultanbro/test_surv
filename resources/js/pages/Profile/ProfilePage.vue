@@ -72,7 +72,7 @@ export default {
             const w = this.$viewportSize.width
             if(w < 651) return '100%'
             if(w < 1360) return '75%'
-            return w - (39 * this.$viewportSize.rem) + 'px'
+            return w - (19 * this.$viewportSize.rem) + 'px'
         }
     },
     data: function () {

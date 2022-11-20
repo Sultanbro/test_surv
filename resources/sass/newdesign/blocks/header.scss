@@ -196,49 +196,6 @@
   position: relative;
 }
 
-.profile__button{
-  background: #8FAF00;
-  color:#fff;
-  text-align: center;
-  padding: 2rem 1.5rem;
-  width: 100%;
-  max-width: 28rem;
-  border-radius:1rem;
-  margin-bottom: 1.5rem;
-  display: block;
-  text-transform: uppercase;
-  transition: background .3s 0s;
-
-  &.red {
-    background: #fc5757;
-  }
-
-  p{
-    padding-left: 2rem;
-    font-size:1.4rem;
-    font-weight: 600;
-    position:relative;
-    white-space: nowrap;
-
-    &::before{
-      content:"";
-      position:absolute;
-      top: 0;
-      left:0;
-      width: 2rem;
-      height: 2rem;
-      background: url("../images/dist/start-icon.svg") center no-repeat;
-      background-size: cover;
-    }
-  }
-  &:hover{
-    background: #88a402;
-
-  }
-  &.active{
-    background: #fc5757;
-  }
-}
 .profile__balance{
   width: 100%;
   max-width: 28rem;
@@ -795,11 +752,6 @@
       visibility: visible;
       transform:translateY(0);
     }
-    .profile__button{
-      opacity:1;
-      visibility: visible;
-      transform:translateY(0);
-    }
     .profile__balance{
       opacity:1;
       visibility: visible;
@@ -833,13 +785,7 @@
     transition:1s;
   }
 
-  .profile__button{
-    transition: all 1s .2s, background .3s 0s;
-    opacity:0;
-    visibility: hidden;
-    transform:translateY(10px);
-
-  }
+  
   .profile__balance{
     transition: all 1s .4s;
     opacity:0;

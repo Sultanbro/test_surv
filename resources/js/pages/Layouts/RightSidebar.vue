@@ -24,7 +24,6 @@
 
     <chat-sidepanel></chat-sidepanel>
     <!-- <div class="header__right-messages">
-        
         <a href="#" class="header__message-item new">
             <img src="/images/dist/header-right-avatar-1.png" alt="header avatar">
         </a>
@@ -48,10 +47,6 @@
     <div class="header__right-arrow">
         <a href="#"><img src="/images/dist/header-arrow.svg" alt="arrow icon"></a>
     </div>
-
-
-   
-
 </div>
 </template>
 
