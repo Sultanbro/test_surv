@@ -1,5 +1,5 @@
 <template>
-<div class="popup__content mt-5">
+<div class="popup__content  mt-5" :class="{'v-loading': loading}">
     <div class="tabs">
         <div class="popup__filter">
             <div class="trainee__tabs tabs__wrapper">
@@ -105,7 +105,8 @@ export default {
                 daysInMonth: 0
             },
             potential_bonuses: '',
-            history: []
+            history: [],
+            loading: false
         };
     },
     created(){
@@ -133,7 +134,7 @@ export default {
         },
 
         fetchData() {
-            let loader = this.$loading.show();
+            this.loading = true
 
             axios
                 .post("/bonuses", {
@@ -144,11 +145,11 @@ export default {
                     // this.potential_bonuses = response.data.data.potential_bonuses
                     this.history = response.data.data.history
 
-                    loader.hide();
+                    this.loading = false
                 });
         },
       fetchBonuses(){
-        let loader = this.$loading.show();
+        this.loading = true
         const _this = this;
         axios
             .post("/bonus/user")
@@ -156,7 +157,7 @@ export default {
                 console.log(response);
                 _this.bonuses = response.data.bonuses
 
-                loader.hide();
+              this.loading = false
             });
       }
     }

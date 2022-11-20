@@ -1,5 +1,5 @@
 <template>
-    <div class="header__profile _anim _anim-no-hide custom-scroll-y">
+    <div class="header__profile _anim _anim-no-hide custom-scroll-y" :class="{'v-loading': loading}">
         <div class="profile__content">
             <div
                 class="profile__logo logo-img-wrap"
@@ -136,7 +136,8 @@ export default {
             logo:{
               image: '',
               canvas: null
-            }
+            },
+            loading: false
         };
     },
     mounted(){
@@ -176,9 +177,8 @@ export default {
          * Загрузить лого
          */
         uploadLogo(){
-            const _this = this;
-            _this.logo.canvas.toBlob(function(blob) {
-                let loader = _this.$loading.show();
+            this.logo.canvas.toBlob(blob => {
+                this.loading = true
 
                 const formData = new FormData();
                 formData.append('file', blob);
@@ -193,16 +193,15 @@ export default {
                     }
                 )
                 .then((response) => {
-
                     console.log('success')
                     console.log(response)
-                    _this.logo.image = response.data.logo;
-                    loader.hide();
+                    this.logo.image = response.data.logo;
+                    this.loading = false
                 })
                 .catch((response)=> {
                     console.log('failure!!');
                     console.log(response)
-
+                    this.loading = false
                 });
             })
             this.modalHideLogo();

@@ -2,7 +2,11 @@
 <div
     id="courses__anchor"
     class="courses__wrapper block _anim _anim-no-hide mt-4"
-    :class="{'hidden': data.length == 0}"
+    :class="{
+        'hidden': data.length === 0,
+        '_active': data.length,
+        'v-loading': loading
+    }"
 >
     <div class="courses__content" :class="{'hidden': activeCourse !== null}">
         <div class="courses__title">
@@ -106,7 +110,8 @@ export default {
             data: [], 
             items: [],
             courses: [],
-            activeCourse: null
+            activeCourse: null,
+            loading: false
         };
     },
     computed: {
@@ -134,12 +139,9 @@ export default {
          * Загрузка данных 
          */
         fetchData() {
-            let loader = this.$loading.show();
-
             axios.post('/profile/courses').then(response => {
                 this.data = response.data
                 this.$nextTick(() => this.initSlider())
-                loader.hide()
             }).catch((e) => console.log(e))
 
             axios.get('/my-courses/get', {}).then(response => {
@@ -151,19 +153,18 @@ export default {
          * select active course info
          */
         selectCourse(index) {
-            console.log('clicked ' + index)
             this.activeCourse = this.data[index]
             this.fetchCourse();
             // this.$nextTick(() => this.initInnerSlider())
         },
 
         fetchCourse() {
-            let loader = this.$loading.show();
+            this.loading = true
 
             axios.get('/my-courses/get/' + this.activeCourse.id).then(response => {
                 this.items = response.data.items
                 // this.$nextTick(() => this.initSlider())
-                loader.hide()
+                this.loading = false
             }).catch((e) => console.log(e));
         },
 
