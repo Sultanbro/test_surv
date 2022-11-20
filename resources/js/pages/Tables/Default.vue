@@ -1,5 +1,5 @@
 <template>
-<div class="mb-3 index__content custom-scroll">
+<div class="mb-3 index__content custom-scroll" :class="{'v-loading': loading}">
     <div class="d-flex align-items-center mb-2" v-if="show_headers">
         
         <h4 class="mr-2">{{ activity.name }} <i class="fa fa-cogs show" @click="editActivity()"></i> </h4>
@@ -273,7 +273,8 @@ export default {
                 less_avg: 'Не более, сред. зн.',
             },
             showEditModal: false,
-            showExcelImport: false
+            showExcelImport: false,
+            loading: false
         };
     },
     watch: { 
@@ -373,7 +374,7 @@ export default {
          * fetch data
          */
         fetchData() {
-            let loader = this.$loading.show();
+            this.loading = true
             
             this.records = this.activity.records;
             this.accountsNumber = this.activity.records.length
@@ -389,7 +390,7 @@ export default {
 
             if(this.show_headers) this.addButtonToFirstItem();
 
-            loader.hide();    
+            this.loading = false
         },
 
         /**
@@ -432,7 +433,7 @@ export default {
          * action
          */
         updateTable(items) {
-            let loader = this.$loading.show();
+            this.loading = true
             
             this.records = items;
             this.calculateRecordsValues();
@@ -444,7 +445,7 @@ export default {
             
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
-            loader.hide();
+            this.loading = false
         },
         
         /**

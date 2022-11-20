@@ -1,5 +1,5 @@
 <template>
-<div class="popup__con">
+<div class="popup__con" :class="{'v-loading': loading}">
     ????????
 </div>
 </template>
@@ -10,7 +10,8 @@ export default {
     props: {},
     data: function () {
         return {
-            data: []
+            data: [],
+            loading: false
         };
     },
     created(){
@@ -18,12 +19,12 @@ export default {
     },
     methods: {
         fetchData() {
-            let loader = this.$loading.show();
+            this.loading = true
             
             axios.post("/checklist", {})
                 .then((response) => {
                     this.data = response.data
-                    loader.hide();
+                    this.loading = false
                 });
         },
     }

@@ -1,5 +1,5 @@
 <template>
-<div class="popup__content mt-3">
+<div class="popup__content mt-3" :class="{'v-loading': loading}">
     <div class="popup__filter">
         <select class="select-css" v-model="currentMonth" @change="fetchBefore()">
             <option
@@ -60,6 +60,7 @@ export default {
                 weekDays: 0,
                 daysInMonth: 0
             },
+            loading: false
         };
     },
     created(){
@@ -96,7 +97,7 @@ export default {
         },
 
         fetchData(filters = null) {
-            let loader = this.$loading.show();
+            this.loading = true
 
             axios.post('/statistics/quartal-premiums', {
                 filters: filters 
@@ -108,9 +109,9 @@ export default {
 
                 this.items.forEach(el => el.expanded = true);
 
-                loader.hide()
+                this.loading = false
             }).catch(error => {
-                loader.hide()
+                this.loading = false
                 alert(error)
             });
         },
@@ -130,7 +131,6 @@ export default {
                     }
                 });
             })
-           
         },
     }
 };
