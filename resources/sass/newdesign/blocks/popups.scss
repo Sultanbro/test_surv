@@ -322,111 +322,7 @@ max-width: 100%;}
 
 }
 
-.balance__content{
-  overflow-x: auto;
-  padding-bottom: 2rem;
-}
 
-.balance__table{
-    margin-top: 4rem;
-    width: 100%;
-    border-spacing: 0;
-
-    tr{
-      td:first-child,th:first-child{
-        text-align: left;
-        padding-left: 1.5rem;
-        padding-right: 1rem;
-      }
-    }
-    th:first-child{
-      border-radius:1.2rem 0 0 0;
-    }
-    th:last-child{
-      border-radius:0 1.2rem 0 0;
-    }
-    th{
-      white-space: nowrap;
-      font-weight: 600;
-      max-width: 25.9rem;
-      background: #f4f6fd;
-      font-size:1.3rem;
-      height: 4rem;
-      min-width:4rem;
-      padding: 0 1rem;
-      color: #62788B;
-      border: 1px solid #EBEDF5;
-
-    }
-    td{
-      min-width:4rem;
-      max-width: 25.9rem;
-      border: 1px solid #EBEDF5;
-      height: 4rem;
-      font-size:1.2rem;
-      font-family: "Inter",sans-serif;
-      color: #62788B;
-      text-align: center;
-
-      &.yellow{
-        background: #FFEF86;
-      }
-      &.orange{
-        background: #FF9900;
-        color:#fff;
-      }
-      &.blue{
-        background: #8FC9FF;
-      }
-      &.pink{
-        background: #EC6898;
-        color:#fff;
-      }
-      &.green-pink{
-        background: linear-gradient(105deg,#8BAB00 40%, #EC6898 40%);
-      }
-    }
-}
-
-.balance__title{
-  margin-top: 0rem;
-  margin-bottom: 3rem;
-  font-family: "Open Sans",sans-serif;
-  font-size:2rem;
-  color:rgb(139 171 2);
-  font-weight: 400; 
-  border-bottom: 1px solid #aebde0;
-  padding-bottom: 1rem;
-
-  span {
-    display: block;
-  }
-}
-
-.balance__inner{
-  padding: 4rem 4rem;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  // display: flex;
-  background: #F5F7FC;
-  border-radius:1.5rem;
-  justify-content: space-between;
-
-}
-
-.balance__item{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap:3rem;
-  color:#62788B;
-  margin-bottom: 4rem;
-  font-size:1.3rem;
-
-  &-title{
-    font-weight: 600;
-  }
-}
 
 .kaspi, .nominations {
   .select-css{
@@ -909,14 +805,8 @@ max-width: 100%;}
     .tab__item-include{
       white-space: nowrap;
       margin-top: 0;
-
     }
   }
-
-  .balance__inner{
-    width: 90rem;
-  }
-
 }
 
 @media(max-width:1100px){
@@ -974,10 +864,6 @@ max-width: 100%;}
     gap:2rem;
     row-gap: 1rem;
     flex-wrap:wrap;
-  }
-
-  .balance .select-css{
-    max-width: 18rem;
   }
   .nominations__wrapper{
     justify-content: space-around;
@@ -1087,9 +973,6 @@ max-width: 100%;}
   .popup__body{
     padding: 0 2rem;
   }
-  .balance__title{
-    font-size:2.7rem
-  }
   .certificates__title{
     font-size:2.3rem;
   }
@@ -1162,3 +1045,9 @@ max-width: 100%;}
   }
 }
 
+/**
+    Не относится к этому для tooltip bootstrap
+*/
+.popover {
+  z-index: 999999;
+}
