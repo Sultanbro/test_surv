@@ -4,6 +4,10 @@
         >Создать награду
         </BButton
         >
+        <BButton variant="success" class="mb-2" @click="testest"
+        >Тест отправка
+        </BButton
+        >
         <BTableSimple
                 id="awards-table"
                 class="mb-3"
@@ -69,10 +73,70 @@
             return {
                 showEditAwardSidebar: false,
                 item: false,
-                tableItems: []
+                tableItems: [],
+                award:{
+                    awardTypeId: 1,
+                    courseIds: 1,
+                    name: 'lorem',
+                    description: 'lorem ipsum dolor',
+                    hide: true,
+                    file: '/upload/sertificates/SL_012519_18110_94.jpg',
+                    styles: {
+                        fullName: {
+                            screenX: 0,
+                            screenY: 0,
+                            text: 'Иван Иванович Иванов',
+                            size: 32,
+                            fontWeight: 700,
+                            uppercase: 'lowercase',
+                            fullWidth: false,
+                            color: '#000000'
+                        },
+                        courseName: {
+                            screenX: 0,
+                            screenY: 0,
+                            text: 'Название курса',
+                            size: 20,
+                            fontWeight: 400,
+                            uppercase: 'lowercase',
+                            fullWidth: false,
+                            color: '#000000'
+                        },
+                        hours: {
+                            screenX: 0,
+                            screenY: 0,
+                            text: 'Название курса',
+                            size: 16,
+                            fontWeight: 400,
+                            uppercase: 'lowercase',
+                            fullWidth: false,
+                            color: '#000000'
+                        },
+                    }
+                },
+                awardType: {
+                    name: 'afsafsfsaf',
+                    description: 'asdfadsddad asdg asdgasg asd asd gasd gdssaf'
+                }
             };
         },
         methods: {
+            testest(){
+                this.axios
+                    .post("/awards/store", {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        data: JSON.stringify(this.award)
+                    })
+                    .then(function (response) {
+                        console.log(response);
+                    })
+                    .catch(function (error) {
+                        console.log("error");
+                        console.log(error);
+                    });
+            },
             rowClickedHandler(data) {
                 this.showEditAwardSidebar = true;
                 this.item = data;

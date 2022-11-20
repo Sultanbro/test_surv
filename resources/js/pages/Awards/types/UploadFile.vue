@@ -49,6 +49,10 @@
         <div v-else>
             <p class="text-danger">Выберите файл(ы)</p>
         </div>
+        <div v-for="imgimg in imageSrc">
+            <div style="width: 300px" :key="imgimg">{{imgimg}}</div>
+            <hr>
+        </div>
     </BContainer>
 </template>
 
@@ -73,6 +77,7 @@
             return {
                 image: null,
                 imageSrc: [],
+                imageBlob: '',
                 imagesList: []
             };
         },
@@ -94,6 +99,8 @@
             hasImage(val) {
             },
             image(newValue, oldValue) {
+
+
 
                 const newValueString = [];
                 for (let i = 0; i < newValue.length; i++) {
@@ -125,6 +132,7 @@
                         this.imageSrc = [];
                     }
                 }
+                console.log(this.imageSrc);
             },
         },
         methods: {
