@@ -44,6 +44,10 @@ export default {
     text-transform: uppercase;
 }
 
+.check__items-empty{
+    font-size: 1.6rem;
+}
+
 .check__button{
     display: flex;
     justify-content: center;
