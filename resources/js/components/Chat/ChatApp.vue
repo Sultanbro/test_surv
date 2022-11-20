@@ -52,7 +52,8 @@ export default {
   position: fixed;
   right: 0;
   bottom: 0;
-  width: 90vw;
+  width: 80vw;
+  z-index: 1001;
   height: 100vh;
   display: flex;
   flex-direction: column;
