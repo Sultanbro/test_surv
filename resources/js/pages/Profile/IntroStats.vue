@@ -1,7 +1,9 @@
 <template>
     <div
         class="intro__stats _anim _anim-no-hide block"
-        :class="{'v-loading': loading}"
+        :class="{
+            '_active': isMounted
+        }"
     >
         <div class="stat__item" @click="$emit('pop', 'balance')">
             <div class="stat__image">
@@ -78,7 +80,7 @@
 
 <script>
 export default {
-    name: "IntroStats", 
+    name: "IntroStats",
     props: {},
     data: function () {
         return {
@@ -87,11 +89,9 @@ export default {
                 kpiMax: 20000
             },
             has_quartal_premiums: false,
-            loading: false
+            loading: false,
+            isMounted: false
         };
-    },
-    created() {
-        this.fetch()
     },
     methods: {
         fetch() {
@@ -116,7 +116,7 @@ export default {
         /**
          * animate opacity in blocks
          */
-        OpacityStats() { 
+        OpacityStats() {
             let MAXBALANCE = this.data.oklad,
                 MAXKPI = this.data.kpiMax,
                 MAXBONUSES = 1,
@@ -146,9 +146,9 @@ export default {
 
             VJQuery('.stat__value').each(function(){
                 let n = VJQuery(this).children('span').text().replace(/\D/g,'');
-                let element = VJQuery(this); 
+                let element = VJQuery(this);
 
-                function separateNumber(x) { 
+                function separateNumber(x) {
                     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     //разделитель можно задать тут вторым аргументом для метода replace. Сейчас, как видно, пробел
                 }
@@ -165,6 +165,12 @@ export default {
                 });
             })
         }, // end of opacity
+    },
+    created() {
+        this.fetch()
+    },
+    mounted(){
+        this.isMounted = true
     }
 };
 </script>
