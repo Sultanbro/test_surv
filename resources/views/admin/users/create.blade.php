@@ -1,9 +1,8 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 @section('title', 'Сотрудник')
 @section('content')
 
-{{--    {{dd($corpbooks,'99',$user)}}--}}
-
+<div class="old__content">
 <div class="user-page">
     <div class="mt-3">
         <div class="col-md-12 d-flex justify-content-between align-items-start">
@@ -92,10 +91,6 @@
 
                                 <!-- PROFILE IMAGE -->
                                 <div class="">
-{{--                                    <input type="file" name="file6" id="file-6"--}}
-{{--                                        class="inputfile inputfile-6"--}}
-{{--                                        data-multiple-caption="{count} files selected"--}}
-{{--                                        style="    display: none;" accept="image/*,.pdf">--}}
 
 
 
@@ -560,42 +555,8 @@
                                                 </select>
                                                 @endif
                                             </div>
-{{--                                            <div class="mb-4 none-block" id="profile_books" >--}}
-{{--                                                @if(isset($user))--}}
-{{--                                                <h5 class="mb-4 mt-4">База знание</h5>--}}
 
 
-
-
-{{--                                                    <select class="form-control form-control-sm" >--}}
-{{--                                                        @if(!empty($corpbooks))--}}
-{{--                                                            @foreach($corpbooks as $corpbook)--}}
-{{--                                                                <option>{{$corpbook['title']}}</option>--}}
-{{--                                                            @endforeach--}}
-{{--                                                        @else--}}
-{{--                                                            <option>Нет добавленных книг</option>--}}
-{{--                                                        @endif--}}
-{{--                                                    </select>--}}
-
-
-
-
-
-{{--                                                    <base-knowledge :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />--}}
-
-
-{{--                                                    <page-kb :auth_user_id="{{ auth()->user()->id }}" :can_edit="{{ auth()->user()->can('kb_edit') ? 'true' : 'false'}}"/>--}}
-
-{{--                                                <profile-books :books="{{json_encode($corpbooks) }}" :user_id="{{ $user->id }}"--}}
-{{--                                                    @if(isset($user->in_books))--}}
-{{--                                                        :in_books="{{ $user->in_books }}"--}}
-{{--                                                    @else--}}
-{{--                                                        :in_books="[]"--}}
-{{--                                                    @endif--}}
-{{--                                                    />--}}
-
-{{--                                                @endif--}}
-{{--                                            </div>--}}
 
                                             <!-- end of groups and books tab -->
                                             <!-- documents tab -->
@@ -807,29 +768,7 @@
                                                     @endforeach
 
 
-                                                    {{--                                                    @foreach($user->adaptation_talks as $key => $talk)--}}
-                                                    {{--                                                        <div class="adaptation_talk col-12 mt-3">--}}
-
-                                                    {{--                                                            <div class="col-2 div_1 ml-0 p-0 adap_day">{{ $talk['day'] }} й день--}}
-                                                    {{--                                                                <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">--}}
-                                                    {{--                                                            </div>--}}
-
-                                                    {{--                                                            <div class="col-3 div_2 p-0 ml-4" style="flex-direction:unset">--}}
-
-                                                    {{--                                                                <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">--}}
-
-                                                    {{--                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"--}}
-                                                    {{--                                                                       @if($talk['date'] != null)--}}
-                                                    {{--                                                                           value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"--}}
-                                                    {{--                                                                       @endif>--}}
-                                                    {{--                                                            </div>--}}
-
-                                                    {{--                                                            <div class="col-6 div_3 p-0 ">--}}
-                                                    {{--                                                                <textarea class="btn btn-block" name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>--}}
-                                                    {{--                                                            </div>--}}
-
-                                                    {{--                                                        </div>--}}
-                                                    {{--                                                    @endforeach--}}
+                                      
                                                 </div>
 
 
@@ -1236,6 +1175,7 @@
     </div>
 </div>
 
+</div>
 
 
 @if(isset($user))
@@ -1357,6 +1297,9 @@
 @endsection
 
 @section('scripts')
+
+<script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
+<script src="{{ url('/js/jquery.maskedinput.js') }}"></script>
     <div id="uploadimageModal" class="modal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">

@@ -89,13 +89,13 @@
                 <div class="tabs__include profile-slick" style="display: none;">
                     <div class="tab__content-include">
                         <div class="tab__content-item-include is-active"  data-content="1">
-                            <img src="images/dist/schedule.png" alt="schedule image">
+                            <img src="/images/dist/schedule.png" alt="schedule image">
                         </div>
                         <div class="tab__content-item-include"  data-content="2">
-                            <img src="images/dist/profile-active.png" alt="schedule image">
+                            <img src="/images/dist/profile-active.png" alt="schedule image">
                         </div>
                         <div class="tab__content-item-include"  data-content="3">
-                            <img src="images/dist/schedule.png" alt="schedule image">
+                            <img src="/images/dist/schedule.png" alt="schedule image">
                         </div>
                     </div>
                     <div class="tabs__wrapper">
@@ -104,7 +104,7 @@
                         <div  class="tab__item-include" onclick="switchTabsInclude(this)"  data-index="3">год</div>
                     </div>
                 </div>
-                <img src="images/dist/close.svg" alt="close icon" class="point-close">
+                <img src="/images/dist/close.svg" alt="close icon" class="point-close">
             </div>
 
             <!-- <a href="#" class="profile__more" v-if="$laravel.userId == 5 || $laravel.userId == 18" @click="addWidget">

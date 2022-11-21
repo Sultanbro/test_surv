@@ -1,11 +1,11 @@
 
-<!-- <script  src="https://maps.api.2gis.ru/2.0/loader.js"></script> -->
-<script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
 
-@extends('layouts.admin')
+
+@extends('layouts.app')
 @section('title', 'Карта Мира')
+@section('content')
 
-    @section('content')
+<div class="old__content">
     <div id="coordinates-maps" data-json="{{json_encode($maps_array,true)}}"></div>
 
     <div id="map" style="width:100%;height:1500px;"></div>
@@ -50,8 +50,16 @@
             });
         });
     </script>
-    @endsection
 
+    
+
+</div>
+@endsection
+
+@section('scripts')
+<!-- <script  src="https://maps.api.2gis.ru/2.0/loader.js"></script> -->
+<script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
+@endsection
 @section('styles')
    <style>
 

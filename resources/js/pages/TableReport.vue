@@ -29,7 +29,7 @@
         <div v-if="hasPermission">
             
             <div class="row mb-3">
-                <div class="col-2">
+                <div class="col-2 p-0">
                     <div class="overflow-auto d-flex">
                         <b-pagination 
                             v-model="currentPage"
