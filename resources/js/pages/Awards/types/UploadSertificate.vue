@@ -6,7 +6,7 @@
         class="form-file"
         placeholder="Выберите Сертификат"
         drop-placeholder="Перетащите файл сюда..."
-        accept=".jpg, .png, .pdf"
+        accept=".pdf"
         required
         type="file"
         id="file"
@@ -26,11 +26,14 @@
         >Очистить</BButton
       >
     </div>
+
     <div v-if="hasImage" class="sertificate-prewiev">
       <div class="sertificate-modal">
-        <BImg :src="imageSrc" v-b-modal="'modal-constructor'" class="mb-3 img" fluid block rounded></BImg>
+        <div style="width: 300px; height: auto;" v-b-modal="'modal-constructor'">
+          <vue-pdf-embed v-if="imageSrc" :source="imageSrc"/>
+        </div>
         <BModal id="modal-constructor" title="Контсруктор сертификата" size="xl" centered>
-          <UploadSertificateModal :img="imageSrc" :sertificate="sertificate" />
+          <UploadSertificateModal :img="imageSrc" />
         </BModal>
       </div>
     </div>
@@ -39,6 +42,8 @@
 
 <script>
 import UploadSertificateModal from "../types/UploadSertificateModal.vue";
+import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
+
 const base64Encode = (data) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -51,6 +56,7 @@ export default {
   name: "UploadSertificate",
   components: {
     UploadSertificateModal,
+    VuePdfEmbed
   },
   props: {
     sertificate: File,
@@ -59,7 +65,7 @@ export default {
   data() {
     return {
       file: "",
-      image: null,
+      image: '',
       imageSrc: null,
     };
   },
@@ -71,18 +77,24 @@ export default {
   },
   watch: {
     image(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.imageSrc = null;
+      let newValueString = newValue.name + newValue.size;
+      let oldValueString = null;
+      if (oldValue !== null) {
+        oldValueString = oldValue.name + oldValue.size;
+      }
+      if (newValueString !== oldValueString) {
+        this.imageSrc = '';
         if (newValue) {
           base64Encode(newValue)
-            .then((val) => {
-              this.imageSrc = val;
-            })
-            .catch(() => {
-              this.imageSrc = null;
-            });
+                  .then((val) => {
+                    this.imageSrc = val;
+                    // this.$emit("image-download", this.image);
+                  })
+                  .catch(() => {
+                    this.imageSrc = '';
+                  });
         } else {
-          this.imageSrc = null;
+          this.imageSrc = '';
         }
       }
     },

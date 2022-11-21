@@ -7,11 +7,6 @@
                 <div  class="trainee__tab tab__item" onclick="switchTabs(this)"  data-index="2">Сертификаты</div>
                 <div  class="trainee__tab tab__item" onclick="switchTabs(this)"  data-index="3">Лучшие сотрудники</div>
             </div>
-            <select class="select-css trainee-select mobile-select">
-                <option value="1">Номинации</option>
-                <option value="2">Сертификаты</option>
-                <option value="3">Лучшие сотрудники</option>
-            </select>
 
 
             <!--							<div class="nominations__arrows">-->
@@ -253,11 +248,24 @@ export default {
     props: {},
     data: function () {
         return {
-            fields: [], 
+            fields: [],
+            awardTypes: null
         };
     },
-    created(){
-
+    mounted() {
+        this.axios
+            .get('/award-types/get', {
+                headers: {
+                    'X-CSRF-TOKEN' :`${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}`,
+                },
+            })
+            .then(response => {
+                console.log(response);
+                this.awardTypes = response.data.data;
+            })
+            .catch(error => {
+                console.log(error);
+            })
     },
     methods: {
         fetchData() {

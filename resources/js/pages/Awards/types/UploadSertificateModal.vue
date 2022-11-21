@@ -118,7 +118,7 @@
                          :class="{'no-border': border, 'active': selectedEdit === 2}" @click="selectEdit(3)">
                         {{courseName.text}}
                     </div>
-                    <img :src="img" alt="">
+                    <vue-pdf-embed v-if="img" :source="img"/>
                 </div>
             </div>
         </BCol>
@@ -127,12 +127,16 @@
 
 <script>
     import interact from "interactjs";
+    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
 
     export default {
         name: "Draggable",
         props: {
             sertificate: File,
             img: String,
+        },
+        components: {
+            VuePdfEmbed
         },
         data() {
             return {

@@ -179,7 +179,7 @@
                                 this.axios
                                     .post("/award-type/store", formDataType, {
                                         headers: {
-                                            'Content-Type': 'multipart/form-data"',
+                                            'Content-Type': 'multipart/form-data',
                                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                         },
                                     })
