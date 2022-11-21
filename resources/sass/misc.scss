@@ -349,3 +349,193 @@ nav {
     position: sticky;
     top: 0;
 }
+
+
+/*
+
+Новые стили для интеграции профильного дизайна
+Там ставили html {font-size:10px}
+Размеры шрифтов не совпадают
+
+*/
+
+
+$text-grey: #62788B;
+
+.old {
+
+    &__content {
+        font-size: 16px;
+
+        select.form-control:not([size]):not([multiple]) {
+            height: 3.2rem;
+        }
+
+        .fz-08 {
+            font-size: 1.2rem;
+        }
+
+        .fz-09 {
+            font-size: 1.4rem;
+        }
+
+        .cell-input {
+            font-size: 1.2rem;
+        }
+
+        label {
+            font-size: 1.4rem;
+            line-height: 2rem;
+        }
+
+        .my-table .day {
+            font-size: 1.2rem;
+        }
+
+       
+
+        
+
+        
+
+        .custom-control-label::before {
+            width: 1.4rem;
+            height: 1.4rem;
+        }
+
+        .custom-control-label::after {
+            top: 0.6rem;
+            left: 0.3rem;
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 5px;
+            background: #fff;
+        }
+        .custom-control {
+            padding-left: 2rem;
+        }
+
+        // TOP page
+        .gauge {
+            margin-bottom: 1rem;
+        }
+
+        // analytics page
+        .day-minute div {
+            font-size: 1.2rem;
+        }
+
+        .table td, .table th {
+            font-size: 1.4rem;
+        }
+        .wd {
+            font-size: 1.2rem;
+        }
+
+        // база знаний
+        .questions .question .title .btns {
+            font-size: 1.6rem;
+        }
+        .questions .points input {
+            padding: 2px 8px;
+            text-align: center;
+        }
+
+        // найстроки
+        .input-group-sm>.form-control {
+            font-size: 1.4rem;
+        }
+
+        .custom-select-sm {
+            height: 2.8rem;
+        }
+
+        .custom-select {
+            height: 3.2rem;
+            font-size: 1.4rem;
+        }
+        .box svg {
+            height: 50px;
+        }
+
+        // ОКК
+        .quality-page { 
+            .table td.month,
+            .table th.month, 
+            .table thead th.month,
+            .wd div,
+            .table th,
+            .cell-input {
+                font-size: 1.2rem;
+            }
+
+            .table-sm td,
+            .table-sm th {
+                padding: 3px 4px;
+            }
+        }
+
+        // HR
+        .resp_user {
+            font-size: 1rem;
+        }
+        .ind p {
+            font-size: 1.2rem;
+        }
+        .progress,
+        .plan p.name {
+            font-size: 1.4rem;
+        }
+        .recruting-analytics h3 {
+            font-size: 1.8rem;
+        }
+        .skypes-table td:nth-child(7), .skypes-table th:nth-child(7) {
+            font-size: 1rem;
+        }
+    }
+
+    
+}
+
+.v-select  {
+    font-size: 13px;
+
+    .vs__dropdown-toggle { 
+        padding: 3px 4px;
+    }
+}
+
+.pagination-sm .page-link {
+    font-size: 1.3rem;
+}
+
+.ui-sidebar__header {
+    font-size: 1.6rem;
+}
+
+.modal-title {
+    color: $text-grey;
+    font-size: 1.4rem;
+}
+
+.modal-body {
+    font-size: 16px;
+
+    select.form-control-sm:not([size]):not([multiple]) {
+        height: 2.75rem;
+    }
+}
+
+.modal-content {
+    border-radius: 1rem;
+}
+.modal-dialog {
+    .close {
+        font-size: 2.2rem;
+    }
+}
+
+
+/**
+    end of new design integration
+*/

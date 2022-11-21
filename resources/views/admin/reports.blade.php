@@ -1,7 +1,7 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 @section('title', 'Табель')
 @section('content')
-    <div class="">
+    <div class="old__content">
         <div class="row">
             <div class="col-md-12  mt-4 mb-3">
                 <nav>
@@ -12,7 +12,7 @@
                         @if(auth()->user()->can('entertime_view'))<a class="nav-item nav-link " id="nav-home-tab" href="/timetracking/reports/enter-report" >Время прихода</a>@endif
                         @if(auth()->user()->can('hr_view'))<a class="nav-item nav-link" id="nav-profilex-tab" href="/timetracking/analytics">HR</a> @endif
                         @if(auth()->user()->can('analytics_view'))<a class="nav-item nav-link" id="nav-profile-tab" href="/timetracking/an">Аналитика</a>@endif
-                        @if(auth()->user()->can('salaries_view'))<a class="nav-item nav-link " id="nav-salary-tab" href="/timetracking/salaries">Начисление</a>@endif
+                        @if(auth()->user()->can('salaries_view'))<a class="nav-item nav-link " id="nav-salary-tab" href="/timetracking/salaries">Начисления</a>@endif
                         @if(auth()->user()->can('quality_view'))<a class="nav-item nav-link" id="nav-quality-tab" href="/timetracking/quality-control">ОКК</a>@endif
                     </div>
                 </nav>
@@ -21,7 +21,7 @@
                         :groups="{{json_encode($groups)}}"
                         :fines="{{json_encode($fines)}}" 
                         :years="{{json_encode($years)}}" 
-                        :can_edit="{{ true }}"
+                        :can_edit="true"
                         activeuserid="{{json_encode(auth()->user()->id)}}" 
                         activeuserpos="{{json_encode(auth()->user()->position_id)}}" 
                     />
@@ -29,4 +29,17 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+
+<style>
+.header__profile {
+    display:none !important;
+}
+@media (min-width: 1360px) {
+.container.container-left-padding {
+    padding-left: 7rem !important; 
+}
+}
+</style>
 @endsection

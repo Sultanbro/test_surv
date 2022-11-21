@@ -15,9 +15,9 @@
         <a href="#" class="header__right-icon" v-b-popover.hover.left.html="'Тикеты - Этот функционал в разработке'">
             <img src="/images/dist/header-right-5.svg" alt="nav icon" class="header__icon-img">
         </a>
-        <a href="#" class="header__right-icon check" @click="$emit('pop', 'checklist')">
+        <!-- <a href="#" class="header__right-icon check" @click="$emit('pop', 'checklist')">
             <img src="/images/dist/header-right-6.svg" alt="nav icon" class="header__icon-img">
-        </a>
+        </a> -->
 
         <chat-search-button></chat-search-button>
     </div>
@@ -28,7 +28,7 @@
             <img src="/images/dist/header-right-avatar-1.png" alt="header avatar">
         </a>
         <a href="#" class="header__message-item new">
-            <img src="/images/dist/header-right-avatar-2.png" alt="header avatar">
+            <img src="/images/dist/header-right-avatar-2.png" alt="header avatar"> 
         </a>
         <a href="#" class="header__message-item new">
             <img src="/images/dist/header-right-avatar-3.png" alt="header avatar">

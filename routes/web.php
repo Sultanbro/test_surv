@@ -17,7 +17,7 @@ use App\Http\Controllers\Admin\GroupAnalyticsController;
 | contains the "web" middleware group. Now create something great!
 |
  */
-//Auth::routes();
+// Auth::routes();
 // Route::any('/auth', function () {
 //     return redirect('/');
 // });
@@ -25,8 +25,24 @@ use App\Http\Controllers\Admin\GroupAnalyticsController;
 // Route::get('/login', [LoginController::class, 'index'])->name('login');
 // Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
+// Authentication Routes...
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('_login');
+Route::post('login', 'Auth\LoginController@login');
+Route::post('logout', 'Auth\LoginController@logout')->name('_logout');
 
+// // Registration Routes...
+// $this->get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+// $this->post('register', 'Auth\RegisterController@register');
 
+// // Password Reset Routes...
+// $this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+// $this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+// $this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+// $this->post('password/reset', 'Auth\ResetPasswordController@reset');
+
+/**
+ * Central App routes
+ */
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/test', [HomeController::class, 'test']);
 
