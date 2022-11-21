@@ -12,14 +12,14 @@
     </div>
 
     <new-courses @init="intro['courses'] = true"></new-courses>
-    <new-profit @init="intro['profit'] = true"></new-profit> 
+    <new-profit @init="intro['profit'] = true"></new-profit>
     <new-trainee-estimation @init="intro['estimation'] = true"></new-trainee-estimation>
     <new-compare-indicators @init="intro['indicators'] = true"></new-compare-indicators>
 
     <popup v-if="popBalance"
         title="Баланс оклада"
         desc="Заработанная сумма именно от окладной части"
-        :open="popBalance" 
+        :open="popBalance"
         @close="popBalance=false"
         :width="popupWidth">
         <popup-balance></popup-balance>
@@ -28,7 +28,7 @@
     <popup v-if="popKpi"
         title="Kpi"
         desc="Выполняя дополнительные активности, заработайте больше денег"
-        :open="popKpi" 
+        :open="popKpi"
         @close="popKpi=false"
         :width="popupWidth">
         <popup-kpi></popup-kpi>
@@ -37,7 +37,7 @@
     <popup v-if="popBonuses"
         title="Бонусы"
         desc="Зарабатывайте бонусы, выполняя дополнительные активности"
-        :open="popBonuses" 
+        :open="popBonuses"
         @close="popBonuses=false"
         :width="popupWidth">
         <popup-bonuses></popup-bonuses>
@@ -46,7 +46,7 @@
     <popup v-if="popQuartalPremiums"
         title="Квартальные премии"
         desc=""
-        :open="popQuartalPremiums" 
+        :open="popQuartalPremiums"
         @close="popQuartalPremiums=false"
         :width="popupWidth">
         <popup-quartal></popup-quartal>
@@ -55,7 +55,7 @@
     <popup v-if="popNominations"
         title="Номинации"
         desc="Дополнительное поле с описанием функционала данного окна"
-        :open="popNominations" 
+        :open="popNominations"
         @close="popNominations=false"
         :width="popupWidth">
         <popup-nominations></popup-nominations>
@@ -77,7 +77,7 @@ export default {
     },
     data: function () {
         return {
-            fields: [], 
+            fields: [],
             popBalance: false,
             popKpi: false,
             popBonuses: false,
@@ -112,6 +112,6 @@ export default {
 @media(max-width:1910px){
     #page-profile{
         padding-right: 0;
-    }   
+    }
 }
 </style>

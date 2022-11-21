@@ -613,7 +613,7 @@ export default {
 }
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-<style>
+<style scoped>
 .vs__clear {
     display: none !important;
 }
@@ -692,7 +692,7 @@ select {
     min-height: 100vh;
 }
 </style>
-<style>
+<style scoped>
 .multiselect {
     margin-top: 0;
     min-height: 30px;

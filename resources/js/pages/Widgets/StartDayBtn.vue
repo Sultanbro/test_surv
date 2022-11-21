@@ -38,7 +38,7 @@
       
     </a>
 
-    <!-- Corp book page when day has started --> 
+    <!-- Corp book page when day has started -->
     <b-modal v-model="showCorpBookPage" title="Н" size="xl" class="modalle" hide-footer hide-header no-close-on-backdrop>
       <div class="corpbook" v-if="corp_book_page !== undefined && corp_book_page !== null">
         <div class="inner">
@@ -51,10 +51,10 @@
               <span class="text">Я прочитал</span>
               <span class="timer"></span>
             </button>
-        </div>      
+        </div>
       </div>
     </b-modal>
-  
+
   </div>
 
 </template>
@@ -72,7 +72,8 @@ export default {
 
       // corp book
       corp_book_page: null,
-      showCorpBookPage: false
+      showCorpBookPage: false,
+      isLoading: false
     }
   },
 
@@ -82,7 +83,7 @@ export default {
 
   methods: {
     /**
-     * Узнать текущий статус 
+     * Узнать текущий статус
      * Начат или завершен рабочий день
      */
     workStatus() {
@@ -95,10 +96,10 @@ export default {
 
             if(this.workdayStatus === 'started' && response.data.corp_book.has) {
               this.corp_book_page = response.data.corp_book.page
-              this.showCorpBookPage = this.corp_book_page !== null 
+              this.showCorpBookPage = this.corp_book_page !== null
               this.bookCounter()
-            } 
-            
+            }
+
             this.$emit('currentBalance', response.data.balance)
 
             this.status = 'init'
@@ -111,7 +112,7 @@ export default {
 
     /**
      * private
-     * 
+     *
      * Получить параметры для начатия и завершения дня
      */
     getParams() {
@@ -139,21 +140,20 @@ export default {
             return;
           }
 
-          if(response.data.status == 'started') {
+          if(response.data.status === 'started') {
 
             this.workdayStatus = 'started';
 
             if(response.data.corp_book.has) {
               this.corp_book_page = response.data.corp_book.page
-              this.showCorpBookPage = this.corp_book_page != null; 
+              this.showCorpBookPage = this.corp_book_page != null;
               this.bookCounter();
             }
-            
             this.$toast.info('День начат');
-          } 
+          }
 
-          if(response.data.status == 'stopped') { // stopped
-            this.workdayStatus = response.data.status;
+          if(response.data.status === 'stopped' || response.data.status === '') { // stopped
+            this.status = 'stopped';
             this.$toast.info('День завершен');
           }
 
@@ -184,7 +184,7 @@ export default {
           VJQuery('#readCorpBook').prop('disabled', false);
         }, seconds * 1000);
     },
-    
+
     /**
      * Set read corp book page
      */
