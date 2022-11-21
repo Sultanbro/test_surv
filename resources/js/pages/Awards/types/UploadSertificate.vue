@@ -27,16 +27,31 @@
       >
     </div>
 
-    <div v-if="hasImage" class="sertificate-prewiev">
-      <div class="sertificate-modal">
-        <div class="preview-canvas" v-b-modal="'modal-constructor'">
-          <vue-pdf-embed v-if="imageSrc" :source="imageSrc"/>
+
+    <template v-if="imagePath.length > 0">
+      <div class="sertificate-prewiev">
+        <div class="sertificate-modal">
+          <div class="preview-canvas" v-b-modal="'modal-constructor'">
+            <vue-pdf-embed :source="imagePath"/>
+          </div>
+          <BModal id="modal-constructor" title="Контсруктор сертификата" size="xl" hide-footer centered>
+            <UploadSertificateModal :styles="styles" :img="imagePath" @save-changes="saveStyles"/>
+          </BModal>
         </div>
-        <BModal id="modal-constructor" title="Контсруктор сертификата" size="xl" centered>
-          <UploadSertificateModal :img="imageSrc" />
-        </BModal>
+        </div>
+    </template>
+    <template v-else>
+      <div v-if="hasImage" class="sertificate-prewiev">
+        <div class="sertificate-modal">
+          <div class="preview-canvas" v-b-modal="'modal-constructor'">
+            <vue-pdf-embed v-if="imageSrc" :source="imageSrc"/>
+          </div>
+          <BModal id="modal-constructor" title="Контсруктор сертификата" size="xl" hide-footer centered>
+            <UploadSertificateModal :styles="styles" :img="imageSrc" @save-changes="saveStyles"/>
+          </BModal>
+        </div>
       </div>
-    </div>
+    </template>
   </BContainer>
 </template>
 
@@ -59,15 +74,20 @@ export default {
     VuePdfEmbed
   },
   props: {
-    sertificate: File,
-    fileType: Number,
+    path: String,
+    format: String,
+    styles: String
   },
   data() {
     return {
       file: "",
       image: '',
       imageSrc: null,
+      imagePath: ''
     };
+  },
+  mounted(){
+    this.imagePath = this.path;
   },
   computed: {
     hasImage() {
@@ -100,6 +120,14 @@ export default {
     },
   },
   methods: {
+    saveStyles(fullName, courseName, hours, date){
+      const styles = {};
+      styles.fullName = fullName;
+      styles.courseName = courseName;
+      styles.hours = hours;
+      styles.date = date;
+      this.$emit("styles-change", styles);
+    },
     clearImage() {
       this.image = null;
     },

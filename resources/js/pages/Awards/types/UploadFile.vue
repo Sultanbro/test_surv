@@ -7,7 +7,6 @@
                     placeholder="Выберите Файл"
                     drop-placeholder="Перетащите файл сюда..."
                     accept=".jpg, .png"
-                    :required="image === null"
                     type="file"
                     id="file"
                     ref="file"
@@ -21,7 +20,7 @@
             </BFormFile
             >
             <BButton
-                    v-if="hasImage"
+                    v-if="hasImage || imagePath.length > 0"
                     variant="danger"
                     class="ml-3 clear-btn"
                     @click="clearImage"
@@ -30,22 +29,38 @@
             >
         </div>
 
-        <div v-if="hasImage" class="images-prewiev">
-            <BImg
-                    v-b-modal="'myModal'"
-                    :src="imageSrc"
-                    class="mb-3 img"
-                    fluid
-                    block
-                    rounded
+        <template v-if="imagePath.length > 0">
+            <BImg :src="imagePath"
+                  alt="картинка"
+                  class="mb-3 img"
+                  fluid
+                  block
+                  rounded
+                  ref="imgcur"
+                  v-b-modal="'myModalPath'"
             ></BImg>
-            <BModal id="myModal" title="BootstrapVue" class="w-80%">
-                <BImg :src="imageSrc" class="mb-3 img" fluid block rounded></BImg>
+            <BModal id="myModalPath" title="BootstrapVue" class="w-80%">
+                <BImg :src="imagePath" class="mb-3 img" fluid block rounded></BImg>
             </BModal>
-        </div>
-        <div v-else>
-            <p class="text-danger">Выберите файл(ы)</p>
-        </div>
+        </template>
+       <template v-else>
+           <div v-if="hasImage" class="images-prewiev">
+               <BImg
+                       v-b-modal="'myModal'"
+                       :src="imageSrc"
+                       class="mb-3 img"
+                       fluid
+                       block
+                       rounded
+               ></BImg>
+               <BModal id="myModal" title="BootstrapVue" class="w-80%">
+                   <BImg :src="imageSrc" class="mb-3 img" fluid block rounded></BImg>
+               </BModal>
+           </div>
+           <div v-else>
+               <p class="text-danger">Выберите файл(ы)</p>
+           </div>
+       </template>
     </BContainer>
 </template>
 
@@ -58,18 +73,27 @@
             reader.onerror = (error) => reject(error);
         });
 
+    async function getImageFileFromUrl(url, format) {
+        let response = await fetch(url);
+        let data = await response.blob();
+        let metadata = {
+            type: "image/" + format
+        };
+        return new File([data], "result.jpg", metadata);
+    }
+
     export default {
         name: "UploadFile",
         components: {},
         props: {
-            fileType: Number,
-            uploadImage: Array | Boolean,
-            imagesPath: Array | Boolean
+            path: String,
+            format: String
         },
         data() {
             return {
                 image: null,
                 imageSrc: '',
+                imagePath: ''
             };
         },
         computed: {
@@ -79,8 +103,16 @@
                 }
             },
         },
+        mounted() {
+            this.imagePath = this.path;
+            console.log(this.imagePath.length);
+            if(this.imagePath.length > 0){
+                this.$emit("image-download", getImageFileFromUrl(this.imagePath, this.format));
+            }
+        },
         watch: {
             image(newValue, oldValue) {
+                this.imagePath = '';
                 let newValueString = newValue.name + newValue.size;
                 let oldValueString = null;
                 if (oldValue !== null) {
@@ -106,6 +138,7 @@
         methods: {
             async clearImage() {
                 this.image = null;
+                this.imagePath = '';
             },
             toClickImg() {
                 console.log("ok");

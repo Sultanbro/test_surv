@@ -21,6 +21,7 @@
                     <BTh>Тип</BTh>
                     <BTh>Дата создания</BTh>
                     <BTh>Постановщик</BTh>
+                    <BTh>Картинка</BTh>
                 </BTr>
             </BThead>
             <BTbody>
@@ -28,10 +29,13 @@
                     <BTd>{{ key + 1 }}</BTd>
                     <BTd>{{ item.name }}</BTd>
                     <BTd>{{ item.description }}</BTd>
-                    <BTd v-if="item.awardTypeId === 1 || item.awardTypeId === 2">Картинка</BTd>
+                    <BTd v-if="item.award_type_id === 1 || item.award_type_id === 2">Картинка</BTd>
                     <BTd v-else>Данные начислений</BTd>
                     <BTd>{{ item.created_at }}</BTd>
                     <BTd>{{ item.awardCreator }}</BTd>
+                    <BTd>
+                        <img :src="item.path" alt="" style="width: 100px; height: auto;">
+                    </BTd>
                     <BTd @click.stop>
                         <bButton size="sm" pill variant="danger" @click="remove(item)"><i class="fa fa-trash"></i>
                         </bButton>
@@ -44,8 +48,7 @@
             <hr>
             <h4>Пока нет ни одного сертификата.</h4>
         </div>
-
-<!--        <Draggable/>-->
+        <!--        <Draggable/>-->
 
         <EditAwardSidebar
                 v-if="showEditAwardSidebar"
@@ -73,6 +76,7 @@
             };
         },
         mounted(){
+            console.log(this.tableItems);
             let loader = this.$loading.show();
             this.axios
                 .get("/awards/get")
