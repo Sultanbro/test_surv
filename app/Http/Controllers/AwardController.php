@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AwardsByTypeRequest;
 use App\Http\Requests\RewardRequest;
 use App\Models\Award;
 use App\Http\Requests\StoreAwardRequest;
@@ -49,6 +50,18 @@ class AwardController extends Controller
     {
         $authUser = Auth::user() ?? User::find(13865);
         $response = $this->awardService->myAwards($authUser);
+
+        return \response()->success($response);
+    }
+
+      /**
+     * @throws Exception
+     */
+    public function awardsByType(AwardsByTypeRequest $request)
+    {
+        $user_id = Auth::id() ?? 5;
+
+        $response = $this->awardService->awardsByType($request, $user_id);
 
         return \response()->success($response);
     }
