@@ -3,7 +3,7 @@
     <!-- avatar  -->
     <div class="header__avatar">
         <img :src="$laravel.avatar" alt="avatar image" >
-        
+
         <!-- hover menu -->
         <div class="header__menu">
             <div class="header__menu-title">
@@ -20,7 +20,7 @@
                     <span class="menu__item-title">Выход</span>
                 </button>
                 <input type="hidden" :value="$laravel.csrfToken" name="_token" />
-            </form> 
+            </form>
         </div>
     </div>
 
@@ -73,7 +73,7 @@
 import LeftSidebarItem from './LeftSidebarItem'
 
 export default {
-    name: 'LeftSidebar', 
+    name: 'LeftSidebar',
     components: {
         LeftSidebarItem
     },
@@ -141,8 +141,7 @@ export default {
                     name: 'База знаний',
                     href: '/kb',
                     icon: 'icon-nd-kdb',
-                    height: 0,
-                    hide: !this.$can('kb_view')
+                    height: 0
                 },
                 {
                     hide: !this.showEducation,
@@ -349,7 +348,7 @@ export default {
     overflow-y: auto;
     &::-webkit-scrollbar {
         width: 0; /* высота для горизонтального скролла */
-        height: 0; 
+        height: 0;
     }
 }
 
@@ -466,11 +465,11 @@ export default {
 
     background: #fff;
     cursor:pointer;
-    
+
     &:first-of-type{
         border-radius: 0 1rem 0 0;
     }
-    
+
     &:last-of-type{
         border-radius: 0 0 1rem 0;
     }
