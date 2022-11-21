@@ -267,7 +267,7 @@ export default {
             let h = this.items[0].height
             return this.items.reduce((res, item) => {
                 if(item.hide) return res;
-                h += item.height + 6
+                h += item.height + 4
                 if(this.height - h > 0){
                     res.visible.push(item)
                 }
@@ -344,7 +344,7 @@ export default {
     display: flex;
     flex-direction: column;
     flex: 0 1 100%;
-    gap:.5rem;
+    gap:.3rem;
     overflow-y: auto;
     &::-webkit-scrollbar {
         width: 0; /* высота для горизонтального скролла */
@@ -392,11 +392,11 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap:.7rem;
+    gap:.5rem;
 
     width: 100%;
     height: 100%;
-    padding:  1rem 1.2rem 1rem;
+    padding:  0.9rem 1.2rem;
 
     text-align: center;
     font-size: 1.2rem;

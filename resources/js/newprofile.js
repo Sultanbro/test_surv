@@ -60,11 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Profit slider
 
-    
+
 
 
     // Profit info slider
-   
+
 
 
     // VJQuery('.courses__item').each(function(){
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    
+
 
 
     if(window.innerWidth>900){
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //    VJQuery(this).css('background',`linear-gradient(to right, ${VJQuery(this).attr('data-color')} ${VJQuery(this).find('.value').text()}, #fff ${VJQuery(this).find('.value').text()})`)
     // })
 
-    
+
 
     // Smooth Scroll
 
@@ -154,10 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         openPopup(popupAward, modalOverlay);
     })
-    VJQuery('.header__nav-link a[href$="kpi"], .stat__item[data-item$="kpi"]').on('click', function(e){
-        e.preventDefault();
-        openPopup(popupKPI, modalOverlay);
-    })
+    // VJQuery('.header__nav-link a[href$="kpi"], .stat__item[data-item$="kpi"]').on('click', function(e){
+    //     e.preventDefault();
+    //     openPopup(popupKPI, modalOverlay);
+    // })
     VJQuery('.header__nav-link a[href$="balance"], .stat__item[data-item$="balance"]').on('click', function(e){
         e.preventDefault();
         openPopup(popupBalance, modalOverlay);
@@ -214,18 +214,18 @@ document.addEventListener('DOMContentLoaded', () => {
             popup.fadeOut(500);
         })
     }
-    
+
     /**
-     * maybe animate circle 
+     * maybe animate circle
      */
-    
+
     // const circle = document.querySelector('.progress-ring__circle');
 
     // const circleNum = null;
     // const circleNumValue = 0;
     // const radius = 0;
     // const circumference = 0;
-    // const circleParent = null; 
+    // const circleParent = null;
 
     // if(circle !== null) {
     //     const radius = circle.r.baseVal.value;
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //     const circleNum = circleParent.querySelector('.profile__progressbar-number span');
     //     const circleNumValue = circleParent.querySelector('.profile__progressbar-number span').textContent;
     //     animateValue(circleNum, 0, 0, 1);
-    // } 
+    // }
 
 
 
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //             VJQuery('html').addClass('modal-open')
     //         }
     //     })
-        
+
     let switchTabs = (tab) => {
         // get all tab list items and remove the is-active class
         let tabs = tab.closest('.tabs').querySelectorAll('.tab__item');
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
     VJQuery(window).on('resize',function(e){
 
     })
- 
+
     VJQuery('.point-close').click(function(){
         VJQuery(this).closest('.profile-box').find('.profile-slick').slideToggle(700, 'swing')
         VJQuery(this).closest('.profile-box').find('.profile__title').toggleClass('_slicked')
