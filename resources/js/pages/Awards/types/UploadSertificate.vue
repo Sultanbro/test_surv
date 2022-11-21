@@ -29,7 +29,7 @@
 
     <div v-if="hasImage" class="sertificate-prewiev">
       <div class="sertificate-modal">
-        <div style="width: 300px; height: auto;" v-b-modal="'modal-constructor'">
+        <div class="preview-canvas" v-b-modal="'modal-constructor'">
           <vue-pdf-embed v-if="imageSrc" :source="imageSrc"/>
         </div>
         <BModal id="modal-constructor" title="Контсруктор сертификата" size="xl" centered>
@@ -115,12 +115,25 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+  .preview-canvas{
+    cursor: pointer;
+    border: 1px solid #999;
+    border-radius: 10px;
+    overflow: hidden;
+    display: inline-block;
+    transition: 0.2s all ease;
+    &:hover{
+      transform: scale(1.05);
+      box-shadow: 0 0 6px 0 #999;
+    }
+    canvas{
+      height: 170px!important;
+      width: auto!important;
+    }
+  }
 .sertificate-modal {
-  cursor: default;
-  width: 150px;
-  height: 150px;
-  padding: 10px;
+  margin-top: 20px;
 }
 .img {
   object-fit: cover;
