@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('messenger', function () {
+Broadcast::channel('messages.{userId}', function ($user, $userId) {
     return true;
 });
+

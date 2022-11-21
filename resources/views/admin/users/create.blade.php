@@ -1861,30 +1861,32 @@ $('#bitrix_editor').click(function() {
 });
 </script>
 <script>
-String.prototype.replaceAt = function(index, replacement) {
-    return this.substring(0, index) + replacement + this.substring(index + replacement.length);
-}
-
-@if(isset($user))
-$('#weekdays-input').val('{{$user->weekdays}}');
-@else
-$('#weekdays-input').val('0000000');
-@endif
-$('#weekdays .weekday').click(function() {
-    let val = $('#weekdays input').val();
-    let el = $(this);
-    let id = el.data('id');
-    if(el.hasClass('active')) {
-        $(this).removeClass('active');
-
-        val = val.replaceAt(id, "0");
-    } else {
-        $(this).addClass('active');
-        val = val.replaceAt(id, "1");
+$(document).ready(function() {
+    String.prototype.replaceAt = function(index, replacement) {
+        return this.substring(0, index) + replacement + this.substring(index + replacement.length);
     }
 
-    $('#weekdays-input').val(val);
+    @if(isset($user))
+    $('#weekdays-input').val('{{$user->weekdays}}');
+    @else
+    $('#weekdays-input').val('0000000');
+    @endif
+    $('#weekdays .weekday').click(function() {
+        let val = $('#weekdays input').val();
+        let el = $(this);
+        let id = el.data('id');
+        if(el.hasClass('active')) {
+            $(this).removeClass('active');
 
+            val = val.replaceAt(id, "0");
+        } else {
+            $(this).addClass('active');
+            val = val.replaceAt(id, "1");
+        }
+
+        $('#weekdays-input').val(val);
+
+    });
 });
 </script>
 <script>

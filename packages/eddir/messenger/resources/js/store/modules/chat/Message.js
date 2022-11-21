@@ -1,22 +1,83 @@
 import API from "../../API.vue";
 import Vue from "vue";
 
+import {MESSAGES_MAX_COUNT, MESSAGES_LOAD_COUNT, MESSAGES_LOAD_COUNT_ON_RESET} from "./constants.js";
+
 export default {
   state: {
     messages: [],
     editMessage: null,
     pinnedMessage: null,
+    messagesLoadMoreCount: MESSAGES_LOAD_COUNT,
+    startMessageId: null,
+    messagesOldEndReached: false,
+    messagesNewEndReached: false,
+    messagesLoading: false
   },
   actions: {
-    async loadMessages({commit, getters, dispatch}) {
-      return API.fetchMessages(getters.chat.id, messages => {
-        commit('setMessages', Object.keys(messages).map(key => messages[key]).reverse());
-        dispatch('markMessagesAsRead', messages);
+    async loadMessages({commit, getters, dispatch}, {reset = false, goto = 0} = {}) {
+      if (getters.messagesLoading) {
+        return;
+      }
+      commit('setMessagesLoading', true);
 
-        if (getters.chat.unread_messages_count > 0 && getters.chat.unread_messages_count <= messages.length) {
-          commit('markChatAsSeen');
+      let count, startMessageId, including;
+      if (reset) {
+        commit('resetMessages');
+        count = MESSAGES_LOAD_COUNT_ON_RESET;
+        startMessageId = null;
+        including = false;
+      } else if (goto > 0) {
+        commit('resetMessages');
+        count = -MESSAGES_MAX_COUNT;
+        startMessageId = goto;
+        including = true;
+      } else {
+        count = getters.messagesLoadMoreCount;
+        startMessageId = getters.startMessageId;
+        including = false;
+      }
+
+      return API.fetchMessages(getters.chat.id, count, startMessageId, including, messages => {
+        if (messages.length === 0) {
+
+          if (count < 0) {
+            commit('setMessagesNewEndReached');
+          } else {
+            commit('setMessagesOldEndReached');
+          }
+
+        } else {
+
+          messages = Object.keys(messages).map(key => messages[key]).reverse();
+          dispatch('markMessagesAsRead', messages);
+
+          if (getters.chat.unread_messages_count > 0 && getters.chat.unread_messages_count <= messages.length) {
+            commit('markChatAsSeen');
+          }
+
+          if (reset) {
+            commit('setMessages', messages);
+            dispatch('requestScroll', 0);
+          } else if (count > 0) {
+            commit('prependMessages', messages);
+          } else {
+            commit('appendMessages', messages);
+          }
+
         }
+        commit('setMessagesLoading', false);
       });
+    },
+    async loadMoreOldMessages({commit, getters, dispatch}) {
+      commit('setMessagesLoadMoreCount', MESSAGES_LOAD_COUNT);
+      commit('setStartMessageId', getters.messages[0].id);
+      dispatch('loadMessages');
+    },
+    async loadMoreNewMessages({commit, getters, dispatch}) {
+      commit('setMessagesLoadMoreCount', -MESSAGES_LOAD_COUNT);
+      commit('setStartMessageId', getters.messages[getters.messages.length - 1].id);
+      dispatch('loadMessages');
     },
     async sendMessage({commit, getters, dispatch}, message) {
       const guid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -28,7 +89,9 @@ export default {
         sender_id: getters.user.id
       }
       commit('addMessage', newMessage);
+      dispatch('requestScroll', 0);
       return API.sendMessage(getters.chat.id, message, response => {
+        response.new_id = response.id;
         response.id = guid;
         commit('updateMessage', response);
       }, () => {
@@ -51,7 +114,8 @@ export default {
       let chat = getters.chats.find(chat => chat.id === message.chat_id);
       // add chat if not exists
       if (chat) {
-        commit('updateChatLastMessage', {chat, message});
+        const isSender = getters.user.id === message.sender_id;
+        commit('updateChatLastMessage', {chat, message, isSender});
       } else {
         await API.getChatInfo(message.chat_id, chat => {
           commit('addChat', chat);
@@ -59,31 +123,48 @@ export default {
       }
     },
     async newServiceMessage({commit, getters, dispatch}, message) {
-      switch (message.type) {
+      switch (message.event.type) {
         case 'join':
-          commit('addMembers', [message.payload.user]);
+          commit('addMembers', [message.event.payload.user]);
           break;
         case 'leave':
           // check if it is current chat
           if (getters.chat.id === message.chat_id) {
-            commit('removeMembers', [message.payload.user]);
+            commit('removeMembers', [message.event.payload.user]);
           }
           break;
         case 'delete':
-          commit('deleteMessage', message.payload.message_id);
+          commit('deleteMessage', message.event.payload.message_id);
           break;
         case 'edit':
-          commit('updateMessage', message.payload.message);
+          commit('updateMessage', message.event.payload.message);
           break;
         case 'pin':
-          // todo
+          commit('setPinnedMessage', message.event.payload.message);
           break;
         case 'unpin':
-          // todo
+          commit('setPinnedMessage', null);
           break;
         case 'rename':
-          commit('updateChat', message.payload.chat);
+          commit('updateChat', message.event.payload.chat);
+          break
+        case 'online':
+          if (getters.chat.private && getters.chat.users.find(member => member.id === message.sender.id)) {
+            commit('setChatOnline', true);
+          }
+          return true;
+        case 'offline':
+          // if user is in current chat
+          if (getters.chat.private && getters.chat.users.find(member => member.id === message.sender.id)) {
+            commit('setChatOnline', false);
+          }
+          return true;
+        case 'chat_created':
+          commit('addChat', message.event.payload.chat);
           break;
+        case 'read':
+          commit('setMessageRead', {messageId: message.event.payload.message_id, reader: message.sender});
+          return true;
       }
 
       if (getters.chat.id === message.chat_id) {
@@ -91,8 +172,16 @@ export default {
       }
     },
     async markMessagesAsRead({commit, getters, dispatch}, messages) {
+      // exclude messages from user
+      messages = messages.filter(message => message.sender_id !== getters.user.id);
+      // exclude messages contains reader.id (current user)
+      messages = messages.filter(message => !message.readers || !message.readers.find(reader => reader.id === getters.user.id));
       if (messages.length > 0) {
-        await API.setMessagesAsRead(messages.map(message => message.id));
+        await API.setMessagesAsRead(messages.map(message => message.id), (response) => {
+          if (response.left === 0) {
+            commit('markChatAsSeen');
+          }
+        });
       }
     },
     async deleteMessage({commit, getters, dispatch}, message) {
@@ -125,8 +214,26 @@ export default {
         chat_id: getters.chat.id,
         sender_id: getters.user.id
       }
+
       commit('addMessage', newMessage);
-      return API.uploadFile(getters.chat.id, "File", file, message => {
+
+      // set body message depends on file mime type
+      let caption = 'Файл';
+      switch (file.type) {
+        case 'image/jpeg':
+        case 'image/png':
+        case 'image/gif':
+          caption = 'Изображение';
+          break;
+          case 'audio/mpeg':
+          case 'audio/ogg':
+          case 'audio/wav':
+            caption = 'Голосовое сообщение';
+            break;
+      }
+
+      return API.uploadFile(getters.chat.id, caption, file, message => {
+        message.new_id = message.id;
         message.id = guid;
         commit('updateMessage', message);
       }, () => {
@@ -141,6 +248,12 @@ export default {
     setMessages(state, messages) {
       state.messages = messages;
     },
+    appendMessages(state, messages) {
+      state.messages.push(...messages.reverse());
+    },
+    prependMessages(state, messages) {
+      state.messages.unshift(...messages);
+    },
     addMessage(state, message) {
       if (!state.messages.find(m => m.id === message.id)) {
         message.failed = false;
@@ -149,6 +262,11 @@ export default {
     },
     updateMessage(state, message) {
       let index = state.messages.findIndex(m => m.id === message.id);
+
+      if (index !== -1 && message.new_id) {
+        message.id = message.new_id;
+      }
+
       Vue.set(state.messages, index, message);
     },
     deleteMessage(state, message) {
@@ -160,6 +278,37 @@ export default {
     },
     setPinnedMessage(state, message) {
       state.pinnedMessage = message;
+    },
+    setMessagesLoadMoreCount(state, messagesLoadMoreCount) {
+      state.messagesLoadMoreCount = messagesLoadMoreCount;
+    },
+    setStartMessageId(state, startMessageId) {
+      state.startMessageId = startMessageId;
+    },
+    resetMessages(state) {
+      state.messages = [];
+      state.messagesLoadMoreCount = MESSAGES_MAX_COUNT;
+      state.startMessageId = null;
+      state.messagesOldEndReached = false;
+      state.messagesNewEndReached = false;
+    },
+    setMessagesOldEndReached(state) {
+      state.messagesOldEndReached = true;
+    },
+    setMessagesNewEndReached(state) {
+      state.messagesNewEndReached = true;
+    },
+    setMessagesLoading(state, messagesLoading) {
+      state.messagesLoading = messagesLoading;
+    },
+    setMessageRead(state, {messageId, reader}) {
+      let message = state.messages.find(m => m.id === messageId);
+      if (message) {
+        if (!message.readers) {
+          message.readers = [];
+        }
+        message.readers.push(reader);
+      }
     }
   },
   getters: {
@@ -167,5 +316,10 @@ export default {
     editMessage: state => state.editMessage,
     pinnedMessage: state => state.pinnedMessage,
     unreadCount: (state, getters) => getters.chats.reduce((sum, chat) => sum + chat.unread_messages_count, 0),
+    messagesLoadMoreCount: state => state.messagesLoadMoreCount,
+    startMessageId: state => state.startMessageId,
+    messagesOldEndReached: state => state.messagesOldEndReached,
+    messagesNewEndReached: state => state.messagesNewEndReached,
+    messagesLoading: state => state.messagesLoading
   }
 }

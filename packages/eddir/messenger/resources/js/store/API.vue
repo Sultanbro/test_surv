@@ -61,10 +61,19 @@ export default {
   /**
    * Fetch messages
    * @param {Number} chatId
+   * @param count
+   * @param start_message_id
+   * @param including
    * @param {Function} callback
    */
-  fetchMessages(chatId, callback) {
-    axios.get(REST_URI + 'chat/' + chatId + '/messages').then(response => {
+  fetchMessages(chatId, count, start_message_id, including, callback) {
+    axios.get(REST_URI + 'chat/' + chatId + '/messages', {
+      params: {
+        count: count,
+        start_message_id: start_message_id,
+        including: including,
+      }
+    }).then(response => {
       callback(response.data);
     });
   },
@@ -159,6 +168,28 @@ export default {
    */
   unpinMessage(messageId, callback = () => {}) {
     axios.delete(REST_URI + 'message/' + messageId + '/pin').then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
+   * Pin chat
+   * @param {Number} chatId
+   * @param {Function} callback
+   */
+  pinChat(chatId, callback = () => {}) {
+    axios.post(REST_URI + 'chat/' + chatId + '/pin').then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
+   * Unpin chat
+   * @param {Number} chatId
+   * @param {Function} callback
+   */
+  unpinChat(chatId, callback = () => {}) {
+    axios.delete(REST_URI + 'chat/' + chatId + '/pin').then(response => {
       callback(response.data);
     });
   },

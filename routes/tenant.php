@@ -69,6 +69,11 @@ use App\Http\Controllers\CallibroController;
 use \App\Http\Controllers\Department\UserController as DepartmentUserController;
 use App\Http\Controllers\NotificationControlller;
 
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
+use Eddir\Messenger\Handlers\MessengerWebSocketHandler;
+use Illuminate\Support\Facades\Route;
+
+
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -81,7 +86,10 @@ use App\Http\Controllers\NotificationControlller;
 |
 */
 
-
+/**
+ * Custom websocket handler
+ */
+WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
 
 Route::middleware([
     'web',
@@ -89,7 +97,8 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
     \Auth::routes(); 
-   
+    
+
 
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
 
@@ -685,7 +694,6 @@ Route::middleware([
         'prefix'   => 'messenger/api',
     ], function() {
 
-      
         /**
          * Get chats list
          */
@@ -745,6 +753,16 @@ Route::middleware([
          * Unpin message
          */
         Route::delete('/v2/message/{message_id}/pin', 'MessagesController@unpinMessage')->name('api.v2.unpinMessage');
+
+        /**
+         * Pin chat
+         */
+        Route::post('/v2/chat/{chat_id}/pin', 'ChatsController@pinChat')->name('api.v2.pinChat');
+
+        /**
+         * Unpin chat
+         */
+        Route::delete('/v2/chat/{chat_id}/pin', 'ChatsController@unpinChat')->name('api.v2.unpinChat');
 
         /**
          * Create chat

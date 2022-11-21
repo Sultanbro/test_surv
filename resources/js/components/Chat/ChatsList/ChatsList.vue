@@ -7,7 +7,11 @@
       :y="contextMenuY"
       :parent-element="$refs.messengerChats"
     >
-      <a href="javascript:" @click="leftChat(contextMenuChat)">Покинуть чат</a>
+      <a v-if="contextMenuChat && contextMenuChat.pinned" href="javascript:"
+         @click="contextMenuVisible = false; unpinChat(contextMenuChat)">Открепить чат</a>
+      <a v-else href="javascript:" @click="contextMenuVisible = false; pinChat(contextMenuChat)">Закрепить чат</a>
+      <a href="javascript:" @click="contextMenuVisible = false; leftChat(contextMenuChat)">Покинуть чат</a>
+
     </ContextMenu>
     <div class="messenger__chats-list">
       <template v-if="!isSearchMode || !fullscreen">
@@ -15,36 +19,30 @@
           v-if="!isSearchMode || !fullscreen"
           v-for="item in sortedChats"
           :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-          @click="openChat(item)"
+          @click="openChat(item, $event)"
           @contextmenu.prevent="showChatContextMenu($event, item)"
         >
           <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
         </div>
       </template>
-      <template v-else>
-        <template v-if="isSearchMessagesMode">
-          <div
-            v-if="isSearchMode"
-            v-for="(item, index) in searchMessagesChatsResults"
-            v-bind:key="index"
-            :class="'messenger__chat-item'"
-            @click="openChat(item)"
-          >
-            <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
-          </div>
-        </template>
-        <template v-if="isSearchContactsMode">
-          <div
-            v-if="isSearchMode"
-            v-for="item in contacts"
-            :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-            :data-test-id="item.id"
-            @click="openChat(item)"
-            @contextmenu.prevent="showChatContextMenu($event, item)"
-          >
-            <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
-          </div>
-        </template>
+      <template v-else-if="isSearchMode">
+        <div
+          v-for="item in contacts"
+          :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
+          :data-test-id="item.id"
+          @click="openChat(item, $event)"
+          @contextmenu.prevent="showChatContextMenu($event, item)"
+        >
+          <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
+        </div>
+        <div
+          v-for="(item, index) in searchMessagesChatsResults"
+          v-bind:key="index"
+          :class="'messenger__chat-item'"
+          @click="openChat(item, $event)"
+        >
+          <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
+        </div>
       </template>
     </div>
   </div>
@@ -61,7 +59,6 @@ export default {
   computed: {
     ...mapGetters(['sortedChats', 'chat',
       'contacts', 'searchMessagesChatsResults',
-      'isSearchMessagesMode', 'isSearchContactsMode',
       'isSearchMode'])
   },
   props: {
@@ -79,8 +76,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['loadChat', 'toggleMessenger', 'leftChat']),
-    openChat(chat) {
+    ...mapActions(['loadChat', 'toggleMessenger', 'leftChat', 'pinChat', 'unpinChat']),
+    openChat(chat, event) {
+      event.stopPropagation();
       this.contextMenuVisible = false;
       if (!this.chat || this.chat.id !== chat.id) {
         this.loadChat(chat.id);
@@ -101,6 +99,7 @@ export default {
 
 <style>
 
+/*noinspection CssUnusedSymbol*/
 .messenger__chats-container {
   display: flex;
   flex-flow: column;
@@ -113,12 +112,13 @@ export default {
   border-bottom-left-radius: 4px;
 }
 
+/*noinspection CssUnusedSymbol*/
 .messenger__collapsed {
   min-width: auto;
 }
 
 .messenger__collapsed .messenger__chat-item {
-  padding: 5px 10px;
+  padding: 5px;
 }
 
 .messenger__chat-item:hover {
@@ -131,8 +131,8 @@ export default {
   max-width: 100%;
   cursor: pointer;
   overflow-y: auto;
-  margin: 20px 11px 0 14px;
-  padding-right: 19px;
+  margin: 20px 5px 0 10px;
+  padding-right: 10px;
 }
 
 /*noinspection CssUnusedSymbol*/
@@ -147,7 +147,7 @@ export default {
   display: flex;
   flex: 1 1 100%;
   margin-bottom: 5px;
-  padding: 10px 14px;
+  padding: 10px;
   position: relative;
   transition: background-color .3s cubic-bezier(.25, .8, .5, 1);
 }

@@ -19,7 +19,7 @@ export default {
     ...mapGetters(['isOpen'])
   },
   methods: {
-    ...mapActions(['toggleMessenger'])
+    ...mapActions(['toggleMessenger']),
   }
 }
 </script>

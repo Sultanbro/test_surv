@@ -7,6 +7,7 @@
 <script>
 import ChatsList from "../ChatsList/ChatsList";
 
+// noinspection JSUnusedGlobalSymbols
 export default {
   components: {
     ChatsList,

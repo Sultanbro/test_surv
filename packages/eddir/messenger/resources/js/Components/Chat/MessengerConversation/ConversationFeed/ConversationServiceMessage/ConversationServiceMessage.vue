@@ -2,21 +2,34 @@
   <div class="messenger__message-notification">
     <div class="messenger__message-notification-content">
       <div class="messenger__message-notification-content-text">
-        <template v-if="message.type === 'join'">
-          <span class="messenger__message-notification__link">{{ message.user.name }}</span>
+        <template v-if="message.event.type === 'join'">
+          <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
           добавил
-          <span class="messenger__message-notification__link">{{ message.payload.user.name }}</span>
+          <span class="messenger__message-notification__link">{{ message.event.payload.user.name }}</span>
         </template>
-        <template v-if="message.type === 'leave'">
-          <span class="messenger__message-notification__link">{{ message.user.name }}</span>
+        <template v-else-if="message.event.type === 'leave'">
+          <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
           удалил
-          <span class="messenger__message-notification__link">{{ message.payload.user.name }}</span>
+          <span class="messenger__message-notification__link">{{ message.event.payload.user.name }}</span>
         </template>
-        <template v-if="message.type === 'rename'">
-          <span class="messenger__message-notification__link">{{ message.user.name }}</span>
+        <template v-else-if="message.event.type === 'rename'">
+          <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
           переименовал чат в
-          <span class="messenger__message-notification__link">{{ message.payload.chat.title }}</span>
+          <span class="messenger__message-notification__link">{{ message.event.payload.chat.title }}</span>
         </template>
+        <template v-else-if="message.event.type === 'pin'">
+          <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
+          закрепил сообщение
+        </template>
+        <template v-else-if="message.event.type === 'unpin'">
+          <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
+          открепил сообщение
+        </template>
+        <template v-else-if="message.event.type === 'chat_created'">
+          <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
+          создал новый чат
+        </template>
+
       </div>
     </div>
   </div>

@@ -41,4 +41,8 @@ class MessengerMessage extends Model {
         return $this->belongsTo( MessengerFile::class, 'id', 'message_id' );
     }
 
+    public function event(): BelongsTo {
+        return $this->belongsTo( MessengerEvent::class, 'id', 'message_id' );
+    }
+
 }

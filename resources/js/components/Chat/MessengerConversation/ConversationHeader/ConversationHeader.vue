@@ -1,10 +1,13 @@
 <template>
   <div class="messenger__chat-header">
     <div class="messenger__chat-wrapper">
-      <div class="messenger__info-wrapper" v-if="chat">
-        <div class="messenger__avatar messenger__clickable" @click="toggleInfoPanel" :style="'background-image: url(\'' + chat.image + '\');'"></div>
-        <div class="messenger__text-ellipsis messenger__clickable" @click="toggleInfoPanel">
-          <div class="messenger__chat-name" v-text="chat.title"></div>
+      <div class="messenger__info-wrapper" v-if="chat" @click="toggleInfoPanel">
+        <AlternativeAvatar :title="chat.title" :image="chat.image"/>
+        <div class="messenger__info-wrapper_head messenger__text-ellipsis messenger__clickable">
+          <div class="messenger__chat-name">
+            <span v-text="chat.title"></span>
+            <span v-if="chat.private" class="messenger__chat-status" :class="{'messenger__chat-status--online': chat.isOnline}"></span>
+          </div>
           <div class="messenger__chat-info" v-text="chat.role"></div>
         </div>
         <div class="messenger__chat-button-right" @click="openAddMemberModal">
@@ -23,12 +26,14 @@
 import {mapActions, mapGetters} from "vuex";
 import ConversationPinned from "../ConversationPinned/ConversationPinned.vue";
 import AddMemberModal from "./AddMemberModal/AddMemberModal.vue";
+import AlternativeAvatar from "../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue";
 
 export default {
   name: "ConversationHeader",
   components: {
     ConversationPinned,
     AddMemberModal,
+    AlternativeAvatar,
   },
   computed: {
     ...mapGetters(['chat', 'contacts', 'user'])
@@ -36,11 +41,13 @@ export default {
   data() {
     return {
       showAddMemberModal: false,
+      imageError: false,
     };
   },
   methods: {
     ...mapActions(['getUsers', 'setCurrentChatContacts', 'toggleInfoPanel']),
-    openAddMemberModal() {
+    openAddMemberModal(e) {
+      e.stopPropagation();
       this.getUsers();
       this.setCurrentChatContacts(this.chat.users.filter(user => user.id !== this.user.id));
       this.showAddMemberModal = true;
@@ -52,7 +59,6 @@ export default {
 <style>
 
 .messenger__chat-header {
-  position: absolute;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -91,17 +97,11 @@ export default {
   color: #9ca6af;
 }
 
-.messenger__avatar {
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-color: #ddd;
-  height: 42px;
-  width: 42px;
-  min-height: 42px;
-  min-width: 42px;
-  margin-right: 15px;
-  border-radius: 50%;
+.messenger__info-wrapper_head {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
 }
 
 .messenger__clickable {
@@ -113,6 +113,19 @@ export default {
   line-height: 22px;
   color: #3f4144;
   margin-bottom: 2px;
+}
+
+.messenger__chat-status {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f60000;
+  margin-left: 4px;
+}
+
+.messenger__chat-status--online {
+  background-color: #4cd964;
 }
 
 .messenger__chat-button-right {

@@ -14,12 +14,12 @@ class FilesController {
     /**
      * Upload file
      *
+     * @param int $chatId
      * @param Request $request
      *
      * @return JsonResponse
      */
     public function upload( int $chatId, Request $request ): JsonResponse {
-        $message = [];
         // check is user is not authorized
         if ( ! Auth::check() ) {
             return response()->json( [ 'message' => 'Unauthorized' ], 401 );
@@ -39,8 +39,34 @@ class FilesController {
             return response()->json( [ 'message' => 'File is not valid: ' ], 400 );
         }
 
-        $fileModel            = new MessengerFile();
-        $fileModel->name      = time() . '_' . $file->getClientOriginalName();
+        $fileModel = new MessengerFile();
+        // get current milliseconds
+        $milliseconds = round( microtime( true ) * 1000 );
+        // file name should be unique with a timestamp
+        $fileModel->name = $milliseconds . '_' . $file->getClientOriginalName();
+
+        // if file doesnt contain extension
+        if ( ! $file->getClientOriginalExtension() ) {
+            // add extension based on mime type
+            switch ( $file->getMimeType() ) {
+                case 'audio/ogg':
+                    $fileModel->name .= '.ogg';
+                    break;
+                case 'audio/mpeg':
+                    $fileModel->name .= '.mp3';
+                    break;
+                case 'video/webm':
+                case 'audio/webm':
+                    $fileModel->name .= '.webm';
+                    break;
+                case 'audio/wav':
+                    $fileModel->name .= '.wav';
+                    break;
+                default:
+                    dd( $file->getMimeType() );
+            }
+        }
+
         $fileModel->file_path = $file->storeAs( 'messenger', $fileModel->name );
 
         // if file is image, create thumbnail
@@ -51,14 +77,12 @@ class FilesController {
 
             // upload thumbnail to storage
             $fileModel->thumbnail_path = 'messenger/thumbs/thumb_' . $fileModel->name;
-            Storage::disk('s3')->put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents($tmpFile), 'thumbs' );
+            Storage::put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents( $tmpFile ) );
 
             unlink( $tmpFile );
         }
 
         $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ), $fileModel );
-        // set message as read
-        MessengerFacade::setMessageAsRead( $message, Auth::user() );
 
         if ( ! $message->files ) {
             return response()->json( [ 'message' => 'File is not saved: ' ], 400 );
@@ -67,11 +91,11 @@ class FilesController {
         return response()->json( $message );
     }
 
-    public function resize_crop_image( $max_width, $max_height, $source_file, $dst_dir, $quality = 80 ) {
-        $imgsize = getimagesize( $source_file );
-        $width   = $imgsize[0];
-        $height  = $imgsize[1];
-        $mime    = $imgsize['mime'];
+    public function resize_crop_image( $max_width, $max_height, $source_file, $dst_dir, $quality = 80 ): bool {
+        $img_size = getimagesize( $source_file );
+        $width    = $img_size[0];
+        $height   = $img_size[1];
+        $mime     = $img_size['mime'];
 
         switch ( $mime ) {
             case 'image/gif':
@@ -98,8 +122,8 @@ class FilesController {
         $dst_img = imagecreatetruecolor( $max_width, $max_height );
         $src_img = $image_create( $source_file );
 
-        $width_new  = (int) ($height * $max_width / $max_height);
-        $height_new = (int) ($width * $max_height / $max_width);
+        $width_new  = (int) ( $height * $max_width / $max_height );
+        $height_new = (int) ( $width * $max_height / $max_width );
         //if the new width is greater than the actual width of the image, then the height is too large and the rest cut off, or vice versa
         if ( $width_new > $width ) {
             //cut point by height
@@ -120,5 +144,7 @@ class FilesController {
         if ( $src_img ) {
             imagedestroy( $src_img );
         }
+
+        return true;
     }
 }

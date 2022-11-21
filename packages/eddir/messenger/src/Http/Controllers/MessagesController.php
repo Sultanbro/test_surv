@@ -2,11 +2,11 @@
 
 namespace Eddir\Messenger\Http\Controllers;
 
+use Eddir\Messenger\Facades\MessengerFacade;
 use Eddir\Messenger\Models\MessengerMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use MessengerFacade;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -21,41 +21,42 @@ class MessagesController {
      *
      * @return JsonResponse
      */
-    public function fetchMessages(int $chatId): JsonResponse
-    {
+    public function fetchMessages( int $chatId ): JsonResponse {
         // check if user is member of chat
-        if (!MessengerFacade::isMember($chatId, Auth::user()->id)) {
-            return response()->json([
+        if ( ! MessengerFacade::isMember( $chatId, Auth::user()->id ) ) {
+            return response()->json( [
                 'error' => 'You are not member of this chat'
-            ], 403);
+            ], 403 );
         }
-        $messages = MessengerFacade::fetchMessages($chatId, 0, $this->perPage);
+
+        // get start message id from request or set to 0
+        $startMessageId = (int) request()->input( 'start_message_id', 0 );
+        $count          = (int) request()->input( 'count', $this->perPage );
+        $including      = request()->boolean( 'including' );
+
+        $messages = MessengerFacade::fetchMessages( $chatId, $count, $startMessageId, $including );
 
         // last message should contain readers
         $lastMessage = $messages->first();
-        if ($lastMessage) {
+        if ( $lastMessage ) {
             $lastMessage->readers = $lastMessage->readers()->get();
             // exclude current user from readers
-            $lastMessage->readers = $lastMessage->readers->filter(function ($reader) {
+            $lastMessage->readers = $lastMessage->readers->filter( function ( $reader ) {
                 return $reader->id !== Auth::user()->id;
-            });
+            } );
             // set default avatar if user has no img_url
-            $lastMessage->readers->transform(function ($reader) {
-                if (!$reader->img_url) {
-                    $reader->img_url = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
+            $lastMessage->readers->transform( function ( $reader ) {
+                if ( ! $reader->img_url ) {
+                    $reader->img_url = config( 'messenger.user_avatar.default' ) ?? asset( 'vendor/messenger/images/users.png' );
                 }
+
                 return $reader;
-            });
+            } );
         }
 
-        $events = collect(MessengerFacade::fetchEvents($chatId));
-        $messages = collect($messages)->merge($events)->toArray();
+        $messages = $messages->toArray();
 
-        usort($messages, function ($a, $b) {
-            return strtotime($b['created_at']) - strtotime($a['created_at']);
-        });
-
-        return response()->json($messages);
+        return response()->json( $messages );
     }
 
     /**
@@ -65,17 +66,16 @@ class MessagesController {
      *
      * @return JsonResponse
      */
-    public function searchMessages(Request $request): JsonResponse
-    {
-        $search = $request->get('q');
+    public function searchMessages( Request $request ): JsonResponse {
+        $search = $request->get( 'q' );
         // select where user is member of chat and message contains search text
-        $messages = MessengerMessage::whereHas('chat', function ($query) {
-            $query->whereHas('users', function ($query) {
-                $query->where('user_id', Auth::user()->id);
-            });
-        })->where('body', 'like', "%{$search}%")->get();
+        $messages = MessengerMessage::whereHas( 'chat', function ( $query ) {
+            $query->whereHas( 'users', function ( $query ) {
+                $query->where( 'user_id', Auth::user()->id );
+            } );
+        } )->where( 'body', 'like', "%$search%" )->get();
 
-        return response()->json($messages);
+        return response()->json( $messages );
     }
 
     /**
@@ -86,31 +86,29 @@ class MessagesController {
      *
      * @return JsonResponse
      */
-    public function sendMessage(int $chatId, Request $request): JsonResponse
-    {
+    public function sendMessage( int $chatId, Request $request ): JsonResponse {
         $message = [];
         // check is user is not authorized
-        if (!Auth::check()) {
-            return response()->json([ 'message' => 'Unauthorized' ], 401);
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
         // check if message is empty
-        if ($request->message == "") {
-            return response()->json([ 'message' => 'Message is empty: ' ], 400);
+        if ( $request->message == "" ) {
+            return response()->json( [ 'message' => 'Message is empty: ' ], 400 );
         }
         // check if message is too long
-        if (strlen($request->message) > 1000) {
+        if ( strlen( $request->message ) > 1000 ) {
             // split message to parts
-            $parts = str_split($request->message, 1000);
+            $parts = str_split( $request->message, 1000 );
             // send each part
-            foreach ($parts as $part) {
-                $message = MessengerFacade::sendMessage($chatId, Auth::user()->id, $part);
+            foreach ( $parts as $part ) {
+                $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $part );
             }
         } else {
-            $message = MessengerFacade::sendMessage($chatId, Auth::user()->id, $request->get('message'));
+            $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ) );
         }
-        // set message as read
-        MessengerFacade::setMessageAsRead($message, Auth::user());
-        return response()->json($message);
+
+        return response()->json( $message );
     }
 
     /**
@@ -121,15 +119,14 @@ class MessagesController {
      *
      * @return JsonResponse
      */
-    public function editMessage(int $messageId, Request $request): JsonResponse
-    {
+    public function editMessage( int $messageId, Request $request ): JsonResponse {
         // check if user is sender of message
-        if (!MessengerFacade::isSender($messageId, Auth::user()->id)) {
-            return response()->json([ 'message' => 'You are not sender of this message' ], 403);
+        if ( ! MessengerFacade::isSender( $messageId, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not sender of this message' ], 403 );
         }
         // check if message is empty
-        if (empty($request->message)) {
-            return response()->json([ 'message' => 'Message is empty' ], 400);
+        if ( empty( $request->message ) ) {
+            return response()->json( [ 'message' => 'Message is empty' ], 400 );
         }
         // check if message is too long
         if ( strlen( $request->message ) <= 1000 ) {
@@ -138,7 +135,8 @@ class MessagesController {
             // return error
             return response()->json( [ 'message' => 'Message is too long' ], 400 );
         }
-        return response()->json($response);
+
+        return response()->json( $response );
     }
 
     /**
@@ -148,15 +146,15 @@ class MessagesController {
      *
      * @return JsonResponse
      */
-    public function deleteMessage(int $messageId): JsonResponse
-    {
+    public function deleteMessage( int $messageId ): JsonResponse {
         // check if user is sender of message
-        if (!MessengerFacade::isSender($messageId, Auth::user()->id)) {
-            return response()->json([ 'message' => 'You are not sender of this message' ], 403);
+        if ( ! MessengerFacade::isSender( $messageId, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not sender of this message' ], 403 );
         }
         // delete message
-        $message = MessengerFacade::deleteMessage($messageId, Auth::user());
-        return response()->json($message);
+        $message = MessengerFacade::deleteMessage( $messageId, Auth::user() );
+
+        return response()->json( $message );
     }
 
     /**
@@ -166,22 +164,27 @@ class MessagesController {
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function setMessagesAsRead(): JsonResponse
-    {
-        $messageIds = request()->get('messages');
+    public function setMessagesAsRead(): JsonResponse {
+        $messageIds = request()->get( 'messages' );
         // select messages by ids where user is a member of chat of each message
-        $messages = MessengerMessage::whereIn('id', $messageIds)
-            ->whereHas('chat', function ($query) {
-                $query->whereHas('users', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
-                });
-            })
-            ->get();
-        // set messages as read
-        MessengerFacade::setMessagesAsRead($messages, Auth::user());
+        $messages = MessengerMessage::whereIn( 'id', $messageIds )
+                                    ->whereHas( 'chat', function ( $query ) {
+                                        $query->whereHas( 'users', function ( $query ) {
+                                            $query->where( 'user_id', Auth::user()->id );
+                                        } );
+                                    } )
+                                    ->get();
+        if ( $messages->count() > 0 ) {
+            // set messages as read
+            MessengerFacade::setMessagesAsRead( $messages, Auth::user() );
 
-        // return get chats last messages
-        return response()->json(MessengerFacade::fetchChatsLastMessages(Auth::user()));
+            // return get chats last messages
+            return response()->json( [
+                'left' => $messages->first()->chat->getUnreadMessagesCount(Auth::user()),
+            ] );
+        }
+
+        return response()->json( [ 'ok' => false ] );
     }
 
     /**
@@ -191,18 +194,18 @@ class MessagesController {
      *
      * @return JsonResponse
      */
-    public function pinMessage(int $messageId): JsonResponse
-    {
+    public function pinMessage( int $messageId ): JsonResponse {
         /** @var MessengerMessage $message */
-        $message = MessengerMessage::find($messageId);
+        $message = MessengerMessage::find( $messageId );
 
         // check if user is member of chat
-        if (!MessengerFacade::isMember($message->chat_id, Auth::user()->id)) {
-            return response()->json([ 'message' => 'You are not member of this chat' ], 403);
+        if ( ! MessengerFacade::isMember( $message->chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not member of this chat' ], 403 );
         }
         // pin message
-        $message = MessengerFacade::pinMessage($messageId, Auth::user());
-        return response()->json($message);
+        $message = MessengerFacade::pinMessage( $messageId, Auth::user() );
+
+        return response()->json( $message );
     }
 
     /**
@@ -212,18 +215,18 @@ class MessagesController {
      *
      * @return JsonResponse
      */
-    public function unpinMessage(int $messageId): JsonResponse
-    {
+    public function unpinMessage( int $messageId ): JsonResponse {
         /** @var MessengerMessage $message */
-        $message = MessengerMessage::find($messageId);
+        $message = MessengerMessage::find( $messageId );
 
         // check if user is member of chat
-        if (!MessengerFacade::isMember($message->chat_id, Auth::user()->id)) {
-            return response()->json([ 'message' => 'You are not member of this chat' ], 403);
+        if ( ! MessengerFacade::isMember( $message->chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not member of this chat' ], 403 );
         }
         // unpin message
-        $message = MessengerFacade::unpinMessage($messageId, Auth::user());
-        return response()->json($message);
+        $message = MessengerFacade::unpinMessage( $messageId, Auth::user() );
+
+        return response()->json( $message );
     }
 
 }

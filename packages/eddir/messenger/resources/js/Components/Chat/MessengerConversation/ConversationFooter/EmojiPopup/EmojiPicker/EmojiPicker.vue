@@ -20,6 +20,7 @@
 
 <script lang="ts">
 import emojis from './emojis.ts'
+import clickOutside from '../../../../directives/clickOutside.ts'
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
 // const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -58,9 +59,9 @@ export default /*#__PURE__*/{
           obj[category] = {}
 
           // for (const emoji in this.emojiTable[category]) {
-            // if (new RegExp(`.*${escapeRegExp(this.search)}.*`).test(emoji)) {
-            //   obj[category][emoji] = this.emojiTable[category][emoji]
-            // }
+          // if (new RegExp(`.*${escapeRegExp(this.search)}.*`).test(emoji)) {
+          //   obj[category][emoji] = this.emojiTable[category][emoji]
+          // }
           // }
 
           if (Object.keys(obj[category]).length === 0) {
@@ -79,7 +80,7 @@ export default /*#__PURE__*/{
       this.$emit('emoji', emoji)
     },
     toggle(e) {
-      this.display.visible = ! this.display.visible
+      this.display.visible = !this.display.visible
 
       // const messengerWindowRect = document.getElementById('messengerInput').getBoundingClientRect()
       // const x = messengerWindowRect.left - 300;
@@ -99,30 +100,7 @@ export default /*#__PURE__*/{
     },
   },
   directives: {
-    'click-outside': {
-      bind(el, binding) {
-        if (typeof binding.value !== 'function') {
-          return
-        }
-
-        const bubble = binding.modifiers.bubble
-        const handler = e => {
-          if (bubble || (! el.contains(e.target) && el !== e.target)) {
-            binding.value(e)
-          }
-        }
-        el.__vueClickOutside__ = handler
-
-        document.addEventListener('click', handler)
-      },
-      unbind(el) {
-        if (el.__vueClickOutside__ !== null) {
-          document.removeEventListener('click', el.__vueClickOutside__)
-
-          el.__vueClickOutside__ = null
-        }
-      },
-    },
+    clickOutside
   },
   mounted() {
     document.addEventListener('keyup', this.escape)

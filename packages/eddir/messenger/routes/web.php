@@ -4,15 +4,14 @@
  * API Routes
  */
 
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
+use Eddir\Messenger\Handlers\MessengerWebSocketHandler;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/chat', function () {
-    return Inertia::render('chat/ChatWindow', [
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-
+/**
+ * Custom websocket handler
+ */
+WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
 
 /**
  * Authentication for pusher private channels
@@ -78,6 +77,16 @@ Route::post('/v2/message/{message_id}/pin', 'MessagesController@pinMessage')->na
  * Unpin message
  */
 Route::delete('/v2/message/{message_id}/pin', 'MessagesController@unpinMessage')->name('api.v2.unpinMessage');
+
+/**
+ * Pin chat
+ */
+Route::post('/v2/chat/{chat_id}/pin', 'ChatsController@pinChat')->name('api.v2.pinChat');
+
+/**
+ * Unpin chat
+ */
+Route::delete('/v2/chat/{chat_id}/pin', 'ChatsController@unpinChat')->name('api.v2.unpinChat');
 
 /**
  * Create chat
