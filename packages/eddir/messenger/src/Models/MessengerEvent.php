@@ -3,6 +3,7 @@
 namespace Eddir\Messenger\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User;
 
 class MessengerEvent extends Model {
@@ -32,23 +33,21 @@ class MessengerEvent extends Model {
     public const TYPE_DESCRIPTION = 'description';
     public const TYPE_INVITE_LINK = 'invite_link';
     public const TYPE_INVITE_LINKS = 'invite_links';
-    public const TYPE_STICKER_SET = 'sticker_set';
-    public const TYPE_PREVIEWS = 'previews';
-    public const TYPE_HISTORY = 'history';
-    public const TYPE_HISTORY_DELETE = 'history_delete';
-    public const TYPE_HISTORY_RESTORE = 'history_restore';
+    public const TYPE_ONLINE = 'online';
+    public const TYPE_OFFLINE = 'offline';
 
     public static array $save_events = [
         self::TYPE_CHAT_CREATED,
         self::TYPE_JOIN,
         self::TYPE_LEAVE,
-        self::TYPE_RENAME
+        self::TYPE_RENAME,
+        self::TYPE_PIN,
+        self::TYPE_UNPIN,
     ];
 
     protected $fillable = [
         'type',
-        'chat_id',
-        'user_id',
+        'message_id',
         'payload'
     ];
 
@@ -56,12 +55,8 @@ class MessengerEvent extends Model {
         'payload' => 'array'
     ];
 
-    public function chat() {
-        return $this->belongsTo( MessengerChat::class );
-    }
-
-    public function user() {
-        return $this->belongsTo( User::class );
+    public function message(): BelongsTo {
+        return $this->belongsTo(MessengerMessage::class, 'message_id');
     }
 
     public function prepareUser( $user ): array {

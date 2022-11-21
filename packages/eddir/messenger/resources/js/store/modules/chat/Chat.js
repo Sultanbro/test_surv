@@ -15,9 +15,11 @@ export default {
     setChat(state, chat) {
       state.chat = chat;
     },
-    updateChatLastMessage(state, {chat, message}) {
+    updateChatLastMessage(state, {chat, message, isSender}) {
       chat.last_message = message;
-      chat.unread_messages_count++;
+      if (!isSender) {
+        chat.unread_messages_count++;
+      }
     },
     removeChat(state, chat) {
       state.chats = state.chats.filter(c => c.id !== chat.id);
@@ -49,23 +51,30 @@ export default {
       const chatFromList = state.chats.find(c => c.id === chat.id);
       chatFromList.title = chat.title;
       chatFromList.description = chat.description;
+      chatFromList.pinned = chat.pinned;
       if (state.chat && state.chat.id === chat.id) {
         state.chat.title = chat.title;
         state.chat.description = chat.description;
+        state.chat.pinned = chat.pinned;
       }
-    }
+    },
+    setChatOnline(state, online) {
+      state.chat.isOnline = online;
+    },
   },
   getters: {
     chats: state => state.chats,
     sortedChats: state => {
       return state.chats.sort((a, b) => {
-        if (a.last_message === null) {
-          return 1;
-        }
-        if (b.last_message === null) {
+        if (a.pinned) {
           return -1;
         }
-        return new Date(b.last_message.created_at) - new Date(a.last_message.created_at);
+        if (b.pinned) {
+          return 1;
+        }
+        let date1 = a.last_message ? a.last_message.created_at : a.created_at;
+        let date2 = b.last_message ? b.last_message.created_at : b.created_at;
+        return new Date(date2) - new Date(date1);
       });
     },
     chat: state => state.chat,
@@ -82,7 +91,7 @@ export default {
       await API.getChatInfo(chatId, chat => {
         commit('setChat', chat);
         commit('setPinnedMessage', chat.pinned_message);
-        dispatch('loadMessages');
+        dispatch('loadMessages', {reset: true});
         dispatch('cancelEditMessage');
       });
     },
@@ -130,6 +139,16 @@ export default {
     async editChatTitle({commit, getters, dispatch}) {
       await API.editChat(getters.chat.id, getters.chat.title, getters.chat.description);
       commit('updateChat', getters.chat);
+    },
+    async pinChat({commit, getters, dispatch}, chat) {
+      await API.pinChat(chat.id);
+      chat.pinned = true;
+      commit('updateChat', chat);
+    },
+    async unpinChat({commit, getters, dispatch}, chat) {
+      await API.unpinChat(chat.id);
+      chat.pinned = false;
+      commit('updateChat', chat);
     }
   }
 }

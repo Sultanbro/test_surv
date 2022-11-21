@@ -1,5 +1,6 @@
 <template>
-  <div class="messenger__card-window" v-show="isOpen" @keydown.esc="escapeChat" id="messengerWindow">
+  <div @keydown.esc="escapeChat" v-click-outside="toggle" v-show="isOpen"
+       class="messenger__card-window" id="messengerWindow">
     <SearchBox></SearchBox>
     <div class="messenger__chat-container">
       <ChatsList :fullscreen="true"></ChatsList>
@@ -17,7 +18,9 @@ import ChatsList from "./ChatsList/ChatsList.vue";
 import MessengerConversation from "./MessengerConversation/MessengerConversation.vue";
 import ChinBox from "./ChinBox/ChinBox.vue";
 import InfoPanel from "./InfoPanel/InfoPanel";
+import clickOutside from "./directives/clickOutside.ts";
 
+// noinspection JSUnusedGlobalSymbols
 export default {
   name: "ChatApp",
   components: {
@@ -27,6 +30,20 @@ export default {
     ChinBox,
     InfoPanel
   },
+  directives: {
+    clickOutside
+  },
+  watch: {
+    isOpen: function (val) {
+      if (val) {
+        // set div modal-open class
+        document.body.classList.add('modal-open');
+      } else {
+        // remove div modal-open class
+        document.body.classList.remove('modal-open');
+      }
+    }
+  },
   computed: {
     ...mapGetters(['isInitialized', 'user', 'isOpen'])
   },
@@ -34,26 +51,29 @@ export default {
     this.boot();
   },
   methods: {
-    ...mapActions(['boot', 'escapeChat', 'toggleMessenger'])
+    ...mapActions(['boot', 'escapeChat', 'toggleMessenger']),
+    toggle() {
+      if (this.isOpen) {
+        this.toggleMessenger();
+      }
+    }
   }
 }
 </script>
 
 <style>
 
-.messenger__chat-container {
-  display: flex;
-  flex: 1;
-  overflow-y: hidden;
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
 }
 
 .messenger__card-window {
-  margin-right: 6rem;
   position: fixed;
+  margin-right: 6rem;
   right: 0;
   bottom: 0;
-  width: 80vw;
-  z-index: 1001;
+  width: 90vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -63,6 +83,13 @@ export default {
   overflow-wrap: break-word;
   white-space: normal;
   -webkit-tap-highlight-color: transparent;
+  z-index: 1000;
+}
+
+.messenger__chat-container {
+  display: flex;
+  flex: 1;
+  overflow-y: hidden;
 }
 
 </style>

@@ -14,12 +14,12 @@ class FilesController {
     /**
      * Upload file
      *
+     * @param int $chatId
      * @param Request $request
      *
      * @return JsonResponse
      */
     public function upload( int $chatId, Request $request ): JsonResponse {
-        $message = [];
         // check is user is not authorized
         if ( ! Auth::check() ) {
             return response()->json( [ 'message' => 'Unauthorized' ], 401 );
@@ -51,7 +51,7 @@ class FilesController {
 
             // upload thumbnail to storage
             $fileModel->thumbnail_path = 'messenger/thumbs/thumb_' . $fileModel->name;
-            Storage::disk('s3')->put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents($tmpFile), 'thumbs' );
+            Storage::put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents($tmpFile) );
 
             unlink( $tmpFile );
         }
@@ -67,11 +67,11 @@ class FilesController {
         return response()->json( $message );
     }
 
-    public function resize_crop_image( $max_width, $max_height, $source_file, $dst_dir, $quality = 80 ) {
-        $imgsize = getimagesize( $source_file );
-        $width   = $imgsize[0];
-        $height  = $imgsize[1];
-        $mime    = $imgsize['mime'];
+    public function resize_crop_image( $max_width, $max_height, $source_file, $dst_dir, $quality = 80 ): bool {
+        $img_size = getimagesize( $source_file );
+        $width   = $img_size[0];
+        $height  = $img_size[1];
+        $mime    = $img_size['mime'];
 
         switch ( $mime ) {
             case 'image/gif':
@@ -120,5 +120,6 @@ class FilesController {
         if ( $src_img ) {
             imagedestroy( $src_img );
         }
+        return true;
     }
 }

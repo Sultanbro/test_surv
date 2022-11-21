@@ -20,11 +20,11 @@ class MessengerFile extends Model {
         return $this->belongsTo( MessengerMessage::class, 'message_id' );
     }
 
-    public function getFilePathAttribute( $value ) {
+    public function getFilePathAttribute( $value ): ?string {
         return $value ? Storage::url( $value ) : null;
     }
 
-    public function getThumbnailPathAttribute( $value ) {
+    public function getThumbnailPathAttribute( $value ): ?string {
         return $value ? Storage::url( $value ) : null;
     }
 }

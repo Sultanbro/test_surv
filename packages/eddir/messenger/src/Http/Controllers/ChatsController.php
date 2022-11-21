@@ -93,13 +93,6 @@ class ChatsController extends Controller
             MessengerFacade::getChatAttributesForUser($chat, Auth::user());
         }
 
-        foreach ($users as $user) {
-            // set default image if user has no image
-            if (empty($user->image)) {
-                $user->image = config('messenger.user_avatar.default') ?? asset('vendor/messenger/images/users.png');
-            }
-        }
-
         return response()->json([
             'chats' => $chats,
             'users' => $users,
@@ -314,6 +307,7 @@ class ChatsController extends Controller
      * Edit chat
      *
      * @param Request $request
+     * @param int $chat_id
      *
      * @return JsonResponse
      */

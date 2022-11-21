@@ -16,7 +16,6 @@ class InstallCommand extends Command
         $this->updateNodePackages(function ($packages) {
             return [
                        "vuex"                    => "^3.6.2",
-                       "vue-draggable-resizable" => "^2.3.0",
                        "moment"                  => "",
                        "vue-simple-context-menu" => "3.4.2",
                         "vue-multiselect"        => "^2.1.6",

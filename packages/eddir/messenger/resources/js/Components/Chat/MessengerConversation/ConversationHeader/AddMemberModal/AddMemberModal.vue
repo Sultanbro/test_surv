@@ -63,12 +63,12 @@ export default {
   },
   methods: {
     ...mapActions(['createChat', 'addMembers', 'removeMembers']),
-    submitForm() {
+    submitForm(e) {
+      e.stopPropagation();
       if (!this.title) {
         return;
       }
       if (this.chat.private) {
-        console.log("create chat", this.members);
         this.createChat({
           title: this.title,
           description: '',

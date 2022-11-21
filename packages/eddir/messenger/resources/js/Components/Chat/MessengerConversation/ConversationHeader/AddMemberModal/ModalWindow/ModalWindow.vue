@@ -40,7 +40,8 @@
 <script>
 export default {
   methods: {
-    close() {
+    close(e) {
+      e.stopPropagation();
       this.$emit('close');
     },
   },

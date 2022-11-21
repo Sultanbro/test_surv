@@ -8,10 +8,9 @@
 
 namespace Eddir\Messenger;
 
-use Illuminate\Auth\Authenticatable;
+use Eddir\Messenger\Models\MessengerUserOnline;
 use Illuminate\Foundation\Auth\User;
 use Eddir\Messenger\Models\MessengerChat;
-use Eddir\Messenger\Models\MessengerFile;
 use Eddir\Messenger\Models\MessengerEvent;
 use Eddir\Messenger\Models\MessengerMessage;
 use Exception;
@@ -19,6 +18,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Pusher\ApiErrorException;
 use Pusher\Pusher;
 use Pusher\PusherException;
@@ -54,11 +54,11 @@ class Messenger {
     /**
      * Get user's chats with last message and unread messages count for each chat.
      *
-     * @param Authenticatable $user
+     * @param User $user
      *
      * @return Collection
      */
-    public function fetchChatsLastMessages( User $user ): Collection {
+    public function fetchChatsWithLastMessages( User $user ): Collection {
         $chats = MessengerChat::query()
                               ->whereHas( 'users', function ( Builder $query ) use ( $user ) {
                                   $query->where( 'user_id', $user->id );
@@ -85,22 +85,19 @@ class Messenger {
         $chat->last_message = $chat->getLastMessage();
         if ( $chat->last_message ) {
             $chat->last_message->sender = $chat->last_message->sender;
+            if ( $chat->last_message->event ) {
+                $chat->last_message->body = "";
+            }
         }
+        $chat->pinned = $chat->isPinned( $user );
 
         if ( $chat->private ) {
             // get second user in private chat
-            $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
-
-            $chat->title = 'Безымянный';
-            $chat->image = '';
-
-            if($second_user) {
-                $chat->title = $second_user->name . " " . $second_user->last_name;
-                $chat->image = $second_user->img_url ? 'users_img/' . $second_user->img_url : asset( 'vendor/messenger/images/users.png' );
-            }
-
+            $second_user    = $chat->users->firstWhere( 'id', '!=', $user->id );
+            $chat->title    = $second_user->name . " " . $second_user->last_name;
+            $chat->image    = $second_user->img_url;
+            $chat->isOnline = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
         }
-
         if ( empty( $chat->image ) ) {
             $chat->image = config( 'messenger.user_avatar.default' ) ?? asset( 'vendor/messenger/images/users.png' );
         }
@@ -200,32 +197,41 @@ class Messenger {
      * Fetch chat messages with pagination.
      *
      * @param int $chatId
-     * @param int $page
-     * @param int $perPage
+     * @param int $start_message_id
+     * @param int $count
      *
      * @return Collection
      */
-    public function fetchMessages( int $chatId, int $page = 0, int $perPage = 10 ): Collection {
-        $disk = \Storage::disk('s3');
-
+    public function fetchMessages( int $chatId, int $count, int $start_message_id = 0, bool $including = false ): Collection {
         $messages = MessengerMessage::query()
-                ->with( 'files' )
-                ->where( 'chat_id', $chatId )
-                ->where( 'deleted', false )
-                ->orderBy( 'created_at', 'desc' )
-                ->skip( $page * $perPage )
-                ->take( $perPage )
-                ->get();
+                                    ->with( 'files' )
+                                    ->with( 'event' )
+                                    ->with( 'sender' )
+                                    ->where( 'chat_id', $chatId )
+                                    ->where( 'deleted', false );
 
-        foreach ($messages as $key => $message) {
-            if($message->files && $message->files['file_path']) {
-                $message->files['file_path'] = $disk->temporaryUrl(
-                    $message->files['file_path'], now()->addMinutes(360)
-                );
+        // if start_message_id is 0, get last messages
+        if ( $start_message_id != 0 ) {
+            if ( $count > 0 ) {
+                $messages = $messages->orderBy( 'id', 'desc' );
+                if ( $including ) {
+                    $messages = $messages->where( 'id', '<=', $start_message_id );
+                } else {
+                    $messages = $messages->where( 'id', '<', $start_message_id );
+                }
+            } else {
+                $messages = $messages->orderBy( 'id', 'asc' );
+                if ( $including ) {
+                    $messages = $messages->where( 'id', '>=', $start_message_id );
+                } else {
+                    $messages = $messages->where( 'id', '>', $start_message_id );
+                }
             }
+        } else {
+            $messages = $messages->orderBy( 'id', 'desc' );
         }
 
-        return $messages;
+        return $messages->limit( abs( $count ) )->get();
     }
 
     /**
@@ -235,21 +241,23 @@ class Messenger {
      * @param User $user
      *
      * @return Collection
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function setMessagesAsRead( Collection $messages, User $user ): Collection {
         $messages->each( function ( MessengerMessage $message ) use ( $user ) {
             // add user to read users
             $message->readers()->syncWithoutDetaching( $user );
-            # get all users in chat
-            $users = $message->chat->users;
-            # send notification to all users in chat
-            $users->each( function ( User $user ) use ( $message ) {
-                $this->pusher->trigger( 'messages.' . $user->id, 'readMessage', [
-                    'message' => $message->toArray(),
-                    'user'    => $user->toArray(),
-                ] );
-            } );
         } );
+
+        // check if the highest message is really the last message
+        $last_message = $messages->last();
+        if ( $last_message->id == $last_message->chat->getLastMessage()->id ) {
+            // send pusher event
+            $this->createEvent( $last_message->chat, $user, MessengerEvent::TYPE_READ, [
+                'message_id' => $last_message->id,
+            ] );
+        }
 
         return $messages;
     }
@@ -261,18 +269,17 @@ class Messenger {
      * @param User $user
      *
      * @return MessengerMessage
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function setMessageAsRead( MessengerMessage $message, User $user ): MessengerMessage {
         $message->readers()->syncWithoutDetaching( $user );
-        # get all users in chat
-        $users = $message->chat->users;
-        # send notification to all users in chat
-        $users->each( function ( User $user ) use ( $message ) {
-            $this->pusher->trigger( 'messages.' . $user->id, 'readMessage', [
-                'message' => $message->toArray(),
-                'user'    => $user->toArray(),
-            ] );
-        } );
+        // check if the highest message is really the last message
+        if ( $message->id == $message->chat->getLastMessage()->id ) {
+            // send pusher event
+            $this->createEvent( $message->chat, $user, MessengerEvent::TYPE_READ );
+        }
 
         return $message;
     }
@@ -328,6 +335,7 @@ class Messenger {
      *
      * @return MessengerMessage
      * @throws Exception
+     * @throws GuzzleException
      */
     public function sendMessage( int $chatId, int $userId, string $body, $file = null ): MessengerMessage {
         $message            = new MessengerMessage();
@@ -351,9 +359,9 @@ class Messenger {
             $message->files;
         }
 
-        // todo: for every online user
-        $chat->users->each( function ( User $user ) use ( $message ) {
-            $this->pusher->trigger( 'messages.' . $user->id, 'newMessage', [
+        $users = MessengerUserOnline::getOnlineMembers( $chatId );
+        $users->each( function ( $user ) use ( $message ) {
+            $this->push( 'messages.' . $user->user_id, 'newMessage', [
                 'message' => $message->toArray(),
             ] );
         } );
@@ -383,6 +391,9 @@ class Messenger {
      * @param string $body
      *
      * @return MessengerMessage
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function editMessage( int $messageId, string $body ): MessengerMessage {
         /** @var MessengerMessage $message */
@@ -401,8 +412,12 @@ class Messenger {
      * Set message as deleted.
      *
      * @param int $messageId
+     * @param User $promote
      *
      * @return bool
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function deleteMessage( int $messageId, User $promote ): bool {
 
@@ -423,6 +438,7 @@ class Messenger {
      * Pin message.
      *
      * @param int $messageId
+     * @param User $promote
      *
      * @return MessengerMessage
      * @throws ApiErrorException
@@ -436,7 +452,7 @@ class Messenger {
         $message->save();
 
         $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_PIN, [
-            'message_id' => $messageId
+            'message' => $message
         ] );
 
         return $message;
@@ -446,6 +462,7 @@ class Messenger {
      * Unpin message.
      *
      * @param int $messageId
+     * @param User $promote
      *
      * @return MessengerMessage
      * @throws ApiErrorException
@@ -458,24 +475,7 @@ class Messenger {
         $message->pinned = false;
         $message->save();
 
-        // get last pinned message in chat
-        $chat = $message->chat;
-        /** @var MessengerMessage $lastPinnedMessage */
-        $lastPinnedMessage = $chat->messages()
-                                  ->where( 'pinned', true )
-                                  ->orderBy( 'created_at', 'desc' )
-                                  ->first();
-
-        $messageArray = $lastPinnedMessage?->toArray();
-
-        // trigger unpin event to pusher for every user in chat
-        $chat->users->each( function ( User $user ) use ( $messageArray ) {
-            $this->pusher->trigger( 'messages.' . $user->id, 'pinMessage', [
-                'message' => $messageArray,
-            ] );
-        } );
-
-        $this->createEvent( $chat, $promote, MessengerEvent::TYPE_UNPIN, [
+        $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_UNPIN, [
             'message_id' => $message->id,
         ] );
 
@@ -483,14 +483,57 @@ class Messenger {
     }
 
     /**
+     * Pin chat
+     *
+     * @param int $chatId
+     * @param User $promote
+     *
+     * @return bool
+     */
+    public function pinChat( int $chatId, User $promote ): bool {
+        // update chat_users table
+        DB::table( 'messenger_chat_users' )
+            ->where( 'chat_id', $chatId )
+            ->where( 'user_id', $promote->id )
+            ->update( [
+                'pinned' => true,
+            ] );
+
+        return true;
+    }
+
+    /**
+     * Unpin chat
+     *
+     * @param int $chatId
+     * @param User $promote
+     *
+     * @return bool
+     */
+    public function unpinChat( int $chatId, User $promote ): bool {
+        // update chat_users table
+        DB::table( 'messenger_chat_users' )
+          ->where( 'chat_id', $chatId )
+          ->where( 'user_id', $promote->id )
+          ->update( [
+              'pinned' => false,
+          ] );
+
+        return true;
+    }
+
+    /**
      * Create new chat.
      *
-     * @param int $userId
+     * @param User $user
      * @param string $title
      * @param string $description
      * @param array $members
      *
      * @return MessengerChat
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function createChat( User $user, string $title, string $description, array $members ): MessengerChat {
         $chat              = new MessengerChat();
@@ -500,12 +543,14 @@ class Messenger {
         $chat->save();
         $chat->users()->attach( $user->id );
 
-        $this->createEvent( $chat, $user, MessengerEvent::TYPE_CHAT_CREATED );
-
         // attach every member to chat
         foreach ( $members as $member ) {
             $chat->users()->attach( $member );
         }
+
+        $this->createEvent( $chat, $user, MessengerEvent::TYPE_CHAT_CREATED, [
+            'chat' => $chat->toArray(),
+        ] );
 
         return $chat;
     }
@@ -515,8 +560,12 @@ class Messenger {
      *
      * @param int $chatId
      * @param int $userId
+     * @param User $promote
      *
      * @return MessengerChat
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function addUserToChat( int $chatId, int $userId, User $promote ): MessengerChat {
         $chat = MessengerChat::find( $chatId );
@@ -534,8 +583,12 @@ class Messenger {
      *
      * @param int $chatId
      * @param int $userId
+     * @param User $promote
      *
      * @return MessengerChat
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function removeUserFromChat( int $chatId, int $userId, User $promote ): MessengerChat {
         $chat = MessengerChat::find( $chatId );
@@ -552,8 +605,12 @@ class Messenger {
      * Delete chat.
      *
      * @param int $chatId
+     * @param User $user
      *
      * @return MessengerChat
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function deleteChat( int $chatId, User $user ): MessengerChat {
         $chat = MessengerChat::find( $chatId );
@@ -571,20 +628,24 @@ class Messenger {
      * @param int $chatId
      * @param string $title
      * @param string $description
+     * @param User $user
      *
      * @return MessengerChat
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function updateChat( int $chatId, string $title, string $description, User $user ): MessengerChat {
 
         /* @var MessengerChat $chat */
-        $chat = MessengerChat::find( $chatId );
-        $oldChat = $chat->toArray();
+        $chat              = MessengerChat::find( $chatId );
+        $oldChat           = $chat->toArray();
         $chat->title       = $title;
         $chat->description = $description;
         $chat->save();
 
         $this->createEvent( $chat, $user, MessengerEvent::TYPE_RENAME, [
-            'chat'            => MessengerChat::find($chat->id)->toArray(),
+            'chat'            => MessengerChat::find( $chat->id )->toArray(),
             'old_title'       => $oldChat['title'],
             'old_description' => $oldChat['description'],
         ] );
@@ -593,43 +654,46 @@ class Messenger {
     }
 
     /**
-     * Fetch events for chat.
-     *
-     * @param int $chatId
-     *
-     * @return Collection
-     */
-    public function fetchEvents( int $chatId ): Collection {
-        return MessengerEvent::where( 'chat_id', $chatId )->with( 'user' )->get();
-    }
-
-    /**
      * Create event
      *
      * @param MessengerChat $chat
      * @param User $user
      * @param string $type
-     * @param array $payload
+     * @param array|null $payload
      *
      * @return MessengerEvent
+     * @throws ApiErrorException
+     * @throws GuzzleException
+     * @throws PusherException
      */
     public function createEvent( MessengerChat $chat, User $user, string $type, array $payload = null ): MessengerEvent {
-        $event          = new MessengerEvent();
-        $event->chat_id = $chat->id;
-        $event->user_id = $user->id;
-        $event->type    = $type;
+        $message = new MessengerMessage();
+        $message->chat()->associate( $chat );
+        $message->sender()->associate( $user );
+        $message->body = 'Event';
+
+        $event       = new MessengerEvent();
+        $event->type = $type;
+        $event->message()->associate( $message );
         $event->setPayloadAttribute( $payload );
 
         if ( in_array( $type, MessengerEvent::$save_events ) ) {
+            $message->save();
+            $event->message()->associate( $message );
             $event->save();
+            /** @noinspection PhpExpressionResultUnusedInspection */
+            $message->event;
+            $messageData = $message->toArray();
+        } else {
+            $messageData = $message->toArray();
+            $messageData['event'] = $event->toArray();
         }
 
-        $eventData         = $event->toArray();
-        $eventData['user'] = $user->toArray();
 
-        $chat->users->each( function ( User $user ) use ( $eventData ) {
-            $this->pusher->trigger( 'messages.' . $user->id, 'newMessage', [
-                'message' => $eventData,
+        $users = MessengerUserOnline::getOnlineMembers( $chat->id );
+        $users->each( function ( $user ) use ( $messageData ) {
+            $this->push( 'messages.' . $user->user_id, 'newMessage', [
+                'message' => $messageData,
             ] );
         } );
 
@@ -649,21 +713,64 @@ class Messenger {
      * @throws PusherException
      */
     public function push( string $channel, string $event, array $data ): object {
-        return $this->pusher->trigger( $channel, $event, $data );
+        return $this->pusher->trigger( "private-" . $channel, $event, $data );
     }
 
     /**
      * Authentication for pusher
      *
-     * @param string $channelName
+     * @param string $channel_name
      * @param string $socket_id
      * @param string|null $data
+     * @param int|null $user_id
      *
      * @return string
+     * @throws GuzzleException
      */
-    public function pusherAuth( string $channelName, string $socket_id, string $data = null ): string {
+    public function pusherAuth( string $channel_name, string $socket_id, string $data = null, int $user_id = null ): string {
         try {
-            return $this->pusher->socketAuth( $channelName, $socket_id, $data );
+            $response = $this->pusher->socketAuth( $channel_name, $socket_id, $data );
+
+            if ( $user_id ) {
+                // create MessengerUserOnline if not exists or update last_seen
+                // this is used to show online status
+                $user = MessengerUserOnline::where( 'socket_id', $socket_id )->first();
+                if ( $user ) {
+                    $user->user_id = $user_id;
+                    $user->touch();
+                } else {
+                    MessengerUserOnline::create( [
+                        'user_id'   => $user_id,
+                        'socket_id' => $socket_id,
+                    ] );
+                }
+
+                $users = DB::select( "
+SELECT DISTINCT t2.user_id
+FROM `messenger_chat_users` t1
+         INNER JOIN `messenger_chat_users` t2
+                    ON t1.chat_id = t2.chat_id
+                        AND t1.user_id != t2.user_id
+         INNER JOIN `messenger_users_online` o
+                    ON o.user_id = t2.user_id
+WHERE t1.user_id = {$user_id}" );
+
+                // for each user trigger event
+                foreach ( $users as $user ) {
+                    $this->push( 'messages.' . $user->user_id, 'newMessage', [
+                        'message' => [
+                            'event'  => [
+                                'type' => MessengerEvent::TYPE_ONLINE,
+                            ],
+                            'sender' => [
+                                'id' => $user_id
+                            ]
+                        ]
+                    ] );
+                }
+            }
+
+            return $response;
         } catch ( PusherException $e ) {
             return $e->getMessage();
         }

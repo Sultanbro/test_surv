@@ -10,7 +10,15 @@
               <div class="messenger__message-file" v-for="file in [message.files]">
                 <template v-if="isImage(file)">
                   <div class="messenger__message-file-image" @click="openImage(file)">
-                    <img :src="file.thumbnail_path ? file.thumbnail_path : file.file_path" alt="file.name">
+                    <img v-on:load="$emit('loadImage')"
+                      :src="file.thumbnail_path ? file.thumbnail_path : file.file_path" alt="file.name">
+                  </div>
+                </template>
+                <template v-else-if="isAudio(file)">
+                  <div class="messenger__message-file-audio">
+                    <audio controls>
+                      <source :src="file.file_path" type="audio/mpeg">
+                    </audio>
                   </div>
                 </template>
                 <template v-else>
@@ -39,6 +47,9 @@
             </span>
         </div>
       </div>
+      <template v-if="message.sender_id === user.id && message.readers && message.readers.length > 0">
+        <MessageReaders :message="message" :user="user"></MessageReaders>
+      </template>
     </div>
   </div>
 </template>
@@ -46,6 +57,7 @@
 <script>
 import {mapGetters} from "vuex";
 import moment from "moment";
+import MessageReaders from "./MessageReaders/MessageReaders.vue";
 
 export default {
   name: "ConversationMessage",
@@ -53,7 +65,10 @@ export default {
     message: {
       type: Object,
       required: true,
-    }
+    },
+  },
+  components: {
+    MessageReaders,
   },
   computed: {
     ...mapGetters(['user', 'chat']),
@@ -68,6 +83,10 @@ export default {
     isImage(file) {
       const ext = file.file_path.split('.').pop();
       return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);
+    },
+    isAudio(file) {
+      const ext = file.file_path.split('.').pop();
+      return ['mp3', 'wav', 'ogg', 'webm'].includes(ext);
     },
     openImage(image) {
       window.open(image.file_path, '_blank').focus();
@@ -111,9 +130,11 @@ export default {
 .messenger__message-container {
   position: relative;
   padding: 2px 10px;
-  align-items: end;
+  align-items: flex-end;
   min-width: 100px;
   box-sizing: content-box;
+  display: flex;
+  flex-direction: column;
 }
 
 /*noinspection CssUnusedSymbol*/

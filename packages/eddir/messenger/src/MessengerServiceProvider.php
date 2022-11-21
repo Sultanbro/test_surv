@@ -3,7 +3,7 @@
 namespace Eddir\Messenger;
 
 use Eddir\Messenger\Console\InstallCommand;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 

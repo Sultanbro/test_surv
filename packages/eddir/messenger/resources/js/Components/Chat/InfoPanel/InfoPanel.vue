@@ -24,10 +24,7 @@
       <div class="messenger__chat-info-members">
         <div class="messenger__chat-info-members-list">
           <div class="messenger__chat-info-members-list-item" v-for="member in chat.users">
-            <div class="messenger__chat-info-members-list-item-avatar">
-              <img v-if="member.img_url" :src="member.img_url" alt="Аватарка участника">
-              <img v-else src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Аватарка участника">
-            </div>
+            <AlternativeAvatar :title="member.name" :image="member.img_url"/>
             <div class="messenger__chat-info-members-list-item-name">
               <span>{{ member.name }}</span>
             </div>
@@ -48,9 +45,13 @@
 
 <script>
 import {mapActions, mapGetters} from "vuex";
+import AlternativeAvatar from "../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar";
 
 export default {
   name: "InfoPanel",
+  components: {
+    AlternativeAvatar
+  },
   computed: {
     ...mapGetters(['user', 'chat', 'isInfoPanel'])
   },
@@ -64,10 +65,6 @@ export default {
     changeTitle() {
       this.editChatTitle();
       this.editMode = false;
-
-      let arr = [1, 2, 3];
-      // продублировать массив в 16 раза
-      arr = arr.concat(arr, arr, arr, arr, arr, arr, arr, arr, arr, arr, arr, arr, arr, arr, arr, arr);
     },
   }
 }

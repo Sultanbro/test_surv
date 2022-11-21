@@ -15,9 +15,6 @@
     </div>
     <div slot="emoji-picker" slot-scope="{ emojis, insert, display }">
       <div class="emoji-picker" :style="{ bottom: 5 + '%', right: 10 + '%' }">
-        <div class="emoji-picker__search">
-          <input type="text" v-model="search">
-        </div>
         <div>
           <div v-for="(emojiGroup, category) in emojis" :key="category">
             <h5>{{ category }}</h5>
@@ -100,7 +97,7 @@ export default {
 .emoji-picker {
   position: fixed;
   z-index: 1000;
-  font-family: Montserrat;
+  font-family: Montserrat,serif;
   border: 1px solid #ccc;
   width: 300px;
   height: 20rem;
