@@ -8,7 +8,6 @@
                     drop-placeholder="Перетащите файл сюда..."
                     accept=".jpg, .png"
                     :required="image === null"
-                    multiple
                     type="file"
                     id="file"
                     ref="file"
@@ -30,28 +29,22 @@
             </BButton
             >
         </div>
+
         <div v-if="hasImage" class="images-prewiev">
-            <div v-for="(img, id) in imageSrc" :key="id" class="image-modal">
-                <BImg
-                        v-b-modal="'myModal' + id"
-                        :src="img"
-                        class="mb-3 img"
-                        fluid
-                        block
-                        rounded
-                        @click="openModal(id)"
-                ></BImg>
-                <BModal :id="'myModal' + id" title="BootstrapVue" class="w-80%">
-                    <BImg :src="img" class="mb-3 img" fluid block rounded></BImg>
-                </BModal>
-            </div>
+            <BImg
+                    v-b-modal="'myModal'"
+                    :src="imageSrc"
+                    class="mb-3 img"
+                    fluid
+                    block
+                    rounded
+            ></BImg>
+            <BModal id="myModal" title="BootstrapVue" class="w-80%">
+                <BImg :src="imageSrc" class="mb-3 img" fluid block rounded></BImg>
+            </BModal>
         </div>
         <div v-else>
             <p class="text-danger">Выберите файл(ы)</p>
-        </div>
-        <div v-for="imgimg in imageSrc">
-            <div style="width: 300px" :key="imgimg">{{imgimg}}</div>
-            <hr>
         </div>
     </BContainer>
 </template>
@@ -76,63 +69,38 @@
         data() {
             return {
                 image: null,
-                imageSrc: [],
-                imageBlob: '',
-                imagesList: []
+                imageSrc: '',
             };
         },
         computed: {
             hasImage() {
                 if (this.image) {
-                    this.$emit("image-download", this.image);
                     return !!this.image;
                 }
             },
         },
-        mounted() {
-            if (this.uploadImage) {
-                this.image = this.uploadImage;
-                this.imagesList = this.imagesPath;
-            }
-        },
         watch: {
-            hasImage(val) {
-            },
             image(newValue, oldValue) {
-
-
-
-                const newValueString = [];
-                for (let i = 0; i < newValue.length; i++) {
-                    newValueString.push(newValue[i].name + newValue[i].size);
-                }
-
-                const oldValueString = [];
+                let newValueString = newValue.name + newValue.size;
+                let oldValueString = null;
                 if (oldValue !== null) {
-                    for (let i = 0; i < oldValue.length; i++) {
-                        oldValueString.push(oldValue[i].name + oldValue[i].size);
-                    }
+                    oldValueString = oldValue.name + oldValue.size;
                 }
-                if (newValueString.toString() !== oldValueString.toString()) {
-                    if (oldValue !== null) {
-                        this.$emit("images-remove", oldValue);
-                    }
-                    this.imageSrc = [];
+                if (newValueString !== oldValueString) {
+                    this.imageSrc = '';
                     if (newValue) {
-                        newValue.forEach((el) => {
-                            base64Encode(el)
-                                .then((val) => {
-                                    this.imageSrc.push(val);
-                                })
-                                .catch(() => {
-                                    this.imageSrc = [];
-                                });
-                        });
+                        base64Encode(newValue)
+                            .then((val) => {
+                                this.imageSrc = val;
+                                this.$emit("image-download", this.image);
+                            })
+                            .catch(() => {
+                                this.imageSrc = '';
+                            });
                     } else {
-                        this.imageSrc = [];
+                        this.imageSrc = '';
                     }
                 }
-                console.log(this.imageSrc);
             },
         },
         methods: {

@@ -41,6 +41,15 @@ export default {
 		document.addEventListener('award-user-sidebar', (e) => {
 			this.open = true
 			console.log('USER ID:', e.detail)
+		});
+
+		this.axios
+		.get('/awards/get')
+        .then(response => {
+			console.log(response);
+		})
+		.catch(error => {
+			console.log(error);
 		})
 	}
 }

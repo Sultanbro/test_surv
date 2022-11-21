@@ -63,11 +63,7 @@
             <BFormGroup class="file-type">
                 <UploadFile
                         @image-download="formFile"
-                        @images-remove="getRemoveFiles"
                         v-if="form.awardTypeId === 1"
-                        :fileType="form.awardTypeId"
-                        :uploadImage="form.imagesData"
-                        :imagesPath="form.images"
                         required
                 />
 
@@ -89,7 +85,7 @@
             </BFormGroup>
 
             <BFormGroup id="input-group-4" switches>
-                <BFormCheckbox v-model="form.visibleToOthers" required>
+                <BFormCheckbox v-model="form.hide" required>
                     Отображать пользователям награды других участников
                 </BFormCheckbox>
             </BFormGroup>
@@ -118,17 +114,14 @@
             return {
                 userName: 'Тимур Хайруллин',
                 selectFileType: true,
-                removeImages: null,
                 form: {
-                    id: null,
+                    awardTypeId: null,
+                    courseIds: [],
                     name: '',
                     description: '',
-                    awardTypeId: null,
-                    images: [],
-                    imagesData: null,
-                    visibleToOthers: false,
-                    awardCreator: '',
-                    date: '',
+                    hide: false,
+                    file: null,
+                    styles: {}
                 },
             };
         },
@@ -136,18 +129,81 @@
             async onSubmit() {
                 if (this.form.awardTypeId) {
                     let loader = this.$loading.show();
-                    this.formFile;
-                    this.getRemoveFiles;
-                    await this.removeFiles();
-                    await this.uploadFiles();
-                    if (this.item) {
-                        this.$emit('update-award', this.form);
+                    if (this.form.hide) {
+                        this.form.hide = 1;
                     } else {
-                        this.$emit('save-award', this.form);
+                        this.form.hide = 0;
                     }
-                    this.$emit('update:open', false);
-                    this.$refs.newSertificateForm.reset();
-                    loader.hide();
+                    const formData = new FormData();
+                    formData.append('award_type_id', this.form.awardTypeId);
+                    formData.append('course_ids[]', this.form.courseIds);
+                    formData.append('name', this.form.name);
+                    formData.append('description', this.form.description);
+                    formData.append('hide', this.form.hide);
+                    formData.append('file', this.form.file);
+                    formData.append('styles', this.form.styles);
+                    if (this.item) {
+                        // this.$emit('update-award', this.form);
+                        this.axios
+                            .put("/awards/update/" + this.item.id, formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data"'
+                                },
+                            })
+                            .then(response =>  {
+                                console.log(response);
+                                this.$emit('update:open', false);
+                                this.$emit('save-award');
+                                this.$refs.newSertificateForm.reset();
+                                loader.hide();
+                            })
+                            .catch(function (error) {
+                                console.log("error");
+                                console.log(error);
+                                loader.hide();
+                            });
+                    } else {
+                        // this.$emit('save-award', this.form);
+                        this.axios
+                            .post("/awards/store", formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data"'
+                                },
+                            })
+                            .then(response =>  {
+                                console.log(response);
+                                const data = response.data.data;
+                                const formDataType = new FormData();
+                                formDataType.append('user_id', 5);
+                                formDataType.append('award_id', data.id);
+                                this.axios
+                                    .post("/award-type/store", formDataType, {
+                                        headers: {
+                                            'Content-Type': 'multipart/form-data"',
+                                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                        },
+                                    })
+                                    .then(response =>  {
+                                        console.log(response);
+                                    })
+                                    .catch(function (error) {
+                                        console.log("error");
+                                        console.log(error);
+                                    });
+                                this.$emit('update:open', false);
+                                this.$emit('save-award');
+                                this.$refs.newSertificateForm.reset();
+                                loader.hide();
+                            })
+                            .catch(function (error) {
+                                console.log("error");
+                                console.log(error);
+                                loader.hide();
+                            });
+
+
+                    }
+
                 } else {
                     this.selectFileType = false;
                 }
@@ -157,89 +213,21 @@
                 this.selectFileType = true;
             },
             formFile(val) {
-                this.form.images = [];
-                this.form.imagesData = val;
+                this.form.file = val;
                 return val;
             },
-            getRemoveFiles(files) {
-                this.removeImages = null;
-                this.removeImages = files;
-                return files;
-            },
-            async removeFiles() {
-                if(this.removeImages !== null){
-                    const imagesObj = [];
-                    for (let i = 0; i < this.removeImages.length; i++) {
-                        const dataObj = {
-                            path: '/upload/sertificates/' + this.removeImages[i].name,
-                            format: this.removeImages[i].type
-                        };
-                        imagesObj.push(dataObj);
-                    }
-
-                    await this.axios
-                        .post("/delete.php", {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            data: JSON.stringify(imagesObj)
-                        })
-                        .then(function (response) {
-                            console.log('deleted');
-                        })
-                        .catch(function (error) {
-                            console.log("error");
-                            console.log(error);
-                        });
-                }
-            },
-            async uploadFiles() {
-                let formData = new FormData();
-                for (let i = 0; i < this.form.imagesData.length; i++) {
-                    formData.append("file[]", this.form.imagesData[i]);
-                    const dataObj = {
-                        path: '/upload/sertificates/' + this.form.imagesData[i].name,
-                        format: this.form.imagesData[i].type
-                    };
-                    this.form.images.push(dataObj);
-                }
-                if (JSON.stringify(this.form.images) !== JSON.stringify(this.item.images)) {
-                    await this.axios
-                        .post("/upload.php", formData, {
-                            headers: {
-                                "Content-Type":
-                                    "multipart/form-data; charset=utf-8; boundary=" +
-                                    Math.random().toString().substr(2),
-                            },
-                        })
-                        .then(function (response) {
-                            if (!response.data) {
-                                console.log("File not uploaded.");
-                            } else {
-                                console.log("File uploaded successfully.");
-                            }
-                        })
-                        .catch(function (error) {
-                            console.log("error");
-                            console.log(error);
-                        });
-                }
-            }
         },
         mounted() {
-            this.form.id = Date.now();
-            this.form.date = new Date().toLocaleDateString();
-            this.form.awardCreator = this.userName;
+            console.log(this.item);
+            // this.form.awardCreator = this.userName;
             if (this.item) {
-                this.form.id = this.item.id;
+                this.form.awardTypeId = this.item.awardTypeId;
+                this.form.courseIds = this.item.courseIds;
                 this.form.name = this.item.name;
                 this.form.description = this.item.description;
-                this.form.awardTypeId = this.item.awardTypeId;
-                this.form.images = this.item.images;
-                this.form.imagesData = this.item.imagesData;
-                this.form.visibleToOthers = this.item.visibleToOthers;
-                this.form.awardCreator = this.item.awardCreator;
-                this.form.date = this.item.date;
+                this.form.hide = this.item.hide;
+                this.form.file = this.item.file;
+                this.form.styles = this.item.styles;
             }
         }
     };
