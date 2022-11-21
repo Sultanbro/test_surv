@@ -16,9 +16,9 @@
             <img src="/images/dist/header-right-5.svg" alt="nav icon" class="header__icon-img">
         </a>
 
-        <!-- <a href="#" class="header__right-icon check" @click="$emit('pop', 'checklist')">
+        <a href="#" class="header__right-icon check" @click="$emit('pop', 'checklist')">
             <img src="/images/dist/header-right-6.svg" alt="nav icon" class="header__icon-img">
-        </a> -->
+        </a>
 
         <chat-search-button></chat-search-button>
     </div>
