@@ -57,7 +57,7 @@ class SetAbsent extends Command
                 if($group->checktime && Carbon::parse($group->checktime)->timestamp - time() < 0) { // если время отметок истекло
                     
                     $group_users = collect((new UserService)->getTrainees($group->id, date('Y-m-d')))->pluck('id')->toArray();
-                    dd($group_users);
+
                     $users = User::with('user_description')
                         ->withTrashed()
                         ->whereHas('user_description', function ($query) {
