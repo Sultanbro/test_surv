@@ -88,7 +88,7 @@
                 <b-button v-if="selectedGroup.salary_approved == 0 && can_edit"
                         style="float:right"
                         @click="showBeforeApprove = true" 
-                        class="rounded btn-sm mb-3" 
+                        class="rounded btn-sm mb-3 mt-1" 
                         variant="info">Проверено и готово к выдаче</b-button>
                         
                 <p class="approved-text" v-if="selectedGroup.salary_approved == 1">

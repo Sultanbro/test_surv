@@ -113,13 +113,13 @@
           <b-form-checkbox
             v-model="paid_internship"
             :value="1"
-            :unchecked-value="0"
+            :unchecked-value="0" 
           >
             Оплачиваемая стажировка
           </b-form-checkbox>
         </div>
 
-        <button
+        <!-- <button
           @click="showKPI = !showKPI"
           class="btn btn-primary rounded mr-2"
         >
@@ -131,7 +131,8 @@
           class="btn btn-primary mr-2 rounded"
         >
           <i class="fa fa-star-half-o"></i> Бонусы
-        </button>
+        </button> -->
+
       </div>
 
       <div class="col-lg-6 mb-3 mt-4 sssz">

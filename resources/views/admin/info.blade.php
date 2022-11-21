@@ -1,7 +1,8 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 @section('title', 'Частые вопросы')
 @section('content')
-<div class="container pt-3" style="background:#e4e4e4">
+<div class="old__content">
+<div class="">
     <div class="card p-3" id="card1">
       <h3>Учет времени</h3>
     <p><strong>Кнопка &laquo;Начать день&raquo;</strong></p>
@@ -222,7 +223,7 @@
 </div>
 
 
-
+</div>
 @endsection
 
 @section('styles')
@@ -260,4 +261,19 @@ body {
         var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
     })(window,document,'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_8_dzfbjh.js');
 </script>
+
+
+<style>
+.header__profile {
+    display:none !important;
+}
+@media (min-width: 1360px) {
+.container.container-left-padding {
+    padding-left: 7rem !important; 
+}
+}
+</style>
+
+
 @endsection
+
