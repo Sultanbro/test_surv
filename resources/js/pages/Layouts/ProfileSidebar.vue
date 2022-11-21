@@ -1,5 +1,8 @@
 <template>
-    <div class="header__profile _anim _anim-no-hide custom-scroll-y" :class="{'v-loading': loading}">
+    <div class="header__profile _anim _anim-no-hide custom-scroll-y" :class="{
+        'v-loading': loading,
+        hidden: hide
+    }">
         <div class="profile__content">
             <div
                 class="profile__logo logo-img-wrap"
@@ -10,7 +13,7 @@
                     Загрузить логотип
                 </template>
                 <img v-if="logo.image" :src="logo.image" class="logo-img">
-                <template v-if="canChangeLogo">    
+                <template v-if="canChangeLogo">
                     <input
                         type="file"
                         class="hidden-file-input"
@@ -53,7 +56,7 @@
             </b-modal>
 
             <profile-info></profile-info>
-    <!--         
+    <!--
             <div class="profile__point profile-box">
                 <div class="profile__title">Цель на сегодня</div>
                 <div class="profile__point-wrapper profile-slick">
@@ -118,7 +121,7 @@
 import axios from 'axios';
 
 export default {
-    name: 'ProfileSidebar', 
+    name: 'ProfileSidebar',
     props: {},
     computed: {
         canChangeLogo(){
@@ -127,7 +130,7 @@ export default {
     },
     data: function () {
         return {
-            fields: [], 
+            fields: [],
             balance: 0,
             currency: 'KZT',
             file: '',
@@ -137,11 +140,18 @@ export default {
               image: '',
               canvas: null
             },
-            loading: false
+            loading: false,
+            hide: false
         };
     },
     mounted(){
         this.getLogo();
+        const isRoot = window.location.pathname === '/'
+        const isProfile = window.location.pathname === '/profile'
+        if(!isRoot && !isProfile){
+            this.hide = true
+            document.body.classList.add('no-profile')
+        }
     },
     methods: {
         getLogo(){
