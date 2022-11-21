@@ -48,7 +48,7 @@ export default {
 
   methods: {
     /**
-     * Загрузка данных 
+     * Загрузка данных
      */
     fetchData() {
         this.loading = true
@@ -57,6 +57,11 @@ export default {
           .then(response => {
               this.data = response.data
               this.loading = false
+
+              // DIRTY HACK
+              if(this.data.user && this.data.user.program_id === 1 && location.host.split('.')[0] === 'bp'){
+                this.$laravel.permissions.push('ucalls_view')
+              }
           }).catch((e) => console.log(e))
     },
   }
