@@ -1,5 +1,11 @@
 <template>
-<div class="profile__about" :class="{'hidden': data.user === undefined || data.user === null }">
+<div
+  class="profile__about"
+  :class="{
+    'hidden': data.user === undefined || data.user === null,
+    'v-loading': loading
+  }"
+>
 
     <template v-if="data.user !== undefined && data.user !== null">
       <div class="profile__name">{{ data.user.name + ' ' + data.user.last_name }}</div>
@@ -12,7 +18,6 @@
           <p class="profile-border">{{ data.workingTime }}</p>
       </div>
     </template>
-  
 
     <!-- <select class="select-css" v-model="data.currency">
         <option v-for="key in Object.keys(data.currencies)" :value="key">
@@ -33,6 +38,7 @@ export default {
   data() {
     return {
       data: {},
+      loading: false
     }
   },
 
@@ -45,12 +51,12 @@ export default {
      * Загрузка данных 
      */
     fetchData() {
-        let loader = this.$loading.show();
+        this.loading = true
 
         axios.get('/profile/personal-info')
           .then(response => {
               this.data = response.data
-              loader.hide()
+              this.loading = false
           }).catch((e) => console.log(e))
     },
   }

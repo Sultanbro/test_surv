@@ -112,9 +112,11 @@
     <script>
         window.Laravel = @json($laravelToVue);
     </script>
+       @yield('scripts')
     <script src="{{ url('/js/croppie.js') }}"></script>
     <script src="{{ url('/js/croppie.min.js') }}"></script>
 	<script src="{{ url('/js/app.js') }}"></script>
 
+ 
 </body>
 </html>

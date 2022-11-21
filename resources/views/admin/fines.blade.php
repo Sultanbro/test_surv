@@ -1,7 +1,8 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 @section('title', 'Депремирование')
 @section('content')
 
+<div class="old__content">
 <div class="container p-4">
   <div class="card p-3 content">
       <h5 class="mb-3"><strong>Система депремирования&nbsp;</strong></h5>
@@ -20,7 +21,7 @@
  
   </div>
 </div>
-
+</div>
 @endsection
 
 @section('styles')
@@ -45,4 +46,18 @@
         var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
     })(window,document,'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_8_dzfbjh.js');
 </script>
+@endsection
+
+@section('scripts')
+
+<style>
+.header__profile {
+    display:none !important;
+}
+@media (min-width: 1360px) {
+.container.container-left-padding {
+    padding-left: 7rem !important; 
+}
+}
+</style>
 @endsection

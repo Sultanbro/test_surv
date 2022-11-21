@@ -1,11 +1,10 @@
 <template>
-<div class="popup__content  mt-5">
-
-    <div class="tabs ">
+<div class="popup__content  mt-5" :class="{'v-loading': loading}">
+    <div class="tabs">
         <div class="popup__filter">
             <div class="trainee__tabs tabs__wrapper">
-                <div  class="trainee__tab tab__item is-active" onclick="switchTabs(this)"  data-index="1">Заработанные бонусы</div>
-                <div  class="trainee__tab tab__item" onclick="switchTabs(this)"  data-index="2">Можно заработать</div>
+                <div class="trainee__tab tab__item is-active" onclick="switchTabs(this)" data-index="1">Заработанные бонусы</div>
+                <div class="trainee__tab tab__item" onclick="switchTabs(this)" data-index="2">Можно заработать</div>
             </div>
             <select class="select-css trainee-select mobile-select">
                 <option value="1">Заработанные бонусы</option>
@@ -21,11 +20,10 @@
                     {{ month }}
                 </option>
             </select>
-
         </div>
 
         <div class="tab__content">
-            <div class="kaspi__content custom-scroll-y tab__content-item is-active"  data-content="1">
+            <div class="kaspi__content custom-scroll-y tab__content-item is-active" data-content="1">
                 <table>
                     <thead>
                         <tr>
@@ -35,11 +33,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in history">
+                        <tr
+                            v-for="(item, index) in history"
+                            :key="index"
+                        >
                             <td class="text-center">{{ (new Date(item.date)).addHours(6).toLocaleString('ru-RU') }}</td>
                             <td class="text-center">{{ item.sum }}</td>
                             <td>
-                                <p class="fz14 mb-0" v-html="item.comment"></p>
+                                <p class="kaspi__content-comment fz14 mb-0">
+                                    {{ item.comment }}
+                                </p>
                             </td>
                         </tr>
                     </tbody>
@@ -52,37 +55,32 @@
 
             <!--                </div>-->
             <table>
-              <template v-for=" (bonus, i) in bonuses">
-                <thead>
-
-                <tr>
-                  <div class="popup__subtitle">
-                    {{ bonus.name }}
-
-                  </div>
-
-                </tr>
-                <tr>
-                  <th class="text-center">Название</th>
-                  <th class="text-center">За что</th>
-                  <th class="text-center">Сумма</th>
-                </tr>
-              </thead>
-              <tbody>
-              <tr v-for="item in bonus.items">
-                <td class="text-center">{{ item.title }}</td>
-                <td class="text-center">{{ item.text }}</td>
-                <td class="text-center">{{ item.sum }}</td>
-
-              </tr>
-              </tbody>
-
-              </template>
-
+                <template v-for=" (bonus, i) in bonuses">
+                    <thead :key="i">
+                        <tr>
+                            <div class="kaspi__content-subtitle">
+                                {{ bonus.name }}
+                            </div>
+                        </tr>
+                        <tr>
+                            <th class="text-center">Название</th>
+                            <th class="text-center">За что</th>
+                            <th class="text-center">Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody :key="i">
+                        <tr
+                            v-for="(item, index) in bonus.items"
+                            :key="index"
+                        >
+                            <td class="text-center">{{ item.title }}</td>
+                            <td class="text-center">{{ item.text }}</td>
+                            <td class="text-center">{{ item.sum }}</td>
+                        </tr>
+                    </tbody>
+                </template>
             </table>
           </div>
-
-
         </div>
     </div>
 </div>
@@ -107,7 +105,8 @@ export default {
                 daysInMonth: 0
             },
             potential_bonuses: '',
-            history: []
+            history: [],
+            loading: false
         };
     },
     created(){
@@ -135,7 +134,7 @@ export default {
         },
 
         fetchData() {
-            let loader = this.$loading.show();
+            this.loading = true
 
             axios
                 .post("/bonuses", {
@@ -146,21 +145,33 @@ export default {
                     // this.potential_bonuses = response.data.data.potential_bonuses
                     this.history = response.data.data.history
 
-                    loader.hide();
+                    this.loading = false
                 });
         },
       fetchBonuses(){
-        let loader = this.$loading.show();
+        this.loading = true
         const _this = this;
         axios
             .post("/bonus/user")
             .then((response) => {
-             console.log(response);
-             _this.bonuses = response.data.bonuses
+                console.log(response);
+                _this.bonuses = response.data.bonuses
 
-              loader.hide();
+              this.loading = false
             });
       }
     }
 };
 </script>
+
+<style lang="scss">
+.kaspi__content-comment{
+    white-space: pre-wrap;
+}
+.kaspi__content-subtitle{
+    padding-top: 2rem;
+    font-size: 1.6rem;
+    color: #3a3a3a;
+    line-height: normal;
+}
+</style>

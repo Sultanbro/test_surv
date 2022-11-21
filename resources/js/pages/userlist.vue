@@ -119,8 +119,8 @@
   </div>
 
   <div class="my-2 d-flex align-items-center">
-    <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0"></b-pagination>
-     <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded" v-if="[5,18].includes(currentUser)">
+    <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0 p-0"></b-pagination>
+     <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded d-block block" v-if="[5,18].includes(currentUser)">
                 <i class="far fa-file-excel"></i>
                 Экспорт</a>
   </div>

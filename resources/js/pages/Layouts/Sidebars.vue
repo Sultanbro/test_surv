@@ -15,7 +15,7 @@
     <popup v-if="popNotifications"
         title="Уведомления"
         desc="Дополнительное поле с описанием функционала данного окна"
-        :open="popNotifications" 
+        :open="popNotifications"
         @close="popNotifications=false"
         width="50%">
         <popup-notifications></popup-notifications>
@@ -25,17 +25,17 @@
     <popup v-if="popChecklist"
         title="Чек лист"
         desc="Важно в течении дня выполнить все пункты чек листа"
-        :open="popChecklist" 
+        :open="popChecklist"
         @close="popChecklist=false"
-        width="50%">
-        <popup-checklist></popup-checklist>
+        width="75%">
+        <popup-checklist :data="checklistData"></popup-checklist>
     </popup>
 
     <!-- popup -->
     <popup v-if="popFAQ"
         title="Вопросы и ответы"
         desc="Дополнительное поле с описанием функционала данного окна"
-        :open="popFAQ" 
+        :open="popFAQ"
         @close="popFAQ=false"
         width="50%">
         <popup-faq></popup-faq>
@@ -45,7 +45,7 @@
     <popup v-if="popSearch"
         title="Поиск"
         desc="Дополнительное поле с описанием функционала данного окна"
-        :open="popSearch" 
+        :open="popSearch"
         @close="popSearch=false"
         width="50%">
         <popup-search></popup-search>
@@ -55,7 +55,7 @@
     <popup v-if="popMail"
         title="Почта или что это?"
         desc="Дополнительное поле с описанием функционала данного окна"
-        :open="popMail" 
+        :open="popMail"
         @close="popMail=false"
         width="50%">
         <popup-mail></popup-mail>
@@ -66,7 +66,6 @@
 
 <script>
 export default {
-
   name: 'Sidebars',
   props: {},
 
@@ -78,6 +77,10 @@ export default {
       popFAQ: false,
       popSearch: false,
       popMail: false,
+
+      checklistData: {},
+      checklistSettings: null,
+      checklistTimer: null
     }
   },
   methods: {
@@ -91,9 +94,87 @@ export default {
       if(window == 'messenger') this.popMessenger = true;
       if(window == 'mail') this.popMail = true;
       if(window == 'checklist') this.popChecklist = true;
-    }
-  }
+    },
 
+    fetchChecklist(){
+      // axios.post('/checklist', {}).then((response) => {
+      //   this.checklistData = response.data
+      // })
+    },
+
+    checkCheckList(){
+      if(!this.checklistData.show_count) return
+      if(!this.checklistData.work_start) return
+      if(!this.checklistData.work_end) return
+
+      if(!this.checklistSettings) this.prepareCheckList()
+
+      const now = this.$moment(Date.now())
+      let isTrigger = false
+      const dateInfo = this.checklistSettings.showed[this.checklistSettings.date]
+      this.checklistSettings.showTimes.forEach(time => {
+        const fTime = time.format('HH:mm:ss')
+        if(time.diff(now) < 0 && !dateInfo[fTime]){
+          isTrigger = true
+          this.checklistSettings.showed[this.checklistSettings.date][fTime] = true
+        }
+      })
+
+      if(isTrigger){
+        this.pop('checklist')
+        localStorage.setItem('bpCheckListShowed', JSON.stringify(this.checklistSettings.showed))
+      }
+    },
+
+    prepareCheckList(){
+      if(!this.checklistData.show_count) return
+      if(!this.checklistData.work_start) return
+      if(!this.checklistData.work_end) return
+
+      this.checklistSettings = {
+        showed: JSON.parse(localStorage.getItem('bpCheckListShowed')),
+        date: this.$moment(Date.now()).format('DD.MM.YYYY'),
+        startTime: this.checklistData.work_start.split(':'),
+        endTime: this.checklistData.work_end.split(':')
+      }
+      this.checklistSettings.start = this.$moment(Date.now()).set({
+        hour: this.checklistSettings.startTime[0],
+        minute: this.checklistSettings.startTime[1],
+        second: this.checklistSettings.startTime[2]
+      })
+      this.checklistSettings.end = this.$moment(Date.now()).set({
+        hour: this.checklistSettings.endTime[0],
+        minute: this.checklistSettings.endTime[1],
+        second: this.checklistSettings.endTime[2]
+      })
+      this.checklistSettings.diff = this.checklistSettings.end.diff(this.checklistSettings.start)
+      this.checklistSettings.part = this.checklistSettings.diff / this.checklistData.show_count
+
+      this.checklistSettings.showTimes = []
+      for(let i = 0; i < this.checklistData.show_count; ++i){
+        if(this.checklistSettings.showTimes.length){
+          this.checklistSettings.showTimes.push(this.checklistSettings.start.clone().add(parseInt(this.checklistSettings.part) * i, 'milliseconds'))
+        }
+        else{
+          this.checklistSettings.showTimes.push(this.checklistSettings.start.clone().add(parseInt(this.checklistSettings.part/2), 'milliseconds'))
+        }
+      }
+
+      if(!this.checklistSettings.showed) this.checklistSettings.showed = {}
+      Object.keys(this.checklistSettings.showed).forEach(key => {
+        if(key !== this.checklistSettings.date) delete this.checklistSettings.showed[key]
+      })
+    }
+  },
+  created(){
+    this.fetchChecklist()
+  },
+  mounted(){
+    setTimeout(() => {
+      this.checkCheckList()
+      this.checklistTimer = setInterval(this.checkCheckList, 1000 * 60)
+    }, 1000)
+  }
 }
 </script>
 

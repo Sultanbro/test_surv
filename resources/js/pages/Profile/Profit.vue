@@ -1,5 +1,12 @@
 <template>
-<div class="profit block _anim _anim-no-hide content" id="profit" :class="{'hidden': slides.length == 0}">
+<div
+    id="profit"
+    class="profit block _anim _anim-no-hide content"
+    :class="{
+        'hidden': slides.length == 0,
+        'v-loading': loading
+    }"
+>
     <div class="profit__title title mt-5">
         Как можно зарабатывать больше
     </div>
@@ -58,12 +65,13 @@
 <script>
 // слайдер с условиями оплаты для отделов и должности
 export default {
-    name: "Profit", 
+    name: "Profit",
     props: {},
     data: function () {
         return {
-            data: [], 
-            slides: []
+            data: [],
+            slides: [],
+            loading: false
         };
     },
     created() {
@@ -75,16 +83,15 @@ export default {
          * Загрузка данных 
          */
         fetchData() {
-            let loader = this.$loading.show();
+            this.loading = true
 
             axios.post('/profile/payment-terms').then(response => {
 
                 this.showBtn(response.data)
-                
 
                 this.data = response.data
                 this.form();
-                loader.hide()
+                this.loading = false
             }).catch((e) => console.log(e))
         },
 
@@ -162,8 +169,7 @@ export default {
             /**
              * init slider 
              */
-             this.$nextTick(() => this.initSlider())
-            
+            this.$nextTick(() => this.initSlider())
         },
 
         /**
@@ -202,7 +208,6 @@ export default {
             this.data.positions = items;
 
             // if(lastLeftBlock !== null) items.unshift(lastLeftBlock);
-            
             if(lastLeftBlock !== null) {
                 this.slides.push({
                     left: lastLeftBlock,
@@ -261,13 +266,6 @@ export default {
             console.log(leftSlides);
             [...leftSlides].forEach(data => {data.style.minHeight = height + "px"});
             [...rightSlides].forEach(data => {data.style.minHeight = height + "px"});
-
-
-
-
-
-
-
         }
     }
 };

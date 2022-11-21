@@ -7,8 +7,8 @@
         <!-- hover menu -->
         <div class="header__menu">
             <div class="header__menu-title">
-                Пользователь <a href="#">#{{ $laravel.userId }}</a>
-                <p>{{ $laravel.email }}</p>
+                Пользователь <a class="header__menu-userid" href="#">#{{ $laravel.userId }}</a>
+                <p class="header__menu-email">{{ $laravel.email }}</p>
             </div>
             <a href="/cabinet" class="menu__item">
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
@@ -435,62 +435,61 @@ export default {
     opacity: 0;
     visibility: hidden;
     transition: .5s;
+}
 
-    .header__menu-title{
-        text-align: left;
-        padding-left: 2rem;
-        text-transform: uppercase;
-        padding-bottom: 1.2rem;
-        padding-right: 1.3rem;
-        p{
-            border-bottom: 1px solid #EDEFF3;
-            font-size:1.1rem;
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-            text-transform: none;
-        }
+.header__menu-title{
+    padding: 2rem 1.3rem 1.2rem 2rem;
+    text-align: left;
+    text-transform: uppercase;
+}
 
-        a{
-            color:#608EE9;
-        }
+.header__menu-email{
+    border-bottom: 1px solid #EDEFF3;
+    font-size:1.1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    text-transform: none;
+}
+
+.header__menu-userid{
+    color:#608EE9;
+}
+
+.menu__item{
+    display: flex;
+    gap:1rem;
+    align-items: center;
+
+    height: 3.4rem;
+    padding-right: 3rem;
+    padding-left: 2rem;
+
+    background: #fff;
+    cursor:pointer;
+    
+    &:first-of-type{
+        border-radius: 0 1rem 0 0;
+    }
+    
+    &:last-of-type{
+        border-radius: 0 0 1rem 0;
     }
 
-    .menu__item{
-        display: flex;
-        gap:1rem;
-        align-items: center;
-
-        height: 3.4rem;
-        padding-right: 3rem;
-        padding-left: 2rem;
-
-        background: #fff;
-        cursor:pointer;
-        
-        &:first-of-type{
-            border-radius: 0 1rem 0 0;
-        }
-        
-        &:last-of-type{
-            border-radius: 0 0 1rem 0;
-        }
-
-        &:hover{
-            background: #FAFCFD;
-            .menu__item-title,
-            .menu__item-icon{
-                color: #156AE8;
-            }
-        }
-        &-title{
-            color:#657A9F;
-            padding: 1rem 0;
+    &:hover{
+        background: #FAFCFD;
+        .menu__item-title,
+        .menu__item-icon{
+            color: #156AE8;
         }
     }
-
-    .menu__item-icon{
-        color: #A6B7D4;
+    &-title{
+        color:#657A9F;
+        padding: 1rem 0;
     }
+}
+
+.menu__item-icon{
+    color: #A6B7D4;
 }
 
 .header__nav-link-more{

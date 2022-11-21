@@ -1,5 +1,8 @@
 <template>
-    <div class="header__profile _anim _anim-no-hide custom-scroll-y">
+    <div class="header__profile _anim _anim-no-hide custom-scroll-y" :class="{
+        'v-loading': loading,
+        hidden: hide
+    }">
         <div class="profile__content">
             <div
                 class="profile__logo logo-img-wrap"
@@ -10,7 +13,7 @@
                     Загрузить логотип
                 </template>
                 <img v-if="logo.image" :src="logo.image" class="logo-img">
-                <template v-if="canChangeLogo">    
+                <template v-if="canChangeLogo">
                     <input
                         type="file"
                         class="hidden-file-input"
@@ -53,7 +56,7 @@
             </b-modal>
 
             <profile-info></profile-info>
-    <!--         
+    <!--
             <div class="profile__point profile-box">
                 <div class="profile__title">Цель на сегодня</div>
                 <div class="profile__point-wrapper profile-slick">
@@ -89,13 +92,13 @@
                 <div class="tabs__include profile-slick" style="display: none;">
                     <div class="tab__content-include">
                         <div class="tab__content-item-include is-active"  data-content="1">
-                            <img src="images/dist/schedule.png" alt="schedule image">
+                            <img src="/images/dist/schedule.png" alt="schedule image">
                         </div>
                         <div class="tab__content-item-include"  data-content="2">
-                            <img src="images/dist/profile-active.png" alt="schedule image">
+                            <img src="/images/dist/profile-active.png" alt="schedule image">
                         </div>
                         <div class="tab__content-item-include"  data-content="3">
-                            <img src="images/dist/schedule.png" alt="schedule image">
+                            <img src="/images/dist/schedule.png" alt="schedule image">
                         </div>
                     </div>
                     <div class="tabs__wrapper">
@@ -104,7 +107,7 @@
                         <div  class="tab__item-include" onclick="switchTabsInclude(this)"  data-index="3">год</div>
                     </div>
                 </div>
-                <img src="images/dist/close.svg" alt="close icon" class="point-close">
+                <img src="/images/dist/close.svg" alt="close icon" class="point-close">
             </div>
 
             <!-- <a href="#" class="profile__more" v-if="$laravel.userId == 5 || $laravel.userId == 18" @click="addWidget">
@@ -118,7 +121,7 @@
 import axios from 'axios';
 
 export default {
-    name: 'ProfileSidebar', 
+    name: 'ProfileSidebar',
     props: {},
     computed: {
         canChangeLogo(){
@@ -127,7 +130,7 @@ export default {
     },
     data: function () {
         return {
-            fields: [], 
+            fields: [],
             balance: 0,
             currency: 'KZT',
             file: '',
@@ -136,11 +139,19 @@ export default {
             logo:{
               image: '',
               canvas: null
-            }
+            },
+            loading: false,
+            hide: false
         };
     },
     mounted(){
         this.getLogo();
+        const isRoot = window.location.pathname === '/'
+        const isProfile = window.location.pathname === '/profile'
+        if(!isRoot && !isProfile){
+            this.hide = true
+            document.body.classList.add('no-profile')
+        }
     },
     methods: {
         getLogo(){
@@ -176,9 +187,8 @@ export default {
          * Загрузить лого
          */
         uploadLogo(){
-            const _this = this;
-            _this.logo.canvas.toBlob(function(blob) {
-                let loader = _this.$loading.show();
+            this.logo.canvas.toBlob(blob => {
+                this.loading = true
 
                 const formData = new FormData();
                 formData.append('file', blob);
@@ -193,16 +203,15 @@ export default {
                     }
                 )
                 .then((response) => {
-
                     console.log('success')
                     console.log(response)
-                    _this.logo.image = response.data.logo;
-                    loader.hide();
+                    this.logo.image = response.data.logo;
+                    this.loading = false
                 })
                 .catch((response)=> {
                     console.log('failure!!');
                     console.log(response)
-
+                    this.loading = false
                 });
             })
             this.modalHideLogo();

@@ -1,8 +1,8 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 @section('title', 'Настройки')
 @section('content')
 
-
+<div class="old__content">
 
     <div class="">
         <div class="">
@@ -18,7 +18,7 @@
                                 @if(auth()->user()->can('positions_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 2) active @endif" id="nav-home-tab"  href="/timetracking/settings?tab=2#nav-home"  aria-controls="nav-home" aria-selected="true">Должности</a>@endif
                                 @if(auth()->user()->can('groups_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 3) active @endif" id="nav-profile-tab"  href="/timetracking/settings?tab=3#nav-profile"  aria-controls="nav-profile" aria-selected="false">Отделы</a>@endif
                                 @if(auth()->user()->can('fines_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 4) active @endif" id="nav-fines-tab"  href="/timetracking/settings?tab=4#nav-fines"  aria-controls="nav-fines" aria-selected="false">Штрафы</a>@endif
-                                @if(auth()->user()->can('notifications_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 5) active @endif" id="nav-notifications-tab"  href="/timetracking/settings?tab=5#nav-notifications" aria-controls="nav-notifications" aria-selected="false">Уведомления</a>@endif
+                                @if(auth()->user()->can('notifications_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 5) active @endif" id="nav-notifications-tab"  href="/timetracking/settings?tab=5" aria-controls="nav-notifications" aria-selected="false">Уведомления</a>@endif
                                 @if(auth()->user()->can('permissions_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 6) active @endif" id="nav-permissions-tab"  href="/timetracking/settings?tab=6#nav-permissions" aria-controls="nav-permissions" aria-selected="false">Доступы</a>@endif
                                 @if(auth()->user()->can('checklists_view') || auth()->user()->can('settings_view'))<a class="nav-item nav-link @if($active_tab == 7) active @endif" id="nav-checkList-tab"  href="/timetracking/settings?tab=7#nav-checkList" aria-controls="nav-checkList" aria-selected="false">Чек-листы</a>@endif
                                 @if(auth()->user()->is_admin == 1)<a class="nav-item nav-link @if($active_tab == 8) active @endif" id="nav-integrations-tab"  href="/timetracking/settings?tab=8#nav-integrations" aria-controls="nav-integrations" aria-selected="false">Интеграции</a>@endif
@@ -103,5 +103,20 @@
             </div>
         </div>
     </div>
-
+ </div>
 @endsection
+
+@section('scripts')
+
+<style>
+.header__profile {
+    display:none !important;
+}
+@media (min-width: 1360px) {
+.container.container-left-padding {
+    padding-left: 7rem !important; 
+}
+}
+</style>
+@endsection
+

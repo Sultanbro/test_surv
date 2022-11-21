@@ -102,9 +102,12 @@ class AwardService
                 'icon'      => $request->input('icon'),
                 'path'      => $this->saveAwardFile($request)['relative']
             ]);
+            if ($request->has('course_ids')){
+                Course::whereIn('id', $request->input('course_ids'))
+                    ->update(['award_id' => $success->id]);
+            }
 
-            Course::whereIn('id', $request->input('course_ids'))
-                ->update(['award_id' => $success->id]);
+
 
             return response()->success($success);
         } catch (Exception $exception) {

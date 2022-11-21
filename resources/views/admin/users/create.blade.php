@@ -1,9 +1,8 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 @section('title', 'Сотрудник')
 @section('content')
 
-{{--    {{dd($corpbooks,'99',$user)}}--}}
-
+<div class="old__content">
 <div class="user-page">
     <div class="mt-3">
         <div class="col-md-12 d-flex justify-content-between align-items-start">
@@ -92,10 +91,6 @@
 
                                 <!-- PROFILE IMAGE -->
                                 <div class="">
-{{--                                    <input type="file" name="file6" id="file-6"--}}
-{{--                                        class="inputfile inputfile-6"--}}
-{{--                                        data-multiple-caption="{count} files selected"--}}
-{{--                                        style="    display: none;" accept="image/*,.pdf">--}}
 
 
 
@@ -560,42 +555,8 @@
                                                 </select>
                                                 @endif
                                             </div>
-{{--                                            <div class="mb-4 none-block" id="profile_books" >--}}
-{{--                                                @if(isset($user))--}}
-{{--                                                <h5 class="mb-4 mt-4">База знание</h5>--}}
 
 
-
-
-{{--                                                    <select class="form-control form-control-sm" >--}}
-{{--                                                        @if(!empty($corpbooks))--}}
-{{--                                                            @foreach($corpbooks as $corpbook)--}}
-{{--                                                                <option>{{$corpbook['title']}}</option>--}}
-{{--                                                            @endforeach--}}
-{{--                                                        @else--}}
-{{--                                                            <option>Нет добавленных книг</option>--}}
-{{--                                                        @endif--}}
-{{--                                                    </select>--}}
-
-
-
-
-
-{{--                                                    <base-knowledge :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />--}}
-
-
-{{--                                                    <page-kb :auth_user_id="{{ auth()->user()->id }}" :can_edit="{{ auth()->user()->can('kb_edit') ? 'true' : 'false'}}"/>--}}
-
-{{--                                                <profile-books :books="{{json_encode($corpbooks) }}" :user_id="{{ $user->id }}"--}}
-{{--                                                    @if(isset($user->in_books))--}}
-{{--                                                        :in_books="{{ $user->in_books }}"--}}
-{{--                                                    @else--}}
-{{--                                                        :in_books="[]"--}}
-{{--                                                    @endif--}}
-{{--                                                    />--}}
-
-{{--                                                @endif--}}
-{{--                                            </div>--}}
 
                                             <!-- end of groups and books tab -->
                                             <!-- documents tab -->
@@ -807,29 +768,7 @@
                                                     @endforeach
 
 
-                                                    {{--                                                    @foreach($user->adaptation_talks as $key => $talk)--}}
-                                                    {{--                                                        <div class="adaptation_talk col-12 mt-3">--}}
-
-                                                    {{--                                                            <div class="col-2 div_1 ml-0 p-0 adap_day">{{ $talk['day'] }} й день--}}
-                                                    {{--                                                                <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">--}}
-                                                    {{--                                                            </div>--}}
-
-                                                    {{--                                                            <div class="col-3 div_2 p-0 ml-4" style="flex-direction:unset">--}}
-
-                                                    {{--                                                                <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">--}}
-
-                                                    {{--                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"--}}
-                                                    {{--                                                                       @if($talk['date'] != null)--}}
-                                                    {{--                                                                           value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"--}}
-                                                    {{--                                                                       @endif>--}}
-                                                    {{--                                                            </div>--}}
-
-                                                    {{--                                                            <div class="col-6 div_3 p-0 ">--}}
-                                                    {{--                                                                <textarea class="btn btn-block" name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>--}}
-                                                    {{--                                                            </div>--}}
-
-                                                    {{--                                                        </div>--}}
-                                                    {{--                                                    @endforeach--}}
+                                      
                                                 </div>
 
 
@@ -1236,109 +1175,111 @@
     </div>
 </div>
 
+</div>
 
 
 @if(isset($user))
-@if (is_null($user->deleted_at))
-<b-modal id="modal-deactivate" hide-footer hide-header style="display:none">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <h6>Вы уверены что хотите уволить пользователя?</h6>
-            </div>
-            <div class="text-center mb-3">
-                <form action="/timetracking/delete-person" id="deleteForm" enctype="multipart/form-data"  method="post">
-                    <input class="form-control" type="hidden" name="id" value="{{$user->id}}">
-                    <input class="form-control" type="hidden" name="delay" value="1" id="delay">
+    @if (is_null($user->deleted_at))
+    <b-modal id="modal-deactivate" hide-footer hide-header style="display:none">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <h6>Вы уверены что хотите уволить пользователя?</h6>
+                </div>
+                <div class="text-center mb-3">
+                    <form action="/timetracking/delete-person" id="deleteForm" enctype="multipart/form-data"  method="post">
+                        <input class="form-control" type="hidden" name="id" value="{{$user->id}}">
+                        <input class="form-control" type="hidden" name="delay" value="1" id="delay">
 
-                    {{ csrf_field() }}
-                    <div class="row align-items-center justify-content-center p-3" style="padding-bottom:0!important">
-                        
-                        <div class="col-md-12 mb-2">
-                            <select name="cause" id="cause" class="form-control form-control-sm">
-                                <option value="" selected disabled>Выберите причину</option>
-                                @foreach($fire_causes as $cause)
-                                    <option value="{{ $cause }}">{{ $cause }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{ csrf_field() }}
+                        <div class="row align-items-center justify-content-center p-3" style="padding-bottom:0!important">
+                            
+                            <div class="col-md-12 mb-2">
+                                <select name="cause" id="cause" class="form-control form-control-sm">
+                                    <option value="" selected disabled>Выберите причину</option>
+                                    @foreach($fire_causes as $cause)
+                                        <option value="{{ $cause }}">{{ $cause }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                        
-                        @if(isset($user) && !$user->is_trainee)
-                        <div class="col-md-6">
-                            <div class="box">
-                                <div class="d-inline-block text-center" style="width:100%">
-                                <input type="file" name="file8" id="file-8"
-                                        class="inputfile inputfile-1" style="display:none">
-                                    @if (isset($user->downloads) && $user->downloads->resignation)
-                                    <label for="file-8">
-                                        <svg width="20" height="30" class="">
-                                            <use
-                                                xlink:href="#{{ pathinfo($user->downloads->resignation, PATHINFO_EXTENSION) }}-icon">
-                                            </use>
-                                        </svg>
-                                        <span>Заявление об <br>увольнении</span>
-                                    </label>
-                                    @else
-                                    <label for="file-8">
-                                        <svg width="20" height="30" class="">
-                                            <use xlink:href="#download-icon"></use>
-                                        </svg>
-                                        <span>Заявление об <br>увольнении</span>
-                                    </label>
-                                    @endif
-                                </div>
-                            </div>  
-                        </div>
-                        <div class="col-md-6 d-flex justify-content-between flex-column">
-                            <button type="submit" class="btn btn-success rounded mb-2" id="deleteUser">Да</button>
-                            <button type="reset" class="btn btn-primary rounded " data-dismiss="modal">Нет</button>
-                        </div>
-                        @else
-                        <div class="col-md-12 mb-2">
-                            <input class="form-control" type="text" name="cause2" placeholder="Или напишите свой вариант" value="" id="cause2" class="form-control form-control-sm">
-                        </div>
-                        <div class="col-md-6 d-flex justify-content-between flex-column">
-                            <button type="submit" class="btn btn-success rounded">Да</button>
-                        </div>
-                        <div class="col-md-6 d-flex justify-content-between flex-column">
-                            <button type="reset" class="btn btn-primary rounded" data-dismiss="modal">Нет</button>
-                        </div>
-                        @endif
-                        
-                        
-                                        
+                            
+                            @if(isset($user) && !$user->is_trainee)
+                            <div class="col-md-6">
+                                <div class="box">
+                                    <div class="d-inline-block text-center" style="width:100%">
+                                    <input type="file" name="file8" id="file-8"
+                                            class="inputfile inputfile-1" style="display:none">
+                                        @if (isset($user->downloads) && $user->downloads->resignation)
+                                        <label for="file-8">
+                                            <svg width="20" height="30" class="">
+                                                <use
+                                                    xlink:href="#{{ pathinfo($user->downloads->resignation, PATHINFO_EXTENSION) }}-icon">
+                                                </use>
+                                            </svg>
+                                            <span>Заявление об <br>увольнении</span>
+                                        </label>
+                                        @else
+                                        <label for="file-8">
+                                            <svg width="20" height="30" class="">
+                                                <use xlink:href="#download-icon"></use>
+                                            </svg>
+                                            <span>Заявление об <br>увольнении</span>
+                                        </label>
+                                        @endif
+                                    </div>
+                                </div>  
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-between flex-column">
+                                <button type="submit" class="btn btn-success rounded mb-2" id="deleteUser">Да</button>
+                                <button type="reset" class="btn btn-primary rounded " data-dismiss="modal">Нет</button>
+                            </div>
+                            @else
+                            <div class="col-md-12 mb-2">
+                                <input class="form-control" type="text" name="cause2" placeholder="Или напишите свой вариант" value="" id="cause2" class="form-control form-control-sm">
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-between flex-column">
+                                <button type="submit" class="btn btn-success rounded">Да</button>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-between flex-column">
+                                <button type="reset" class="btn btn-primary rounded" data-dismiss="modal">Нет</button>
+                            </div>
+                            @endif
+                            
+                            
+                                            
 
+                            
+                        </div>
+                        <div class="row mt-2 px-5">
+                            <span id="deleteError" style="color:red;text-align:center;width:100%"></span>
+                        </div>
                         
-                    </div>
-                    <div class="row mt-2 px-5">
-                        <span id="deleteError" style="color:red;text-align:center;width:100%"></span>
-                    </div>
-                    
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</b-modal>
-@else
-<b-modal id="modal-activate" hide-footer hide-header>
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <h6>Вы уверены что хотите востановить пользователя?</h6>
-            </div>
-            <div class="text-center mb-3 ">
-                <form action="/timetracking/recover-person">
-                    <input class="form-control" type="hidden" name="id" value="{{$user->id}}">
-                    <button type="submit" class="btn btn-success" id="deleteUserButton">Да</button>
-                    <button type="reset" class="btn btn-primary" data-dismiss="modal">Нет</button>
-                </form>
+    </b-modal>
+    @else
+    <b-modal id="modal-activate" hide-footer hide-header>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <h6>Вы уверены что хотите востановить пользователя?</h6>
+                </div>
+                <div class="text-center mb-3 ">
+                    <form action="/timetracking/recover-person">
+                        <input class="form-control" type="hidden" name="id" value="{{$user->id}}">
+                        <button type="submit" class="btn btn-success" id="deleteUserButton">Да</button>
+                        <button type="reset" class="btn btn-primary" data-dismiss="modal">Нет</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</b-modal>
+    </b-modal>
+    @endif
 @endif
-@endif
+
 <div class="modal " id="beforeSubmit" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -1352,31 +1293,37 @@
 
 <award-user-sidebar />
 
-@include('admin.svg.icons')
+    @include('admin.svg.icons')
 
 @endsection
 
+
 @section('scripts')
-    <div id="uploadimageModal" class="modal" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <a onclick="$('#uploadimageModal').modal('hide')"  class="close" >&times;</a>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-8 text-center">
-                            <div id="image_demo" style="width:455px; margin-top:15px"></div>
-                        </div>
+<div id="uploadimageModal" class="modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a onclick="$('#uploadimageModal').modal('hide')"  class="close" >&times;</a>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8 text-center">
+                        <div id="image_demo" style="width:455px; margin-top:15px"></div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button  class="btn btn-default crop_image" onclick="crop_image()" >Сохранить</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button  class="btn btn-default crop_image" onclick="crop_image()" >Сохранить</button>
             </div>
         </div>
     </div>
+</div>
 
+
+<script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
+<script src="{{ url('/js/jquery.maskedinput.js') }}"></script>
+   
+ 
 <script>
 
  $(".phone_mask").mask("+7(999)999-99-99");
@@ -1425,10 +1372,7 @@
 
         });
 
-
-    });
-
-    function crop_image(){
+        function crop_image(){
         $image_crop.croppie('result', {
             type: 'canvas',
             size: 'viewport'
@@ -1576,332 +1520,335 @@
 
     }
 
-
-
-
     function bitrix_quarter_editor(){
         $('#bitrix_quarter_id_input').show();
     }
 
 
-var counter = 0
+    var counter = 0
 
-$('#submitx').click(function(e) {
-    e.preventDefault();
-    $('#trainee').val(false)
-    submitx();
-});
+        $('#submitx').click(function(e) {
+            console.log('test')
+            e.preventDefault();
+            
+            $('#trainee').val(false)
+            submitx();
+        });
 
-$('#submitx2').click(function(e) {
-    e.preventDefault();
-    $('#trainee').val(false)
-    $('#increment_provided').val(true)
-    submitx();
-});
+        $('#submitx2').click(function(e) {
+            e.preventDefault();
+            $('#trainee').val(false)
+            $('#increment_provided').val(true)
+            submitx();
+        });
 
-$('#submit_job').click(function(e) {
-    e.preventDefault();
-    $('#trainee').val(false)
-    $('#increment_provided').val(true)
-    submitx();
-});
+        $('#submit_job').click(function(e) {
+            e.preventDefault();
+            console.log('TETETET')
+            $('#trainee').val(false)
+            $('#increment_provided').val(true)
+            submitx();
+        });
 
-$('#submit_trainee').click(function(e) {
-    e.preventDefault();
-    $('#trainee').val(true)
-    submit_trainee();
-});
-$('#deleteModalBtn').click(function(e) {
-    $('#delay').val(0)
-});
-$('#deleteModalBtn2').click(function(e) {
-    $('#delay').val(1)
-});
-$('#deleteUser').click(function(e) {
-    e.preventDefault();
-    // if($('#delay').val() == 0) {
-    //     $('#deleteError').text('');
-    //     $('#deleteForm').submit();
+        $('#submit_trainee').click(function(e) {
+            e.preventDefault();
+            $('#trainee').val(true)
+            submit_trainee();
+        });
+        $('#deleteModalBtn').click(function(e) {
+            $('#delay').val(0)
+        });
+        $('#deleteModalBtn2').click(function(e) {
+            $('#delay').val(1)
+        });
+        $('#deleteUser').click(function(e) {
+            e.preventDefault();
+            // if($('#delay').val() == 0) {
+            //     $('#deleteError').text('');
+            //     $('#deleteForm').submit();
+            
+            if(($('#file-8').val() =='' || $('#file-8').val() == null) && $('#cause').val() != 'Дубликат, 2 учетки') {
+                $('#deleteError').text('Прикрепите Заявление об увольнении!');
+            } else {
+                $('#deleteError').text('');
+                $('#deleteForm').submit();
+            }
+            
+            
+            
+        });
+
+
+    function submitx() {
+
+
+
+
+        counter = 0;
+
+        let phone = $('#phone').val(),
+            name = $('#firstName').val(),
+            last_name = $('#lastName').val(),
+            birthday = $('#birthday').val(),
+            email = $('#email').val(),
+            zarplata = $('#zarplata').val();
+            selectedCityInput = $('#selectedCityInput').val();
+
+
+
+
+        $('#beforeSubmit .texter').html('');
+
+        $('#zarplata').val(zarplata.replace(/\D/g, ""));
+
+
+
+        let profile_errors = 0;
+
+        if (selectedCityInput.length < 2) {
+            $('#beforeSubmit .texter').append('<div>Поиск: <b>Стран</b> <b>Город</b></div>');
+            counter++;
+            profile_errors++
+        }
+
+
+
+        if (name.length < 2) {
+            $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');
+            counter++;
+            profile_errors++
+        }
+
+        if (last_name.length < 3) {
+            $('#beforeSubmit .texter').append('<div>Профиль: <b>Фамилия</b></div>');
+            counter++;
+            profile_errors++
+        }
+
+        if (!validateEmail(email)) {
+            $('#beforeSubmit .texter').append('<div>Профиль: <b>Email </b> не корректный</div>');
+            counter++;
+            profile_errors++
+        }
+
+        if (birthday.length == 0) {
+            $('#beforeSubmit .texter').append('<div>Профиль: <b>День рождения</b></div>');
+            counter++;
+            profile_errors++
+        }
+
+
+        let phone_errors = 0;
+
+        if (phone.length < 11) {
+            $('#beforeSubmit .texter').append('<div>Контакты: <b>Мобильный</b></div>');
+            counter++;
+            phone_errors++
+        }
+
+        // if (phone_1.length < 6) {
+        //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Домашний</b></div>');
+        //     counter++;
+        //     phone_errors++
+        // }
+
+        // if (phone_2.length < 11) {
+        //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Супруга/Муж</b></div>');
+        //     counter++;
+        //     phone_errors++
+        // }
+
+        // if (phone_3.length < 11) {
+        //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Друг/Брат/Сестра</b></div>');
+        //     counter++;
+        //     phone_errors++
+        // }
+
+
+        // if (workingCity == null) {
+        //     $('#beforeSubmit .texter').append('<div>Город: <b>Астана</b></div>');
+        //     counter++;
+        //     profile_errors++
+        // }
+
+        let zarplata_errors = 0;
+
+        // if (validateCnum()) {
+        //     $('#beforeSubmit .texter').append('<div>Зарплата: <b>Номер карты</b></div>');
+        //     counter++;
+        //     zarplata_errors++;
+        // }
+
+        ///////////////////////////////////////
+        if(profile_errors != 0){
+            $('.listo1').text(profile_errors);
+        } else {
+            $('.listo1').text('');
+        }
+
+        if(phone_errors != 0){
+            $('.listo2').text(phone_errors);
+        } else {
+            $('.listo2').text('');
+        }
+
+        if(zarplata_errors != 0){
+            $('.listo3').text(zarplata_errors);
+        } else {
+            $('.listo3').text('');
+        }
+        //////////////////////////////////////////////
     
-    if(($('#file-8').val() =='' || $('#file-8').val() == null) && $('#cause').val() != 'Дубликат, 2 учетки') {
-        $('#deleteError').text('Прикрепите Заявление об увольнении!');
-    } else {
-        $('#deleteError').text('');
-        $('#deleteForm').submit();
-    }
-    
-    
-    
-});
+        
+        if (counter > 0) {
+            $('#beforeSubmit').modal('show');
+        } else {
+            $('#form').submit();
+        }
 
-
-function submitx() {
-
-
-
-
-    counter = 0;
-
-    let phone = $('#phone').val(),
-        name = $('#firstName').val(),
-        last_name = $('#lastName').val(),
-        birthday = $('#birthday').val(),
-        email = $('#email').val(),
-        zarplata = $('#zarplata').val();
-        selectedCityInput = $('#selectedCityInput').val();
-
-
-
-
-    $('#beforeSubmit .texter').html('');
-
-    $('#zarplata').val(zarplata.replace(/\D/g, ""));
-
-
-
-    let profile_errors = 0;
-
-    if (selectedCityInput.length < 2) {
-        $('#beforeSubmit .texter').append('<div>Поиск: <b>Стран</b> <b>Город</b></div>');
-        counter++;
-        profile_errors++
     }
 
+    //////////////
+
+    function submit_trainee() {
+        
+        counter = 0;
+
+        let phone = $('#phone').val(),
+            name = $('#firstName').val(),
+            last_name = $('#lastName').val(),
+            birthday = $('#birthday').val(),
+            email = $('#email').val(),
+            zarplata = $('#zarplata').val();
+            country = $("#selectedCityInput").val();
 
 
-    if (name.length < 2) {
-        $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');
-        counter++;
-        profile_errors++
-    }
 
-    if (last_name.length < 3) {
-        $('#beforeSubmit .texter').append('<div>Профиль: <b>Фамилия</b></div>');
-        counter++;
-        profile_errors++
-    }
+        $('#beforeSubmit .texter').html('');
 
-    if (!validateEmail(email)) {
-        $('#beforeSubmit .texter').append('<div>Профиль: <b>Email </b> не корректный</div>');
-        counter++;
-        profile_errors++
-    }
-
-    if (birthday.length == 0) {
-        $('#beforeSubmit .texter').append('<div>Профиль: <b>День рождения</b></div>');
-        counter++;
-        profile_errors++
-    }
+        $('#zarplata').val(zarplata.replace(/\D/g, ""));
+        //$('#zarplata').val(0);
 
 
-    let phone_errors = 0;
+        let profile_errors = 0;
 
-    if (phone.length < 11) {
-        $('#beforeSubmit .texter').append('<div>Контакты: <b>Мобильный</b></div>');
-        counter++;
-        phone_errors++
-    }
+        if (country.length < 2) {
+            $('#beforeSubmit .texter').append('<div>Найти:<b>страну</b>  <b>Город</b> : </div>');
+            counter++;
+            profile_errors++
+        }
 
-    // if (phone_1.length < 6) {
-    //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Домашний</b></div>');
-    //     counter++;
-    //     phone_errors++
-    // }
+        if (name.length < 2) {
+            $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');
+            counter++;
+            profile_errors++
+        }
 
-    // if (phone_2.length < 11) {
-    //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Супруга/Муж</b></div>');
-    //     counter++;
-    //     phone_errors++
-    // }
+        if (last_name.length < 3) {
+            $('#beforeSubmit .texter').append('<div>Профиль: <b>Фамилия</b></div>');
+            counter++;
+            profile_errors++
+        }
 
-    // if (phone_3.length < 11) {
-    //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Друг/Брат/Сестра</b></div>');
-    //     counter++;
-    //     phone_errors++
-    // }
+        if (!validateEmail(email)) {
+            $('#beforeSubmit .texter').append('<div>Профиль: <b>Email </b> не корректный</div>');
+            counter++;
+            profile_errors++
+        }
+
+        if (birthday.length == 0) {
+            $('#beforeSubmit .texter').append('<div>Профиль: <b>День рождения</b></div>');
+            counter++;
+            profile_errors++
+        }
 
 
-    // if (workingCity == null) {
-    //     $('#beforeSubmit .texter').append('<div>Город: <b>Астана</b></div>');
-    //     counter++;
-    //     profile_errors++
-    // }
+        ///////////////////////////////////////
+        if(profile_errors != 0){
+            $('.listo1').text(profile_errors);
+        } else {
+            $('.listo1').text('');
+        }
 
-    let zarplata_errors = 0;
-
-    // if (validateCnum()) {
-    //     $('#beforeSubmit .texter').append('<div>Зарплата: <b>Номер карты</b></div>');
-    //     counter++;
-    //     zarplata_errors++;
-    // }
-
-    ///////////////////////////////////////
-    if(profile_errors != 0){
-        $('.listo1').text(profile_errors);
-    } else {
-        $('.listo1').text('');
-    }
-
-    if(phone_errors != 0){
-        $('.listo2').text(phone_errors);
-    } else {
         $('.listo2').text('');
-    }
-
-    if(zarplata_errors != 0){
-        $('.listo3').text(zarplata_errors);
-    } else {
         $('.listo3').text('');
-    }
-    //////////////////////////////////////////////
-   
+        //////////////////////////////////////////////
     
-    if (counter > 0) {
-        $('#beforeSubmit').modal('show');
-    } else {
-        $('#form').submit();
+        if (counter > 0) {
+            $('#beforeSubmit').modal('show');
+        } else {
+            $('#form').submit();
+        }
+
     }
 
-}
+    /////////////////
+    var phoneIndex = 1;
 
-//////////////
-
-function submit_trainee() {
-    
-    counter = 0;
-
-    let phone = $('#phone').val(),
-        name = $('#firstName').val(),
-        last_name = $('#lastName').val(),
-        birthday = $('#birthday').val(),
-        email = $('#email').val(),
-        zarplata = $('#zarplata').val();
-        country = $("#selectedCityInput").val();
-
-
-
-    $('#beforeSubmit .texter').html('');
-
-    $('#zarplata').val(zarplata.replace(/\D/g, ""));
-    //$('#zarplata').val(0);
-
-
-    let profile_errors = 0;
-
-    if (country.length < 2) {
-        $('#beforeSubmit .texter').append('<div>Найти:<b>страну</b>  <b>Город</b> : </div>');
-        counter++;
-        profile_errors++
+    function validateEmail(email) {
+        const re =
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
     }
 
-    if (name.length < 2) {
-        $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');
-        counter++;
-        profile_errors++
+    function addPhone(e) {
+        if ($('.phones .phone-row').length < 10) {
+            var index = phoneIndex++;
+            $('.phones').append(`<div class="d-flex phone-row form-group m0">
+                <input class="form-control mr-1 col-sm-4" type="text" value="Свой" name="contacts[phone][${index}][name]" placeholder="Название">
+                <input class="phone_mask form-control mr-1 col-sm-8" type="text" name="contacts[phone][${index}][value]" placeholder="Телефон">
+                <button class="btn btn-danger btn-sm contact-delete rounded" type="button" onclick="deletePhone(event)"><i class="fa fa-trash"></i></button>
+            </div>`);
+        }
     }
 
-    if (last_name.length < 3) {
-        $('#beforeSubmit .texter').append('<div>Профиль: <b>Фамилия</b></div>');
-        counter++;
-        profile_errors++
-    }
-
-    if (!validateEmail(email)) {
-        $('#beforeSubmit .texter').append('<div>Профиль: <b>Email </b> не корректный</div>');
-        counter++;
-        profile_errors++
-    }
-
-    if (birthday.length == 0) {
-        $('#beforeSubmit .texter').append('<div>Профиль: <b>День рождения</b></div>');
-        counter++;
-        profile_errors++
+    function deletePhone(e) {
+        if (confirm('Удалить номер?')) {
+            $(e.target).parents('.phone-row').remove();
+        }
     }
 
 
-    ///////////////////////////////////////
-    if(profile_errors != 0){
-        $('.listo1').text(profile_errors);
-    } else {
-        $('.listo1').text('');
+    var cardIndex = 1;
+    function addCard(e) {
+        var index = cardIndex++;
+        $('.cards').append(`<div class="d-flex form-group m0 card-row">
+            <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][bank]" placeholder="Банк">
+            <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][country]" placeholder="Страна">
+            <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][cardholder]" placeholder="Имя на карте">
+            <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][phone]" placeholder="Телефон">
+            <input class="form-control mr-1 col-sm-3 card-number mr-5" type="text" name="cards[${index}][number]" placeholder="Номер карты">
+            <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
+        </div>`);
+
+        $(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
     }
 
-    $('.listo2').text('');
-    $('.listo3').text('');
-    //////////////////////////////////////////////
-   
-    if (counter > 0) {
-        $('#beforeSubmit').modal('show');
-    } else {
-        $('#form').submit();
-    }
+    var taxIndex = 1;
+    function addTax(userId, salary) {
+        var index = taxIndex++;
 
-}
-
-/////////////////
-var phoneIndex = 1;
-
-function validateEmail(email) {
-    const re =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-}
-
-function addPhone(e) {
-    if ($('.phones .phone-row').length < 10) {
-        var index = phoneIndex++;
-        $('.phones').append(`<div class="d-flex phone-row form-group m0">
-            <input class="form-control mr-1 col-sm-4" type="text" value="Свой" name="contacts[phone][${index}][name]" placeholder="Название">
-            <input class="phone_mask form-control mr-1 col-sm-8" type="text" name="contacts[phone][${index}][value]" placeholder="Телефон">
-            <button class="btn btn-danger btn-sm contact-delete rounded" type="button" onclick="deletePhone(event)"><i class="fa fa-trash"></i></button>
+        $('.taxes').append(`<div class="d-flex form-group m0 tax-row">
+            <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][name]" placeholder="Название налога">
+            <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][amount]" placeholder="Сумма">
+            <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][percent]" placeholder="Процент">
+            <input class="form-control mr-1 col-sm-2" type="hidden" name="tax[${index}][user_id]" value="${userId}">
+            <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
         </div>`);
     }
-}
 
-function deletePhone(e) {
-    if (confirm('Удалить номер?')) {
-        $(e.target).parents('.phone-row').remove();
+    function deleteCard(e) {
+        if (confirm('Удалить карту?')) {
+            $(e.target).parents('.card-row').remove();
+        }
+    }function deleteTax(e) {
+        if (confirm('Удалить налог?')) {
+            $(e.target).parents('.tax-row').remove();
+        }
     }
-}
 
 
-var cardIndex = 1;
-function addCard(e) {
-    var index = cardIndex++;
-    $('.cards').append(`<div class="d-flex form-group m0 card-row">
-        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][bank]" placeholder="Банк">
-        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][country]" placeholder="Страна">
-        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][cardholder]" placeholder="Имя на карте">
-        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][phone]" placeholder="Телефон">
-        <input class="form-control mr-1 col-sm-3 card-number mr-5" type="text" name="cards[${index}][number]" placeholder="Номер карты">
-        <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
-    </div>`);
-
-    $(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
-}
-
- var taxIndex = 1;
- function addTax(userId, salary) {
-     var index = taxIndex++;
-
-     $('.taxes').append(`<div class="d-flex form-group m0 tax-row">
-        <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][name]" placeholder="Название налога">
-        <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][amount]" placeholder="Сумма">
-        <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][percent]" placeholder="Процент">
-        <input class="form-control mr-1 col-sm-2" type="hidden" name="tax[${index}][user_id]" value="${userId}">
-        <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
-    </div>`);
- }
-
-function deleteCard(e) {
-    if (confirm('Удалить карту?')) {
-        $(e.target).parents('.card-row').remove();
-    }
-}function deleteTax(e) {
-    if (confirm('Удалить налог?')) {
-        $(e.target).parents('.tax-row').remove();
-    }
-}
+    });
 
 
 </script>
