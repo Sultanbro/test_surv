@@ -46,7 +46,7 @@
                 >
                     <td
                         v-for="field in fields"
-                        :key="field.key" 
+                        :key="field.key"
                         @click="showHistory(field.key)"
                         :class="{
                             'day-fine': item[field.key] !== undefined && item[field.key].hasFine,
@@ -174,7 +174,7 @@ export default {
     name: "PopupBalance",
     components: {
         BalanceItem
-    }, 
+    },
     props: {},
     watch: {
         month: {
@@ -246,13 +246,15 @@ export default {
                 test_bonus: data.test_bonus,
                 awards: data.awards,
                 training: data.training,
+                value: data.value,
+                calculated: data.calculated
             }
 
             setTimeout(() => {
                 this.$refs.historyElement.scrollIntoView({ behavior: 'smooth' })
             }, 1)
         },
- 
+
         /**
          * Загрузка данных для таблицы
          */
@@ -268,7 +270,7 @@ export default {
                 this.total_avanses = response.data.total_avanses
 
                 this.loadItems()
-                
+
                 this.showHistory()
                 this.loading = false
             }).catch((e) => console.log(e))
@@ -480,7 +482,7 @@ $training: #f90;
     font-family: "Open Sans",sans-serif;
     font-size:2rem;
     color:rgb(139 171 2);
-    font-weight: 400; 
+    font-weight: 400;
     border-bottom: 1px solid #aebde0;
     padding-bottom: 1rem;
 
