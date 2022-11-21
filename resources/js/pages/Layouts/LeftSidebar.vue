@@ -3,7 +3,7 @@
     <!-- avatar  -->
     <div class="header__avatar">
         <img :src="$laravel.avatar" alt="avatar image" >
-        
+
         <!-- hover menu -->
         <div class="header__menu">
             <div class="header__menu-title">
@@ -20,7 +20,7 @@
                     <span class="menu__item-title">Выход</span>
                 </button>
                 <input type="hidden" :value="$laravel.csrfToken" name="_token" />
-            </form> 
+            </form>
         </div>
     </div>
 
@@ -73,7 +73,7 @@
 import LeftSidebarItem from './LeftSidebarItem'
 
 export default {
-    name: 'LeftSidebar', 
+    name: 'LeftSidebar',
     components: {
         LeftSidebarItem
     },
@@ -268,7 +268,7 @@ export default {
             let h = this.items[0].height
             return this.items.reduce((res, item) => {
                 if(item.hide) return res;
-                h += item.height + 6
+                h += item.height + 4
                 if(this.height - h > 0){
                     res.visible.push(item)
                 }
@@ -345,11 +345,11 @@ export default {
     display: flex;
     flex-direction: column;
     flex: 0 1 100%;
-    gap:.5rem;
+    gap:.3rem;
     overflow-y: auto;
     &::-webkit-scrollbar {
         width: 0; /* высота для горизонтального скролла */
-        height: 0; 
+        height: 0;
     }
 }
 
@@ -393,11 +393,11 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap:.7rem;
+    gap:.5rem;
 
     width: 100%;
     height: 100%;
-    padding:  1rem 1.2rem 1rem;
+    padding:  0.9rem 1.2rem;
 
     text-align: center;
     font-size: 1.2rem;
@@ -466,11 +466,11 @@ export default {
 
     background: #fff;
     cursor:pointer;
-    
+
     &:first-of-type{
         border-radius: 0 1rem 0 0;
     }
-    
+
     &:last-of-type{
         border-radius: 0 0 1rem 0;
     }
