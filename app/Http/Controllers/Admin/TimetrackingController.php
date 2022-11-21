@@ -861,74 +861,14 @@ class TimetrackingController extends Controller
          * Выбираем кого покзаывать
          */
         if($request->user_types == 0) { // Действующие
-            $_user_ids = [];
-            $my_ids = DB::table('users')
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->when($group, function ($query) use ($group) {
-                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
-                })
-                ->where('ud.is_trainee', 0)
-                ->get(['users.id','ud.applied']);
-                
-            foreach($my_ids as $ids) {
-                $_user_ids[] = $ids->id;
-            }
-
             $users = (new UserService)->getEmployees($request->group_id, $date);
         }
         
         if($request->user_types == 1) { // Уволенныне
-            $_user_ids = User::onlyTrashed()
-                ->when($group, function ($query) use ($group) {
-                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
-                })
-                ->pluck('id')
-                ->toArray();
-            //////////////////////
-            $date = $year . '-' . $request->month . '-01';
-            $date_for_register = Carbon::parse($date); 
-            $date_for_fire = Carbon::parse($date)->startOfMonth();
-            $d_users = User::onlyTrashed()
-                //->whereDate('created_at', '<', $date_for_register)
-                ->whereDate('deleted_at', '>=', $date_for_fire)
-                ->get();
-            
-            foreach($d_users as $d_user) {
-                if($d_user->last_group != NULL) {
-                    $lg = json_decode($d_user->last_group);
-                    if(in_array($request['group_id'], $lg)) {
-                        array_push($_user_ids, $d_user->id);
-                    }
-                } 
-            } 
-            
-            $_user_ids = DB::table('users')
-                ->whereNotNull('deleted_at')
-                ->whereMonth('deleted_at',$date_for_register->month)
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', $_user_ids)
-                ->where('ud.is_trainee', 0) 
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-
             $users = (new UserService)->getFiredEmployees($request->group_id, $date);
         }
 
         if($request->user_types == 2) { // Стажеры
-
-            $_user_ids = DB::table('users')
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->when($group, function ($query) use ($group) {
-                    return $query->whereIn('users.id', $group->users()->pluck('user_id')->toArray());
-                })
-                ->where('ud.is_trainee', 1) 
-                ->get(['users.id'])
-                ->pluck('id')
-                ->toArray();
-
             $users = (new UserService)->getTrainees($request->group_id, $date);
         }
 
