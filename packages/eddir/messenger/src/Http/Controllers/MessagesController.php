@@ -107,8 +107,6 @@ class MessagesController {
         } else {
             $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ) );
         }
-        // set message as read
-        MessengerFacade::setMessageAsRead( $message, Auth::user() );
 
         return response()->json( $message );
     }
@@ -176,11 +174,17 @@ class MessagesController {
                                         } );
                                     } )
                                     ->get();
-        // set messages as read
-        MessengerFacade::setMessagesAsRead( $messages, Auth::user() );
+        if ( $messages->count() > 0 ) {
+            // set messages as read
+            MessengerFacade::setMessagesAsRead( $messages, Auth::user() );
 
-        // return get chats last messages
-        return response()->json( MessengerFacade::fetchChatsLastMessages( Auth::user() ) );
+            // return get chats last messages
+            return response()->json( [
+                'left' => $messages->first()->chat->getUnreadMessagesCount(Auth::user()),
+            ] );
+        }
+
+        return response()->json( [ 'ok' => false ] );
     }
 
     /**

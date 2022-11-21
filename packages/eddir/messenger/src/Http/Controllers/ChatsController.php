@@ -4,7 +4,7 @@
  * ChatsController.php
  *
  * @noinspection PhpUndefinedFieldInspection
-*/
+ */
 
 namespace Eddir\Messenger\Http\Controllers;
 
@@ -15,8 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
-class ChatsController extends Controller
-{
+class ChatsController extends Controller {
     protected int $perPage = 30;
 
     /**
@@ -26,26 +25,27 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function pusherAuth(Request $request): JsonResponse
-    {
+    public function pusherAuth( Request $request ): JsonResponse {
         // Auth data
-        $authData = json_encode([
+        $authData = json_encode( [
             'user_id'   => Auth::user()->id,
             'user_info' => [
                 'name' => Auth::user()->name,
             ],
-        ]);
+        ] );
         // check if user authorized
-        if (Auth::check()) {
-            return response()->json([ MessengerFacade::pusherAuth(
-                $request['channel_name'],
-                $request['socket_id'],
-                $authData
-            ) ]);
+        if ( Auth::check() ) {
+            return response()->json( json_decode(MessengerFacade::pusherAuth(
+                    $request['channel_name'],
+                    $request['socket_id'],
+                    $authData,
+                    Auth::user()->id
+                )
+            ));
         }
 
         // if not authorized
-        return response()->json([ 'message' => 'Unauthorized' ], 401);
+        return response()->json( [ 'message' => 'Unauthorized' ], 401 );
     }
 
     /**
@@ -53,13 +53,13 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function fetchChats(): JsonResponse
-    {
-        $chats = MessengerFacade::fetchChatsLastMessages(Auth::user());
-        return response()->json([
+    public function fetchChats(): JsonResponse {
+        $chats = MessengerFacade::fetchChatsWithLastMessages( Auth::user() );
+
+        return response()->json( [
             'chats' => $chats,
-            'user' => Auth::user(),
-        ]);
+            'user'  => Auth::user(),
+        ] );
     }
 
     /**
@@ -67,10 +67,9 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function fetchUsers(): JsonResponse
-    {
+    public function fetchUsers(): JsonResponse {
         // return users list except current user
-        return response()->json( User::where('id', '!=', Auth::user()->id)->get() );
+        return response()->json( User::where( 'id', '!=', Auth::user()->id )->get() );
     }
 
     /**
@@ -80,23 +79,22 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function search(Request $request): JsonResponse
-    {
+    public function search( Request $request ): JsonResponse {
         // check search query length
-        if (strlen($request->get('q')) < 1) {
-            return response()->json([ 'message' => 'Search query must be at least 1 characters long' ], 422);
+        if ( strlen( $request->get( 'q' ) ) < 1 ) {
+            return response()->json( [ 'message' => 'Search query must be at least 1 characters long' ], 422 );
         }
-        $chats = MessengerFacade::searchChats($request->get('q'), Auth::user()->id);
-        $users = MessengerFacade::searchUsers($request->get('q'));
+        $chats = MessengerFacade::searchChats( $request->get( 'q' ), Auth::user()->id );
+        $users = MessengerFacade::searchUsers( $request->get( 'q' ) );
 
-        foreach ($chats as $chat) {
-            MessengerFacade::getChatAttributesForUser($chat, Auth::user());
+        foreach ( $chats as $chat ) {
+            MessengerFacade::getChatAttributesForUser( $chat, Auth::user() );
         }
 
-        return response()->json([
+        return response()->json( [
             'chats' => $chats,
             'users' => $users,
-        ]);
+        ] );
     }
 
     /**
@@ -106,21 +104,20 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function getChat(int $chat_id): JsonResponse
-    {
+    public function getChat( int $chat_id ): JsonResponse {
         // get chat
-        $chat = MessengerFacade::getChat($chat_id);
+        $chat = MessengerFacade::getChat( $chat_id );
 
         // check if chat exists
-        if (!$chat->users) { // need to check users, so we can return later chat data with users as polymorphic call
-            return response()->json([ 'message' => 'Chat not found' ], 404);
+        if ( ! $chat->users ) { // need to check users, so we can return later chat data with users as polymorphic call
+            return response()->json( [ 'message' => 'Chat not found' ], 404 );
         }
 
-        $chat = MessengerFacade::getChatAttributesForUser($chat, Auth::user());
+        $chat                 = MessengerFacade::getChatAttributesForUser( $chat, Auth::user() );
         $chat->pinned_message = $chat->getPinnedMessages()->last();
 
         // return chat model
-        return response()->json($chat);
+        return response()->json( $chat );
     }
 
     /**
@@ -130,10 +127,10 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function getPrivateChat(int $user_id): JsonResponse
-    {
-        $chat = MessengerFacade::getPrivateChat(Auth::user()->id, $user_id);
-        return response()->json( MessengerFacade::getChatAttributesForUser($chat, Auth::user()) );
+    public function getPrivateChat( int $user_id ): JsonResponse {
+        $chat = MessengerFacade::getPrivateChat( Auth::user()->id, $user_id );
+
+        return response()->json( MessengerFacade::getChatAttributesForUser( $chat, Auth::user() ) );
     }
 
     /**
@@ -143,35 +140,35 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function createChat(Request $request): JsonResponse
-    {
+    public function createChat( Request $request ): JsonResponse {
         // check if user is authorized
-        if (!Auth::check()) {
-            return response()->json([ 'message' => 'Unauthorized' ], 401);
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
 
         // chat should have title
-        if (empty($request->title)) {
-            return response()->json([ 'message' => 'Title is empty' ], 400);
+        if ( empty( $request->title ) ) {
+            return response()->json( [ 'message' => 'Title is empty' ], 400 );
         }
 
         // chat title should be less than 50 characters
-        if (strlen($request->title) > 255) {
-            return response()->json([ 'message' => 'Title is too long' ], 400);
+        if ( strlen( $request->title ) > 255 ) {
+            return response()->json( [ 'message' => 'Title is too long' ], 400 );
         }
 
         // chat description should be less than 255 characters
-        if (strlen($request->description) > 255) {
-            return response()->json([ 'message' => 'Description is too long' ], 400);
+        if ( strlen( $request->description ) > 255 ) {
+            return response()->json( [ 'message' => 'Description is too long' ], 400 );
         }
 
-        if (!$request->members) {
-            return response()->json([ 'message' => 'Members are empty' ], 400);
+        if ( ! $request->members ) {
+            return response()->json( [ 'message' => 'Members are empty' ], 400 );
         }
 
         // create chat
-        $chat = MessengerFacade::createChat(Auth::user(), $request->title, $request->description ?? "", $request->members);
-        return response()->json($chat);
+        $chat = MessengerFacade::createChat( Auth::user(), $request->title, $request->description ?? "", $request->members );
+
+        return response()->json( $chat );
     }
 
     /**
@@ -182,35 +179,35 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function updateChat(Request $request, int $chat_id): JsonResponse
-    {
+    public function updateChat( Request $request, int $chat_id ): JsonResponse {
         // check if user is authorized
-        if (!Auth::check()) {
-            return response()->json([ 'message' => 'Unauthorized' ], 401);
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
         // check if user is member of chat
-        if (!MessengerFacade::isMember($chat_id)) {
-            return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
+        if ( ! MessengerFacade::isMember( $chat_id ) ) {
+            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
         }
         // check if chat exists
-        if (!MessengerFacade::getChat($chat_id)) {
-            return response()->json([ 'message' => 'Chat not found' ], 404);
+        if ( ! MessengerFacade::getChat( $chat_id ) ) {
+            return response()->json( [ 'message' => 'Chat not found' ], 404 );
         }
         // check if title is empty
-        if (empty($request->title)) {
-            return response()->json([ 'message' => 'Title is empty' ], 400);
+        if ( empty( $request->title ) ) {
+            return response()->json( [ 'message' => 'Title is empty' ], 400 );
         }
         // check if title is too long
-        if (strlen($request->title) > 50) {
-            return response()->json([ 'message' => 'Title is too long' ], 400);
+        if ( strlen( $request->title ) > 50 ) {
+            return response()->json( [ 'message' => 'Title is too long' ], 400 );
         }
         // check if description is too long
-        if (strlen($request->description) > 255) {
-            return response()->json([ 'message' => 'Description is too long' ], 400);
+        if ( strlen( $request->description ) > 255 ) {
+            return response()->json( [ 'message' => 'Description is too long' ], 400 );
         }
         // update chat
-        $chat = MessengerFacade::updateChat($chat_id, $request->title, $request->description, Auth::user());
-        return response()->json($chat);
+        $chat = MessengerFacade::updateChat( $chat_id, $request->title, $request->description, Auth::user() );
+
+        return response()->json( $chat );
     }
 
     /**
@@ -220,19 +217,19 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function deleteChat(int $chat_id): JsonResponse
-    {
+    public function deleteChat( int $chat_id ): JsonResponse {
         // check if user is authorized
-        if (!Auth::check()) {
-            return response()->json([ 'message' => 'Unauthorized' ], 401);
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
         // check if user is member of chat
-        if (!MessengerFacade::isMember($chat_id)) {
-            return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
+        if ( ! MessengerFacade::isMember( $chat_id ) ) {
+            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
         }
         // delete chat
-        $chat = MessengerFacade::deleteChat($chat_id, Auth::user());
-        return response()->json($chat);
+        $chat = MessengerFacade::deleteChat( $chat_id, Auth::user() );
+
+        return response()->json( $chat );
     }
 
     /**
@@ -243,23 +240,23 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function addUser(Request $request, int $chat_id): JsonResponse
-    {
+    public function addUser( Request $request, int $chat_id ): JsonResponse {
         // check if user is authorized
-        if (!Auth::check()) {
-            return response()->json([ 'message' => 'Unauthorized' ], 401);
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
         // check if user is member of chat
-        if (!MessengerFacade::isMember($chat_id, Auth::user()->id)) {
-            return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
+        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
         }
         // check if user exists
-        if (!User::find($request->user_id)) {
-            return response()->json([ 'message' => 'User not found' ], 404);
+        if ( ! User::find( $request->user_id ) ) {
+            return response()->json( [ 'message' => 'User not found' ], 404 );
         }
         // add user to chat
-        $chat = MessengerFacade::addUserToChat($chat_id, $request->user_id, Auth::user());
-        return response()->json($chat);
+        $chat = MessengerFacade::addUserToChat( $chat_id, $request->user_id, Auth::user() );
+
+        return response()->json( $chat );
     }
 
     /**
@@ -270,19 +267,19 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function removeUser(int $chat_id, int $user_id): JsonResponse
-    {
+    public function removeUser( int $chat_id, int $user_id ): JsonResponse {
         // check if user is authorized
-        if (!Auth::check()) {
-            return response()->json([ 'message' => 'Unauthorized' ], 401);
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
         // check if user is member of chat
-        if (!MessengerFacade::isMember($chat_id, Auth::user()->id)) {
-            return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
+        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
         }
         // remove user from chat
-        $chat = MessengerFacade::removeUserFromChat($chat_id, $user_id, Auth::user());
-        return response()->json($chat);
+        $chat = MessengerFacade::removeUserFromChat( $chat_id, $user_id, Auth::user() );
+
+        return response()->json( $chat );
     }
 
     /**
@@ -292,15 +289,15 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function leaveChat(int $chat_id): JsonResponse
-    {
+    public function leaveChat( int $chat_id ): JsonResponse {
         // check if user is member of chat
-        if (!MessengerFacade::isMember($chat_id, Auth::user()->id)) {
-            return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
+        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
         }
         // leave chat
-        $chat = MessengerFacade::removeUserFromChat($chat_id, Auth::user()->id, Auth::user());
-        return response()->json($chat);
+        $chat = MessengerFacade::removeUserFromChat( $chat_id, Auth::user()->id, Auth::user() );
+
+        return response()->json( $chat );
     }
 
     /**
@@ -311,35 +308,87 @@ class ChatsController extends Controller
      *
      * @return JsonResponse
      */
-    public function editChat(Request $request, int $chat_id): JsonResponse
-    {
+    public function editChat( Request $request, int $chat_id ): JsonResponse {
         // check if user is authorized
-        if (!Auth::check()) {
-            return response()->json([ 'message' => 'Unauthorized' ], 401);
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
         // check if user is member of chat
-        if (!MessengerFacade::isMember($chat_id, Auth::user()->id)) {
-            return response()->json([ 'message' => 'You are not a member of this chat' ], 403);
+        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
         }
         // check if chat exists
-        if (!MessengerFacade::getChat($chat_id)) {
-            return response()->json([ 'message' => 'Chat not found' ], 404);
+        if ( ! MessengerFacade::getChat( $chat_id ) ) {
+            return response()->json( [ 'message' => 'Chat not found' ], 404 );
         }
         // check if title is empty
-        if (empty($request->title)) {
-            return response()->json([ 'message' => 'Title is empty' ], 400);
+        if ( empty( $request->title ) ) {
+            return response()->json( [ 'message' => 'Title is empty' ], 400 );
         }
         // check if title is too long
-        if (strlen($request->title) > 50) {
-            return response()->json([ 'message' => 'Title is too long' ], 400);
+        if ( strlen( $request->title ) > 50 ) {
+            return response()->json( [ 'message' => 'Title is too long' ], 400 );
         }
         // check if description is too long
-        if (strlen($request->description) > 255) {
-            return response()->json([ 'message' => 'Description is too long' ], 400);
+        if ( ! empty( $request->description ) && strlen( $request->description ) > 255 ) {
+            return response()->json( [ 'message' => 'Description is too long' ], 400 );
         }
         // update chat
-        $chat = MessengerFacade::updateChat($chat_id, $request->title, $request->description ?? "", Auth::user());
-        return response()->json($chat);
+        $chat = MessengerFacade::updateChat( $chat_id, $request->title, $request->description ?? "", Auth::user() );
+
+        return response()->json( $chat );
+    }
+
+    /**
+     * Pin chat
+     *
+     * @param int $chat_id
+     *
+     * @return JsonResponse
+     */
+    public function pinChat( int $chat_id ): JsonResponse {
+        // check if user is authorized
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
+        }
+        // check if chat exists
+        if ( ! MessengerFacade::getChat( $chat_id ) ) {
+            return response()->json( [ 'message' => 'Chat not found' ], 404 );
+        }
+        // check if user is member of chat
+        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
+        }
+        // pin chat
+        $chat = MessengerFacade::pinChat( $chat_id, Auth::user() );
+
+        return response()->json( $chat );
+    }
+
+    /**
+     * Unpin chat
+     *
+     * @param int $chat_id
+     *
+     * @return JsonResponse
+     */
+    public function unpinChat( int $chat_id ): JsonResponse {
+        // check if user is authorized
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
+        }
+        // check if chat exists
+        if ( ! MessengerFacade::getChat( $chat_id ) ) {
+            return response()->json( [ 'message' => 'Chat not found' ], 404 );
+        }
+        // check if user is member of chat
+        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
+        }
+        // unpin chat
+        $chat = MessengerFacade::unpinChat( $chat_id, Auth::user() );
+
+        return response()->json( $chat );
     }
 
 }
