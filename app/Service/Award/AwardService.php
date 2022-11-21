@@ -2,12 +2,15 @@
 
 namespace App\Service\Award;
 
+use App\Http\Requests\AwardsByTypeRequest;
 use App\Http\Requests\RewardRequest;
 use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
 use App\Models\Award;
 use App\Models\AwardType;
+use App\Models\AwardUser;
 use App\Models\Course;
+use App\Models\CourseResult;
 use App\Repositories\AwardRepository;
 use App\Repositories\AwardTypeRepository;
 use App\Repositories\CoreRepository;
@@ -93,6 +96,7 @@ class AwardService
     {
         try {
 
+            $file = $this->saveAwardFile($request);
             $success = Award::query()->create([
                 'award_type_id' => $request->input('award_type_id'),
                 'name' => $request->input('name'),
@@ -101,8 +105,9 @@ class AwardService
                 'styles' => $request->input('styles'),
                 'format'    => $request->file('file')->extension(),
                 'icon'      => $request->input('icon'),
-                'path'      => $this->saveAwardFile($request)['relative']
+                'path'      => $file['relative']
             ]);
+            $success['temp'] = $file['temp'];
             if ($request->has('course_ids')){
                 Course::whereIn('id', $request->input('course_ids'))
                     ->update(['award_id' => $success->id]);
@@ -155,7 +160,7 @@ class AwardService
             $awards['types'] = $this->awardTypeRepository->allTypes();
 
             if ($access) {
-                $awards['awards']['all'] = $this->awardRepository->relationAwardUser($user, '!=');
+                $awards['awards']['all'] = $this->awardRepository->relationAwardUser($user,null,'!=' );
             }
 
             return $awards;
@@ -163,6 +168,70 @@ class AwardService
         } catch (\Throwable $exception) {
             throw new Exception($exception->getMessage());
         }
+    }
+
+    public function awardsByType(AwardsByTypeRequest $request, int $user_id): array
+    {
+        //nominations - all, my, available //all if hidden false
+        //certificates - all, my, available
+        //nachisleniya - all by group, or position
+
+        $user = User::query()->findOrFail($user_id);
+        try {
+            $result = [];
+            $awardType = AwardType::query()->findOrFail($request->input('award_type_id'))->first();
+
+            $userAwards = $user->awards;
+            $availableAwards = $awardType->awards;
+            if ($this->isNomination($awardType)) {
+                $result['my'] =  $userAwards;
+                $result['available'] =  $availableAwards ;
+                if (!$awardType->hidden){
+                    $result['other'] =   AwardUser::query()
+                        ->whereNot('user_id', $user_id)
+                        ->with(['user', 'award'])
+                        ->get();;
+                }
+            }
+
+            if ($this->isCertificate($awardType)){
+                $otherAwards = [];
+                foreach ($userAwards as $award){
+                    $award['course'] = CourseResult::query()
+                        ->where('user_id', $user_id)
+                        ->whereNotNull('ended_at')
+                        ->with('course')
+                        ->get()
+                        ->pluck('course');
+
+                    if (!$award->hide){
+                        $otherAwards = AwardUser::query()
+                            ->whereNot('user_id', $user_id)
+                            ->with(['user', 'award'])
+                            ->get();;
+                    }
+                }
+                $result['my'] =  $userAwards;
+                $result['available'] =  $availableAwards;
+                $result['other'] =  $otherAwards;
+
+            }
+
+            if ($this->isAccrual($awardType)){
+
+                $result = $this->calculateSalaries();
+            }
+
+
+            return $result;
+
+        } catch (\Throwable $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
+    public function calculateSalaries(){
+
     }
 
     /**
@@ -211,6 +280,20 @@ class AwardService
     private function showOtherAwards($user): bool
     {
         return $user->user_description->view_other_awards == 1;
+    }
+
+
+    private function isNomination($award): bool
+    {
+        return str_contains(strtolower($award->name), 'номинации');
+    }
+    private function isCertificate($award): bool
+    {
+        return str_contains(strtolower($award->name), 'сертификаты');
+    }
+    private function isAccrual($award): bool
+    {
+        return str_contains(strtolower($award->name), 'начисления');
     }
 
     /**
