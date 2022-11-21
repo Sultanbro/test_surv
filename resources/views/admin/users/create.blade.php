@@ -1323,150 +1323,415 @@
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
 <script src="{{ url('/js/jquery.maskedinput.js') }}"></script>
    
- 
+<script>
+    $(".phone_mask").mask("+7(999)999-99-99");
+</script>
+<script>
+var getFileKis;
+
+function showBlock(type,elem) {
+
+    $(".none-block").hide();
+    $(".none-check").hide();
+    $(".bg-this").css('background-color','rgb(248 248 248)')
+
+
+    $("#check-"+type).show();
+    $("#bg-this-"+type).css('background-color','rgb(227 229 232)')
+
+
+
+    if(type == 1){
+        $("#profile_d").show();
+        $("#add_info").show(" ");///доп инф
+        $("#profile_books").show(" "); /// база знание
+        $("#iphones3").show(" "); /// группы
+    }else if(type == 7){
+        $("#adaptation_conversations").show(" ")
+    }else if(type == 2){
+        $("#iphones3").show(" ");
+    }else if(type == 5){
+        $("#profile_salary").show(" ");
+    }else if(type == 9){
+        $("#iphones4").show(" ");
+    }else if(type == 4){
+        $("#profile_contacts").show(" ");
+    }else if(type == 6){
+        $("#other_data").show(" ");
+        $("#other_data_bitrix").show(" ");
+    }
+
+}
+
+function liHoverOver(element){
+    $("#li-hover-jquery-"+element).css('background-color','rgb(236 244 249)');
+}
+
+function liHoverOut(element){
+    $("#li-hover-jquery-"+element).css('background-color','rgb(245, 245, 245)');
+}
+
+function crop_image() {
+    $image_crop.croppie('result', {
+        type: 'canvas',
+        size: 'viewport'
+    }).then(function(response){
+        var user_id = $("#user_id_img").val();
+        var file_name = $("#file_name_img").val();
+        var origin_file = $("#upload_image").val();
+
+
+
+        $.ajax({
+            type:'POST',
+            url: "/profile/upload/edit/",
+            data:{
+                "image": response,
+                'user_id':user_id,
+                'file_name':file_name,
+                    // file:getFileKis
+            },
+            // cache: false,
+            // contentType: 'json',
+            // processData: false,
+            success: (data) => {
+
+                console.log(data,'imasheev kis')
+
+                var auth_user_id = $("#user_id_img").attr('data-auth-id');
+
+                if (auth_user_id === user_id){
+                    $(".img_url_sm").html(data['src'])
+                }
+
+                $('#uploadimageModal').modal('hide');
+                $(".img_url_md").html(data['src'])
+                $("#file_name_img").attr('value',data['filename'])
+            },
+            error: function(data){
+                console.log(data);
+            }
+        });
+    })
+}
+
+function pasteSearchInput(type_id){
+    var kis = $("#hiddenCity-"+type_id).text();
+    $("#working_city").val(type_id);
+    $("#selectedCityInput").val(kis);
+    $("#listSearchResult").hide();
+
+}
+
+function bitrix_quarter_editor(){
+    $('#bitrix_quarter_id_input').show();
+}   
+    
+function submitx() {
+
+    counter = 0;
+
+    let phone = $('#phone').val(),
+        name = $('#firstName').val(),
+        last_name = $('#lastName').val(),
+        birthday = $('#birthday').val(),
+        email = $('#email').val(),
+        zarplata = $('#zarplata').val();
+        selectedCityInput = $('#selectedCityInput').val();
+
+
+
+
+    $('#beforeSubmit .texter').html('');
+
+    $('#zarplata').val(zarplata.replace(/\D/g, ""));
+
+
+
+    let profile_errors = 0;
+
+    if (selectedCityInput.length < 2) {
+        $('#beforeSubmit .texter').append('<div>Поиск: <b>Стран</b> <b>Город</b></div>');
+        counter++;
+        profile_errors++
+    }
+
+
+
+    if (name.length < 2) {
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');
+        counter++;
+        profile_errors++
+    }
+
+    if (last_name.length < 3) {
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Фамилия</b></div>');
+        counter++;
+        profile_errors++
+    }
+
+    if (!validateEmail(email)) {
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Email </b> не корректный</div>');
+        counter++;
+        profile_errors++
+    }
+
+    if (birthday.length == 0) {
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>День рождения</b></div>');
+        counter++;
+        profile_errors++
+    }
+
+
+    let phone_errors = 0;
+
+    if (phone.length < 11) {
+        $('#beforeSubmit .texter').append('<div>Контакты: <b>Мобильный</b></div>');
+        counter++;
+        phone_errors++
+    }
+
+    // if (phone_1.length < 6) {
+    //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Домашний</b></div>');
+    //     counter++;
+    //     phone_errors++
+    // }
+
+    // if (phone_2.length < 11) {
+    //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Супруга/Муж</b></div>');
+    //     counter++;
+    //     phone_errors++
+    // }
+
+    // if (phone_3.length < 11) {
+    //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Друг/Брат/Сестра</b></div>');
+    //     counter++;
+    //     phone_errors++
+    // }
+
+
+    // if (workingCity == null) {
+    //     $('#beforeSubmit .texter').append('<div>Город: <b>Астана</b></div>');
+    //     counter++;
+    //     profile_errors++
+    // }
+
+    let zarplata_errors = 0;
+
+    // if (validateCnum()) {
+    //     $('#beforeSubmit .texter').append('<div>Зарплата: <b>Номер карты</b></div>');
+    //     counter++;
+    //     zarplata_errors++;
+    // }
+
+    ///////////////////////////////////////
+    if(profile_errors != 0){
+        $('.listo1').text(profile_errors);
+    } else {
+        $('.listo1').text('');
+    }
+
+    if(phone_errors != 0){
+        $('.listo2').text(phone_errors);
+    } else {
+        $('.listo2').text('');
+    }
+
+    if(zarplata_errors != 0){
+        $('.listo3').text(zarplata_errors);
+    } else {
+        $('.listo3').text('');
+    }
+    //////////////////////////////////////////////
+
+
+    if (counter > 0) {
+        $('#beforeSubmit').modal('show');
+    } else {
+        $('#form').submit();
+    }
+
+}
+
+function submit_trainee() {
+
+    counter = 0;
+
+    let phone = $('#phone').val(),
+        name = $('#firstName').val(),
+        last_name = $('#lastName').val(),
+        birthday = $('#birthday').val(),
+        email = $('#email').val(),
+        zarplata = $('#zarplata').val();
+        country = $("#selectedCityInput").val();
+
+
+
+    $('#beforeSubmit .texter').html('');
+
+    $('#zarplata').val(zarplata.replace(/\D/g, ""));
+    //$('#zarplata').val(0);
+
+
+    let profile_errors = 0;
+
+    if (country.length < 2) {
+        $('#beforeSubmit .texter').append('<div>Найти:<b>страну</b>  <b>Город</b> : </div>');
+        counter++;
+        profile_errors++
+    }
+
+    if (name.length < 2) {
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');
+        counter++;
+        profile_errors++
+    }
+
+    if (last_name.length < 3) {
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Фамилия</b></div>');
+        counter++;
+        profile_errors++
+    }
+
+    if (!validateEmail(email)) {
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Email </b> не корректный</div>');
+        counter++;
+        profile_errors++
+    }
+
+    if (birthday.length == 0) {
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>День рождения</b></div>');
+        counter++;
+        profile_errors++
+    }
+
+
+    ///////////////////////////////////////
+    if(profile_errors != 0){
+        $('.listo1').text(profile_errors);
+    } else {
+        $('.listo1').text('');
+    }
+
+    $('.listo2').text('');
+    $('.listo3').text('');
+    //////////////////////////////////////////////
+
+    if (counter > 0) {
+        $('#beforeSubmit').modal('show');
+    } else {
+        $('#form').submit();
+    }
+
+}
+
+function validateEmail(email) {
+    const re =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
+var phoneIndex = 1;
+
+function addPhone(e) {
+    if ($('.phones .phone-row').length < 10) {
+        var index = phoneIndex++;
+        $('.phones').append(`<div class="d-flex phone-row form-group m0">
+            <input class="form-control mr-1 col-sm-4" type="text" value="Свой" name="contacts[phone][${index}][name]" placeholder="Название">
+            <input class="phone_mask form-control mr-1 col-sm-8" type="text" name="contacts[phone][${index}][value]" placeholder="Телефон">
+            <button class="btn btn-danger btn-sm contact-delete rounded" type="button" onclick="deletePhone(event)"><i class="fa fa-trash"></i></button>
+        </div>`);
+    }
+}
+
+function deletePhone(e) {
+    if (confirm('Удалить номер?')) {
+        $(e.target).parents('.phone-row').remove();
+    }
+}
+
+var cardIndex = 1;
+function addCard(e) {
+    var index = cardIndex++;
+    $('.cards').append(`<div class="d-flex form-group m0 card-row">
+        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][bank]" placeholder="Банк">
+        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][country]" placeholder="Страна">
+        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][cardholder]" placeholder="Имя на карте">
+        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][phone]" placeholder="Телефон">
+        <input class="form-control mr-1 col-sm-3 card-number mr-5" type="text" name="cards[${index}][number]" placeholder="Номер карты">
+        <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
+    </div>`);
+
+    $(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
+}
+
+var taxIndex = 1;
+function addTax(userId, salary) {
+    var index = taxIndex++;
+
+    $('.taxes').append(`<div class="d-flex form-group m0 tax-row">
+        <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][name]" placeholder="Название налога">
+        <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][amount]" placeholder="Сумма">
+        <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][percent]" placeholder="Процент">
+        <input class="form-control mr-1 col-sm-2" type="hidden" name="tax[${index}][user_id]" value="${userId}">
+        <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
+    </div>`);
+}
+
+function deleteCard(e) {
+    if (confirm('Удалить карту?')) {
+        $(e.target).parents('.card-row').remove();
+    }
+}
+
+function deleteTax(e) {
+    if (confirm('Удалить налог?')) {
+        $(e.target).parents('.tax-row').remove();
+    }
+}
+</script>
 <script>
 
- $(".phone_mask").mask("+7(999)999-99-99");
+$(document).ready(function() {
+
+    $image_crop = $('#image_demo').croppie({
+        enableExif: true,
+        viewport: {
+            width:200,
+            height:200,
+            type:'square' //circle
+        },
+        boundary:{
+            width:300,
+            height:300
+        }
+    });
+
+    $('#upload_image').on('change', function(){
+
+        var reader = new FileReader();
+
+        reader.onload = function (event) {
+            $image_crop.croppie('bind', {
+                url: event.target.result
+            }).then(function(){
 
 
-
- var getFileKis;
-
-    $(document).ready(function(){
-
-
-
-        $image_crop = $('#image_demo').croppie({
-            enableExif: true,
-            viewport: {
-                width:200,
-                height:200,
-                type:'square' //circle
-            },
-            boundary:{
-                width:300,
-                height:300
-            }
-        });
-
-
-        $('#upload_image').on('change', function(){
-
-            var reader = new FileReader();
-            reader.onload = function (event) {
-                $image_crop.croppie('bind', {
-                    url: event.target.result
-                }).then(function(){
-
-
-                    console.log('jQuery bind complete');
-                });
-            }
-
-             getFileKis = this.files[0];
-
-            reader.readAsDataURL(this.files[0]);
-
-            $('#uploadimageModal').modal('show');
-
-
-        });
-
-        function crop_image(){
-        $image_crop.croppie('result', {
-            type: 'canvas',
-            size: 'viewport'
-        }).then(function(response){
-            var user_id = $("#user_id_img").val();
-            var file_name = $("#file_name_img").val();
-            var origin_file = $("#upload_image").val();
-
-
-
-            $.ajax({
-                type:'POST',
-                url: "/profile/upload/edit/",
-                data:{
-                    "image": response,
-                    'user_id':user_id,
-                    'file_name':file_name,
-                     // file:getFileKis
-                },
-                // cache: false,
-                // contentType: 'json',
-                // processData: false,
-                success: (data) => {
-
-                    console.log(data,'imasheev kis')
-
-                    var auth_user_id = $("#user_id_img").attr('data-auth-id');
-
-                    if (auth_user_id === user_id){
-                        $(".img_url_sm").html(data['src'])
-                    }
-
-                    $('#uploadimageModal').modal('hide');
-                    $(".img_url_md").html(data['src'])
-                    $("#file_name_img").attr('value',data['filename'])
-                },
-                error: function(data){
-                    console.log(data);
-                }
+                console.log('jQuery bind complete');
             });
-        })
-    }
+        }
+
+        getFileKis = this.files[0];
+
+        reader.readAsDataURL(this.files[0]);
+
+        $('#uploadimageModal').modal('show');
+    });
 
     $("#profile_d").show();
     $("#add_info").show(" ");///доп инф
     $("#profile_books").show(" "); /// база знание
     $("#iphones3").show(" "); /// группы
-
-
-    function showBlock(type,elem)
-    {
-
-        $(".none-block").hide();
-        $(".none-check").hide();
-        $(".bg-this").css('background-color','rgb(248 248 248)')
-
-
-        $("#check-"+type).show();
-        $("#bg-this-"+type).css('background-color','rgb(227 229 232)')
-
-
-
-        if(type == 1){
-            $("#profile_d").show();
-            $("#add_info").show(" ");///доп инф
-            $("#profile_books").show(" "); /// база знание
-            $("#iphones3").show(" "); /// группы
-        }else if(type == 7){
-            $("#adaptation_conversations").show(" ")
-        }else if(type == 2){
-            $("#iphones3").show(" ");
-        }else if(type == 5){
-            $("#profile_salary").show(" ");
-        }else if(type == 9){
-            $("#iphones4").show(" ");
-        }else if(type == 4){
-            $("#profile_contacts").show(" ");
-        }else if(type == 6){
-            $("#other_data").show(" ");
-            $("#other_data_bitrix").show(" ");
-        }
-
-
-
-
-    }
-
-    function liHoverOver(element){
-        $("#li-hover-jquery-"+element).css('background-color','rgb(236 244 249)');
-    }
-
-    function liHoverOut(element){
-        $("#li-hover-jquery-"+element).css('background-color','rgb(245, 245, 245)');
-    }
 
     document.getElementById('selectedCityInput').onkeyup = function() {
         let _token   = $('meta[name="csrf-token"]').attr('content');
@@ -1500,356 +1765,66 @@
                 },
 
             });
-        }else{
+        } else {
 
             $("#searchResultCountry").empty();
             $("#listSearchResult").css('display','none');
         }
 
-
-
-
     }
-
-
-    function pasteSearchInput(type_id){
-        var kis = $("#hiddenCity-"+type_id).text();
-        $("#working_city").val(type_id);
-        $("#selectedCityInput").val(kis);
-        $("#listSearchResult").hide();
-
-    }
-
-    function bitrix_quarter_editor(){
-        $('#bitrix_quarter_id_input').show();
-    }
-
 
     var counter = 0
 
-        $('#submitx').click(function(e) {
-            console.log('test')
-            e.preventDefault();
-            
-            $('#trainee').val(false)
-            submitx();
-        });
-
-        $('#submitx2').click(function(e) {
-            e.preventDefault();
-            $('#trainee').val(false)
-            $('#increment_provided').val(true)
-            submitx();
-        });
-
-        $('#submit_job').click(function(e) {
-            e.preventDefault();
-            console.log('TETETET')
-            $('#trainee').val(false)
-            $('#increment_provided').val(true)
-            submitx();
-        });
-
-        $('#submit_trainee').click(function(e) {
-            e.preventDefault();
-            $('#trainee').val(true)
-            submit_trainee();
-        });
-        $('#deleteModalBtn').click(function(e) {
-            $('#delay').val(0)
-        });
-        $('#deleteModalBtn2').click(function(e) {
-            $('#delay').val(1)
-        });
-        $('#deleteUser').click(function(e) {
-            e.preventDefault();
-            // if($('#delay').val() == 0) {
-            //     $('#deleteError').text('');
-            //     $('#deleteForm').submit();
-            
-            if(($('#file-8').val() =='' || $('#file-8').val() == null) && $('#cause').val() != 'Дубликат, 2 учетки') {
-                $('#deleteError').text('Прикрепите Заявление об увольнении!');
-            } else {
-                $('#deleteError').text('');
-                $('#deleteForm').submit();
-            }
-            
-            
-            
-        });
-
-
-    function submitx() {
-
-
-
-
-        counter = 0;
-
-        let phone = $('#phone').val(),
-            name = $('#firstName').val(),
-            last_name = $('#lastName').val(),
-            birthday = $('#birthday').val(),
-            email = $('#email').val(),
-            zarplata = $('#zarplata').val();
-            selectedCityInput = $('#selectedCityInput').val();
-
-
-
-
-        $('#beforeSubmit .texter').html('');
-
-        $('#zarplata').val(zarplata.replace(/\D/g, ""));
-
-
-
-        let profile_errors = 0;
-
-        if (selectedCityInput.length < 2) {
-            $('#beforeSubmit .texter').append('<div>Поиск: <b>Стран</b> <b>Город</b></div>');
-            counter++;
-            profile_errors++
-        }
-
-
-
-        if (name.length < 2) {
-            $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');
-            counter++;
-            profile_errors++
-        }
-
-        if (last_name.length < 3) {
-            $('#beforeSubmit .texter').append('<div>Профиль: <b>Фамилия</b></div>');
-            counter++;
-            profile_errors++
-        }
-
-        if (!validateEmail(email)) {
-            $('#beforeSubmit .texter').append('<div>Профиль: <b>Email </b> не корректный</div>');
-            counter++;
-            profile_errors++
-        }
-
-        if (birthday.length == 0) {
-            $('#beforeSubmit .texter').append('<div>Профиль: <b>День рождения</b></div>');
-            counter++;
-            profile_errors++
-        }
-
-
-        let phone_errors = 0;
-
-        if (phone.length < 11) {
-            $('#beforeSubmit .texter').append('<div>Контакты: <b>Мобильный</b></div>');
-            counter++;
-            phone_errors++
-        }
-
-        // if (phone_1.length < 6) {
-        //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Домашний</b></div>');
-        //     counter++;
-        //     phone_errors++
-        // }
-
-        // if (phone_2.length < 11) {
-        //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Супруга/Муж</b></div>');
-        //     counter++;
-        //     phone_errors++
-        // }
-
-        // if (phone_3.length < 11) {
-        //     $('#beforeSubmit .texter').append('<div>Контакты: <b>Друг/Брат/Сестра</b></div>');
-        //     counter++;
-        //     phone_errors++
-        // }
-
-
-        // if (workingCity == null) {
-        //     $('#beforeSubmit .texter').append('<div>Город: <b>Астана</b></div>');
-        //     counter++;
-        //     profile_errors++
-        // }
-
-        let zarplata_errors = 0;
-
-        // if (validateCnum()) {
-        //     $('#beforeSubmit .texter').append('<div>Зарплата: <b>Номер карты</b></div>');
-        //     counter++;
-        //     zarplata_errors++;
-        // }
-
-        ///////////////////////////////////////
-        if(profile_errors != 0){
-            $('.listo1').text(profile_errors);
-        } else {
-            $('.listo1').text('');
-        }
-
-        if(phone_errors != 0){
-            $('.listo2').text(phone_errors);
-        } else {
-            $('.listo2').text('');
-        }
-
-        if(zarplata_errors != 0){
-            $('.listo3').text(zarplata_errors);
-        } else {
-            $('.listo3').text('');
-        }
-        //////////////////////////////////////////////
-    
+    $('#submitx').click(function(e) {
+        console.log('test')
+        e.preventDefault();
         
-        if (counter > 0) {
-            $('#beforeSubmit').modal('show');
-        } else {
-            $('#form').submit();
-        }
-
-    }
-
-    //////////////
-
-    function submit_trainee() {
-        
-        counter = 0;
-
-        let phone = $('#phone').val(),
-            name = $('#firstName').val(),
-            last_name = $('#lastName').val(),
-            birthday = $('#birthday').val(),
-            email = $('#email').val(),
-            zarplata = $('#zarplata').val();
-            country = $("#selectedCityInput").val();
-
-
-
-        $('#beforeSubmit .texter').html('');
-
-        $('#zarplata').val(zarplata.replace(/\D/g, ""));
-        //$('#zarplata').val(0);
-
-
-        let profile_errors = 0;
-
-        if (country.length < 2) {
-            $('#beforeSubmit .texter').append('<div>Найти:<b>страну</b>  <b>Город</b> : </div>');
-            counter++;
-            profile_errors++
-        }
-
-        if (name.length < 2) {
-            $('#beforeSubmit .texter').append('<div>Профиль: <b>Имя</b></div>');
-            counter++;
-            profile_errors++
-        }
-
-        if (last_name.length < 3) {
-            $('#beforeSubmit .texter').append('<div>Профиль: <b>Фамилия</b></div>');
-            counter++;
-            profile_errors++
-        }
-
-        if (!validateEmail(email)) {
-            $('#beforeSubmit .texter').append('<div>Профиль: <b>Email </b> не корректный</div>');
-            counter++;
-            profile_errors++
-        }
-
-        if (birthday.length == 0) {
-            $('#beforeSubmit .texter').append('<div>Профиль: <b>День рождения</b></div>');
-            counter++;
-            profile_errors++
-        }
-
-
-        ///////////////////////////////////////
-        if(profile_errors != 0){
-            $('.listo1').text(profile_errors);
-        } else {
-            $('.listo1').text('');
-        }
-
-        $('.listo2').text('');
-        $('.listo3').text('');
-        //////////////////////////////////////////////
-    
-        if (counter > 0) {
-            $('#beforeSubmit').modal('show');
-        } else {
-            $('#form').submit();
-        }
-
-    }
-
-    /////////////////
-    var phoneIndex = 1;
-
-    function validateEmail(email) {
-        const re =
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
-    }
-
-    function addPhone(e) {
-        if ($('.phones .phone-row').length < 10) {
-            var index = phoneIndex++;
-            $('.phones').append(`<div class="d-flex phone-row form-group m0">
-                <input class="form-control mr-1 col-sm-4" type="text" value="Свой" name="contacts[phone][${index}][name]" placeholder="Название">
-                <input class="phone_mask form-control mr-1 col-sm-8" type="text" name="contacts[phone][${index}][value]" placeholder="Телефон">
-                <button class="btn btn-danger btn-sm contact-delete rounded" type="button" onclick="deletePhone(event)"><i class="fa fa-trash"></i></button>
-            </div>`);
-        }
-    }
-
-    function deletePhone(e) {
-        if (confirm('Удалить номер?')) {
-            $(e.target).parents('.phone-row').remove();
-        }
-    }
-
-
-    var cardIndex = 1;
-    function addCard(e) {
-        var index = cardIndex++;
-        $('.cards').append(`<div class="d-flex form-group m0 card-row">
-            <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][bank]" placeholder="Банк">
-            <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][country]" placeholder="Страна">
-            <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][cardholder]" placeholder="Имя на карте">
-            <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][phone]" placeholder="Телефон">
-            <input class="form-control mr-1 col-sm-3 card-number mr-5" type="text" name="cards[${index}][number]" placeholder="Номер карты">
-            <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
-        </div>`);
-
-        $(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
-    }
-
-    var taxIndex = 1;
-    function addTax(userId, salary) {
-        var index = taxIndex++;
-
-        $('.taxes').append(`<div class="d-flex form-group m0 tax-row">
-            <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][name]" placeholder="Название налога">
-            <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][amount]" placeholder="Сумма">
-            <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][percent]" placeholder="Процент">
-            <input class="form-control mr-1 col-sm-2" type="hidden" name="tax[${index}][user_id]" value="${userId}">
-            <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
-        </div>`);
-    }
-
-    function deleteCard(e) {
-        if (confirm('Удалить карту?')) {
-            $(e.target).parents('.card-row').remove();
-        }
-    }function deleteTax(e) {
-        if (confirm('Удалить налог?')) {
-            $(e.target).parents('.tax-row').remove();
-        }
-    }
-
-
+        $('#trainee').val(false)
+        submitx();
     });
 
+    $('#submitx2').click(function(e) {
+        e.preventDefault();
+        $('#trainee').val(false)
+        $('#increment_provided').val(true)
+        submitx();
+    });
+
+    $('#submit_job').click(function(e) {
+        e.preventDefault();
+        console.log('TETETET')
+        $('#trainee').val(false)
+        $('#increment_provided').val(true)
+        submitx();
+    });
+
+    $('#submit_trainee').click(function(e) {
+        e.preventDefault();
+        $('#trainee').val(true)
+        submit_trainee();
+    });
+
+    $('#deleteModalBtn').click(function(e) {
+        $('#delay').val(0)
+    });
+
+    $('#deleteModalBtn2').click(function(e) {
+        $('#delay').val(1)
+    });
+
+    $('#deleteUser').click(function(e) {
+        e.preventDefault();
+        
+        if(($('#file-8').val() =='' || $('#file-8').val() == null) && $('#cause').val() != 'Дубликат, 2 учетки') {
+            $('#deleteError').text('Прикрепите Заявление об увольнении!');
+        } else {
+            $('#deleteError').text('');
+            $('#deleteForm').submit();
+        }
+        
+    });
+
+});
 
 </script>
 <script>
@@ -1880,22 +1855,11 @@ function raf() {
     }
 }
 </script>
-
-<!--
-<script>
-$(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
-</script>
--->
-
-
 <script>
 $('#bitrix_editor').click(function() {
     $('#bitrix_id_input').slideToggle(100);
 });
-
-
 </script>
-
 <script>
 String.prototype.replaceAt = function(index, replacement) {
     return this.substring(0, index) + replacement + this.substring(index + replacement.length);
@@ -1922,8 +1886,6 @@ $('#weekdays .weekday').click(function() {
     $('#weekdays-input').val(val);
 
 });
-
-
 </script>
 <script>
 function selectedCountry() {
@@ -1977,8 +1939,6 @@ function selectedCountry() {
         console.log(error);
     }
     });
-
-
 
 }
 </script>

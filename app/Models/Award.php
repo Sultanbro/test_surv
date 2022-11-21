@@ -54,4 +54,12 @@ class Award extends Model
         return $this->belongsToMany(User::class, 'award_user', 'award_id', 'user_id')
             ->withTimestamps();
     }
+
+    public function getPathAttribute($value){
+        $disk = \Storage::disk('s3');
+
+        return $disk->temporaryUrl(
+            $value, now()->addMinutes(360)
+        );
+    }
 }
