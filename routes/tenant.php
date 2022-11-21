@@ -110,8 +110,9 @@ Route::middleware([
     });
     
     
-
-    Route::any('/', [UserProfileController::class, 'getProfile']);
+    // Profile
+    // Route::any('/', [UserProfileController::class, 'getProfile']); // old
+    Route::any('/', [ProfileController::class, 'newprofile']);
     Route::view('/doc', 'docs.index');
     Route::view('/html', 'design');
 
@@ -120,8 +121,10 @@ Route::middleware([
         'prefix' => 'profile',
         'as' => 'profile.'
     ], function () {
-        Route::post('/', [UserProfileController::class, 'profile']);
-        Route::any('/', [UserProfileController::class, 'getProfile']);
+        // Route::post('/', [UserProfileController::class, 'profile']);
+        // Route::any('/', [UserProfileController::class, 'getProfile']);
+
+        Route::get('/', [ProfileController::class, 'newprofile']);
         Route::any('/personal-info', [UserProfileController::class, 'personalInfo']);
         Route::any('/recruter-stats', [UserProfileController::class, 'recruterStatsRates']);
         Route::any('/activities', [UserProfileController::class, 'activities']);

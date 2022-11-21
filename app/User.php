@@ -20,6 +20,7 @@ use App\OauthClientToken as Oauth;
 use App\External\Bitrix\Bitrix;
 use App\Exam;
 use App\DayType;
+use App\Setting;
 use App\UserDescription;
 use App\TimetrackingHistory;
 use App\Http\Controllers\IntellectController as IC;
@@ -310,7 +311,7 @@ class User extends Authenticatable implements Authorizable
 
     /**
      * В каких группах находится user 
-     * @return array
+     * @return ProfileGroup
      */
     public function inGroups($is_head = false)
     {
@@ -899,7 +900,8 @@ class User extends Authenticatable implements Authorizable
      */
     public function canWorkThisDay()
     {
-        return $this->weekdays[(int)date('w')] == '1';
+        $dayOfWeek = Carbon::now($this->timezone())->dayOfWeek;
+        return $this->weekdays[$dayOfWeek] == '0';
     }
 
     public function created_checklists(){
@@ -919,5 +921,59 @@ class User extends Authenticatable implements Authorizable
               ->whereHas('user_description', function ($query) {
                    $query->where('is_trainee', 0);
               });
+    }
+
+    /**
+     * График работы сотрудника
+     * 
+     * @return array
+     */
+    public function schedule()
+    {
+        $tz = $this->timezone();
+
+        $user_groups = $this->inGroups();
+        $work_end_max = $user_groups->max('work_end');
+
+        if($work_end_max == null) {
+            $work_end_max = $this->work_end ?? Timetracking::DEFAULT_WORK_END_TIME;
+        }
+
+        $userWorkTime = $this->work_start ?? Timetracking::DEFAULT_WORK_START_TIME;
+
+        $dt = Carbon::now($tz)->format('d.m.Y');
+
+        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz)->subMinutes(30);
+        $worktime_end   = Carbon::parse($dt . ' ' . $work_end_max, $tz);
+
+        return [
+            'start' => $worktime_start,
+            'end'   => $worktime_end
+        ];
+    }
+
+    /**
+     * Timezone
+     * 
+     * @return String
+     */
+    public function timezone() 
+    {
+        $user_timezone = ($this->timezone >= 0) ? $this->timezone : 6;
+        return Setting::TIMEZONES[$user_timezone];
+    }
+
+    /**
+     * Cтраница из Базы знаний 
+     * Показывается при начале дня Сотрудника
+     * Сотрудник обязан читать минимум 60 сек
+     * 
+     * @return \App\KnowBase|null;
+     */
+    public function getCorpbook() 
+    {   
+        return !$this->readCorpBook()
+            ? \App\KnowBase::getRandomPage()
+            : null;
     }
 }

@@ -285,105 +285,86 @@ class TimetrackingController extends Controller
 
     public function timetracking(Request $request)
     {
-        $user = User::bitrixUser();
-        $user_timezone = ($user->timezone >= 0) ? $user->timezone : 6;
-        $tz = Setting::TIMEZONES[$user_timezone];
+        $userClickedStart = $request->has('start');
+        $userClickedEnd   = $request->has('stop');
 
         $message = '';
-        $action = '';
-
-        $user_groups = $user->inGroups();
-        $work_end_max = $user_groups->max('work_end');
-
-        if($work_end_max == null) {
-            $work_end_max = $user->work_end ?? Timetracking::DEFAULT_WORK_END_TIME;
-        }
-
-        $userWorkTime = $user->work_start ?? Timetracking::DEFAULT_WORK_START_TIME;
-
-        $dt = Carbon::now($tz)->format('d.m.Y');
-
-        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz)->subMinutes(30);
-        $worktime_end = Carbon::parse($dt . ' ' . $work_end_max, $tz);
-        $running = $user->timetracking()->running()->first();
-
-        if (!is_null($running)) {
-            $action = 'started';
-
-            if ($worktime_end->isPast()) {
-                $running->exit = $worktime_end;
-                $running->save();
-                $action = 'stopped';
-
-            } elseif ($request->stop) {
-                $running->exit = Carbon::now($tz);
-                $running->save();
-                $action = 'stopped';
-
-            }
-        } else {
-            if ($request->start) {
-                if ($user->canWorkThisDay()) {
-                    $message = 'Вы не можете работать в выходной день';
-                } else if ($worktime_start->isFuture()) {
-                    $message = 'Вы не можете начать день до ' . $worktime_start->format('H:i');
-                } else if ($worktime_end->isPast()) {
-                    $message = 'Вы не можете работать после ' . $worktime_end->format('H:i');
-                } else {
-                    $tt = Timetracking::where('user_id', $user->id)->whereDate('enter', date('Y-m-d'))->first();
-                    if($tt) {
-                        $message = 'Вы уже начали день!';
-                    } else {
-                        $running = Timetracking::create([
-                            'enter' => Carbon::now($tz),
-                            'user_id' => $user->id,
-                        ]);
-                        $action = 'started'; 
-                    }
-                }
-
-            }
-
-        }
-        $error = [];
-
-        if ($message != '') {
-            $error = [
-                'error' => [
-                    'message' => $message,
-                ],
-            ];
-        }
-
-
-        // corp book page 
-
-        if(!$user->readCorpBook()) {
-
-            $has_corp_book = true;
-            $page =  \App\KnowBase::getRandomPage();
-            if($page == null) $has_corp_book = false;
-
-        } else {
-            $page = [
-                'title' => '',
-                'description' => ''
-            ];
-            $has_corp_book = false;
-        }
-
-            $data = [
-                'status' => $action,
-                'corp_book' => [
-                    'has' => $has_corp_book,
-                    'page' => $page,
-                ],
-                'message' => $message
-        ] ;
         
-        return response()->json($data);
+        $user = User::find(auth()->id());
 
-        return $data;
+        // Рабочий график
+        $schedule = $user->schedule();
+
+        // Время фиксации начала дня
+        $workdayStarted = $user->timetracking()->running()->first();
+
+        // Уже начинал работу
+        if ( $workdayStarted ) { 
+
+            // конец рабочего дня прошел
+            if ( $schedule['end']->isPast() ) {
+
+                $workdayStarted->exit = $schedule['end'];
+                $workdayStarted->save();
+                $status = 'stopped';
+
+            // Нажал "Завершиить день"
+            } else if ( $userClickedEnd ) { 
+
+                $workdayStarted->exit = Carbon::now($user->timezone());
+                $workdayStarted->save();
+                $status = 'stopped';
+
+            }
+
+        } 
+   
+        // Не наничал работу и Нажал "Начать день"
+        if( !$workdayStarted  && $userClickedStart ) {
+
+            // Не может начать по причине что Выходной
+            if ( !$user->canWorkThisDay() ) {
+                $message = 'Вы не можете работать в выходной день';
+            // Не может, время не пришло
+            } else if ( $schedule['start']->isFuture() ) {
+                $message = 'Вы не можете начать день до ' . $schedule['start']->format('H:i');
+            // Не может, время конца работы уже прошло
+            } else if ( $schedule['end']->isPast() ) {
+                $message = 'Вы не можете работать после ' . $schedule['end']->format('H:i');
+            // Может начать день. Начинаем день
+            } else {
+                $status = 'started';
+                
+                Timetracking::create([
+                    'enter' => Carbon::now($user->timezone()),
+                    'user_id' => $user->id,
+                ]);
+            }
+
+        } 
+
+        // Cтраница из Базы знаний 
+        // Показывается при начале дня Сотрудника
+        // Сотрудник обязан читать минимум 60 сек
+        $corp_book = $user->getCorpbook();
+
+        // Если есть конфликтное сообщение
+        if ($message != '') {
+            return response()->json([
+                'error' => [
+                    'message' => $message
+                ]
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => isset($status) ? $status : 'stopped',
+            'corp_book' => [
+                'has' => $corp_book ? true : false,
+                'page' => $corp_book,
+            ],
+        ]);
+
     }
 
     /**
