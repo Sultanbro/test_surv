@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
+use App\Service\Department\UserService;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\User;
 use App\ProfileGroup;
-use App\Models\Course;
-use App\Models\CourseModel;
 
 class CourseResult extends Model
 {
@@ -44,7 +43,7 @@ class CourseResult extends Model
     ];
 
     public static $courses;
-    
+
     /**
      * relation to course_id
      */
@@ -58,20 +57,23 @@ class CourseResult extends Model
      */
     public static function getUsers($group_id, $date = null)
     {
-        $user_ids = ProfileGroup::employees($group_id);
+        $user_ids = (new UserService)->getEmployeeIds($group_id, $date);
+
         $users = [];
 
         self::$courses = Course::get();
 
         foreach ($user_ids as $key => $user_id) {
             $user = User::withTrashed()
-                ->with('course_results')
-                ->with('course_results.course')
+                ->with([
+                    'course_results',
+                    'course_results.course'
+                ])
                 ->find($user_id);
 
             if(!$user) continue;
-            
-            array_push($users, self::getUserItem($user, $date));
+
+            $users[] = self::getUserItem($user, $date);
         }
 
         return [
@@ -161,7 +163,6 @@ class CourseResult extends Model
     private static function getUserCourses($user) : array
     {
         $arrx = [];
-
         /**
          * total variables
          */
@@ -182,7 +183,6 @@ class CourseResult extends Model
 
         // get user courses
         $course_ids = self::getCourseIds($user->id);
-        
         /**
          *  order 
          */
@@ -273,8 +273,12 @@ class CourseResult extends Model
                  */
                 $arr['started_at'] = $result->started_at ? Carbon::parse($result->started_at)->format('d.m.Y') : '';
                 $arr['ended_at'] =  $result->ended_at ? Carbon::parse($result->ended_at)->format('d.m.Y') : '';
-                
-                array_push($arrx, $arr);
+
+                if (isset($course->items) && $course->items->count() > 1) {
+                    $arr['items'] = $course->items;
+                }
+
+                $arrx[] = $arr;
             }
         }
 
@@ -331,7 +335,7 @@ class CourseResult extends Model
 
         foreach ($_groups as $key => $group) {
             $users = self::getUsers($group->id, $date);
-            array_push($groups, self::getGroupItem($users, $group));
+            $groups[] = self::getGroupItem($users, $group);
         }
 
         return [
