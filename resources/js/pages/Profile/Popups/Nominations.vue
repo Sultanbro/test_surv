@@ -37,102 +37,7 @@
                     <!--											</div>-->
                     <!--										</div>-->
                     <!--									</div>-->
-                    <div class="nominations__item">
-                        <div class="nominations__item-title">
-                            Процент успешных
-                            исходящих продаж
-                        </div>
-                        <div class="nominations__item-avatar gift-1">
-                            <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                        </div>
-                        <div class="nominations__item-name">
-                            Елена Линовская
-                        </div>
-                        <div class="nominations__item-subtext">
-                            колл-центр
-                        </div>
-                        <div class="nominations__item-value">
-                            15 500 ₸
-                        </div>
-                        <div class="nominations__item-wrapper">
-                            <div class="nominations__item-row">
-                                <p>KPI</p>
-                                <p>1300 ₸</p>
-                            </div>
-                            <div class="nominations__item-row">
-                                <p>БОНУСЫ</p>
-                                <p>200 ₸</p>
-                            </div>
-                            <div class="nominations__item-row">
-                                <p>ОКЛАД</p>
-                                <p>14000 ₸</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="nominations__item green">
-                        <div class="nominations__item-title">
-                            Процент успешных
-                            исходящих продаж
-                        </div>
-                        <div class="nominations__item-avatar gift-2">
-                            <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                        </div>
-                        <div class="nominations__item-name">
-                            Елена Линовская
-                        </div>
-                        <div class="nominations__item-subtext">
-                            колл-центр
-                        </div>
-                        <div class="nominations__item-value">
-                            15 500 ₸
-                        </div>
-                        <div class="nominations__item-wrapper">
-                            <div class="nominations__item-row">
-                                <p>KPI</p>
-                                <p>1300 ₸</p>
-                            </div>
-                            <div class="nominations__item-row">
-                                <p>БОНУСЫ</p>
-                                <p>200 ₸</p>
-                            </div>
-                            <div class="nominations__item-row">
-                                <p>ОКЛАД</p>
-                                <p>14000 ₸</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="nominations__item">
-                        <div class="nominations__item-title">
-                            Процент успешных
-                            исходящих продаж
-                        </div>
-                        <div class="nominations__item-avatar gift-3">
-                            <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                        </div>
-                        <div class="nominations__item-name">
-                            Елена Линовская
-                        </div>
-                        <div class="nominations__item-subtext">
-                            колл-центр
-                        </div>
-                        <div class="nominations__item-value">
-                            15 500 ₸
-                        </div>
-                        <div class="nominations__item-wrapper">
-                            <div class="nominations__item-row">
-                                <p>KPI</p>
-                                <p>1300 ₸</p>
-                            </div>
-                            <div class="nominations__item-row">
-                                <p>БОНУСЫ</p>
-                                <p>200 ₸</p>
-                            </div>
-                            <div class="nominations__item-row">
-                                <p>ОКЛАД</p>
-                                <p>14000 ₸</p>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
             <div class="nominations__content custom-scroll-y tab__content-item"  data-content="2">
@@ -235,7 +140,106 @@
 
                 </div>
             </div>
-
+            <div class="nominations__content custom-scroll-y tab__content-item"  data-content="3">
+                <div class="tabs__include">
+                    <div class="nominations__item">
+                        <div class="nominations__item-title">
+                            Процент успешных
+                            исходящих продаж
+                        </div>
+                        <div class="nominations__item-avatar gift-1">
+                            <img src="images/dist/profile-avatar.png" alt="profile avatar">
+                        </div>
+                        <div class="nominations__item-name">
+                            Елена Линовская
+                        </div>
+                        <div class="nominations__item-subtext">
+                            колл-центр
+                        </div>
+                        <div class="nominations__item-value">
+                            15 500 ₸
+                        </div>
+                        <div class="nominations__item-wrapper">
+                            <div class="nominations__item-row">
+                                <p>KPI</p>
+                                <p>1300 ₸</p>
+                            </div>
+                            <div class="nominations__item-row">
+                                <p>БОНУСЫ</p>
+                                <p>200 ₸</p>
+                            </div>
+                            <div class="nominations__item-row">
+                                <p>ОКЛАД</p>
+                                <p>14000 ₸</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nominations__item green">
+                        <div class="nominations__item-title">
+                            Процент успешных
+                            исходящих продаж
+                        </div>
+                        <div class="nominations__item-avatar gift-2">
+                            <img src="images/dist/profile-avatar.png" alt="profile avatar">
+                        </div>
+                        <div class="nominations__item-name">
+                            Елена Линовская
+                        </div>
+                        <div class="nominations__item-subtext">
+                            колл-центр
+                        </div>
+                        <div class="nominations__item-value">
+                            15 500 ₸
+                        </div>
+                        <div class="nominations__item-wrapper">
+                            <div class="nominations__item-row">
+                                <p>KPI</p>
+                                <p>1300 ₸</p>
+                            </div>
+                            <div class="nominations__item-row">
+                                <p>БОНУСЫ</p>
+                                <p>200 ₸</p>
+                            </div>
+                            <div class="nominations__item-row">
+                                <p>ОКЛАД</p>
+                                <p>14000 ₸</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nominations__item">
+                        <div class="nominations__item-title">
+                            Процент успешных
+                            исходящих продаж
+                        </div>
+                        <div class="nominations__item-avatar gift-3">
+                            <img src="images/dist/profile-avatar.png" alt="profile avatar">
+                        </div>
+                        <div class="nominations__item-name">
+                            Елена Линовская
+                        </div>
+                        <div class="nominations__item-subtext">
+                            колл-центр
+                        </div>
+                        <div class="nominations__item-value">
+                            15 500 ₸
+                        </div>
+                        <div class="nominations__item-wrapper">
+                            <div class="nominations__item-row">
+                                <p>KPI</p>
+                                <p>1300 ₸</p>
+                            </div>
+                            <div class="nominations__item-row">
+                                <p>БОНУСЫ</p>
+                                <p>200 ₸</p>
+                            </div>
+                            <div class="nominations__item-row">
+                                <p>ОКЛАД</p>
+                                <p>14000 ₸</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -249,19 +253,19 @@ export default {
     data: function () {
         return {
             fields: [],
-            awardTypes: null
+            awardTypes: null,
+            awards: []
         };
     },
     mounted() {
         this.axios
-            .get('/award-types/get', {
-                headers: {
-                    'X-CSRF-TOKEN' :`${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}`,
-                },
-            })
+            .get('/awards/type?award_type_id=1')
             .then(response => {
                 console.log(response);
-                this.awardTypes = response.data.data;
+                // const data = response.data.data.awards.my;
+                // for (let i = 0; i < data.length; i++){
+                //     this.awards.push(data[i]);
+                // }
             })
             .catch(error => {
                 console.log(error);
