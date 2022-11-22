@@ -52,9 +52,9 @@ class AwardRepository extends CoreRepository
      * @param $userId
      * @return mixed
      */
-    public function attachUser($id, $userId)
+    public function attachUser($id, $userId, $path = '')
     {
-        return $this->getById($id)->users()->attach($userId);
+        return $this->getById($id)->users()->attach($userId, ['path' => $path]);
     }
 
     /**

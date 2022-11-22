@@ -3,15 +3,16 @@
 namespace App\Service\Award;
 
 use App\Http\Requests\AwardsByTypeRequest;
+use App\Http\Requests\CourseAwardRequest;
 use App\Http\Requests\RewardRequest;
 use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Award;
 use App\Models\AwardType;
-use App\Models\AwardUser;
 use App\Models\Course;
 use App\Models\CourseResult;
+use App\Position;
 use App\ProfileGroup;
 use App\Repositories\AwardRepository;
 use App\Repositories\AwardTypeRepository;
@@ -21,15 +22,13 @@ use App\Service\Department\UserService;
 use App\User;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class AwardService
 {
-    const POSITION = 'App\Positions';
+    const POSITION = 'App\Position';
     const GROUP = 'App\ProfileGroup';
 
     /**
@@ -176,7 +175,7 @@ class AwardService
         try {
             $awards = [];
             $access = $this->showOtherAwards($user);
-            $awards['awards']['my']   = $user->awards;
+            $awards['awards']['my']   = $this->awardRepository->relationAwardUser($user,'!=' );
             $awards['types'] = $this->awardTypeRepository->allTypes();
 
             if ($access) {
@@ -184,6 +183,21 @@ class AwardService
             }
 
             return $awards;
+
+        } catch (\Throwable $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+    /**
+     * @throws Exception
+     */
+    public function courseAward(CourseAwardRequest $request): array
+    {
+        try {
+            return Course::query()
+                ->findOrFail($request->input('course_id'))
+                ->award
+                ->toArray();
 
         } catch (\Throwable $exception) {
             throw new Exception($exception->getMessage());
@@ -269,28 +283,30 @@ class AwardService
 
 
         foreach ($awards as $targetable_id => $targetable_type){
-            $user_ids = collect( (new UserService)
-                ->getEmployees($targetable_id, $date->format('Y-m-d')))
-                ->pluck('id')->toArray();
+
 
 
             if ($targetable_type == self::GROUP){
-                $result['topByGroup'] = $this->getTopSalaryByGroupEmployees($user_ids, $date, $targetable_id);
+                $user_ids = collect( (new UserService)
+                    ->getEmployees($targetable_id, $date->format('Y-m-d')))
+                    ->pluck('id')->toArray();
+                $result['topByGroup']['group'][$targetable_id] = $this->getTopSalaryEmployees($user_ids, $date, $targetable_id);
             }
 
             if ($targetable_type == self::POSITION){
-                $result['topByPosition'] = $this->getTopSalaryByPoistionEmployees($user_ids, $date, $targetable_id);
+                $user_ids = Position::query()
+                    ->findOrFail($targetable_id)
+                    ->users
+                    ->pluck('id');
+                $result['topByPosition']['position'][$targetable_id] = $this->getTopSalaryEmployees($user_ids, $date, $groups[0]);
 
             }
         }
 
         return $result;
     }
-    public function getTopSalaryByPoistionEmployees($user_ids, $date,$group_id)
-    {
 
-    }
-    public function getTopSalaryByGroupEmployees($user_ids, $date,$group_id){
+    public function getTopSalaryEmployees($user_ids, $date,$group_id){
         $result = [];
         $month = Carbon::parse($date)->startOfMonth();
         $group = ProfileGroup::find($group_id);
@@ -406,6 +422,7 @@ class AwardService
         try {
             $awardId = $request->input('award_id');
             $userId  = $request->input('user_id');
+            $file = $this->saveAwardFile($request);
 
             $added   = $awardRepository->attachUser($awardId, $userId);
             return response()->success($added);
