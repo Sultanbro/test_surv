@@ -14,14 +14,18 @@
         Информация, которая может быть полезна для Вашего карьерного роста
     </div>
     <div class="row profit__inner mr-1 ml-1">
-        <div class="col col-md-6 profit__carousel">
-            <div  class="profit__inner-item left-slide" v-for="(slide, i) in data.groups" :key="i">
-                <div  class="profit__inner__left">
+        <div
+            v-if="data.groups"
+            class="col profit__carousel"
+            :class="{'col-md-6': data.positions}"
+        >
+            <div class="profit__inner-item left-slide" v-for="(slide, i) in data.groups" :key="i">
+                <div class="profit__inner__left" :class="{'profit__inner__one': !data.positions}">
                     <div class="profit__left-wrapper">
                         <div class="profit__inner-title">
                             {{ slide.title }}
                         </div>
-                        <a href="#">
+                        <a href="javascript:void(0)">
                             <img
                                 src="/images/dist/profit-info.svg"
                                 alt="info icon"
@@ -32,17 +36,21 @@
                     <div class="profit__inner-text" v-html="slide.text"></div>
                 </div>
                 <div class="profit__arrows">
-                    <a href="#" class="profit__prev"></a>
-                    <a href="#" class="profit__next"></a>
+                    <a href="javascript:void(0)" class="profit__prev"></a>
+                    <a href="javascript:void(0)" class="profit__next"></a>
                 </div>
             </div>
         </div>
-        <div class="col col-md-6 profit__carousel ">
-            <div  class="profit__inner-item right-slide" v-for="(slide, i) in data.positions" :key="i">
-                <div  class="profit__inner-right">
+        <div
+            v-if="data.positions"
+            class="col profit__carousel"
+            :class="{'col-md-6': data.groups}"
+        >
+            <div class="profit__inner-item right-slide" v-for="(slide, i) in data.positions" :key="i">
+                <div  class="profit__inner-right" :class="{'profit__inner__one': !data.groups}">
                     <div class="profit__inner-title">
                         {{ slide.title }}
-                        <a href="#">
+                        <a href="javascript:void(0)">
                             <img
                                 src="/images/dist/profit-info.svg"
                                 alt="info icon"
@@ -53,8 +61,8 @@
                     <div class="profit__inner-text profit-right" v-html="slide.text"></div>
                 </div>
                 <div class="profit__arrows">
-                    <a href="#" class="profit__prev"></a>
-                    <a href="#" class="profit__next"></a>
+                    <a href="javascript:void(0)" class="profit__prev"></a>
+                    <a href="javascript:void(0)" class="profit__next"></a>
                 </div>
             </div>
         </div>
@@ -80,7 +88,7 @@ export default {
 
     methods: {
         /**
-         * Загрузка данных 
+         * Загрузка данных
          */
         fetchData() {
             this.loading = true
@@ -96,7 +104,7 @@ export default {
         },
 
         /**
-         * private: show btn in introTop 
+         * private: show btn in introTop
          */
         showBtn(data) {
             if(data.groups.length != 0 || data.position !== null) {
@@ -167,7 +175,7 @@ export default {
             }
 
             /**
-             * init slider 
+             * init slider
              */
             this.$nextTick(() => this.initSlider())
         },
