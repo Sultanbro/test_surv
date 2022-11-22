@@ -71,7 +71,6 @@ use App\Http\Controllers\NotificationControlller;
 
 use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 use Eddir\Messenger\Handlers\MessengerWebSocketHandler;
-use Illuminate\Support\Facades\Route;
 
 
 /*
