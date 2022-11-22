@@ -87,7 +87,7 @@
       </div>
 
       <div class="content">
-        <div class="row m-0 mt-2"> 
+        <div class="row m-0 mt-2">
           <!-- profile data -->
           <div class="col-8">
             <div class="form-group row mt-3">
@@ -204,8 +204,18 @@
             <div class="form-group mb-0 text-center">
              <!-- <canvas id="myCanvas" width="250" height="250" @click="chooseProfileImage()">
               </canvas>-->
-              <div class="profile-img-wrap" @click="chooseProfileImage()">
+              <div class="profile-img-wrap hidden-file-wrapper">
                <img alt="Profile image" :src="!crop_image.hide ? crop_image.image: '/svg/500.svg'"  class="profile-img">
+                <input
+                  type="file"
+                  class="hidden-file-input"
+                  id="CabinetProfileImage"
+                  aria-describedby="CabinetProfileImage"
+                  ref="file"
+                  accept="image/*"
+                  v-on:change="handleFileUpload()"
+                >
+                <label class="hidden-file-label" for="CabinetProfileImage"/>
               </div>
 
 
@@ -231,12 +241,12 @@
 <!--                v-on="hasImage ? { click:chooseProfileImage } : {}"-->
 
 <!--              ></croppa>-->
-              <button
-                class="btn btn-success w-100 mt-2"
-                @click="chooseProfileImage()"
-              >
-                Выбрать фото
-              </button>
+              <div class="hidden-file-wrapper">
+                <button class="btn btn-success w-100 mt-2">
+                  Выбрать фото
+                </button>
+                <label class="hidden-file-label" for="CabinetProfileImage"/>
+              </div>
             </div>
           </div>
           <div class="col-12 mt-3">
@@ -341,21 +351,17 @@
         </div>
       </div>
     </div>
-    <b-modal  v-model="showChooseProfileModal"  title="Изображение профиля" size="lg" class="modalle" @ok="save_picture()">
-
-      <div class="custom-file mb-5">
-        <input type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" ref="file" accept="image/*" v-on:change="handleFileUpload()">
-        <label class="custom-file-label" for="inputGroupFile04">Загрузить фото</label>
-      </div>
-      <cropper
-      ref="mycrop"
-      class="cropper"
-      :src="imagePreview"
-      :stencil-props="{
-        aspectRatio: 12/12
-      }"
-      @change="change"
-    />
+    <b-modal v-model="showChooseProfileModal"  title="Изображение профиля" size="lg" class="modalle" @ok="save_picture()">
+      <div id="cabinet-croppie"/>
+      <!-- <cropper
+        ref="mycrop"
+        class="cropper"
+        :src="imagePreview"
+        :stencil-props="{
+          aspectRatio: 12/12
+        }"
+        @change="change"
+      /> -->
     </b-modal>
   </div>
 </template>
@@ -422,6 +428,7 @@ export default {
       country_results: [],
       image: "",
       payments_view:false,
+      croppie: null
     };
   },
   watch: {
@@ -468,7 +475,12 @@ export default {
       console.log(coordinates, canvas)
     },
     save_picture(){
-      this.crop_image.canvas.toBlob(function(blob) {
+      // this.crop_image.canvas.toBlob(function(blob) {
+      this.croppie.result({
+        type: 'blob',
+        format: 'jpeg',
+        quality: 0.8
+      }).then(blob => {
             const formData = new FormData();
             formData.append("file", blob);
             axios.post("/profile/upload/image/profile/", formData)
@@ -477,8 +489,8 @@ export default {
                   $(".img_url_lg").html(response.data.img);
 
                 });
-
-      });
+      })
+      // });
 
       this.saveCropped();
     },
@@ -492,7 +504,12 @@ export default {
     },
     saveCropped() {
       const _this = this;
-      this.crop_image.canvas.toBlob(function(blob) {
+      // this.crop_image.canvas.toBlob(function(blob) {
+      this.croppie.result({
+        type: 'blob',
+        format: 'jpeg',
+        quality: 0.8
+      }).then(blob => {
             let loader = _this.$loading.show();
             const formData = new FormData();
              formData.append("file", blob);
@@ -507,19 +524,35 @@ export default {
                 .catch(function (err) {
                   console.log(err, "error");
                 });
-        },
-        "image/jpeg",
-        0.8
-      ); // 80% compressed jpeg file
+      })
+      //   },
+      //   "image/jpeg",
+      //   0.8
+      // ); // 80% compressed jpeg file
     },
     handleFileUpload(){
 
       this.file = this.$refs.file.files[0];
 
       let reader  = new FileReader();
-
+      this.showChooseProfileModal = true
       reader.addEventListener("load", function () {
         this.imagePreview = reader.result;
+        this.croppie = new Croppie(document.getElementById('cabinet-croppie'), {
+          enableExif: true,
+          viewport: {
+            width:200,
+            height:200,
+            type:'square' //circle
+          },
+          boundary:{
+            width:300,
+            height:300
+          }
+        })
+        this.croppie.bind({
+          url: reader.result
+        })
       }.bind(this), false);
 
       if( this.file ){

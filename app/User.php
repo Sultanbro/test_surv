@@ -2,36 +2,31 @@
 
 namespace App;
 
+use App\Classes\Helpers\Phone;
+use App\External\Bitrix\Bitrix;
+use App\Http\Controllers\IntellectController as IC;
 use App\Models\Award;
+use App\Models\AwardUser;
+use App\Models\CourseResult;
+use App\Models\GroupUser;
 use App\Models\Tax;
+use App\OauthClientToken as Oauth;
+use App\Service\Department\UserService;
 use Carbon\Carbon;
+use Illuminate\Contracts\Auth\Access\Authorizable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use App\OauthClientToken as Oauth;
-use App\External\Bitrix\Bitrix;
-use App\Exam;
-use App\DayType;
-use App\Setting;
-use App\UserDescription;
-use App\TimetrackingHistory;
-use App\Http\Controllers\IntellectController as IC;
-use App\Classes\Helpers\Phone;
-use App\ProfileGroupUser as PGU;
-use App\Models\CourseResult;
-use App\Models\GroupUser;
-use App\Service\Department\UserService;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Contracts\Auth\Access\Authorizable;
-use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable implements Authorizable
 {
@@ -98,7 +93,8 @@ class User extends Authenticatable implements Authorizable
 
     public function awards(): BelongsToMany
     {
-        return $this->belongsToMany(Award::class, 'award_user', 'user_id', 'award_id');
+        return $this->belongsToMany(Award::class)
+            ->withTimestamps();
     }
 
     public function groupKpis()

@@ -5,11 +5,11 @@ namespace App;
 use App\Repositories\SavedKpiRepository;
 use App\Repositories\UpdatedUserStatRepository;
 use App\Service\UpdatedUserStatService;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use DB;
 use Auth;
-use App\User;
 use App\UserFine;
 use App\ProfileGroupUser;
 use App\Models\Admin\ObtainedBonus;
@@ -75,43 +75,7 @@ class Salary extends Model
         }
 
 
-        $users = User::withTrashed()
-            //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->with([
-                'user_description',
-                'salaries' => function ($q) use ($month) {
-                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-                        ->whereMonth('date', $month->month)
-                        ->whereYear('date', $month->year);
-                },
-                'daytypes' => function ($q) use ($month) {
-                    $q->select([
-                            'user_id',
-                            DB::raw('DAY(date) as day'),
-                            'type'
-                        ]) 
-                        ->whereMonth('date', $month->month)
-                        ->whereYear('date', $month->year)
-                        ->groupBy('day', 'type', 'user_id', 'date');
-                },
-                'timetracking' => function ($q) use ($month) {
-                    $q->select(['user_id',
-                            DB::raw('DAY(enter) as day'),
-                            DB::raw('sum(total_hours) as total_hours'),
-                            DB::raw('UNIX_TIMESTAMP(enter) as time'),
-                        ])
-                        ->whereMonth('enter', $month->month)
-                        ->whereYear('enter', $month->year)
-                        ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
-                      
-                },
-                'testBonuses' => function ($q) use ($month) {
-                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $month->month)->whereYear('date', $month->year);
-                },
-            ])
-        ->whereIn('users.id', $user_ids)
-        ->oldest('users.last_name')
-        ->get();
+        $users = self::getUsersData($month, $user_ids);
 
         $all_total = 0;
 
@@ -404,6 +368,46 @@ class Salary extends Model
         return $all_total;
     }
 
+
+    public static function getUsersData($month, $user_ids){
+        return User::withTrashed()
+            //->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->with([
+                'user_description',
+                'salaries' => function ($q) use ($month) {
+                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                        ->whereMonth('date', $month->month)
+                        ->whereYear('date', $month->year);
+                },
+                'daytypes' => function ($q) use ($month) {
+                    $q->select([
+                        'user_id',
+                        DB::raw('DAY(date) as day'),
+                        'type'
+                    ])
+                        ->whereMonth('date', $month->month)
+                        ->whereYear('date', $month->year)
+                        ->groupBy('day', 'type', 'user_id', 'date');
+                },
+                'timetracking' => function ($q) use ($month) {
+                    $q->select(['user_id',
+                        DB::raw('DAY(enter) as day'),
+                        DB::raw('sum(total_hours) as total_hours'),
+                        DB::raw('UNIX_TIMESTAMP(enter) as time'),
+                    ])
+                        ->whereMonth('enter', $month->month)
+                        ->whereYear('enter', $month->year)
+                        ->groupBy('day', 'enter', 'user_id', 'total_hours', 'time');
+
+                },
+                'testBonuses' => function ($q) use ($month) {
+                    $q->selectRaw("*,DATE_FORMAT(date, '%e') as day")->whereMonth('date', '=', $month->month)->whereYear('date', $month->year);
+                },
+            ])
+            ->whereIn('users.id', $user_ids)
+            ->oldest('users.last_name')
+            ->get();
+    }
     /**
      * add spaces to money
      */

@@ -606,6 +606,7 @@ Route::middleware([
         Route::post('/reward', [AwardController::class, 'reward'])->name('reward');
         Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->name('delete-reward');
         Route::get('/my', [AwardController::class, 'myAwards'])->name('my-awards');
+        Route::get('/course', [AwardController::class, 'courseAward'])->name('course-awards');
         Route::get('/type', [AwardController::class, 'awardsByType'])->name('type-awards');
         Route::get('/get', [AwardController::class, 'index'])->name('get');
         Route::get('/get/{award}', [AwardController::class, 'show'])->name('show');
