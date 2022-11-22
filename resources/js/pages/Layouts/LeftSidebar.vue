@@ -144,7 +144,6 @@ export default {
                     height: 0
                 },
                 {
-                    hide: !this.showEducation,
                     name: 'Обучение',
                     icon: 'icon-nd-education',
                     height: 0,
@@ -152,20 +151,17 @@ export default {
                         {
                             name: 'Читать книги',
                             icon: 'icon-nd-books',
-                            href: '/admin/upbooks',
-                            hide: !this.$can('books_view')
+                            href: '/admin/upbooks'
                         },
                         {
                             name: 'Смотреть видео',
                             icon: 'icon-nd-video',
-                            href: '/video_playlists',
-                            hide: !this.$can('videos_view')
+                            href: '/video_playlists'
                         },
                         {
                             name: 'Курсы',
                             icon: 'icon-nd-courses',
-                            href: '/courses',
-                            hide: !this.$can('courses_view')
+                            href: '/courses'
                         }
                     ]
                 },
