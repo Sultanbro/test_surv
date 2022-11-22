@@ -100,7 +100,6 @@ class User extends Authenticatable implements Authorizable
     public function awards(): BelongsToMany
     {
         return $this->belongsToMany(Award::class)
-            ->using(AwardUser::class)
             ->withTimestamps();
     }
 

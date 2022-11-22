@@ -170,17 +170,17 @@ class AwardService
     /**
      * @throws Exception
      */
-    public function myAwards($user): array
+    public function myAwards($user_id): array
     {
+        $user = User::query()->findOrFail($user_id);
         try {
             $awards = [];
             $access = $this->showOtherAwards($user);
-            $awards['awards']['my']   = $this->awardRepository->relationAwardUser($user);
-            $awards['awards']['nomination'] = $this->awardRepository->getNomination($user);
+            $awards['awards']['my']   = $user->awards;
             $awards['types'] = $this->awardTypeRepository->allTypes();
 
             if ($access) {
-                $awards['awards']['all'] = $this->awardRepository->relationAwardUser($user,null,'!=' );
+                $awards['awards']['all'] =  $this->awardRepository->relationAwardUser($user,'!=' );
             }
 
             return $awards;
@@ -192,10 +192,6 @@ class AwardService
 
     public function awardsByType(AwardsByTypeRequest $request, int $user_id): array
     {
-        //nominations - all, my, available //all if hidden false
-        //certificates - all, my, available
-        //nachisleniya - all by group, or position
-
         $user = User::query()->findOrFail($user_id);
         try {
             $result = [];
@@ -210,10 +206,7 @@ class AwardService
 
                 foreach ($userAwards as $award){
                     if (!$award->hide){
-                        $otherAwards = AwardUser::query()
-                            ->whereNot('user_id', $user_id)
-                            ->with(['user', 'award'])
-                            ->get();;
+                        $otherAwards = $this->awardRepository->relationAwardUser($user,'!=' );
                     }
                 }
                 $result['other'] =  $otherAwards;
@@ -231,10 +224,7 @@ class AwardService
                         ->pluck('course');
 
                     if (!$award->hide){
-                        $otherAwards = AwardUser::query()
-                            ->whereNot('user_id', $user_id)
-                            ->with(['user', 'award'])
-                            ->get();;
+                        $otherAwards = $this->awardRepository->relationAwardUser($user,'!=' );
                     }
                 }
                 $result['my'] =  $userAwards;
@@ -279,24 +269,28 @@ class AwardService
 
 
         foreach ($awards as $targetable_id => $targetable_type){
-            $user_ids = (new UserService)->getEmployees($targetable_id, $date->format('Y-m-d'));
+            $user_ids = collect( (new UserService)
+                ->getEmployees($targetable_id, $date->format('Y-m-d')))
+                ->pluck('id')->toArray();
 
 
             if ($targetable_type == self::GROUP){
-                $result['topByGroup'] = $this->getTopSalaryEmployees($user_ids, $date, $targetable_id);
+                $result['topByGroup'] = $this->getTopSalaryByGroupEmployees($user_ids, $date, $targetable_id);
             }
 
             if ($targetable_type == self::POSITION){
-                $result['topByPosition'] = $this->getTopSalaryEmployees($user_ids, $date, $targetable_id);
+                $result['topByPosition'] = $this->getTopSalaryByPoistionEmployees($user_ids, $date, $targetable_id);
 
             }
         }
 
-        error_log(json_encode($result));
         return $result;
     }
+    public function getTopSalaryByPoistionEmployees($user_ids, $date,$group_id)
+    {
 
-    public function getTopSalaryEmployees($user_ids, $date,$group_id){
+    }
+    public function getTopSalaryByGroupEmployees($user_ids, $date,$group_id){
         $result = [];
         $month = Carbon::parse($date)->startOfMonth();
         $group = ProfileGroup::find($group_id);
@@ -359,7 +353,6 @@ class AwardService
 
                 //test bonuses
                 $bonusesSum += $user->testBonuses->sum('amount');
-
             }
             $result[] = [
              'total' => $earningSum + $bonusesSum,
@@ -369,11 +362,15 @@ class AwardService
              'id' => $user->id,
             ];
         }
-
+        //sort
         usort($result, function($a, $b) {
-            return $a['total'] > $b['total'];
+            if ($a['total'] == $b['total']) {
+                return 0;
+            }
+            return ($a['total'] > $b['total']) ? -1 : 1;
         });
 
+        //return top 3
         return array_slice( $result , 0, 3);
     }
 

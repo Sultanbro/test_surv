@@ -53,9 +53,9 @@ class Award extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)
-            ->using(AwardUser::class)
+        return $this->belongsToMany(Award::class, 'award_user', 'award_id','user_id')
             ->withTimestamps();
+
     }
 
     public function getPathAttribute($value){
