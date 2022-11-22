@@ -265,7 +265,9 @@ export default {
     width: 100%;
     max-width: 30rem;
 }
-
+.hidden-file-wrapper{
+    position: relative;
+}
 .hidden-file-input{
     display: none;
 }
