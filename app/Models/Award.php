@@ -23,6 +23,8 @@ class Award extends Model
         'hide',
         'name',
         'description',
+        'targetable_type',
+        'targetable_id',
     ];
 
     protected $dates = [
@@ -51,15 +53,20 @@ class Award extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'award_user', 'award_id', 'user_id')
+        return $this->belongsToMany(Award::class, 'award_user', 'award_id','user_id')
             ->withTimestamps();
+
     }
 
     public function getPathAttribute($value){
-        $disk = \Storage::disk('s3');
+        if ($value != ''){
+            $disk = \Storage::disk('s3');
 
-        return $disk->temporaryUrl(
-            $value, now()->addMinutes(360)
-        );
+            return $disk->temporaryUrl(
+                $value, now()->addMinutes(360)
+            );
+        }
+        return $value;
+
     }
 }
