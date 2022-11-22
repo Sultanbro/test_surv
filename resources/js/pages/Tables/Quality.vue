@@ -10,7 +10,7 @@
           <table class="class indicators-table-fixed">
               <tr>
                   <th class="indicators-table-fixed-name sticky-left text-left pl-4">
-                      <div class="max-content">Сотрудник</div>  
+                      <div class="max-content">Сотрудник</div>
                   </th>
                   <template v-for="(field, key) in fields">
                       <th :class="field.class">
@@ -18,13 +18,21 @@
                       </th>
                   </template>
               </tr>
-              <tr v-for="(item, index) in users" :key="index"> 
+              <tr
+                v-for="(item, index) in users"
+                :key="index"
+                :class="{
+                  'prize first-place': item.show_cup == 1,
+                  'prize second-place':item.show_cup == 2,
+                  'prize third-place': item.show_cup == 3,
+                }"
+              >
                   <td class="indicators-table-fixed-name sticky-left text-left">
                       <div class="d-flex max-content">
                           {{ item.name }}
-                      </div> 
+                      </div>
                   </td>
-                  <template v-for="(field, key) in fields"> 
+                  <template v-for="(field, key) in fields">
                       <td :class="field.class" :key="key">
                           <div v-if="item[field.key] != 0">{{ item[field.key] }}</div>
                       </td>
@@ -34,7 +42,7 @@
       </div>
   </div>
 </template>
-  
+
 <script>
 export default {
     name: "TableQuality",
@@ -51,7 +59,7 @@ export default {
             total_count: 0,
             loader: null,
         };
-    }, 
+    },
 
     created() {
         this.setWeeksTableFields()
@@ -73,11 +81,9 @@ export default {
           arr.sort((a, b) => Number(a.total) < Number(b.total)  ?
               1 : Number(a.total) > Number(b.total) ? -1 : 0);
 
-          if(this.users.length > 3) {
-              arr[0].show_cup = 1;
-              arr[1].show_cup = 2;
-              arr[2].show_cup = 3;
-          } 
+          if(arr[0]) arr[0].show_cup = 1;
+          if(arr[1]) arr[1].show_cup = 2;
+          if(arr[2]) arr[2].show_cup = 3;
 
           let total_avg = 0;
           let total_count = 0;
@@ -94,12 +100,12 @@ export default {
           this.total_avg = total_avg
           this.total_count = total_count
       },
-        
+
       /**
        * set fields
        */
       setWeeksTableFields() {
-          
+
           let fieldsArray = []
           let weekNumber = 1;
           let order = 1;
@@ -110,7 +116,7 @@ export default {
               order: order++,
               class: 'indicators-table-fixed-hmonth sticky-left text-center t-total'
           })
-          
+
           for(let i = 1; i <= this.monthInfo.daysInMonth; i++) {
 
               let m = this.monthInfo.month.toString()
@@ -118,9 +124,9 @@ export default {
               if(d.toString().length == 1) d = '0' + d;
               if(m.length == 1) m = '0' + m;
 
-              let date = moment(this.monthInfo.currentYear + '-' + m + '-' + d); 
+              let date = moment(this.monthInfo.currentYear + '-' + m + '-' + d);
               let dow = date.day();
-              
+
               fieldsArray.push({
                   key: i,
                   name: i,
@@ -149,7 +155,7 @@ export default {
                       type: 'avg'
                   })
               }
-          } 
+          }
 
           this.fields = fieldsArray
       },
@@ -163,4 +169,3 @@ th.averages {
   background: #B7E100;
 }
 </style>
- 
