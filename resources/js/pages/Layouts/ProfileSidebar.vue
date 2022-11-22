@@ -235,6 +235,9 @@ export default {
                     reader.readAsDataURL( this.file );
                 }
             }
+            else{
+                this.$toast.error('Неподдерживаемый формат: ' + this.file.name.split('.').reverse()[0])
+            }
         },
         /**
          * Добавить виджет
