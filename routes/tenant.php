@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UserProfileController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\AwardTypeController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\Course\RegressCourseController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -142,6 +143,7 @@ Route::middleware([
         Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
     });
 
+    Route::post('course/regress', [RegressCourseController::class, 'regress']);
 
     Route::group([
         'prefix' => 'notifications',
