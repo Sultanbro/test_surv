@@ -146,12 +146,12 @@
                             {{textCourseName}}
                         </div>
                         <div ref="hours" name="hours" class="draggable" :data-x="hours.screenX" :data-y="hours.screenY" follow-text="Потраченное время на курсы"
-                             :style="styleHours" style="margin-top: 380px;"
+                             :style="[styleHours, transformHoursName]" style="margin-top: 380px;"
                              :class="{'no-border': border, 'active': selectedEdit === 3}" @click="selectEdit(3)">
                             {{textHours}}
                         </div>
                         <div ref="date" name="date" class="draggable" :data-x="date.screenX" :data-y="date.screenY" follow-text="Дата завершения курса"
-                             :style="styleDate" style="margin-top: 470px;"
+                             :style="[styleDate, transformDateName]" style="margin-top: 470px;"
                              :class="{'no-border': border, 'active': selectedEdit === 4}" @click="selectEdit(4)">
                             {{textDate}}
                         </div>
@@ -234,16 +234,17 @@
             };
         },
         mounted () {
-            const getStyles = JSON.parse(this.styles);
-            console.log(getStyles.fullName);
-            this.fullName = getStyles.fullName;
-            this.courseName = getStyles.courseName;
-            this.hours = getStyles.hours;
-            this.date = getStyles.date;
-            this.transformFullName = {transform: `translate(${this.fullName.screenX}px ${this.fullName.screenY}px)`};
-            this.transformCourseName = {transform: `translate(${this.courseName.screenX}px ${this.courseName.screenY}px)`};
-            this.transformHoursName = {transform: `translate(${this.hours.screenX}px ${this.hours.screenY}px)`};
-            this.transformDateName = {transform: `translate(${this.date.screenX}px ${this.date.screenY}px)`};
+            if(this.styles.length > 0){
+                const getStyles = JSON.parse(this.styles);
+                this.fullName = getStyles.fullName;
+                this.courseName = getStyles.courseName;
+                this.hours = getStyles.hours;
+                this.date = getStyles.date;
+                this.transformFullName = {transform: `translate(${this.fullName.screenX}px, ${this.fullName.screenY}px)`};
+                this.transformCourseName = {transform: `translate(${this.courseName.screenX}px, ${this.courseName.screenY}px)`};
+                this.transformHoursName = {transform: `translate(${this.hours.screenX}px, ${this.hours.screenY}px)`};
+                this.transformDateName = {transform: `translate(${this.date.screenX}px, ${this.date.screenY}px)`};
+            }
             let fullNameEdit = this.$refs.fullName;
             let courseNameEdit = this.$refs.courseName;
             let hoursEdit = this.$refs.hours;

@@ -15,7 +15,7 @@
         <template v-if="awards.length">
             <BRow>
                 <BCol cols="12" md="3" v-for="(award, index) in awards" :key="award.id + index">
-                    <b-card @click="reward(award)">
+                    <b-card @click="reward(award)" v-if="award.award_type_id === 1">
                         <div>{{ award.name }}</div>
                         <img :src="award.path" :alt="award.name" :title="award.name" style="width: 100%; height: auto">
                     </b-card>

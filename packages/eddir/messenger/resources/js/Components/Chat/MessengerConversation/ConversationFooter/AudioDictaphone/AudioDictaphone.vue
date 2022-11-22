@@ -45,12 +45,7 @@ export default {
     stopRecord() {
       this.isRecording = false;
       this.mediaRecorder.stop();
-      // stream.getTracks().forEach(function(track) {
-      //   if (track.readyState === 'live' && track.kind === 'audio') {
-      //     track.stop();
-      //   }
-      // });
-    }
+    },
   },
   watch: {
     audioBlob() {

@@ -1,5 +1,5 @@
 <template>
-    <BContainer class="" fluid>
+    <div>
         <div class="d-flex file">
             <BFormFile
                     v-model="image"
@@ -9,6 +9,7 @@
                     accept=".jpg, .png"
                     type="file"
                     id="file"
+                    :required="imageSrc.length > 0"
                     ref="file"
                     :state="true"
             >
@@ -20,7 +21,7 @@
             </BFormFile
             >
             <BButton
-                    v-if="hasImage || imagePath.length > 0"
+                    v-if="hasImage || imageSrc.length > 0"
                     variant="danger"
                     class="ml-3 clear-btn"
                     @click="clearImage"
@@ -29,8 +30,8 @@
             >
         </div>
 
-        <template v-if="imagePath.length > 0">
-            <BImg :src="imagePath"
+        <template v-if="imageSrc.length > 0">
+            <BImg :src="imageSrc"
                   alt="картинка"
                   class="mb-3 img"
                   fluid
@@ -40,7 +41,7 @@
                   v-b-modal="'myModalPath'"
             ></BImg>
             <BModal id="myModalPath" title="BootstrapVue" class="w-80%">
-                <BImg :src="imagePath" class="mb-3 img" fluid block rounded></BImg>
+                <BImg :src="imageSrc" class="mb-3 img" fluid block rounded></BImg>
             </BModal>
         </template>
        <template v-else>
@@ -58,10 +59,10 @@
                </BModal>
            </div>
            <div v-else>
-               <p class="text-danger">Выберите файл(ы)</p>
+               <p class="text-danger">Выберите файл</p>
            </div>
        </template>
-    </BContainer>
+    </div>
 </template>
 
 <script>
@@ -92,8 +93,7 @@
         data() {
             return {
                 image: null,
-                imageSrc: '',
-                imagePath: ''
+                imageSrc: ''
             };
         },
         computed: {
@@ -104,33 +104,33 @@
             },
         },
         mounted() {
-            this.imagePath = this.path;
-            console.log(this.imagePath.length);
-            if(this.imagePath.length > 0){
+            this.imageSrc = this.path;
+            if(this.imageSrc.length > 0){
                 this.$emit("image-download", getImageFileFromUrl(this.imagePath, this.format));
             }
         },
         watch: {
             image(newValue, oldValue) {
-                this.imagePath = '';
-                let newValueString = newValue.name + newValue.size;
-                let oldValueString = null;
-                if (oldValue !== null) {
-                    oldValueString = oldValue.name + oldValue.size;
-                }
-                if (newValueString !== oldValueString) {
+                if(newValue !== null){
                     this.imageSrc = '';
-                    if (newValue) {
-                        base64Encode(newValue)
-                            .then((val) => {
-                                this.imageSrc = val;
-                                this.$emit("image-download", this.image);
-                            })
-                            .catch(() => {
-                                this.imageSrc = '';
-                            });
-                    } else {
-                        this.imageSrc = '';
+                    let newValueString = newValue.name + newValue.size;
+                    let oldValueString = null;
+                    if (oldValue !== null) {
+                        oldValueString = oldValue.name + oldValue.size;
+                    }
+                    if (newValueString !== oldValueString) {
+                        if (newValue) {
+                            base64Encode(newValue)
+                                .then((val) => {
+                                    this.imageSrc = val;
+                                    this.$emit("image-download", this.image);
+                                })
+                                .catch(() => {
+                                    this.imageSrc = '';
+                                });
+                        } else {
+                            this.imageSrc = '';
+                        }
                     }
                 }
             },
@@ -138,7 +138,8 @@
         methods: {
             async clearImage() {
                 this.image = null;
-                this.imagePath = '';
+                this.imageSrc = '';
+                this.$emit("image-download", this.image);
             },
             toClickImg() {
                 console.log("ok");

@@ -282,14 +282,16 @@ export default {
    * Upload file
    * @param chatId
    * @param caption
-   * @param {File} file
+   * @param files
    * @param {Function} callback
    * @param callback_error
    * @return {Promise}
    */
-  uploadFile(chatId, caption, file, callback, callback_error) {
+  uploadFiles(chatId, files, caption, callback, callback_error) {
     let formData = new FormData();
-    formData.append('file', file);
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files[]', files[i]);
+    }
     formData.append('message', caption);
 
     return axios.post(REST_URI + 'chat/' + chatId + '/upload', formData, {

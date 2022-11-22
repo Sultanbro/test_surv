@@ -1,6 +1,6 @@
 <template>
   <div ref="messengerChats"
-       :class="!fullscreen ? 'messenger__chats-container messenger__collapsed' : 'messenger__chats-container'">
+       :class="!fullscreen ? 'messenger__chats-container messenger__collapsed' : 'messenger__chats-container messenger__fullscreen'">
     <ContextMenu
       :show="contextMenuVisible"
       :x="contextMenuX"
@@ -104,12 +104,18 @@ export default {
   display: flex;
   flex-flow: column;
   flex: 0 0 25%;
-  min-width: 280px;
+  min-width: 200px;
   max-width: 500px;
   position: relative;
   height: 100%;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
+}
+
+@media only screen and (max-width: 670px) {
+  .messenger__fullscreen {
+    display: none;
+  }
 }
 
 /*noinspection CssUnusedSymbol*/

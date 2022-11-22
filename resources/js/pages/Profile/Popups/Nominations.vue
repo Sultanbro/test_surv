@@ -329,23 +329,14 @@
                     console.log(error);
                 })
 
-            // this.axios
-            //     .get('/awards/type?award_type_id=1')
-            //     .then(response => {
-            //         console.log(response);
-            //     })
-            //     .catch(error => {
-            //         console.log(error);
-            //     })
-
             this.axios
-            .get('/award-types/get')
+                .get('/awards/type?award_type_id=1')
                 .then(response => {
                     console.log(response);
                 })
                 .catch(error => {
                     console.log(error);
-                })
+                });
         },
         methods: {
             fetchData() {

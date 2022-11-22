@@ -42,6 +42,12 @@ export default {
     },
     async requestScroll({commit}, position) {
       commit('setScrolling', position);
+    },
+    showGallery({commit}, {images, index}) {
+      commit('prepareGallery', {images, index});
+    },
+    hideGallery({commit}) {
+      commit('hideGallery');
     }
   },
   mutations: {
@@ -50,9 +56,6 @@ export default {
     },
     toggleInfoPanel(state) {
       state.infoPanel = !state.infoPanel;
-    },
-    setOnline(state) {
-      // todo
     },
     toggleMessenger(state) {
       state.open = !state.open;
@@ -71,6 +74,14 @@ export default {
     },
     setSocketConnected(state, status) {
       state.socketConnected = status;
+    },
+    prepareGallery(state, {images, index}) {
+      state.galleryImages = images;
+      state.galleryIndex = index;
+    },
+    hideGallery(state) {
+      state.galleryImages = [];
+      state.galleryIndex = null;
     }
   },
   state: {
@@ -81,15 +92,18 @@ export default {
     debug: false,
     searchMode: false,
     scrollingPosition: -1,
-    socketConnected: false
+    socketConnected: false,
+    galleryIndex: null,
+    galleryImages: [],
   },
   getters: {
     isInitialized: state => state.initialized,
     isOpen: state => state.open,
     isInfoPanel: state => state.infoPanel,
-    isDebug: state => state.debug,
     isSearchMode: state => state.searchMode,
     scrollingPosition: state => state.scrollingPosition,
-    isSocketConnected: state => state.socketConnected
+    isSocketConnected: state => state.socketConnected,
+    galleryIndex: state => state.galleryIndex,
+    galleryImages: state => state.galleryImages,
   }
 }

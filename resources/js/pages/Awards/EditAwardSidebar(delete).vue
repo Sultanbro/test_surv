@@ -87,6 +87,22 @@
                         :select_all_btn="true"/>
             </BFormGroup>
 
+            <BFormGroup v-if="form.award_type_id === 2">
+                <Multiselect
+                        v-model="value"
+                        :options="options"
+                        :multiple="true"
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        :preserve-search="true"
+                        placeholder="Выберите курсы"
+                        label="name"
+                        track-by="name"
+                        :preselect-first="false"
+
+                />
+            </BFormGroup>
+
             <BFormGroup id="input-group-4" switches>
                 <BFormCheckbox v-model="form.hide" required>
                     Отображать пользователям награды других участников
@@ -101,6 +117,7 @@
     import UploadFile from "./types/UploadFile.vue";
     import FormUsers from "./types/FormUsers.vue";
     import UploadSertificate from "./types/UploadSertificate.vue";
+    import Multiselect from "vue-multiselect";
 
     export default {
         name: "EditAwardSidebar",
@@ -108,6 +125,7 @@
             UploadFile,
             FormUsers,
             UploadSertificate,
+            Multiselect
         },
         props: {
             open: Boolean,
@@ -115,6 +133,9 @@
         },
         data() {
             return {
+                id: null,
+                value: [],
+                options: [],
                 dropDownText: 'Выберите тип награды',
                 userName: 'Тимур Хайруллин',
                 selectFileType: true,
@@ -127,118 +148,130 @@
                     hide: false,
                     path: '',
                     format: '',
-                    styles: {}
+                    styles: ''
                 },
             };
         },
         methods: {
             async onSubmit() {
-                if (this.form.award_type_id) {
-                    let loader = this.$loading.show();
-                    if (this.form.hide) {
-                        this.form.hide = 1;
-                    } else {
-                        this.form.hide = 0;
-                    }
-                    const formData = new FormData();
-                    formData.append('award_type_id', this.form.award_type_id);
-                    formData.append('course_ids[]', this.form.course_ids);
-                    formData.append('name', this.form.name);
-                    formData.append('description', this.form.description);
-                    formData.append('hide', this.form.hide);
-                    formData.append('file', this.file);
-                    formData.append('styles', JSON.stringify(this.form.styles));
-                    if (this.item) {
-                        // this.$emit('update-award', this.form);
-                        this.axios
-                            .put("/awards/update/" + this.item.id, formData, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                },
-                            })
-                            .then(response =>  {
-                                console.log(response);
-                                this.$emit('update:open', false);
-                                this.$emit('save-award');
-                                this.$refs.newSertificateForm.reset();
-                                loader.hide();
-                            })
-                            .catch(function (error) {
-                                console.log("error");
-                                console.log(error);
-                                loader.hide();
-                            });
-                    } else {
-                        // this.$emit('save-award', this.form);
-                        this.axios
-                            .post("/awards/store", formData, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data"'
-                                },
-                            })
-                            .then(response =>  {
-                                console.log(response);
-                                const data = response.data.data;
-                                const formDataType = new FormData();
-                                formDataType.append('user_id', 5);
-                                formDataType.append('award_id', data.id);
-                                this.axios
-                                    .post("/award-type/store", formDataType, {
-                                        headers: {
-                                            'Content-Type': 'multipart/form-data',
-                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                        },
-                                    })
-                                    .then(response =>  {
-                                        console.log(response);
-                                    })
-                                    .catch(function (error) {
-                                        console.log("error");
-                                        console.log(error);
-                                    });
-                                this.$emit('update:open', false);
-                                this.$emit('save-award');
-                                this.$refs.newSertificateForm.reset();
-                                loader.hide();
-                            })
-                            .catch(function (error) {
-                                console.log("error");
-                                console.log(error);
-                                loader.hide();
-                            });
+                if(this.file !== null){
+                  if (this.form.award_type_id) {
+                      let loader = this.$loading.show();
+                     if(this.form.award_type_id === 2){
+                         for(let i = 0; i < this.value.length; i++){
+                             this.form.course_ids.push(this.value[i].id);
+                         }
+                     }
+                      if (this.form.hide) {
+                          this.form.hide = 1;
+                      } else {
+                          this.form.hide = 0;
+                      }
+                      const formData = new FormData();
+                      formData.append('award_type_id', this.form.award_type_id);
+                      for(let j = 0; j < this.form.course_ids.length; j++){
+                          formData.append('course_ids[]', this.form.course_ids[j]);
+                      }
+                      formData.append('name', this.form.name);
+                      formData.append('description', this.form.description);
+                      formData.append('hide', this.form.hide);
+                      formData.append('file', this.file);
+                      formData.append('styles', JSON.stringify(this.form.styles));
+                      if (this.item) {
+                          // this.$emit('update-award', this.form);
+                          this.axios
+                              .put("/awards/update/" + this.item.id, formData, {
+                                  headers: {
+                                      'Content-Type': 'multipart/form-data',
+                                      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                  },
+                              })
+                              .then(response =>  {
+                                  console.log(response.data.data);
+                                  this.$emit('update:open', false);
+                                  this.$emit('save-award');
+                                  this.$refs.newSertificateForm.reset();
+                                  loader.hide();
+                              })
+                              .catch(function (error) {
+                                  console.log("error");
+                                  console.log(error);
+                                  loader.hide();
+                              });
+                      } else {
+                          // this.$emit('save-award', this.form);
+                          this.axios
+                              .post("/awards/store", formData, {
+                                  headers: {
+                                      'Content-Type': 'multipart/form-data"'
+                                  },
+                              })
+                              .then(response =>  {
+                                  this.$emit('update:open', false);
+                                  this.$emit('save-award', response.data.data);
+                                  this.$refs.newSertificateForm.reset();
+                                  loader.hide();
+                              })
+                              .catch(function (error) {
+                                  console.log("error");
+                                  console.log(error);
+                                  loader.hide();
+                              });
+                      }
 
-
-                    }
-
-                } else {
-                    this.selectFileType = false;
-                }
+                  } else {
+                      this.selectFileType = false;
+                  }
+              }
             },
             setFileType(id) {
                 this.form.award_type_id = id;
                 this.selectFileType = true;
                 if(id === 1){
-                    this.dropDownText = 'Загрузка картинки'
+                    this.dropDownText = 'Загрузка картинки';
                 }
                 if(id === 2){
-                    this.dropDownText = 'Конструктор сертификата'
+                    this.dropDownText = 'Конструктор сертификата';
+                    this.getCourses();
                 }
                 if(id === 3){
-                    this.dropDownText = 'Данные начислений'
+                    this.dropDownText = 'Данные начислений';
                 }
+            },
+            async getCourses(){
+                let loader = this.$loading.show();
+                await this.axios
+                    .get('/admin/courses/get')
+                    .then(response => {
+                        const data = response.data.courses;
+                        for(let i = 0; i < data.length; i++){
+                            this.options.push(data[i]);
+                            if(this.id !== null){
+                                if(data[i].award_id === this.id){
+                                    this.value.push(data[i]);
+                                }
+                            }
+                        }
+                        loader.hide();
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        loader.hide();
+                    })
             },
             formFile(val) {
                 this.file = val;
                 return val;
             },
             styleChange(styles){
-                this.form.styles = styles;
+                this.form.styles = JSON.stringify(styles);
+                console.log(this.form);
             }
         },
         mounted() {
             // this.form.awardCreator = this.userName;
             if (this.item) {
+                this.id = this.item.id;
                 this.form.award_type_id = this.item.award_type_id;
                 this.form.course_ids = this.item.course_ids;
                 this.form.name = this.item.name;
@@ -248,15 +281,15 @@
                 this.form.format = this.item.format;
                 this.form.styles = this.item.styles;
                 if(this.item.award_type_id === 1){
-                    this.dropDownText = 'Загрузка картинки'
+                    this.dropDownText = 'Загрузка картинки';
                 }
                 if(this.item.award_type_id === 2){
-                    this.dropDownText = 'Конструктор сертификата'
+                    this.dropDownText = 'Конструктор сертификата';
+                    this.getCourses();
                 }
                 if(this.item.award_type_id === 3){
-                    this.dropDownText = 'Данные начислений'
+                    this.dropDownText = 'Данные начислений';
                 }
-                console.log(typeof this.form.styles);
             }
         }
     };
@@ -264,6 +297,9 @@
 
 <style lang="scss">
     #edit-award-sidebar {
+        .multiselect__tags-wrap{
+            display: flex!important;
+        }
         .ui-sidebar__body {
             overflow: visible;
             display: flex;

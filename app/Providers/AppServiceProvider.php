@@ -135,6 +135,12 @@ class AppServiceProvider extends ServiceProvider
 
             if(!\Auth::guest()) {
 
+                $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray(); // Spatie permissions
+
+                if(auth()->user()->program_id === 1) {
+                    $permissions = 'ucalls_view';
+                } 
+                
                 $view->with([
                     'laravelToVue' => [
                         'csrfToken'   => csrf_token(),
@@ -144,7 +150,7 @@ class AppServiceProvider extends ServiceProvider
                             : 'https://cp.callibro.org/files/img/8.png',
                         'email'       => auth()->user()->email,
                         'is_admin'    => auth()->user()->is_admin == 1,
-                        'permissions' => auth()->user()->getAllPermissions()->pluck('name')->toArray() // Spatie permissions
+                        'permissions' => $permissions
                     ]
                 ]);
 

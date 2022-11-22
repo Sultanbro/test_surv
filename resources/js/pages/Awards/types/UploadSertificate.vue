@@ -1,5 +1,5 @@
 <template>
-  <BContainer class="" fluid>
+  <div>
     <div class="d-flex file">
       <BFormFile
         v-model="image"
@@ -52,7 +52,7 @@
         </div>
       </div>
     </template>
-  </BContainer>
+  </div>
 </template>
 
 <script>
@@ -81,7 +81,7 @@ export default {
   data() {
     return {
       file: "",
-      image: '',
+      image: null,
       imageSrc: null,
       imagePath: ''
     };
@@ -143,7 +143,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .preview-canvas{
     cursor: pointer;
     border: 1px solid #999;
