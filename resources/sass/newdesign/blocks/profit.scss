@@ -123,6 +123,10 @@
   border-radius:0 1.5rem 0 0;
 }
 
+.profit__inner__one{
+  border-radius:1.5rem 1.5rem 0 0;
+}
+
 // Courses
 
 
@@ -380,7 +384,7 @@
     background-color: #AEBEE0;
     border-radius: 1rem;
   }
-  
+
   & .slick-track{
     display: flex;
     min-width:0;
@@ -537,8 +541,18 @@
   //.profit__inner-right{
   //  display: none;
   //}
-
+  .profit__inner-item{
+    margin-bottom: 2rem;
+  }
   .profit__inner__left{
+    flex: 0 1 100%;
+    border-radius: 1.5rem 1.5rem 0 0;
+
+    img{
+      display: none;
+    }
+  }
+  .profit__inner-right{
     flex: 0 1 100%;
     border-radius: 1.5rem 1.5rem 0 0;
 
@@ -692,6 +706,9 @@
 }
 
 @media(min-width:1251px){
+  .profit__inner-left{
+    flex: 0 1 100%;
+  }
   .profit__inner-right{
     flex: 0 1 100%;
   }
