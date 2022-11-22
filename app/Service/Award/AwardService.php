@@ -70,7 +70,6 @@ class AwardService
     {
         try {
             $type = AwardType::query()->create($request->all());
-
             return response()->success($type);
         }catch (\Exception $exception) {
             return response()->error($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

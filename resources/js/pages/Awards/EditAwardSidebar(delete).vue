@@ -43,7 +43,7 @@
             </BFormGroup>
 
             <BFormGroup>
-                <BDropdown text="Выберете тип награды" required>
+                <BDropdown :text="dropDownText" required>
                     <BDropdownItem href="#" @click="setFileType(1)"
                     >Загрузка картинки
                     </BDropdownItem
@@ -63,30 +63,48 @@
             <BFormGroup class="file-type">
                 <UploadFile
                         @image-download="formFile"
-                        v-if="form.awardTypeId === 1"
-                        :fileType="form.awardTypeId"
-                        :uploadImage="form.imagesData"
+                        v-if="form.award_type_id === 1"
+                        :path="form.path"
+                        :format="form.format"
                         required
                 />
 
                 <UploadSertificate
                         @image-download="formFile"
-                        v-if="form.awardTypeId === 2"
-                        :fileType="form.awardTypeId"
-                        :sertificate="form.formFile"
+                        @styles-change="styleChange"
+                        v-if="form.award_type_id === 2"
+                        :path="form.path"
+                        :format="form.format"
+                        :styles="form.styles"
                         required
                 />
 
-<!--                <FormUsers v-if="form.fileType === 3" required/>-->
+                <!--                <FormUsers v-if="form.fileType === 3" required/>-->
                 <superselect
-                        v-if="form.awardTypeId === 3"
+                        v-if="form.award_type_id === 3"
                         class="w-50 mb-4"
                         :key="1"
-                        :select_all_btn="true" />
+                        :select_all_btn="true"/>
+            </BFormGroup>
+
+            <BFormGroup v-if="form.award_type_id === 2">
+                <Multiselect
+                        v-model="value"
+                        :options="options"
+                        :multiple="true"
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        :preserve-search="true"
+                        placeholder="Выберите курсы"
+                        label="name"
+                        track-by="name"
+                        :preselect-first="false"
+
+                />
             </BFormGroup>
 
             <BFormGroup id="input-group-4" switches>
-                <BFormCheckbox v-model="form.visibleToOthers" required>
+                <BFormCheckbox v-model="form.hide" required>
                     Отображать пользователям награды других участников
                 </BFormCheckbox>
             </BFormGroup>
@@ -99,6 +117,7 @@
     import UploadFile from "./types/UploadFile.vue";
     import FormUsers from "./types/FormUsers.vue";
     import UploadSertificate from "./types/UploadSertificate.vue";
+    import Multiselect from "vue-multiselect";
 
     export default {
         name: "EditAwardSidebar",
@@ -106,6 +125,7 @@
             UploadFile,
             FormUsers,
             UploadSertificate,
+            Multiselect
         },
         props: {
             open: Boolean,
@@ -113,93 +133,163 @@
         },
         data() {
             return {
+                id: null,
+                value: [],
+                options: [],
+                dropDownText: 'Выберите тип награды',
                 userName: 'Тимур Хайруллин',
                 selectFileType: true,
+                file: null,
                 form: {
-                    id: null,
+                    award_type_id: null,
+                    course_ids: [],
                     name: '',
                     description: '',
-                    awardTypeId: null,
-                    images: [],
-                    imagesData: null,
-                    visibleToOthers: false,
-                    awardCreator: '',
-                    date: '',
+                    hide: false,
+                    path: '',
+                    format: '',
+                    styles: ''
                 },
             };
         },
         methods: {
             async onSubmit() {
-                if (this.form.awardTypeId) {
-                    let loader = this.$loading.show();
-                    this.formFile;
-                    // await this.uploadFiles();
-                    if (this.item) {
-                        this.$emit('update-award', this.form);
-                    } else {
-                        this.$emit('save-award', this.form);
-                    }
-                    this.$emit('update:open', false);
-                    this.$refs.newSertificateForm.reset();
-                    loader.hide();
-                } else {
-                    this.selectFileType = false;
-                }
+                if(this.file !== null){
+                  if (this.form.award_type_id) {
+                      let loader = this.$loading.show();
+                     if(this.form.award_type_id === 2){
+                         for(let i = 0; i < this.value.length; i++){
+                             this.form.course_ids.push(this.value[i].id);
+                         }
+                     }
+                      if (this.form.hide) {
+                          this.form.hide = 1;
+                      } else {
+                          this.form.hide = 0;
+                      }
+                      const formData = new FormData();
+                      formData.append('award_type_id', this.form.award_type_id);
+                      for(let j = 0; j < this.form.course_ids.length; j++){
+                          formData.append('course_ids[]', this.form.course_ids[j]);
+                      }
+                      formData.append('name', this.form.name);
+                      formData.append('description', this.form.description);
+                      formData.append('hide', this.form.hide);
+                      formData.append('file', this.file);
+                      formData.append('styles', JSON.stringify(this.form.styles));
+                      if (this.item) {
+                          // this.$emit('update-award', this.form);
+                          this.axios
+                              .put("/awards/update/" + this.item.id, formData, {
+                                  headers: {
+                                      'Content-Type': 'multipart/form-data',
+                                      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                  },
+                              })
+                              .then(response =>  {
+                                  console.log(response.data.data);
+                                  this.$emit('update:open', false);
+                                  this.$emit('save-award');
+                                  this.$refs.newSertificateForm.reset();
+                                  loader.hide();
+                              })
+                              .catch(function (error) {
+                                  console.log("error");
+                                  console.log(error);
+                                  loader.hide();
+                              });
+                      } else {
+                          // this.$emit('save-award', this.form);
+                          this.axios
+                              .post("/awards/store", formData, {
+                                  headers: {
+                                      'Content-Type': 'multipart/form-data"'
+                                  },
+                              })
+                              .then(response =>  {
+                                  this.$emit('update:open', false);
+                                  this.$emit('save-award', response.data.data);
+                                  this.$refs.newSertificateForm.reset();
+                                  loader.hide();
+                              })
+                              .catch(function (error) {
+                                  console.log("error");
+                                  console.log(error);
+                                  loader.hide();
+                              });
+                      }
+
+                  } else {
+                      this.selectFileType = false;
+                  }
+              }
             },
             setFileType(id) {
-                this.form.awardTypeId = id;
+                this.form.award_type_id = id;
                 this.selectFileType = true;
+                if(id === 1){
+                    this.dropDownText = 'Загрузка картинки';
+                }
+                if(id === 2){
+                    this.dropDownText = 'Конструктор сертификата';
+                    this.getCourses();
+                }
+                if(id === 3){
+                    this.dropDownText = 'Данные начислений';
+                }
+            },
+            async getCourses(){
+                let loader = this.$loading.show();
+                await this.axios
+                    .get('/admin/courses/get')
+                    .then(response => {
+                        const data = response.data.courses;
+                        for(let i = 0; i < data.length; i++){
+                            this.options.push(data[i]);
+                            if(this.id !== null){
+                                if(data[i].award_id === this.id){
+                                    this.value.push(data[i]);
+                                }
+                            }
+                        }
+                        loader.hide();
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        loader.hide();
+                    })
             },
             formFile(val) {
-                this.form.images = [];
-                this.form.imagesData = val;
+                this.file = val;
                 return val;
             },
-            async uploadFiles(){
-                let formData = new FormData();
-                for (let i = 0; i < this.form.imagesData.length; i++) {
-                    formData.append("file[]", this.form.imagesData[i]);
-                    const dataObj = {
-                        path: '/upload/sertificates/' + this.form.imagesData[i].name,
-                        format: this.form.imagesData[i].type
-                    };
-                    this.form.images.push(dataObj);
-                }
-                await this.axios
-                    .post("/upload.php", formData, {
-                        headers: {
-                            "Content-Type":
-                                "multipart/form-data; charset=utf-8; boundary=" +
-                                Math.random().toString().substr(2),
-                        },
-                    })
-                    .then(function (response) {
-                        if (!response.data) {
-                            console.log("File not uploaded.");
-                        } else {
-                            console.log("File uploaded successfully.");
-                        }
-                    })
-                    .catch(function (error) {
-                        console.log("error");
-                        console.log(error);
-                    });
+            styleChange(styles){
+                this.form.styles = JSON.stringify(styles);
+                console.log(this.form);
             }
         },
         mounted() {
-            this.form.id = Date.now();
-            this.form.date = new Date().toLocaleDateString();
-            this.form.awardCreator = this.userName;
+            // this.form.awardCreator = this.userName;
             if (this.item) {
-                this.form.id = this.item.id;
+                this.id = this.item.id;
+                this.form.award_type_id = this.item.award_type_id;
+                this.form.course_ids = this.item.course_ids;
                 this.form.name = this.item.name;
                 this.form.description = this.item.description;
-                this.form.awardTypeId = this.item.awardTypeId;
-                this.form.images = this.item.images;
-                this.form.imagesData = this.item.imagesData;
-                this.form.visibleToOthers = this.item.visibleToOthers;
-                this.form.awardCreator = this.item.awardCreator;
-                this.form.date = this.item.date;
+                this.form.hide = this.item.hide;
+                this.form.path = this.item.path;
+                this.form.format = this.item.format;
+                this.form.styles = this.item.styles;
+                if(this.item.award_type_id === 1){
+                    this.dropDownText = 'Загрузка картинки';
+                }
+                if(this.item.award_type_id === 2){
+                    this.dropDownText = 'Конструктор сертификата';
+                    this.getCourses();
+                }
+                if(this.item.award_type_id === 3){
+                    this.dropDownText = 'Данные начислений';
+                }
             }
         }
     };
@@ -207,6 +297,9 @@
 
 <style lang="scss">
     #edit-award-sidebar {
+        .multiselect__tags-wrap{
+            display: flex!important;
+        }
         .ui-sidebar__body {
             overflow: visible;
             display: flex;

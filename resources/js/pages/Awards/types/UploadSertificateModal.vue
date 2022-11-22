@@ -1,188 +1,518 @@
 <template>
-  <BRow>
-    <BCol cols="10">
-      <div class="konva-stage" id="container" ref="container"></div>
-      <v-stage
-        ref="stage"
-        type="file"
-        :config="stageSize"
-        @mousemove="handleMouseMove"
-        @mouseDown="handleMouseDown"
-        @mouseUp="handleMouseUp"
-      >
-        <v-layer ref="layer">
-          <v-text
-            ref="text"
-            :config="{
-              x: 10,
-              y: 10,
-              fontSize: 20,
-              text: text,
-              fill: 'black',
-            }"
-          />
-          <v-rect
-            v-for="(rec, index) in recs"
-            :key="index"
-            :config="{
-              x: Math.min(rec.startPointX, rec.startPointX + rec.width),
-              y: Math.min(rec.startPointY, rec.startPointY + rec.height),
-              width: Math.abs(rec.width),
-              height: Math.abs(rec.height),
-              fill: 'rgb(0,0,0,0)',
-              stroke: 'black',
-              strokeWidth: 3,
-            }"
-          />
-        </v-layer>
-      </v-stage>
-    </BCol>
-  </BRow>
+    <div>
+        <BRow class="m-0 cestificates-constructor">
+            <BCol cols="3">
+                <div class="settings">
+                    <BFormGroup>
+                        <b-form-checkbox v-model="border">Убрать вспомогательные элементы</b-form-checkbox>
+                    </BFormGroup>
+                    <div v-if="selectedEdit === 1">
+                        <BFormGroup>
+                            <h4>Имя и Фамилия</h4>
+                        </BFormGroup>
+                        <BFormGroup
+                                label="Имя и Фамилия (Впишите любое)"
+                                description="Это поле будет брать имя и фамилию того сотрудника, который пройдет курс"
+                        >
+                            <BFormInput v-model="textFullName"></BFormInput>
+                        </BFormGroup>
+                        <BFormGroup label="Жирность текста">
+                            <BFormSelect v-model="fullName.fontWeight" :options="fontWeightList"></BFormSelect>
+                        </BFormGroup>
+                        <BFormGroup label="Размер текста">
+                            <BFormInput v-model="fullName.size"></BFormInput>
+                        </BFormGroup>
+                        <BFormGroup
+                                description="Это позволит выводить текст по центру"
+                        >
+                            <b-form-checkbox v-model="fullName.fullWidth">На всю ширину</b-form-checkbox>
+                        </BFormGroup>
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="fullName.color">
+                        </BFormGroup>
+                        <b-form-group label="Заглавность">
+                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="lowercase">Первая заглавная
+                            </b-form-radio>
+                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            </b-form-radio>
+                        </b-form-group>
+                    </div>
+
+                    <div v-if="selectedEdit === 2">
+                        <BFormGroup>
+                            <h4>Название курса</h4>
+                        </BFormGroup>
+                        <BFormGroup
+                                label="Название курса"
+                                description="Это поле будет брать название курса, который пройдет сотрудник"
+                        >
+                            <BFormInput v-model="textCourseName"></BFormInput>
+                        </BFormGroup>
+                        <BFormGroup label="Жирность текста">
+                            <BFormSelect v-model="courseName.fontWeight" :options="fontWeightList"></BFormSelect>
+                        </BFormGroup>
+                        <BFormGroup label="Размер текста">
+                            <BFormInput v-model="courseName.size"></BFormInput>
+                        </BFormGroup>
+                        <BFormGroup
+                                description="Это позволит выводить текст по центру"
+                        >
+                            <b-form-checkbox v-model="courseName.fullWidth">На всю ширину</b-form-checkbox>
+                        </BFormGroup>
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="courseName.color">
+                        </BFormGroup>
+                        <b-form-group label="Заглавность">
+                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="lowercase">Первая
+                                заглавная
+                            </b-form-radio>
+                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            </b-form-radio>
+                        </b-form-group>
+                    </div>
+                    <div v-if="selectedEdit === 3">
+                        <BFormGroup>
+                            <h4>Количетсво потраченных часов на курс</h4>
+                        </BFormGroup>
+                        <BFormGroup
+                                label="Потраченное время на курс"
+                                description="Здесь будет время, за которое пройден курс"
+                        >
+                            <BFormInput v-model="textHours"></BFormInput>
+                        </BFormGroup>
+                        <BFormGroup label="Жирность текста">
+                            <BFormSelect v-model="hours.fontWeight" :options="fontWeightList"></BFormSelect>
+                        </BFormGroup>
+                        <BFormGroup label="Размер текста">
+                            <BFormInput v-model="hours.size"></BFormInput>
+                        </BFormGroup>
+                        <BFormGroup
+                                description="Это позволит выводить текст по центру"
+                        >
+                            <b-form-checkbox v-model="hours.fullWidth">На всю ширину</b-form-checkbox>
+                        </BFormGroup>
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="hours.color">
+                        </BFormGroup>
+                        <b-form-group label="Заглавность">
+                            <b-form-radio v-model="hours.uppercase" name="some-radios" value="lowercase">Первая
+                                заглавная
+                            </b-form-radio>
+                            <b-form-radio v-model="hours.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            </b-form-radio>
+                        </b-form-group>
+                    </div>
+                    <div v-if="selectedEdit === 4">
+                        <BFormGroup>
+                            <h4>Дата завершения курса</h4>
+                        </BFormGroup>
+                        <BFormGroup
+                                label="Дата"
+                                description="Здесь будет дата окончания курса"
+                        >
+                            <BFormInput v-model="textDate"></BFormInput>
+                        </BFormGroup>
+                        <BFormGroup label="Жирность текста">
+                            <BFormSelect v-model="date.fontWeight" :options="fontWeightList"></BFormSelect>
+                        </BFormGroup>
+                        <BFormGroup label="Размер текста">
+                            <BFormInput v-model="date.size"></BFormInput>
+                        </BFormGroup>
+                        <BFormGroup
+                                description="Это позволит выводить текст по центру"
+                        >
+                            <b-form-checkbox v-model="date.fullWidth">На всю ширину</b-form-checkbox>
+                        </BFormGroup>
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="date.color">
+                        </BFormGroup>
+                        <b-form-group label="Заглавность">
+                            <b-form-radio v-model="date.uppercase" name="some-radios" value="lowercase">Первая
+                                заглавная
+                            </b-form-radio>
+                            <b-form-radio v-model="date.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            </b-form-radio>
+                        </b-form-group>
+                    </div>
+                </div>
+            </BCol>
+            <BCol cols="9">
+                <div class="draggable-container">
+                    <div class="draggable-edit">
+                        <div ref="fullName" name="fullName" class="draggable" :data-x="fullName.screenX" :data-y="fullName.screenY" follow-text="Имя и фамилия"
+                             :style="[styleFullName, transformFullName]" style="margin-top: 200px;"
+                             :class="{'no-border': border, 'active': selectedEdit === 1}" @click="selectEdit(1)">
+                            {{textFullName}}
+                        </div>
+                        <div ref="courseName" name="courseName" class="draggable" :data-x="courseName.screenX" :data-y="courseName.screenY" follow-text="Название курса"
+                             :style="[styleCourseName, transformCourseName]" style="margin-top: 290px;"
+                             :class="{'no-border': border, 'active': selectedEdit === 2}" @click="selectEdit(2)">
+                            {{textCourseName}}
+                        </div>
+                        <div ref="hours" name="hours" class="draggable" :data-x="hours.screenX" :data-y="hours.screenY" follow-text="Потраченное время на курсы"
+                             :style="[styleHours, transformHoursName]" style="margin-top: 380px;"
+                             :class="{'no-border': border, 'active': selectedEdit === 3}" @click="selectEdit(3)">
+                            {{textHours}}
+                        </div>
+                        <div ref="date" name="date" class="draggable" :data-x="date.screenX" :data-y="date.screenY" follow-text="Дата завершения курса"
+                             :style="[styleDate, transformDateName]" style="margin-top: 470px;"
+                             :class="{'no-border': border, 'active': selectedEdit === 4}" @click="selectEdit(4)">
+                            {{textDate}}
+                        </div>
+                        <vue-pdf-embed v-if="img" :source="img"/>
+                    </div>
+                </div>
+            </BCol>
+        </BRow>
+        <BButton variant="success" @click="saveChanges">Сохранить</BButton>
+    </div>
 </template>
 
 <script>
-var width = window.innerWidth;
-var height = window.innerHeight;
+    import interact from "interactjs";
+    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
 
-export default {
-  name: "UploadSertificateModal",
-  props: {
-    sertificate: File,
-    img: String,
-  },
-  data() {
-    return {
-      stageSize: {
-        width: width,
-        height: height,
-      },
-      text: "Try to draw a rectangle",
-      lines: [],
-      isDrawing: false,
-      recs: [],
-      image: null,
-      stageWidth: null,
-      stageHeight: null,
+    export default {
+        name: "Draggable",
+        props: {
+            sertificate: File,
+            img: String,
+            styles: String
+        },
+        components: {
+            VuePdfEmbed
+        },
+        data() {
+            return {
+                selectedUppercase: [],
+                border: false,
+                selectedEdit: 1,
+                textFullName: 'Иван Иванович Иванов',
+                textCourseName: 'Название курса',
+                textHours: 'В объеме 100 часа(ов) с домашними заданиями',
+                textDate: new Date().toLocaleDateString(),
+                transformFullName: {},
+                transformCourseName: {},
+                transformHoursName: {},
+                transformDateName: {},
+                fullName: {
+                    screenX: 0,
+                    screenY: 0,
+                    size: 32,
+                    fontWeight: 700,
+                    uppercase: 'lowercase',
+                    fullWidth: false,
+                    color: '#000000'
+                },
+                courseName: {
+                    screenX: 0,
+                    screenY: 0,
+                    text: 'Название курса',
+                    size: 20,
+                    fontWeight: 400,
+                    uppercase: 'lowercase',
+                    fullWidth: false,
+                    color: '#000000'
+                },
+                hours: {
+                    screenX: 0,
+                    screenY: 0,
+                    text: 'Название курса',
+                    size: 16,
+                    fontWeight: 400,
+                    uppercase: 'lowercase',
+                    fullWidth: false,
+                    color: '#000000'
+                },
+                date: {
+                    screenX: 0,
+                    screenY: 0,
+                    text: 'Название курса',
+                    size: 16,
+                    fontWeight: 400,
+                    uppercase: 'lowercase',
+                    fullWidth: false,
+                    color: '#000000'
+                },
+                fontWeightList: [200, 300, 400, 500, 600, 700, 800, 900]
+            };
+        },
+        mounted () {
+            if(this.styles.length > 0){
+                const getStyles = JSON.parse(this.styles);
+                this.fullName = getStyles.fullName;
+                this.courseName = getStyles.courseName;
+                this.hours = getStyles.hours;
+                this.date = getStyles.date;
+                this.transformFullName = {transform: `translate(${this.fullName.screenX}px, ${this.fullName.screenY}px)`};
+                this.transformCourseName = {transform: `translate(${this.courseName.screenX}px, ${this.courseName.screenY}px)`};
+                this.transformHoursName = {transform: `translate(${this.hours.screenX}px, ${this.hours.screenY}px)`};
+                this.transformDateName = {transform: `translate(${this.date.screenX}px, ${this.date.screenY}px)`};
+            }
+            let fullNameEdit = this.$refs.fullName;
+            let courseNameEdit = this.$refs.courseName;
+            let hoursEdit = this.$refs.hours;
+            let dateEdit = this.$refs.date;
+            this.initInteract(fullNameEdit);
+            this.initInteract(courseNameEdit);
+            this.initInteract(hoursEdit);
+            this.initInteract(dateEdit);
+        },
+        computed: {
+            styleFullName() {
+                let width = 'auto';
+                if (this.fullName.fullWidth) {
+                    width = '100%';
+                }
+                return {
+                    fontWeight: this.fullName.fontWeight,
+                    fontSize: `${this.fullName.size}px`,
+                    textTransform: this.fullName.uppercase,
+                    width: width,
+                    color: this.fullName.color
+                };
+            },
+            styleCourseName() {
+                let width = 'auto';
+                if (this.courseName.fullWidth) {
+                    width = '100%';
+                }
+                return {
+                    fontWeight: this.courseName.fontWeight,
+                    fontSize: `${this.courseName.size}px`,
+                    textTransform: this.courseName.uppercase,
+                    width: width,
+                    color: this.courseName.color
+                };
+            },
+            styleHours() {
+                let width = 'auto';
+                if (this.hours.fullWidth) {
+                    width = '100%';
+                }
+                return {
+                    fontWeight: this.hours.fontWeight,
+                    fontSize: `${this.hours.size}px`,
+                    textTransform: this.hours.uppercase,
+                    width: width,
+                    color: this.hours.color
+                };
+            },
+            styleDate() {
+                let width = 'auto';
+                if (this.date.fullWidth) {
+                    width = '100%';
+                }
+                return {
+                    fontWeight: this.date.fontWeight,
+                    fontSize: `${this.date.size}px`,
+                    textTransform: this.date.uppercase,
+                    width: width,
+                    color: this.date.color
+                };
+            }
+        },
+        methods: {
+            saveChanges(){
+              this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date)
+            },
+            selectEdit(val) {
+                this.selectedEdit = val;
+            },
+            initInteract: function (selector) {
+                interact(selector).draggable({
+                    // enable inertial throwing
+                    inertia: true,
+                    // keep the element within the area of it's parent
+                    restrict: {
+                        restriction: "parent",
+                        endOnly: true,
+                        elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+                    },
+                    // enable autoScroll
+                    autoScroll: true,
+
+                    // call this function on every dragmove event
+                    onmove: this.dragMoveListener,
+                    // call this function on every dragend event
+                    onend: this.onDragEnd
+                });
+            },
+            dragMoveListener: function (event) {
+                let target = event.target;
+                let name = target.getAttribute("name");
+                let x = null;
+                let y = null;
+                if (name === 'fullName') {
+                    x = (parseFloat(target.getAttribute("data-x")) || this.fullName.screenX) + event.dx;
+                }
+                if (name === 'courseName') {
+                    x = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX) + event.dx;
+                }
+                if (name === 'hours') {
+                    x = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX) + event.dx;
+                }
+                if (name === 'date') {
+                    x = (parseFloat(target.getAttribute("data-x")) || this.date.screenX) + event.dx;
+                }
+
+                if (name === 'fullName') {
+                    y = (parseFloat(target.getAttribute("data-y")) || this.fullName.screenY) + event.dy;
+                }
+                if (name === 'courseName') {
+                    y = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY) + event.dy;
+                }
+                if (name === 'hours') {
+                    y = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY) + event.dy;
+                }
+                if (name === 'date') {
+                    y = (parseFloat(target.getAttribute("data-y")) || this.date.screenY) + event.dy;
+                }
+                target.style.webkitTransform = target.style.transform = "translate(" + x + "px, " + y + "px)";
+
+                target.setAttribute("data-x", x);
+                target.setAttribute("data-y", y);
+            },
+            onDragEnd: function (event) {
+                var target = event.target;
+                let name = target.getAttribute("name");
+                if (name === 'fullName') {
+                    this.fullName.screenX = (parseFloat(target.getAttribute("data-x")) || this.fullName.screenX);
+                    this.fullName.screenY = (parseFloat(target.getAttribute("data-y")) || this.fullName.screenY)
+                }
+                if (name === 'courseName') {
+                    this.courseName.screenX = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX);
+                    this.courseName.screenY = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY)
+                }
+                if (name === 'hours') {
+                    this.hours.screenX = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX);
+                    this.hours.screenY = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY)
+                }
+                if (name === 'date') {
+                    this.date.screenX = (parseFloat(target.getAttribute("data-x")) || this.date.screenX);
+                    this.date.screenY = (parseFloat(target.getAttribute("data-y")) || this.date.screenY)
+                }
+            }
+        }
     };
-  },
-  mounted() {
-    console.log(this.sertificate, "sert");
-    const image = new window.Image();
-    image.src = `http://bp.localhost.com/upload/sertificates/${this.sertificate.name}`;
-    image.onload = () => {
-      console.log(image.width, "11111111111111111111111;");
-      this.stageWidth = image.width;
-      console.log(this.stageWidth, "0000000000000000;");
-      this.stageHeight = image.height;
-      // set image only when it is loaded
-      this.image = image;
-      var width = window.innerWidth;
-
-      console.log(image.width, "22222222222222222222;");
-      var stage = new Konva.Stage({
-        container: "container",
-        width: this.stageWidth,
-        draggable: true,
-      });
-
-      var layer = new Konva.Layer();
-      stage.add(layer);
-
-      console.log(this.stageWidth, "3333333333333333333333333;");
-      // another solution is to use rectangle shape
-      var background = new Konva.Rect({
-        x: 0,
-        y: 0,
-        width: stage.width(),
-        height: stage.height(),
-        listening: false,
-      });
-      var imageObj = new Image();
-      imageObj.onload = function () {
-        background.fillPatternImage(imageObj);
-      };
-      imageObj.src = `http://bp.localhost.com/upload/sertificates/${this.sertificate.name}`;
-      layer.add(background);
-      // the stage is draggable
-      // that means absolute position of background may change
-      // so we need to reset it back to {0, 0}
-
-      stage.on("dragmove", () => {
-        background.absolutePosition({ x: 0, y: 0 });
-      });
-
-      // add demo shape
-      var rec = new Konva.Rect({
-        x: stage.width() / 2,
-        y: stage.height() / 2,
-        width: stage.width() / 2,
-        height: stage.height() / 2,
-        fill: "rgb(0,0,0,0)",
-        stroke: "black",
-        strokeWidth: 3,
-      });
-      layer.add(rec);
-    };
-  },
-  methods: {
-    getWidth() {
-      console.log(this.stageWidth, "stageWidth");
-      let res =
-        this.stageWidth <= container.width ? this.stageWidth : container;
-      return res;
-    },
-    handleMouseDown(event) {
-      this.isDrawing = true;
-      const pos = this.$refs.stage.getNode().getPointerPosition();
-      this.setRecs([
-        ...this.recs,
-        { startPointX: pos.x, startPointY: pos.y, width: 0, height: 0 },
-      ]);
-    },
-    handleMouseUp() {
-      this.isDrawing = false;
-    },
-    setRecs(element) {
-      this.recs = element;
-    },
-    handleMouseMove(event) {
-      // no drawing - skipping
-      if (!this.isDrawing) {
-        return;
-      }
-      // console.log(event);
-      const point = this.$refs.stage.getNode().getPointerPosition();
-      // handle  rectangle part
-      let curRec = this.recs[this.recs.length - 1];
-      curRec.width = point.x - curRec.startPointX;
-      curRec.height = point.y - curRec.startPointY;
-    },
-  },
-};
 </script>
 
-<style>
-body {
-  margin: 0;
-  padding: 0;
-}
-.konva-stage {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-}
-.modal-sertificate {
-  width: 100%;
-}
-.canvas-blocks {
-  display: flex;
-  flex-direction: column;
-}
-.box {
-  width: 200px;
-  height: 100px;
-  border: 1px solid #0515f0;
-}
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="scss">
+    .cestificates-constructor{
+        canvas{
+            width: 100% !important;
+            height: auto!important;
+        }
+        .draggable-container {
+            padding: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
+        .form-group {
+            margin-top: 15px;
+            margin-bottom: 0 !important;
+            padding-bottom: 20px;
+            position: relative;
+
+            &:before {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 1px;
+                background-color: #ddd;
+            }
+
+            &:last-child {
+                &:before {
+                    content: none;
+                }
+            }
+        }
+
+        .draggable-edit {
+            position: relative;
+            border: 2px solid #333;
+            img {
+                width: 100%;
+                height: auto;
+            }
+
+            .draggable {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 12;
+                text-align: center;
+                display: inline-block;
+                padding: 5px;
+                border-radius: 6px;
+                border: 1px dashed #ddd;
+                box-shadow: 0 0 5px 0 #333;
+                background-color: #fff;
+                &:before {
+                    content: attr(follow-text);
+                    position: absolute;
+                    top: -22px;
+                    left: 0;
+                    font-size: 12px;
+                    color: #000;
+                    background-color: #fff;
+                    padding: 3px 6px;
+                    border-radius: 4px;
+                    z-index: 2;
+                    white-space: nowrap;
+                }
+
+                &.no-border {
+                    border: none;
+                    padding: 0;
+                    border-radius: 0;
+                    background: transparent;
+                    box-shadow: none;
+                    &:before {
+                        content: none;
+                    }
+                    &.active {
+                        border: 1px dashed #000;
+                        background-color: rgba(255, 255, 255, 0.4);
+                    }
+
+                    &:hover {
+                        border: 1px dashed #000;
+                        background-color: rgba(255, 255, 255, 0.7);
+                    }
+
+                    &:active {
+                        border: 1px dashed #000;
+                        background-color: rgba(255, 255, 255, 0.9);
+                    }
+                }
+
+                &:hover {
+                    border: 1px dashed #000;
+                }
+
+                &:active {
+                    border: 1px dashed #000;
+                    background-color: #d4d4d4;
+                }
+            }
+        }
+
+        .settings {
+            max-height: calc(100vh - 130px);
+            min-height: calc(100vh - 130px);
+            padding: 20px 10px;
+            overflow: auto;
+            border-right: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+        }
+
+        .color-picker {
+            width: 100%;
+            height: 40px;
+        }
+    }
 </style>
