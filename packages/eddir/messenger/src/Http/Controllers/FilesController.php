@@ -24,68 +24,76 @@ class FilesController {
         if ( ! Auth::check() ) {
             return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
-        // check if message is empty
-        if ( $request->message == "" ) {
-            return response()->json( [ 'message' => 'Message is empty: ' ], 400 );
-        }
-        // check if message is too long
-        if ( strlen( $request->message ) > 1000 ) {
-            return response()->json( [ 'message' => 'Message is too long: ' ], 400 );
-        }
 
-        $file = $request->file( 'file' );
+        $files      = $request->file( 'files' );
+        $fileModels = [];
 
-        if ( ! $file->isValid() ) {
-            return response()->json( [ 'message' => 'File is not valid: ' ], 400 );
-        }
+        if ( $request->hasFile( 'files' ) ) {
+            foreach ( $files as $file ) {
+                if ( ! $file->isValid() ) {
+                    return response()->json( [ 'message' => 'File is not valid: ' ], 400 );
+                }
 
-        $fileModel = new MessengerFile();
-        // get current milliseconds
-        $milliseconds = round( microtime( true ) * 1000 );
-        // file name should be unique with a timestamp
-        $fileModel->name = $milliseconds . '_' . $file->getClientOriginalName();
+                $fileModel = new MessengerFile();
+                // get current milliseconds
+                $milliseconds = round( microtime( true ) * 1000 );
 
-        // if file doesnt contain extension
-        if ( ! $file->getClientOriginalExtension() ) {
-            // add extension based on mime type
-            switch ( $file->getMimeType() ) {
-                case 'audio/ogg':
-                    $fileModel->name .= '.ogg';
-                    break;
-                case 'audio/mpeg':
-                    $fileModel->name .= '.mp3';
-                    break;
-                case 'video/webm':
-                case 'audio/webm':
-                    $fileModel->name .= '.webm';
-                    break;
-                case 'audio/wav':
-                    $fileModel->name .= '.wav';
-                    break;
-                default:
-                    dd( $file->getMimeType() );
+                $name = $file->getClientOriginalName();
+                // remove extension
+                $name = substr( $name, 0, strrpos( $name, '.' ) );
+                // file name should be unique with a timestamp
+                $fileModel->name = $name . '_' . $milliseconds;
+
+                // if file doesnt contain extension
+                if ( ! $file->getClientOriginalExtension() ) {
+                    // add extension based on mime type
+                    switch ( $file->getMimeType() ) {
+                        case 'audio/ogg':
+                            $fileModel->name .= '.ogg';
+                            break;
+                        case 'audio/mpeg':
+                            $fileModel->name .= '.mp3';
+                            break;
+                        case 'video/webm':
+                        case 'audio/webm':
+                            $fileModel->name .= '.webm';
+                            break;
+                        case 'audio/wav':
+                            $fileModel->name .= '.wav';
+                            break;
+                    }
+                } else {
+                    $fileModel->name .= '.' . $file->getClientOriginalExtension();
+                }
+
+                $fileModel->file_path = $file->storeAs( 'messenger', $fileModel->name );
+
+                // if file is image, create thumbnail
+                if ( in_array( $file->getMimeType(), [ 'image/jpeg', 'image/png', 'image/gif' ] ) ) {
+
+                    $tmpFile = tempnam( sys_get_temp_dir(), $fileModel->name );
+                    $this->resize_crop_image( 350, 200, $file->getRealPath(), $tmpFile );
+
+                    // upload thumbnail to storage
+                    $fileModel->thumbnail_path = 'messenger/thumbs/thumb_' . $fileModel->name;
+                    Storage::put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents( $tmpFile ) );
+
+                    unlink( $tmpFile );
+                }
+
+                $fileModels[] = $fileModel;
             }
         }
 
-        $fileModel->file_path = $file->storeAs( 'messenger', $fileModel->name );
-
-        // if file is image, create thumbnail
-        if ( in_array( $file->getMimeType(), [ 'image/jpeg', 'image/png', 'image/gif' ] ) ) {
-
-            $tmpFile = tempnam( sys_get_temp_dir(), $fileModel->name );
-            $this->resize_crop_image( 350, 200, $file->getRealPath(), $tmpFile );
-
-            // upload thumbnail to storage
-            $fileModel->thumbnail_path = 'messenger/thumbs/thumb_' . $fileModel->name;
-            Storage::put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents( $tmpFile ) );
-
-            unlink( $tmpFile );
+        $message = $request->get( 'message' );
+        if (! $message) {
+            $message = '';
         }
 
-        $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ), $fileModel );
+        $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $message, $fileModels );
 
         if ( ! $message->files ) {
-            return response()->json( [ 'message' => 'File is not saved: ' ], 400 );
+            return response()->json( [ 'message' => 'Files is not saved: ' ], 400 );
         }
 
         return response()->json( $message );

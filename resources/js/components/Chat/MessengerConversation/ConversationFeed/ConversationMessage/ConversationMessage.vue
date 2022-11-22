@@ -5,46 +5,57 @@
     <div class="messenger__message-container">
       <div :class="messageCardClass">
         <div class="messenger__format-message-wrapper">
-          <template v-if="message.files">
-            <div class="messenger__message-files">
-              <div class="messenger__message-file" v-for="file in [message.files]">
-                <template v-if="isImage(file)">
-                  <div class="messenger__message-file-image" @click="openImage(file)">
-                    <img v-on:load="$emit('loadImage')"
-                      :src="file.thumbnail_path ? file.thumbnail_path : file.file_path" alt="file.name">
-                  </div>
-                </template>
-                <template v-else-if="isAudio(file)">
-                  <div class="messenger__message-file-audio">
-                    <audio controls>
-                      <source :src="file.file_path" type="audio/mpeg">
-                    </audio>
-                  </div>
-                </template>
-                <template v-else>
-                  <div class="messenger__message-file-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="30" height="30">
-                      <path
-                        d="M0 64C0 28.65 28.65 0 64 0H229.5C246.5 0 262.7 6.743 274.7 18.75L365.3 109.3C377.3 121.3 384 137.5 384 154.5V448C384 483.3 355.3 512 320 512H64C28.65 512 0 483.3 0 448V64zM336 448V160H256C238.3 160 224 145.7 224 128V48H64C55.16 48 48 55.16 48 64V448C48 456.8 55.16 464 64 464H320C328.8 464 336 456.8 336 448z"/>
-                    </svg>
-                  </div>
-                  <div class="messenger__message-file-name">
-                    <a :href="file.file_path" download>{{ file.name }}</a>
-                  </div>
-                </template>
+          <div class="messenger__format-container">
+            <span v-text="message.body"></span>
+          </div>
+          <div v-if="isGallery()" class="messenger__message-files messenger__message-files_group">
+            <div v-for="(file, key) in message.files.slice(0, 3)" :key="key"
+                 :class="{
+                    'messenger__message-file_group': true,
+                    'messenger__last-row': key === 2 && message.files.length > 2,
+                    'messenger__last-column': (key === 1 && message.files.length > 2) || (key === 2 && message.files.length > 1)
+                  }"
+            >
+              <div @click="openImage(file)" class="messenger__message-file-image">
+                <img v-on:load="$emit('loadImage')"
+                     :src="file.thumbnail_path ? file.thumbnail_path : file.file_path" alt="file.name">
+<!--                <div v-if="message.files.length > 3 && key === 2" class="messenger__message-files_group-count">-->
+<!--                  <span>+{{ message.files.length - 3 }}</span>-->
+<!--                </div>-->
               </div>
             </div>
-          </template>
-          <template v-else>
-            <div class="messenger__format-container">
-              <span v-text="message.body"></span>
+          </div>
+          <div v-else class="messenger__message-files">
+            <div class="messenger__message-file" v-for="file in message.files">
+              <template v-if="isImage(file)">
+                <div class="messenger__message-file-image" @click="openImage(file)">
+                  <img v-on:load="$emit('loadImage')"
+                       :src="file.thumbnail_path ? file.thumbnail_path : file.file_path" alt="file.name">
+                </div>
+              </template>
+              <template v-else-if="isAudio(file)">
+                <div class="messenger__message-file-audio">
+                  <audio controls>
+                    <source :src="file.file_path" type="audio/mpeg">
+                  </audio>
+                </div>
+              </template>
+              <template v-else>
+                <div class="messenger__message-file-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="25" height="25">
+                    <path
+                      d="M0 64C0 28.65 28.65 0 64 0H229.5C246.5 0 262.7 6.743 274.7 18.75L365.3 109.3C377.3 121.3 384 137.5 384 154.5V448C384 483.3 355.3 512 320 512H64C28.65 512 0 483.3 0 448V64zM336 448V160H256C238.3 160 224 145.7 224 128V48H64C55.16 48 48 55.16 48 64V448C48 456.8 55.16 464 64 464H320C328.8 464 336 456.8 336 448z"/>
+                  </svg>
+                </div>
+                <div class="messenger__message-file-name">
+                  <a :href="file.file_path" download>{{ file.name }}</a>
+                </div>
+              </template>
             </div>
-          </template>
+          </div>
         </div>
         <div class="messenger__text-timestamp">
-            <span>
-              {{ message.created_at | moment }}
-            </span>
+          <span>{{ message.created_at | moment }}</span>
         </div>
       </div>
       <template v-if="message.sender_id === user.id && message.readers && message.readers.length > 0">
@@ -55,7 +66,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import moment from "moment";
 import MessageReaders from "./MessageReaders/MessageReaders.vue";
 
@@ -80,6 +91,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['showGallery']),
     isImage(file) {
       const ext = file.file_path.split('.').pop();
       return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);
@@ -88,8 +100,17 @@ export default {
       const ext = file.file_path.split('.').pop();
       return ['mp3', 'wav', 'ogg', 'webm'].includes(ext);
     },
+    isGallery() {
+      return this.message.files && this.message.files.length > 0 && this.message.files.every(file => this.isImage(file));
+    },
+    getImages() {
+      return this.message.files.filter(file => this.isImage(file)).map(file => file.file_path);
+    },
     openImage(image) {
-      window.open(image.file_path, '_blank').focus();
+      this.showGallery({
+        images: this.getImages(),
+        index: this.message.files.findIndex(f => f.id === image.id),
+      });
     },
   },
   filters: {
@@ -171,6 +192,7 @@ export default {
 
 .messenger__text-timestamp {
   font-size: 10px;
+  line-height: 10px;
   color: #828c94;
   text-align: right;
 }
@@ -184,7 +206,7 @@ export default {
 .messenger__message-file {
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
+  margin: 5px;
   max-width: 100%;
 }
 
@@ -219,6 +241,59 @@ export default {
 
 .messenger__message-file-image img {
   max-width: 100%;
+}
+
+audio {
+  max-width: 230px;
+}
+
+.messenger__message-files_group {
+  flex-wrap: wrap;
+  width: 210px;
+  height: 160px;
+  align-content: space-around;
+}
+
+.messenger__message-files_group-count {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.messenger__message-files_group-count span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+.messenger__message-file_group {
+  width: 100px;
+  height: 155px;
+  margin-bottom: 5px;
+}
+
+.messenger__message-file_group .messenger__message-file-image {
+  height: 100%;
+}
+
+.messenger__message-file_group .messenger__message-file-image img {
+  height: 100%;
+}
+
+.messenger__last-row {
+  width: 100px;
+  height: 75px;
+}
+
+.messenger__last-column {
+  width: 100px;
+  height: 75px;
 }
 
 </style>

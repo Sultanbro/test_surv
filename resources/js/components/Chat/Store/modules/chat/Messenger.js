@@ -1,4 +1,3 @@
-
 export default {
   actions: {
     async boot({commit, getters, dispatch}) {
@@ -9,48 +8,54 @@ export default {
       if (debug) {
         setTimeout(() => {
           dispatch('loadChat', getters.chats[0].id);
-        } , 2000);
+        }, 2000);
       }
     },
     async init({commit, getters, dispatch}) {
+
+      window.Echo.connector.pusher.connection.bind_global(function (payload) {
+        if (!getters.isSocketConnected && payload === 'message') {
+          commit('setSocketConnected', true);
+        } else if (payload === 'connected') {
+          commit('setSocketConnected', true);
+        } else if (payload === 'error' || payload === 'disconnected' || payload === 'connecting' || payload === 'unavailable') {
+          commit('setSocketConnected', false);
+        }
+      });
+
       // new message notification
-      window.Echo.channel(`messages.${getters.user.id}`).listen('.newMessage', e => {
-        dispatch('newMessage', e.message);
-      });
-
-      // pin message notification
-      window.Echo.channel(`messages.${getters.user.id}`).listen('.pinMessage', e => {
-        //this.handlePinnedMessage(e.message);
-      });
-
-      // read message notification
-      window.Echo.channel(`messages.${getters.user.id}`).listen('.readMessage', e => {
-        // if (e.user.id !== this.user.id) {
-          //this.handleReadMessage(e.message);
-        // }
-      });
-
+      window.Echo.private(`messages.${getters.user.id}`)
+        .listen('.newMessage', e => {
+          if (e.message.event) {
+            dispatch('newServiceMessage', e.message);
+          } else {
+            dispatch('newMessage', e.message);
+          }
+        });
       commit('setInitialize', true);
-    },
-    async fullscreen({commit}) {
-      commit('toggleFullscreen');
-    },
-    async online({commit}) {
-      commit('setOnline', true);
     },
     async toggleMessenger({commit}) {
       commit('toggleMessenger');
     },
+    async toggleInfoPanel({commit}) {
+      commit('toggleInfoPanel');
+    },
+    async requestScroll({commit}, position) {
+      commit('setScrolling', position);
+    },
+    showGallery({commit}, {images, index}) {
+      commit('prepareGallery', {images, index});
+    },
+    hideGallery({commit}) {
+      commit('hideGallery');
+    }
   },
   mutations: {
     setInitialize(state, initialized) {
       state.initialized = initialized;
     },
-    toggleFullscreen(state) {
-      state.fullscreen = !state.fullscreen;
-    },
-    setOnline(state) {
-      // todo
+    toggleInfoPanel(state) {
+      state.infoPanel = !state.infoPanel;
     },
     toggleMessenger(state) {
       state.open = !state.open;
@@ -63,20 +68,42 @@ export default {
     },
     setSearchMode(state, mode) {
       state.searchMode = mode;
+    },
+    setScrolling(state, position) {
+      state.scrollingPosition = position;
+    },
+    setSocketConnected(state, status) {
+      state.socketConnected = status;
+    },
+    prepareGallery(state, {images, index}) {
+      state.galleryImages = images;
+      state.galleryIndex = index;
+    },
+    hideGallery(state) {
+      state.galleryImages = [];
+      state.galleryIndex = null;
     }
   },
   state: {
     initialized: false,
     fullscreen: false,
     open: false,
+    infoPanel: false,
     debug: false,
-    searchMode: false
+    searchMode: false,
+    scrollingPosition: -1,
+    socketConnected: false,
+    galleryIndex: null,
+    galleryImages: [],
   },
   getters: {
     isInitialized: state => state.initialized,
-    isFullscreen: state => state.fullscreen,
     isOpen: state => state.open,
-    isDebug: state => state.debug,
-    isSearchMode: state => state.searchMode
+    isInfoPanel: state => state.infoPanel,
+    isSearchMode: state => state.searchMode,
+    scrollingPosition: state => state.scrollingPosition,
+    isSocketConnected: state => state.socketConnected,
+    galleryIndex: state => state.galleryIndex,
+    galleryImages: state => state.galleryImages,
   }
 }

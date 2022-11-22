@@ -1,13 +1,22 @@
 <template>
-  <div @keydown.esc="escapeChat" v-click-outside="toggle" v-show="isOpen"
-       class="messenger__card-window" id="messengerWindow">
-    <SearchBox></SearchBox>
-    <div class="messenger__chat-container">
-      <ChatsList :fullscreen="true"></ChatsList>
-      <MessengerConversation></MessengerConversation>
-      <InfoPanel></InfoPanel>
+  <div>
+    <div @keydown.esc="escapeChat" v-click-outside="toggle" v-show="isOpen"
+         class="messenger__card-window" id="messengerWindow">
+      <SearchBox></SearchBox>
+      <div class="messenger__chat-container">
+        <ChatsList :fullscreen="true"></ChatsList>
+        <MessengerConversation></MessengerConversation>
+        <InfoPanel></InfoPanel>
+      </div>
+      <ChinBox></ChinBox>
     </div>
-    <ChinBox></ChinBox>
+    <ImageGallery
+      :images="galleryImages"
+      id="messenger_gallery"
+      :index="galleryIndex"
+      @onopen="openGallery"
+      @close="hideGallery"
+    />
   </div>
 </template>
 
@@ -19,6 +28,7 @@ import MessengerConversation from "./MessengerConversation/MessengerConversation
 import ChinBox from "./ChinBox/ChinBox.vue";
 import InfoPanel from "./InfoPanel/InfoPanel";
 import clickOutside from "./directives/clickOutside.ts";
+import ImageGallery from "./ImageGallery/ImageGallery.vue";
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -28,7 +38,8 @@ export default {
     ChatsList,
     MessengerConversation,
     ChinBox,
-    InfoPanel
+    InfoPanel,
+    ImageGallery
   },
   directives: {
     clickOutside
@@ -44,19 +55,34 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      galleryOpened: false,
+    };
+  },
   computed: {
-    ...mapGetters(['isInitialized', 'user', 'isOpen'])
+    ...mapGetters(['isInitialized', 'user', 'isOpen', 'galleryImages', 'galleryIndex']),
   },
   created() {
     this.boot();
   },
   methods: {
-    ...mapActions(['boot', 'escapeChat', 'toggleMessenger']),
+    ...mapActions(['boot', 'escapeChat', 'toggleMessenger', 'hideGallery']),
     toggle() {
+
+      if (this.galleryOpened) {
+        this.galleryOpened = false;
+        return;
+      }
+
       if (this.isOpen) {
         this.toggleMessenger();
       }
-    }
+
+    },
+    openGallery() {
+      this.galleryOpened = true;
+    },
   }
 }
 </script>

@@ -205,7 +205,7 @@ export default {
         commit('setPinnedMessage', null);
       });
     },
-    async uploadFile({commit, getters, dispatch}, file) {
+    async uploadFiles({commit, getters, dispatch}, {files, caption = ""}) {
       const guid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       let newMessage = {
         id: guid,
@@ -217,22 +217,7 @@ export default {
 
       commit('addMessage', newMessage);
 
-      // set body message depends on file mime type
-      let caption = 'Файл';
-      switch (file.type) {
-        case 'image/jpeg':
-        case 'image/png':
-        case 'image/gif':
-          caption = 'Изображение';
-          break;
-          case 'audio/mpeg':
-          case 'audio/ogg':
-          case 'audio/wav':
-            caption = 'Голосовое сообщение';
-            break;
-      }
-
-      return API.uploadFile(getters.chat.id, caption, file, message => {
+      return API.uploadFiles(getters.chat.id, files, caption, message => {
         message.new_id = message.id;
         message.id = guid;
         commit('updateMessage', message);

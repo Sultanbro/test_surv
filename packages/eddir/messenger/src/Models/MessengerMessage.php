@@ -3,6 +3,7 @@
 
 namespace Eddir\Messenger\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User;
 use Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,14 +32,13 @@ class MessengerMessage extends Model {
         return $this->belongsTo( MessengerChat::class, 'chat_id' );
     }
 
-    // users who read this message
+    // users who has been seen this message
     public function readers(): BelongsToMany {
         return $this->belongsToMany( User::class, 'messenger_message_users_read', 'message_id', 'user_id' );
     }
 
-    # files belongs to one message no file_id field
-    public function files(): BelongsTo {
-        return $this->belongsTo( MessengerFile::class, 'id', 'message_id' );
+    public function files(): HasMany {
+        return $this->hasMany( MessengerFile::class, 'message_id' );
     }
 
     public function event(): BelongsTo {

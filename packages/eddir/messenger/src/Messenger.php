@@ -94,9 +94,18 @@ class Messenger {
         if ( $chat->private ) {
             // get second user in private chat
             $second_user    = $chat->users->firstWhere( 'id', '!=', $user->id );
-            $chat->title    = $second_user->name . " " . $second_user->last_name;
-            $chat->image    = $second_user->img_url;
-            $chat->isOnline = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
+
+            $chat->title    = 'Неизвестный пользователь';
+            $chat->image    = '';
+            $chat->isOnline = false;
+
+            if($second_user) {
+                $chat->title    = $second_user->name . " " . $second_user->last_name;
+                $chat->image    = $second_user->img_url;
+                $chat->isOnline = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
+            } 
+      
+            
         }
         if ( empty( $chat->image ) ) {
             $chat->image = config( 'messenger.user_avatar.default' ) ?? asset( 'vendor/messenger/images/users.png' );
@@ -337,7 +346,7 @@ class Messenger {
      * @throws Exception
      * @throws GuzzleException
      */
-    public function sendMessage( int $chatId, int $userId, string $body, $file = null ): MessengerMessage {
+    public function sendMessage( int $chatId, int $userId, string $body, $files = [] ): MessengerMessage {
         $message            = new MessengerMessage();
         $message->chat_id   = $chatId;
         $message->sender_id = $userId;
@@ -352,9 +361,11 @@ class Messenger {
             throw new Exception( 'User is not member of chat ' . $chatId );
         }
 
-        if ( $file ) {
-            $file->message_id = $message->id;
-            $file->save();
+        if ( count( $files ) > 0 ) {
+            foreach ( $files as $file ) {
+                $file->message_id = $message->id;
+                $file->save();
+            }
             /** @noinspection PhpExpressionResultUnusedInspection */
             $message->files;
         }
@@ -493,11 +504,11 @@ class Messenger {
     public function pinChat( int $chatId, User $promote ): bool {
         // update chat_users table
         DB::table( 'messenger_chat_users' )
-            ->where( 'chat_id', $chatId )
-            ->where( 'user_id', $promote->id )
-            ->update( [
-                'pinned' => true,
-            ] );
+          ->where( 'chat_id', $chatId )
+          ->where( 'user_id', $promote->id )
+          ->update( [
+              'pinned' => true,
+          ] );
 
         return true;
     }
@@ -685,7 +696,7 @@ class Messenger {
             $message->event;
             $messageData = $message->toArray();
         } else {
-            $messageData = $message->toArray();
+            $messageData          = $message->toArray();
             $messageData['event'] = $event->toArray();
         }
 

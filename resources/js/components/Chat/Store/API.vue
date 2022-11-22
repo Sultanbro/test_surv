@@ -61,10 +61,19 @@ export default {
   /**
    * Fetch messages
    * @param {Number} chatId
+   * @param count
+   * @param start_message_id
+   * @param including
    * @param {Function} callback
    */
-  fetchMessages(chatId, callback) {
-    axios.get(REST_URI + 'chat/' + chatId + '/messages').then(response => {
+  fetchMessages(chatId, count, start_message_id, including, callback) {
+    axios.get(REST_URI + 'chat/' + chatId + '/messages', {
+      params: {
+        count: count,
+        start_message_id: start_message_id,
+        including: including,
+      }
+    }).then(response => {
       callback(response.data);
     });
   },
@@ -164,6 +173,28 @@ export default {
   },
 
   /**
+   * Pin chat
+   * @param {Number} chatId
+   * @param {Function} callback
+   */
+  pinChat(chatId, callback = () => {}) {
+    axios.post(REST_URI + 'chat/' + chatId + '/pin').then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
+   * Unpin chat
+   * @param {Number} chatId
+   * @param {Function} callback
+   */
+  unpinChat(chatId, callback = () => {}) {
+    axios.delete(REST_URI + 'chat/' + chatId + '/pin').then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
    * Create chat with title and description
    * @param {String} title
    * @param {String} description
@@ -231,16 +262,36 @@ export default {
   },
 
   /**
-   * Upload file
-   * @param chatId
-   * @param caption
-   * @param {File} file
+   * Edit chat
+   * @param {Number} chatId
+   * @param {String} title
+   * @param {String} description
    * @param {Function} callback
    * @return {Promise}
    */
-  uploadFile(chatId, caption, file, callback) {
+  editChat(chatId, title, description, callback = () => {}) {
+    return axios.post(REST_URI + 'chat/' + chatId + '/edit', {
+      title: title,
+      description: description,
+    }).then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
+   * Upload file
+   * @param chatId
+   * @param caption
+   * @param files
+   * @param {Function} callback
+   * @param callback_error
+   * @return {Promise}
+   */
+  uploadFiles(chatId, files, caption, callback, callback_error) {
     let formData = new FormData();
-    formData.append('file', file);
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files[]', files[i]);
+    }
     formData.append('message', caption);
 
     return axios.post(REST_URI + 'chat/' + chatId + '/upload', formData, {
@@ -249,6 +300,8 @@ export default {
       }
     }).then(response => {
       callback(response.data);
+    }).catch(error => {
+      callback_error(error.response.data);
     });
   }
 }

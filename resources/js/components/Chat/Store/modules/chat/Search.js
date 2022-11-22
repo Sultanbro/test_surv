@@ -4,6 +4,7 @@ export default {
   state: {
     contacts: [],
     newChatContacts: [],
+    searchFocus: false,
     searchMessagesResults: [],
     searchType: "messages"
   },
@@ -23,17 +24,16 @@ export default {
     setNewChatContacts(state, contacts) {
       state.newChatContacts = contacts;
     },
-    setSearchType(state, type) {
-      state.searchType = type;
-    },
+    setSearchFocus(state, focus) {
+      state.searchFocus = focus;
+    }
   },
   getters: {
     contacts: state => state.contacts,
     newChatContacts: state => state.newChatContacts,
     searchMessagesChatsResults: state => state.searchMessagesResults,
     searchType: state => state.searchType,
-    isSearchMessagesMode: state => state.searchType === "messages",
-    isSearchContactsMode: state => state.searchType === "contacts",
+    isSearchFocus: state => state.searchFocus,
   },
   actions: {
     async findContacts({commit, getters, dispatch}, username) {
@@ -42,7 +42,7 @@ export default {
         await API.searchChats(username, contacts => {
           contacts.users.forEach(user => {
             user.id = 'user' + user.id;
-            user.title = user.name;
+            user.title = user.name + ' ' + user.last_name;
             user.private = true;
           });
           commit('setContacts', contacts.users.concat(contacts.chats));
@@ -75,7 +75,7 @@ export default {
         commit('clearMessagesSearchResults');
       }
     },
-    async getUsers({commit, getters, dispatch}) {
+    async getUsers({commit}) {
       await API.fetchUsers(users => {
         users.forEach(user => {
           user.title = user.name;
@@ -86,6 +86,9 @@ export default {
     },
     async setCurrentChatContacts({commit, getters, dispatch}, contacts) {
       commit('setNewChatContacts', contacts);
+    },
+    async setSearchFocus({commit, getters, dispatch}, focus) {
+      commit('setSearchFocus', focus);
     }
   }
 }

@@ -5,12 +5,25 @@
         <SpectrumAnalyser class="messenger__chat-footer_spectrum" :fill-style="'#5ebee9'"></SpectrumAnalyser>
       </template>
       <template v-else>
-        <textarea v-model="body"
-                  @keydown.enter="performMessage" @paste="pasteMessage"
-                  id="messengerMessageInput"
-                  cols="30" rows="10" class="messenger__textarea"
-                  placeholder="Ввести сообщение"
-        ></textarea>
+        <div class="messenger__message-input messenger__message-text-input">
+          <textarea v-model="body"
+                    @keydown.enter="performMessage" @paste="pasteMessage"
+                    id="messengerMessageInput" class="messenger__textarea"
+                    placeholder="Ввести сообщение"
+          ></textarea>
+          <div v-for="file in files" class="messenger__input_file-attachment">
+            <div>
+              <div>{{ file.name }}</div>
+              <div>{{ file.size | fileSizeFormat }}</div>
+            </div>
+            <div class="messenger__input_file-attachment_remove" @click="removeFile(file, $event)">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                <path
+                  d="M310.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 210.7 54.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L114.7 256 9.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 301.3 265.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L205.3 256 310.6 150.6z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
       </template>
       <div class="messenger__message-input" id="messengerInput">
 
@@ -25,7 +38,7 @@
               <EmojiPopup @append="appendEmoji"></EmojiPopup>
 
               <div class="messenger__attachment-item" @click="$refs.messengerFile.click()">
-                <input type="file" ref="messengerFile" style="display:none" @change="prepareFile">
+                <input type="file" ref="messengerFile" style="display:none" @change="prepareFiles" multiple="multiple">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297.126 297.126">
                   <g>
                     <path fill="#5ebee9"
@@ -87,6 +100,7 @@ export default {
   data() {
     return {
       body: "",
+      files: [],
       isRecordingAudio: false,
       recordingTime: 0,
     };
@@ -111,26 +125,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["sendMessage", "editMessageAction", "uploadFile"]),
-    pasteMessage(e) {
-      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-      for (let index in items) {
-        let item = items[index];
-        if (item.kind === 'file') {
-          let blob = item.getAsFile();
-          this.uploadFile(blob);
-        }
-      }
-    },
+    ...mapActions(["sendMessage", "editMessageAction", "uploadFiles", "appendMessage"]),
     performMessage(e) {
       let text = this.body.trim();
-      if (text && this.chat) {
+      if ((text || this.files.length > 0) && this.chat) {
         if (this.editMessage) {
           this.editMessageAction(text);
         } else {
-          this.sendMessage(text)
-          this.body = "";
           e.preventDefault();
+          if (this.files) {
+            this.uploadFiles({'files': this.files, 'caption': text});
+            this.files = [];
+          } else {
+            this.sendMessage(text)
+          }
+          this.body = "";
           this.$nextTick(() => {
             document.getElementById("messengerMessageInput").focus();
           });
@@ -140,17 +149,30 @@ export default {
     appendEmoji(emoji) {
       this.body += emoji;
     },
-    prepareFile() {
-      let file = this.$refs.messengerFile.files[0];
-      if (file) {
-        this.uploadFile(file);
+    pasteMessage(e) {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (let index in items) {
+        let item = items[index];
+        if (item.kind === 'file') {
+          this.files.push(item.getAsFile());
+        }
+      }
+    },
+    removeFile(file, event) {
+      event.stopPropagation();
+      this.files = this.files.filter(f => f !== file);
+    },
+    prepareFiles() {
+      let files = this.$refs.messengerFile.files;
+      for (let file of files) {
+        this.files.push(file);
       }
     },
     handleError() {
-      alert("Ваш браузер не поддерживает запись аудио или используется не безопасное соединение (http).");
+      console.log("Голосовая запись не поддерживается или не разрешена");
     },
     handleRecording({blob}) {
-      this.uploadFile(blob);
+      this.uploadFiles({'files': [blob], 'caption': ""});
       this.isRecordingAudio = false;
     },
     setRecordingAudio(value) {
@@ -165,6 +187,15 @@ export default {
       let santiseconds = value % 100;
       seconds = seconds % 60;
       return `${minutes}:${seconds < 10 ? "0" + seconds : seconds},${santiseconds < 10 ? "0" + santiseconds : santiseconds}`;
+    },
+    fileSizeFormat(value) {
+      if (value < 1024) {
+        return `${value} B`;
+      } else if (value < 1024 * 1024) {
+        return `${Math.floor(value / 1024)} KB`;
+      } else {
+        return `${Math.floor(value / 1024 / 1024)} MB`;
+      }
     }
   }
 }
@@ -176,6 +207,9 @@ export default {
   width: 100%;
   border-bottom-right-radius: 4px;
   border-top: 2px solid #5ebee9;
+  max-height: 30vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .messenger__box-footer {
@@ -223,11 +257,34 @@ export default {
 
 .messenger__message-input {
   display: flex;
-  flex: 1;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   margin-right: 10px;
+  min-width: 0;
+}
+
+.messenger__message-text-input {
+  flex-grow: 1;
+  align-items: flex-start;
+}
+
+.messenger__input_file-attachment {
+  margin: 5px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.messenger__input_file-attachment_remove {
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
+  margin: 10px;
+  min-width: 10px;
 }
 
 .messenger__attachment {
