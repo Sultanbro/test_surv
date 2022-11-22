@@ -27,7 +27,10 @@
                 </template>
             </div>
 
-            <start-day-btn @currentBalance="currentBalance"></start-day-btn>
+            <start-day-btn
+                v-if="userInfo.user && userInfo.user.user_type === 'remote'"
+                @currentBalance="currentBalance"
+            ></start-day-btn>
 
             <div class="profile__balance">
                 Текущий баланс
@@ -55,7 +58,7 @@
                 </form>
             </b-modal>
 
-            <profile-info></profile-info>
+            <profile-info :data="userInfo"></profile-info>
     <!--
             <div class="profile__point profile-box">
                 <div class="profile__title">Цель на сегодня</div>
@@ -141,7 +144,8 @@ export default {
               canvas: null
             },
             loading: false,
-            hide: false
+            hide: false,
+            userInfo: {}
         };
     },
     mounted(){
@@ -249,6 +253,15 @@ export default {
             this.balance = balance.sum
             this.currency = balance.currency
         },
+
+        fetchUserInfo(){
+            this.loading = true
+
+            axios.get('/profile/personal-info').then(response => {
+                this.userInfo = response.data
+                this.loading = false
+            }).catch((e) => console.log(e))
+        }
     }
 };
 </script>

@@ -32,18 +32,17 @@ export default {
 
   name: 'ProfileInfo',
   props: {
-
+    data: Object
   },
 
   data() {
     return {
-      data: {},
       loading: false
     }
   },
 
   created() {
-    this.fetchData()
+    // this.fetchData()
   },
 
   methods: {
