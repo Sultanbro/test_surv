@@ -109,7 +109,7 @@ body.modal-open {
   overflow-wrap: break-word;
   white-space: normal;
   -webkit-tap-highlight-color: transparent;
-  z-index: 1000;
+  z-index: 1002;
 }
 
 .messenger__chat-container {

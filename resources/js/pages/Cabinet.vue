@@ -535,7 +535,6 @@ export default {
       this.file = this.$refs.file.files[0];
 
       let reader  = new FileReader();
-      this.showChooseProfileModal = true
       reader.addEventListener("load", function () {
         this.imagePreview = reader.result;
         this.croppie = new Croppie(document.getElementById('cabinet-croppie'), {
@@ -557,7 +556,11 @@ export default {
 
       if( this.file ){
         if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
+          this.showChooseProfileModal = true
           reader.readAsDataURL( this.file );
+        }
+        else{
+          this.$toast.error('Неподдерживаемый формат: ' + this.file.name.split('.').reverse()[0])
         }
       }
     },

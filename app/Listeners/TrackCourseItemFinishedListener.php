@@ -32,9 +32,12 @@ class TrackCourseItemFinishedListener
     public function handle(TrackCourseItemFinishedEvent $event): void
     {
         try {
-            $course = $event->course;
-            $award  = Award::query()->where('course_id', $course->id)->first();
-            $award->users()->attach($event->userId);
+            
+            $award  = Award::where('course_id', $event->course->id)->first();
+
+            if($award) {
+                $award->users()->attach($event->userId);
+            }
 
         } catch (Throwable $exception) {
             throw new Exception($exception->getMessage());
