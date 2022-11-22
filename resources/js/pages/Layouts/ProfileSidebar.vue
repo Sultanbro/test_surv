@@ -160,9 +160,10 @@ export default {
             this.hide = true
             document.body.classList.add('no-profile')
         }
-        new IntersectionObserver(() => {
+        const scrollObserver = new IntersectionObserver(() => {
             this.inViewport = true
         })
+        scrollObserver.observe(this.$el)
     },
     created(){
         this.fetchUserInfo()
