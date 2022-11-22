@@ -143,80 +143,8 @@
 }
 
 
-.header__profile{
-  margin: 0 auto;
-  padding: 2rem 2rem 1rem;
-  overflow-y:auto;
-  overflow-x:hidden;
-  height: 100%;
-  position:fixed;
-  left: 7rem;
-  top: 0;
-  width: 32rem;
-  background: #F6F7FC;
-  z-index: 1001;
-  min-height: 100vh;
-  font-family: "Open Sans",sans-serif;
-  opacity:0;
-  visibility: hidden;
-  transform:translateX(-20px);
-  transition: all .7s;
-  &::-webkit-scrollbar {
-    width: 6px; /* высота для горизонтального скролла */
-  }
-  &.opened{
-    opacity:1;
-    visibility: visible;
-    transform:translateX(0);
-  }
 
-}
-.profile__content{}
 
-.profile__more{
-  background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><rect width='98%' height='98%' x='1%' y='1%' ry='12%' rx='12%' style='fill: none; stroke: %23D9D9D9; stroke-width: 1; stroke-dasharray: 8'/></svg>");
-  min-height: 8rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 2rem;
-}
-
-.profile__logo{
-  display: flex;
-  margin: 0 auto 2rem;
-  background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><rect width='98%' height='98%' x='1%' y='1%' ry='12%' rx='12%' style='fill: none; stroke: %23D9D9D9; stroke-width: 1; stroke-dasharray: 8'/></svg>");
-  justify-content: center;
-  align-items: center;
-  min-height: 8rem;
-  color:#5B6166;
-  font-size:1.5rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  position: relative;
-}
-
-.profile__balance{
-  width: 100%;
-  max-width: 28rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius:1rem;
-  background: #608EE9;
-  min-height:8rem;
-  color:#fff;
-  font-size:1.4rem;
-  text-transform: uppercase;
-  padding-top: .9rem;
-  p{
-    font-size:3.5rem;
-    span{
-      font-size:2.8rem;
-    }
-  }
-
-}
 
 
 
@@ -370,27 +298,7 @@
   }
 }
 
-.header__profile{
 
-  .tab__item-include{
-    font-family: "Inter",sans-serif;
-    font-size:1.2rem;
-    font-weight: 600;
-    padding: .7rem 1.2rem;
-    min-height: 2rem;
-    border-radius:1.5rem;
-    text-transform: lowercase;
-    &.is-active,
-    &:hover{
-      background: #608EE9;
-    }
-  }
-  .tabs__wrapper{
-    gap:1rem;
-    border:none;
-    justify-content: center;
-  }
-}
 
 .header__top{
   display: none;
@@ -659,28 +567,7 @@
   min-width:25rem;
 }
 
-@media(max-width:440px){
-  .header__profile{
-    top: 0rem;
-    height: 100%;
-    width: 100%;
-    left: 0;
-    display: flex;
-    padding: 2rem;
-    z-index: 1001;
-  }
-  .profile__content{
-    padding-top: 6rem;
-    display: flex;
-    flex-direction: column;
-    max-width: 28rem;
-    align-items: center;
-    margin: auto;
-    max-height: 100%;
-    position:relative;
-  }
 
-}
 
 @media(min-width:1360px){
   .header__left.closed{
@@ -696,13 +583,6 @@
     .header__nav-icon::before{
       color:#fff;
     }
-  }
-  .header__profile {
-    opacity: 1;
-    -webkit-transform: translateX(0);
-    -ms-transform: translateX(0);
-    transform: translateX(0);
-    visibility: visible;
   }
 }
 
@@ -737,63 +617,8 @@
     gap:1rem;
     margin-bottom: 5rem;
   }
-
-}
-@media(max-width:1909px){
-  .header__profile{
-
-  }
 }
 @media(min-width:1360px){
-  .header__profile._active{
-
-    .profile__logo{
-      opacity:1;
-      visibility: visible;
-      transform:translateY(0);
-    }
-    .profile__balance{
-      opacity:1;
-      visibility: visible;
-      transform:translateY(0);
-    }
-    .profile__about{
-      opacity:1;
-      visibility: visible;
-      transform:translateY(0);
-    }
-    .profile-select{
-      opacity:1;
-      visibility: visible;
-      transform:translateY(0);
-    }
-    .profile__point{
-      opacity:1;
-      visibility: visible;
-      transform:translateY(0);
-    }
-    .profile__active{
-      opacity:1;
-      visibility: visible;
-      transform:translateY(0);
-    }
-  }
-  .profile__logo{
-    opacity:0;
-    visibility: hidden;
-    transform:translateY(10px);
-    transition:1s;
-  }
-
-  
-  .profile__balance{
-    transition: all 1s .4s;
-    opacity:0;
-    visibility: hidden;
-    transform:translateY(10px);
-
-  }
-
   .profile-select{
     transition: all 1s .6s;
     opacity:0;
