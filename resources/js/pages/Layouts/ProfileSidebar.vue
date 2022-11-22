@@ -159,6 +159,9 @@ export default {
             document.body.classList.add('no-profile')
         }
     },
+    created(){
+        this.fetchUserInfo()
+    },
     methods: {
         getLogo(){
             const _this = this;
