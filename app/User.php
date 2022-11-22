@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Award;
+use App\Models\AwardUser;
 use App\Models\Tax;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -98,7 +99,9 @@ class User extends Authenticatable implements Authorizable
 
     public function awards(): BelongsToMany
     {
-        return $this->belongsToMany(Award::class, 'award_user', 'user_id', 'award_id');
+        return $this->belongsToMany(Award::class)
+            ->using(AwardUser::class)
+            ->withTimestamps();
     }
 
     public function groupKpis()

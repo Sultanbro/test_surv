@@ -6,15 +6,20 @@ use App\Http\Requests\AwardsByTypeRequest;
 use App\Http\Requests\RewardRequest;
 use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
+use App\Models\Admin\ObtainedBonus;
 use App\Models\Award;
 use App\Models\AwardType;
 use App\Models\AwardUser;
 use App\Models\Course;
 use App\Models\CourseResult;
+use App\ProfileGroup;
 use App\Repositories\AwardRepository;
 use App\Repositories\AwardTypeRepository;
 use App\Repositories\CoreRepository;
+use App\Salary;
+use App\Service\Department\UserService;
 use App\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +29,9 @@ use Throwable;
 
 class AwardService
 {
+    const POSITION = 'App\Positions';
+    const GROUP = 'App\ProfileGroup';
+
     /**
      * Место хранение в диске.
      * S3
@@ -97,17 +105,29 @@ class AwardService
         try {
 
             $file = $this->saveAwardFile($request);
-            $success = Award::query()->create([
+            $awardType = AwardType::query()
+                ->findOrFail($request->input('award_type_id'));
+
+            $params = [
                 'award_type_id' => $request->input('award_type_id'),
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'hide' => $request->input('hide'),
                 'styles' => $request->input('styles'),
-                'format'    => $request->file('file')->extension(),
                 'icon'      => $request->input('icon'),
                 'path'      => $file['relative']
-            ]);
-            $success['temp'] = $file['temp'];
+            ];
+
+            if ($this->isAccrual($awardType)){
+                $params = [
+                    'award_type_id' => $request->input('award_type_id'),
+                    'name' => $request->input('name'),
+                    'description' => $request->input('description'),
+                    'targetable_type'      => $request->input('targetable_type'),
+                    'targetable_id'      => $request->input('targetable_id'),
+                ];
+            }
+            $success = Award::query()->create($params);
             if ($request->has('course_ids')){
                 Course::whereIn('id', $request->input('course_ids'))
                     ->update(['award_id' => $success->id]);
@@ -179,19 +199,25 @@ class AwardService
         $user = User::query()->findOrFail($user_id);
         try {
             $result = [];
-            $awardType = AwardType::query()->findOrFail($request->input('award_type_id'))->first();
+            $awardType = AwardType::query()->findOrFail($request->input('award_type_id'));
 
-            $userAwards = $user->awards;
+            $userAwards = $user->awards->where('award_type_id', $awardType->id);
             $availableAwards = $awardType->awards;
             if ($this->isNomination($awardType)) {
                 $result['my'] =  $userAwards;
                 $result['available'] =  $availableAwards ;
-                if (!$awardType->hidden){
-                    $result['other'] =   AwardUser::query()
-                        ->whereNot('user_id', $user_id)
-                        ->with(['user', 'award'])
-                        ->get();;
+                $otherAwards = [];
+
+                foreach ($userAwards as $award){
+                    if (!$award->hide){
+                        $otherAwards = AwardUser::query()
+                            ->whereNot('user_id', $user_id)
+                            ->with(['user', 'award'])
+                            ->get();;
+                    }
                 }
+                $result['other'] =  $otherAwards;
+
             }
 
             if ($this->isCertificate($awardType)){
@@ -219,7 +245,8 @@ class AwardService
 
             if ($this->isAccrual($awardType)){
 
-                $result = $this->calculateSalaries();
+                $result['awards'] = $this->getAccrual($user, $awardType->id);
+
             }
 
 
@@ -230,9 +257,127 @@ class AwardService
         }
     }
 
-    public function calculateSalaries(){
+    /**
+     * @param $user
+     * @return array
+     */
+    public function getAccrual($user, $award_type_id): array
+    {
+        $result = [];
+        $groups = $user->groups->pluck('id')->toArray();
 
+        $today = Carbon::now();
+        $date = Carbon::createFromDate($today->year, $today->month, 1);
+
+        $awards = Award::query()
+            ->where('award_type_id', $award_type_id)
+            ->orWhere('targetable_id',$user->position_id)
+            ->orWhereIn('targetable_id', $groups)
+            ->get()
+            ->pluck('targetable_type','targetable_id');
+
+
+
+        foreach ($awards as $targetable_id => $targetable_type){
+            $user_ids = (new UserService)->getEmployees($targetable_id, $date->format('Y-m-d'));
+
+
+            if ($targetable_type == self::GROUP){
+                $result['topByGroup'] = $this->getTopSalaryEmployees($user_ids, $date, $targetable_id);
+            }
+
+            if ($targetable_type == self::POSITION){
+                $result['topByPosition'] = $this->getTopSalaryEmployees($user_ids, $date, $targetable_id);
+
+            }
+        }
+
+        error_log(json_encode($result));
+        return $result;
     }
+
+    public function getTopSalaryEmployees($user_ids, $date,$group_id){
+        $result = [];
+        $month = Carbon::parse($date)->startOfMonth();
+        $group = ProfileGroup::find($group_id);
+
+        $users = Salary::getUsersData($month, $user_ids);
+
+        $internship_pay_rate = $group->paid_internship == 1 ? 0.5 : 0;
+        foreach ($users as $user){
+            $earningSum = 0;
+            $bonusesSum = 0;
+
+            $user_applied_at = $user->applied_at();
+            $trainee_days = $user->daytypes->whereIn('type', [5,6,7]);
+            $work_shift = $user->working_time_id == 1 ? 8 : 9;
+
+            $tts_before_apply = $user->timetracking
+                ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
+            $tts = $user->timetracking
+                ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
+
+            for ($i = 1; $i <= $month->daysInMonth; $i++) {
+                $d = (strlen ($i) == 1) ?  '0' . $i  :  '' . $i;
+                $daySalary = $user->salaries->where('day', $d)->first();
+
+                // accrual
+                $salary = $daySalary->amount ?? 70000;
+                $working_hours = $user->workingTime->time ?? 9;
+                $ignore = $user->working_day_id == 1 ? [6,0] : [0];
+                $workdays = workdays($month->year, $month->month, $ignore);
+
+                $hourly_pay = $salary / $workdays / $working_hours;
+
+                $time_day = $tts->where('day', $i);
+                $time_day_before_apply = $tts_before_apply->where('day', $i);
+                $time_day_trainee = $trainee_days->where('day', $i);
+
+
+                if($time_day_trainee->count() > 0) { // день отмечен как стажировка
+                    $earningSum += round( $hourly_pay * $internship_pay_rate * $work_shift);
+
+                }
+                if($time_day->count() > 0) { // отработанное врея есть
+                    $total_hours = $time_day->sum('total_hours');
+                    $earningSum += round($total_hours / 60 * $hourly_pay);
+
+                }
+                if($time_day_before_apply->count() > 0) {// отработанное врея есть до принятия на работу
+                    $total_hours = $time_day_before_apply->sum('total_hours');
+                    $earningSum += round($total_hours / 60 * $hourly_pay);
+                }
+
+
+
+                //bonuses
+                $bonusesSum += $daySalary?->bonus;
+
+                //awards
+                $award_date = Carbon::createFromFormat('m-Y', $month->month . '-' . $month->year);
+                $bonusesSum += ObtainedBonus::onDay($user->id, $award_date->day($i)->format('Y-m-d'));
+
+                //test bonuses
+                $bonusesSum += $user->testBonuses->sum('amount');
+
+            }
+            $result[] = [
+             'total' => $earningSum + $bonusesSum,
+             'name' => $user->name,
+             'last_name' => $user->last_name,
+             'email' => $user->email,
+             'id' => $user->id,
+            ];
+        }
+
+        usort($result, function($a, $b) {
+            return $a['total'] > $b['total'];
+        });
+
+        return array_slice( $result , 0, 3);
+    }
+
+
 
     /**
      * @param RewardRequest $request
@@ -264,8 +409,8 @@ class AwardService
         try {
             $awardId = $request->input('award_id');
             $userId  = $request->input('user_id');
-            $added   = $awardRepository->attachUser($awardId, $userId);
 
+            $added   = $awardRepository->attachUser($awardId, $userId);
             return response()->success($added);
         }catch (Throwable $exception) {
             throw new Exception($exception->getMessage());
@@ -302,6 +447,12 @@ class AwardService
      */
     private function saveAwardFile($request): array
     {
+        if (!$request->hasFile('file')){
+           return [
+                'relative'  => '',
+                'temp'      => ''
+            ];
+        }
         $extension  = $request->file('file')->extension();
         $awardFileName = uniqid() . '_' . md5(time()) . '.' . $extension;
 
