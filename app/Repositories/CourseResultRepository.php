@@ -34,10 +34,31 @@ class CourseResultRepository extends CoreRepository
         ]);
     }
 
+    /**
+     * Удаляем заработанные бонусы.
+     *
+     * @param int $userId
+     * @param int $courseId
+     * @param int $points
+     * @param int $progress
+     * @return void
+     */
     public function removeItemPoints(
-        int $itemId
+        int $userId,
+        int $courseId,
+        int $points,
+        int $progress
     )
     {
-        //
+        $result = $this->model()->where([
+            ['course_id', $courseId],
+            ['user_id', $userId]
+
+        ])->first();
+
+        $result->points   -= $points;
+        $result->progress -= $progress;
+
+        $result->save();
     }
 }
