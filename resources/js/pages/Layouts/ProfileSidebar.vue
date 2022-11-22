@@ -335,6 +335,7 @@ export default {
     width: 100%;
     max-width: 30rem;
 }
+
 .logo-img{
     display: block;
     width: 100%;
@@ -346,6 +347,9 @@ export default {
     object-fit: cover;
 }
 
+.hidden-file-wrapper{
+    position: relative;
+}
 .hidden-file-input{
     display: none;
 }

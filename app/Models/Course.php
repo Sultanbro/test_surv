@@ -3,14 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CourseItem;
-use App\Models\CourseModel;
-use App\Models\Videos\VideoPlaylist;
-use App\Models\Books\Book;
-use App\Models\Videos\Video;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
@@ -32,13 +25,10 @@ class Course extends Model
         'stages' // all stages in course
     ];
 
-    /**
-     * У курса есть одна награда
-     * @return BelongsTo
-     */
+
     public function award(): BelongsTo
     {
-        return $this->belongsTo(Award::class, 'award_id');
+        return $this->belongsTo(Award::class);
     }
 
     public function items()

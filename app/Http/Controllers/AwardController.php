@@ -3,17 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AwardsByTypeRequest;
+use App\Http\Requests\CourseAwardRequest;
 use App\Http\Requests\RewardRequest;
-use App\Models\Award;
 use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
+use App\Models\Award;
 use App\Repositories\AwardRepository;
 use App\Service\Award\AwardService;
-use App\User;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class AwardController extends Controller
 {
@@ -50,6 +48,17 @@ class AwardController extends Controller
     {
         $authUser = Auth::user() ?? User::find(13865);
         $response = $this->awardService->myAwards($authUser);
+
+        return \response()->success($response);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function courseAward(CourseAwardRequest $request)
+    {
+        $response = $this->awardService->courseAward($request);
+
 
         return \response()->success($response);
     }

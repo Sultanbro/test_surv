@@ -33,9 +33,11 @@ class StoreAwardRequest extends FormRequest
             'course_ids'      => 'array',
             'name'      => 'required|string',
             'description'      => 'required|string',
-            'hide'      => 'required|boolean',
+            'hide'      => 'boolean',
             'styles'      => 'string',
-            'file'          => ['required', File::types(['jpg', 'png', 'pdf'])->max(2048)]
+            'targetable_type'      => 'string',
+            'targetable_id'      => 'integer',
+            'file'          => [ File::types(['jpg', 'png', 'pdf'])->max(2048)]
         ];
     }
     protected function failedValidation(Validator $validator)
