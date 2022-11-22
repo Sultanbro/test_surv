@@ -38,11 +38,12 @@ window.Pusher = Pusher;
 
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: 12345,
-    wsHost: 'bp.jobtron.org',
-   // wsHost: 'bp.jobtron.org',
-    wsPort: 6001,
-    wssPort: 6001,
+    authEndpoint: '/messenger/api/chat/auth',
+    key: process.env.MIX_PUSHER_APP_KEY ?? 12345,
+    wsHost: process.env.MIX_PUSHER_HOST ?? window.location.hostname,
+    wssHost: process.env.MIX_PUSHER_HOST ?? window.location.hostname,
+    wsPort: process.env.MIX_PUSHER_PORT ?? 6001,
+    wssPort: process.env.MIX_PUSHER_PORT ?? 6001,
     forceTLS: true,
     enabledTransports: ['ws', 'wss'],
 });
