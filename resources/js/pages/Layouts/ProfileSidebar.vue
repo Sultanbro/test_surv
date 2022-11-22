@@ -1,7 +1,8 @@
 <template>
     <div class="header__profile _anim _anim-no-hide custom-scroll-y" :class="{
         'v-loading': loading,
-        hidden: hide
+        hidden: hide,
+        '_active': inViewport
     }">
         <div class="profile__content">
             <div class="profile__col">
@@ -147,7 +148,8 @@ export default {
             },
             loading: false,
             hide: false,
-            userInfo: {}
+            userInfo: {},
+            inViewport: false
         };
     },
     mounted(){
@@ -158,6 +160,10 @@ export default {
             this.hide = true
             document.body.classList.add('no-profile')
         }
+        const scrollObserver = new IntersectionObserver(() => {
+            this.inViewport = true
+        })
+        scrollObserver.observe(this.$el)
     },
     created(){
         this.fetchUserInfo()
