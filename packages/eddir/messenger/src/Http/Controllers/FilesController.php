@@ -66,7 +66,9 @@ class FilesController {
                     $fileModel->name .= '.' . $file->getClientOriginalExtension();
                 }
 
-                $fileModel->file_path = $file->storeAs( 'messenger', $fileModel->name );
+               // $fileModel->file_path = $file->storeAs( 'messenger', $fileModel->name );
+                
+                $fileModel->file_path = Storage::disk('s3')->putFileAs( 'messenger', $file, $fileModel->name );
 
                 // if file is image, create thumbnail
                 if ( in_array( $file->getMimeType(), [ 'image/jpeg', 'image/png', 'image/gif' ] ) ) {
@@ -76,7 +78,7 @@ class FilesController {
 
                     // upload thumbnail to storage
                     $fileModel->thumbnail_path = 'messenger/thumbs/thumb_' . $fileModel->name;
-                    Storage::put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents( $tmpFile ) );
+                    Storage::disk('s3')->put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents( $tmpFile ) );
 
                     unlink( $tmpFile );
                 }
