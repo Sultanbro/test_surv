@@ -79,7 +79,7 @@ class SetAbsent extends Command
                     continue;
                 }
 
-                $traineeMarked = in_array($user->id, $marked_users);
+                $traineeMarked = in_array($user->id, $this->marked_users);
                 $traineeNotMarked = !$traineeMarked;
 
                 if($traineeNotMarked) {
