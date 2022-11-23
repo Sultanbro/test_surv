@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Start day btn -->
-    <a href="javascript:void(0)"
+    <a href="#"
       class="profile__button"
       @click="startDay"
       :class="{
@@ -35,23 +35,164 @@
         <p v-if="workdayStatus === 'stopped'" class="profile__button-text">Начать рабочий день</p>
         <p v-if="workdayStatus === 'started'" class="profile__button-text">Завершить рабочий день</p>
       </template>
+
     </a>
+
+    <!-- Corp book page when day has started -->
+    <b-modal v-model="showCorpBookPage" title="Н" size="xl" class="modalle" hide-footer hide-header no-close-on-backdrop>
+      <div class="corpbook" v-if="corp_book_page !== undefined && corp_book_page !== null">
+        <div class="inner">
+            <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей корпоративной книги</h5>
+            <h3 class="text-center">{{ corp_book_page.title }}</h3>
+
+            <div v-html="corp_book_page.text"></div>
+
+            <button href="#profitInfo" class="button-blue m-auto mt-5" id="readCorpBook" @click="hideBook" disabled>
+              <span class="text">Я прочитал</span>
+              <span class="timer"></span>
+            </button>
+        </div>
+      </div>
+    </b-modal>
+
   </div>
 </template>
 
 <script>
 export default {
+
   name: 'StartDayBtn',
-  props: {
-    status: String,
-    workdayStatus: String
-  },
+  props: {},
   data() {
     return {
-      data: {}
+      data: {},
+      status: 'init',
+      workdayStatus: 'stopped',
+
+      // corp book
+      corp_book_page: null,
+      showCorpBookPage: false,
+      isLoading: false
     }
   },
-  methods: {}
+
+  created() {
+    this.workStatus()
+  },
+
+  methods: {
+    /**
+     * Узнать текущий статус
+     * Начат или завершен рабочий день
+     */
+    workStatus() {
+      this.status = 'loading'
+
+      axios.post('/timetracking/status', {})
+        .then((response) => {
+
+            this.workdayStatus = response.data.status
+
+            if(this.workdayStatus === 'started' && response.data.corp_book.has) {
+              this.corp_book_page = response.data.corp_book.page
+              this.showCorpBookPage = this.corp_book_page !== null
+              this.bookCounter()
+            }
+
+            this.$emit('currentBalance', response.data.balance)
+
+            this.status = 'init'
+        })
+        .catch((error) => {
+            this.status = 'error'
+            console.log('StartDayBtn:', error)
+        })
+    },
+
+    /**
+     * private
+     *
+     * Получить параметры для начатия и завершения дня
+     */
+    getParams() {
+      let params = {start: moment().format('HH:mm:ss')};
+      if(this.workdayStatus === 'started') params = {stop: moment().format('HH:mm:ss')};
+
+      return params;
+    },
+
+    /**
+     * Начать или завершить день
+     */
+    startDay() {
+      if(this.status === 'loading') return
+
+      this.status = 'loading'
+
+      axios.post('/timetracking/starttracking', this.getParams())
+        .then((response) => {
+
+          this.status = 'init'
+
+          if (response.data.error) {
+            this.$toast.info(response.data.error.message);
+            return;
+          }
+
+          if(response.data.status === 'started') {
+
+            this.workdayStatus = 'started';
+
+            if(response.data.corp_book.has) {
+              this.corp_book_page = response.data.corp_book.page
+              this.showCorpBookPage = this.corp_book_page != null;
+              this.bookCounter();
+            }
+            this.$toast.info('День начат');
+          }
+
+          if(response.data.status === 'stopped' || response.data.status === '') { // stopped
+            this.status = 'stopped';
+            this.$toast.info('День завершен');
+          }
+
+
+
+        })
+        .catch((error) => {
+          this.status = 'error'
+          console.log(error);
+        });
+    },
+
+    /**
+     *  Time to read book before "I have read" btn became active
+     */
+    bookCounter() {
+        let seconds = 60;
+        let interv = setInterval(() => {
+            seconds--;
+            VJQuery('#readCorpBook .timer').text(seconds);
+            if(seconds == 0) {
+              VJQuery('#readCorpBook .timer').text('');
+              clearInterval(interv);
+            }
+        }, 1000);
+
+        setTimeout(() => {
+          VJQuery('#readCorpBook').prop('disabled', false);
+        }, seconds * 1000);
+    },
+
+    /**
+     * Set read corp book page
+     */
+    hideBook() {
+      axios.post('/corp_book/set-read/', {})
+        .then((res) => this.showCorpBookPage = false)
+        .catch((error) => console.log(error))
+    },
+  }
 }
 </script>
 
@@ -84,7 +225,12 @@ export default {
   }
 }
 .profile__button_loading{
+  background-color: #555;
   cursor: default;
+
+  .profile__button-text::before {
+    display: none;
+  }
 }
 
 .profile__button-text{
