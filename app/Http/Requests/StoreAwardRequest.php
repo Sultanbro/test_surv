@@ -37,7 +37,7 @@ class StoreAwardRequest extends FormRequest
             'styles'      => 'string',
             'targetable_type'      => 'string',
             'targetable_id'      => 'integer',
-            'file'          => [ File::types(['jpg', 'png', 'pdf'])->max(2048)]
+            'file'          => 'file|mimes:jpg,png,pdf|max:2048'
         ];
     }
     protected function failedValidation(Validator $validator)

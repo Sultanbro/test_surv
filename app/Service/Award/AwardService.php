@@ -175,7 +175,7 @@ class AwardService
         try {
             $awards = [];
             $access = $this->showOtherAwards($user);
-            $awards['awards']['my']   = $this->awardRepository->relationAwardUser($user,'!=' );
+            $awards['awards']['my']   = $this->awardRepository->relationAwardUser($user );
             $awards['types'] = $this->awardTypeRepository->allTypes();
 
             if ($access) {
@@ -290,7 +290,7 @@ class AwardService
                 $user_ids = collect( (new UserService)
                     ->getEmployees($targetable_id, $date->format('Y-m-d')))
                     ->pluck('id')->toArray();
-                $result['topByGroup']['group'][$targetable_id] = $this->getTopSalaryEmployees($user_ids, $date, $targetable_id);
+                $result['group'][$targetable_id] = $this->getTopSalaryEmployees($user_ids, $date, $targetable_id);
             }
 
             if ($targetable_type == self::POSITION){
@@ -298,7 +298,7 @@ class AwardService
                     ->findOrFail($targetable_id)
                     ->users
                     ->pluck('id');
-                $result['topByPosition']['position'][$targetable_id] = $this->getTopSalaryEmployees($user_ids, $date, $groups[0]);
+                $result['position'][$targetable_id] = $this->getTopSalaryEmployees($user_ids, $date, $groups[0]);
 
             }
         }
