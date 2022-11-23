@@ -3,8 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 
 class UpdateAwardRequest extends FormRequest
 {
@@ -28,7 +26,7 @@ class UpdateAwardRequest extends FormRequest
         return [
             'award_type_id'  => 'integer',
             'course_id'      => 'integer',
-            'file'           => File::types(['jpg', 'png', 'pdf'])->max(2048)
+            'file'           =>'file|mimes:jpg,png,pdf|max:2048'
         ];
     }
 }
