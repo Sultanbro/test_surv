@@ -148,7 +148,7 @@ class BonusService
      */
     public function delete(int $id) : void
     {
-        Bonus::findOrFail($id)->delete();
+        Bonus::query()->findOrFail($id)->delete();
     }
 
     private function getData(array $data)
