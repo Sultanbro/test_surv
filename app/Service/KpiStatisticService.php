@@ -1344,7 +1344,7 @@ class KpiStatisticService
             ->pluck('activity_id')
             ->unique()
             ->toArray();
-
+  
 
         // subquery
 		$sum_and_counts = \DB::table('user_stats')
@@ -1358,8 +1358,11 @@ class KpiStatisticService
 			->whereYear('date', $date->year)
             ->where('value', '>', 0)
             ->whereIn('activity_id', $activities)
-			->groupBy('user_id', 'activity_id', 'date');
 
+			->groupBy('user_id', 'activity_id');
+
+
+    
         // query
 		$users = User::withTrashed()
 			->select([
@@ -1384,9 +1387,10 @@ class KpiStatisticService
 			->whereIn('users.id', $user_ids)
 			->orderBy('last_name')
 			->get();
-
-        // group collection
-		$users = $users->groupBy('id')
+        
+            // group collection
+            $users = $users->groupBy('id')
+ 
 			->map(function($items) {
 				return [
 					'id' => $items[0]->id,
@@ -1402,6 +1406,7 @@ class KpiStatisticService
 				];
 			});
 
+                
 		return $users->values(); //array_values($users->toArray());
     }
 
