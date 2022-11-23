@@ -26,10 +26,17 @@ class AwardRepository extends CoreRepository
      * @param $operator
      * @return mixed
      */
-    public function relationAwardUser($user, $operator = '=')
+    public function relationAwardUser($user, $type, $operator = '=')
     {
-        return $this->model()->join('award_user as au', 'au.award_id', '=', 'awards.id')
-            ->where('au.user_id', $operator, $user->id)->get()->toArray();
+        $query = $this->model()
+            ->join('award_user as au', 'au.award_id', '=', 'awards.id')
+            ->join('award_types as at', 'at.id', '=', 'awards.award_type_id')
+            ->where('au.user_id', $operator, $user->id);
+
+            if ($type){
+                $query->where('at.id', $type->id);
+            }
+           return  $query->get()->toArray();
     }
 
     /**
