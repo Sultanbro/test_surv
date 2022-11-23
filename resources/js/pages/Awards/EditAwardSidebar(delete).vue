@@ -84,7 +84,9 @@
                         v-if="form.award_type_id === 3"
                         class="w-50 mb-4"
                         :key="1"
-                        :select_all_btn="true"/>
+                        @choose="superselectChoice"
+                        :single="true"
+                        :select_all_btn="false"/>
             </BFormGroup>
 
             <BFormGroup v-if="form.award_type_id === 2">
@@ -139,7 +141,9 @@
                 dropDownText: 'Выберите тип награды',
                 userName: 'Тимур Хайруллин',
                 selectFileType: true,
-                file: null,
+                file: {},
+                targetable_id: null,
+                targetable_type: null,
                 form: {
                     award_type_id: null,
                     course_ids: [],
@@ -153,6 +157,16 @@
             };
         },
         methods: {
+            superselectChoice(val){
+                console.log(val);
+                this.targetable_id = val.id;
+                if(val.type === 2){
+                    this.targetable_type = 'App/Group';
+                }
+                if(val.type === 3){
+                    this.targetable_type = 'App/Position';
+                }
+            },
             async onSubmit() {
                 if(this.file !== null){
                   if (this.form.award_type_id) {
@@ -168,6 +182,10 @@
                           this.form.hide = 0;
                       }
                       const formData = new FormData();
+                      if(this.form.award_type_id === 3){
+                          formData.append('targetable_type', this.targetable_type);
+                          formData.append('targetable_id', this.targetable_id);
+                      }
                       formData.append('award_type_id', this.form.award_type_id);
                       for(let j = 0; j < this.form.course_ids.length; j++){
                           formData.append('course_ids[]', this.form.course_ids[j]);
@@ -203,7 +221,7 @@
                           this.axios
                               .post("/awards/store", formData, {
                                   headers: {
-                                      'Content-Type': 'multipart/form-data"'
+                                      'Content-Type': 'multipart/form-data'
                                   },
                               })
                               .then(response =>  {
@@ -280,6 +298,8 @@
                 this.form.path = this.item.path;
                 this.form.format = this.item.format;
                 this.form.styles = this.item.styles;
+                this.form.targetable_type = this.item.targetable_type;
+                this.form.targetable_id = this.item.targetable_id;
                 if(this.item.award_type_id === 1){
                     this.dropDownText = 'Загрузка картинки';
                 }
