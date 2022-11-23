@@ -5,6 +5,7 @@ namespace App;
 use App\Classes\Helpers\Phone;
 use App\External\Bitrix\Bitrix;
 use App\Http\Controllers\IntellectController as IC;
+use App\Models\Admin\ObtainedBonus;
 use App\Models\Award;
 use App\Models\AwardUser;
 use App\Models\CourseResult;
@@ -224,6 +225,74 @@ class User extends Authenticatable implements Authorizable
         $diff = ($now - $date) / 86400;
         return (int)$diff;
 
+    }
+    /**
+     *  Посчитать фот на одного пользователя
+     * */
+    public function calculateFot($internship_pay_rate, $date){
+        $earningSum = 0;
+        $bonusesSum = 0;
+        $month = $date->startOfMonth();
+
+        $user_applied_at = $this->applied_at();
+        $trainee_days = $this->daytypes->whereIn('type', [5,6,7]);
+        $work_shift = $this->working_time_id == 1 ? 8 : 9;
+
+        $tts_before_apply = $this->timetracking
+            ->where('time', '<', Carbon::parse($user_applied_at)->timestamp);
+        $tts = $this->timetracking
+            ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp);
+
+        for ($i = 1; $i <= $month->daysInMonth; $i++) {
+            $d = (strlen ($i) == 1) ?  '0' . $i  :  '' . $i;
+            $daySalary = $this->salaries->where('day', $d)->first();
+
+            // accrual
+            $salary = $daySalary->amount ?? 70000;
+            $working_hours = $this->workingTime->time ?? 9;
+            $ignore = $this->working_day_id == 1 ? [6,0] : [0];
+            $workdays = workdays($month->year, $month->month, $ignore);
+
+            $hourly_pay = $salary / $workdays / $working_hours;
+
+            $time_day = $tts->where('day', $i);
+            $time_day_before_apply = $tts_before_apply->where('day', $i);
+            $time_day_trainee = $trainee_days->where('day', $i);
+
+
+            if($time_day_trainee->count() > 0) { // день отмечен как стажировка
+                $earningSum += round( $hourly_pay * $internship_pay_rate * $work_shift);
+
+            }
+            if($time_day->count() > 0) { // отработанное врея есть
+                $total_hours = $time_day->sum('total_hours');
+                $earningSum += round($total_hours / 60 * $hourly_pay);
+
+            }
+            if($time_day_before_apply->count() > 0) {// отработанное врея есть до принятия на работу
+                $total_hours = $time_day_before_apply->sum('total_hours');
+                $earningSum += round($total_hours / 60 * $hourly_pay);
+            }
+
+
+
+            //bonuses
+            $bonusesSum += $daySalary?->bonus;
+
+            //awards
+            $award_date = Carbon::createFromFormat('m-Y', $month->month . '-' . $month->year);
+            $bonusesSum += ObtainedBonus::onDay($this->id, $award_date->day($i)->format('Y-m-d'));
+
+            //test bonuses
+            $bonusesSum += $this->testBonuses->sum('amount');
+        }
+        $kpi = SavedKpi::where('user_id', $this->id)
+            ->where('date', $date->format('Y-m-d'))
+            ->first();
+
+        $kpiTotal = $kpi->total ?? 0;
+
+        return ($earningSum + $bonusesSum + $kpiTotal);
     }
 
     /**
