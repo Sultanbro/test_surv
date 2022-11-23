@@ -5,8 +5,6 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\ValidationException;
 
 class StoreAwardRequest extends FormRequest
@@ -37,7 +35,7 @@ class StoreAwardRequest extends FormRequest
             'styles'      => 'string',
             'targetable_type'      => 'string',
             'targetable_id'      => 'integer',
-            'file'          => [ File::types(['jpg', 'png', 'pdf'])->max(2048)]
+            'file'          => 'file|mimes:jpg,png,pdf|max:2048'
         ];
     }
     protected function failedValidation(Validator $validator)
