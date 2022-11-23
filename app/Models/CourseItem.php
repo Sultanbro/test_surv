@@ -8,6 +8,7 @@ use App\Models\Books\Book;
 use App\Models\Videos\Video;
 use App\KnowBase;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CourseItem extends Model
@@ -33,6 +34,13 @@ class CourseItem extends Model
     CONST MODEL_KB = 'kb';
     CONST MODEL_BOOK = 'book';
 
+    /**
+     * @return HasMany
+     */
+    public function testResults(): HasMany
+    {
+        return $this->hasMany(TestResult::class);
+    }
 
     public function course(): BelongsTo
     {

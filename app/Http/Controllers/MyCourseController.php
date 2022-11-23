@@ -71,6 +71,7 @@ class MyCourseController extends Controller
     public function pass(Request $request)
     {
         $user_id = auth()->id();
+        $courseItemId = $request->input('course_item_id');
 
         /**
          * save Course item model
@@ -111,7 +112,6 @@ class MyCourseController extends Controller
                     $tr->answer = $q['result']['answer'];
                     $tr->save();
                 } else {
-
                     // $tq = TestQuestion::find($q['id']);
                     if($q['success']) $sum_bonus += $q['points'];
 
@@ -123,10 +123,9 @@ class MyCourseController extends Controller
                         'course_item_model_id' => $q['result']['course_item_model_id'],
                     ]);
                 }
-
             }
         }
-
+        
         /**
          * save bonuses
          */
@@ -164,6 +163,7 @@ class MyCourseController extends Controller
                 'user_id' => $user_id,
                 'amount' => $sum_bonus,
                 'comment' => $item ? $type . $item->title : 'За обучение',
+                'course_item_id' => $courseItemId
             ]);
         }
 
