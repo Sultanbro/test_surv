@@ -537,7 +537,7 @@ Route::middleware([
         Route::post('user',[BonusController::class,'getUserBonuses'])->name('getUserBonuses');
         Route::post('save',[BonusController::class,'save'])->name('save');
         Route::put('update',[BonusController::class,'update'])->name('update');
-        Route::delete('delete',[BonusController::class,'delete'])->name('delete');
+        Route::delete('delete/{id}',[BonusController::class,'delete'])->name('delete');
     });
 
     /**

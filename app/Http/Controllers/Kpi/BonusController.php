@@ -49,7 +49,20 @@ class BonusController extends Controller
      */
     public function save(Request $request): JsonResponse
     {
-        $response = $this->bonusService->save($request);
+        $data = $request->only([
+            'title',
+            'sum',
+            'group_id',
+            'activity_id',
+            'unit',
+            'quantity',
+            'daypart',
+            'text',
+            'targetable_id',
+            'targetable_type'
+        ]);
+
+        $response = $this->bonusService->save($data);
 
         return response()->json($response);
     }
@@ -67,9 +80,9 @@ class BonusController extends Controller
     /**
      * Удаление
      */
-    public function delete(Request $request): JsonResponse
+    public function delete(int $id): JsonResponse
     {
-        $response = $this->bonusService->delete($request);
+        $response = $this->bonusService->delete($id);
 
         return response()->json($response);
     }
