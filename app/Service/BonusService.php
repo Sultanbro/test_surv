@@ -109,12 +109,10 @@ class BonusService
     public function save(array $data): array
     {
         try {
-            $data['created_by'] = auth()->id() ?? 5;
-            $data['updated_by'] = auth()->id() ?? 5;
-            $data['targetable_type'] = $this->getModel($data['targetable_type']);
+            $bonusData = $this->getBonusData($data);
 
             return [
-                'bonus' => $this->repository->saveNewBonus($data)
+                'bonus' => $this->repository->saveNewBonus($bonusData)
             ];
         } catch (Exception $exception) {
             throw new Exception($exception);
@@ -157,5 +155,23 @@ class BonusService
         {
             return $item;
         }
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    private function getBonusData(array $data): array
+    {
+        $data['title']       = $data['title'][0];
+        $data['sum']         = $data['sum'][0];
+        $data['activity_id'] = $data['activity_id'][0];
+        $data['unit']        = $data['unit'][0];
+        $data['quantity']    = $data['quantity'][0];
+        $data['daypart']     = $data['daypart'][0];
+        $data['text']        = $data['text'][0];
+        $data['targetable_type'] = $this->getModel($data['targetable_type']);
+
+        return $data;
     }
 }
