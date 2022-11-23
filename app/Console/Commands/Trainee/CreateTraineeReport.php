@@ -1,14 +1,10 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Trainee;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use App\Trainee;
 use App\ProfileGroup;
-use App\User;
 use App\DayType;
-use App\UserDescription;
 use Carbon\Carbon;
 use App\Models\Bitrix\Lead;
 use App\Models\Analytics\TraineeReport;
