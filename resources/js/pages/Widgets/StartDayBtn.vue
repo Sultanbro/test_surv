@@ -9,7 +9,7 @@
         'profile__button_started': workdayStatus === 'started',
         'profile__button_loading': status === 'loading'
       }"
-    > 
+    >
       <svg :class="{'visible': status === 'loading'}" class="profile__loader" version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
         <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
           s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
@@ -26,7 +26,7 @@
             repeatCount="indefinite"/>
         </path>
       </svg>
-      
+
       <template v-if="status === 'error'">
         <p class="profile__button-text">Ошибка сети</p>
       </template>
@@ -35,7 +35,7 @@
         <p v-if="workdayStatus === 'stopped'" class="profile__button-text">Начать рабочий день</p>
         <p v-if="workdayStatus === 'started'" class="profile__button-text">Завершить рабочий день</p>
       </template>
-      
+
     </a>
 
     <!-- Corp book page when day has started -->
@@ -56,7 +56,6 @@
     </b-modal>
 
   </div>
-
 </template>
 
 <script>
@@ -88,7 +87,7 @@ export default {
      */
     workStatus() {
       this.status = 'loading'
-      
+
       axios.post('/timetracking/status', {})
         .then((response) => {
 
@@ -157,7 +156,7 @@ export default {
             this.$toast.info('День завершен');
           }
 
-          
+
 
         })
         .catch((error) => {
@@ -199,6 +198,7 @@ export default {
 
 <style lang="scss" scoped>
 .profile__button{
+  display: none;
   background: #8FAF00;
   color:#fff;
   text-align: center;
@@ -207,10 +207,11 @@ export default {
   max-width: 28rem;
   border-radius:1rem;
   margin-bottom: 1.5rem;
-  display: flex;
   align-items:center;
   text-transform: uppercase;
   transition: background .3s 0s;
+  opacity:0;
+  visibility: hidden;
 
   &:hover{
     background: #88a402;
@@ -225,7 +226,7 @@ export default {
 }
 .profile__button_loading{
   background-color: #555;
-  cursor: default; 
+  cursor: default;
 
   .profile__button-text::before {
     display: none;
@@ -262,6 +263,14 @@ export default {
 }
 .corpbook {
   font-size: 14px;
+}
+
+@media(min-width: 900px){
+  .profile__button{
+    display: flex;
+    opacity:1;
+    visibility: visible;
+  }
 }
 
 @media(min-width:1360px){
