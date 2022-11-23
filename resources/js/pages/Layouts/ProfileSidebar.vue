@@ -29,7 +29,9 @@
                     </template>
                 </div>
                 <start-day-btn
-                    v-if="userInfo.user && userInfo.user.user_type === 'remote'"
+                    v-if="showButton"
+                    :status="buttonStatus"
+                    :workdayStatus="workdayStatus"
                     @currentBalance="currentBalance"
                 ></start-day-btn>
                 <div class="profile__balance">
@@ -120,6 +122,25 @@
                 <img src="/images/dist/logo-download.svg" alt="more download">
             </a> -->
         </div>
+
+
+
+        <!-- Corp book page when day has started -->
+        <b-modal v-model="showCorpBookPage" title="Н" size="xl" class="modalle" hide-footer hide-header no-close-on-backdrop>
+            <div class="corpbook" v-if="corp_book_page !== undefined && corp_book_page !== null">
+                <div class="inner">
+                    <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей корпоративной книги</h5>
+                    <h3 class="text-center">{{ corp_book_page.title }}</h3>
+
+                    <div v-html="corp_book_page.text"></div>
+
+                    <button href="#profitInfo" class="button-blue m-auto mt-5" id="readCorpBook" @click="hideBook" disabled>
+                        <span class="text">Я прочитал</span>
+                        <span class="timer"></span>
+                    </button>
+                </div>
+            </div>
+        </b-modal>
     </div>
 </template>
 
@@ -132,6 +153,10 @@ export default {
     computed: {
         canChangeLogo(){
             return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
+        },
+        showButton(){
+            if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
+            return this.workdayStatus === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
         }
     },
     data: function () {
@@ -143,13 +168,18 @@ export default {
             showPreview: false,
             imagePreview: '',
             logo:{
-              image: '',
-              canvas: null
+                image: '',
+                canvas: null
             },
             loading: false,
             hide: false,
             userInfo: {},
-            inViewport: false
+            inViewport: false,
+            buttonStatus: 'init',
+            workdayStatus: 'stopped',
+            // corp book
+            corp_book_page: null,
+            showCorpBookPage: false,
         };
     },
     mounted(){
@@ -167,6 +197,7 @@ export default {
     },
     created(){
         this.fetchUserInfo()
+        this.fetchTTStatus()
     },
     methods: {
         getLogo(){
@@ -275,7 +306,109 @@ export default {
                 this.userInfo = response.data
                 this.loading = false
             }).catch((e) => console.log(e))
-        }
+        },
+
+        /**
+         * Узнать текущий статус
+         * Начат или завершен рабочий день
+         */
+        fetchTTStatus(){
+            this.buttonStatus = 'loading'
+
+            axios.post('/timetracking/status', {}).then((response) => {
+                this.workdayStatus = response.data.status
+
+                if(this.workdayStatus === 'started' && response.data.corp_book.has) {
+                    this.corp_book_page = response.data.corp_book.page
+                    this.showCorpBookPage = this.corp_book_page !== null
+                    this.bookCounter()
+                }
+
+                this.$emit('currentBalance', response.data.balance)
+
+                this.buttonStatus = 'init'
+            })
+            .catch((error) => {
+                this.buttonStatus = 'error'
+                console.log('StartDayBtn:', error)
+            })
+        },
+
+        /**
+         * private
+         *
+         * Получить параметры для начатия и завершения дня
+         */
+        getParams() {
+            let params = {start: moment().format('HH:mm:ss')};
+            if(this.workdayStatus === 'started') params = {stop: moment().format('HH:mm:ss')};
+            return params;
+        },
+        /**
+         * Начать или завершить день
+         */
+        startDay() {
+            if(this.buttonStatus === 'loading') return
+
+            this.buttonStatus = 'loading'
+
+            axios.post('/timetracking/starttracking', this.getParams()).then((response) => {
+
+                this.buttonStatus = 'init'
+
+                if (response.data.error) {
+                    this.$toast.info(response.data.error.message);
+                    return;
+                }
+
+                if(response.data.status === 'started') {
+                    this.workdayStatus = 'started';
+                    if(response.data.corp_book.has) {
+                        this.corp_book_page = response.data.corp_book.page
+                        this.showCorpBookPage = this.corp_book_page != null;
+                        this.bookCounter();
+                    }
+                    this.$toast.info('День начат');
+                }
+
+                if(response.data.status === 'stopped' || response.data.status === '') { // stopped
+                    this.workdayStatus = 'stopped';
+                    this.$toast.info('День завершен');
+                }
+            })
+            .catch((error) => {
+                this.buttonStatus = 'error'
+                console.log(error);
+            });
+        },
+
+        /**
+         *  Time to read book before "I have read" btn became active
+         */
+        bookCounter() {
+            let seconds = 60;
+            let interv = setInterval(() => {
+                seconds--;
+                VJQuery('#readCorpBook .timer').text(seconds);
+                if(seconds == 0) {
+                    VJQuery('#readCorpBook .timer').text('');
+                    clearInterval(interv);
+                }
+            }, 1000);
+
+            setTimeout(() => {
+                VJQuery('#readCorpBook').prop('disabled', false);
+            }, seconds * 1000);
+        },
+
+        /**
+         * Set read corp book page
+         */
+        hideBook() {
+            axios.post('/corp_book/set-read/', {})
+                .then((res) => this.showCorpBookPage = false)
+                .catch((error) => console.log(error))
+        },
     }
 };
 </script>
@@ -307,7 +440,7 @@ export default {
         justify-content: center;
     }
 }
-.profile__content{}
+// .profile__content{}
 .profile__logo{
     // display: flex;
     // margin: 0 auto 2rem;
@@ -526,7 +659,7 @@ export default {
         transform:translateY(10px);
     }
 }
-@media(max-width:1909px){
-  .header__profile{}
-}
+// @media(max-width:1909px){
+//   .header__profile{}
+// }
 </style>

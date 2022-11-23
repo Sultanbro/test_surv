@@ -13,8 +13,12 @@ const mix = require('laravel-mix');
 
 
 mix.js('resources/js/app.js', 'public/js').vue()
-    .sass('resources/sass/admin.scss', 'public/css/admin/app.css');
-    //.webpackConfig(require('./webpack.config'));
+    .sass('resources/sass/admin.scss', 'public/css/admin/app.css')
+    .options({
+        terser: {
+          extractComments: false,
+        }
+    });
 
 mix.webpackConfig({
     resolve: {
