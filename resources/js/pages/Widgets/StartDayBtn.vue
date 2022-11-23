@@ -57,6 +57,7 @@ export default {
 
 <style lang="scss" scoped>
 .profile__button{
+  display: none;
   background: #8FAF00;
   color:#fff;
   text-align: center;
@@ -65,10 +66,11 @@ export default {
   max-width: 28rem;
   border-radius:1rem;
   margin-bottom: 1.5rem;
-  display: flex;
   align-items:center;
   text-transform: uppercase;
   transition: background .3s 0s;
+  opacity:0;
+  visibility: hidden;
 
   &:hover{
     background: #88a402;
@@ -115,6 +117,14 @@ export default {
 }
 .corpbook {
   font-size: 14px;
+}
+
+@media(min-width: 900px){
+  .profile__button{
+    display: flex;
+    opacity:1;
+    visibility: visible;
+  }
 }
 
 @media(min-width:1360px){

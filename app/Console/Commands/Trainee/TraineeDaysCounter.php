@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Trainee;
 
 use Illuminate\Console\Command;
 use Carbon\Carbon;
 use App\Models\Analytics\UserStat;
 use App\ProfileGroup;
 use App\DayType;
-use App\UserDescription;
 use App\Timetracking;
 
 class TraineeDaysCounter extends Command

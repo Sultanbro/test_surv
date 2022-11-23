@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\File;
 
 class RewardRequest extends FormRequest
 {
@@ -27,7 +26,7 @@ class RewardRequest extends FormRequest
         return [
             'user_id'  => 'required|numeric|exists:users,id',
             'award_id' => 'required|numeric|exists:awards,id',
-            'file'          => [ File::types(['jpg', 'png', 'pdf'])->max(2048)]
+            'file'          => 'file|mimes:jpg,png,pdf|max:2048'
         ];
     }
 }
