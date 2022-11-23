@@ -1,0 +1,11 @@
+<?php
+
+namespace {{ namespace }};
+
+/**
+* Класс для работы с Service.
+*/
+class {{ class }}
+{
+
+}
