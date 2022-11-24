@@ -7,7 +7,6 @@
         placeholder="Выберите Сертификат"
         drop-placeholder="Перетащите файл сюда..."
         accept=".pdf"
-        required
         type="file"
         id="file"
         ref="file"
