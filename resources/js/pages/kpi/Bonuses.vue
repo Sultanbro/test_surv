@@ -868,13 +868,13 @@ export default {
                 "targetable_type": item.target.type,
                 "targetable_id": parseInt(item.target.id),
                 "group_id": item.group_id,
-                "title": item.title,
-                "sum": item.sum,
-                "activity_id": item.activity_id,
-                "unit": item.unit,
-                "quantity": item.quantity,
-                "daypart": tem.daypart,
-                "text": item.text
+                "title": [item.title],
+                "sum": [item.sum],
+                "activity_id": [item.activity_id],
+                "unit": [item.unit],
+                "quantity": [item.quantity],
+                "daypart": [item.daypart],
+                "text": [item.text]
             };
             let fields = {
                 targetable_id: item.target.id,
