@@ -105,7 +105,7 @@
                 />
             </BFormGroup>
 
-            <BFormGroup id="input-group-4" switches>
+            <BFormGroup id="input-group-4" v-if="form.award_type_id === 1 ||form.award_type_id === 2 " switches>
                 <BFormCheckbox v-model="form.hide" required>
                     Отображать пользователям награды других участников
                 </BFormCheckbox>
@@ -141,7 +141,7 @@
                 dropDownText: 'Выберите тип награды',
                 userName: 'Тимур Хайруллин',
                 selectFileType: true,
-                file: {},
+                file: null,
                 targetable_id: null,
                 targetable_type: null,
                 form: {
@@ -161,15 +161,14 @@
                 console.log(val);
                 this.targetable_id = val.id;
                 if(val.type === 2){
-                    this.targetable_type = 'App/Group';
+                    this.targetable_type = 'App\\ProfileGroup';
                 }
                 if(val.type === 3){
-                    this.targetable_type = 'App/Position';
+                    this.targetable_type = 'App\\Position';
                 }
             },
             async onSubmit() {
-                if(this.file !== null){
-                  if (this.form.award_type_id) {
+                  if (this.form.award_type_id !== null) {
                       let loader = this.$loading.show();
                      if(this.form.award_type_id === 2){
                          for(let i = 0; i < this.value.length; i++){
@@ -193,7 +192,9 @@
                       formData.append('name', this.form.name);
                       formData.append('description', this.form.description);
                       formData.append('hide', this.form.hide);
-                      formData.append('file', this.file);
+                      if(this.file !== null){
+                          formData.append('file', this.file);
+                      }
                       formData.append('styles', JSON.stringify(this.form.styles));
                       if (this.item) {
                           // this.$emit('update-award', this.form);
@@ -240,7 +241,6 @@
                   } else {
                       this.selectFileType = false;
                   }
-              }
             },
             setFileType(id) {
                 this.form.award_type_id = id;
@@ -287,6 +287,14 @@
             }
         },
         mounted() {
+            this.axios
+            .get('http://bp.localhost:8000/awards/type?award_type_id=3')
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            })
             // this.form.awardCreator = this.userName;
             if (this.item) {
                 this.id = this.item.id;
