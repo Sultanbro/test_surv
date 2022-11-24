@@ -61,6 +61,10 @@
                 <BButton variant="light" @click="modal = !modal">Отмена</BButton>
             </template>
         </b-modal>
+        <b-button v-b-modal.my-modal variant="dark">Генерировать</b-button>
+        <b-modal id="my-modal" centered>
+            ЫВПвып
+        </b-modal>
     </div>
 </template>
 
@@ -74,6 +78,12 @@
         },
         data() {
             return {
+                img: {
+                    name: 'Хайруллин Тимур',
+                    certificate: 'За лучшие заслуги лучших',
+                    date: Date.now().toLocaleDateString,
+                    time: 'Пройдено за 50 часа(ов) вместе с домашними заданиями'
+                },
                 modal: false,
                 itemRemove: null,
                 showEditAwardSidebar: false,
