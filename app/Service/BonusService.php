@@ -8,6 +8,7 @@ use App\Http\Requests\BonusUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
+use App\Repositories\KpiBonusRepository;
 use App\Traits\KpiHelperTrait;
 use Exception;
 use Illuminate\Http\Request;
@@ -19,6 +20,13 @@ use App\Exceptions\Kpi\TargetDuplicateException;
 class BonusService
 {
     use KpiHelperTrait;
+
+    private KpiBonusRepository $repository;
+
+    public function __construct(KpiBonusRepository $repository)
+    {
+        $this->repository = $repository;
+    }
 
     /**
      * Получить бонусы пользователя
@@ -98,36 +106,19 @@ class BonusService
      * Сохраняем новый бонус.
      * @throws Exception
      */
-    public function save(Request $request): array
+    public function save(array $data): array
     {
         try {
-            $bonus = [];
-            for ($i = 0; $i < count($request->input('activity_id')); $i++)
-            {
-                $bonus[] = Bonus::query()->create([
-                    'targetable_id'     => $request->input('targetable_id'),
-                    'targetable_type'   => $this->getModel($request->input('targetable_type')),
-                    'title'             => $request->input('title')[$i],
-                    'sum'               => $request->input('sum')[$i],
-                    'group_id'          => $request->input('group_id'),
-                    'activity_id'       => $request->input('activity_id')[$i],
-                    'unit'              => $request->input('unit')[$i],
-                    'quantity'          => $request->input('quantity')[$i],
-                    'daypart'           => $request->input('daypart')[$i],
-                    'from'              => $request->input('from')[$i],
-                    'to'                => $request->input('to')[$i],
-                    'text'              => $request->input('text')[$i],
-                    'created_by'        => auth()->id() ?? 5,
-                    'updated_by'        => auth()->id() ?? 5,
-                ]);
-            }
+            $data['created_by'] = auth()->id() ?? 5;
+            $data['updated_by'] = auth()->id() ?? 5;
+            $data['targetable_type'] = $this->getModel($data['targetable_type']);
+
+            return [
+                'bonus' => $this->repository->saveNewBonus($data)
+            ];
         } catch (Exception $exception) {
             throw new Exception($exception);
         }
-
-        return [
-            'bonus' => $bonus
-        ];
     }
 
     /**
@@ -155,9 +146,9 @@ class BonusService
     /**
      * Удалить бонус
      */
-    public function delete(Request $request) : void
+    public function delete(int $id) : void
     {
-        Bonus::findOrFail($request->id)->delete();
+        Bonus::query()->findOrFail($id)->delete();
     }
 
     private function getData(array $data)

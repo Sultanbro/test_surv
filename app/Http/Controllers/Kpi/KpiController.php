@@ -84,8 +84,9 @@ class KpiController extends Controller
      * @param KpiService $kpiService
      * @return JsonResponse
      */
-    public function delete(Request $request): JsonResponse
+    public function delete(Request $request, int $id): JsonResponse
     {
+        dd($id);
         $response = $this->kpiService->delete($request);
 
         return response()->json($response);
