@@ -292,7 +292,11 @@ class User extends Authenticatable implements Authorizable
 
         $kpiTotal = $kpi->total ?? 0;
 
-        return ($earningSum + $bonusesSum + $kpiTotal);
+        return [
+            'earnings' => $earningSum,
+            'bonuses' => $bonusesSum,
+            'kpi' => $kpiTotal
+        ];
     }
 
     /**
