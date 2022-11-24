@@ -3,6 +3,11 @@
 declare(strict_types=1);
 
 
+use App\ArticleLib\Http\Controllers\Article\ArticleActionController;
+use App\ArticleLib\Http\Controllers\Article\ArticleController;
+use App\ArticleLib\Http\Controllers\Article\Comments\ArticleCommentActionController;
+use App\ArticleLib\Http\Controllers\Article\Comments\ArticleCommentController;
+use App\Http\Controllers\News\NewsController;
 use App\Http\Controllers\Admin\UserProfileController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\AwardTypeController;
@@ -688,6 +693,78 @@ Route::middleware([
         Route::put('/update', [KpisController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [KpisController::class, 'delete'])->name('delete');
     });
+
+
+    Route::prefix('news')
+        ->name('articles.')
+        ->middleware([
+            'auth',
+        ])
+        ->whereNumber([
+            'article_id',
+            'comment_id',
+        ])
+        ->group(function () {
+            Route::get('', [NewsController::class, 'index'])->name('index');
+
+            Route::get('/get', [ArticleController::class, 'index'])
+                ->name('index');
+
+            Route::get('{article_id}', [ArticleController::class, 'show'])
+                ->name('show');
+
+            Route::post('', [ArticleController::class, 'store'])
+                ->name('store');
+
+            Route::put('{article_id}', [ArticleController::class, 'update'])
+                ->name('update');
+
+            Route::delete('{article_id}', [ArticleController::class, 'delete'])
+                ->name('delete');
+
+            Route::prefix('{article_id}')
+                ->name('actions.')
+                ->group(function () {
+
+                    Route::post('like', [ArticleActionController::class, 'like'])
+                        ->name('like');
+
+                    Route::post('favourite', [ArticleActionController::class, 'favourite'])
+                        ->name('favourite');
+
+                    Route::post('pin', [ArticleActionController::class, 'pin'])
+                        ->name('pin');
+
+                    Route::post('views', [ArticleActionController::class, 'views'])
+                        ->name('views');
+                });
+
+            Route::prefix('{article_id}/comments')
+                ->name('comments.')
+                ->group(function () {
+
+                    Route::get('', [ArticleCommentController::class, 'index'])
+                        ->name('index');
+
+                    Route::post('', [ArticleCommentController::class, 'store'])
+                        ->name('store');
+
+                    Route::delete('{comment_id}', [ArticleCommentController::class, 'delete'])
+                        ->name('delete');
+
+                    Route::prefix('{comment_id}')
+                        ->name('actions.')
+                        ->group(function () {
+
+                            Route::post('like', [ArticleCommentActionController::class, 'like'])
+                                ->name('like');
+
+                            Route::post('reaction', [ArticleCommentActionController::class, 'reaction'])
+                                ->name('reaction');
+                        });
+                });
+        });
+
 
 
     Route::any('/getnewimage',[UserController::class,'getProfileImage']);

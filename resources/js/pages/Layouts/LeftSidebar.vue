@@ -124,11 +124,10 @@ export default {
                     height: 0
                 },
                 {
-                    name: 'Новости',
-                    // href: '/news',
-                    icon: 'icon-nd-news',
-                    popover: 'Новости - Этот функционал в разработке',
-                    height: 0
+                  name: 'NEWS',
+                  href: '/news',
+                  icon: 'icon-nd-news',
+                  height: 0,
                 },
                 {
                     name: 'Структура',

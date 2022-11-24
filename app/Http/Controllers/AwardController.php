@@ -23,7 +23,7 @@ class AwardController extends Controller
     public function __construct(AwardService $awardService)
     {
         $this->awardService = $awardService;
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -31,7 +31,7 @@ class AwardController extends Controller
      */
     public function reward(RewardRequest $request, AwardRepository $awardRepository)
     {
-        $this->access();
+//        $this->access();
         return $this->awardService->reward($request, $awardRepository);
     }
 
@@ -82,7 +82,7 @@ class AwardController extends Controller
     public function index()
     {
         try {
-            $this->access();
+//            $this->access();
             $awardTypes = Award::all();
             return response()->success($awardTypes);
         } catch (Exception $exception) {
@@ -98,7 +98,7 @@ class AwardController extends Controller
     public function store(StoreAwardRequest $request)
     {
 
-        $this->access();
+//        $this->access();
         return $this->awardService->storeAward($request);
     }
 
