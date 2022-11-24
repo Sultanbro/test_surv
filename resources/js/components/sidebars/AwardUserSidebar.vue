@@ -13,13 +13,17 @@
 
         <!--		<awards-card class="mt-4" header="Награды пользователя" :values="awards"/>-->
         <template v-if="awards.length">
-            <BRow>
-                <BCol cols="12" md="3" v-for="(award, index) in awards" :key="award.id + index">
-                    <b-card @click="reward(award)" v-if="award.award_type_id === 1">
-                        <div>{{ award.name }}</div>
-                        <img :src="award.path" :alt="award.name" :title="award.name" style="width: 100%; height: auto">
-                    </b-card>
-                </BCol>
+            <BRow class="m-0">
+                <template v-for="(award, index) in awards">
+                    <BCol cols="12" md="4" :key="award.id + index" v-if="award.award_type_id === 1">
+                        <b-card class="award-card" @click.once="reward(award, index)" ref="award">
+                            <template #header>
+                                {{ award.name }}
+                            </template>
+                            <img :src="award.path" :alt="award.name" :title="award.name" style="width: 100%; height: auto">
+                        </b-card>
+                    </BCol>
+                </template>
             </BRow>
         </template>
         <template v-else>
@@ -38,6 +42,7 @@
         components: {UploadModal},
         data() {
             return {
+                actives: [],
                 open: false,
                 uploadModalOpen: false,
                 userId: null,
@@ -47,7 +52,7 @@
         },
         mounted() {
             document.addEventListener('award-user-sidebar', (e) => {
-                this.open = true
+                this.open = true;
                 console.log('USER ID:', e.detail);
                 this.userId = e.detail;
             });
@@ -55,29 +60,23 @@
             this.axios
                 .get('/awards/get')
                 .then(response => {
-                    for (let i = 0; i < response.data.data.length; i++) {
-                        this.awards.push(response.data.data[i])
-                    }
-                    console.log(this.awards);
-                })
-                .catch(error => {
-                    console.log(error);
-                })
-
-            this.axios
-                .get('/awards/my')
-                .then(response => {
-                    // for (let i = 0; i < response.data.data.length; i++) {
-                    //     this.awards.push(response.data.data[i])
-                    // }
-                    console.log(response);
+                    const data = response.data.data;
+                    const awards = [];
+                    data.map(item => {
+                        if(item.award_type_id === 1){
+                            awards.push(item);
+                        }
+                    });
+                    this.awards = awards;
+                    console.log(awards);
                 })
                 .catch(error => {
                     console.log(error);
                 })
         },
         methods: {
-            reward(award) {
+            reward(award, index) {
+                    this.$refs.award[index].classList.add('active');
                 const formData = new FormData();
                 formData.append('user_id', this.userId);
                 formData.append('award_id', award.id);
@@ -101,8 +100,29 @@
 </script>
 
 <style lang="scss" scoped>
-    .card {
+    .award-card {
         cursor: pointer;
         border: 1px solid #ddd;
+        &.active{
+            border: 3px solid #038e34;
+        }
+
+    .card-header{
+        padding: 10px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+        .card-body{
+            overflow: hidden;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            img{
+                width: auto !important;
+                height: 200px !important;
+                object-fit: cover;
+            }
+        }
     }
 </style>

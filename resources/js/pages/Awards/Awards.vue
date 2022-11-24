@@ -121,22 +121,11 @@
                 this.item = false;
             },
             saveAward(data) {
-                this.tableItems.push(data);
+                // this.tableItems.push(data);
+                this.getAwards();
             },
-            updateTable(data) {
-            //     this.tableItems.map(el => {
-            //         if (el.id === data.id) {
-            //             el.id = data.id;
-            //             el.name = data.name;
-            //             el.description = data.description;
-            //             el.awardTypeId = data.awardTypeId;
-            //             el.images = data.images;
-            //             el.imagesData = data.imagesData;
-            //             el.visibleToOthers = data.visibleToOthers;
-            //             el.awardCreator = data.awardCreator;
-            //             el.date = data.date;
-            //         }
-            //     });
+            updateTable() {
+            this.getAwards();
             },
             async remove(item) {
                  this.modal = !this.modal;
@@ -144,12 +133,12 @@
                 await this.axios
                      .delete("/awards/delete/" + item.id)
                      .then(response =>  {
-                         console.log(response);
-                         for( let i = 0; i < this.tableItems.length; i++){
-                             if ( this.tableItems[i].id === item.id) {
-                                 this.tableItems.splice(i, 1);
-                             }
-                         }
+                         this.getAwards();
+                         // for( let i = 0; i < this.tableItems.length; i++){
+                         //     if ( this.tableItems[i].id === item.id) {
+                         //         this.tableItems.splice(i, 1);
+                         //     }
+                         // }
                          loader.hide();
                      })
                      .catch(function (error) {
