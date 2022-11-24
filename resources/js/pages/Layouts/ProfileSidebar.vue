@@ -324,7 +324,7 @@ export default {
                     this.bookCounter()
                 }
 
-                this.currentBalance(response.data.balance)
+                this.$emit('currentBalance', response.data.balance)
 
                 this.buttonStatus = 'init'
             })
