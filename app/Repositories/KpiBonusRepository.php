@@ -20,9 +20,4 @@ class KpiBonusRepository extends CoreRepository
     {
         return Bonus::query()->create($data);
     }
-
-    public function deleteKpiBonus(int $id)
-    {
-
-    }
 }

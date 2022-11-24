@@ -138,9 +138,9 @@ class AppServiceProvider extends ServiceProvider
                 $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray(); // Spatie permissions
 
                 if(auth()->user()->program_id === 1) {
-                    $permissions = 'ucalls_view';
+                    $permissions[] = 'ucalls_view';
                 } 
-                
+
                 $view->with([
                     'laravelToVue' => [
                         'csrfToken'   => csrf_token(),
