@@ -76,7 +76,7 @@
         },
         methods: {
             reward(award, index) {
-                    this.$refs.award[index].classList.add('active');
+                this.$refs.award[index].classList.add('active');
                 const formData = new FormData();
                 formData.append('user_id', this.userId);
                 formData.append('award_id', award.id);
@@ -89,6 +89,7 @@
                     })
                     .then(response => {
                         console.log(response);
+                        this.$toast.success('Добавлено');
                     })
                     .catch(function (error) {
                         console.log("error");

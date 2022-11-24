@@ -83,6 +83,14 @@
         },
         mounted(){
             this.getAwards();
+            this.axios
+            .get('http://bp.localhost:8000/award-types/get')
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err=> {
+                console.log(err);
+            })
         },
         computed:{
             tableData() {

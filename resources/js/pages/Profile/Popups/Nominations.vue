@@ -354,25 +354,27 @@
             this.axios
                 .get('/awards/type?award_type_id=1')
                 .then(response => {
-                    this.nominations = response.data.data;
-                    this.nominations.availableResult = [];
-                    const arrMy = [];
-                    const arrAv = [];
-                    response.data.data.my.forEach(item => {
-                        arrMy.push(item.award_id);
-                    });
-                    response.data.data.available.forEach(item => {
-                        arrAv.push(item.id);
-                    });
-                    const resArr = arrAv.filter(e => !arrMy.includes(e));
-                    this.nominations.available.map(item => {
-                        resArr.forEach(i => {
-                            if(item.id === i){
-                                this.nominations.availableResult.push(item);
-                            }
-                        })
-                    })
-                    console.log(this.nominations);
+                    if(response.data.data){
+                        this.nominations = response.data.data;
+                        this.nominations.availableResult = [];
+                        const arrMy = [];
+                        const arrAv = [];
+                        response.data.data.my.forEach(item => {
+                            arrMy.push(item.award_id);
+                        });
+                        response.data.data.available.forEach(item => {
+                            arrAv.push(item.id);
+                        });
+                        const resArr = arrAv.filter(e => !arrMy.includes(e));
+                        this.nominations.available.map(item => {
+                            resArr.forEach(i => {
+                                if(item.id === i){
+                                    this.nominations.availableResult.push(item);
+                                }
+                            })
+                        });
+                        console.log(this.nominations);
+                    }
                     loader.hide();
                 })
                 .catch(error => {

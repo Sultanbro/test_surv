@@ -43,7 +43,7 @@
             </BFormGroup>
 
             <BFormGroup>
-                <BDropdown :text="dropDownText" required>
+                <BDropdown :text="dropDownText" required class="dropdown-select-type">
                     <BDropdownItem href="#" @click="setFileType(1)"
                     >Загрузка картинки
                     </BDropdownItem
@@ -84,8 +84,13 @@
                         v-if="form.award_type_id === 3"
                         class="w-50 mb-4"
                         :key="1"
+                        :onlytype="2"
                         @choose="superselectChoice"
                         :single="true"
+                        :placeholder="'Выберите должность или отдел'"
+                        :disable_type="1"
+                        :value_id="form.targetable_id"
+                        :pre_build="true"
                         :select_all_btn="false"/>
             </BFormGroup>
 
@@ -347,6 +352,17 @@
             flex-direction: column;
             width: 80%;
             margin: auto 0 !important;
+        }
+        .dropdown-select-type{
+            li{
+                a{
+                    font-size: 16px;
+                    padding: 8px 14px;
+                    &:hover{
+                        background-color: #ebebec;
+                    }
+                }
+            }
         }
     }
 </style>
