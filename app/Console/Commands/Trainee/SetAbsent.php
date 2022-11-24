@@ -86,7 +86,7 @@ class SetAbsent extends Command
                     
                     $this->mark($user);
 
-                    $this->logHistory($user);
+                    // $this->logHistory($user);
                     
                     $this->notify($user, $group->name);
 
