@@ -4,16 +4,16 @@
             <div class="throbber-loader"></div>
         </div>
         <b-tabs>
-            <b-tab no-body title="Номинации" v-if="Object.keys(nominations).length !== 0">
+            <b-tab no-body title="Номинации" active v-if="Object.keys(nominations).length !== 0">
                 <b-tabs class="inside-tabs">
-                    <b-tab no-body title="Мои номинации">
+                    <b-tab no-body title="Мои номинации" active>
                         <div class="certificates__title">
                             Сертификатов: <span class="current">{{nominations.my.length}}</span> из <span
                                 class="all">{{nominations.available.length}}</span>
                         </div>
 
                         <BRow>
-                            <BCol cols="12" md="4" lg="3" v-for="(award, key) in nominations.my"
+                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(award, key) in nominations.my"
                                   :key="award.id + key">
                                 <div class="certificates__item" @click="modalShow(award)">
                                     <img :src="award.path" alt="certificate image">
@@ -30,7 +30,7 @@
                         </div>
 
                         <BRow>
-                            <BCol cols="12" md="4" lg="3" v-for="(award, key) in nominations.available"
+                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(award, key) in nominations.availableResult"
                                   :key="award.id + key">
                                 <div class="certificates__item" @click="modalShow(award)">
                                     <img :src="award.path" alt="certificate image">
@@ -40,7 +40,7 @@
                     </b-tab>
                     <b-tab no-body title="Номинации других участников">
                         <BRow>
-                            <BCol cols="12" md="4" lg="3" v-for="(award, key) in nominations.other"
+                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(award, key) in nominations.other"
                                   :key="award.id + key">
                                 <div class="certificates__item" @click="modalShow(award)">
                                     <img :src="award.path" alt="certificate image">
@@ -104,7 +104,7 @@
             -->
             <b-tab no-body title="Лучшие сотрудники">
                 <b-tabs class="inside-tabs">
-                    <b-tab no-body title="По отделу">
+                    <b-tab no-body title="По отделу" active>
                         <BRow>
                             <BCol cols="12" md="4">
                                 <div class="nominations__item">
@@ -355,6 +355,24 @@
                 .get('/awards/type?award_type_id=1')
                 .then(response => {
                     this.nominations = response.data.data;
+                    this.nominations.availableResult = [];
+                    const arrMy = [];
+                    const arrAv = [];
+                    response.data.data.my.forEach(item => {
+                        arrMy.push(item.award_id);
+                    });
+                    response.data.data.available.forEach(item => {
+                        arrAv.push(item.id);
+                    });
+                    const resArr = arrAv.filter(e => !arrMy.includes(e));
+                    this.nominations.available.map(item => {
+                        resArr.forEach(i => {
+                            if(item.id === i){
+                                this.nominations.availableResult.push(item);
+                            }
+                        })
+                    })
+                    console.log(this.nominations);
                     loader.hide();
                 })
                 .catch(error => {
