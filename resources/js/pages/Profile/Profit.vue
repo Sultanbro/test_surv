@@ -15,7 +15,7 @@
     </div>
     <div class="row profit__inner mr-1 ml-1">
         <div
-            v-if="data.groups"
+            v-if="hasGroups"
             class="col profit__carousel"
             :class="{'col-md-6': hasPositions}"
         >
@@ -42,7 +42,7 @@
             </div>
         </div>
         <div
-            v-if="data.positions"
+            v-if="hasPositions"
             class="col profit__carousel"
             :class="{'col-md-6': hasGroups}"
         >
