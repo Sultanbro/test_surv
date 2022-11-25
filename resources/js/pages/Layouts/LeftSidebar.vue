@@ -310,10 +310,11 @@ export default {
 
 .header__avatar{
     cursor:pointer;
-    margin-bottom: 0.5rem;
     display: block;
-    max-width: 6rem;
-    width: 100%;
+    width: 8rem;
+    max-width: 8rem;
+    margin-bottom: 0.5rem;
+    padding: 0 1.2rem;
     position:relative;
     border-radius: 10px;
     z-index: 1003;

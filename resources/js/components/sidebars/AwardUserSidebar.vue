@@ -12,18 +12,26 @@
         <!--		</b-button>-->
 
         <!--		<awards-card class="mt-4" header="Награды пользователя" :values="awards"/>-->
-        <template v-if="awards.length">
+        <template v-if="awardsAvailable.length || awardsMy.length">
+            <h4 class="title-awards px-4 pb-4">Доступные номинации</h4>
             <BRow class="m-0">
-                <template v-for="(award, index) in awards">
-                    <BCol cols="12" md="4" :key="award.id + index" v-if="award.award_type_id === 1">
-                        <b-card class="award-card" @click.once="reward(award, index)" ref="award">
-                            <template #header>
-                                {{ award.name }}
-                            </template>
-                            <img :src="award.path" :alt="award.name" :title="award.name" style="width: 100%; height: auto">
-                        </b-card>
-                    </BCol>
-                </template>
+                <BCol cols="12" md="4" v-for="(award, index) in awardsAvailable" :key="award.id + index">
+                    <b-card class="award-card" @click.once="reward(award, index)" ref="award">
+                        <template #header>
+                            {{ award.name }}
+                        </template>
+                        <img :src="award.path" :alt="award.name" :title="award.name" style="width: 100%; height: auto">
+                    </b-card>
+                </BCol>
+            </BRow>
+            <hr class="my-4">
+            <h4 class="title-awards px-4 pb-4">Выданные номинации</h4>
+            <BRow class="m-0">
+                <BCol cols="12" md="4" v-for="(award, index) in awardsMy" :key="award.id + index">
+                    <b-card class="award-card my">
+                        <img :src="award.path" :alt="award.name" :title="award.name" style="width: 100%; height: auto">
+                    </b-card>
+                </BCol>
             </BRow>
         </template>
         <template v-else>
@@ -42,11 +50,11 @@
         components: {UploadModal},
         data() {
             return {
-                actives: [],
                 open: false,
                 uploadModalOpen: false,
                 userId: null,
-                awards: [],
+                awardsMy: [],
+                awardsAvailable: [],
 
             }
         },
@@ -55,28 +63,22 @@
                 this.open = true;
                 console.log('USER ID:', e.detail);
                 this.userId = e.detail;
-            });
 
-            this.axios
-                .get('/awards/get')
-                .then(response => {
-                    const data = response.data.data;
-                    const awards = [];
-                    data.map(item => {
-                        if(item.award_type_id === 1){
-                            awards.push(item);
-                        }
-                    });
-                    this.awards = awards;
-                    console.log(awards);
-                })
-                .catch(error => {
-                    console.log(error);
-                })
+                this.axios
+                    .get('/awards/type?award_type_id=1&user_id=' + this.userId)
+                    .then(response => {
+                        console.log(response.data.data);
+                        this.awardsAvailable = response.data.data.available;
+                        this.awardsMy = response.data.data.my;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            });
         },
         methods: {
             reward(award, index) {
-                    this.$refs.award[index].classList.add('active');
+                this.$refs.award[index].classList.add('active');
                 const formData = new FormData();
                 formData.append('user_id', this.userId);
                 formData.append('award_id', award.id);
@@ -89,6 +91,7 @@
                     })
                     .then(response => {
                         console.log(response);
+                        this.$toast.success('Добавлено');
                     })
                     .catch(function (error) {
                         console.log("error");
@@ -100,11 +103,22 @@
 </script>
 
 <style lang="scss" scoped>
+    .title-awards{
+        font-size: 20px;
+        font-weight: 600;
+    }
     .award-card {
         cursor: pointer;
         border: 1px solid #ddd;
         &.active{
             border: 3px solid #038e34;
+        }
+        &.my{
+            border: 3px solid #038e34;
+            cursor: default;
+            img{
+                filter: grayscale(1);
+            }
         }
 
     .card-header{
@@ -114,13 +128,13 @@
     }
         .card-body{
             overflow: hidden;
-            height: 200px;
+            height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
             img{
                 width: auto !important;
-                height: 200px !important;
+                height: 150px !important;
                 object-fit: cover;
             }
         }

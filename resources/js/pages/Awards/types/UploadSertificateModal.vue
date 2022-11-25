@@ -136,22 +136,22 @@
                 <div class="draggable-container">
                     <div class="draggable-edit">
                         <div ref="fullName" name="fullName" class="draggable" :data-x="fullName.screenX" :data-y="fullName.screenY" follow-text="Имя и фамилия"
-                             :style="[styleFullName, transformFullName]" style="margin-top: 200px;"
+                             :style="[styleFullName, transformFullName]" style="margin-top: 40px;"
                              :class="{'no-border': border, 'active': selectedEdit === 1}" @click="selectEdit(1)">
                             {{textFullName}}
                         </div>
                         <div ref="courseName" name="courseName" class="draggable" :data-x="courseName.screenX" :data-y="courseName.screenY" follow-text="Название курса"
-                             :style="[styleCourseName, transformCourseName]" style="margin-top: 290px;"
+                             :style="[styleCourseName, transformCourseName]" style="margin-top: 120px;"
                              :class="{'no-border': border, 'active': selectedEdit === 2}" @click="selectEdit(2)">
                             {{textCourseName}}
                         </div>
                         <div ref="hours" name="hours" class="draggable" :data-x="hours.screenX" :data-y="hours.screenY" follow-text="Потраченное время на курсы"
-                             :style="[styleHours, transformHoursName]" style="margin-top: 380px;"
+                             :style="[styleHours, transformHoursName]" style="margin-top: 200px;"
                              :class="{'no-border': border, 'active': selectedEdit === 3}" @click="selectEdit(3)">
                             {{textHours}}
                         </div>
                         <div ref="date" name="date" class="draggable" :data-x="date.screenX" :data-y="date.screenY" follow-text="Дата завершения курса"
-                             :style="[styleDate, transformDateName]" style="margin-top: 470px;"
+                             :style="[styleDate, transformDateName]" style="margin-top: 280px;"
                              :class="{'no-border': border, 'active': selectedEdit === 4}" @click="selectEdit(4)">
                             {{textDate}}
                         </div>
@@ -235,7 +235,7 @@
         },
         mounted () {
             if(this.styles.length > 0){
-                const getStyles = JSON.parse(this.styles);
+                const getStyles = JSON.parse(JSON.parse(this.styles).replace(/\\"/g,'\''));
                 this.fullName = getStyles.fullName;
                 this.courseName = getStyles.courseName;
                 this.hours = getStyles.hours;
@@ -397,7 +397,7 @@
 <style lang="scss">
     .cestificates-constructor{
         canvas{
-            width: 100% !important;
+            width: 600px !important;
             height: auto!important;
         }
         .draggable-container {
@@ -432,7 +432,10 @@
 
         .draggable-edit {
             position: relative;
-            border: 2px solid #333;
+            border: 3px solid #333;
+            max-width: 700px;
+            overflow: auto;
+            max-height: calc(100vh - 200px);
             img {
                 width: 100%;
                 height: auto;
