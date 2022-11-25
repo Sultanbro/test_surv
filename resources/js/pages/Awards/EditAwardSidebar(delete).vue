@@ -204,8 +204,9 @@
                     }
                     formData.append('styles', JSON.stringify(this.form.styles));
                     if (this.item) {
+                        formData.append('_method', 'put');
                         this.axios
-                            .put("/awards/update/" + this.item.id, formData, {
+                            .post("/awards/update/" + this.item.id, formData, {
                                 headers: {
                                     'Content-Type': 'multipart/form-data',
                                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -296,7 +297,6 @@
             if (this.item) {
                 this.id = this.item.id;
                 this.form.award_type_id = this.item.award_type_id;
-                this.form.course_ids = this.item.course_ids;
                 this.form.name = this.item.name;
                 this.form.description = this.item.description;
                 this.form.hide = this.item.hide;

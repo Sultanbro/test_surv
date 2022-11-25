@@ -61,10 +61,6 @@
                 <BButton variant="light" @click="modal = !modal">Отмена</BButton>
             </template>
         </b-modal>
-        <b-button v-b-modal.my-modal variant="dark">Генерировать</b-button>
-        <b-modal id="my-modal" centered>
-            ЫВПвып
-        </b-modal>
     </div>
 </template>
 
