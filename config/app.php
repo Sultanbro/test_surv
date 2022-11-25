@@ -18,6 +18,26 @@ return [
     'name' => env('APP_NAME', 'jobtron.org'),
 
 
+    'file' => [
+        'path' => 'files',
+    ],
+
+    'pagination' => [
+        'articles' => [
+            'page' => 1,
+            'per_page' => 5,
+        ],
+
+        'birthdays' =>
+            [
+                'page' => 1,
+                'per_page' => 10,
+            ]
+    ],
+
+    'upload' => [
+        'path' => 'uploads',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -197,6 +217,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
         App\Providers\TenancyServiceProvider::class, // <-- here
+        App\Providers\RepositoryServiceProvider::class, // <-- here
         Eddir\Messenger\MessengerServiceProvider::class,
 
        // Spatie\Permission\PermissionServiceProvider::class,

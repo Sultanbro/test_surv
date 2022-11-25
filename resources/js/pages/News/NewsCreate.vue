@@ -99,15 +99,15 @@
                             :key="item.id"
                             v-show="item.name.toLowerCase().includes(accessSearch.toLowerCase())"
                             class="user-item"
-                            @click="changeAccessList(item.id, item.name, 1, item.avatar)">
-                            <img :src="item.avatar" class="user-item__avatar">
+                            @click="changeAccessList(item.id, item.name, 1, item?.avatar)">
+                            <img :src="item?.avatar" class="user-item__avatar">
                             <div class="user-item__info">
                                 <div class="user-item__sub">{{ item.position_name }}</div>
                                 <div class="user-item__name">{{ item.name }}</div>
                             </div>
                             <label class="news-checkbox">
                                 <input type="checkbox"
-                                       @click="changeAccessList(item.id, item.name, 1, item.avatar)"
+                                       @click="changeAccessList(item.id, item.name, 1, item?.avatar)"
                                        :checked="checked(item, 1) ? 'checked' : ''">
                                 <span class="news-checkmark"></span>
                             </label>
@@ -119,14 +119,14 @@
                             :key="item.id"
                             v-show="item.name.toLowerCase().includes(accessSearch.toLowerCase())"
                             class="user-item"
-                            @click="changeAccessList(item.id, item.name, 2, item.avatar)">
-                            <img :src="item.avatar" class="user-item__avatar">
+                            @click="changeAccessList(item.id, item.name, 2, item?.avatar)">
+                            <img :src="item?.avatar" class="user-item__avatar">
                             <div class="user-item__info">
                                 <div class="user-item__name">{{ item.name }}</div>
                             </div>
                             <label class="news-checkbox">
                                 <input type="checkbox"
-                                       @click="changeAccessList(item.id, item.name, 2, item.avatar)"
+                                       @click="changeAccessList(item.id, item.name, 2, item?.avatar)"
                                        :checked="checked(item, 2) ? 'checked' : ''">
                                 <span class="news-checkmark"></span>
                             </label>
@@ -575,7 +575,10 @@ export default {
         async getAccessDictionaries() {
             await axios.get('/dictionaries')
                 .then(res => {
-                    this.accessDictionaries = res.data.data;
+                  console.log('res')
+                  console.log(res)
+
+                  this.accessDictionaries = res.data.data;
                 })
                 .catch(res => {
                     console.log(res)

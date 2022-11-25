@@ -8,7 +8,6 @@
                 <span class="news-header__title">Новости</span>
                 <filter-component @searchNews="getPosts" ref="filterComponent" @toggleWhiteBg="showWhiteBg"/>
             </div>
-
             <post-component
                 @editPost="updatePost"
                 @update-news-list="getPosts"
@@ -98,9 +97,8 @@ export default {
                 })
                 .catch();
         },
-
         async getPosts(data = null) {
-            await axios.get('/news' + (data == null ? '' : data.params))
+            await axios.get('/news/get' + (data == null ? '' : data.params))
                 .then(response => {
                     this.nextPageURL = response.data.data.pagination.next_page_url;
                     this.posts = response.data.data.articles;
