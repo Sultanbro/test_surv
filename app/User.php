@@ -407,10 +407,7 @@ class User extends Authenticatable implements Authorizable
     public function inGroupsWithTerms()
     {
         $groups = GroupUser::where('user_id', $this->id)
-            ->where([
-                ['status', 'active']
-            ])
-            ->whereNull('to')
+            ->where('status', 'active')
             ->get()
             ->pluck('group_id')
             ->toArray();
