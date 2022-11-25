@@ -408,6 +408,7 @@ class User extends Authenticatable implements Authorizable
     {
         $groups = GroupUser::where('user_id', $this->id)
             ->where('status', 'active')
+            ->whereNull('to')
             ->get()
             ->pluck('group_id')
             ->toArray();
