@@ -2,6 +2,7 @@
 
 namespace App\Service\Courses;
 
+use App\Models\CourseItemModel;
 use App\Models\TestBonus;
 use App\Models\TestResult;
 use App\Repositories\CourseItemRepository;
@@ -36,24 +37,36 @@ class CourseRegress implements RegressInterface
     /**
      * Удалить записи из таблицы test_results.
      *
-     * @param $courseId
-     * @param $userId
+     * @param int $courseId
+     * @param int $userId
      * @return void
      */
-    protected function resetTestResult($courseId, $userId): void
+    protected function resetTestResult(int $courseId, int $userId): void
     {
         $items = (new CourseRepository)->getCourseItems($courseId)->pluck('id')->toArray();
-        TestResult::query()->where('user_id', $userId)->whereIn('course_item_model_id', $items)->delete();
+        $courseItemModelIds = CourseItemModel::query()->where('user_id', $userId)->whereIn('course_item_id', $items)->get()->pluck('id')->toArray();
+
+        TestResult::query()->where('user_id', $userId)->whereIn('course_item_model_id', $courseItemModelIds)->delete();
+        $this->deleteFromCourseItemModels($courseItemModelIds);
+    }
+
+    /**
+     * @param array $ids
+     * @return void
+     */
+    protected function deleteFromCourseItemModels(array $ids): void
+    {
+        CourseItemModel::query()->whereIn('id', $ids)->delete();
     }
 
     /**
      * Удалить записи из таблицы test_bonuses.
      *
-     * @param $courseId
-     * @param $userId
+     * @param int $courseId
+     * @param int $userId
      * @return void
      */
-    protected function resetTestBonus($courseId, $userId): void
+    protected function resetTestBonus(int $courseId, int $userId): void
     {
         $items = (new CourseRepository)->getCourseItems($courseId)->pluck('id')->toArray();
         TestBonus::query()->where('user_id', $userId)->whereIn('course_item_id', $items)->delete();

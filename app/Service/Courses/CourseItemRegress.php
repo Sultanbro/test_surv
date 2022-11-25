@@ -3,6 +3,7 @@
 namespace App\Service\Courses;
 
 use App\Http\Requests\CourseRegressRequest;
+use App\Models\CourseItemModel;
 use App\Models\TestBonus;
 use App\Models\TestResult;
 use App\Repositories\CourseItemRepository;
@@ -23,10 +24,12 @@ class CourseItemRegress implements CourseRegress
     {
         $amount = $this->getAmount($data['user_id'], $data['course_item_id']);
         $course = (new CourseItemRepository)->getCourse($data['course_item_id'])->id;
+        $progress = $this->getProgress($data['course_item_id'], $data['user_id']);
 
-        DB::transaction(function () use ($data, $amount, $course){
-            (new CourseResultRepository)->removeItemPoints($data['user_id'], $course, $amount, $data['completed_stages']);
+        DB::transaction(function () use ($data, $amount, $course, $progress){
+            (new CourseResultRepository)->removeItemPoints($data['user_id'], $course, $amount, $progress);
 
+            $this->deleteCourseItemModel($data['course_item_id'], $data['user_id']);
             $this->deleteItemFromTestResult($data['user_id'], $data['course_item_id']);
             $this->deleteItemFromTestBonuses($data['user_id'], $data['course_item_id']);
         });
@@ -37,14 +40,29 @@ class CourseItemRegress implements CourseRegress
      *
      * @param int $userId
      * @param int $courseItemId
-     * @return int|mixed
+     * @return int
      */
-    protected function getAmount(int $userId, int $courseItemId)
+    protected function getAmount(int $userId, int $courseItemId): int
     {
         return TestBonus::query()->where([
             ['user_id', '=', $userId],
             ['course_item_id', '=', $courseItemId]
         ])->sum('amount');
+    }
+
+    /**
+     * @param int $courseItemId
+     * @param int $userId
+     * @return int
+     */
+    protected function getProgress(int $courseItemId, int $userId): int
+    {
+        return CourseItemModel::query()->where('user_id', $userId)->where('course_item_id', $courseItemId)->count();
+    }
+
+    protected function deleteCourseItemModel(int $courseItemId, int $userId)
+    {
+        CourseItemModel::query()->where('user_id', $userId)->where('course_item_id', $courseItemId)->delete();
     }
 
     /**
