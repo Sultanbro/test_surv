@@ -44,7 +44,7 @@ class TestController extends Controller {
 
 
 	public function test() { 
-		dd(config('cache'));
+		return $this['config']->get('app.debug');
 	}  
 
 	private function getSegmentAndSaveForLead($id) {
