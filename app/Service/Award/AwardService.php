@@ -111,10 +111,6 @@ class AwardService
             if ($this->isCertificate($awardType) && !$request->has('course_ids')){
                 return response()->error('Course required for certificate award', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
-            if ($request->has('course_ids')){
-                return response()->error('Course required for certificate award', Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
-
 
             $params = [
                 'award_type_id' => $request->input('award_type_id'),

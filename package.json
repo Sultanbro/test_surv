@@ -16,6 +16,7 @@
         "@babel/preset-stage-3": "^7.0.0",
         "@popperjs/core": "^2.10.2",
         "axios": "~0.21.1",
+        "blueimp-gallery": "^3.4.0",
         "bootstrap": "^5.1.3",
         "bootstrap-sass": "^3.3.7",
         "cross-env": "^5.2.1",
@@ -31,8 +32,7 @@
         "vue-loader": "^15.9.8",
         "vue-multiselect": "^2.1.6",
         "vue-simple-context-menu": "3.4.2",
-        "vue-template-compiler": "2.6.12",
-        "blueimp-gallery": "^3.4.0"
+        "vue-template-compiler": "2.6.12"
     },
     "dependencies": {
         "@tinymce/tinymce-vue": "^3.0.1",
@@ -47,6 +47,7 @@
         "dropzone": "^6.0.0-beta.2",
         "expr-eval": "^2.0.2",
         "fs": "0.0.1-security",
+        "html2pdf.js": "^0.10.1",
         "interactjs": "^1.10.17",
         "jexcel": "^3.8.2",
         "jw-vue-pagination": "^1.0.3",
