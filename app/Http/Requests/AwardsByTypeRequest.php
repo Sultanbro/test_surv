@@ -25,6 +25,7 @@ class AwardsByTypeRequest extends FormRequest
     {
         return [
             'award_type_id'  => 'required|numeric|exists:award_types,id',
+            'user_id'  => 'numeric|exists:users,id',
         ];
     }
 }
