@@ -44,8 +44,7 @@ class TestController extends Controller {
 
 
 	public function test() { 
-		$a = (new Bitrix)->getCalls(142876, 0 ,'ASC', 'all', 10, '2022-11-16', '2022-11-16');
-		dd($a);
+		dd(config('cache'));
 	}  
 
 	private function getSegmentAndSaveForLead($id) {
@@ -54,6 +53,7 @@ class TestController extends Controller {
 		
 		$segment = 999;
 
+	
 		if(array_key_exists('result',$res) && array_key_exists('UF_CRM_1498210379', $res['result'])) {
 			$segment = $res['result']['UF_CRM_1498210379'];
 

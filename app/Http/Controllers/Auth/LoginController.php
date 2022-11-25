@@ -102,7 +102,6 @@ class LoginController extends Controller
      
             if(request()->getHost() == config('app.domain')) {
                 $link = '/';
-                dd(CentralUser::get()->toArray());
             } else {
                 $link = $this->redirectTo;
             }
