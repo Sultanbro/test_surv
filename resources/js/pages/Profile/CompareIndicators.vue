@@ -17,7 +17,7 @@
     <div class="index__table">
         <b-tabs>
             <b-tab
-                v-for="(item, itemIndex) in rightItems"
+                v-for="(item, itemIndex) in items"
                 :key="itemIndex"
                 :title="item.group.name"
             >
@@ -91,7 +91,7 @@
 
 <script>
 export default {
-    name: 'CompareIndicators', 
+    name: 'CompareIndicators',
     props: {},
     data: function () {
         return {
@@ -111,15 +111,6 @@ export default {
             loading: false
         };
     },
-    computed: {
-        rightItems(){
-            return this.items.reduce((items, item) => {
-                if(item.activities.length === 1 && item.activities[0].name === 'OKK') return items
-                items.push(item)
-                return items
-            }, [])
-        }
-    },
     created() {
         this.setMonthInfo()
         this.createConsts()
@@ -128,7 +119,7 @@ export default {
 
     methods: {
         /**
-         * Загрузка данных 
+         * Загрузка данных
          */
         fetchData() {
             this.loading = true
@@ -143,7 +134,7 @@ export default {
         },
 
         /**
-         * private: show btn in introTop 
+         * private: show btn in introTop
          */
         showBtn(data) {
             const totalActivities = data.items.reduce((n, item) => {
@@ -184,7 +175,7 @@ export default {
             this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
             this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
 
-            this.currentYear = this.$moment().format('YYYY') //Установка выбранного года 
+            this.currentYear = this.$moment().format('YYYY') //Установка выбранного года
             this.monthInfo.currentYear = this.currentYear;
         },
     }
