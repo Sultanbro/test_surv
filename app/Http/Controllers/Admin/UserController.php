@@ -967,15 +967,16 @@ class UserController extends Controller
 
             
             
-        } else {
-            // Если нет другого аккаунта с новым email, то меняем уже сущ аккаунт в калибро
-            $old_account = Account::where('email', $user->id)->where('owner_uid', 5)->first();
-            if ($old_account) {
-                $old_account->email = strtolower($request['email']);
-                $old_account->status = Account::ACTIVE_STATUS;
-                $old_account->save();
-            }
         }
+//        else {
+////            // Если нет другого аккаунта с новым email, то меняем уже сущ аккаунт в калибро
+////            $old_account = Account::where('email', $user->id)->where('owner_uid', 5)->first();
+////            if ($old_account) {
+////                $old_account->email = strtolower($request['email']);
+////                $old_account->status = Account::ACTIVE_STATUS;
+////                $old_account->save();
+////            }
+//        }
 
 
 
