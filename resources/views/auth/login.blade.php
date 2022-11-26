@@ -130,23 +130,22 @@
 
 
 
-
+ 
 
 
 
 @endsection
 
 @section('scripts')
-<!-- <script>
-deleteAllCookies();
+<script>
+delete_cookie('XSRF-TOKEN', '/', '.jobtron.org')
 
-var cookies = document.cookie.split(";");
-
-for (var i = 0; i < cookies.length; i++) {
-    var cookie = cookies[i];
-    var eqPos = cookie.indexOf("=");
-    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+function delete_cookie( name, path, domain ) {
+    document.cookie = name + "=" +
+       
+      ((path) ? ";Max-Age=0;path="+path:"")+
+      ((domain)?";domain="+domain:"") +
+      ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
 }
-</script> -->
+</script> 
 @endsection
