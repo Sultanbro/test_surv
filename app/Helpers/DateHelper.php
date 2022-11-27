@@ -15,8 +15,9 @@ class DateHelper
             : $date->diffForHumans();
     }
 
-    public static function prepareDate(Carbon $birthday): string
+    public static function prepareDate(string $birthday): string
     {
+        $birthday = Carbon::createFromFormat('Y-m-d H:i:s',$birthday);
         $diff = $birthday->diff(Carbon::today()->setYear($birthday->year));
 
         if ($diff->days === 1){

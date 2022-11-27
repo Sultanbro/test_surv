@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\User;

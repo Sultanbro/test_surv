@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Article;
 
-use App\ArticleLib\Rules\IsFileAlreadyUsed;
+use App\Entities\DataTransferObjects\News\ArticleStoreDTO;
 use App\Enums\ArticleAvailableForTypeEnum;
+use App\Rules\IsFileAlreadyUsed;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 

@@ -17,7 +17,7 @@ class BirthdayResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'name' => $this->resource->full_name,
-            'avatar' => asset($this->resource->img_url_path),
+            'avatar' => $this->resource->img_url_path,
             'date_human' => DateHelper::prepareDate($this->resource->birthday),
             'date' => Carbon::parse($this->resource->birthday)->format('m-d-Y')
         ];

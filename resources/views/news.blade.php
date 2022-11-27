@@ -6,6 +6,7 @@
                 page="{{ $page }}"
                 access="{{ auth()->user()->can('news_edit') ? 'edit' : 'view' }}"
         ></news-pages>
+        <birthday-feed></birthday-feed>
     </div>
 
 

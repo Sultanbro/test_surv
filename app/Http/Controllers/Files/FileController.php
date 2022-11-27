@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Files;
 
-use App\ArticleLib\Services\Files\FileService;
 use App\Exceptions\News\BusinessLogicException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Files\FileRequest;
 use App\Http\Requests\Files\FileStoreRequest;
 use App\Http\Resources\Files\FileResource;
 use App\Http\Resources\Responses\JsonSuccessResponse;
+use App\Service\Files\FileService;
 use Illuminate\Http\JsonResponse;
 
 class FileController extends Controller

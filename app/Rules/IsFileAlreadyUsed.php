@@ -1,8 +1,8 @@
 <?php
 
-namespace App\ArticleLib\Rules;
+namespace App\Rules;
 
-use App\ArticleLib\Models\File;
+use App\Models\File\File;
 use Illuminate\Contracts\Validation\Rule;
 
 class IsFileAlreadyUsed implements Rule

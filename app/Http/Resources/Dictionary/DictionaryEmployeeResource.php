@@ -16,7 +16,7 @@ class DictionaryEmployeeResource extends JsonResource
             'id' => $this->resource->id,
             'name' => $this->resource->name,
             'last_name' => $this->resource->last_name,
-            'avatar' => asset($this->resource->img_url),
+            'avatar' => $this->resource->img_url_path,
             'position_name' => $this->resource->position?->position,
             'profile_group' => $this->resource->groups
         ];

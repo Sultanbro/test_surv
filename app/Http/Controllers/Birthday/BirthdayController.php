@@ -21,7 +21,7 @@ class BirthdayController extends Controller
 
         $birthdays = User::whereRaw(
             'date_format(`birthday`, \'%m-%d\') BETWEEN \'' . $dateStart . '\' AND \'' . $dateEnd . '\''
-        )->orderBy('birthday');
+        )->oldest(\DB::raw('date_format(`birthday`, \'%m-%d\')'));
 
         return response()->json(
             new JsonSuccessResponse(
@@ -33,12 +33,35 @@ class BirthdayController extends Controller
         );
     }
 
-    public function sendGift(BirthdaySendGiftRequest $request): JsonResponse
+    public function sendGift(BirthdaySendGiftRequest $request, User $user): JsonResponse
     {
+        $params = $request->validated();
+        $today = today();
+        $avansParams = $params + [
+            'user_id' => \Auth::id(),
+            'type' => 'avans',
+            'day' =>  $today->day,
+            'month' => $today->month,
+            'year' => $today->year,
+            'comment' =>'Аванс в виде подаренной суммы на день рождения ' . $user->full_name,
+        ];
+        $bonusParams = $params + [
+            'user_id' => $user->id,
+            'type' => 'bonus',
+            'day' =>  $today->day,
+            'month' => $today->month,
+            'year' => $today->year,
+            'comment' =>'Бонус в виде подарка на день рождения от ' . \Auth::user()->full_name,
+        ];
+
+
         return response()->json(
             new JsonSuccessResponse(
                 __('model/birthday.send_gift'),
-                $request->validated()
+                [
+                    'avansData' => $avansParams,
+                    'bonusData' => $bonusParams
+                ]
             )
         );
     }

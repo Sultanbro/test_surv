@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Files;
+namespace App\Service\Files;
 
 use App\Entities\DataTransferObjects\FileStoreDTO;
 use App\Exceptions\News\BusinessLogicException;

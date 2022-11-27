@@ -1,9 +1,8 @@
 <template>
     <div class="col-9">
-        <news-create ref="newsCreate" @update-news-list="getPosts" :me="me"></news-create>
+        <news-create v-if="isRedactor" ref="newsCreate" @update-news-list="getPosts" :me="me"></news-create>
 
         <div class="news-container">
-
             <div class="news-container__header">
                 <span class="news-header__title">Новости</span>
                 <filter-component @searchNews="getPosts" ref="filterComponent" @toggleWhiteBg="showWhiteBg"/>
@@ -44,6 +43,7 @@ export default {
     components: {},
     data() {
         return {
+          isRedactor: true,
             posts: [],
             pinnedPosts: [],
             nextPageURL: null,
@@ -53,11 +53,11 @@ export default {
         }
     },
     mounted() {
+        this.isRedactor = this.$can('news_edit')
 
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const post_id = urlParams.get('post_id');
-
         if (post_id != null) {
             let params = {
                 params: '?post_id=' + post_id,

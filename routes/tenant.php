@@ -35,6 +35,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\AwardTypeController;
+use App\Http\Controllers\Birthday\BirthdayController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\CallibroController;
 use App\Http\Controllers\Course\RegressCourseController;
@@ -786,7 +787,7 @@ Route::middleware([
             Route::get('', [BirthdayController::class, 'index'])
                 ->name('index');
 
-            Route::post('{user_id}/send-gift', [BirthdayController::class, 'sendGift'])
+            Route::post('{user}/send-gift', [BirthdayController::class, 'sendGift'])
                 ->name('send_gift');
         });
 

@@ -96,15 +96,11 @@ export default {
             showModal: false,
             showSecondModal: false,
             summ: '',
-
             success: false,
         }
     },
     mounted() {
-        this.$eventBus.$on('hide-gift-popup', () => {
-            this.showModal = false;
-            this.showSecondModal = false;
-        });
+
     },
     methods: {
         togleShowModal(newValue) {
@@ -150,13 +146,36 @@ export default {
             await axios.post('birthdays/' + this.user.id + '/send-gift ', formData)
                 .then(res => {
                     console.log(res);
-                    this.success = true;
-                    setTimeout(() => {  this.success = false;}, 5000);
+                    this.createAvans(res.data.data)
+
                 })
                 .catch(res => {
                     console.log(res);
                 })
         },
+        async createAvans(data) {
+
+            await axios.post('/timetracking/salaries/update', data.avansData)
+                .then(res => {
+                  console.log(res)
+                  this.sendBonuses(data.bonusData)
+                })
+                .catch( res =>{
+                  console.log(res)
+                })
+        },
+        async sendBonuses(data) {
+          await axios.post('/timetracking/salaries/update', data)
+                .then(res => {
+                  console.log(res)
+                  this.success = true;
+                  setTimeout(() => {  this.success = false;}, 5000);
+                })
+                .catch( res =>{
+                  console.log(res)
+                })
+        },
+
     }
 }
 </script>

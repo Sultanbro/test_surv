@@ -7,11 +7,11 @@
                 }">
             <div class="news-item__header">
                 <div class="news-item__info">
-                    <img class="news-item__avatar" :src="currentPost.author.avatar">
+                    <img class="news-item__avatar" :src="currentPost.author?.avatar">
                     <div class="news-item__name-time">
                         <div class="news-item__name-access">
                             <div class="news-item__info-block">
-                                <span class="news-item__name">{{ currentPost.author.name }}</span>
+                                <span class="news-item__name">{{ currentPost.author?.name }}</span>
                                 <span class="news-item__time" v-html="currentPost.created_at"/>
                             </div>
                             <img src="/icon/news/some-icons/arrow-right.svg">
@@ -50,12 +50,12 @@
                                          src="/icon/news/news-popup/copy-link.svg">
                                     <span class="news-menu-popup__text" v-html="'Скопировать ссылку'"/>
                                 </div>
-                                <div v-show="currentPost.author.id == me.id" class="news-menu-popup__item"
+                                <div v-show="currentPost.author?.id == me?.id" class="news-menu-popup__item"
                                      @click="editPost">
                                     <img class="news-menu-popup__img" alt="img" src="/icon/news/news-popup/edit.svg">
                                     <span class="news-menu-popup__text" v-html="'Редактировать'"/>
                                 </div>
-                                <div v-show="currentPost.author.id == me.id" class="news-menu-popup__item"
+                                <div v-show="currentPost.author?.id == me?.id" class="news-menu-popup__item"
                                      @click="deletePost(currentPost.id)">
                                     <img class="news-menu-popup__img" alt="img" src="/icon/news/news-popup/delete.svg">
                                     <span class="news-menu-popup__text" v-html="'Удалить'"/>
@@ -89,10 +89,7 @@
                              @click="toggleShowComments">
                         <span class="news-item__footer-count">{{ currentPost.comments_count }}</span>
                     </div>
-                    <div class="news-item__footer-action">
-                        <img class="news-icon hover-pointer" src="/icon/news/post-actions/share.svg">
-                        <span class="news-item__footer-count">111</span>
-                    </div>
+
                     <div
                         v-show="this.currentPost.files.length != 0"
                         class="news-item__footer-action"
@@ -126,7 +123,7 @@
         </div>
 
         <div ref="NewsCommentInput" v-show="showComments" class="news-comment-store">
-            <img :src="me.avatar" class="news-comment-store__avatar">
+            <img :src="me?.avatar" class="news-comment-store__avatar">
             <div class="news-comment-store__form">
                 <input type="text" v-model="commentText" placeholder="Добавить комментарий" v-on:keyup.enter="sendComment(currentPost.id)">
                 <img class="hover-pointer" @click="sendComment(currentPost.id)" src="/icon/news/comments/send.svg">
@@ -166,10 +163,6 @@ export default {
     },
     mounted() {
         this.showFullContent = this.currentPost.is_pinned == false;
-
-        this.$eventBus.$on('hide-access-popup', () => {
-            this.userAccessListShow = false;
-        });
     },
     methods: {
         getFileTypeByExtension(extension) {

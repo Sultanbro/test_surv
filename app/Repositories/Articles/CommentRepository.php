@@ -4,6 +4,7 @@ namespace App\Repositories\Articles;
 
 
 use App\Entities\DataTransferObjects\News\CommentStoreDTO;
+use App\Models\Article\Article;
 use App\Models\Comment\Comment;
 use App\Repositories\Interfaces\Articles\CommentRepositoryInterface;
 

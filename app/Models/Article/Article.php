@@ -6,7 +6,7 @@ use App\Enums\ArticleAvailableForTypeEnum;
 use App\Filters\QueryFilter;
 use App\Models\Comment\Comment;
 use App\Models\File\File;
-use App\Models\News\Like;
+use App\Models\Like\Like;
 use App\Traits\Filterable;
 use App\User;
 use Eloquent;

@@ -63,7 +63,12 @@ import VueVideoPlayer from 'vue-video-player'
  
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
- 
+
+import CKEditor from '@ckeditor/ckeditor5-vue2';
+import VueObserveVisibility from 'vue-observe-visibility';
+
+Vue.use( CKEditor );
+Vue.use( VueObserveVisibility );
 
 Vue.use(DatePicker)
 

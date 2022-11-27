@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Like;
 
 use App\User;
 use Eloquent;
