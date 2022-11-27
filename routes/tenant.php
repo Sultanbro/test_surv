@@ -103,6 +103,13 @@ Route::middleware([
 
     WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
 
+    Route::get('/impersonate/{token}', function ($token) {
+        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
+    });
+    
+  
+ 
+
     // Authentication Routes...
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login']);
@@ -716,7 +723,9 @@ Route::middleware([
         'prefix'   => 'messenger/api',
     ], function() {
 
-        /**
+        Route::post('/chat/auth', 'ChatsController@pusherAuth')->name('api.pusher.auth');
+    
+        /** 
          * Get chats list
          */
         Route::get('/v2/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');

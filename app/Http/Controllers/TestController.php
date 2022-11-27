@@ -32,6 +32,7 @@ use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\TraineeReport;
 use App\Models\Bitrix\Lead;
+use App\Models\CentralUser;
 use App\Models\GroupUser;
 use App\Models\Tenant;
 use App\Salary;
@@ -42,19 +43,9 @@ class TestController extends Controller {
   
 	
 	public function test() { 
-		$nameFound = false;
+		$centralUser = CentralUser::with('tenants')->where('email', 'ali.akpanov@yandex.ru')->first();
 
-        do {
-
-            $domain = 'heu';
-
-            if(Tenant::where('id', $domain)->doesntExist()) {
-                $nameFound = true;
-            }
-
-        } while($nameFound == false);
-
-		dd($nameFound);
+		dd($centralUser->tenants());
 	}  
 
 	private function getSegmentAndSaveForLead($id) {

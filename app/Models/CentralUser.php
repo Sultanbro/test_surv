@@ -25,8 +25,8 @@ class CentralUser extends Model
     /**
      * Кабинеты user-a
      */
-    public function tenants(): \Illuminate\Database\Eloquent\Relations\belongsToMany
+    public function tenants(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class, 'tenant_user', 'tenant_id', 'user_id');
+        return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id');
     }
 }

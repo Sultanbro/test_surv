@@ -34,7 +34,6 @@ class ChatsController extends Controller {
             ],
         ] );
  
-        dd(Auth::user());
         // check if user authorized
         if ( Auth::check() ) {
             return response()->json( json_decode(MessengerFacade::pusherAuth(
