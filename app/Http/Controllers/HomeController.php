@@ -33,12 +33,7 @@ class HomeController extends Controller
 
     public function test(){
         
-        $c = (array)config();
-        dd($c['app']);
-        // foreach( as $key) {
-        //     dump($c[$key]); 
-        // }
-        dd( $c);
+        dd(config('session'));
     }
 
     public function myfunction($products, $field, $value)

@@ -33,6 +33,7 @@ use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\TraineeReport;
 use App\Models\Bitrix\Lead;
 use App\Models\GroupUser;
+use App\Models\Tenant;
 use App\Salary;
 use App\Service\Department\UserService;
 use Illuminate\Support\Facades\Http;
@@ -40,11 +41,20 @@ use Illuminate\Support\Facades\Http;
 class TestController extends Controller { 
   
 	
- 
-
-
 	public function test() { 
-		return $this['config']->get('app.debug');
+		$nameFound = false;
+
+        do {
+
+            $domain = 'heu';
+
+            if(Tenant::where('id', $domain)->doesntExist()) {
+                $nameFound = true;
+            }
+
+        } while($nameFound == false);
+
+		dd($nameFound);
 	}  
 
 	private function getSegmentAndSaveForLead($id) {

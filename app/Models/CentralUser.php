@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Tenant;
 
 class CentralUser extends Model
 {
@@ -20,4 +21,12 @@ class CentralUser extends Model
         'deleted_at',
         'password',
     ];
+
+    /**
+     * Кабинеты user-a
+     */
+    public function tenants(): \Illuminate\Database\Eloquent\Relations\belongsToMany
+    {
+        return $this->belongsToMany(Tenant::class, 'tenant_user', 'tenant_id', 'user_id');
+    }
 }
