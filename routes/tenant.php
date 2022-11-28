@@ -121,10 +121,8 @@ Route::middleware([
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
-
-
-    
- 
+    // admin routes 
+    Route::get('/admino', [\App\Http\Controllers\Admin\AdminController::class, 'index']);    
 
 
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
