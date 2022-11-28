@@ -284,10 +284,7 @@ class AwardService
             ->get()
             ->pluck('targetable_type','targetable_id');
 
-        error_log(json_encode($awards));
         foreach ($awards as $targetable_id => $targetable_type){
-            error_log($targetable_type);
-
 
             if ($targetable_type == self::GROUP){
                 $user_ids = collect( (new UserService)
