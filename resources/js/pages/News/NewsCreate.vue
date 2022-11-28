@@ -2,7 +2,7 @@
   <div class="d-flex flex-column">
     <div :class="'news-create ' + (editorOpen ? 'news-create--column' : '')" @click="toggleInput(true, null)">
       <div v-show="!editorOpen" class="news-create__img-placeholder">
-        <img class="news-create__avatar" alt="img" :src="me?.avatar">
+        <img class="news-create__avatar" alt="img" :src="me ? me.avatar : null">
         <span class="news-create__placeholder">Что у вас нового?</span>
       </div>
 
@@ -97,17 +97,17 @@
             <div
                 v-for="item in accessDictionaries.users"
                 :key="item.id"
-                v-show="item.name?.toLowerCase().includes(accessSearch.toLowerCase())"
+                v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
                 class="user-item"
-                @click="changeAccessList(item.id, item.name, 1, item?.avatar)">
-              <img :src="item?.avatar" class="user-item__avatar">
+                @click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)">
+              <img :src="item ? item.avatar : null" class="user-item__avatar">
               <div class="user-item__info">
                 <div class="user-item__sub">{{ item.position }}</div>
                 <div class="user-item__name">{{ item.name }}</div>
               </div>
               <label class="news-checkbox">
                 <input type="checkbox"
-                       @click="changeAccessList(item.id, item.name, 1, item?.avatar)"
+                       @click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
                        :checked="checked(item, 1) ? 'checked' : ''">
                 <span class="news-checkmark"></span>
               </label>
@@ -117,7 +117,7 @@
             <div
                 v-for="item in accessDictionaries.profile_groups"
                 :key="item.id"
-                v-show="item.name?.toLowerCase().includes(accessSearch.toLowerCase())"
+                v-show="item.name? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
                 class="user-item"
                 @click="changeAccessList(item.id, item.name, 2)">
               <div class="user-item__info">
@@ -135,7 +135,7 @@
             <div
                 v-for="item in accessDictionaries.positions"
                 :key="item.id"
-                v-show="item.name?.toLowerCase().includes(accessSearch.toLowerCase())"
+                v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
                 class="user-item"
                 @click="changeAccessList(item.id, item.name, 3)">
               <div class="user-item__info">
@@ -413,7 +413,7 @@ export default {
 
           dictionaries.forEach(el => {
             if (el.id == item.id && item.type == 1) {
-              image = el?.avatar;
+              image = el ? el.avatar : '';
             }
           });
 
