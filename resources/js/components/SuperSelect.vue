@@ -155,7 +155,7 @@ export default {
                     this.addSelectedAttr();
                 })
         }
-        this.valueList = [];
+        this.valueList = this.values;
         if(this.one_choice && this.valueList.length > 0) this.one_choice_made = true;
         this.checkSelectedAll(); 
         if(this.onlytype > 0){
