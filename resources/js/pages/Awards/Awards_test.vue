@@ -61,16 +61,19 @@
                 <BButton variant="light" @click="modal = !modal">Отмена</BButton>
             </template>
         </b-modal>
+        <saveCertificate/>
     </div>
 </template>
 
 <script>
     import EditAwardSidebar from "./EditAwardSidebar(delete).vue";
+    import saveCertificate from "./types/saveCertificate";
 
     export default {
         name: "Awards",
         components: {
             EditAwardSidebar,
+            saveCertificate
         },
         data() {
             return {
@@ -89,14 +92,6 @@
         },
         mounted(){
             this.getAwards();
-            this.axios
-            .get('http://bp.localhost:8000/award-types/get')
-            .then(res => {
-                console.log(res);
-            })
-            .catch(err=> {
-                console.log(err);
-            })
         },
         computed:{
             tableData() {
