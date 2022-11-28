@@ -24,7 +24,7 @@ class AwardsByTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            'award_type_id'  => 'required|numeric|exists:award_types,id',
+            'key'  => 'required|string|exists:award_types,key',
             'user_id'  => 'numeric|exists:users,id',
         ];
     }

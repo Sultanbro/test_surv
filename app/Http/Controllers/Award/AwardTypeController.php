@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Award;
 
-use App\Models\AwardType;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAwardTypeRequest;
 use App\Http\Requests\UpdateAwardTypeRequest;
+use App\Models\Award\AwardType;
 use App\Service\Awards\AwardService;
 use Exception;
 use Illuminate\Http\JsonResponse;

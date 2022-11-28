@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\AwardType;
+use App\Models\Award\AwardType;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -25,7 +25,7 @@ class AwardTypePolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Models\AwardType  $awardType
+     * @param  \App\Models\Award\AwardType  $awardType
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function view(User $user, AwardType $awardType)
@@ -48,7 +48,7 @@ class AwardTypePolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Models\AwardType  $awardType
+     * @param  \App\Models\Award\AwardType  $awardType
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function update(User $user, AwardType $awardType)
@@ -60,7 +60,7 @@ class AwardTypePolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Models\AwardType  $awardType
+     * @param  \App\Models\Award\AwardType  $awardType
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function delete(User $user, AwardType $awardType)
@@ -72,7 +72,7 @@ class AwardTypePolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Models\AwardType  $awardType
+     * @param  \App\Models\Award\AwardType  $awardType
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function restore(User $user, AwardType $awardType)
@@ -84,7 +84,7 @@ class AwardTypePolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Models\AwardType  $awardType
+     * @param  \App\Models\Award\AwardType  $awardType
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function forceDelete(User $user, AwardType $awardType)

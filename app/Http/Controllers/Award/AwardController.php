@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Award;
 
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\User;
 use App\Http\Requests\AwardsByTypeRequest;
 use App\Http\Requests\CourseAwardRequest;
 use App\Http\Requests\RewardRequest;
 use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
-use App\Models\Award;
+use App\Models\Award\Award;
 use App\Repositories\AwardRepository;
+use App\Service\Awards\AwardBuilder;
 use App\Service\Awards\AwardService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -68,11 +71,15 @@ class AwardController extends Controller
      */
     public function awardsByType(AwardsByTypeRequest $request)
     {
-        $user_id = Auth::id() ?? 5;
-        if ($request->has('user_id')){
-            $user_id = $request->input('user_id');
+        $params = $request->validated();
+        $params['user_id'] = Auth::id() ?? 5;
+        if ($request->has('user_id')) {
+            $params['user_id'] = $request->input('user_id');
         }
-        $response = $this->awardService->awardsByType($request, $user_id);
+
+        $key = $request->input('key');
+        $awardBuilder = app(AwardBuilder::class);
+        $response = $awardBuilder->handle($key)->fetch($params);
 
         return \response()->success($response);
     }

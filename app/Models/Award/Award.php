@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Award;
 
-use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

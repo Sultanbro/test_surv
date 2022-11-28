@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Award;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +14,7 @@ class AwardType extends Model
 
     protected $fillable = [
         'name',
+        'key',
         'description'
     ];
 

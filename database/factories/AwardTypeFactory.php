@@ -6,7 +6,7 @@ use Faker\Factory as Faker;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AwardType>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Award\AwardType>
  */
 class AwardTypeFactory extends Factory
 {

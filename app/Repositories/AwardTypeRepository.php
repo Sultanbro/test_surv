@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repositories;
-use App\Models\AwardType as Model;
+use App\Models\Award\AwardType as Model;
 
 class AwardTypeRepository extends CoreRepository
 {
