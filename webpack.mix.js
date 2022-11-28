@@ -23,17 +23,6 @@ mix.js('resources/js/app.js', 'public/js').vue()
 mix.webpackConfig({
     resolve: {
         fallback: { "timers": require.resolve('timers-browserify') }
-    },
-    module: {
-        rules: [
-            {
-                test: /\.vue$/,
-                loader: 'vue-loader',
-                options: {
-                    compiler: require('vue-template-babel-compiler')
-                }
-            }
-        ]
     }
 });
 
