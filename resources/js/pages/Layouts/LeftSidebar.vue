@@ -128,7 +128,7 @@ export default {
                   href: '/news',
                   icon: 'icon-nd-news',
                   height: 0,
-                  hide: !this.$can('news_edit')
+                  hide: !this.$can('table_view')
                 },
                 {
                     name: 'Структура',
