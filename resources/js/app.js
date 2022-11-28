@@ -63,7 +63,12 @@ import VueVideoPlayer from 'vue-video-player'
  
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
- 
+
+import CKEditor from '@ckeditor/ckeditor5-vue2';
+import VueObserveVisibility from 'vue-observe-visibility';
+
+Vue.use( CKEditor );
+Vue.use( VueObserveVisibility );
 
 Vue.use(DatePicker)
 
@@ -252,6 +257,23 @@ Vue.component('t-stats-bonus', require('./pages/kpi/StatsTableBonus.vue').defaul
 Vue.component('t-stats-quartal', require('./pages/kpi/StatsTableQuartal.vue').default); // kpi
 Vue.component('bonuses', require('./pages/kpi/Bonuses.vue').default); // kpi
 Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').default); // kpi
+
+
+// NEWS
+
+Vue.component('news-pages', require('./pages/News/NewsPages').default); // новостная лента раздел
+Vue.component('news-feed', require('./pages/News/NewsFeed').default); // новостная лента раздел
+Vue.component('news-create', require('./pages/News/NewsCreate').default);
+Vue.component('drop-zone', require('./pages/News/DropZone').default);
+Vue.component('post-component', require('./pages/News/PostComponent').default);
+Vue.component('comments-component', require('./pages/News/CommentsComponent').default);
+Vue.component('filter-component', require('./pages/News/FilterComponent').default);
+Vue.component('reactions', require('./pages/News/ReactionComponent').default);
+
+Vue.component('birthday-feed', require('./pages/News/BirthdayFeed').default);
+Vue.component('birthday-user', require('./pages/News/BirthdayUser').default);
+
+
 
 // temp
 Vue.component('profile-salary-info', require('./pages/ProfileSalaryInfo.vue').default); 

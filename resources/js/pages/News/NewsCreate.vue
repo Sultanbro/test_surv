@@ -1,0 +1,589 @@
+<template>
+  <div class="d-flex flex-column">
+    <div :class="'news-create ' + (editorOpen ? 'news-create--column' : '')" @click="toggleInput(true, null)">
+      <div v-show="!editorOpen" class="news-create__img-placeholder">
+        <img class="news-create__avatar" alt="img" :src="me?.avatar">
+        <span class="news-create__placeholder">Что у вас нового?</span>
+      </div>
+
+      <img v-show="!editorOpen"
+           class="news-create__link news-icon"
+           alt="img"
+           @click="toggleInput(true, true, true)"
+           src="/icon/news/create-post/link.svg"/>
+
+      <input type="text" id="newsCreateInput" ref="newsCreateInput" placeholder="Заголовок новости"
+             v-model="postTitle" v-show="editorOpen"
+             class="news-create__title">
+
+      <span class="news-create__title-error" v-show="titleError" v-html="'Необходимо заполнить заголовок.'"/>
+    </div>
+
+    <div v-show="editorOpen" class="news-create__form">
+      <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"/>
+
+      <span class="news-create__content-error" v-show="contentError"
+            v-html="'Необходимо заполнить контент новости.'"/>
+
+      <div class="news-create__access-container">
+        <div
+            v-show="availableToEveryone"
+            @click="toggleAvailableToEveryone(!availableToEveryone)"
+            :class="'access-item ' + 'access-item--active'">
+          <span v-html="'Всем пользователям'"></span>
+          <img src="/icon/news/create-post/remove.svg">
+        </div>
+
+        <div v-for="item in accessList"
+             :class="'access-item access-item--active ' + (item.image == null ? '' : 'access-item--with-img')">
+          <img v-show="item.image != null" class="access-item__img" :src="item.image">
+          <span v-html="item.name"/>
+          <img src="/icon/news/create-post/remove.svg"
+               @click="changeAccessList(item.id, item.name, item.type)">
+        </div>
+
+        <div class="access-item__add" @click="toggleAccessModal(true)">
+          <img src="/icon/news/create-post/add-new.svg">
+          <span>Добавить ещё</span>
+
+        </div>
+      </div>
+
+      <span
+          class="news-create__content-error"
+          v-show="availableError"
+          v-html="'Необходимо указать для кого предназначена новость.'"/>
+    </div>
+
+    <div v-show="editorOpen"
+         :class="'news-create__bottom-menu ' + (fileInputOpen == true ? 'without-border-radius' : '')">
+      <img class="news-icon" src="/icon/news/create-post/link.svg" @click="toggleInput(true, !fileInputOpen)">
+      <a class="news-create__submit" @click="isEdit == false ? createPost() : updatePost()">
+        <span v-html="isEdit ? 'Сохранить' : 'Отправить'"/>
+      </a>
+    </div>
+
+    <div v-show="editorOpen && fileInputOpen" class="news-create__files">
+      <drop-zone ref="dropZone" @sendFiles="updateFileList"></drop-zone>
+    </div>
+
+    <div v-show="showAccessModal" class="access-modal-bg" @click.self="toggleAccessModal(false)">
+      <div class="access-modal">
+
+        <div class="access-modal__tabs">
+          <div :class="'access-modal__tab ' + (currentAccessTab == 1 ?'access-modal__tab--active' : '')"
+               @click="changeAccessTab(1)">Сотрудники
+          </div>
+          <div :class="'access-modal__tab ' + (currentAccessTab == 2 ?'access-modal__tab--active' : '')"
+               @click="changeAccessTab(2)">Отделы
+          </div>
+          <div :class="'access-modal__tab ' + (currentAccessTab == 3 ?'access-modal__tab--active' : '')"
+               @click="changeAccessTab(3)">Должности
+          </div>
+          <div :class="'access-modal__tab'" @click="toggleAvailableToEveryone(true)">Все
+          </div>
+        </div>
+
+        <div class="access-modal__search">
+          <img class="news-icon" src="/icon/news/filter/search.svg">
+          <input type="text"
+                 v-model="accessSearch"
+                 class="access-modal__search-input"
+                 placeholder="Быстрый поиск">
+        </div>
+
+        <div class="user-list">
+          <div v-show="currentAccessTab == 1" class="user-list__container">
+            <div
+                v-for="item in accessDictionaries.users"
+                :key="item.id"
+                v-show="item.name?.toLowerCase().includes(accessSearch.toLowerCase())"
+                class="user-item"
+                @click="changeAccessList(item.id, item.name, 1, item?.avatar)">
+              <img :src="item?.avatar" class="user-item__avatar">
+              <div class="user-item__info">
+                <div class="user-item__sub">{{ item.position }}</div>
+                <div class="user-item__name">{{ item.name }}</div>
+              </div>
+              <label class="news-checkbox">
+                <input type="checkbox"
+                       @click="changeAccessList(item.id, item.name, 1, item?.avatar)"
+                       :checked="checked(item, 1) ? 'checked' : ''">
+                <span class="news-checkmark"></span>
+              </label>
+            </div>
+          </div>
+          <div v-show="currentAccessTab == 2" class="user-list__container">
+            <div
+                v-for="item in accessDictionaries.profile_groups"
+                :key="item.id"
+                v-show="item.name?.toLowerCase().includes(accessSearch.toLowerCase())"
+                class="user-item"
+                @click="changeAccessList(item.id, item.name, 2)">
+              <div class="user-item__info">
+                <div class="user-item__name">{{ item.name }}</div>
+              </div>
+              <label class="news-checkbox">
+                <input type="checkbox"
+                       @click="changeAccessList(item.id, item.name, 2)"
+                       :checked="checked(item, 2) ? 'checked' : ''">
+                <span class="news-checkmark"></span>
+              </label>
+            </div>
+          </div>
+          <div v-show="currentAccessTab == 3" class="user-list__container">
+            <div
+                v-for="item in accessDictionaries.positions"
+                :key="item.id"
+                v-show="item.name?.toLowerCase().includes(accessSearch.toLowerCase())"
+                class="user-item"
+                @click="changeAccessList(item.id, item.name, 3)">
+              <div class="user-item__info">
+                <div class="user-item__name">{{ item.name }}</div>
+              </div>
+              <label class="news-checkbox">
+                <input type="checkbox"
+                       @click="changeAccessList(item.id, item.name, 3)"
+                       :checked="checked(item, 3) ? 'checked' : ''">
+                <span class="news-checkmark"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="access-modal__footer">
+                    <span class="access-modal__selected-count"
+                          v-html="enumerate(accessList.length, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessList.length + ' ' + enumerate(accessList.length, ['элемент', 'элемента', 'элементов'])"/>
+          <a class="access-modal__add-employee hover-pointer">
+            <img src="/icon/news/access-modal/plus-accent.svg">
+            <span v-html="'Пригласить сотрудника'"/>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import ClassicEditor from '/ckeditor5-custom/build/ckeditor';
+
+function SimpleUploadAdapterPlugin(editor) {
+  editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+    return new UploadAdapter(loader);
+  };
+}
+
+class UploadAdapter {
+  constructor(loader) {
+    this.loader = loader;
+  }
+
+  upload() {
+    return this.loader.file
+        .then(file => new Promise((resolve, reject) => {
+          this._initRequest();
+          this._initListeners(resolve, reject, file);
+          this._sendRequest(file);
+        }))
+  }
+
+  abort() {
+    if (this.xhr) {
+      this.xhr.abort();
+    }
+  }
+
+  _initRequest() {
+    const xhr = this.xhr = new XMLHttpRequest();
+    xhr.open('POST', "/uploads", true);
+    xhr.setRequestHeader('x-csrf-token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    xhr.responseType = 'json';
+  }
+
+  _initListeners(resolve, reject, file) {
+    const xhr = this.xhr;
+    const loader = this.loader;
+    const genericErrorText = `Couldn't upload file: ${file.name}.`;
+
+    xhr.addEventListener('error', () => reject(genericErrorText));
+    xhr.addEventListener('abort', () => reject());
+    xhr.addEventListener('load', () => {
+      const response = xhr.response;
+
+      if (!response || response.error) {
+        return reject(response && response.error ? response.error.message : genericErrorText);
+      }
+
+      resolve({
+        default: response.data.url
+      });
+    });
+
+    if (xhr.upload) {
+      xhr.upload.addEventListener('progress', evt => {
+        if (evt.lengthComputable) {
+          loader.uploadTotal = evt.total;
+          loader.uploaded = evt.loaded;
+        }
+      });
+    }
+  }
+
+  _sendRequest(file) {
+    const data = new FormData();
+    data.append('file', file);
+    this.xhr.send(data);
+  }
+}
+
+
+export default {
+  name: "NewsCreate",
+  props: {
+    me: {
+      required: true
+    },
+  },
+  data() {
+    return {
+      accessDictionaries: {
+        positions: [],
+        profile_groups: [],
+        users: [],
+      },
+
+      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+
+      editor: ClassicEditor,
+      editorData: '',
+      editorConfig: {
+        extraPlugins: [SimpleUploadAdapterPlugin,],
+      },
+
+      editorOpen: false,
+      fileInputOpen: false,
+
+      accessSearch: '',
+
+      currentAccessTab: 1,
+
+      showAccessModal: false,
+      accessList: [],
+
+      availableToEveryone: false,
+
+      postTitle: '',
+      postFiles: [],
+
+      isEdit: false,
+      editableId: null,
+
+      //Ошибки валидации
+      titleError: false,
+      contentError: false,
+      availableError: false,
+    }
+  },
+  mounted() {
+    this.getAccessDictionaries();
+  },
+  methods: {
+
+    toggleAvailableToEveryone(value) {
+      this.accessList = [];
+      this.availableToEveryone = value;
+      if (value) {
+        this.toggleAccessModal();
+      }
+    },
+
+    enumerate(num, dec) {
+      if (num > 100) num = num % 100;
+      if (num <= 20 && num >= 10) return dec[2];
+      if (num > 20) num = num % 10;
+      return num === 1 ? dec[0] : num > 1 && num < 5 ? dec[1] : dec[2];
+    },
+
+    toggleAccessModal(show) {
+      if (show) {
+        let scrollTop = document.documentElement.scrollTop;
+        let scrollLeft = document.documentElement.scrollLeft;
+        window.onscroll = function () {
+          window.scrollTo(scrollLeft, scrollTop);
+        };
+      } else {
+        window.onscroll = function () {
+        };
+      }
+      this.showAccessModal = show;
+    },
+
+    toggleInput(editorOpen, fileInputOpen, fakeClick = null) {
+      this.editorOpen = editorOpen;
+
+      if (editorOpen && fileInputOpen == null) {
+        this.$refs.newsCreateInput.focus();
+      }
+
+      if (fakeClick != null) {
+        this.$refs.dropZone.fakeClick();
+      }
+
+      if (fileInputOpen != null) {
+        this.fileInputOpen = fileInputOpen;
+      }
+    },
+
+    changeAccessTab(newTab) {
+      this.currentAccessTab = newTab;
+    },
+
+    updateFileList(data) {
+      this.postFiles = data.newList;
+    },
+
+    changeAccessList(id, name, type, image = null) {
+      let element = this.accessList.find(item => ((item.id == id) && (item.type == type)));
+
+      if (!element) {
+        this.$set(this.accessList, this.accessList.length, {
+          id: id,
+          name: name,
+          image: image,
+          type: type,
+        });
+
+        if(this.accessList.length > 0) {
+          this.availableToEveryone = false;
+        }
+
+        return;
+      }
+
+
+      const el = this.accessList.filter(item => {
+        return !((item.id != id) || (item.type != type));
+      })[0];
+      this.accessList.splice(this.accessList.indexOf(el), 1);
+
+      if(this.accessList.length > 0) {
+        this.availableToEveryone = false;
+      }
+    },
+
+    clearAccessList() {
+      this.accessList = [];
+    },
+
+    checked(item, type) {
+      return this.accessList.some(el => {
+        return el.id === item.id && el.type === type
+      });
+    },
+
+    getOldData(data) {
+      this.toggleInput(true, data.files.length != 0);
+
+      this.accessList = [];
+
+      if (data.available_for != null) {
+
+        if(data.available_for.length > 0) {
+          this.availableToEveryone = false;
+        }
+
+        data.available_for.forEach(item => {
+          let dictionaries = [];
+          let image = null;
+
+          switch (item.type) {
+            case 1: {
+              dictionaries = this.accessDictionaries.users;
+              break;
+            }
+            case 2: {
+              dictionaries = this.accessDictionaries.profile_groups;
+              break;
+            }
+            case 3: {
+              dictionaries = this.accessDictionaries.positions;
+              break;
+            }
+          }
+
+          dictionaries.forEach(el => {
+            if (el.id == item.id && item.type == 1) {
+              image = el?.avatar;
+            }
+          });
+
+          this.$set(this.accessList, this.accessList.length, {
+            id: item.id,
+            name: item.name,
+            image: image ?? null,
+            type: item.type,
+          });
+        });
+      } else {
+        this.availableToEveryone = true;
+      }
+
+      this.editableId = data.id;
+      this.postTitle = data.title;
+      this.editorData = data.content;
+
+      this.$refs.dropZone.manualyAddFiles(data.files);
+
+      this.isEdit = true;
+    },
+
+    async createPost() {
+      let formData = new FormData;
+
+      this.titleError = false;
+      this.contentError = false;
+      this.availableError = false;
+
+      if (this.availableToEveryone == false && this.accessList.length == 0) {
+        this.availableError = true;
+      }
+
+      if (this.postTitle == '') {
+        this.titleError = true;
+      }
+
+      if (this.editorData == '') {
+        this.contentError = true;
+      }
+
+      if (this.titleError || this.contentError || this.availableError) {
+        return;
+      }
+
+      if (this.availableToEveryone) {
+        formData.append('available_for', '');
+      } else {
+        formData.append('available_for', JSON.stringify(this.accessList));
+      }
+
+      this.accessList = [];
+      this.availableToEveryone = false;
+
+      if (this.postFiles.length != 0) {
+        let fileIds = [];
+
+        this.postFiles.forEach(item => {
+          fileIds.push(item.id);
+        });
+
+        formData.append('files', JSON.stringify(fileIds));
+      }
+
+      formData.append('title', this.postTitle);
+      formData.append('content', this.editorData);
+
+      await axios.post('/news', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+          .then(response => {
+            this.$emit('update-news-list');
+            this.postFiles = [];
+            this.postTitle = '';
+            this.editorData = '';
+            this.clearAccessList();
+            this.$refs.dropZone.removeAllFiles();
+            this.toggleInput(false, false);
+          })
+          .catch(response => {
+            console.log(response)
+          });
+      this.isEdit = false;
+    },
+
+    async updatePost() {
+      let formData = new FormData;
+
+      this.titleError = false;
+      this.contentError = false;
+      this.availableError = false;
+
+      if (this.availableToEveryone == false && this.accessList.length == 0) {
+        this.availableError = true;
+      }
+
+      if (this.postTitle == '') {
+        this.titleError = true;
+      }
+
+      if (this.editorData == '') {
+        this.contentError = true;
+      }
+
+      if (this.titleError || this.contentError || this.availableError) {
+        return;
+      }
+
+      if (this.availableToEveryone) {
+        formData.append('available_for', '');
+      } else {
+        formData.append('available_for', JSON.stringify(this.accessList));
+      }
+
+      this.accessList = [];
+      this.availableToEveryone = false;
+
+
+      if (this.postFiles.length != 0) {
+        let fileIds = [];
+
+        this.postFiles.forEach(item => {
+          fileIds.push(item.id);
+        });
+
+        formData.append('files', JSON.stringify(fileIds));
+      }
+
+      formData.append('title', this.postTitle);
+      formData.append('content', this.editorData);
+
+      await axios.put('/news/' + this.editableId, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+          .then(response => {
+            this.$emit('update-news-list');
+            this.postFiles = [];
+            this.postTitle = '';
+            this.editorData = '';
+            this.editableId = null;
+            this.clearAccessList();
+            this.$refs.dropZone.removeAllFiles();
+            this.toggleInput(false, false);
+          })
+          .catch(response => {
+            console.log(response)
+          });
+      this.isEdit = false;
+    },
+
+    async getAccessDictionaries() {
+      let loader = this.$loading.show();
+
+      await axios.get('/dictionaries')
+          .then(res => {
+            this.accessDictionaries = res.data.data;
+            loader.hide();
+          })
+          .catch(res => {
+            console.log(res)
+          });
+    }
+
+  }
+}
+</script>

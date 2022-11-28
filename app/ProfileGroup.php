@@ -2,10 +2,12 @@
 
 namespace App;
 
+use App\Helpers\FileHelper;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Spatie\Permission\Traits\HasRoles;
@@ -82,6 +84,16 @@ class ProfileGroup extends Model
             ->withPivot(['from', 'to'])
             ->withTimestamps();
     }
+
+    /**
+     * Returns users relation
+     * @return BelongsToMany
+     */
+    public function profileGroupUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'group_user', 'group_id', 'user_id');
+    }
+
 
     /**
      * @return MorphMany

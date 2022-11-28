@@ -6,6 +6,7 @@ use App\Classes\Helpers\Phone;
 use App\External\Bitrix\Bitrix;
 use App\Http\Controllers\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
+use App\Models\Article\Article;
 use App\Models\Award;
 use App\Models\AwardUser;
 use App\Models\CentralUser;
@@ -93,6 +94,33 @@ class User extends Authenticatable implements Authorizable
      */
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
 
+    public function favouriteArticles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_favourites_users',
+            'user_id',
+            'article_id',
+        );
+    }
+    public function pinnedArticles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_pins_users',
+            'user_id',
+            'article_id',
+        );
+    }
+    public function views(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_views_users',
+            'user_id',
+            'article_id'
+        );
+    }
     public function taxes(): HasMany
     {
         return $this->hasMany(Tax::class, 'user_id');
@@ -1051,5 +1079,19 @@ class User extends Authenticatable implements Authorizable
         return !$this->readCorpBook()
             ? \App\KnowBase::getRandomPage()
             : null;
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->name . ' ' . $this->last_name;
+    }
+
+    public function getImgUrlPathAttribute(): string
+    {
+        if ($this->img_url){
+            return '/users_img/' .$this->img_url;
+
+        }
+        return '/user.png';
     }
 }
