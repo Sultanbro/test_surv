@@ -124,10 +124,11 @@ export default {
                     height: 0
                 },
                 {
-                  name: 'NEWS',
+                  name: 'Новости',
                   href: '/news',
                   icon: 'icon-nd-news',
                   height: 0,
+                  hide: !this.$can('news_edit')
                 },
                 {
                     name: 'Структура',
