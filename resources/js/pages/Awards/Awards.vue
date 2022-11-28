@@ -74,6 +74,12 @@
         },
         data() {
             return {
+                img: {
+                    name: 'Хайруллин Тимур',
+                    certificate: 'За лучшие заслуги лучших',
+                    date: Date.now().toLocaleDateString,
+                    time: 'Пройдено за 50 часа(ов) вместе с домашними заданиями'
+                },
                 modal: false,
                 itemRemove: null,
                 showEditAwardSidebar: false,
@@ -83,6 +89,14 @@
         },
         mounted(){
             this.getAwards();
+            this.axios
+            .get('http://bp.localhost:8000/award-types/get')
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err=> {
+                console.log(err);
+            })
         },
         computed:{
             tableData() {

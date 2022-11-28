@@ -66,6 +66,7 @@ class SettingController extends Controller
      *  ]
      * 
      */
+    
     public function getSettings(Request $request)
     {
         $keys = $this->setting_names($request->type);

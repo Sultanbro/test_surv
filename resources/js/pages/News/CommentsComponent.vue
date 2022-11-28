@@ -1,0 +1,159 @@
+<template>
+    <div class="news-item__comments">
+        <div class="news-comments" v-for="comment in comments" :key="comment.id + comment.content">
+            <div class="news-comment">
+                <img class="news-comment__avatar" :src="comment.author.avatar">
+                <div class="news-comment__content">
+                    <span class="news-comment__name">{{ comment.author.name }}</span>
+                    <span class="news-comment__text">{{ comment.content }}</span>
+                    <div class="news-comment__footer news-footer">
+                        <div class="news-footer__main">
+                            <div class="news-comment__action">{{ comment.created_at }}</div>
+                            <div class="news-comment__action hover-pointer"
+                                 @click="sendData(comment.id, comment.author.name)">Ответить
+                            </div>
+                            <div class="news-comment__action hover-pointer">Поделиться</div>
+                            <div
+                                v-show="comment.author.id == me.id"
+                                class="news-comment__action hover-pointer"
+                                @click="destroyComment(comment.id)"
+                                v-html="'Удалить'">
+                            </div>
+                        </div>
+                        <div class="news-footer__reactions">
+                            <img class="hover-pointer" v-if="comment.is_liked == true" @click="likeComment(comment.id)"
+                                 src="/icon/news/post-actions/like-active.svg">
+                            <img v-else class="news-icon hover-pointer" @click="likeComment(comment.id)"
+                                 src="/icon/news/post-actions/like.svg">
+                            <span class="news-item__footer-count">{{ comment.likes_count }}</span>
+                        </div>
+                    </div>
+
+                    <reactions
+                        :articleId="postId"
+                        :commentId="comment.id"
+                        :reactions="comment.reactions"/>
+                </div>
+            </div>
+
+            <div class="news-comment news-comment--child" v-for="childComment in comment.comments" :key="childComment.id  + childComment.content">
+                <img class="news-comment__avatar" :src="childComment.author.avatar">
+                <div class="news-comment__content">
+                    <span class="news-comment__name">{{ childComment.author.name }}</span>
+                    <span class="news-comment__text">{{ childComment.content }}</span>
+                    <div class="news-comment__footer news-footer">
+                        <div class="news-footer__main">
+                            <div class="news-comment__action">{{ childComment.created_at }}</div>
+                            <div class="news-comment__action hover-pointer"
+                                 @click="sendData(comment.id, childComment.author.name)">Ответить
+                            </div>
+                            <div class="news-comment__action hover-pointer">Поделиться</div>
+                            <div
+                                v-show="childComment.author.id == me.id"
+                                class="news-comment__action hover-pointer"
+                                @click="destroyComment(childComment.id)"
+                                v-html="'Удалить'"/>
+                        </div>
+                        <div class="news-footer__reactions">
+                            <img class="hover-pointer" v-if="childComment.is_liked == true"
+                                 @click="likeComment(childComment.id)"
+                                 src="/icon/news/post-actions/like-active.svg">
+                            <img v-else class="news-icon hover-pointer" @click="likeComment(childComment.id)"
+                                 src="/icon/news/post-actions/like.svg">
+                            <span class="news-item__footer-count">{{ childComment.likes_count }}</span>
+                        </div>
+                    </div>
+
+                    <reactions
+                        :articleId="postId"
+                        :commentId="childComment.id"
+                        :reactions="childComment.reactions"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+
+export default {
+    name: "CommentsComponent",
+    props: {
+        me: {
+            required: true
+        }
+    },
+    data() {
+        return {
+
+            comments: [],
+            comments_count: 0,
+            postId: null,
+        }
+    },
+
+    methods: {
+
+
+        async getComments(postId) {
+            this.postId = postId;
+
+            await axios.get('/news/' + postId + '/comments')
+                .then(response => {
+                    this.comments = response.data.data.comments;
+                    this.comments_count = response.data.data.comments_count;
+
+                    this.$emit('changeCommentsCount', {
+                        comments_count: this.comments_count,
+                    });
+                })
+                .catch(response => {
+                });
+        },
+
+        async likeComment(commentId) {
+            await axios.post('news/' + this.postId + '/comments/' + commentId + '/like')
+                .then(response => {
+                    this.changeLikeComment(commentId, response.data.data)
+                })
+                .catch(response => {
+                });
+        },
+
+        sendData(parentId, name) {
+            this.$emit('send', {
+                parentId: parentId,
+                userName: name
+            })
+        },
+
+        async destroyComment(commentId) {
+            await axios.delete('news/' + this.postId + '/comments/' + commentId)
+                .then(res => {
+                    this.getComments(this.postId);
+                })
+                .catch(res => {
+                    console.log(res);
+                });
+        },
+
+        changeLikeComment(searchId, data) {
+            let comment = this.comments.find(comment => comment.id === searchId);
+
+            if (comment != null) {
+                comment.likes_count = data.likes_count;
+                comment.is_liked = data.is_liked;
+            }
+
+            this.comments.forEach(comment => {
+                comment.comments.forEach(childComment => {
+                    if (childComment.id == searchId) {
+                        childComment.likes_count = data.likes_count;
+                        childComment.is_liked = data.is_liked;
+                    }
+                })
+            });
+        }
+    }
+}
+</script>

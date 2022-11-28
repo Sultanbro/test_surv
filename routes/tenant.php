@@ -3,75 +3,78 @@
 declare(strict_types=1);
 
 
+use App\Http\Controllers\Admin\ActivityController;
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\BpartnersController;
+use App\Http\Controllers\Admin\CheckListController;
+use App\Http\Controllers\Admin\DecompositionController;
+use App\Http\Controllers\Admin\ExamController;
+use App\Http\Controllers\Admin\FineController;
+use App\Http\Controllers\Admin\GroupAnalyticsController;
+use App\Http\Controllers\Admin\KpiController as OldKpiController;
+use App\Http\Controllers\Admin\LeadController;
+use App\Http\Controllers\Admin\NpsController;
+use App\Http\Controllers\Admin\PositionController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\QualityController;
+use App\Http\Controllers\Admin\QuartalBonusController;
+use App\Http\Controllers\Admin\SalaryController;
+use App\Http\Controllers\Admin\TimetrackingController;
+use App\Http\Controllers\Admin\TopController;
+use App\Http\Controllers\Admin\TraineeController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserFineController;
 use App\Http\Controllers\Admin\UserProfileController;
+use App\Http\Controllers\Article\ArticleActionController;
+use App\Http\Controllers\Article\ArticleController;
+use App\Http\Controllers\Article\Comments\ArticleCommentActionController;
+use App\Http\Controllers\Article\Comments\ArticleCommentController;
+use App\Http\Controllers\Article\NewsController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\AwardTypeController;
-use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\Birthday\BirthdayController;
+use App\Http\Controllers\CabinetController;
+use App\Http\Controllers\CallibroController;
 use App\Http\Controllers\Course\RegressCourseController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseResultController;
+use App\Http\Controllers\Department\UserController as DepartmentUserController;
+use App\Http\Controllers\Dictionary\DictionaryController;
+use App\Http\Controllers\Files\FileController;
+use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\GlossaryController;
+use App\Http\Controllers\GroupsController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\IntellectController;
+use App\Http\Controllers\KnowBaseController;
+use App\Http\Controllers\Kpi\BonusController;
+use App\Http\Controllers\Kpi\IndicatorController;
+use App\Http\Controllers\Kpi\KpiController as KpisController;
+use App\Http\Controllers\Kpi\KpiStatController;
+use App\Http\Controllers\Kpi\QuartalPremiumController;
+use App\Http\Controllers\LearningController;
+use App\Http\Controllers\LinkController;
+use App\Http\Controllers\MapsController;
+use App\Http\Controllers\MyCourseController;
+use App\Http\Controllers\NotificationControlller;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProfileSalaryController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\UpbookController;
+use App\Http\Controllers\Uploads\UploadController;
+use App\Http\Controllers\Video\VideoCategoryController;
+use App\Http\Controllers\Video\VideoController;
+use App\Http\Controllers\Video\VideoGroupController;
+use App\Http\Controllers\Video\VideoPlaylistController;
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
+use Eddir\Messenger\Handlers\MessengerWebSocketHandler;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
-
-use App\Http\Controllers\Kpi\KpiController as KpisController;
-use App\Http\Controllers\Kpi\BonusController;
-use App\Http\Controllers\Kpi\QuartalPremiumController;
-use App\Http\Controllers\Kpi\KpiStatController;
-use App\Http\Controllers\Kpi\IndicatorController;
-
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\TraineeController;
-use App\Http\Controllers\Admin\QuartalBonusController;
-use App\Http\Controllers\Admin\TimetrackingController;
-use App\Http\Controllers\Admin\KpiController as OldKpiController;
-use App\Http\Controllers\Admin\BpartnersController;
-use App\Http\Controllers\Admin\NpsController;
-use App\Http\Controllers\Admin\QualityController;
-use App\Http\Controllers\Admin\CheckListController;
-use App\Http\Controllers\Admin\ActivityController;
-use App\Http\Controllers\Admin\DecompositionController;
-use App\Http\Controllers\Admin\UserFineController;
-use App\Http\Controllers\Admin\AnalyticsController;
-use App\Http\Controllers\Admin\GroupAnalyticsController;
-use App\Http\Controllers\Admin\LeadController;
-use App\Http\Controllers\Admin\SalaryController;
-use App\Http\Controllers\Admin\TopController;
-use App\Http\Controllers\Admin\FineController;
-use App\Http\Controllers\Admin\ExamController;
-use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\PositionController;
-use App\Http\Controllers\Admin\BookController;
-
-use App\Http\Controllers\Video\VideoPlaylistController;
-use App\Http\Controllers\Video\VideoCategoryController;
-use App\Http\Controllers\Video\VideoGroupController;
-use App\Http\Controllers\Video\VideoController;
-
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\FileUploadController;
-use App\Http\Controllers\LearningController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\CabinetController;
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\CourseResultController;
-use App\Http\Controllers\KnowBaseController;
-use App\Http\Controllers\UpbookController;
-use App\Http\Controllers\MyCourseController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\TestController;
-use App\Http\Controllers\IntellectController;
-use App\Http\Controllers\LinkController;
-use App\Http\Controllers\GroupsController;
-use App\Http\Controllers\ProfileSalaryController;
-use App\Http\Controllers\MapsController;
-use App\Http\Controllers\GlossaryController;
-use App\Http\Controllers\CallibroController;
-use \App\Http\Controllers\Department\UserController as DepartmentUserController;
-use App\Http\Controllers\NotificationControlller;
-
-use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
-use Eddir\Messenger\Handlers\MessengerWebSocketHandler;
 
 
 /*
@@ -98,6 +101,29 @@ Route::middleware([
 ])->group(function () {
     \Auth::routes(); 
     
+
+    WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
+
+    Route::get('/impersonate/{token}', function ($token) {
+        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
+    });
+    
+  
+ 
+
+    // Authentication Routes...
+    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [LoginController::class, 'login']);
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+
+    // Password reset Routes...
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [ResetPasswordController::class, 'reset']);
+
+    // admin routes 
+    Route::get('/admino', [\App\Http\Controllers\Admin\AdminController::class, 'index']);    
 
 
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
@@ -688,6 +714,135 @@ Route::middleware([
         Route::put('/update', [KpisController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [KpisController::class, 'delete'])->name('delete');
     });
+
+
+    Route::prefix('news')
+        ->name('articles.')
+        ->middleware([
+            'auth',
+        ])
+        ->whereNumber([
+            'article_id',
+            'comment_id',
+        ])
+        ->group(function () {
+            Route::get('', [NewsController::class, 'index'])->name('index');
+
+            Route::get('/get', [ArticleController::class, 'index'])
+                ->name('index');
+
+            Route::get('{article_id}', [ArticleController::class, 'show'])
+                ->name('show');
+
+            Route::post('', [ArticleController::class, 'store'])
+                ->name('store');
+
+            Route::put('{article_id}', [ArticleController::class, 'update'])
+                ->name('update');
+
+            Route::delete('{article_id}', [ArticleController::class, 'delete'])
+                ->name('delete');
+
+            Route::prefix('{article_id}')
+                ->name('actions.')
+                ->group(function () {
+
+                    Route::post('like', [ArticleActionController::class, 'like'])
+                        ->name('like');
+
+                    Route::post('favourite', [ArticleActionController::class, 'favourite'])
+                        ->name('favourite');
+
+                    Route::post('pin', [ArticleActionController::class, 'pin'])
+                        ->name('pin');
+
+                    Route::post('views', [ArticleActionController::class, 'views'])
+                        ->name('views');
+                });
+
+            Route::prefix('{article_id}/comments')
+                ->name('comments.')
+                ->group(function () {
+
+                    Route::get('', [ArticleCommentController::class, 'index'])
+                        ->name('index');
+
+                    Route::post('', [ArticleCommentController::class, 'store'])
+                        ->name('store');
+
+                    Route::delete('{comment_id}', [ArticleCommentController::class, 'delete'])
+                        ->name('delete');
+
+                    Route::prefix('{comment_id}')
+                        ->name('actions.')
+                        ->group(function () {
+
+                            Route::post('like', [ArticleCommentActionController::class, 'like'])
+                                ->name('like');
+
+                            Route::post('reaction', [ArticleCommentActionController::class, 'reaction'])
+                                ->name('reaction');
+                        });
+                });
+        });
+
+    Route::middleware('auth')
+        ->get('/me', [NewsController::class, 'user']);
+
+    Route::prefix('dictionaries')
+        ->name('dictionaries.')
+        ->middleware([
+            'auth',
+        ])
+        ->group(function () {
+
+            Route::get('', [DictionaryController::class, 'index'])
+                ->name('index');
+        });
+
+    Route::prefix('birthdays')
+        ->name('birthdays.')
+        ->middleware([
+            'auth',
+        ])
+        ->group(function () {
+
+            Route::get('', [BirthdayController::class, 'index'])
+                ->name('index');
+
+            Route::post('{user}/send-gift', [BirthdayController::class, 'sendGift'])
+                ->name('send_gift');
+        });
+
+    Route::prefix('files')
+        ->name('files.')
+        ->middleware([
+            'auth',
+        ])
+        ->whereNumber([
+            'file_id',
+        ])
+        ->group(function () {
+
+            Route::post('', [FileController::class, 'store'])
+                ->name('store');
+
+            Route::delete('{file_id}', [FileController::class, 'delete'])
+                ->name('delete');
+        });
+
+    Route::prefix('uploads')
+        ->name('uploads.')
+        ->middleware([
+            'auth:web',
+        ])
+        ->group(function () {
+
+            Route::post('', [UploadController::class, 'store'])
+                ->name('store');
+        });
+
+
 
 
     Route::any('/getnewimage',[UserController::class,'getProfileImage']);

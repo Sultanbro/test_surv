@@ -34,7 +34,7 @@ table td {
         <div class="d-flex justify-content-between">
             {{ auth()->id() }} {{ auth()->user()->email }} 
             
-            <form action="/logout">
+            <form action="/logout" method="post">
                 <button class="btn btn-primary">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Выйти</span>

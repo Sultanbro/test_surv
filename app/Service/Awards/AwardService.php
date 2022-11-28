@@ -21,6 +21,7 @@ use App\Salary;
 use App\SavedKpi;
 use App\Service\Department\UserService;
 use App\User;
+use AWS\CRT\Log;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -111,10 +112,6 @@ class AwardService
             if ($this->isCertificate($awardType) && !$request->has('course_ids')){
                 return response()->error('Course required for certificate award', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
-            if ($request->has('course_ids')){
-                return response()->error('Course required for certificate award', Response::HTTP_INTERNAL_SERVER_ERROR);
-            }
-
 
             $params = [
                 'award_type_id' => $request->input('award_type_id'),
@@ -324,8 +321,6 @@ class AwardService
             })
             ->get()
             ->pluck('targetable_type','targetable_id');
-
-
 
         foreach ($awards as $targetable_id => $targetable_type){
 

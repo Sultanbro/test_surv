@@ -57,60 +57,86 @@
                        
                         <div class="tab-content">
                             <div id="tab-30" class="tab @if(!isset($_GET['tab'])) active @else js-tab-hidden  @endif">
-                                <form class="form-horizontal" method="POST" action="{{ route('login') }}">
-                                    {{ csrf_field() }}
+
+                                <h3 class="text-center">Регистрация</h3>
+                                <form class="form-horizontal" method="POST" action="{{ route('register') }}">
+                                    @csrf
                                     <div class="form-subregistration">
+
                                         <div class="form-registration-row">
-                                            <input id="username" type="text" class="form-control" name="username"
-                                                value="{{ old('username') }}" required autofocus
-                                                placeholder="olegivanov@mail.ru">
-                                            @if ($errors->has('username'))
-                                            <span class="help-block">
-                                                <strong>{{ $errors->first('username') }}</strong>
-                                            </span>
-                                            @endif
+                                            <input id="name" type="text" class="form-control" name="name"
+                                                value="{{ old('name') }}" required autofocus
+                                                placeholder="Ваше имя">
+                                            
                                         </div>
+                                        @if ($errors->has('name'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('name') }}</strong>
+                                            </span>
+                                        @endif
+                                        
+                                        <div class="form-registration-row">
+                                            <input id="last_name" type="text" class="form-control" name="last_name"
+                                                value="{{ old('last_name') }}" required autofocus
+                                                placeholder="Ваша фамилия">
+                                            
+                                        </div>
+                                        @if ($errors->has('last_name'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('last_name') }}</strong>
+                                            </span>
+                                        @endif
+
+                                        <div class="form-registration-row">
+                                            <input id="email" type="text" class="form-control" name="email"
+                                                value="{{ old('email') }}" required autofocus
+                                                placeholder="Ваш email">
+                                            
+                                        </div>
+                                        @if ($errors->has('email'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('email') }}</strong>
+                                            </span>
+                                        @endif
+
+                                        <div class="form-registration-row">
+                                            <input id="phone" type="text" class="form-control" name="phone"
+                                                value="{{ old('phone') }}" required autofocus
+                                                placeholder="Ваш телефон">
+                                            
+                                        </div>
+                                        @if ($errors->has('phone'))
+                                            <span class="help-block">
+                                                <strong>{{ $errors->first('phone') }}</strong>
+                                            </span>
+                                        @endif
+
                                         <div class="form-registration-row">
                                             <input id="password" type="password" class="form-control" name="password"
                                                 required placeholder="Введите пароль">
-
-                                            @if ($errors->has('password'))
-                                            <span class="help-block">
-                                                <strong>{{ $errors->first('password') }}</strong>
-                                            </span>
-                                            @endif
-
                                         </div>
-                                        <div class="form-registration-line">
-                                            <input type="hidden" name="remember" value="1">
-
-
-                                            <a id="openForgetPass">Восстановление пароля</a>
+                                        <div class="form-registration-row">
+                                            <input id="password" type="password" class="form-control" name="password_confirmation"
+                                                required placeholder="Введите пароль повторно">
                                         </div>
+                                        @if ($errors->has('password'))
+                                        <span class="help-block">
+                                            <strong>{{ $errors->first('password') }}</strong>
+                                        </span>
+                                        @endif
+
+
+                          
 
 
                                         <button type="submit" class="btn-form-login">
-                                            Войти
+                                            Зарегистрироваться
                                         </button>
                                     </div>
                                 </form>
                             </div>
                     
-                            <div id="forgetPass" class="js-tab-hidden">
-
-                                <form class="form-registration" id="forget" action="#">
-                                    <div class="form-subregistration">
-                                        <div class="message">
-                                        </div>
-                                        <div class="form-registration-row form-registration-star">
-                                            <input type="email" name="email" placeholder="Введите e-mail">
-                                        </div>
-                                        <br>
-                                        <input type="submit" value="Восстановить пароль" class="btn-form-registarion">
-                                    </div>
-                                </form>
-
-                            </div>
+                         
                         </div>
                     </div>
 
@@ -122,7 +148,7 @@
         <div id="sub-footer">
             <div class="sub-footer">
                 <div class="col-lg-12 col-md-2 col-sm-2 col-xs-12">
-                    <p class="copy">© 2022 joytron.org</p>
+                    <p class="copy">© 2022 jobtron.org</p>
                 </div>
 
             </div>

@@ -6,11 +6,14 @@ use App\Classes\Helpers\Phone;
 use App\External\Bitrix\Bitrix;
 use App\Http\Controllers\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
+use App\Models\Article\Article;
 use App\Models\Award;
 use App\Models\AwardUser;
+use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Tax;
+use App\Models\Traits\HasTenants;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use Carbon\Carbon;
@@ -31,7 +34,11 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements Authorizable
 {
-    use Notifiable,HasFactory,HasRoles,SoftDeletes;
+    use Notifiable,
+        SoftDeletes,
+        HasFactory,
+        HasRoles,
+        HasTenants;
 
     const USER_TYPE_OFFICE = 'office';
     const USER_TYPE_REMOTE = 'remote';
@@ -87,11 +94,38 @@ class User extends Authenticatable implements Authorizable
      */
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
 
+    public function favouriteArticles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_favourites_users',
+            'user_id',
+            'article_id',
+        );
+    }
+    public function pinnedArticles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_pins_users',
+            'user_id',
+            'article_id',
+        );
+    }
+    public function views(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Article::class,
+            'article_views_users',
+            'user_id',
+            'article_id'
+        );
+    }
     public function taxes(): HasMany
     {
         return $this->hasMany(Tax::class, 'user_id');
     }
-
+    
     public function awards(): BelongsToMany
     {
         return $this->belongsToMany(Award::class)
@@ -396,7 +430,7 @@ class User extends Authenticatable implements Authorizable
             
         return ProfileGroup::whereIn('id', array_values($groups))
             //->where('active', 1)
-            ->select(['id', 'name', 'work_start', 'work_end'])
+            ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics'])
             ->get();
     }
 
@@ -407,7 +441,8 @@ class User extends Authenticatable implements Authorizable
     public function inGroupsWithTerms()
     {
         $groups = GroupUser::where('user_id', $this->id)
-           // ->where('status', 'active')
+            ->where('status', 'active')
+            ->whereNull('to')
             ->get()
             ->pluck('group_id')
             ->toArray();
@@ -1044,5 +1079,19 @@ class User extends Authenticatable implements Authorizable
         return !$this->readCorpBook()
             ? \App\KnowBase::getRandomPage()
             : null;
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->name . ' ' . $this->last_name;
+    }
+
+    public function getImgUrlPathAttribute(): string
+    {
+        if ($this->img_url){
+            return '/users_img/' .$this->img_url;
+
+        }
+        return '/user.png';
     }
 }
