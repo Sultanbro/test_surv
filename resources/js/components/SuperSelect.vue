@@ -2,7 +2,7 @@
 <div class="super-select" ref="select" :class="posClass" v-click-outside="close">
     <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
         <div 
-            v-for="(value, i) in values"
+            v-for="(value, i) in valueList"
             :key="i"
             class="selected-item"
             :class="'value' + value.type">
@@ -27,15 +27,15 @@
         
         <div class="options-window">
             <div class="types"> 
-                <div class="type" :class="{'active': type == 1}" @click="changeType(1)" >
+                <div class="type" v-if="disable_type !== 1" :class="{'active': type == 1}" @click="changeType(1)" >
                     <div class="text">Сотрудники</div>
                     <i class="fa fa-user"></i>
                 </div>
-                <div class="type" :class="{'active': type == 2}" @click="changeType(2)">
+                <div class="type" v-if="disable_type !== 2" :class="{'active': type == 2}" @click="changeType(2)">
                     <div class="text" >Отделы</div>
                     <i class="fa fa-users"></i>
                 </div>
-                <div class="type" :class="{'active': type == 3}" @click="changeType(3)" >
+                <div class="type" v-if="disable_type !== 3" :class="{'active': type == 3}" @click="changeType(3)" >
                     <div class="text">Должности</div>
                     <i class="fa fa-briefcase"></i>
                 </div>
@@ -75,6 +75,18 @@
 export default {
     name: 'Superselect',
     props: {
+        pre_build: {
+          type: Boolean,
+          default: false
+        },
+        value_id: {
+          type: Number,
+          default: null
+        },
+        disable_type: {
+          type: Number,
+          default: null
+        },
         onlytype:{
             type: Number,
             default: 0
@@ -85,7 +97,7 @@ export default {
         },
         values: {
             type: Array,
-            default: []
+            default: Array
         },
         single: {
             type: Boolean,
@@ -106,6 +118,7 @@ export default {
     },
     data() {
         return {
+            valueList: [],
             show_placeholder: true,
             options: [],
             filtered_options: [],
@@ -119,9 +132,31 @@ export default {
         };
     },
     created() {
-        console.log(this.values)
-        console.log(this.values.length)
-        if(this.one_choice && this.values.length > 0) this.one_choice_made = true; 
+        if(this.pre_build){
+            axios
+                .get("/superselect/get", {})
+                .then(response => {
+                    if(this.disable_type){
+                        response.data.options.forEach(item =>{
+                            if(this.disable_type !== item.type){
+                                this.options.push(item);
+                            }
+                        })
+                    } else{
+                        this.options = response.data.options;
+                    }
+                    if(this.value_id){
+                        this.valueList.push(this.options.find(x => x.id === this.value_id));
+                        document.getElementById('placeholder').style.display = "none";
+                    }
+                    console.log(this.options);
+                    this.first_time = false;
+                    this.filterType();
+                    this.addSelectedAttr();
+                })
+        }
+        this.valueList = [];
+        if(this.one_choice && this.valueList.length > 0) this.one_choice_made = true;
         this.checkSelectedAll(); 
         if(this.onlytype > 0){
             this.changeType(2);
@@ -132,9 +167,9 @@ export default {
             this.show_placeholder = !this.show_placeholder;
         },
         checkSelectedAll() {
-            if(this.values.length == 1
-                && this.values[0]['id']== 0
-                && this.values[0]['type'] == 0) {
+            if(this.valueList.length == 1
+                && this.valueList[0]['id']== 0
+                && this.valueList[0]['type'] == 0) {
                 this.selected_all = true;
                  console.log('okay');
             } else {
@@ -150,7 +185,7 @@ export default {
 
         addSelectedAttr() {
             this.filtered_options.forEach(el => {
-                el.selected = this.values.findIndex(v => v.id == el.id && v.type == el.type) != -1
+                el.selected = this.valueList.findIndex(v => v.id == el.id && v.type == el.type) != -1
             });
         },
 
@@ -169,8 +204,7 @@ export default {
             if(this.first_time) {
                 this.fetch();
             }
-            
-            
+
             this.$nextTick(() => {
                 if(this.$refs.search !== undefined) this.$refs.search.focus();
             });
@@ -192,7 +226,7 @@ export default {
 
         addValue(index) {
             if(this.single) this.show = false;
-            if(this.single && this.values.length > 0) {
+            if(this.single && this.valueList.length > 0) {
                 return;
             }; 
 
@@ -201,7 +235,7 @@ export default {
 
             let item = this.filtered_options[index];
 
-            if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
+            if(this.valueList.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
 
                 let value = {
                     name: item.name,
@@ -210,7 +244,7 @@ export default {
                 };
 
                 this.$emit('choose', value);
-                this.values.push(value);
+                this.valueList.push(value);
 
                 item.selected = true
             }
@@ -221,11 +255,11 @@ export default {
                 if(!confirm(this.ask_before_delete)) return;
             }
             
-            let v = this.values[i];
+            let v = this.valueList[i];
             console.log(v);
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
-            this.values.splice(i, 1);
+            this.valueList.splice(i, 1);
 
             let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
             if(index != -1) {
@@ -236,9 +270,9 @@ export default {
 
         removeValueFromList(i) {
             let fo = this.filtered_options[i];
-            let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
+            let index = this.valueList.findIndex(v => v.id == fo.id && v.type == fo.type);
             if(index != -1) {
-                this.values.splice(index, 1);
+                this.valueList.splice(index, 1);
                 fo.selected = false;
             }
         },
@@ -263,9 +297,16 @@ export default {
         fetch() {
             axios
                 .get("/superselect/get", {})
-                .then((response) => {
-
-                    this.options = response.data.options;
+                .then(response => {
+                    if(this.disable_type){
+                        response.data.options.forEach(item =>{
+                            if(this.disable_type !== item.type){
+                                this.options.push(item);
+                            }
+                        })
+                    } else{
+                        this.options = response.data.options;
+                    }
                     this.first_time = false;
                     this.filterType();
                     this.addSelectedAttr();
@@ -277,8 +318,8 @@ export default {
 
         selectAll() {
             if(this.selected_all) return; 
-            this.values.splice(0, this.values.length);
-            this.values.push({
+            this.valueList.splice(0, this.valueList.length);
+            this.valueList.push({
                 name: 'Все',
                 id: 0,
                 type: 0
@@ -293,6 +334,7 @@ export default {
 </script>
 <style scoped lang="scss">
     .placeholder{
-        background: #fff !important;
+       color: rgba(0,0,0,0.5);
+        background-color: transparent!important;
     }
 </style>

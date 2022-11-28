@@ -31,6 +31,22 @@ class HomeController extends Controller
         return view('home');
     }
 
+    public function test(){
+        
+        dd(config('session'));
+    }
+
+    public function myfunction($products, $field, $value)
+    {
+        foreach($products as $key => $product)
+        {
+            if ( $product[$field] === $value )
+                dump($key);
+        }
+        
+        return false;
+    }
+
     /**
      * login to test.jobtron.org 
      * to see antoher profile

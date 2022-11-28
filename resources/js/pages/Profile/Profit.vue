@@ -15,12 +15,12 @@
     </div>
     <div class="row profit__inner mr-1 ml-1">
         <div
-            v-if="data.groups"
+            v-if="hasGroups"
             class="col profit__carousel"
-            :class="{'col-md-6': data.positions}"
+            :class="{'col-md-6': hasPositions}"
         >
             <div class="profit__inner-item left-slide" v-for="(slide, i) in data.groups" :key="i">
-                <div class="profit__inner__left" :class="{'profit__inner__one': !data.positions}">
+                <div class="profit__inner__left" :class="{'profit__inner__one': !hasPositions}">
                     <div class="profit__left-wrapper">
                         <div class="profit__inner-title">
                             {{ slide.title }}
@@ -42,12 +42,12 @@
             </div>
         </div>
         <div
-            v-if="data.positions"
+            v-if="hasPositions"
             class="col profit__carousel"
-            :class="{'col-md-6': data.groups}"
+            :class="{'col-md-6': hasGroups}"
         >
             <div class="profit__inner-item right-slide" v-for="(slide, i) in data.positions" :key="i">
-                <div  class="profit__inner-right" :class="{'profit__inner__one': !data.groups}">
+                <div  class="profit__inner-right" :class="{'profit__inner__one': !hasGroups}">
                     <div class="profit__inner-title">
                         {{ slide.title }}
                         <a href="javascript:void(0)">
@@ -82,10 +82,17 @@ export default {
             loading: false
         };
     },
+    computed: {
+        hasGroups(){
+            return !!(this.data.groups && this.data.groups.length)
+        },
+        hasPositions(){
+            return !!(this.data.positions && this.data.positions.length)
+        }
+    },
     created() {
         this.fetchData()
     },
-
     methods: {
         /**
          * Загрузка данных

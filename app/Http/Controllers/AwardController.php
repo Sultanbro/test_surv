@@ -69,7 +69,9 @@ class AwardController extends Controller
     public function awardsByType(AwardsByTypeRequest $request)
     {
         $user_id = Auth::id() ?? 5;
-
+        if ($request->has('user_id')){
+            $user_id = $request->input('user_id');
+        }
         $response = $this->awardService->awardsByType($request, $user_id);
 
         return \response()->success($response);
@@ -127,7 +129,7 @@ class AwardController extends Controller
      * @return mixed
      * @throws Exception
      */
-    public function update(UpdateAwardRequest $request, Award $award)
+    public function update(Award $award, UpdateAwardRequest $request )
     {
         $this->access();
         $response = $this->awardService->updateAward($request, $award);

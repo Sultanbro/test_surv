@@ -29,7 +29,6 @@ class CourseRegressRequest extends FormRequest
             'course_item_id'    => ['required_if:type,item', 'exists:course_items,id'],
             'course_id'         => ['required_if:type,course', 'exists:courses,id'],
             'type'              => ['required', Rule::in(['item', 'course'])],
-            'completed_stages'  => ['required_with:course_item_id', 'numeric']
         ];
     }
 }

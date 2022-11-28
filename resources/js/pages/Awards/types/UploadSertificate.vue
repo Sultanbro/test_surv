@@ -7,7 +7,6 @@
         placeholder="Выберите Сертификат"
         drop-placeholder="Перетащите файл сюда..."
         accept=".pdf"
-        required
         type="file"
         id="file"
         ref="file"
@@ -209,16 +208,6 @@ export default {
 }
 .clear-btn {
   height: 40px;
-}
-.modal-body{
-  max-height: calc(100vh - 130px) !important;
-  min-height: calc(100vh - 130px) !important;
-  overflow: auto !important;
-}
-.modal-dialog{
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
 }
 
 </style>

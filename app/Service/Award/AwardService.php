@@ -108,6 +108,11 @@ class AwardService
             $awardType = AwardType::query()
                 ->findOrFail($request->input('award_type_id'));
 
+
+            if ($this->isCertificate($awardType) && !$request->has('course_ids')){
+                return response()->error('Course required for certificate award', Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
             $params = [
                 'award_type_id' => $request->input('award_type_id'),
                 'name' => $request->input('name'),
@@ -117,7 +122,6 @@ class AwardService
                 'icon'      => $request->input('icon'),
                 'path'      => $file['relative']
             ];
-
             if ($this->isAccrual($awardType)){
                 $params = [
                     'award_type_id' => $request->input('award_type_id'),
@@ -127,6 +131,7 @@ class AwardService
                     'targetable_id'      => $request->input('targetable_id'),
                 ];
             }
+
             $success = Award::query()->create($params);
             if ($request->has('course_ids')){
                 Course::whereIn('id', $request->input('course_ids'))
@@ -147,7 +152,7 @@ class AwardService
     public function updateAward(UpdateAwardRequest $request, Award $award): bool
     {
         try {
-            $parameters = $request->except('_method');
+            $parameters = $request->except(['_method', 'course_ids']);
             if ($request->hasFile('file')) {
                 if ($award->path != '') {
                     if($this->disk->exists($award->path)) {
@@ -160,11 +165,36 @@ class AwardService
 
                 unset($parameters['file']);
             }
+            $this->updateCourses($request->input('course_ids', []), $award);
+
+
             return $award->update($parameters);
 
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
+    }
+
+    /**
+     * @param $course_ids
+     * @param $award
+     * @return void
+     */
+    public function updateCourses($courseIds, $award){
+        $existingCourses = Course::where('award_id', $award->id)->get()->pluck('id');
+        error_log(json_encode($existingCourses));
+        error_log(json_encode($courseIds));
+        $removeCourses = $existingCourses->diff(
+            $courseIds
+        );
+
+        error_log(json_encode($removeCourses));
+        if ($removeCourses){
+            Course::whereIn('id', $removeCourses)
+                ->update(['award_id' => 0]);
+        }
+        Course::whereIn('id', $courseIds)
+            ->update(['award_id' => $award->id]);
     }
 
     /**
@@ -213,7 +243,7 @@ class AwardService
             $awardType = AwardType::query()->findOrFail($request->input('award_type_id'));
 
             $userAwards = $this->awardRepository->relationAwardUser($user,$awardType);
-            $availableAwards = $awardType->awards;
+            $availableAwards =$this->awardRepository->availableAwards($user,$awardType);
             if ($this->isNomination($awardType)) {
                 $result['my'] =  $userAwards;
                 $result['available'] =  $availableAwards ;
@@ -230,12 +260,12 @@ class AwardService
 
             if ($this->isCertificate($awardType)){
                 $otherAwards = [];
-                foreach ($userAwards as $award){
-                    $award->course = CourseResult::query()
+                foreach ($userAwards as $key => $award){
+                    $userAwards[$key]['course'] = CourseResult::query()
                         ->where('user_id', $user_id)
                         ->whereNotNull('ended_at')
                         ->with('course', function ($q) use ($award){
-                            $q->where('award_id', $award['id']);
+                            $q->where('award_id', $award['award_id']);
                         })
                         ->get()
                         ->pluck('course');
@@ -252,7 +282,6 @@ class AwardService
 
             if ($this->isAccrual($awardType)){
 
-                error_log($user);
                 $result= $this->getAccrual($user, $awardType->id);
 
             }
@@ -279,8 +308,17 @@ class AwardService
 
         $awards = Award::query()
             ->where('award_type_id', $award_type_id)
-            ->orWhere('targetable_id',$user->position_id)
-            ->orWhereIn('targetable_id', $groups)
+            ->where(function ($query) use ($user, $groups) {
+                $query->where(function ($q) use ($user) {
+                    $q->where('targetable_id',$user->position_id)
+                    ->where('targetable_type', self::POSITION);
+
+                 })
+                ->orWhere(function ($q) use ($groups) {
+                    $q->whereIn('targetable_id', $groups)
+                    ->where('targetable_type', self::GROUP);
+                });
+            })
             ->get()
             ->pluck('targetable_type','targetable_id');
 
@@ -315,11 +353,16 @@ class AwardService
 
         $internship_pay_rate = $group->paid_internship == 1 ? 0.5 : 0;
         foreach ($users as $user){
-            $userTotal = $user->calculateFot($internship_pay_rate, $date);
+            $userFot = $user->calculateFot($internship_pay_rate, $date);
             $result[] = [
-             'total' => $userTotal,
+             'kpi' => $userFot['kpi'],
+             'earnings' => $userFot['earnings'],
+             'bonuses' => $userFot['bonuses'],
+                'total' => array_sum(array_values($userFot)),
+                'position' => $user->position?->position,
              'name' => $user->name,
              'last_name' => $user->last_name,
+                'path'=> 'users_img/' . $user->img_url,
              'email' => $user->email,
              'id' => $user->id,
             ];
@@ -368,9 +411,16 @@ class AwardService
         try {
             $awardId = $request->input('award_id');
             $userId  = $request->input('user_id');
-            $file = $this->saveAwardFile($request);
 
-            $added   = $awardRepository->attachUser($awardId, $userId, $file['relative']);
+
+            $award = $awardRepository->getById($awardId);
+            if ($award->users()->where('user_id', $userId)->exists()){
+                return response()->error('User has already  rewarded with this award!', Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+            $file = $this->saveAwardFile($request);
+            $added   = $awardRepository->attachUser($award, $userId, $file['relative']);
+
             return response()->success($added);
         }catch (Throwable $exception) {
             throw new Exception($exception->getMessage());

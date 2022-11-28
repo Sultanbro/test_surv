@@ -9,7 +9,6 @@
                     accept=".jpg, .png"
                     type="file"
                     id="file"
-                    :required="imageSrc.length > 0"
                     ref="file"
                     :state="true"
             >
@@ -74,15 +73,6 @@
             reader.onerror = (error) => reject(error);
         });
 
-    async function getImageFileFromUrl(url, format) {
-        let response = await fetch(url);
-        let data = await response.blob();
-        let metadata = {
-            type: "image/" + format
-        };
-        return new File([data], "result.jpg", metadata);
-    }
-
     export default {
         name: "UploadFile",
         components: {},
@@ -105,9 +95,6 @@
         },
         mounted() {
             this.imageSrc = this.path;
-            if(this.imageSrc.length > 0){
-                this.$emit("image-download", getImageFileFromUrl(this.imagePath, this.format));
-            }
         },
         watch: {
             image(newValue, oldValue) {

@@ -75,7 +75,7 @@
             </div>
 
             <BalanceItem title="Начислено">
-                <div v-if="Number(history.value) > 0">{{ history.calculated }}</div>
+                <div v-if="Number(history.value) > 0">{{ history.value }}</div>
                 <div v-else>0</div>
                 <template v-slot:footer>
                     <div v-if="history.training">

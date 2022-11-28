@@ -187,6 +187,11 @@ class UserService
         if( ! $userInCorpUniversity && $hasGroup) {
 
             foreach ($gs as $group) {
+
+                if($group->has_analytics != 1) {
+                    continue;
+                }
+
                 $activities[] = [
                     'activities' => UserStat::activities($group->id, date('Y-m-d')),
                     'group' => [

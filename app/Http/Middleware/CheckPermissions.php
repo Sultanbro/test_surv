@@ -19,8 +19,14 @@ class CheckPermissions
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next)
-    {
-        if(!auth()->user())return $next($request);
+    {   
+        if(request()->getHost() == config('app.domain')) {
+            return $next($request);
+        }
+
+        if(!auth()->user()) {
+            return $next($request);
+        }
 
         $roles = [];
         $pos = Position::find(auth()->user()->position_id);
