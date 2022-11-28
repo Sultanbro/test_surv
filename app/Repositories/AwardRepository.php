@@ -38,7 +38,6 @@ class AwardRepository extends CoreRepository
                 $query->where('at.id', $type->id);
             }
         return $query->get([
-            'au.id',
             'au.award_id',
             'awards.path',
             'awards.award_type_id',

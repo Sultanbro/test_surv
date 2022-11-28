@@ -251,7 +251,6 @@ class UserController extends Controller
             DB::raw("CONCAT(users.name,' ',users.last_name) as FULLNAME2"),
             'users.created_at',
             'users.deleted_at',
-            'users.last_group',
             'users.position_id',
             'users.phone',
             'users.birthday',
@@ -309,7 +308,7 @@ class UserController extends Controller
                     ->pluck('group_id')
                     ->toArray();
 
-                $user->groups = $deleted; //json_decode($user->last_group);
+                $user->groups = $deleted; 
             } elseif($user->deleted_at) {
                 $deleted = GroupUser::where('status', 'fired')
                     ->where('user_id', $user->id)
@@ -967,15 +966,16 @@ class UserController extends Controller
 
             
             
-        } else {
-            // Если нет другого аккаунта с новым email, то меняем уже сущ аккаунт в калибро
-            $old_account = Account::where('email', $user->id)->where('owner_uid', 5)->first();
-            if ($old_account) {
-                $old_account->email = strtolower($request['email']);
-                $old_account->status = Account::ACTIVE_STATUS;
-                $old_account->save();
-            }
         }
+//        else {
+////            // Если нет другого аккаунта с новым email, то меняем уже сущ аккаунт в калибро
+////            $old_account = Account::where('email', $user->id)->where('owner_uid', 5)->first();
+////            if ($old_account) {
+////                $old_account->email = strtolower($request['email']);
+////                $old_account->status = Account::ACTIVE_STATUS;
+////                $old_account->save();
+////            }
+//        }
 
 
 

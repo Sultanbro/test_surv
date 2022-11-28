@@ -16,7 +16,8 @@ class VerifyCsrfToken extends Middleware
         '/bp/job/skype/',  
         '/bp/choose_time', 
         '/statistics/kpi', 
-        '/course-results/nullify', 
+        '/course-results/nullify',
+        '/profile/upload/edit'
     ];
 
 }

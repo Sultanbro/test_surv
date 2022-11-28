@@ -20,6 +20,8 @@ use App\Http\Controllers\Kpi\KpiStatController;
 use App\Http\Controllers\Kpi\IndicatorController;
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TraineeController;
 use App\Http\Controllers\Admin\QuartalBonusController;
@@ -89,15 +91,38 @@ use Eddir\Messenger\Handlers\MessengerWebSocketHandler;
 /**
  * Custom websocket handler
  */
-WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
+
+
 
 Route::middleware([
     'web',
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    \Auth::routes(); 
     
+
+    WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
+
+    Route::get('/impersonate/{token}', function ($token) {
+        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
+    });
+    
+  
+ 
+
+    // Authentication Routes...
+    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [LoginController::class, 'login']);
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+
+    // Password reset Routes...
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [ResetPasswordController::class, 'reset']);
+
+    // admin routes 
+    Route::get('/admino', [\App\Http\Controllers\Admin\AdminController::class, 'index']);    
 
 
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
@@ -696,7 +721,9 @@ Route::middleware([
         'prefix'   => 'messenger/api',
     ], function() {
 
-        /**
+        Route::post('/chat/auth', 'ChatsController@pusherAuth')->name('api.pusher.auth');
+    
+        /** 
          * Get chats list
          */
         Route::get('/v2/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');

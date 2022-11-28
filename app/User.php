@@ -8,9 +8,11 @@ use App\Http\Controllers\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Award;
 use App\Models\AwardUser;
+use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Tax;
+use App\Models\Traits\HasTenants;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use Carbon\Carbon;
@@ -31,7 +33,11 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements Authorizable
 {
-    use Notifiable,HasFactory,HasRoles,SoftDeletes;
+    use Notifiable,
+        SoftDeletes,
+        HasFactory,
+        HasRoles,
+        HasTenants;
 
     const USER_TYPE_OFFICE = 'office';
     const USER_TYPE_REMOTE = 'remote';
@@ -91,7 +97,7 @@ class User extends Authenticatable implements Authorizable
     {
         return $this->hasMany(Tax::class, 'user_id');
     }
-
+    
     public function awards(): BelongsToMany
     {
         return $this->belongsToMany(Award::class)
@@ -407,7 +413,8 @@ class User extends Authenticatable implements Authorizable
     public function inGroupsWithTerms()
     {
         $groups = GroupUser::where('user_id', $this->id)
-           // ->where('status', 'active')
+            ->where('status', 'active')
+            ->whereNull('to')
             ->get()
             ->pluck('group_id')
             ->toArray();

@@ -1,9 +1,5 @@
 @extends('layouts.auth')
-
 @section('content')
-
-
-
 <style>
 .login-page {
     background: #efefef;
@@ -134,7 +130,7 @@
 
 
 
-
+ 
 
 
 
@@ -142,6 +138,14 @@
 
 @section('scripts')
 <script>
+delete_cookie('XSRF-TOKEN', '/', '.jobtron.org')
 
-</script>
+function delete_cookie( name, path, domain ) {
+    document.cookie = name + "=" +
+       
+      ((path) ? ";Max-Age=0;path="+path:"")+
+      ((domain)?";domain="+domain:"") +
+      ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+}
+</script> 
 @endsection
