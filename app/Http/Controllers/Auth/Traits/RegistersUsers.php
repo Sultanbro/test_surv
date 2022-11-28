@@ -54,7 +54,9 @@ trait RegistersUsers
         tenancy()->initialize($tenant);
         
         $this->createTenantUser($user);
- 
+        
+        return $this->login($user); 
+
         if ($response = $this->registered($request, $user)) {
             return $response;
         }
@@ -175,6 +177,26 @@ trait RegistersUsers
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
+    }
+
+
+    protected function login(User $user) {
+        $centralUser = CentralUser::with('tenants')->where('email', $user->email)->first();
+
+        if($centralUser) {
+
+            $tenant = $centralUser->tenants->first();
+
+            tenancy()->initialize($tenant);
+            
+            $domain = $tenant->id .".". config('app.domain');
+
+            $tenantUser = User::where('email', $centralUser->email)->first();
+
+            $token = tenancy()->impersonate($tenant, $tenantUser->id, '/profile');
+
+            return redirect("https://". $domain ."/impersonate/{$token->token}");
+        }   
     }
 
     
