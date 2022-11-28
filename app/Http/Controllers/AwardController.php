@@ -9,7 +9,7 @@ use App\Http\Requests\StoreAwardRequest;
 use App\Http\Requests\UpdateAwardRequest;
 use App\Models\Award;
 use App\Repositories\AwardRepository;
-use App\Service\Award\AwardService;
+use App\Service\Awards\AwardService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Award;
+namespace App\Service\Awards;
 
 use App\Http\Requests\AwardsByTypeRequest;
 use App\Http\Requests\CourseAwardRequest;

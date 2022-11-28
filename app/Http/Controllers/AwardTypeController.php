@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AwardType;
 use App\Http\Requests\StoreAwardTypeRequest;
 use App\Http\Requests\UpdateAwardTypeRequest;
-use App\Service\Award\AwardService;
+use App\Service\Awards\AwardService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
