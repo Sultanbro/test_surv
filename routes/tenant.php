@@ -33,8 +33,8 @@ use App\Http\Controllers\Article\Comments\ArticleCommentController;
 use App\Http\Controllers\Article\NewsController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\AwardController;
-use App\Http\Controllers\AwardTypeController;
+use App\Http\Controllers\Award\AwardCategoryController;
+use App\Http\Controllers\Award\AwardController;
 use App\Http\Controllers\Birthday\BirthdayController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\CallibroController;
@@ -615,13 +615,17 @@ Route::middleware([
      * Типы награды для сотрудников.
      */
     Route::group([
-        'prefix' => 'award-types',
-        'as'     => 'award-types.',
+        'prefix' => 'award-categories',
+        'as'     => 'award-categories.',
     ], function () {
-        Route::get('/get', [AwardTypeController::class, 'index'])->name('get');
-        Route::post('/store', [AwardTypeController::class, 'store'])->name('store');
-        Route::put('/update/{awardType}', [AwardTypeController::class, 'update'])->name('update');
-        Route::delete('/delete/{awardType}', [AwardTypeController::class, 'destroy'])->name('destroy');
+        Route::get('/get', [AwardCategoryController::class, 'index'])->name('get');
+        Route::get('/get/{awardCategory}', [AwardCategoryController::class, 'show'])->name('show');
+        Route::get('/get/awards/{awardCategory}', [AwardCategoryController::class, 'categoryAwards'])->name('awards');
+
+        Route::post('/store', [AwardCategoryController::class, 'store'])->name('store');
+        Route::put('/update/{awardCategory}', [AwardCategoryController::class, 'update'])->name('update');
+        Route::delete('/delete/{awardCategory}', [AwardCategoryController::class, 'destroy'])->name('destroy');
+
     });
 
     /**
@@ -637,7 +641,6 @@ Route::middleware([
         Route::get('/course', [AwardController::class, 'courseAward'])->name('course-awards');
         Route::get('/type', [AwardController::class, 'awardsByType'])->name('type-awards');
         Route::get('/get', [AwardController::class, 'index'])->name('get');
-        Route::get('/get/{award}', [AwardController::class, 'show'])->name('show');
         Route::post('/store', [AwardController::class, 'store'])->name('store');
         Route::put('/update/{award}', [AwardController::class, 'update'])->name('update');
         Route::delete('/delete/{award}', [AwardController::class, 'destroy'])->name('destroy');

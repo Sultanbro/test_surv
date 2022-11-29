@@ -3,11 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\TrackCourseItemFinishedEvent;
-use App\Models\Award;
+use App\Models\Award\Award;
 use Exception;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class TrackCourseItemFinishedListener
