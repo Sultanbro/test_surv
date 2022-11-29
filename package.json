@@ -8,12 +8,19 @@
         "hot": "mix watch --hot",
         "prod": "npm run production",
         "production": "mix --production",
-        "watch-prod": "mix --production -- --watch --progress"
+        "watch-prod": "mix --production -- --watch --progress",
+        "sub-install": "subpkg install",
+        "sub-build": "subpkg run build",
+        "sub-dev": "subpkg run dev"
     },
+    "subPackages": [
+        "resources/js/admin"
+    ],
     "devDependencies": {
         "@babel/core": "^7.20.2",
         "@babel/preset-env": "^7.20.2",
         "@babel/preset-stage-3": "^7.0.0",
+        "@ghnacker/subpackage": "^1.1.4",
         "@popperjs/core": "^2.10.2",
         "axios": "~0.21.1",
         "blueimp-gallery": "^3.4.0",
