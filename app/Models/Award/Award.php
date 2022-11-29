@@ -2,6 +2,7 @@
 
 namespace App\Models\Award;
 
+use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,14 +15,10 @@ class Award extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'award_type_id',
         'format',
-        'icon',
         'path',
         'styles',
-        'hide',
-        'name',
-        'description',
+        'award_category_id',
         'targetable_type',
         'targetable_id',
     ];
@@ -35,24 +32,17 @@ class Award extends Model
     /**
      * @return BelongsTo
      */
-    public function awardType(): BelongsTo
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(AwardType::class, 'award_type_id');
+        return $this->belongsTo(AwardCategory::class, 'award_category_id');
     }
-    /**
-     * Одна награда может принадлежать нескольким курсам
-     * @return HasMany
-     */
-    public function courses(): HasMany
-    {
-        return $this->hasMany(Award::class);
-    }
+
     /**
      * @return BelongsToMany
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(Award::class, 'award_user', 'award_id','user_id')
+        return $this->belongsToMany(User::class, 'award_user', 'award_id','user_id')
             ->withTimestamps();
 
     }

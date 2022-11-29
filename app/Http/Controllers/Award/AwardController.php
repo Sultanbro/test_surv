@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Award;
 
+use App\Enums\AwardTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\User;
-use App\Http\Requests\AwardsByTypeRequest;
-use App\Http\Requests\CourseAwardRequest;
+use App\Http\Requests\Award\AwardsByTypeRequest;
+use App\Http\Requests\Award\CourseAwardRequest;
+use App\Http\Requests\Award\StoreAwardRequest;
+use App\Http\Requests\Award\UpdateAwardRequest;
 use App\Http\Requests\RewardRequest;
-use App\Http\Requests\StoreAwardRequest;
-use App\Http\Requests\UpdateAwardRequest;
 use App\Models\Award\Award;
+use App\Models\Award\AwardCategory;
 use App\Repositories\AwardRepository;
 use App\Service\Awards\AwardBuilder;
 use App\Service\Awards\AwardService;
@@ -22,19 +24,84 @@ class AwardController extends Controller
      * @var AwardService
      */
     private AwardService $awardService;
+    private AwardBuilder $awardBuilder;
 
     public function __construct(AwardService $awardService)
     {
         $this->awardService = $awardService;
-//        $this->middleware('auth');
+        $this->awardBuilder = app(AwardBuilder::class);
+        $this->middleware('auth');
     }
+
+    /**
+     * @return mixed
+     * @throws Exception
+     */
+    public function index()
+    {
+        try {
+            $this->access();
+            $awardTypes = Award::all();
+            return response()->success($awardTypes);
+        } catch (Exception $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param StoreAwardRequest $request
+     * @return mixed
+     * @throws Exception
+     */
+    public function store(StoreAwardRequest $request)
+    {
+        $this->access();
+        $type = $this->awardService->getAwardType($request->input('award_category_id'));
+
+        $response = $this->awardBuilder
+            ->handle($type)
+            ->store($request);
+
+        return response()->success($response);
+    }
+
+    /**
+     * @param UpdateAwardRequest $request
+     * @param Award $award
+     * @return mixed
+     * @throws Exception
+     */
+    public function update(Award $award, UpdateAwardRequest $request )
+    {
+        $this->access();
+        $type = $this->awardService->getAwardType($request['award_category_id'], $award);
+        $response = $this->awardBuilder
+            ->handle($type)
+            ->store($request, $award);
+
+        return response()->success($response);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function destroy(Award $award)
+    {
+        try {
+            $this->access();
+            return response()->success($award->delete());
+        } catch (Exception $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
 
     /**
      * @throws Exception
      */
     public function reward(RewardRequest $request, AwardRepository $awardRepository)
     {
-//        $this->access();
+        $this->access();
         return $this->awardService->reward($request, $awardRepository);
     }
 
@@ -72,88 +139,15 @@ class AwardController extends Controller
     public function awardsByType(AwardsByTypeRequest $request)
     {
         $params = $request->validated();
-        $params['user_id'] = Auth::id() ?? 5;
-        if ($request->has('user_id')) {
-            $params['user_id'] = $request->input('user_id');
-        }
+        $params['user_id'] = $request->get('user_id', Auth::id() ?? 5);
 
-        $key = $request->input('key');
-        $awardBuilder = app(AwardBuilder::class);
-        $response = $awardBuilder->handle($key)->fetch($params);
+
+        $response = $this->awardBuilder->handle($params['key'])->fetch($params);
 
         return \response()->success($response);
     }
 
-    /**
-     * @return mixed
-     * @throws Exception
-     */
-    public function index()
-    {
-        try {
-//            $this->access();
-            $awardTypes = Award::all();
-            return response()->success($awardTypes);
-        } catch (Exception $exception) {
-            throw new Exception($exception->getMessage());
-        }
-    }
 
-    /**
-     * @param StoreAwardRequest $request
-     * @return mixed
-     * @throws Exception
-     */
-    public function store(StoreAwardRequest $request)
-    {
 
-//        $this->access();
-        return $this->awardService->storeAward($request);
-    }
 
-    /**
-     * @throws Exception
-     */
-    public function show(Award $award)
-    {
-        try {
-            $this->access();
-            return response()->success($award);
-        } catch (Exception $exception) {
-            throw new Exception($exception->getMessage());
-        }
-    }
-
-    /**
-     * form-data: {
-     * "award_type_id": 1,
-     * "course_id":1,
-     * "award_id":1,
-     * "image": file
-     * }
-     * @param UpdateAwardRequest $request
-     * @param Award $award
-     * @return mixed
-     * @throws Exception
-     */
-    public function update(Award $award, UpdateAwardRequest $request )
-    {
-        $this->access();
-        $response = $this->awardService->updateAward($request, $award);
-
-        return response()->success($response);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function destroy(Award $award)
-    {
-        try {
-            $this->access();
-            return response()->success($award->delete());
-        } catch (Exception $exception) {
-            throw new Exception($exception->getMessage());
-        }
-    }
 }

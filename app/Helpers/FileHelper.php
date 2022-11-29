@@ -49,7 +49,8 @@ class FileHelper
     {
         $storage =  Storage::disk('s3');
 
-        if (!$storage->exists($path)) {
+
+        if (!$storage->directoryExists($path)) {
             $storage->makeDirectory($path);
         }
 

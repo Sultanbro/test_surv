@@ -13,8 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('award_type', function (Blueprint $table) {
-            $table->string('key')->nullable();
+        Schema::create('award_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('description');
+            $table->tinyInteger('hide');
+            $table->integer('type');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,8 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('award_type', function (Blueprint $table) {
-            $table->dropColumn('key');
-        });
+        Schema::dropIfExists('award_categories');
     }
 };

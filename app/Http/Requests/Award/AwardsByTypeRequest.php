@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Award;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAwardTypeRequest extends FormRequest
+class AwardsByTypeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,8 @@ class UpdateAwardTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
-            'description' => 'string'
+            'key'  => 'required|string',
+            'user_id'  => 'numeric|exists:users,id',
         ];
     }
 }

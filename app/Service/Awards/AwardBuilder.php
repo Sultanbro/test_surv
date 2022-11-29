@@ -10,6 +10,11 @@ use Carbon\Exceptions\ParseErrorException;
 class AwardBuilder implements AwardBuilderInterface
 {
 
+    /**
+     * @param string $typeName
+     * @return mixed
+     * @throws \Exception
+     */
     public function handle(string $typeName)
     {
         $method =  ucfirst($typeName) . 'Award';
@@ -21,16 +26,25 @@ class AwardBuilder implements AwardBuilderInterface
         return $this->{$method}();
     }
 
+    /**
+     * @return NominationAwardService
+     */
     protected function nominationAward(): NominationAwardService
     {
         return new NominationAwardService();
     }
 
+    /**
+     * @return CertificateAwardService
+     */
     protected function certificateAward(): CertificateAwardService
     {
         return new CertificateAwardService();
     }
 
+    /**
+     * @return AccrualAwardService
+     */
     protected function accrualAward(): AccrualAwardService
     {
         return new AccrualAwardService();
