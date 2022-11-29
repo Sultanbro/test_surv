@@ -109,7 +109,14 @@
 
                 />
             </BFormGroup>
-
+            
+            <div v-if="images.length > 0">
+                <hr>
+                <template v-for="image in images">
+                    <img @click="removeImage(image.id)" :src="image.path" :alt="image.format" :key="image.created_at" v-if="image.format !== 'pdf'">
+                    <vue-pdf-embed @click="removeImage(image.id)" :source="image.path" v-else />
+                </template>
+            </div>
             <BFormGroup id="input-group-4" v-if="form.award_type_id === 1 ||form.award_type_id === 2 " switches>
                 <BFormCheckbox v-model="form.hide" required>
                     Отображать пользователям награды других участников
@@ -125,6 +132,7 @@
     import FormUsers from "./types/FormUsers.vue";
     import UploadSertificate from "./types/UploadSertificate.vue";
     import Multiselect from "vue-multiselect";
+    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
 
     export default {
         name: "EditAwardSidebar",
@@ -132,21 +140,26 @@
             UploadFile,
             FormUsers,
             UploadSertificate,
-            Multiselect
+            Multiselect,
+            VuePdfEmbed
         },
         props: {
             open: Boolean,
-            item: Object | Boolean,
+            item: {
+                type: Object,
+                default: {}
+            },
         },
         data() {
             return {
                 id: null,
+                idPost: null,
                 value: [],
                 options: [],
                 dropDownText: 'Выберите тип награды',
                 userName: 'Тимур Хайруллин',
                 selectFileType: true,
-                file: null,
+                file: [],
                 targetable_id: null,
                 targetable_type: null,
                 form: {
@@ -159,9 +172,23 @@
                     format: '',
                     styles: ''
                 },
+                images: []
             };
         },
         methods: {
+            removeImage(id) {
+                let loader = this.$loading.show();
+                this.axios
+                    .delete('/awards/delete/' + id)
+                    .then(response => {
+                        console.log(response);
+                          loader.hide();
+                    })
+                    .catch(error => {
+                        console.log(error);
+                          loader.hide();
+                    })
+            },
             superselectChoice(val) {
                 console.log(val);
                 this.targetable_id = val.id;
@@ -185,46 +212,88 @@
                     } else {
                         this.form.hide = 0;
                     }
-                    const formData = new FormData();
-                    if (this.form.award_type_id === 3) {
-                        formData.append('targetable_type', this.targetable_type);
-                        formData.append('targetable_id', this.targetable_id);
-                    }
-                    formData.append('award_type_id', this.form.award_type_id);
-                    if (this.form.award_type_id === 2) {
-                        for (let j = 0; j < this.form.course_ids.length; j++) {
-                            formData.append('course_ids[]', this.form.course_ids[j]);
-                        }
-                    }
-                    formData.append('name', this.form.name);
-                    formData.append('description', this.form.description);
-                    formData.append('hide', this.form.hide);
-                    if (this.file !== null) {
-                        formData.append('file', this.file);
-                    }
-                    formData.append('styles', JSON.stringify(this.form.styles));
-                    if (this.item) {
-                        formData.append('_method', 'put');
+
+                    if(Object.keys(this.item).length === 0){
+                        const formDataCategories = new FormData();
+                        console.log(this.form.award_type_id);
+                        formDataCategories.append('name', this.form.name);
+                        formDataCategories.append('description', this.form.description);
+                        formDataCategories.append('hide', this.form.hide);
+                        formDataCategories.append('type', this.form.award_type_id);
+
                         this.axios
-                            .post("/awards/update/" + this.item.id, formData, {
+                            .post('/award-categories/store', formDataCategories, {
                                 headers: {
                                     'Content-Type': 'multipart/form-data',
                                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                                 },
                             })
                             .then(response => {
-                                console.log(response);
-                                this.$emit('update:open', false);
-                                this.$emit('update-award');
-                                this.$refs.newSertificateForm.reset();
-                                loader.hide();
+                                this.idPost = response.data.data.id;
+                                // formData Start
+                                const formData = new FormData();
+                                if (this.form.award_type_id === 3) {
+                                    formData.append('targetable_type', this.targetable_type);
+                                    formData.append('targetable_id', this.targetable_id);
+                                }
+                                console.log(this.idPost);
+                                formData.append('award_category_id', this.idPost);
+                                if (this.form.award_type_id === 2) {
+                                    for (let j = 0; j < this.form.course_ids.length; j++) {
+                                        formData.append('course_ids[]', this.form.course_ids[j]);
+                                    }
+                                }
+                                if (this.file.length > 0) {
+                                    for (let i = 0; i < this.file.length; i++) {
+                                        formData.append('file[]', this.file[i]);
+                                    }
+                                }
+                                // formData.append('file', this.file);
+                                formData.append('styles', JSON.stringify(this.form.styles));
+                                // formData end
+                                this.axios
+                                    .post("/awards/store", formData, {
+                                        headers: {
+                                            'Content-Type': 'multipart/form-data'
+                                        },
+                                    })
+                                    .then(response => {
+                                        this.$emit('update:open', false);
+                                        this.$emit('save-award', response.data.data);
+                                        this.$refs.newSertificateForm.reset();
+                                        loader.hide();
+                                    })
+                                    .catch(function (error) {
+                                        console.log("error");
+                                        console.log(error);
+                                        loader.hide();
+                                    });
                             })
                             .catch(function (error) {
-                                console.log("error");
                                 console.log(error);
-                                loader.hide();
                             });
-                    } else {
+                    } else{
+                        // formData Start
+                        const formData = new FormData();
+                        if (this.form.award_type_id === 3) {
+                            formData.append('targetable_type', this.targetable_type);
+                            formData.append('targetable_id', this.targetable_id);
+                        }
+                        console.log(this.idPost);
+                        formData.append('award_category_id', this.id);
+                        if (this.form.award_type_id === 2) {
+                            for (let j = 0; j < this.form.course_ids.length; j++) {
+                                formData.append('course_ids[]', this.form.course_ids[j]);
+                            }
+                        }
+                        if (this.file.length > 0) {
+                            for (let i = 0; i < this.file.length; i++) {
+                                formData.append('file[]', this.file[i]);
+                            }
+                        }
+                        formData.append('styles', JSON.stringify(this.form.styles));
+                        // formData end
+
                         this.axios
                             .post("/awards/store", formData, {
                                 headers: {
@@ -243,7 +312,6 @@
                                 loader.hide();
                             });
                     }
-
                 } else {
                     this.selectFileType = false;
                 }
@@ -295,16 +363,31 @@
         mounted() {
             // this.form.awardCreator = this.userName;
             if (this.item) {
+                this.axios
+                .get('/award-categories/get/awards/' + this.item.id)
+                .then(response => {
+                    console.log(response);
+                    const data = response.data.data;
+                    for (let i = 0; i < data.length; i++){
+                        this.images.push(data[i]);
+                    }
+                    console.log(this.images);
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+
                 this.id = this.item.id;
-                this.form.award_type_id = this.item.award_type_id;
+                this.form.award_type_id = this.item.type;
                 this.form.name = this.item.name;
                 this.form.description = this.item.description;
                 this.form.hide = this.item.hide;
-                this.form.path = this.item.path;
-                this.form.format = this.item.format;
-                this.form.styles = this.item.styles;
-                this.form.targetable_type = this.item.targetable_type;
-                this.form.targetable_id = this.item.targetable_id;
+                // this.form.path = this.item.path;
+                // this.form.format = this.item.format;
+                // this.form.styles = this.item.styles;
+                // this.form.targetable_type = this.item.targetable_type;
+                // this.form.targetable_id = this.item.targetable_id;
+
                 if (this.item.award_type_id === 1) {
                     this.dropDownText = 'Загрузка картинки';
                 }
@@ -353,12 +436,14 @@
             width: 80%;
             margin: auto 0 !important;
         }
-        .dropdown-select-type{
-            li{
-                a{
+
+        .dropdown-select-type {
+            li {
+                a {
                     font-size: 16px;
                     padding: 8px 14px;
-                    &:hover{
+
+                    &:hover {
                         background-color: #ebebec;
                     }
                 }

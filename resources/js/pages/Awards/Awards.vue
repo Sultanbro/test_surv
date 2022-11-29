@@ -28,9 +28,9 @@
                     <BTd>{{ key + 1 }}</BTd>
                     <BTd>{{ item.name }}</BTd>
                     <BTd>{{ item.description }}</BTd>
-                    <BTd v-if="item.award_type_id === 1">Картинка</BTd>
-                    <BTd v-if="item.award_type_id === 2">Конструктор</BTd>
-                    <BTd v-if="item.award_type_id === 3">Данные начислений</BTd>
+                    <BTd v-if="item.type === 1">Картинка</BTd>
+                    <BTd v-if="item.type === 2">Конструктор</BTd>
+                    <BTd v-if="item.type === 3">Данные начислений</BTd>
                     <BTd>{{ item.created_at }}</BTd>
                     <BTd>{{ item.awardCreator }}</BTd>
                     <BTd @click.stop>
@@ -83,7 +83,7 @@
                 modal: false,
                 itemRemove: null,
                 showEditAwardSidebar: false,
-                item: false,
+                item: null,
                 tableItems: [],
             };
         },
@@ -104,12 +104,13 @@
                 let loader = this.$loading.show();
                 this.tableItems = [];
                 this.axios
-                    .get("/awards/get")
+                    .get("/award-categories/get")
                     .then(response => {
                         const data = response.data.data;
                         for(let i = 0; i < data.length; i++){
                             this.tableItems.push(data[i]);
                         }
+                        console.log(this.tableItems);
                         loader.hide();
                     })
                     .catch(function (error) {
@@ -137,14 +138,9 @@
                  this.modal = !this.modal;
                  let loader = this.$loading.show();
                 await this.axios
-                     .delete("/awards/delete/" + item.id)
+                     .delete("/award-categories/delete/" + item.id)
                      .then(response =>  {
                          this.getAwards();
-                         // for( let i = 0; i < this.tableItems.length; i++){
-                         //     if ( this.tableItems[i].id === item.id) {
-                         //         this.tableItems.splice(i, 1);
-                         //     }
-                         // }
                          loader.hide();
                      })
                      .catch(function (error) {

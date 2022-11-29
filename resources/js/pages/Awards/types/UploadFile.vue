@@ -6,7 +6,8 @@
                     class="form-file"
                     placeholder="Выберите Файл"
                     drop-placeholder="Перетащите файл сюда..."
-                    accept=".jpg, .png"
+                    accept=".jpg, .png, .pdf"
+                    multiple
                     type="file"
                     id="file"
                     ref="file"
@@ -17,8 +18,7 @@
                         <BBadge class="badge-img" variant="dark">{{ name }}</BBadge>
                     </div>
                 </template>
-            </BFormFile
-            >
+            </BFormFile>
             <BButton
                     v-if="hasImage || imageSrc.length > 0"
                     variant="danger"
@@ -83,7 +83,8 @@
         data() {
             return {
                 image: null,
-                imageSrc: ''
+                imageSrc: [],
+                imageSrcPdf: [],
             };
         },
         computed: {
@@ -98,8 +99,9 @@
         },
         watch: {
             image(newValue, oldValue) {
+                this.$emit("image-download", this.image);
                 if(newValue !== null){
-                    this.imageSrc = '';
+                    this.imageSrc = [];
                     let newValueString = newValue.name + newValue.size;
                     let oldValueString = null;
                     if (oldValue !== null) {
@@ -110,7 +112,7 @@
                             base64Encode(newValue)
                                 .then((val) => {
                                     this.imageSrc = val;
-                                    this.$emit("image-download", this.image);
+
                                 })
                                 .catch(() => {
                                     this.imageSrc = '';

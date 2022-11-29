@@ -65,11 +65,9 @@
                 this.userId = e.detail;
 
                 this.axios
-                    .get('/awards/type?award_type_id=1&user_id=' + this.userId)
+                    .get('/awards/type?key=nomination')
                     .then(response => {
-                        console.log(response.data.data);
-                        this.awardsAvailable = response.data.data.available;
-                        this.awardsMy = response.data.data.my;
+                        console.log(response);
                     })
                     .catch(error => {
                         console.log(error);
