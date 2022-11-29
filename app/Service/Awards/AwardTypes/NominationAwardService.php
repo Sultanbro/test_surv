@@ -35,7 +35,7 @@ class NominationAwardService implements AwardInterface
                 ->where('type', $type)
                 ->with('awards',function ($query) use ($user){
                     $query->whereHas('users',function ($q) use ($user){
-                        $q->where('id', $user->id);
+                        $q->where('users.id', $user->id);
                     });
                 })
                 ->get();
@@ -44,7 +44,7 @@ class NominationAwardService implements AwardInterface
                 ->where('type', $type)
                 ->with('awards',function ($query) use ($user){
                     $query->whereDoesntHave('users',function ($q) use ($user){
-                        $q->where('id', $user->id);
+                        $q->where('users.id', $user->id);
                     });
                 })
                 ->get();
@@ -53,10 +53,10 @@ class NominationAwardService implements AwardInterface
                 ->where('type', $type)
                 ->with('awards',function ($query) use ($user){
                     $query->with('users', function ($q){
-                        $q->select('id', 'name', 'last_name', 'avatar');
+                        $q->select('users.id', 'users.name', 'users.last_name', 'users.avatar');
                     })
                         ->whereHas('users',function ($q) use ($user){
-                            $q->whereNot('id', $user->id);
+                            $q->whereNot('users.id', $user->id);
                         });
                 })
                 ->where('hide', false)
