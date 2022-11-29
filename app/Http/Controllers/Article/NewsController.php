@@ -14,7 +14,9 @@ class NewsController extends Controller
 {
     public function index()
     {
-       View::share('title', 'NEWS');
+        if(auth()->user()->is_admin == 0) return redirect('/'); 
+
+        View::share('title', 'NEWS');
         View::share('menu', 'news');
 
         return view('news')->with([

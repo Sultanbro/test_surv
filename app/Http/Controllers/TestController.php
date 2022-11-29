@@ -43,9 +43,13 @@ class TestController extends Controller {
   
 	
 	public function test() { 
-		$centralUser = CentralUser::with('tenants')->where('email', 'ali.akpanov@yandex.ru')->first();
-
-		dd($centralUser->tenants());
+		$test = AnalyticStat::getCellValue(
+			31,
+			'C4',
+			'2022-11-01',
+			2
+		);
+		dd($test);
 	}  
 
 	private function getSegmentAndSaveForLead($id) {
