@@ -143,8 +143,8 @@ Route::middleware([
     Route::any('/bless', function() {
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
-    
-    
+
+    Route::get('/test-for-check', [TestController::class, 'testMethodForCheck'])->name('testMethodForCheck');
     // Profile
     // Route::any('/', [UserProfileController::class, 'getProfile']); // old
     Route::any('/', [ProfileController::class, 'newprofile']);
@@ -721,10 +721,6 @@ Route::middleware([
         ->middleware([
             'auth',
         ])
-        ->whereNumber([
-            'article_id',
-            'comment_id',
-        ])
         ->group(function () {
             Route::get('', [NewsController::class, 'index'])->name('index');
 
@@ -818,9 +814,6 @@ Route::middleware([
         ->name('files.')
         ->middleware([
             'auth',
-        ])
-        ->whereNumber([
-            'file_id',
         ])
         ->group(function () {
 

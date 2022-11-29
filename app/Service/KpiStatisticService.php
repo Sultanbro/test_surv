@@ -1221,7 +1221,7 @@ class KpiStatisticService
             $item['fact'] = AnalyticStat::getCellValue(
                 $kpi_item->activity->group_id,
                 $kpi_item->cell,
-                $date->format('Y-m-d'),
+                $date->firstOfMonth()->format('Y-m-d'),
                 2
             );
 
