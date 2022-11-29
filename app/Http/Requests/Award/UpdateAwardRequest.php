@@ -27,14 +27,9 @@ class UpdateAwardRequest extends FormRequest
     public function rules()
     {
         return [
-            'award_type_id' => 'integer',
+            'award_category_id' => 'required|integer',
             'course_ids' => 'array',
-            'name' => 'string|required',
-            'description' => 'string',
-            'hide' => 'boolean',
             'styles' => 'string',
-            'targetable_type' => 'string',
-            'targetable_id' => 'integer',
             'file' => 'file|mimes:jpg,png,pdf|max:2048'
         ];
     }

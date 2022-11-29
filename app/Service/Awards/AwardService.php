@@ -3,6 +3,8 @@
 namespace App\Service\Awards;
 
 use App\Enums\AwardTypeEnum;
+use App\Exceptions\News\BusinessLogicException;
+use App\Helpers\FileHelper;
 use App\Http\Requests\Award\CourseAwardRequest;
 use App\Http\Requests\RewardRequest;
 use App\Models\Award\Award;
@@ -75,6 +77,18 @@ class AwardService
             throw new Exception($exception->getMessage());
         }
     }
+    public function delete(Award $award)
+    {
+        try {
+            if (FileHelper::checkFile($award->path)){
+                FileHelper::delete($award->path, $this->path);
+            }
+
+            return response()->success($award->delete());
+        }catch (Throwable $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
 
     /**
      * @param RewardRequest $request
@@ -135,22 +149,20 @@ class AwardService
     private function saveAwardFile($request): array
     {
         if (!$request->hasFile('file')){
-            return [
+             return [
                 'relative'  => '',
                 'temp'      => ''
             ];
         }
-        $extension  = $request->file('file')->extension();
-        $awardFileName = uniqid() . '_' . md5(time()) . '.' . $extension;
 
-        $this->disk->putFileAs($this->path , $request->file('file'), $awardFileName);
-        $xpath = $this->path . $awardFileName;
-
+        $file = $request->file('file');
+        if (!$filename = FileHelper::save($file, $this->path)) {
+            throw new BusinessLogicException(__('exception.save_error'));
+        }
         return [
-            'relative'  => $xpath,
-            'temp'      => $this->disk->temporaryUrl(
-                $xpath, now()->addMinutes(360)
-            )
+            'relative' => $filename,
+            'format' => $file->getClientOriginalExtension(),
+            'temp' => FileHelper::getUrl($this->path, $filename)
         ];
     }
 

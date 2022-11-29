@@ -77,7 +77,7 @@ class AwardController extends Controller
         $type = $this->awardService->getAwardType($request['award_category_id'], $award);
         $response = $this->awardBuilder
             ->handle($type)
-            ->store($request, $award);
+            ->update($request, $award);
 
         return response()->success($response);
     }
@@ -88,8 +88,8 @@ class AwardController extends Controller
     public function destroy(Award $award)
     {
         try {
-            $this->access();
-            return response()->success($award->delete());
+//            $this->access();
+            return response()->success($this->awardService->delete($award));
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }

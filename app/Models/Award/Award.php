@@ -2,6 +2,7 @@
 
 namespace App\Models\Award;
 
+use App\Helpers\FileHelper;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -43,17 +44,14 @@ class Award extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'award_user', 'award_id','user_id')
+            ->withPivot('path')
             ->withTimestamps();
 
     }
 
     public function getPathAttribute($value){
         if ($value != ''){
-            $disk = \Storage::disk('s3');
-
-            return $disk->temporaryUrl(
-                $value, now()->addMinutes(360)
-            );
+           return FileHelper::getUrl('awards', $value);
         }
         return $value;
 
