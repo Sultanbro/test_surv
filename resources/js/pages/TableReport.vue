@@ -27,11 +27,11 @@
         </div>
 
         <div v-if="hasPermission">
-            
+
             <div class="row mb-3">
                 <div class="col-2 p-0">
                     <div class="overflow-auto d-flex">
-                        <b-pagination 
+                        <b-pagination
                             v-model="currentPage"
                             :total-rows="totalRows"
                             :per-page="perPage"
@@ -47,19 +47,19 @@
                         <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
                         <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
                     </b-form-group>
-                    <button 
+                    <button
                         class="btn btn-sm rounded btn-primary ml-2"
                         v-if="currentGroup != 23 && user_types == 2"
-                        @click="copy()" 
+                        @click="copy()"
                         :style="{'padding': '2px 8px'}"
                         >
                         <i class="fa fa-clone ddpointer"></i>
-                        Начать отметку 
+                        Начать отметку
                     </button>
                 </div>
                 <div class="col-4 d-flex align-items-center justify-content-end" >
                     <input type="text" :ref="'mylink' + currentGroup" class="hider">
-                    <button 
+                    <button
                         v-if="(currentGroup == 42 && can_edit) || (currentGroup == 88 && can_edit)"
                         @click='showExcelImport = !showExcelImport'
                         class="btn btn-primary mr-2 btn-sm rounded"
@@ -74,36 +74,36 @@
                     </p>
                 </div>
             </div>
-            
-            <b-table 
-                responsive striped 
-                :sticky-header="true" 
+
+            <b-table
+                responsive striped
+                :sticky-header="true"
                 class="text-nowrap text-right my-table"
-                id="tabelTable" 
-                :small="true" 
-                :bordered="true" 
-                :items="items" 
-                :fields="fields" 
-                show-empty 
-                emptyText="Нет данных" 
-                :current-page="currentPage" 
+                id="tabelTable"
+                :small="true"
+                :bordered="true"
+                :items="items"
+                :fields="fields"
+                show-empty
+                emptyText="Нет данных"
+                :current-page="currentPage"
                 :per-page="perPage">
 
                 <template slot="cell(name)" slot-scope="data">
                     <div>
                         <span v-if="activeuserpos == 46">
-                            <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>    
+                            <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
                         </span>
                         <span v-else>
                             {{ data.value }}
                         </span>
                         <b-badge v-if="data.field.key == 'name'" pill variant="success">
-                            {{ data.item.user_type }} 
+                            {{ data.item.user_type }}
                         </b-badge>
 
-                   
+
                         <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
-                            Стажер 
+                            Стажер
                         </span>
                     </div>
                 </template>
@@ -119,10 +119,10 @@
                     <div @mouseover="dayInfo(data)" @click="detectClick(data)" :class="{'updated': data.value.updated}">
 
                         <template v-if="data.value.hour">
-                            <b-form-input 
+                            <b-form-input
                                 class="form-control cell-input"
                                 type="number"
-                                @mouseover="$event.preventDefault()" 
+                                @mouseover="$event.preventDefault()"
                                 :min="0"
                                 :max="24"
                                 :step="0.1"
@@ -135,7 +135,7 @@
 
                         <template v-else>
                             {{ data.value.hour ? data.value.hour : data.value }}
-                        </template>  
+                        </template>
 
                         <div class="cell-border" :id="`cell-border-${data.item.id}-${data.field.key}`" v-if="data.value.tooltip"></div>
                         <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top">
@@ -147,7 +147,7 @@
 
                 </template>
 
-            </b-table>  
+            </b-table>
 
             <p>{{ dayInfoText }}</p>
 
@@ -162,7 +162,7 @@
 
 
     <sidebar v-if="showExcelImport"
-        title="Импорт EXCEL" 
+        title="Импорт EXCEL"
         :open="showExcelImport"
         @close="showExcelImport=false"
         width="75%">
@@ -199,7 +199,7 @@
                         <div v-for="dateType in dateTypes" :key="dateType.label" :class="[dateType.type == 4 ? 'mt-auto' : 'mb-2']">
                             <b-button block @click="openModalDay(dateType)" :class="'table-day-'+dateType.type">{{ dateType.label }}
                             </b-button>
-                        </div> 
+                        </div>
                         <div class="mt-auto">
                             <b-button block @click="openFiringModal({
                                                     label: 'Уволить без отработки',
@@ -214,10 +214,10 @@
                                                     type: 4
                                                 }, 2)" :class="'table-day-4'">Уволить с отработкой</b-button>
                         </div>
-                        
-                        
+
+
                     </div>
-                    
+
                 </template>
 
                 <template v-else>
@@ -229,7 +229,7 @@
                         <div class="mt-3" style="color:green;text-align:center">
                             {{ apllyPersonResponse }}
                         </div>
-                        
+
                         <div class="mt-3" style="color:green;text-align:center" v-if="sidebarContent.data.item.requested !== null">
                             Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
                         </div>
@@ -240,12 +240,12 @@
                                                     type: 4
                                                 }, 0)">Уволить</button>
 
-                        
-                        
+
+
                     </div>
                 </template>
 
-                
+
 
                 </b-tab>
                 <b-tab title="⚠️Штрафы" v-if="!sidebarContent.data.item.is_trainee">
@@ -274,18 +274,18 @@
     </b-modal>
 
     <b-modal v-model="modalVisibleApply" ok-text="Да" cancel-text="Нет" :title="'Принятие на работу'" @ok="applyPerson" size="md">
-        <template v-for="error in errors"> 
+        <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
         <b-form-input v-model="applyItems.schedule" placeholder="Напишите со скольки и до скольки рабочий день" :required="true"></b-form-input>
     </b-modal>
- 
+
 
     <b-modal v-model="modalVisibleAbsence" ok-text="Да" cancel-text="Нет" title="Отсутствовал на стажировке" @ok="setUserAbsent" size="md">
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
-        
+
         <select class="form-control" v-model="commentAbsent">
             <option value="" disabled selected>Выберите причину</option>
             <option v-for="cause in fire_causes" :value="cause">{{ cause }}</option>
@@ -297,7 +297,7 @@
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
         </template>
-        
+
 
         <select class="form-control" v-model="commentFiring2">
             <option value="" disabled selected>Выберите причину</option>
@@ -305,17 +305,17 @@
         </select>
 
         <b-form-input v-if="firingItems.type == 0"
-            class="mt-3" 
+            class="mt-3"
             v-model="commentFiring" placeholder="Свой вариант" :required="true"></b-form-input>
 
-        <b-form-file 
+        <b-form-file
             v-if="firingItems.type == 2"
             v-model="firingItems.file"
                             :state="Boolean(firingItems.file)"
                             placeholder="Выберите или перетащите файл сюда..."
                             drop-placeholder="Перетащите файл сюда..."
                             class="mt-3"
-                            ></b-form-file>  
+                            ></b-form-file>
 
     </b-modal>
 
@@ -353,7 +353,7 @@ export default {
     },
     data() {
         return {
-            
+
             data: {},
             showExcelImport: false,
             openSidebar: false,
@@ -364,7 +364,7 @@ export default {
             items: [],
             fields: [],
             head_ids: [],
-            editMode: false,     
+            editMode: false,
             dayInfoText: '',
             scrollLeft: 0, // scroller
             maxScrollWidth: 0, // scroller
@@ -387,7 +387,7 @@ export default {
                 workDays: 0,
                 weekDays: 0,
                 daysInMonth: 0,
-                date: null, 
+                date: null,
                 month: null
             },
             dataLoaded: false,
@@ -456,7 +456,7 @@ export default {
 
     created() {
 
-        
+
         this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
         let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
 
@@ -484,7 +484,7 @@ export default {
             if (confirm(`Если нажмете \"ОК\", то стажеры должны переходить по ссылке и отмечаться в течении 30 минут.
             \nПосле 30 минут кто не отметился, перейдут в статус \"Отсутствует\". \nВы уверены?`) == false) {
                 return '';
-            } 
+            }
 
             axios.post('/autochecker/' + this.currentGroup, {})
                 .then(response => {
@@ -507,7 +507,7 @@ export default {
         openModalApply(dayType) {
             this.currentDayType = dayType
             this.modalVisibleApply = true
-        },  
+        },
 
         openModalAbsence(dayType) {
             this.currentDayType = dayType
@@ -590,11 +590,11 @@ export default {
                     'Слишком большая нагрузка',
                 ];
 
-            
-                
+
+
             }
         },
-        
+
         openModalFine() {
             this.modalVisibleFines = true
         },
@@ -613,8 +613,8 @@ export default {
         },
 
         openDay(data) {
-            if(this.editMode) return 
-            
+            if(this.editMode) return
+
             if (data.field.key == 'name') return
             this.openSidebar = true
             this.sidebarTitle = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth} `
@@ -632,12 +632,12 @@ export default {
         setUserFired() {
             if(this.firingItems.type == 2 && this.firingItems.file == undefined) {
                 this.errors = ['Заявление об увольнении обязательно!']
-                
+
             }
-            
+
             let comment = '';
             if(this.commentFiring.length == 0) {
-                
+
                 if(this.commentFiring2.length == 0) {
                     this.errors = ['Комментарий обязателен']
                     return null
@@ -657,26 +657,26 @@ export default {
             formData.append('file', this.firingItems.file);
             formData.append('fire_type', this.firingItems.type);
 
-            var _this = this; 
+            var _this = this;
 
             axios.post('/timetracking/set-day', formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
             }).then(response => {
-                
+
                 let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
                     [this.sidebarContent.day] = `day-${this.currentDayType.type}`
 
                 this.items[this.sidebarContent.data.index]['_cellVariants'] = v
-                
+
                 this.fetchData()
-                
+
 
                 this.openSidebar = false
-                
+
                 if (response.data.success == 1) {
-                    
+
                     this.sidebarHistory.push(response.data.history)
                     this.modalVisibleFiring = false
                     this.commentFiring = ''
@@ -691,7 +691,7 @@ export default {
         setDayWithoutComment(type) {
             let day = this.sidebarContent.day;
 
-            
+
 
             axios.post('/timetracking/set-day', {
                 month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
@@ -702,24 +702,24 @@ export default {
                 group_id: this.currentGroup,
                 comment: ' '
             }).then(response => {
-                
+
                 let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
                     [day] = `day-${this.currentDayType.type}`
 
                 this.items[this.sidebarContent.data.index]['_cellVariants'] = v
-                
+
                 this.fetchData()
-                
+
 
                 this.openSidebar = false
-                
+
                 if (response.data.success == 1) {
                     this.sidebarHistory.push(response.data.history)
                     this.currentDayType = {}
                 }
             }).catch(error => {
                 alert(error)
-            });    
+            });
         },
 
         setDayType() {
@@ -731,17 +731,17 @@ export default {
                     type: this.currentDayType.type,
                     comment: this.commentDay
                 }).then(response => {
-                  
+
                     let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
                         [this.sidebarContent.day] = `day-${this.currentDayType.type}`
 
                     this.items[this.sidebarContent.data.index]['_cellVariants'] = v
-                    
+
                     this.fetchData()
-                 
+
 
                     this.openSidebar = false
-                    
+
                     if (response.data.success == 1) {
                         this.sidebarHistory.push(response.data.history)
                         this.modalVisibleDay = false
@@ -755,7 +755,7 @@ export default {
                 this.errors = ['Комментарий обязателен']
             }
         },
-        
+
         saveFines() {
             if (this.commentFines.length > 0) {
                 this.openSidebar = false
@@ -783,7 +783,7 @@ export default {
             // if (!isNaN(data.field.key))
             this.dayInfoText = `${data.item.name} -${data.field.key} ${this.dateInfo.currentMonth}`
         },
-      
+
         //Установка выбранного года
         setYear() {
             this.dateInfo.currentYear = this.dateInfo.currentYear ? this.dateInfo.currentYear : this.$moment().format('YYYY')
@@ -807,31 +807,31 @@ export default {
         },
 
         //Установка заголовока таблицы
-        readOnlyFix(event) { 
+        readOnlyFix(event) {
             if(this.editable_time && this.can_edit) {
                 event.target.readOnly = ''
             }
         },
 
-        setFields() { 
+        setFields() {
             let fields = [];
 
             fields = [
                 {
-                    key: 'name', 
-                    stickyColumn: true, 
+                    key: 'name',
+                    stickyColumn: true,
                     label: 'Имя',
-                    variant: 'primary', 
+                    variant: 'primary',
                     sortable: true,
                     class: 'text-left px-3 t-name',
-                }, 
+                },
                 {
                     key: 'total',
                     label: '',
                     sortable: true,
-                    class: 'text-center font-bold px-3 table-yellowgreen font-opensans', 
+                    class: 'text-center font-bold px-3 table-yellowgreen font-opensans',
                 }
-            ]; 
+            ];
 
             let days = this.dateInfo.daysInMonth
 
@@ -855,7 +855,7 @@ export default {
                     url = '/timetracking/reports';
                 } else {
                     url = this.url_page;
-                }   
+                }
             } else {
                 // /timetracking/reports?page=2
                 this.url_page = url;
@@ -865,7 +865,7 @@ export default {
             console.log(url);*/
 
             let loader = this.$loading.show();
-            
+
             axios.post(url, {
                 month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
                 year: this.dateInfo.currentYear,
@@ -888,7 +888,7 @@ export default {
                 this.setFields()
                 this.loadItems()
 
-                
+
                 this.dataLoaded = true
                 setTimeout(() => {
                     var container = document.querySelector('.table-responsive')
@@ -904,10 +904,10 @@ export default {
                     alert(error)
                 });
         },
-        
+
         //Добавление загруженных данных в таблицу
         loadItems() {
-           
+
             let items = []
 
             let daily_totals = {};
@@ -935,27 +935,27 @@ export default {
                     let tt_hours = 0;
 
                     if(tt.updated === 1 || tt.updated === 2 || tt.updated === 3) dayHours[tt.date].updated = 1
-                    
+
                     let enter = this.$moment(tt.enter, 'YYYY-MM-DD HH:mm:ss').format('HH:mm')
                     let exit = this.$moment(tt.exit, 'YYYY-MM-DD HH:mm:ss').format('HH:mm')
                     startEnd[tt.date] += `<tr><td>${enter}</td><td>${exit}</td></td>`
 
                     if(dayHours[tt.date].updated === 1 || dayHours[tt.date].updated === 2 || dayHours[tt.date].updated === 3) {
                         if(tt.updated === 0) {
-                            
+
                         } else {
                             dayHours[tt.date].hour = Number(tt.minutes / 60)
                             tt_hours = Number(tt.minutes / 60);
                         }
-                    } else {  
-                        
+                    } else {
+
 
                         if (tt.minutes > 0) {
                             dayHours[tt.date].hour += Number(tt.minutes / 60);
                             tt_hours += Number(tt.minutes / 60);
                         }
-                        
-                        
+
+
                         var maxHour = item.working_time_id === 1 ? 8 : 9;
 
                          if (dayHours[tt.date].hour > maxHour && tt.updated === 0)  {
@@ -963,15 +963,15 @@ export default {
                             tt_hours = maxHour;
                         }
                     }
-                    
+
                     if (Number(tt.date) >= Number(item.applied_at)) {
                         total += Number(tt_hours);
-        
+
                         daily_totals[tt.date] += Number(tt_hours);
                     }
                 })
 
-        
+
                 //Время, история
                 dayHours.forEach((dh, key) => {
                     let resultHour = (item.user_type == 'office') ? Number(parseFloat(dh.hour)).toFixed(1) : Number(parseFloat(dh.hour)).toFixed(1)
@@ -995,7 +995,7 @@ export default {
                     if (item.dayTypes) v[k] = `day-${item.dayTypes[k]}`
                 });
 
-                
+
                 Object.keys(item.fines).forEach(k => {
                     if (item.fines[k].status == 1) {
                         v[parseInt(item.fines[k].date)] += ' table-day-2'
@@ -1003,7 +1003,7 @@ export default {
 
                 });
 
-      
+
                 Object.keys(item.weekdays).forEach(k => {
                     if (Number(item.weekdays[k]) == 1) {
                         v[Number(k)] += ' table-day-1'
@@ -1014,9 +1014,9 @@ export default {
                     _cellVariants: v
                 }
 
-            
+
                 items.push({
-                    name: item.full_name,
+                    name: `${item.name} ${item.last_name}`,
                     total: Number(total).toFixed(1),
                     enable_comment: item.enable_comment,
                     id: item.id,
@@ -1042,7 +1042,7 @@ export default {
         },
 
         editDay(data) {
-            
+
             try {
                 this.$toast.info('Вы редактируете ' + this.currentEditingCell.field.key + ' число  у ' + this.currentEditingCell.item.name);
             }
@@ -1076,7 +1076,7 @@ export default {
                         loader.hide();
                         return;
                     }
-                
+
                     this.currentEditingCell = {}
 
                     this.fetchData()
@@ -1121,13 +1121,13 @@ export default {
                     this.apllyPersonResponse = ''
                 }, 2000);
             }).catch(error => {
-         
+
                 alert(error)
             });
         },
 
         setUserAbsent() {
-            
+
             let day = this.sidebarContent.day;
             let loader = this.$loading.show();
             axios.post('/timetracking/set-day', {
@@ -1139,17 +1139,17 @@ export default {
                 group_id: this.currentGroup,
                 comment: this.commentAbsent
             }).then(response => {
-                
+
                 let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
                     [day] = `day-${this.currentDayType.type}`
 
                 this.items[this.sidebarContent.data.index]['_cellVariants'] = v
-                
+
                 this.fetchData()
-                
+
 
                 this.openSidebar = false
-                
+
                 if (response.data.success == 1) {
                     this.sidebarHistory.push(response.data.history)
                     this.currentDayType = {}
@@ -1161,12 +1161,12 @@ export default {
                 loader.hide();
             }).catch(error => {
                 alert(error)
-            });    
+            });
 
-            
+
         },
-        
-        detectClick(data) { 
+
+        detectClick(data) {
             //if([48,53,65,66].includes(this.currentGroup) || this.activeuserid == 5) { // if RECRUITING GROUP ENABLE EDIT HOURS ON DBLCLICK
             if(this.editable_time && this.can_edit) {
                 this.numClicks++
@@ -1185,7 +1185,7 @@ export default {
             } else { // ANOTHER GGROUPS JUST OPEN SIDEBAR
                 this.openDay(data);
             }
-            
+
         }
     }
 }
@@ -1221,7 +1221,7 @@ export default {
 .table-day-2 {
     color: #fff;
     background: red;
-    
+
     input {
         color: #fff;
         font-weight: bold;
@@ -1233,7 +1233,7 @@ export default {
     background: red;
 }
 
-.table-day-3 { 
+.table-day-3 {
     color: rgb(0, 0, 0);
     background: aqua !important;
 }

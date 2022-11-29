@@ -41,26 +41,26 @@
             </div>
            <div class="col-2"></div>
         </div>
-        
+
         <!-- filters -->
         <div class="row mb-2" v-if="hasPermission">
             <div class="col-4">
                 <div>
                     <p class="mb-0 fz-08 text-black"><b>Итого действующие ФОТ
-                        
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'<b>ФОТ</b>- Фонд оплаты труда<br>Сумма без вычета расходов (Штрафы и авансы)<br>ФОТ = Начисления (Отработанные + Стажировочные) + Бонусы + KPI'" 
+
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'<b>ФОТ</b>- Фонд оплаты труда<br>Сумма без вычета расходов (Штрафы и авансы)<br>ФОТ = Начисления (Отработанные + Стажировочные) + Бонусы + KPI'"
                             title="ФОТ">
                         </i>
-                        :</b> 
-                        {{ group_total }} тг. 
+                        :</b>
+                        {{ group_total }} тг.
                     </p>
                     <p class="mb-0 fz-08 text-black">
-                        <b>Итого уволенные ФОТ:</b> 
-                        {{ group_fired }} тг. 
+                        <b>Итого уволенные ФОТ:</b>
+                        {{ group_fired }} тг.
                     </p>
                     <p class="fz-08 text-black mr-1 mb-0" v-if="[5,18,84,157].includes(Number(activeuserid))">
-                        <b>Итого все ФОТ (Действующие):</b> 
+                        <b>Итого все ФОТ (Действующие):</b>
                         {{ allTotal }}тг.
                     </p>
                     <p class="fz-08 text-black mr-1 mb-0" v-if="[5,18,84,157].includes(Number(activeuserid))">
@@ -82,15 +82,15 @@
             </div>
             <div class="col-2">
                 <p class="text-right fz-09 text-black">
-                    <span>Сотрудники:</span> 
+                    <span>Сотрудники:</span>
                     <b> {{ users_count }} | {{ total_resources }}</b>
                 </p>
                 <b-button v-if="selectedGroup.salary_approved == 0 && can_edit"
                         style="float:right"
-                        @click="showBeforeApprove = true" 
-                        class="rounded btn-sm mb-3 mt-1" 
+                        @click="showBeforeApprove = true"
+                        class="rounded btn-sm mb-3 mt-1"
                         variant="info">Проверено и готово к выдаче</b-button>
-                        
+
                 <p class="approved-text" v-if="selectedGroup.salary_approved == 1">
                     <span><img src="/images/double-check.png" alt="" style="width: 20px"> Начисления утверждены</span>
                     <span>{{ selectedGroup.salary_approved_by }}</span>
@@ -98,28 +98,28 @@
                 </p>
             </div>
         </div>
-        
+
         <!-- table -->
         <div v-if="hasPermission">
             <b-table
-                responsive 
-                striped 
-                :sticky-header="true" 
-                class="text-nowrap text-right my-table salar accrual-table" 
+                responsive
+                striped
+                :sticky-header="true"
+                class="text-nowrap text-right my-table salar accrual-table"
                 :class="{'hide-special': special_fields}"
-                :small="true" 
-                :bordered="true"  
+                :small="true"
+                :bordered="true"
                 :items="items"
-                :fields="fields" 
-                show-empty 
+                :fields="fields"
+                show-empty
                 emptyText="Нет данных">
-                
+
                 <template slot="cell(name)" slot-scope="data">
-                    <div>{{ data.value }} 
-                        <i 
+                    <div>{{ data.value }}
+                        <i
                             v-if="data.index == 0"
-                            class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'В суммах этого ряда не учитываются Сотрудники, у которых <b>К выдаче</b> меньше 0'" 
+                            class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'В суммах этого ряда не учитываются Сотрудники, у которых <b>К выдаче</b> меньше 0'"
                             title="Заметка">
                         </i>
                         <b-badge pill variant="success">{{data.item.user_type}}</b-badge>
@@ -130,13 +130,13 @@
                     <div @click="defineClickNumber('bonus', data)" class="pointer">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_bonus !== null && data.index != 0"></div>
                     </div>
-                </template> 
+                </template>
 
                 <template slot="cell(kpi)" slot-scope="data">
                     <div @click="defineClickNumber('kpi', data)" class="pointer">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_kpi !== null && data.index != 0"></div>
                     </div>
-                </template> 
+                </template>
 
                 <template slot="cell(total)" slot-scope="data">
                     <div>{{ data.value }}</div>
@@ -158,7 +158,7 @@
                 </template>
 
                 <template slot="cell()" slot-scope="data">
-                    <div @click="detectClick(data)" 
+                    <div @click="detectClick(data)"
                         :class="{
                             'fine': data.item.fine !== undefined && data.item.fine[data.field.key.toString()].length > 0,
                             'avans': data.item.avanses !== undefined && data.item.avanses[data.field.key.toString()] !== null,
@@ -170,16 +170,16 @@
                     </div>
                 </template>
 
-                
+
             </b-table>
-            
+
         </div>
         <div v-else>
             <p>У вас нет доступа к этой группе</p>
         </div>
     </div>
 
-    
+
     <!-- Premium -->
     <sidebar
         v-if="editPremiumSidebar"
@@ -192,11 +192,11 @@
             <div>
                 <div v-if="editedField.item.edited_kpi !== null">
                      <p class="mt-3"><b>Kpi  </b>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Сумма KPI утвержденная к выдаче'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Сумма KPI утвержденная к выдаче'"
                             title="Kpi на этот месяц">
                         </i>
-                       
+
                     </p>
                     <div>
                         <b>Автор:</b>
@@ -218,11 +218,11 @@
                 <div v-if="editedField.item.edited_bonus !== null">
                     <p class="mt-3">
                         <b>Бонусы</b>
-                        <i 
-                            class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Сумма Бонусов, утвержденная к выдаче'" 
+                        <i
+                            class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Сумма Бонусов, утвержденная к выдаче'"
                             title="Бонусы на этот месяц">
-                        ></i> 
+                        ></i>
                     </p>
                     <div>
                         <b>Автор:</b>
@@ -242,11 +242,11 @@
 
             <div>
                 <div v-if="editedField.item.edited_salary !== null">
-                    
+
                      <p class="mt-3">
                         <b>К выдаче</b>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Окончательная суммма утвержденная к выдаче'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Окончательная суммма утвержденная к выдаче'"
                             title="К выдаче на этот месяц">
                         </i>
                     </p>
@@ -265,11 +265,11 @@
                     <hr>
                 </div>
             </div>
-  
+
 
 
             <div class="mt-3">
-                
+
                 <p class="mt-3">
                     <b>Бонусы локальные</b></p>
                     <div v-for="(item,index) in Object.keys(editedField.item.bonuses)" >
@@ -280,9 +280,9 @@
                             <b class="text-black">{{ item  }}:</b>
                             {{   editedField.item.bonuses[item] }}
                         </p>
-                    </div>   
+                    </div>
                 <hr>
-                
+
                 <p class="mt-3">
                     <b>Бонусы за активности</b>
                 </p>
@@ -290,14 +290,14 @@
                     <p class="fz12" v-if=" editedField.item.awards[item] != null">
                         <b class="text-black">{{ item  }}:</b> {{   editedField.item.awards[item] }}
                     </p>
-                </div> 
-                
+                </div>
+
                 <p class="mt-3"><b>Бонусы за обучение</b></p>
                 <div v-for="(item,index) in Object.keys(editedField.item.test_bonus)">
                     <p class="fz12" v-if=" editedField.item.test_bonus[item] != null">
                         <b class="text-black">{{ item  }}:</b> {{   editedField.item.test_bonus[item] }}
                     </p>
-                </div>  
+                </div>
 
                     <hr>
                 <p class="mt-3"><b>Авансы </b></p>
@@ -308,7 +308,7 @@
                     >
                         <b class="text-black">{{ item  }}:</b> {{   editedField.item.avanses[item] }}
                     </p>
-                </div>   
+                </div>
                 <hr>
 
                 <p class="mt-3"><b>История {{ bonus_history.length}}</b></p>
@@ -322,11 +322,11 @@
                     <p class="fz14 mb-0" v-html="item.description"></p>
                     <br>
                     <hr>
-                </div>   
-                 
+                </div>
+
             </div>
         </div>
-    </sidebar>  
+    </sidebar>
 
     <!-- info -->
     <sidebar
@@ -349,16 +349,16 @@
                     <b>Оплата за час:</b>  {{ sidebarContent.item.hourly_pays[sidebarContent.field.key] }}
                 </p>
                 <p class="text-black mb-0">
-                    <b>Начис:</b>  {{ sidebarContent.item.salaries[sidebarContent.field.key] }} 
+                    <b>Начис:</b>  {{ sidebarContent.item.salaries[sidebarContent.field.key] }}
                 </p>
 
                 <template v-if="selectedCell.field.editable">
                     <p class="text-black mb-0"
                         v-if="sidebarContent.item.avanses !== undefined">
-                        <b>Аванс:</b> 
+                        <b>Аванс:</b>
                         {{ sidebarContent.item.avanses[sidebarContent.field.key] }}
                     </p>
-                    <p class="text-black" 
+                    <p class="text-black"
                         v-if="sidebarContent.item.bonuses !== undefined">
                         <b>Бонус:</b>
                         {{ sidebarContent.item.bonuses[sidebarContent.field.key] }}
@@ -367,23 +367,23 @@
                         v-if="sidebarContent.item.awards !== undefined">
                         <b>Бонус (авто):</b>
                         {{ sidebarContent.item.awards[sidebarContent.field.key] }}
-                    </p> 
+                    </p>
                     <p class="text-black"
                         v-if="sidebarContent.item.test_bonus !== undefined">
                         <b>Бонус (тесты):</b>
                         {{ sidebarContent.item.test_bonus[sidebarContent.field.key] }}
-                    </p> 
+                    </p>
                 </template>
-                
-                
+
+
             </div>
             <div class="mb-2" v-if="(user_types == '0' || user_types == '1') && can_edit">
                 <div class="d-flex row">
                     <div class="col-6">
-                        <b-button @click="toggleTab('avans')" class="btn-sm rounded btn-primary w-full d-block" :class="{'activex': avans.visible}">Выдать аванс</b-button>  
+                        <b-button @click="toggleTab('avans')" class="btn-sm rounded btn-primary w-full d-block" :class="{'activex': avans.visible}">Выдать аванс</b-button>
                     </div>
                     <div class="col-6">
-                        <b-button @click="toggleTab('bonus')" class="btn-sm rounded btn-primary w-full d-block" :class="{'activex': bonus.visible}">Выдать бонус</b-button>  
+                        <b-button @click="toggleTab('bonus')" class="btn-sm rounded btn-primary w-full d-block" :class="{'activex': bonus.visible}">Выдать бонус</b-button>
                     </div>
                 </div>
             </div>
@@ -412,7 +412,7 @@
             </div>
             <div>
                 <p class="text-black">
-                    <b>История</b>  
+                    <b>История</b>
                 </p>
                 <template v-if="sidebarHistory && sidebarHistory.length > 0">
                     <div class="history">
@@ -429,7 +429,7 @@
                 </template>
             </div>
         </div>
-        
+
     </sidebar>
 
     <!-- premium -->
@@ -441,7 +441,7 @@
         @ok="editPremium"
         size="md"
     >
-        <b-form-input 
+        <b-form-input
             type="number"
             v-model="amountEdit"
             placeholder="Сумма"
@@ -501,7 +501,7 @@ export default {
         },
         user_types(val) {
             this.fetchData()
-        }, 
+        },
         show_user(val) {
             this.fetchData()
         },
@@ -524,7 +524,7 @@ export default {
             sidebarContent: {},
             sidebarHistory: [],
             numClicks: 0,
-            total_resources: 0, 
+            total_resources: 0,
             allTotalFired: 0, // sum of pay for all fired users
             group_fired: 0, // sum of payment for fired users in group
             group_total: 0, // sum of payment for  users in group
@@ -582,12 +582,12 @@ export default {
         };
     },
     created() {
-     
+
         this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
             this.dateInfo.currentMonth :
             this.$moment().format("MMMM");
         let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
-        
+
         //Расчет выходных дней
         this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
         this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]); //Колличество выходных
@@ -733,7 +733,7 @@ export default {
                     }
 
                     this.hasPermission = true;
-                    
+
                     this.data = data;
                     this.group_fired = data.group_fired;
                     this.allTotal = data.all_total;
@@ -750,7 +750,7 @@ export default {
                         this.selectedGroup.salary_approved_by = data.currentGroup.salary_approved_by;
                         this.selectedGroup.salary_approved_date = data.currentGroup.salary_approved_date;
                     }
-                   
+
                     this.setYear();
                     this.setMonth();
                     this.setFields();
@@ -766,7 +766,7 @@ export default {
                             //     (this.maxScrollWidth * this.dayPercentage) / 100;
                             // this.defaultScrollValue = this.scrollLeft;
                         }
-                    
+
                     }, 1000);
 
                     loader.hide();
@@ -827,9 +827,9 @@ export default {
                 var personalFines = 0;
                 var personalBonuses = 0;
 
-    
+
                 item.salaries.forEach((tt, key) => {
-                
+
                     let salary = 0;
                     let total = 0;
 
@@ -837,7 +837,7 @@ export default {
                         salary = Number(item.earnings[tt.day]);
                         total = salary;
                     }
-                    
+
                     // salary earned to total
                     if(Number(salary) != 0) personalTotal += parseInt(salary);
 
@@ -868,7 +868,7 @@ export default {
 
                         total -= Number(fine_for_day);
                     }
-  
+
                     daySalaries[tt.day] = Number(total) != 0
                         ? Number(total).toFixed(0)
                         : '';
@@ -877,11 +877,11 @@ export default {
                         ? Number(salary).toFixed(0)
                         : '';
                 });
-                
+
                 let personalKpi =  Number(item.kpi);
                 if(item.edited_kpi) {
                     personalKpi = item.edited_kpi.amount
-                }   
+                }
 
                 if(item.edited_bonus) {
                     personalBonuses = item.edited_bonus.amount
@@ -890,18 +890,18 @@ export default {
                 personalFines = Number(item.fines_total);
 
                 personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi;
-                
+
                 if(item.edited_salary) {
                     personalFinal = item.edited_salary.amount
-                }   
+                }
 
                 let a = personalTotal + personalBonuses + personalKpi;
 
-                daySalaries["bonus"] = Number(personalBonuses).toFixed(0);   
-                daySalaries["avans"] = Number(personalAvanses).toFixed(0);   
-                daySalaries["fines"] = Number(personalFines).toFixed(0);   
-                daySalaries["total"] = Number(personalTotal).toFixed(0);   
-                daySalaries["final"] = Number(personalFinal).toFixed(0);    
+                daySalaries["bonus"] = Number(personalBonuses).toFixed(0);
+                daySalaries["avans"] = Number(personalAvanses).toFixed(0);
+                daySalaries["fines"] = Number(personalFines).toFixed(0);
+                daySalaries["total"] = Number(personalTotal).toFixed(0);
+                daySalaries["final"] = Number(personalFinal).toFixed(0);
 
                 total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
                 total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
@@ -913,14 +913,14 @@ export default {
                 daySalaries.forEach((amount, day) => {
                     if(isNaN(amount) || isNaN(Number(amount))) {
                         amount = 0;
-                    } 
-                    
+                    }
+
                     if (typeof daySalariesSum[day] === "undefined") {
                         daySalariesSum[day] = 0;
                     }
 
                     daySalariesSum[day] = parseInt(daySalariesSum[day]) + Number(amount);
-                 
+
                     if(daySalariesSum[day] > 0){
                         hasMoney = 1;
                     }
@@ -932,7 +932,7 @@ export default {
                     user_id: item.id,
                     hours: item.hours,
                     awards: item.awards,
-                    name: item.full_name,
+                    name: `${item.name} ${item.last_name}`,
                     avanses: item.avanses,
                     bonuses: item.bonuses,
                     user_type: item.user_type,
@@ -964,9 +964,9 @@ export default {
                     total = total + parseInt(sum);
                 });
             }
-            
-            total_bonus = Number(total_bonus).toFixed(0);   
-            
+
+            total_bonus = Number(total_bonus).toFixed(0);
+
             items[0] = {
                 name: "Общая сумма",
                 final: total_final,
@@ -987,9 +987,9 @@ export default {
             if(data.index == 0) return false;
             data.type = type;
             this.editedField = data;
-            
+
             this.editedField.name = data.item.name
-         
+
             this.editPremiunWindow = true;
         },
 
@@ -1002,10 +1002,10 @@ export default {
             data.type = type;
 
             this.fetchBonusHistory(data.item.user_id);
-            
+
             this.editedField = data;
             this.editPremiumSidebar = true;
-            this.sidebarTitle = data.item.name + ' : ' + type; 
+            this.sidebarTitle = data.item.name + ' : ' + type;
 
         },
 
@@ -1043,7 +1043,7 @@ export default {
                 if(this.editedField.type == 'bonus') {
                     this.items[this.editedField.index].bonus = this.amountEdit
                 }
-                
+
                 this.commentEdit = '';
                 this.amountEdit = 0;
                 this.$toast.success('Сохранено');
@@ -1055,7 +1055,7 @@ export default {
                 console.log(error)
             });
         },
-        
+
         // утверждено к выдаче
         approveSalary() {
             axios.post("/timetracking/salaries/approve-salary", {
@@ -1084,7 +1084,7 @@ export default {
                     this.avans.require = 'Комментарии обязательны!'
                     return '';
                 }
-        
+
                 if(this.avans.sum == 0 || this.avans.sum == null) {
                     this.avans.require = 'Напишите сумму аванса!'
                     return '';
@@ -1099,7 +1099,7 @@ export default {
                     this.bonus.require = 'Комментарии обязательны!'
                     return '';
                 }
-        
+
                 if(this.bonus.sum == 0 || this.bonus.sum == null) {
                     this.bonus.require = 'Напишите сумму бонуса!'
                     return '';
@@ -1123,13 +1123,13 @@ export default {
                 if(type == 'avans') {
                     this.$toast.success('Аванс успешно сохранен');
                     this.selectedCell.item.avanses[this.selectedCell.field.key] = this.avans.sum;
-                
+
                     this.avans.sum = 0;
                     this.avans.comment = '';
                     this.avans.require = '';
                     this.avans.visible = false;
                 }
-                
+
                 if(type == 'bonus')  {
                     this.$toast.success('Бонус успешно сохранен');
                     this.selectedCell.item.bonuses[this.selectedCell.field.key] = this.bonus.sum;
@@ -1139,10 +1139,10 @@ export default {
                     this.bonus.require = '';
                     this.bonus.visible = false;
                 }
-                
+
                 this.sidebarHistory.unshift(response.data);
                 this.items[this.selectedCell.index].history.unshift(response.data)
-                
+
             }).catch(error => {
                 this.$toast.error('Не сохранилось');
                 console.log(error)
@@ -1170,9 +1170,9 @@ export default {
         },
 
         defineClickNumber(type, data) {
-         
+
             //var self = this
-         
+
             this.clicks++;
             if (this.clicks === 1) {
                 this.timer = setTimeout( () => {
@@ -1180,14 +1180,14 @@ export default {
                     this.clicks = 0
                 }, 350);
             } else {
-                clearTimeout(this.timer);  
+                clearTimeout(this.timer);
                 if(this.can_edit) {
                     this.showEditPremiumWindow(type, data);
                 } else {
                      this.showEditPremiumSidebar(type, data)
                 }
                 this.clicks = 0;
-            } 
+            }
         },
 
         openDay(data) {
@@ -1361,7 +1361,7 @@ hr {
     }
 
     th {
-        
+
         &:nth-child(1) {
             vertical-align: middle;
             background: #94ccff !important;
@@ -1370,11 +1370,11 @@ hr {
                 text-align: left;
             }
         }
-        &:nth-child(2), 
-        &:nth-child(3), 
-        &:nth-child(4), 
-        &:nth-child(5), 
-        &:nth-child(6), 
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4),
+        &:nth-child(5),
+        &:nth-child(6),
         &:nth-child(7) {
             vertical-align: middle;
             background: #6d95bb !important;
@@ -1382,7 +1382,7 @@ hr {
                 font-size: 11px;
                 text-align: center;
             }
-        } 
+        }
 
         &:nth-child(7) {
             background: #28a745 !important;
@@ -1398,11 +1398,11 @@ hr {
                 text-align: left;
             }
     }
-        &:nth-child(2), 
-        &:nth-child(3), 
-        &:nth-child(4), 
-        &:nth-child(5), 
-        &:nth-child(6), 
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4),
+        &:nth-child(5),
+        &:nth-child(6),
         &:nth-child(7) {
             vertical-align: middle;
             background: #6d95bb !important;
@@ -1411,15 +1411,15 @@ hr {
                 font-weight: 700;
                 text-align: center;
             }
-        } 
+        }
 
         &:nth-child(7) {
             background: #28a745 !important;
         }
-        
+
     }
 
-    
+
 }
 .group-select {
     .vs__dropdown-toggle {
@@ -1445,7 +1445,7 @@ hr {
     text-align: right;
     span {
         font-size: 11px;
-    }   
+    }
 }
 .hide-special {
     th,
