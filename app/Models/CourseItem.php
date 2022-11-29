@@ -37,6 +37,14 @@ class CourseItem extends Model
     /**
      * @return HasMany
      */
+    public function courseModelItems(): HasMany
+    {
+        return $this->hasMany(CourseItemModel::class, 'course_item_id', 'id');
+    }
+
+    /**
+     * @return HasMany
+     */
     public function testResults(): HasMany
     {
         return $this->hasMany(TestResult::class);
