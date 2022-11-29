@@ -61,19 +61,16 @@
                 <BButton variant="light" @click="modal = !modal">Отмена</BButton>
             </template>
         </b-modal>
-        <saveCertificate/>
     </div>
 </template>
 
 <script>
     import EditAwardSidebar from "./EditAwardSidebar(delete).vue";
-    import saveCertificate from "./types/saveCertificate";
 
     export default {
         name: "Awards",
         components: {
-            EditAwardSidebar,
-            saveCertificate
+            EditAwardSidebar
         },
         data() {
             return {

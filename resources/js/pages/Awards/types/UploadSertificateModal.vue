@@ -30,7 +30,7 @@
                         <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="fullName.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
-                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="lowercase">Первая заглавная
+                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="none">Первая заглавная
                             </b-form-radio>
                             <b-form-radio v-model="fullName.uppercase" name="some-radios" value="uppercase">Все заглавные
                             </b-form-radio>
@@ -61,8 +61,7 @@
                         <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="courseName.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
-                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="lowercase">Первая
-                                заглавная
+                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="none">По умолчанию
                             </b-form-radio>
                             <b-form-radio v-model="courseName.uppercase" name="some-radios" value="uppercase">Все заглавные
                             </b-form-radio>
@@ -92,8 +91,7 @@
                         <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="hours.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
-                            <b-form-radio v-model="hours.uppercase" name="some-radios" value="lowercase">Первая
-                                заглавная
+                            <b-form-radio v-model="hours.uppercase" name="some-radios" value="none">По умолчанию
                             </b-form-radio>
                             <b-form-radio v-model="hours.uppercase" name="some-radios" value="uppercase">Все заглавные
                             </b-form-radio>
@@ -123,8 +121,7 @@
                         <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="date.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
-                            <b-form-radio v-model="date.uppercase" name="some-radios" value="lowercase">Первая
-                                заглавная
+                            <b-form-radio v-model="date.uppercase" name="some-radios" value="none">По умолчанию
                             </b-form-radio>
                             <b-form-radio v-model="date.uppercase" name="some-radios" value="uppercase">Все заглавные
                             </b-form-radio>
@@ -160,7 +157,9 @@
                 </div>
             </BCol>
         </BRow>
-        <BButton variant="success" @click="saveChanges">Сохранить</BButton>
+        <div class="modal-footer">
+            <BButton variant="success" @click="saveChanges">Сохранить</BButton>
+        </div>
     </div>
 </template>
 
@@ -181,7 +180,7 @@
         data() {
             return {
                 selectedUppercase: [],
-                border: false,
+                border: true,
                 selectedEdit: 1,
                 textFullName: 'Иван Иванович Иванов',
                 textCourseName: 'Название курса',
@@ -196,7 +195,7 @@
                     screenY: 0,
                     size: 32,
                     fontWeight: 700,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
                     color: '#000000'
                 },
@@ -206,7 +205,7 @@
                     text: 'Название курса',
                     size: 20,
                     fontWeight: 400,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
                     color: '#000000'
                 },
@@ -216,7 +215,7 @@
                     text: 'Название курса',
                     size: 16,
                     fontWeight: 400,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
                     color: '#000000'
                 },
@@ -226,7 +225,7 @@
                     text: 'Название курса',
                     size: 16,
                     fontWeight: 400,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
                     color: '#000000'
                 },
@@ -258,7 +257,7 @@
             styleFullName() {
                 let width = 'auto';
                 if (this.fullName.fullWidth) {
-                    width = '100%';
+                    width = '1000px';
                 }
                 return {
                     fontWeight: this.fullName.fontWeight,
@@ -271,7 +270,7 @@
             styleCourseName() {
                 let width = 'auto';
                 if (this.courseName.fullWidth) {
-                    width = '100%';
+                    width = '1000px';
                 }
                 return {
                     fontWeight: this.courseName.fontWeight,
@@ -284,7 +283,7 @@
             styleHours() {
                 let width = 'auto';
                 if (this.hours.fullWidth) {
-                    width = '100%';
+                    width = '1000px';
                 }
                 return {
                     fontWeight: this.hours.fontWeight,
@@ -297,7 +296,7 @@
             styleDate() {
                 let width = 'auto';
                 if (this.date.fullWidth) {
-                    width = '100%';
+                    width = '1000px';
                 }
                 return {
                     fontWeight: this.date.fontWeight,
@@ -397,14 +396,18 @@
 <style lang="scss">
     .cestificates-constructor{
         canvas{
-            width: 600px !important;
+            width: 1000px !important;
             height: auto!important;
+            border: 3px solid #333;
+
         }
         .draggable-container {
-            padding: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 40px 0;
+            margin: 0 auto;
+            max-width: 1010px;
+            max-height: calc(100vh - 95px);
+            width: 100%;
+            overflow: auto;
         }
 
         .form-group {
@@ -432,10 +435,6 @@
 
         .draggable-edit {
             position: relative;
-            border: 3px solid #333;
-            max-width: 700px;
-            overflow: auto;
-            max-height: calc(100vh - 200px);
             img {
                 width: 100%;
                 height: auto;
@@ -504,8 +503,8 @@
         }
 
         .settings {
-            max-height: calc(100vh - 130px);
-            min-height: calc(100vh - 130px);
+            max-height: calc(100vh - 95px);
+            min-height: calc(100vh - 95px);
             padding: 20px 10px;
             overflow: auto;
             border-right: 1px solid #ddd;
