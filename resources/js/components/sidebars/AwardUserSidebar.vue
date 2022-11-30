@@ -145,7 +145,8 @@
                 modalAddFile: false,
                 modalAddBase64: false,
                 awardCategories: [],
-                value: ''
+                value: '',
+                responseAward: []
 
             }
         },
@@ -184,7 +185,8 @@
                         },
                     })
                     .then(response => {
-                        console.log(response);
+                        this.responseAward = response.data.data;
+                        this.$toast.success('Добавлено');
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -192,30 +194,27 @@
 
                 const formDataReward = new FormData();
                 formDataReward.append('user_id', this.userId);
-                formDataReward.append('award_id', this.modalSelectData.id);
+                formDataReward.append('award_id', this.responseAward[0].id);
                 formDataReward.append('file', this.modalAddFile);
-                // this.axios
-                //     .post('/awards/reward', formData, {
-                //         headers: {
-                //             'Content-Type': 'multipart/form-data',
-                //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                //         },
-                //     })
-                //     .then(response => {
-                //         console.log(response);
-                //         this.$toast.success('Добавлено');
-                //         setTimeout(function () {
-                //             this.$refs.downloadFile.style.display = 'block';
-                //             this.$refs.inputFile.style.display = 'none';
-                //             this.modalSelectData = {};
-                //             this.modalSelectFile = null;
-                //             this.modalSelectBase64 = null;
-                //         }, 300)
-                //     })
-                //     .catch(function (error) {
-                //         console.log("error");
-                //         console.log(error);
-                //     });
+                await this.axios
+                    .post('/awards/reward', formDataReward, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                    })
+                    .then(response => {
+                        console.log(response);
+                        this.$toast.success('Награжден');
+                        setTimeout(function () {
+                            this.modalAddFile = null;
+                            this.modalAddBase64 = null;
+                        }, 300)
+                    })
+                    .catch(function (error) {
+                        console.log("error");
+                        console.log(error);
+                    });
             },
              openModalAdd(){
                  this.modalAdd = !this.modalAdd;
