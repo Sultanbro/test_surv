@@ -1,9 +1,9 @@
 <template>
     <div class="popup__content awards-profile mt-5">
-        <div class="spinner-container" v-if="Object.keys(nominations).length === 0">
+        <div class="spinner-container" v-if="loading">
             <div class="throbber-loader"></div>
         </div>
-        <b-tabs>
+        <b-tabs v-if="Object.keys(nominations).length === 0 || favorites_group.length > 0 || favorites_position.length > 0">
             <b-tab no-body title="Номинации" active v-if="Object.keys(nominations).length !== 0">
                 <b-tabs class="inside-tabs">
                     <b-tab no-body title="Мои номинации" active>
@@ -104,212 +104,78 @@
             -->
             <b-tab no-body title="Лучшие сотрудники">
                 <b-tabs class="inside-tabs">
-                    <b-tab no-body title="По отделу" active>
+                    <b-tab no-body title="По отделу" active v-if="favorites_group.length > 0">
                         <BRow>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item">
+                            <BCol cols="12" md="4" v-for="(item, index) in favorites_group" :key="item.id">
+                                <div class="nominations__item" :class="{green: index === 1}">
                                     <div class="nominations__item-title">
                                         Процент успешных
                                         исходящих продаж
                                     </div>
-                                    <div class="nominations__item-avatar gift-1">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
+                                    <div class="nominations__item-avatar" :class="'gift-' + (index + 1)">
+                                        <img :src="item.path" alt="profile avatar" v-if="item.path.length > 10">
+                                        <img src="images/avatar.png" alt="profile avatar" v-else>
                                     </div>
                                     <div class="nominations__item-name">
-                                        Елена Линовская
+                                        {{item.name}} {{item.last_name}}
                                     </div>
                                     <div class="nominations__item-subtext">
-                                        колл-центр
+                                        {{item.position}}
                                     </div>
                                     <div class="nominations__item-value">
-                                        15 500 ₸
+                                        {{item.total | splitNumber(item.total)}} ₸
                                     </div>
                                     <div class="nominations__item-wrapper">
                                         <div class="nominations__item-row">
                                             <p>KPI</p>
-                                            <p>1300 ₸</p>
+                                            <p> {{item.kpi | splitNumber(item.kpi)}} ₸</p>
                                         </div>
                                         <div class="nominations__item-row">
                                             <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
+                                            <p>{{item.bonuses | splitNumber(item.bonuses)}} ₸</p>
                                         </div>
                                         <div class="nominations__item-row">
                                             <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item green">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-2">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-3">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
+                                            <p>{{item.earnings | splitNumber(item.earnings)}} ₸</p>
                                         </div>
                                     </div>
                                 </div>
                             </BCol>
                         </BRow>
                     </b-tab>
-                    <b-tab no-body title="По должностям">
+                    <b-tab no-body title="По должностям" v-if="favorites_position.length > 0">
                         <BRow>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item">
+                            <BCol cols="12" md="4" v-for="(item, index) in favorites_position" :key="item.id">
+                                <div class="nominations__item" :class="{green: index === 1}">
                                     <div class="nominations__item-title">
                                         Процент успешных
                                         исходящих продаж
                                     </div>
-                                    <div class="nominations__item-avatar gift-1">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
+                                    <div class="nominations__item-avatar" :class="'gift-' + (index + 1)">
+                                        <img :src="item.path" alt="profile avatar" v-if="item.path.length > 10">
+                                        <img src="images/avatar.png" alt="profile avatar" v-else>
                                     </div>
                                     <div class="nominations__item-name">
-                                        Елена Линовская
+                                        {{item.name}} {{item.last_name}}
                                     </div>
                                     <div class="nominations__item-subtext">
-                                        колл-центр
+                                        {{item.position}}
                                     </div>
                                     <div class="nominations__item-value">
-                                        15 500 ₸
+                                        {{item.total | splitNumber(item.total)}} ₸
                                     </div>
                                     <div class="nominations__item-wrapper">
                                         <div class="nominations__item-row">
                                             <p>KPI</p>
-                                            <p>1300 ₸</p>
+                                            <p> {{item.kpi | splitNumber(item.kpi)}} ₸</p>
                                         </div>
                                         <div class="nominations__item-row">
                                             <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
+                                            <p>{{item.bonuses | splitNumber(item.bonuses)}} ₸</p>
                                         </div>
                                         <div class="nominations__item-row">
                                             <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item green">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-2">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-3">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
+                                            <p>{{item.earnings | splitNumber(item.earnings)}} ₸</p>
                                         </div>
                                     </div>
                                 </div>
@@ -320,6 +186,9 @@
                 </b-tabs>
             </b-tab>
         </b-tabs>
+        <div v-else>
+            <h4 class="not-awards">У Вас пока нет ни одной награды</h4>
+        </div>
         <b-modal v-if="itemModal" centered size="xl" v-model="modal" :title="itemModal.name">
             <img :src="itemModal.path" alt="" class="img-fluid">
             <template #modal-footer>
@@ -340,44 +209,49 @@
         props: {},
         data: function () {
             return {
+                loading: true,
                 modal: false,
                 itemModal: null,
                 fields: [],
                 awardTypes: null,
                 nominations: {},
                 certificates: {},
-                favorites: {}
+                favorites_group: [],
+                favorites_position: []
             };
         },
+        filters: {
+            splitNumber: function(val){
+                return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            }
+        },
         mounted() {
-            let loader = this.$loading.show();
             this.axios
                 .get('/awards/type?award_type_id=1')
                 .then(response => {
-                    this.nominations = response.data.data;
-                    this.nominations.availableResult = [];
-                    const arrMy = [];
-                    const arrAv = [];
-                    response.data.data.my.forEach(item => {
-                        arrMy.push(item.award_id);
-                    });
-                    response.data.data.available.forEach(item => {
-                        arrAv.push(item.id);
-                    });
-                    const resArr = arrAv.filter(e => !arrMy.includes(e));
-                    this.nominations.available.map(item => {
-                        resArr.forEach(i => {
-                            if(item.id === i){
-                                this.nominations.availableResult.push(item);
-                            }
-                        })
-                    })
-                    console.log(this.nominations);
-                    loader.hide();
+                    if(response.data.data){
+                        this.nominations = response.data.data;
+                        this.nominations.availableResult = [];
+                        const arrMy = [];
+                        const arrAv = [];
+                        response.data.data.my.forEach(item => {
+                            arrMy.push(item.award_id);
+                        });
+                        response.data.data.available.forEach(item => {
+                            arrAv.push(item.id);
+                        });
+                        const resArr = arrAv.filter(e => !arrMy.includes(e));
+                        this.nominations.available.map(item => {
+                            resArr.forEach(i => {
+                                if(item.id === i){
+                                    this.nominations.availableResult.push(item);
+                                }
+                            })
+                        });
+                    }
                 })
                 .catch(error => {
                     console.log(error);
-                    loader.hide();
                 });
 
             // this.axios
@@ -397,13 +271,18 @@
             this.axios
                 .get('/awards/type?award_type_id=3')
                 .then(response => {
-                    console.log(response);
-                    this.favorites = response.data.data;
-                    loader.hide();
+                    const favorites = response.data.data;
+                    for (let key in favorites.group) {
+                        this.favorites_group = favorites.group[key];
+                    }
+                    for (let key in favorites.position) {
+                        this.favorites_position = favorites.position[key];
+                    }
+                    this.loading = false;
                 })
                 .catch(error => {
                     console.log(error);
-                    loader.hide();
+                    this.loading = false;
                 });
         },
         methods: {
@@ -419,6 +298,18 @@
 <style lang="scss">
     .awards-profile {
         position: relative;
+        .not-awards{
+            font-size: 3.1rem;
+            text-transform: uppercase;
+            color: rgba(64, 64, 64, 0.4);
+        }
+        .nominations__item-avatar{
+            img{
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+            }
+        }
         .tabs {
             .nav-tabs {
                 border-top: 1px solid #dee2e6;

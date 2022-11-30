@@ -70,10 +70,16 @@
     export default {
         name: "Awards",
         components: {
-            EditAwardSidebar,
+            EditAwardSidebar
         },
         data() {
             return {
+                img: {
+                    name: 'Хайруллин Тимур',
+                    certificate: 'За лучшие заслуги лучших',
+                    date: Date.now().toLocaleDateString,
+                    time: 'Пройдено за 50 часа(ов) вместе с домашними заданиями'
+                },
                 modal: false,
                 itemRemove: null,
                 showEditAwardSidebar: false,

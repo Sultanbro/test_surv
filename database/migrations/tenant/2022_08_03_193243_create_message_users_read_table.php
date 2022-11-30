@@ -14,13 +14,13 @@ return new class extends Migration
     public function up()
     {
         // many-to-many relationship between messages and users
-        // Schema::create('messenger_message_users_read', function (Blueprint $table) {
-        //     $table->unsignedBigInteger('message_id');
-        //     $table->unsignedBigInteger('user_id');
-        //     $table->primary(['message_id', 'user_id']);
-        //    // $table->foreign('message_id')->references('id')->on('messenger_messages');
-        //    // $table->foreign('user_id')->references('id')->on('users');
-        // });
+        Schema::create('messenger_message_users_read', function (Blueprint $table) {
+            $table->unsignedBigInteger('message_id');
+            $table->unsignedBigInteger('user_id');
+            $table->primary(['message_id', 'user_id']);
+           // $table->foreign('message_id')->references('id')->on('messenger_messages');
+           // $table->foreign('user_id')->references('id')->on('users');
+        });
 
         // remove column read from messages table
         Schema::table('messenger_messages', function (Blueprint $table) {

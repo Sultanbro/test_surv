@@ -99,15 +99,31 @@ class LoginController extends Controller
         if (\Auth::attempt($credentials)) {
 
             $request->session()->regenerate();
-     
+            
+            // login in central app
             if(request()->getHost() == config('app.domain')) {
-                $link = '/';
-            } else {
-                $link = $this->redirectTo;
-            }
+                
+                $centralUser = CentralUser::with('tenants')->where('email', auth()->user()->email)->first();
 
+                if($centralUser) {
 
-            return redirect($link);
+                    $tenant = $centralUser->tenants->first();
+
+                    tenancy()->initialize($tenant);
+                   
+                    $domain = $tenant->id .".". config('app.domain');
+
+                    $tenantUser = User::where('email', $centralUser->email)->first();
+
+                    $token = tenancy()->impersonate($tenant, $tenantUser->id, '/profile');
+        
+                    return redirect("https://". $domain ."/impersonate/{$token->token}");
+                }   
+
+            } 
+
+            return redirect($this->redirectTo);
+
         } else {
             return back()->withErrors([
                 'email' => 'The provided credentials do not match our records.',

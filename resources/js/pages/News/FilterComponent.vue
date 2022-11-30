@@ -1,0 +1,336 @@
+<template>
+    <div :class="'news-header__filter ' + (showFilters ? 'news-header__filter--active' : '')">
+        <div :class="'news-filter ' + (showFilters ? 'news-filter--active' : '')" @click="toggleShowFilters(true)">
+            <div class="news-filter__left">
+                <img
+                    src="/icon/news/filter/filter.svg"
+                    :class="'news-filter__img ' + (showFilters ? 'news-filter__img--active' : '')"
+                    alt="img">
+                <span v-show="!showFilters" class="news-filter__text">Фильтр и поиск</span>
+                <input
+                    v-show="showFilters"
+                    type="text"
+                    ref="newsFilterInput"
+                    placeholder="Поиск"
+                    v-model="query"
+                    class="news-filter__query">
+            </div>
+            <img
+                class="news-filter__search"
+                src="/icon/news/filter/search.svg"
+                alt="img">
+        </div>
+
+        <div v-show="showFilters" class="news-filter-modal">
+            <div class="news-filter-modal__inputs">
+
+                <div :class="dateType != '' ? 'news-select--selected' : 'news-select'">
+                    <div class="news-select__clear" @click="clearDate"/>
+                    <select v-model="dateType" @change="value = null">
+                        <option value="" selected>Дата</option>
+                        <option value="1">Сегодня</option>
+                        <option value="2">Вчера</option>
+                        <option value="3">Текущая неделя</option>
+                        <option value="4">Текущий месяц</option>
+                        <option value="5">Диапазон</option>
+                        <option value="6">Точная дата</option>
+                    </select>
+                </div>
+
+                <div v-show="dateType == 5" class="news-filter-modal__range">
+                    <date-picker
+                        v-model="value"
+                        range
+                        :open.sync="daterangePopupOpen"
+                        @clear="clearDatePicer"
+                        format="DD.MM.YYYY"
+                        range-separator=" – "
+                        placeholder="Диапазон">
+                        <img slot="icon-calendar" alt="img" src="/icon/news/inputs/date-picker.svg">
+                        <template v-slot:content="slotProps">
+                            <calendar-panel :value="innerValue" :get-classes="getClasses"
+                                            @select="handleSelect"></calendar-panel>
+                        </template>
+                    </date-picker>
+                </div>
+
+                <div v-show="dateType == 6" class="news-filter-modal__range">
+                    <date-picker
+                        v-model="value"
+                        :open.sync="datePopupOpen"
+                        @clear="clearDatePicer"
+                        format="DD.MM.YYYY"
+                        placeholder="Точная дата">
+                        <img slot="icon-calendar" alt="img" src="/icon/news/inputs/date-picker.svg">
+                        <template v-slot:content="slotProps">
+                            <calendar-panel :value="datePickerValue" @select="selectSingleDate"></calendar-panel>
+                        </template>
+                    </date-picker>
+                </div>
+
+                <div :class="author != '' ? 'news-select--selected' : 'news-select'">
+                    <div class="news-select__clear" @click="clearAuthor"/>
+                    <select v-model="author">
+                        <option value="" selected>Автор</option>
+                        <option :value="user.id" v-for="user in users" v-html="user.name"/>
+                    </select>
+                </div>
+
+                <div class="news-filter-modal__favourite">
+                    <span v-html="'Избранное'" @click="searchFavourite = !searchFavourite"/>
+                    <label class="news-checkbox">
+                        <input type="checkbox"
+                               @click="searchFavourite = !searchFavourite"
+                               :checked="searchFavourite ? 'checked' : ''">
+                        <span class="news-checkmark"></span>
+                    </label>
+                </div>
+
+            </div>
+            <div class="news-filter-modal__buttons">
+                <a class="news-filter-modal__add-field">
+                    <img alt="img" src="/icon/news/access-modal/plus-accent.svg">
+                    <span v-html="'Добавить поле'"/>
+                </a>
+            </div>
+
+            <div class="news-filter-modal__footer">
+                <a class="news-filter-modal__submit" @click="filterNews">
+                    <img alt="img" src="/icon/news/filter/search.svg">
+                    <span v-html="'Найти новость'"/>
+                </a>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import DatePicker from "vue2-datepicker";
+import "vue2-datepicker/index.css";
+
+import 'vue2-datepicker/locale/ru';
+
+const {CalendarPanel} = DatePicker;
+
+function isValidDate(date) {
+    return date instanceof Date && !isNaN(date);
+}
+
+let moment = require('moment');
+moment.locale();
+
+moment.updateLocale("en", {
+    week: {
+        dow: 1,
+        doy: 7
+    }
+});
+
+export default {
+    name: "FilterComponent",
+    components: {
+        DatePicker,
+        CalendarPanel
+    },
+    data() {
+        return {
+            //date
+            value: [],
+
+            //date-picker
+            datePickerValue: new Date(NaN),
+            datePopupOpen: false,
+
+            //date-range-picker
+            innerValue: [new Date(NaN), new Date(NaN)],
+            daterangePopupOpen: false,
+
+            lang: {
+                formatLocale: {
+                    firstDayOfWeek: 1,
+                },
+                monthBeforeYear: false,
+            },
+
+            users: [],
+
+            showFilters: false,
+
+            query: '',
+            author: '',
+            dateType: '',
+            searchFavourite: false,
+        }
+    },
+
+    created() {
+
+    },
+    mounted() {
+        let dateInputs = document.getElementsByClassName('mx-input');
+
+        for (let i = 0; i < dateInputs.length; i++) {
+            dateInputs[i].disabled = true;
+        }
+        //
+        // dateInputs.forEach(el => {
+        //     el.disabled = true;
+        // });
+
+        this.getUsers();
+    },
+    watch: {
+        // whenever question changes, this function will run
+        dateType(newQuestion, oldQuestion) {
+            this.value = [];
+            this.datePickerValue = new Date(NaN);
+            this.innerValue = [new Date(NaN), new Date(NaN)];
+        },
+    },
+    methods: {
+        clearDate() {
+            this.dateType = '';
+        },
+
+        clearAuthor() {
+            this.author = '';
+        },
+
+        clearDatePicer() {
+            this.value = [];
+            this.datePickerValue = new Date(NaN);
+            this.innerValue = [new Date(NaN), new Date(NaN)];
+        },
+        //datepicker
+        getClasses(cellDate, currentDates, classes) {
+            if (currentDates.length === 2 &&
+                cellDate.getTime() == currentDates[0].getTime()) {
+                return "left";
+            }
+            if (currentDates.length === 2 &&
+                cellDate.getTime() == currentDates[1].getTime()) {
+                return "right";
+            }
+            if (
+                !/disabled|active|not-current-month/.test(classes) &&
+                currentDates.length === 2 &&
+                cellDate.getTime() > currentDates[0].getTime() &&
+                cellDate.getTime() < currentDates[1].getTime()
+            ) {
+                return "in-range";
+            }
+            return "";
+        },
+        handleSelect(date) {
+            const [startValue, endValue] = this.innerValue;
+            if (isValidDate(startValue) && !isValidDate(endValue)) {
+                if (startValue.getTime() > date.getTime()) {
+                    this.innerValue = [date, startValue];
+                } else {
+                    this.innerValue = [startValue, date];
+                }
+                this.daterangePopupOpen = false;
+                this.value = this.innerValue;
+            } else {
+                this.innerValue = [date, new Date(NaN)];
+            }
+        },
+
+        selectSingleDate(date) {
+            this.datePickerValue = date;
+            this.value = this.datePickerValue;
+            this.datePopupOpen = false;
+        },
+
+
+        toggleShowFilters(newValue) {
+            if (newValue) {
+                this.$refs.newsFilterInput.focus();
+                this.$emit('toggleWhiteBg');
+            }
+            this.showFilters = newValue;
+        },
+
+        async getUsers() {
+            await axios.get('/dictionaries')
+                .then(res => {
+                    this.users = res.data.data.users;
+                })
+                .catch(res => {
+                    console.log(res)
+                });
+        },
+
+        async filterNews() {
+            let startDate = null;
+            let endDate = null;
+
+            let getParams = '?';
+
+            switch (this.dateType) {
+                case '1': {
+                    startDate = moment().format('DD-MM-YYYY');
+                    endDate = startDate;
+                    break;
+                }
+                case '2': {
+                    startDate = moment().subtract(1, 'd').format('DD-MM-YYYY');
+                    endDate = startDate;
+                    break;
+                }
+                case '3': {
+                    startDate = moment().startOf('week').format('DD-MM-YYYY');
+                    endDate = moment().endOf('week').format('DD-MM-YYYY');
+                    break;
+                }
+                case '4': {
+                    startDate = moment().startOf('month').format('DD-MM-YYYY');
+                    endDate = moment().endOf('month').format('DD-MM-YYYY');
+                    break;
+                }
+                case '5': {
+                    if (this.value == null && this.value.length != 2) {
+                        return
+                    }
+                    startDate = moment(this.value[0]).format('DD-MM-YYYY');
+                    endDate = moment(this.value[1]).format('DD-MM-YYYY');
+                    break;
+                }
+                case '6': {
+                    if (this.value == null) {
+                        return
+                    }
+                    startDate = moment(this.value).format('DD-MM-YYYY');
+                    endDate = startDate;
+                    break;
+                }
+            }
+
+            if (startDate != null && endDate != null) {
+                getParams = getParams + 'start_date=' + startDate + '&' + 'end_date=' + endDate;
+            }
+
+            if (this.author != '') {
+                getParams = getParams + '&' + 'author_id=' + this.author;
+            }
+
+            if (this.query != '') {
+                getParams = getParams + '&' + 'q=' + this.query;
+            }
+
+            if (this.query != '') {
+                getParams = getParams + '&' + 'q=' + this.query;
+            }
+
+            getParams = getParams + '&' + 'is_favourite=' + (this.searchFavourite == true ? 1 : 0);
+
+            this.$root.$emit('toggle-white-bg', false);
+            this.showFilters = false;
+
+            this.$emit('searchNews', {
+                params: getParams,
+            })
+        },
+    }
+}
+</script>

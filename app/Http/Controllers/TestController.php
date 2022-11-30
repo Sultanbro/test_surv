@@ -32,7 +32,9 @@ use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\TraineeReport;
 use App\Models\Bitrix\Lead;
+use App\Models\CentralUser;
 use App\Models\GroupUser;
+use App\Models\Tenant;
 use App\Salary;
 use App\Service\Department\UserService;
 use Illuminate\Support\Facades\Http;
@@ -40,13 +42,22 @@ use Illuminate\Support\Facades\Http;
 class TestController extends Controller { 
   
 	
- 
-
-
 	public function test() { 
-		dd(config('cache'));
-	}  
+		$lead = Lead::where('phone', '77711486535')->latest()->first();
+		dd($lead);
+	}
 
+    public function testMethodForCheck()
+    {
+        $stat = AnalyticStat::getCellValue(
+            42,
+            'D15',
+            '2022-11-01',
+            2
+        );
+
+        dd($stat);
+    }
 	private function getSegmentAndSaveForLead($id) {
 
 		$res =	(new Bitrix)->getLeads(0, '', 'ALL', 'ASC', '2010-01-01', '2050-01-01', "DATE_CREATE", $id, 'title');

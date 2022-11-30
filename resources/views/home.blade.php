@@ -18,8 +18,15 @@
 				</ul>
 			</div>
 			<div class="autorize">
-				<div><a class="autorization" href="#">Авторизоваться</a></div>
-				<a class="user_link" href="#"><img src="user.png"></a>
+				@guest
+				<div><a class="autorization" href="/login">Авторизоваться</a></div>
+				@else
+				<form method="POST" action="/logout">
+					@csrf
+					<button class="user_link" href="#"><img src="user.png"></button>
+				</form>
+				
+				@endguest
 				<div>
 					<select class="lang" name="lang">
 						<option value="en">EN</option>

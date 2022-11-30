@@ -16,4 +16,6 @@
         @yield('content')
         <script src="/static/new/js/auth.js?v=5"></script>
     </body>
+
+     @yield('scripts')
 </html>
