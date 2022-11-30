@@ -40,6 +40,7 @@ use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\CallibroController;
 use App\Http\Controllers\Course\RegressCourseController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\CourseResultController;
 use App\Http\Controllers\Department\UserController as DepartmentUserController;
 use App\Http\Controllers\Dictionary\DictionaryController;
@@ -175,7 +176,14 @@ Route::middleware([
         Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
     });
 
-    Route::post('course/regress', [RegressCourseController::class, 'regress']);
+    Route::group([
+        'prefix' => 'course',
+        'as'    => 'course.'
+    ], function () {
+        Route::post('/regress', [RegressCourseController::class, 'regress']);
+        Route::get('/progress', CourseProgressController::class);
+    });
+
 
     Route::group([
         'prefix' => 'notifications',
