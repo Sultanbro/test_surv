@@ -34,7 +34,7 @@ class AwardCategoryController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $awardTypes = AwardCategory::all();
+            $awardTypes = AwardCategory::with('creator')->get();
             return response()->success($awardTypes);
         } catch (\Exception $exception) {
             return response()->error($exception->getMessage(), Response::HTTP_NOT_FOUND);
@@ -64,7 +64,9 @@ class AwardCategoryController extends Controller
      */
     public function store(StoreAwardCategoryRequest $request): mixed
     {
-        return $this->awardCategoryService->storeAwardCategory($request);
+        $params = $request->validated();
+        $params['created_by'] = \Auth::id() ?? 5;
+        return $this->awardCategoryService->storeAwardCategory($params);
     }
 
     /**
@@ -75,7 +77,9 @@ class AwardCategoryController extends Controller
      */
     public function update(UpdateAwardCategoryRequest $request, AwardCategory $awardCategory): mixed
     {
-        $response = $this->awardCategoryService->updateAwardCategory($request, $awardCategory);
+        $params = $request->validated();
+        $params['created_by'] = \Auth::id() ?? 5;
+        $response = $this->awardCategoryService->updateAwardCategory($params, $awardCategory);
 
         return response()->success($response);
     }
