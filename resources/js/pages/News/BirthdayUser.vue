@@ -23,7 +23,7 @@
             <span class="news-money-title__text" v-html="'Подарить деньги'"/>
         </div>
 
-        <div v-show="showModal && !showSecondModal" class="news-gift-popup">
+        <div v-show="showModal && !showSecondModal" class="news-gift-popup" v-scroll-lock="showModal">
             <div class="news-gift-popup__container">
 
                 <img class="news-gift-popup__close" @click="togleShowModal(false)" alt="" src="/icon/news/birthday/close.svg">
@@ -104,20 +104,7 @@ export default {
     },
     methods: {
         togleShowModal(newValue) {
-            console.log(newValue);
-            if (newValue)
-            {
-                let scrollTop = document.documentElement.scrollTop;
-                let scrollLeft = document.documentElement.scrollLeft;
-                window.onscroll = function() {
-                    window.scrollTo(scrollLeft, scrollTop);
-                };
-            }
-            else{
-                this.showSecondModal = false;
-                window.onscroll = function() {};
-            }
-
+            this.showSecondModal = false;
             this.showModal = newValue;
             this.$root.$emit('toggle-white-bg', newValue);
         },
