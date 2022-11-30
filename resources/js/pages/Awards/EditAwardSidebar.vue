@@ -205,34 +205,55 @@
                         formData.append('course_ids[]', this.course_ids[j]);
                     }
                     formData.append('styles', this.styles);
-                    formData.append('file', this.fileCertificate);
+                    if(this.fileCertificate){
+                        formData.append('file', this.fileCertificate);
+                    }
                 }
                 if (this.type === 3) {
                     formData.append('targetable_type', this.targetable_type);
                     formData.append('targetable_id', this.targetable_id);
                 }
                 formData.append('award_category_id', this.category_id);
-                if (this.uploadFiles.length > 0) {
+                if (this.type === 1 && this.uploadFiles.length > 0) {
                     for (let i = 0; i < this.uploadFiles.length; i++) {
                         formData.append('file[]', this.uploadFiles[i]);
                     }
                 }
 
-                await this.axios
-                    .post("/awards/store", formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        },
-                    })
-                    .then(response => {
-                        this.$emit('update:open', false);
-                        this.$emit('save-award', response.data.data);
-                        this.$refs.newSertificateForm.reset();
-                    })
-                    .catch(function (error) {
-                        console.log("error");
-                        console.log(error);
-                    });
+                if(Object.keys(this.item).length > 0 && this.type !== 1){
+                    formData.append('_method', 'put');
+                    await this.axios
+                        .post("/awards/update/" + this.awards[0].id, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            },
+                        })
+                        .then(response => {
+                            this.$emit('update:open', false);
+                            this.$emit('save-award', response.data.data);
+                            this.$refs.newSertificateForm.reset();
+                        })
+                        .catch(function (error) {
+                            console.log("error");
+                            console.log(error);
+                        });
+                } else if (Object.keys(this.item).length === 0 || this.type === 1){
+                    await this.axios
+                        .post("/awards/store", formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            },
+                        })
+                        .then(response => {
+                            this.$emit('update:open', false);
+                            this.$emit('save-award', response.data.data);
+                            this.$refs.newSertificateForm.reset();
+                        })
+                        .catch(function (error) {
+                            console.log("error");
+                            console.log(error);
+                        });
+                }
             },
             async onSubmit() {
                 if (this.type) {

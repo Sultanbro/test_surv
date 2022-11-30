@@ -92,13 +92,11 @@
             };
         },
         async mounted() {
-            await console.log(this.awards);
             if (this.awards.length > 0) {
                 this.imageSrc = this.awards[0].path;
-                this.imageSrc = this.awards[0].styles;
+                this.styles = this.awards[0].styles;
             }
             await this.getCourses();
-            console.log(this.value);
         },
         computed: {
             hasImage() {

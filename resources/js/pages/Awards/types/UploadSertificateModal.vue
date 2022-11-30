@@ -249,7 +249,7 @@
         mounted() {
             console.log(this.styles);
             if (this.styles.length > 0) {
-                const getStyles = JSON.parse(JSON.parse(this.styles).replace(/\\"/g, '\''));
+                const getStyles = JSON.parse(this.styles);
                 this.fullName = getStyles.fullName;
                 this.courseName = getStyles.courseName;
                 this.hours = getStyles.hours;
