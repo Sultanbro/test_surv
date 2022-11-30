@@ -149,7 +149,13 @@ class NominationAwardService implements AwardInterface
                 $result[$item->id]['description'] = $item['description'];
                 $result[$item->id]['type'] = $item['type'];
             }
-            $result[$item->id]['my'] = $item['awards'];
+            $result[$item->id]['my'] = $item['awards']->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'award_category_id' => $item->award_category_id,
+                    'path' => FileHelper::getUrl($this->path, $item->users[0]->pivot->path),
+                ];
+            });
 
         }
         foreach ($availableAwards as $item){
