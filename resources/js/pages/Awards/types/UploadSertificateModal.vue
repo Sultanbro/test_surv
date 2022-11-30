@@ -71,6 +71,7 @@
                             </b-form-radio>
                         </b-form-group>
                     </div>
+                    <!--
                     <div v-if="selectedEdit === 3">
                         <BFormGroup>
                             <h4>Количетсво потраченных часов на курс</h4>
@@ -101,6 +102,7 @@
                             </b-form-radio>
                         </b-form-group>
                     </div>
+                    -->
                     <div v-if="selectedEdit === 4">
                         <BFormGroup>
                             <h4>Дата завершения курса</h4>
@@ -148,12 +150,14 @@
                              :class="{'no-border': border, 'active': selectedEdit === 2}" @click="selectEdit(2)">
                             {{textCourseName}}
                         </div>
+                        <!--
                         <div ref="hours" name="hours" class="draggable" :data-x="hours.screenX" :data-y="hours.screenY"
                              follow-text="Потраченное время на курсы"
                              :style="[styleHours, transformHoursName]" style="margin-top: 200px;"
                              :class="{'no-border': border, 'active': selectedEdit === 3}" @click="selectEdit(3)">
                             {{textHours}}
                         </div>
+                        -->
                         <div ref="date" name="date" class="draggable" :data-x="date.screenX" :data-y="date.screenY"
                              follow-text="Дата завершения курса"
                              :style="[styleDate, transformDateName]" style="margin-top: 280px;"
@@ -202,7 +206,7 @@
                 textDate: new Date().toLocaleDateString(),
                 transformFullName: {},
                 transformCourseName: {},
-                transformHoursName: {},
+                // transformHoursName: {},
                 transformDateName: {},
                 fullName: {
                     screenX: 0,
@@ -223,16 +227,16 @@
                     fullWidth: false,
                     color: '#000000'
                 },
-                hours: {
-                    screenX: 0,
-                    screenY: 0,
-                    text: 'Название курса',
-                    size: 16,
-                    fontWeight: 400,
-                    uppercase: 'none',
-                    fullWidth: false,
-                    color: '#000000'
-                },
+                // hours: {
+                //     screenX: 0,
+                //     screenY: 0,
+                //     text: 'Название курса',
+                //     size: 16,
+                //     fontWeight: 400,
+                //     uppercase: 'none',
+                //     fullWidth: false,
+                //     color: '#000000'
+                // },
                 date: {
                     screenX: 0,
                     screenY: 0,
@@ -252,20 +256,20 @@
                 const getStyles = JSON.parse(this.styles);
                 this.fullName = getStyles.fullName;
                 this.courseName = getStyles.courseName;
-                this.hours = getStyles.hours;
+                // this.hours = getStyles.hours;
                 this.date = getStyles.date;
                 this.transformFullName = {transform: `translate(${this.fullName.screenX}px, ${this.fullName.screenY}px)`};
                 this.transformCourseName = {transform: `translate(${this.courseName.screenX}px, ${this.courseName.screenY}px)`};
-                this.transformHoursName = {transform: `translate(${this.hours.screenX}px, ${this.hours.screenY}px)`};
+                // this.transformHoursName = {transform: `translate(${this.hours.screenX}px, ${this.hours.screenY}px)`};
                 this.transformDateName = {transform: `translate(${this.date.screenX}px, ${this.date.screenY}px)`};
             }
             let fullNameEdit = this.$refs.fullName;
             let courseNameEdit = this.$refs.courseName;
-            let hoursEdit = this.$refs.hours;
+            // let hoursEdit = this.$refs.hours;
             let dateEdit = this.$refs.date;
             this.initInteract(fullNameEdit);
             this.initInteract(courseNameEdit);
-            this.initInteract(hoursEdit);
+            // this.initInteract(hoursEdit);
             this.initInteract(dateEdit);
             this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date);
         },
@@ -296,19 +300,19 @@
                     color: this.courseName.color
                 };
             },
-            styleHours() {
-                let width = 'auto';
-                if (this.hours.fullWidth) {
-                    width = '1000px';
-                }
-                return {
-                    fontWeight: this.hours.fontWeight,
-                    fontSize: `${this.hours.size}px`,
-                    textTransform: this.hours.uppercase,
-                    width: width,
-                    color: this.hours.color
-                };
-            },
+            // styleHours() {
+            //     let width = 'auto';
+            //     if (this.hours.fullWidth) {
+            //         width = '1000px';
+            //     }
+            //     return {
+            //         fontWeight: this.hours.fontWeight,
+            //         fontSize: `${this.hours.size}px`,
+            //         textTransform: this.hours.uppercase,
+            //         width: width,
+            //         color: this.hours.color
+            //     };
+            // },
             styleDate() {
                 let width = 'auto';
                 if (this.date.fullWidth) {
@@ -362,9 +366,9 @@
                 if (name === 'courseName') {
                     x = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX) + event.dx;
                 }
-                if (name === 'hours') {
-                    x = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX) + event.dx;
-                }
+                // if (name === 'hours') {
+                //     x = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX) + event.dx;
+                // }
                 if (name === 'date') {
                     x = (parseFloat(target.getAttribute("data-x")) || this.date.screenX) + event.dx;
                 }
@@ -375,9 +379,9 @@
                 if (name === 'courseName') {
                     y = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY) + event.dy;
                 }
-                if (name === 'hours') {
-                    y = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY) + event.dy;
-                }
+                // if (name === 'hours') {
+                //     y = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY) + event.dy;
+                // }
                 if (name === 'date') {
                     y = (parseFloat(target.getAttribute("data-y")) || this.date.screenY) + event.dy;
                 }
@@ -397,10 +401,10 @@
                     this.courseName.screenX = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX);
                     this.courseName.screenY = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY)
                 }
-                if (name === 'hours') {
-                    this.hours.screenX = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX);
-                    this.hours.screenY = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY)
-                }
+                // if (name === 'hours') {
+                //     this.hours.screenX = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX);
+                //     this.hours.screenY = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY)
+                // }
                 if (name === 'date') {
                     this.date.screenX = (parseFloat(target.getAttribute("data-x")) || this.date.screenX);
                     this.date.screenY = (parseFloat(target.getAttribute("data-y")) || this.date.screenY)

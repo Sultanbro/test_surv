@@ -9,12 +9,16 @@
         <BForm ref="newSertificateForm" @submit.prevent="onSubmit">
             <BFormGroup
                     id="input-group-1"
-                    label="Название награды"
-                    label-for="input-1"
                     label-cols-sm="3"
                     label-align-sm="left"
                     description="Например, сертификаты, грамоты и т.п."
             >
+                <template #label>
+                    <label class="with-info">Название награды <i class="fa fa-info" id="info1"></i></label>
+                    <b-popover target="info1" triggers="hover" placement="right">
+                        <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                    </b-popover>
+                </template>
                 <BFormInput
                         id="input-1"
                         v-model="name"
@@ -22,14 +26,19 @@
                         placeholder="Название"
                         required
                 ></BFormInput>
+
             </BFormGroup>
             <BFormGroup
                     id="input-group-2"
-                    label="Описание награды"
-                    label-for="input-2"
                     label-cols-sm="3"
                     label-align-sm="left"
             >
+                <template #label>
+                    <label class="with-info">Описание награды <i class="fa fa-info" id="info2"></i></label>
+                    <b-popover target="info2" triggers="hover" placement="right">
+                        <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                    </b-popover>
+                </template>
                 <BFormTextarea
                         id="input-2"
                         v-model="description"
@@ -43,20 +52,36 @@
 
             <BFormGroup
                     id="input-group-3"
-                    label="Тип награды"
-                    label-for="input-3"
                     label-cols-sm="3"
                     label-align-sm="left"
             >
+                <template #label>
+                    <label class="with-info">Тип награды <i class="fa fa-info" id="info3"></i></label>
+                    <b-popover target="info3" triggers="hover" placement="right">
+                        <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                    </b-popover>
+                </template>
                 <BDropdown id="input-3" :text="dropDownText" required class="dropdown-select-type">
                     <BDropdownItem href="#" @click="setFileType(1)">
                         Загрузка картинки
+                        <i class="fa fa-info" id="info4"></i>
+                        <b-popover target="info4" triggers="hover" placement="top">
+                            <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                        </b-popover>
                     </BDropdownItem>
                     <BDropdownItem href="#" @click="setFileType(2)">
                         Конструктор сертификата
+                          <i class="fa fa-info" id="info5"></i>
+                        <b-popover target="info5" triggers="hover" placement="top">
+                            <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                        </b-popover>
                     </BDropdownItem>
                     <BDropdownItem href="#" @click="setFileType(3)">
                         Данные начислений
+                          <i class="fa fa-info" id="info6"></i>
+                        <b-popover target="info6" triggers="hover" placement="top">
+                            <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                        </b-popover>
                     </BDropdownItem>
                 </BDropdown>
                 <p class="text-danger" v-if="!selectedType">Выберите тип награды*</p>
@@ -95,10 +120,8 @@
                         :select_all_btn="false"/>
             </BFormGroup>
 
-            <BFormGroup id="input-group-4" v-if="type === 1 || type === 2 " switches>
-                <BFormCheckbox v-model="hide" required>
-                    Отображать пользователям награды других участников
-                </BFormCheckbox>
+            <BFormGroup class="custom-switch custom-switch-sm" id="input-group-4" v-if="type === 1 || type === 2 ">
+                <b-form-checkbox v-model="hide" switch>Отображать пользователям награды других участников</b-form-checkbox>
             </BFormGroup>
             <BButton type="submit" variant="primary">Сохранить</BButton>
         </BForm>
@@ -259,9 +282,9 @@
                 if (this.type) {
                     let loader = this.$loading.show();
                     if (this.hide) {
-                        this.hide = 1;
-                    } else {
                         this.hide = 0;
+                    } else {
+                        this.hide = 1;
                     }
                     await this.saveCategory();
                     await this.saveAwards();
@@ -308,10 +331,10 @@
                 this.name = this.item.name;
                 this.description = this.item.description;
                 if(this.item.hide === 1){
-                    this.hide = true;
+                    this.hide = false;
                 }
                 if(this.item.hide === 0){
-                    this.hide = false;
+                    this.hide = true;
                 }
 
                 if(this.type === 2){
@@ -346,6 +369,30 @@
 
 <style lang="scss">
     #edit-award-sidebar {
+        .with-info, .dropdown-item{
+            position: relative;
+            i{
+                width: 16px;
+                font-size: 10px;
+                height: 16px;
+                background-color: #ffc107;
+                color: #333;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
+                position: absolute;
+                top: -3px;
+                margin-left: 3px;
+            }
+        }
+        .dropdown-item{
+            i{
+                top: 7px;
+                right: -7px;
+            }
+        }
         .custom-file-label {
             span {
                 display: flex !important;
@@ -393,6 +440,83 @@
                     &:hover {
                         background-color: #ebebec;
                     }
+                }
+            }
+        }
+
+        .custom-switch{
+            padding-left: 0;
+            input[type="checkbox"] {
+                position: absolute;
+                margin: 8px 0 0 16px;
+            }
+            input[type="checkbox"] + label {
+                position: relative;
+                padding: 5px 0 0 50px;
+                line-height: 1;
+                margin: 10px 0;
+            }
+            input[type="checkbox"] + label:before {
+                content: "";
+                position: absolute;
+                display: block;
+                left: 0;
+                top: 0;
+                width: 40px; /* x*5 */
+                height: 24px; /* x*3 */
+                border-radius: 16px; /* x*2 */
+                background: #fff;
+                border: 1px solid #d9d9d9;
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+            input[type="checkbox"] + label:after {
+                content: "";
+                position: absolute;
+                display: block;
+                left: 0px;
+                top: 0px;
+                width: 24px; /* x*3 */
+                height: 24px; /* x*3 */
+                border-radius: 16px; /* x*2 */
+                background: #fff;
+                border: 1px solid #d9d9d9;
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+            input[type="checkbox"] + label:hover:after {
+                box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            }
+            input[type="checkbox"]:checked + label:after {
+                margin-left: 16px;
+            }
+            input[type="checkbox"]:checked + label:before {
+                background: #55D069;
+            }
+            &.custom-switch-small{
+                input[type="checkbox"] {
+                    margin: 5px 0 0 10px;
+                }
+                input[type="checkbox"] + label {
+                    position: relative;
+                    padding: 0 0 0 32px;
+                    line-height: 1.3em;
+                }
+                input[type="checkbox"] + label:before {
+                    width: 25px; /* x*5 */
+                    height: 15px; /* x*3 */
+                    border-radius: 10px; /* x*2 */
+                }
+                input[type="checkbox"] + label:after {
+                    width: 15px; /* x*3 */
+                    height: 15px; /* x*3 */
+                    border-radius: 10px; /* x*2 */
+                }
+                input[type="checkbox"] + label:hover:after {
+                    box-shadow: 0 0 3px rgba(0,0,0,0.3);
+                }
+                input[type="checkbox"]:checked + label:after {
+                    margin-left: 10px; /* x*2 */
                 }
             }
         }

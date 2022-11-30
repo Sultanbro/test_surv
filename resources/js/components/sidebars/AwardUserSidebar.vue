@@ -52,16 +52,17 @@
            </b-card>
        </div>
 
-        <BModal v-model="modalRemoveReward" modal-class="remove-award-modal" title="Добавление новой награды"
+        <BModal v-model="modalRemoveReward" modal-class="remove-award-modal" title="Отмена награды"
                 size="lg" centered>
-            <h4 class="title-remove">Вы действительно хотите отменить награду?</h4>
+            <h4 class="title-remove">Вы действительно хотите отозвать награду?</h4>
+            <hr class="my-4">
             <div class="award-image-remove" v-if="modalRemoveRewardData">
                 <img :src="modalRemoveRewardData.path" alt="" v-if="modalRemoveRewardData.format !== 'pdf'">
                 <vue-pdf-embed :source="modalRemoveRewardData.path" v-else/>
             </div>
             <template #modal-footer>
                 <b-button variant="secondary" @click="modalRemoveReward = !modalRemoveReward">Отмена</b-button>
-                <b-button variant="danger" @click="removeRewardUser(modalRemoveRewardData)">Наградить</b-button>
+                <b-button variant="danger" @click="removeRewardUser(modalRemoveRewardData)">Отозвать награду</b-button>
             </template>
         </BModal>
 
@@ -88,7 +89,7 @@
                </b-col>
            </b-row>
             <label for="file-add" class="custom-file-upload" ref="inputFileAdd"></label>
-            <input type="file" accept="application/pdf, image/jpg, image/png" id="file-add"
+            <input type="file" accept="application/pdf, image/jpeg, image/png" id="file-add"
                    @change="modalAddEvent" style="display: none;">
             <div class="result-container" v-if="modalAddFile">
                 <img :src="modalAddBase64" alt="" v-if="modalAddFile.type !== 'application/pdf'">
@@ -112,7 +113,7 @@
             </div>
 
             <label for="file" class="custom-file-upload" ref="inputFile" style="display: none;"></label>
-            <input type="file" accept="application/pdf, image/jpg, image/png" id="file"
+            <input type="file" accept="application/pdf, image/jpeg, image/png" id="file"
                    @change="modalSelectDataUploadEvent" style="display: none;">
 
             <div class="result-container" v-if="modalSelectFile">
@@ -170,10 +171,17 @@
                 this.open = true;
                 console.log('USER ID:', e.detail);
                 this.userId = e.detail;
+                this.getAll();
+            });
+        },
+        methods: {
+            async getAll(){
                 let loader = this.$loading.show();
-                this.axios
+                await this.axios
                     .get('/awards/type?key=nomination')
                     .then(response => {
+                        this.awards = [];
+                        this.myAwards = [];
                         this.awards = response.data.data;
                         for (let i = 0; i < this.awards.length; i++) {
                             if(this.awards[i].my.length > 0){
@@ -186,9 +194,7 @@
                         console.log(error);
                         loader.hide();
                     })
-            });
-        },
-        methods: {
+            },
             removeRewardUser(item){
                 // const formDataRemove = new FormData();
                 // formDataRemove.append('user_id', this.userId);
@@ -196,8 +202,10 @@
                 this.axios
                 .delete('/awards/reward-delete', {data: {user_id: this.userId, award_id: item.id}})
                 .then(response => {
+                    this.modalRemoveReward = false;
                     this.$toast.success('Награда убрана');
                     console.log(response);
+                    this.getAll();
                 })
                 .catch(error => {
                     console.log(error);
@@ -238,11 +246,13 @@
                     })
                     .then(response => {
                         console.log(response);
+                        this.modalAdd = false;
                         this.$toast.success('Награжден');
                         setTimeout(function () {
                             this.modalAddFile = null;
                             this.modalAddBase64 = null;
                         }, 300)
+                        this.getAll();
                     })
                     .catch(function (error) {
                         console.log("error");
@@ -271,27 +281,41 @@
                 let files = e.target.files || e.dataTransfer.files;
                 if (!files.length) return;
                 this.modalAddFile = files[0];
-                base64Encode(this.modalAddFile)
-                    .then((val) => {
-                        this.modalAddBase64 = val;
-                        this.$refs.inputFileAdd.style.display = 'none';
-                    })
-                    .catch(() => {
-                        this.modalAddBase64 = null;
+                if(this.modalAddFile.size > 2097152){
+                    this.$toast.error('Максимальный размер файла - 2 МБ', {
+                        timeout: 5000
                     });
+                } else {
+                    base64Encode(this.modalAddFile)
+                        .then((val) => {
+                            this.modalAddBase64 = val;
+                            this.$refs.inputFileAdd.style.display = 'none';
+                        })
+                        .catch(() => {
+                            this.modalAddBase64 = null;
+                        });
+                }
+
             },
             modalSelectDataUploadEvent(e) {
                 let files = e.target.files || e.dataTransfer.files;
                 if (!files.length) return;
                 this.modalSelectFile = files[0];
-                base64Encode(this.modalSelectFile)
-                    .then((val) => {
-                        this.$refs.inputFile.style.display = 'none';
-                        this.modalSelectBase64 = val;
-                    })
-                    .catch(() => {
-                        this.modalSelectBase64 = null;
+                if(this.modalSelectFile.size > 2097152){
+                    this.$toast.error('Максимальный размер файла - 2 МБ', {
+                        timeout: 5000
                     });
+                } else{
+                    base64Encode(this.modalSelectFile)
+                        .then((val) => {
+                            this.$refs.inputFile.style.display = 'none';
+                            this.modalSelectBase64 = val;
+                        })
+                        .catch(() => {
+                            this.modalSelectBase64 = null;
+                        });
+                }
+
             },
             downloadItem(item) {
                 this.$refs.downloadFile.style.display = 'none';
@@ -341,6 +365,7 @@
                             this.modalSelectFile = null;
                             this.modalSelectBase64 = null;
                         }, 300)
+                        this.getAll();
                     })
                     .catch(function (error) {
                         console.log("error");
@@ -356,6 +381,7 @@
         .title-remove{
             font-size: 20px;
             color: red;
+            text-align: center;
         }
         .award-image-remove{
             img, canvas{

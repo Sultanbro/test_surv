@@ -12,6 +12,7 @@
                 small
                 @row-clicked="rowClickedHandler"
                 v-if="tableItems.length > 0"
+                :hover="false"
         >
             <BThead>
                 <BTr>
@@ -24,15 +25,15 @@
                 </BTr>
             </BThead>
             <BTbody>
-                <BTr v-for="(item, key) in tableItems" :key="item.name + key" @click="rowClickedHandler(item)">
+                <BTr v-for="(item, key) in tableItems" :key="item.name + key">
                     <BTd>{{ key + 1 }}</BTd>
-                    <BTd>{{ item.name }}</BTd>
-                    <BTd>{{ item.description }}</BTd>
+                    <BTd><div class="clickable" @click="rowClickedHandler(item)">{{ item.name }}</div></BTd>
+                    <BTd class="td-desc"><div class="desc">{{ item.description }}</div></BTd>
                     <BTd v-if="item.type === 1">Картинка</BTd>
                     <BTd v-if="item.type === 2">Конструктор</BTd>
                     <BTd v-if="item.type === 3">Данные начислений</BTd>
-                    <BTd>{{ item.created_at }}</BTd>
-                    <BTd>{{ item.awardCreator }}</BTd>
+                    <BTd>{{ item.created_at | splitDate(item.created_at) }}</BTd>
+                    <BTd>{{ item.creator.name }} {{ item.creator.last_name }}</BTd>
                     <BTd @click.stop>
                         <bButton size="sm" pill variant="danger" @click="modalShow(item)"><i class="fa fa-trash"></i>
                         </bButton>
@@ -80,6 +81,11 @@
                 item: null,
                 tableItems: [],
             };
+        },
+        filters: {
+            splitDate: function(val){
+                return val.split('T')[0];
+            }
         },
         mounted() {
             this.getAwards();
@@ -138,8 +144,33 @@
 <style lang="scss">
     #awards-page {
         #awards-table {
+            thead{
+                white-space: nowrap;
+            }
             tbody {
+                tr{
+                    cursor: default;
+                }
                 cursor: pointer;
+                .td-desc{
+                    max-width: calc(100vw - 1000px);
+                }
+                .desc{
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    padding: 5px 0;
+                    text-align: left;
+                }
+                .clickable{
+                    cursor: pointer;
+                    height: 35px;
+                    display: inline-flex;
+                    align-items: center;
+                    &:hover{
+                        color: #ed2353;
+                    }
+                }
             }
         }
     }

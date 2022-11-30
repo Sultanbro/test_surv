@@ -21,7 +21,8 @@
                 Очистить
             </BButton>
         </div>
-
+        <small style="float: right; margin: -15px 10px 0 0 ;">Загрузите подготовленный шаблон в формате PDF</small>
+        <br>
         <div v-if="hasImage || awards.length > 0" class="sertificate-prewiev">
             <div class="sertificate-modal">
                 <div class="preview-canvas" @click="modalCertificate = !modalCertificate">
@@ -33,21 +34,31 @@
                 </BModal>
             </div>
         </div>
-        <Multiselect
-                v-model="value"
-                :options="options"
-                :multiple="true"
-                :close-on-select="false"
-                :clear-on-select="false"
-                :preserve-search="true"
-                placeholder="Выберите курсы"
-                label="name"
-                track-by="name"
-                @select="onSelect"
-                @remove="onRemove"
-                :preselect-first="false"
+       <b-row>
+          <b-col cols="12" md="7">
+              <Multiselect
+                      v-model="value"
+                      :options="options"
+                      :multiple="true"
+                      :close-on-select="false"
+                      :clear-on-select="false"
+                      :preserve-search="true"
+                      placeholder="Выберите курсы"
+                      label="name"
+                      track-by="name"
+                      @select="onSelect"
+                      @remove="onRemove"
+                      :preselect-first="false"
 
-        />
+              />
+          </b-col>
+           <b-col cols="12" md="5">
+               <div class="d-flex">
+                   <b-button variant="outline-success" class="ml-2 btn-multiselect" @click="selectAll">Выбрать все <i class="fa fa-check ml-2"></i></b-button>
+                   <b-button variant="outline-danger" class="ml-2 btn-multiselect" @click="clearAll">Убрать все <i class="fa fa-trash ml-2"></i></b-button>
+               </div>
+           </b-col>
+       </b-row>
     </div>
 </template>
 
@@ -88,7 +99,9 @@
                 options: [],
                 image: null,
                 imageSrc: null,
-                styles: ''
+                styles: '',
+                textAll: 'Выбрать все',
+                variant: 'success'
             };
         },
         async mounted() {
@@ -119,6 +132,12 @@
             },
         },
         methods: {
+            selectAll(){
+              this.value = this.options;
+            },
+            clearAll(){
+                this.value = []
+            },
             onSelect(val){
                 this.$emit("add-course", val.id);
             },
@@ -189,6 +208,13 @@
     }
 
     .upload-certificate {
+        .multiselect__tags{
+            overflow: hidden;
+        }
+        .btn-multiselect{
+            height: 40px;
+            width: 100%;
+        }
         .preview-canvas {
             cursor: pointer;
             border: 1px solid #999;
