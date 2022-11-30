@@ -276,7 +276,6 @@ class CourseResult extends Model
 
                 if (isset($course->items) && $course->items->count() > 1) {
                     $arr['items'] = $course->items;
-                    $arr['itemsProgress'] = $course->items->map(fn($item) => dd($item->courseModelItems));
                 }
 
                 $arrx[] = $arr;

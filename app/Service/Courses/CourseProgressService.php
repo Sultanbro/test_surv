@@ -3,7 +3,7 @@
 namespace App\Service\Courses;
 
 use App\DTO\CourseProgressDTO;
-use Exception;
+use App\Exceptions\NotResultsException;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -19,7 +19,7 @@ class CourseProgressService
 
     /**
      * @return array
-     * @throws Exception
+     * @throws NotResultsException
      */
     public function handle(): array
     {
@@ -28,10 +28,10 @@ class CourseProgressService
                 'course'      => $this->dto->course,
                 'testResults' => $this->dto->user->test_results()->get()
             ];
-        } catch (Exception $exception) {
+        } catch (NotResultsException $exception) {
             Log::error($exception->getMessage());
 
-            throw new \Exception($exception->getMessage());
+            throw new NotResultsException($exception->getMessage());
         }
     }
 }
