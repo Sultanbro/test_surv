@@ -14,10 +14,10 @@ class AwardCategoryService
      * @param $request
      * @return mixed
      */
-    public function storeAwardCategory($request): mixed
+    public function storeAwardCategory($params): mixed
     {
         try {
-            $type = AwardCategory::query()->create($request->all());
+            $type = AwardCategory::query()->create($params);
             return response()->success($type);
         }catch (\Exception $exception) {
             return response()->error($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -31,10 +31,10 @@ class AwardCategoryService
      * @return bool
      * @throws Exception
      */
-    public function updateAwardCategory($request, AwardCategory $awardCategory): bool
+    public function updateAwardCategory($params, AwardCategory $awardCategory): bool
     {
         try {
-            return $awardCategory->update($request->all());
+            return $awardCategory->update($params);
         }catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }

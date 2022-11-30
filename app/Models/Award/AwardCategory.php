@@ -15,7 +15,8 @@ class AwardCategory extends Model
         'name',
         'description',
         'hide',
-        'type'
+        'type',
+        'created_by'
     ];
 
     protected $dates = [
@@ -39,6 +40,10 @@ class AwardCategory extends Model
     public function awards(): HasMany
     {
         return $this->hasMany(Award::class);
+    }
+
+    public function creator(){
+        return $this->belongsTo(\App\User::class, 'created_by');
     }
 
 
