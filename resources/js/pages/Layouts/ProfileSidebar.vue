@@ -32,7 +32,7 @@
                     v-if="showButton"
                     :status="buttonStatus"
                     :workdayStatus="workdayStatus"
-                    @currentBalance="currentBalance"
+                    @clickStart="startDay"
                 ></start-day-btn>
                 <div class="profile__balance">
                     Текущий баланс
@@ -213,22 +213,26 @@ export default {
                 console.log(settings.logo)
                 console.log(_this.logo.image)
             }).catch((error) => {
-                alert(error);
+                this.$toast(error);
             });
         },
+
         /**
          * Загрузить лого открыть модальный окно
          */
         modalLogo() {
             this.$bvModal.show('modal-sm');
         },
+
         modalHideLogo() {
             this.$bvModal.hide('modal-sm');
         },
+
         change({ coordinates, canvas }) {
             this.logo.canvas = canvas;
             console.log(coordinates, canvas)
         },
+
         /**
          * Загрузить лого
          */
@@ -264,6 +268,7 @@ export default {
             this.imagePreview = '';
             this.showPreview = false;
         },
+
         handleFileUpload(){
             this.file = this.$refs.file.files[0];
             let reader = new FileReader();
@@ -283,6 +288,7 @@ export default {
                 this.$toast.error('Неподдерживаемый формат: ' + this.file.name.split('.').reverse()[0])
             }
         },
+
         /**
          * Добавить виджет
          */
@@ -324,7 +330,7 @@ export default {
                     this.bookCounter()
                 }
 
-                this.$emit('currentBalance', response.data.balance)
+                this.currentBalance(response.data.balance)
 
                 this.buttonStatus = 'init'
             })
@@ -344,6 +350,7 @@ export default {
             if(this.workdayStatus === 'started') params = {stop: moment().format('HH:mm:ss')};
             return params;
         },
+
         /**
          * Начать или завершить день
          */

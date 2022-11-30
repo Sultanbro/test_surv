@@ -5,7 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Award>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Award\Award>
  */
 class AwardFactory extends Factory
 {

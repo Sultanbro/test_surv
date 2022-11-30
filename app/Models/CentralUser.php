@@ -13,6 +13,8 @@ class CentralUser extends Model
     protected $connection = 'mysql';
     protected $table = 'users';
     
+    protected $appends = ['full_name'];
+
     protected $fillable = [
         'name',
         'last_name',
@@ -20,6 +22,12 @@ class CentralUser extends Model
         'phone',
         'deleted_at',
         'password',
+        'birthday',
+        'login_at',
+        'lead',
+        'country',
+        'city',
+        'balance',
     ];
 
     /**
@@ -29,4 +37,9 @@ class CentralUser extends Model
     {
         return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id');
     }
+
+    public function getFullNameAttribute()
+    {
+		return $this->last_name . ' ' . $this->name;
+	}
 }

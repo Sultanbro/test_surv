@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Award;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -27,15 +27,12 @@ class StoreAwardRequest extends FormRequest
     public function rules()
     {
         return [
-            'award_type_id'  => 'integer|required',
+            'award_category_id'  => 'required|integer|exists:award_categories,id',
             'course_ids'      => 'array',
-            'name'      => 'required|string',
-            'description'      => 'required|string',
-            'hide'      => 'boolean',
             'styles'      => 'string',
             'targetable_type'      => 'string',
             'targetable_id'      => 'integer',
-            'file'          => 'file|mimes:jpg,png,pdf|max:2048'
+            'file.*'          => 'file|mimes:jpg,png,pdf|max:2048',
         ];
     }
     protected function failedValidation(Validator $validator)
