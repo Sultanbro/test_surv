@@ -153,6 +153,7 @@ class NominationAwardService implements AwardInterface
                 return [
                     'id' => $item->id,
                     'award_category_id' => $item->award_category_id,
+                    'format' => $item->format,
                     'path' => FileHelper::getUrl($this->path, $item->users[0]->pivot->path),
                 ];
             });
