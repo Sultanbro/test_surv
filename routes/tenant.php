@@ -124,7 +124,13 @@ Route::middleware([
 
     // admin routes 
     Route::get('/admino', [\App\Http\Controllers\Admin\AdminController::class, 'index']);    
-
+    
+    Route::group([
+        'prefix' => 'admin',
+        'as' => 'admin.'
+    ], function () {
+        Route::get('/owners', [\App\Http\Controllers\Admin\AdminController::class, 'owners']);
+    });
 
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
 
