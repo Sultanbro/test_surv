@@ -642,9 +642,13 @@ class IntellectController extends Controller {
      * Запрос с intellect
      */
     public function get_name(Request $request) {
+
+        TB::send($request->all());
         
         if($request->has('phone')) {
             $lead = Lead::where('phone', $request->phone)->latest()->first();
+
+            TB::send($lead);
 
             if($lead) {
 
@@ -656,7 +660,7 @@ class IntellectController extends Controller {
                     'name' => $lead->name
                 ];
             } else {
-                return abort(500, 'Lead is not found');
+                return abort(404, 'Lead is not found');
             }
         } 
 	}
