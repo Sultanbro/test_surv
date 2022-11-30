@@ -104,6 +104,7 @@ class CertificateAwardService implements AwardInterface
                 'award_category_id' => $request->input('award_category_id'),
                 'path' => $file['relative'],
                 'format' => $file['format'],
+                'styles' => $request->input('styles'),
             ]);
 
             if ($success) {
