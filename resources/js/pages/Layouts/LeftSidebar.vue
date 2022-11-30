@@ -2,7 +2,7 @@
 <div class="header__left closedd">
     <!-- avatar  -->
     <div class="header__avatar">
-        <img :src="$laravel.avatar" alt="avatar image" >
+        <img :src="avatar" alt="avatar image" >
 
         <!-- hover menu -->
         <div class="header__menu">
@@ -71,6 +71,7 @@
 
 <script>
 import LeftSidebarItem from './LeftSidebarItem'
+import { bus } from '../../bus'
 
 export default {
     name: 'LeftSidebar',
@@ -82,6 +83,7 @@ export default {
         return {
             height: 300,
             fields: [],
+            avatar: this.$laravel.avatar,
             token: Laravel.csrfToken,
         };
     },
@@ -280,6 +282,8 @@ export default {
     mounted(){
         this.onResize()
         new ResizeObserver(this.onResize).observe(this.$refs.nav)
+
+        bus.$on('user-avatar-update', avatar => (this.avatar = avatar))
     }
 };
 </script>
