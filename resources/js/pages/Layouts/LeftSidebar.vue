@@ -293,7 +293,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width:7rem;
+    width:8rem;
     min-height: inherit;
     max-height: inherit;
     padding-top: 0.5rem;
@@ -345,6 +345,7 @@ export default {
     display: flex;
     flex-direction: column;
     flex: 0 1 100%;
+    justify-content: space-evenly;
     gap:.3rem;
     overflow-y: auto;
     &::-webkit-scrollbar {
@@ -401,7 +402,7 @@ export default {
 
     text-align: center;
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 400;
     color:#8DA0C1;
 
     transition:.3s;
@@ -414,6 +415,7 @@ export default {
     font-size:2rem;
     &::before{
         transition:.2s;
+        width: auto;
     }
 }
 
