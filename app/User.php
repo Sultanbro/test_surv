@@ -7,7 +7,7 @@ use App\External\Bitrix\Bitrix;
 use App\Http\Controllers\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
-use App\Models\Award;
+use App\Models\Award\Award;
 use App\Models\AwardUser;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
