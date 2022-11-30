@@ -22,7 +22,6 @@ return new class extends Migration
             $table->dropColumn('hide');
             $table->unsignedBigInteger('award_category_id');
 
-
             $table->foreign('award_category_id')->on('award_categories')->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
