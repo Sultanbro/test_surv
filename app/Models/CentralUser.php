@@ -22,6 +22,12 @@ class CentralUser extends Model
         'phone',
         'deleted_at',
         'password',
+        'birthday',
+        'login_at',
+        'lead',
+        'country',
+        'city',
+        'balance',
     ];
 
     /**

@@ -43,13 +43,8 @@ class TestController extends Controller {
   
 	
 	public function test() { 
-		$test = AnalyticStat::getCellValue(
-			31,
-			'C4',
-			'2022-11-01',
-			2
-		);
-		dd($test);
+		$lead = Lead::where('phone', '77711486535')->latest()->first();
+		dd($lead);
 	}
 
     public function testMethodForCheck()

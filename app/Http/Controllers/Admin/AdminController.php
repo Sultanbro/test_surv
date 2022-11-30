@@ -32,8 +32,9 @@ class AdminController extends Controller
      */
     public function owners(Request $request, OwnerRepository $ownerRepository)
     {
+
         return response()->json([
-            'items' => $ownerRepository->getOwnersPaginate(1)
+            'items' => $ownerRepository->getOwnersPaginate(10, $request)
         ]);
     }
 
