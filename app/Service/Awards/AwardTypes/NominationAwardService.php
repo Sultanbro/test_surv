@@ -149,7 +149,7 @@ class NominationAwardService implements AwardInterface
                 $result[$item->id]['description'] = $item['description'];
                 $result[$item->id]['type'] = $item['type'];
             }
-            $result[$item->id]['my'] = $item['awards']->map(function ($item) use ($user) {
+            $result[$item->id]['my'] = $item['awards']->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'award_category_id' => $item->award_category_id,
