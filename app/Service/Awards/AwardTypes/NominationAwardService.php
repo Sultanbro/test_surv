@@ -74,17 +74,18 @@ class NominationAwardService implements AwardInterface
      */
     public function store(StoreAwardRequest $request): array
     {
+        $awards = [];
         try {
             $files = $this->saveAwardFiles($request);
             foreach ($files as $file) {
-                Award::query()->create([
+                $awards[] = Award::query()->create([
                     'award_category_id' => $request->input('award_category_id'),
                     'path'      => $file['relative'],
                     'format'      => $file['format'],
                 ]);
 
             }
-            return [];
+            return $awards;
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
