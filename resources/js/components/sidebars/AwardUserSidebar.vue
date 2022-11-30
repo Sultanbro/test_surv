@@ -39,9 +39,9 @@
            >
                <b-row v-if="myAwards.length > 0">
                    <b-col cols="12" md="3" class="mb-4" v-for="item in myAwards" :key="item.id + item.format">
-                       <div class="award-image">
+                       <div class="award-image" @click="removeReward(item)">
                            <img :src="item.path" alt="" v-if="item.format !== 'pdf'">
-                           <vue-pdf-embed v-else :source="item.path"/>
+                           <vue-pdf-embed :source="item.path" v-else/>
                            <i class="fa fa-trash"></i>
                        </div>
                    </b-col>
@@ -51,6 +51,19 @@
                </div>
            </b-card>
        </div>
+
+        <BModal v-model="modalRemoveReward" modal-class="remove-award-modal" title="Добавление новой награды"
+                size="lg" centered>
+            <h4 class="title-remove">Вы действительно хотите отменить награду?</h4>
+            <div class="award-image-remove" v-if="modalRemoveRewardData">
+                <img :src="modalRemoveRewardData.path" alt="" v-if="modalRemoveRewardData.format !== 'pdf'">
+                <vue-pdf-embed :source="modalRemoveRewardData.path" v-else/>
+            </div>
+            <template #modal-footer>
+                <b-button variant="secondary" @click="modalRemoveReward = !modalRemoveReward">Отмена</b-button>
+                <b-button variant="danger" @click="removeRewardUser(modalRemoveRewardData)">Наградить</b-button>
+            </template>
+        </BModal>
 
 
         <BModal v-model="modalAdd" modal-class="selected-modal" title="Добавление новой награды"
@@ -132,6 +145,8 @@
         components: {UploadModal, VuePdfEmbed, Multiselect},
         data() {
             return {
+                modalRemoveReward: false,
+                modalRemoveRewardData: null,
                 open: false,
                 uploadModalOpen: false,
                 userId: null,
@@ -174,6 +189,24 @@
             });
         },
         methods: {
+            removeRewardUser(item){
+                // const formDataRemove = new FormData();
+                // formDataRemove.append('user_id', this.userId);
+                // formDataRemove.append('award_id', data.id);
+                this.axios
+                .delete('/awards/reward-delete', {data: {user_id: this.userId, award_id: item.id}})
+                .then(response => {
+                    this.$toast.success('Награда убрана');
+                    console.log(response);
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+            },
+            removeReward(item){
+                this.modalRemoveReward = !this.modalRemoveReward;
+                this.modalRemoveRewardData = item;
+            },
             async addAndSaveReward(){
                 const formData = new FormData();
                 formData.append('award_category_id', this.value.id);
@@ -319,6 +352,18 @@
 </script>
 
 <style lang="scss">
+    .remove-award-modal{
+        .title-remove{
+            font-size: 20px;
+            color: red;
+        }
+        .award-image-remove{
+            img, canvas{
+                width: 100% !important;
+                height: auto!important;
+            }
+        }
+    }
     .selected-modal {
         .selected-modal-title {
             text-align: center;
