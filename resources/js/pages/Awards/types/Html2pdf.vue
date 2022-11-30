@@ -237,7 +237,6 @@
 
                 if (this.previewModal) {
                     this.pdfFile = pdfBlobUrl;
-
                 }
 
                 if (this.enableDownload) {

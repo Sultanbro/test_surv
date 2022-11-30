@@ -24,7 +24,7 @@
                 </BTr>
             </BThead>
             <BTbody>
-                <BTr v-for="(item, key) in tableData" :key="item.name + key" @click="rowClickedHandler(item)">
+                <BTr v-for="(item, key) in tableItems" :key="item.name + key" @click="rowClickedHandler(item)">
                     <BTd>{{ key + 1 }}</BTd>
                     <BTd>{{ item.name }}</BTd>
                     <BTd>{{ item.description }}</BTd>
@@ -65,7 +65,7 @@
 </template>
 
 <script>
-    import EditAwardSidebar from "./EditAwardSidebar(delete).vue";
+    import EditAwardSidebar from "./EditAwardSidebar.vue";
 
     export default {
         name: "Awards",
@@ -74,12 +74,6 @@
         },
         data() {
             return {
-                img: {
-                    name: 'Хайруллин Тимур',
-                    certificate: 'За лучшие заслуги лучших',
-                    date: Date.now().toLocaleDateString,
-                    time: 'Пройдено за 50 часа(ов) вместе с домашними заданиями'
-                },
                 modal: false,
                 itemRemove: null,
                 showEditAwardSidebar: false,
@@ -87,34 +81,24 @@
                 tableItems: [],
             };
         },
-        mounted(){
+        mounted() {
             this.getAwards();
         },
-        computed:{
-            tableData() {
-                return this.tableItems;
-            },
-        },
         methods: {
-            modalShow(item){
+            modalShow(item) {
                 this.itemRemove = item;
                 this.modal = !this.modal;
             },
-            async getAwards(){
+            async getAwards() {
                 let loader = this.$loading.show();
                 this.tableItems = [];
-                this.axios
+                await this.axios
                     .get("/award-categories/get")
                     .then(response => {
-                        const data = response.data.data;
-                        for(let i = 0; i < data.length; i++){
-                            this.tableItems.push(data[i]);
-                        }
-                        console.log(this.tableItems);
+                        this.tableItems = response.data.data;
                         loader.hide();
                     })
                     .catch(function (error) {
-                        console.log("error");
                         console.log(error);
                         loader.hide();
                     });
@@ -125,29 +109,27 @@
             },
             addAwardButtonClickHandler() {
                 this.showEditAwardSidebar = true;
-                this.item = false;
+                this.item = {};
             },
-            saveAward(data) {
-                // this.tableItems.push(data);
+            saveAward() {
                 this.getAwards();
             },
             updateTable() {
-            this.getAwards();
+                this.getAwards();
             },
             async remove(item) {
-                 this.modal = !this.modal;
-                 let loader = this.$loading.show();
+                this.modal = !this.modal;
+                let loader = this.$loading.show();
                 await this.axios
-                     .delete("/award-categories/delete/" + item.id)
-                     .then(response =>  {
-                         this.getAwards();
-                         loader.hide();
-                     })
-                     .catch(function (error) {
-                         console.log("error");
-                         console.log(error);
-                         loader.hide();
-                     });
+                    .delete("/award-categories/delete/" + item.id)
+                    .then(response => {
+                        this.getAwards();
+                        loader.hide();
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        loader.hide();
+                    });
             },
         }
     };

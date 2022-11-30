@@ -155,7 +155,7 @@
                 this.$refs.html2Pdf.generatePdf();
             },
             donwload(){
-
+                this.$refs.html2Pdf.generatePdf();
             }
         },
          mounted() {

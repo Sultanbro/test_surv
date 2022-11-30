@@ -80,6 +80,8 @@
                 const formData = new FormData();
                 formData.append('user_id', this.userId);
                 formData.append('award_id', award.id);
+                //Нужно реализовать
+                // formData.append('file', 'Какой-то файл');
                 this.axios
                     .post('/awards/reward', formData, {
                         headers: {

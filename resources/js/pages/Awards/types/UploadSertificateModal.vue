@@ -27,12 +27,14 @@
                         >
                             <b-form-checkbox v-model="fullName.fullWidth">На всю ширину</b-form-checkbox>
                         </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="fullName.color">
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker"
+                                                               v-model="fullName.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
                             <b-form-radio v-model="fullName.uppercase" name="some-radios" value="none">Первая заглавная
                             </b-form-radio>
-                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="uppercase">Все
+                                заглавные
                             </b-form-radio>
                         </b-form-group>
                     </div>
@@ -58,12 +60,14 @@
                         >
                             <b-form-checkbox v-model="courseName.fullWidth">На всю ширину</b-form-checkbox>
                         </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="courseName.color">
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker"
+                                                               v-model="courseName.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
                             <b-form-radio v-model="courseName.uppercase" name="some-radios" value="none">По умолчанию
                             </b-form-radio>
-                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="uppercase">Все
+                                заглавные
                             </b-form-radio>
                         </b-form-group>
                     </div>
@@ -132,22 +136,26 @@
             <BCol cols="9">
                 <div class="draggable-container">
                     <div class="draggable-edit">
-                        <div ref="fullName" name="fullName" class="draggable" :data-x="fullName.screenX" :data-y="fullName.screenY" follow-text="Имя и фамилия"
+                        <div ref="fullName" name="fullName" class="draggable" :data-x="fullName.screenX"
+                             :data-y="fullName.screenY" follow-text="Имя и фамилия"
                              :style="[styleFullName, transformFullName]" style="margin-top: 40px;"
                              :class="{'no-border': border, 'active': selectedEdit === 1}" @click="selectEdit(1)">
                             {{textFullName}}
                         </div>
-                        <div ref="courseName" name="courseName" class="draggable" :data-x="courseName.screenX" :data-y="courseName.screenY" follow-text="Название курса"
+                        <div ref="courseName" name="courseName" class="draggable" :data-x="courseName.screenX"
+                             :data-y="courseName.screenY" follow-text="Название курса"
                              :style="[styleCourseName, transformCourseName]" style="margin-top: 120px;"
                              :class="{'no-border': border, 'active': selectedEdit === 2}" @click="selectEdit(2)">
                             {{textCourseName}}
                         </div>
-                        <div ref="hours" name="hours" class="draggable" :data-x="hours.screenX" :data-y="hours.screenY" follow-text="Потраченное время на курсы"
+                        <div ref="hours" name="hours" class="draggable" :data-x="hours.screenX" :data-y="hours.screenY"
+                             follow-text="Потраченное время на курсы"
                              :style="[styleHours, transformHoursName]" style="margin-top: 200px;"
                              :class="{'no-border': border, 'active': selectedEdit === 3}" @click="selectEdit(3)">
                             {{textHours}}
                         </div>
-                        <div ref="date" name="date" class="draggable" :data-x="date.screenX" :data-y="date.screenY" follow-text="Дата завершения курса"
+                        <div ref="date" name="date" class="draggable" :data-x="date.screenX" :data-y="date.screenY"
+                             follow-text="Дата завершения курса"
                              :style="[styleDate, transformDateName]" style="margin-top: 280px;"
                              :class="{'no-border': border, 'active': selectedEdit === 4}" @click="selectEdit(4)">
                             {{textDate}}
@@ -170,9 +178,15 @@
     export default {
         name: "Draggable",
         props: {
-            sertificate: File,
-            img: String,
-            styles: String
+            img: {
+                type: String,
+                default: ''
+            },
+            styles: {
+                type: String,
+                default: ''
+            },
+            modalCertificate: Boolean
         },
         components: {
             VuePdfEmbed
@@ -232,9 +246,10 @@
                 fontWeightList: [200, 300, 400, 500, 600, 700, 800, 900]
             };
         },
-        mounted () {
-            if(this.styles.length > 0){
-                const getStyles = JSON.parse(JSON.parse(this.styles).replace(/\\"/g,'\''));
+        mounted() {
+            console.log(this.styles);
+            if (this.styles.length > 0) {
+                const getStyles = JSON.parse(JSON.parse(this.styles).replace(/\\"/g, '\''));
                 this.fullName = getStyles.fullName;
                 this.courseName = getStyles.courseName;
                 this.hours = getStyles.hours;
@@ -252,6 +267,7 @@
             this.initInteract(courseNameEdit);
             this.initInteract(hoursEdit);
             this.initInteract(dateEdit);
+            this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date);
         },
         computed: {
             styleFullName() {
@@ -308,8 +324,10 @@
             }
         },
         methods: {
-            saveChanges(){
-              this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date)
+            saveChanges() {
+                this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date);
+                this.$emit('update:modalCertificate', false);
+
             },
             selectEdit(val) {
                 this.selectedEdit = val;
@@ -394,13 +412,14 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-    .cestificates-constructor{
-        canvas{
+    .cestificates-constructor {
+        canvas {
             width: 1000px !important;
-            height: auto!important;
+            height: auto !important;
             border: 3px solid #333;
 
         }
+
         .draggable-container {
             padding: 40px 0;
             margin: 0 auto;
@@ -435,6 +454,7 @@
 
         .draggable-edit {
             position: relative;
+
             img {
                 width: 100%;
                 height: auto;
@@ -452,6 +472,7 @@
                 border: 1px dashed #ddd;
                 box-shadow: 0 0 5px 0 #333;
                 background-color: #fff;
+
                 &:before {
                     content: attr(follow-text);
                     position: absolute;
@@ -472,9 +493,11 @@
                     border-radius: 0;
                     background: transparent;
                     box-shadow: none;
+
                     &:before {
                         content: none;
                     }
+
                     &.active {
                         border: 1px dashed #000;
                         background-color: rgba(255, 255, 255, 0.4);
