@@ -23,7 +23,7 @@
             <span class="news-money-title__text" v-html="'Подарить деньги'"/>
         </div>
 
-        <div v-show="showModal" class="news-gift-popup">
+        <div v-show="showModal && !showSecondModal" class="news-gift-popup">
             <div class="news-gift-popup__container">
 
                 <img class="news-gift-popup__close" @click="togleShowModal(false)" alt="" src="/icon/news/birthday/close.svg">
