@@ -16,7 +16,7 @@
                 <template #label>
                     <label class="with-info">Название награды <i class="fa fa-info" id="info1"></i></label>
                     <b-popover target="info1" triggers="hover" placement="right">
-                        <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                        <p style="font-size: 14px">Название вида награды, которое будет отображаться в профиле сотрудника</p>
                     </b-popover>
                 </template>
                 <BFormInput
@@ -36,7 +36,7 @@
                 <template #label>
                     <label class="with-info">Описание награды <i class="fa fa-info" id="info2"></i></label>
                     <b-popover target="info2" triggers="hover" placement="right">
-                        <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                        <p style="font-size: 14px">Краткое или детальное описание награды. Будет хранить в себе информацию по этому виду награды</p>
                     </b-popover>
                 </template>
                 <BFormTextarea
@@ -58,7 +58,7 @@
                 <template #label>
                     <label class="with-info">Тип награды <i class="fa fa-info" id="info3"></i></label>
                     <b-popover target="info3" triggers="hover" placement="right">
-                        <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                        <p style="font-size: 14px">Доступно 3 типа награды, где каждый отвечает за тот или иной успех сотрудников</p>
                     </b-popover>
                 </template>
                 <BDropdown id="input-3" :text="dropDownText" required class="dropdown-select-type">
@@ -66,21 +66,21 @@
                         Загрузка картинки
                         <i class="fa fa-info" id="info4"></i>
                         <b-popover target="info4" triggers="hover" placement="top">
-                            <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                            <p style="font-size: 14px">Загрузка шаблонов (картинок) для дальнейшего использования. Служит для хранения Ваших шаблонов и быстрой их загрузки при награждении сотрудника</p>
                         </b-popover>
                     </BDropdownItem>
                     <BDropdownItem href="#" @click="setFileType(2)">
                         Конструктор сертификата
                           <i class="fa fa-info" id="info5"></i>
                         <b-popover target="info5" triggers="hover" placement="top">
-                            <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                            <p style="font-size: 14px">Служит для создания уникального шаблона для одного или нескольких курсов. По окончаю того или иного курса, сотрудник будет награжден созданным сертификатом</p>
                         </b-popover>
                     </BDropdownItem>
                     <BDropdownItem href="#" @click="setFileType(3)">
                         Данные начислений
                           <i class="fa fa-info" id="info6"></i>
                         <b-popover target="info6" triggers="hover" placement="top">
-                            <p style="font-size: 14px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, repellendus?</p>
+                            <p style="font-size: 14px">Служит для вывода трёх лучших сотрудников по отделу или должности. Если Вы создали этот тип, то сотрудник сможет увидеть топ 3 лучших сотрудников по своему отделу и (или) своей должности в своем профиле</p>
                         </b-popover>
                     </BDropdownItem>
                 </BDropdown>
