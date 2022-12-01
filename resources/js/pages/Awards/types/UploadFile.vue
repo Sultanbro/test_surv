@@ -1,66 +1,89 @@
 <template>
-    <div>
+    <div class="award-type-1">
         <div class="d-flex file">
             <BFormFile
-                    v-model="image"
+                    v-model="images"
                     class="form-file"
-                    placeholder="Выберите Файл"
+                    placeholder="Выберите Файл(ы)"
                     drop-placeholder="Перетащите файл сюда..."
-                    accept=".jpg, .png"
+                    accept=".jpg, .png, .pdf"
+                    multiple
                     type="file"
                     id="file"
                     ref="file"
                     :state="true"
+                    :file-name-formatter="formatNames"
             >
-                <template slot="file-name" slot-scope="{ names }">
-                    <div class="file-name" v-for="(name, key) in names" :key="key">
-                        <BBadge class="badge-img" variant="dark">{{ name }}</BBadge>
-                    </div>
-                </template>
-            </BFormFile
-            >
+            </BFormFile>
             <BButton
-                    v-if="hasImage || imageSrc.length > 0"
+                    v-if="hasImage"
                     variant="danger"
                     class="ml-3 clear-btn"
+                    size="sm"
                     @click="clearImage"
-            >Очистить
-            </BButton
             >
+                Очистить
+            </BButton>
         </div>
+        <small>Загрузите одну или несколько картинок в формате PNG, JPG или PDF</small>
 
-        <template v-if="imageSrc.length > 0">
-            <BImg :src="imageSrc"
-                  alt="картинка"
-                  class="mb-3 img"
-                  fluid
-                  block
-                  rounded
-                  ref="imgcur"
-                  v-b-modal="'myModalPath'"
-            ></BImg>
-            <BModal id="myModalPath" title="BootstrapVue" class="w-80%">
-                <BImg :src="imageSrc" class="mb-3 img" fluid block rounded></BImg>
-            </BModal>
+        <b-row v-if="hasImage">
+            <b-col cols="12" md="3" class="mt-4" v-for="(image, index) in imageSrc" :key="index">
+                <div class="image-preview">
+                    <BImg
+                            v-b-modal="'myModal'"
+                            :src="image.path"
+                            class="mb-3 img"
+                            fluid
+                            block
+                            rounded
+                            v-if="image.format !== 'pdf'"
+                            @click="modalOpen(image)"
+                    ></BImg>
+                    <div @click="modalOpen(image)" v-else>
+                        <vue-pdf-embed :source="image.path"/>
+                    </div>
+                </div>
+            </b-col>
+        </b-row>
+
+        <template v-if="awards.length > 0">
+            <hr class="my-5">
+            <h4 class="uploaded-title">Загруженные шаблоны</h4>
+            <b-row>
+                <b-col cols="12" md="3" class="mt-4" v-for="award in awards" :key="award.id">
+                    <div class="image-preview active">
+                        <div class="image-preview-container" v-if="award.format !== 'pdf'">
+                            <BImg
+                                    v-b-modal="'myModal'"
+                                    :src="award.path"
+                                    class="mb-3 img"
+                                    fluid
+                                    block
+                                    rounded
+                                    @click="modalOpen(award)"
+                            ></BImg>
+                            <b-button variant="danger" size="sm" @click="removeImage(award.id)"><i
+                                    class="fa fa-trash"></i></b-button>
+                        </div>
+                        <div class="image-preview-container" v-else>
+                            <div @click="modalOpen(award)">
+                                <vue-pdf-embed :source="award.path"/>
+                            </div>
+                            <b-button variant="danger" size="sm" @click="removeImage(award.id)"><i
+                                    class="fa fa-trash"></i></b-button>
+                        </div>
+                    </div>
+                </b-col>
+            </b-row>
         </template>
-       <template v-else>
-           <div v-if="hasImage" class="images-prewiev">
-               <BImg
-                       v-b-modal="'myModal'"
-                       :src="imageSrc"
-                       class="mb-3 img"
-                       fluid
-                       block
-                       rounded
-               ></BImg>
-               <BModal id="myModal" title="BootstrapVue" class="w-80%">
-                   <BImg :src="imageSrc" class="mb-3 img" fluid block rounded></BImg>
-               </BModal>
-           </div>
-           <div v-else>
-               <p class="text-danger">Выберите файл</p>
-           </div>
-       </template>
+        <BModal v-model="modal" v-if="selectedModal" size="lg" centered>
+            <BImg :src="selectedModal.path" fluid block v-if="selectedModal.format !== 'pdf'"></BImg>
+            <vue-pdf-embed :source="selectedModal.path" v-else/>
+            <template #modal-footer>
+                <b-button variant="secondary" @click="modal = !modal">Закрыть</b-button>
+            </template>
+        </BModal>
     </div>
 </template>
 
@@ -73,137 +96,158 @@
             reader.onerror = (error) => reject(error);
         });
 
+    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
+
     export default {
         name: "UploadFile",
-        components: {},
+        components: {VuePdfEmbed},
         props: {
-            path: String,
-            format: String
+            awardsObj: {
+                type: Array,
+                default: []
+            }
         },
         data() {
             return {
-                image: null,
-                imageSrc: ''
+                images: null,
+                imageSrc: [],
+                selectedModal: null,
+                modal: false,
+                awards: []
             };
         },
         computed: {
             hasImage() {
-                if (this.image) {
-                    return !!this.image;
+                if (this.images) {
+                    return !!this.images;
                 }
             },
         },
         mounted() {
-            this.imageSrc = this.path;
+            this.awards = this.awardsObj;
         },
         watch: {
-            image(newValue, oldValue) {
-                if(newValue !== null){
-                    this.imageSrc = '';
-                    let newValueString = newValue.name + newValue.size;
-                    let oldValueString = null;
-                    if (oldValue !== null) {
-                        oldValueString = oldValue.name + oldValue.size;
-                    }
-                    if (newValueString !== oldValueString) {
-                        if (newValue) {
-                            base64Encode(newValue)
-                                .then((val) => {
-                                    this.imageSrc = val;
-                                    this.$emit("image-download", this.image);
-                                })
-                                .catch(() => {
-                                    this.imageSrc = '';
+            images(newValue) {
+                if (newValue) {
+                    this.imageSrc = [];
+                    newValue.forEach(item => {
+                        base64Encode(item)
+                            .then((base64) => {
+                                this.imageSrc.push({
+                                    path: base64,
+                                    format: item.type.split('/')[1]
                                 });
-                        } else {
-                            this.imageSrc = '';
-                        }
-                    }
+                            })
+                            .catch(() => {
+                                this.imageSrc = [];
+                            });
+                    });
+                    this.$emit("image-download", this.images);
+                    console.log(this.imageSrc);
                 }
             },
         },
         methods: {
+            formatNames(files) {
+                return files.length === 1 ? files[0].name : `Выбрано файлов - ${files.length}`
+            },
+            modalOpen(image) {
+                this.selectedModal = image;
+                this.modal = !this.modal;
+            },
             async clearImage() {
-                this.image = null;
-                this.imageSrc = '';
-                this.$emit("image-download", this.image);
+                this.images = null;
+                this.imageSrc = [];
+                this.$emit("image-download", this.images);
             },
-            toClickImg() {
-                console.log("ok");
-            },
-            onSubmit() {
-                if (!this.image) {
-                    alert("Please select an image.");
-                    return;
-                }
-
-                alert("Form submitted!");
-            },
-            openModal(id) {
-                console.log("openModal");
-                console.log(id);
+            removeImage(id) {
+                let loader = this.$loading.show();
+                this.axios
+                    .delete('/awards/delete/' + id)
+                    .then(() => {
+                        this.$toast.success('Удалено');
+                        this.awards = this.awards.filter(n => n.id !== id);
+                        loader.hide();
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        loader.hide();
+                    })
             },
         },
     };
 </script>
 
-<style>
-    .image-modal {
-        cursor: pointer;
-        width: 150px;
-        height: 150px;
-        padding: 10px;
-    }
+<style lang="scss">
+    .award-type-1 {
+        .uploaded-title {
+            font-size: 20px;
+            color: green;
+        }
 
-    .img {
-        object-fit: cover;
-        width: 100%;
-        height: 100%;
-    }
+        .image-preview {
+            height: 100px;
+            overflow: hidden;
+            border: 2px solid #ddd;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.15s all ease;
 
-    .custom-file .custom-file-label {
-        position: relative;
-        height: auto;
-    }
+            &:hover {
+                transform: scale(1.05);
+            }
 
-    .custom-file-input {
-        display: none;
-    }
+            img {
+                width: auto;
+                height: 100px;
+                object-fit: cover;
+            }
 
-    .file {
-        height: auto;
-        margin: auto;
-    }
+            canvas {
+                width: auto;
+                height: 100px;
+            }
 
-    .custom-file {
-        height: auto;
-    }
+            .image-preview-container {
+                position: relative;
+                width: 100%;
+                height: 100px;
 
-    .form-file {
-        margin: auto;
-    }
+                .btn {
+                    position: absolute;
+                    top: 5px;
+                    left: 5px;
+                    z-index: 22;
+                }
+            }
+        }
 
-    .file-name {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-    }
+        .clear-btn {
+            height: 40px;
+        }
 
-    .badge-img {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-    }
+        .form-file {
+            height: 40px;
 
-    .images-prewiev {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
+            .custom-file-input {
+                height: 40px;
+            }
 
-    .clear-btn {
-        height: 40px;
+            .custom-file-label {
+                height: 40px;
+                padding: 0 20px;
+                display: inline-flex;
+                align-items: center;
+
+                &:after {
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 0 20px;
+                }
+            }
+        }
     }
 </style>

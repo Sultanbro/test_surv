@@ -12,6 +12,7 @@
                 small
                 @row-clicked="rowClickedHandler"
                 v-if="tableItems.length > 0"
+                :hover="false"
         >
             <BThead>
                 <BTr>
@@ -24,15 +25,15 @@
                 </BTr>
             </BThead>
             <BTbody>
-                <BTr v-for="(item, key) in tableData" :key="item.name + key" @click="rowClickedHandler(item)">
+                <BTr v-for="(item, key) in tableItems" :key="item.name + key">
                     <BTd>{{ key + 1 }}</BTd>
-                    <BTd>{{ item.name }}</BTd>
-                    <BTd>{{ item.description }}</BTd>
-                    <BTd v-if="item.award_type_id === 1">Картинка</BTd>
-                    <BTd v-if="item.award_type_id === 2">Конструктор</BTd>
-                    <BTd v-if="item.award_type_id === 3">Данные начислений</BTd>
-                    <BTd>{{ item.created_at }}</BTd>
-                    <BTd>{{ item.awardCreator }}</BTd>
+                    <BTd><div class="clickable" @click="rowClickedHandler(item)">{{ item.name }}</div></BTd>
+                    <BTd class="td-desc"><div class="desc">{{ item.description }}</div></BTd>
+                    <BTd v-if="item.type === 1">Картинка</BTd>
+                    <BTd v-if="item.type === 2">Конструктор</BTd>
+                    <BTd v-if="item.type === 3">Данные начислений</BTd>
+                    <BTd>{{ item.created_at | splitDate(item.created_at) }}</BTd>
+                    <BTd>{{ item.creator.name }} {{ item.creator.last_name }}</BTd>
                     <BTd @click.stop>
                         <bButton size="sm" pill variant="danger" @click="modalShow(item)"><i class="fa fa-trash"></i>
                         </bButton>
@@ -65,7 +66,7 @@
 </template>
 
 <script>
-    import EditAwardSidebar from "./EditAwardSidebar(delete).vue";
+    import EditAwardSidebar from "./EditAwardSidebar.vue";
 
     export default {
         name: "Awards",
@@ -74,46 +75,36 @@
         },
         data() {
             return {
-                img: {
-                    name: 'Хайруллин Тимур',
-                    certificate: 'За лучшие заслуги лучших',
-                    date: Date.now().toLocaleDateString,
-                    time: 'Пройдено за 50 часа(ов) вместе с домашними заданиями'
-                },
                 modal: false,
                 itemRemove: null,
                 showEditAwardSidebar: false,
-                item: false,
+                item: null,
                 tableItems: [],
             };
         },
-        mounted(){
+        filters: {
+            splitDate: function(val){
+                return val.split('T')[0];
+            }
+        },
+        mounted() {
             this.getAwards();
         },
-        computed:{
-            tableData() {
-                return this.tableItems;
-            },
-        },
         methods: {
-            modalShow(item){
+            modalShow(item) {
                 this.itemRemove = item;
                 this.modal = !this.modal;
             },
-            async getAwards(){
+            async getAwards() {
                 let loader = this.$loading.show();
                 this.tableItems = [];
-                this.axios
-                    .get("/awards/get")
+                await this.axios
+                    .get("/award-categories/get")
                     .then(response => {
-                        const data = response.data.data;
-                        for(let i = 0; i < data.length; i++){
-                            this.tableItems.push(data[i]);
-                        }
+                        this.tableItems = response.data.data;
                         loader.hide();
                     })
                     .catch(function (error) {
-                        console.log("error");
                         console.log(error);
                         loader.hide();
                     });
@@ -124,34 +115,27 @@
             },
             addAwardButtonClickHandler() {
                 this.showEditAwardSidebar = true;
-                this.item = false;
+                this.item = {};
             },
-            saveAward(data) {
-                // this.tableItems.push(data);
+            saveAward() {
                 this.getAwards();
             },
             updateTable() {
-            this.getAwards();
+                this.getAwards();
             },
             async remove(item) {
-                 this.modal = !this.modal;
-                 let loader = this.$loading.show();
+                this.modal = !this.modal;
+                let loader = this.$loading.show();
                 await this.axios
-                     .delete("/awards/delete/" + item.id)
-                     .then(response =>  {
-                         this.getAwards();
-                         // for( let i = 0; i < this.tableItems.length; i++){
-                         //     if ( this.tableItems[i].id === item.id) {
-                         //         this.tableItems.splice(i, 1);
-                         //     }
-                         // }
-                         loader.hide();
-                     })
-                     .catch(function (error) {
-                         console.log("error");
-                         console.log(error);
-                         loader.hide();
-                     });
+                    .delete("/award-categories/delete/" + item.id)
+                    .then(response => {
+                        this.getAwards();
+                        loader.hide();
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        loader.hide();
+                    });
             },
         }
     };
@@ -160,8 +144,33 @@
 <style lang="scss">
     #awards-page {
         #awards-table {
+            thead{
+                white-space: nowrap;
+            }
             tbody {
+                tr{
+                    cursor: default;
+                }
                 cursor: pointer;
+                .td-desc{
+                    max-width: calc(100vw - 1000px);
+                }
+                .desc{
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    padding: 5px 0;
+                    text-align: left;
+                }
+                .clickable{
+                    cursor: pointer;
+                    height: 35px;
+                    display: inline-flex;
+                    align-items: center;
+                    &:hover{
+                        color: #ed2353;
+                    }
+                }
             }
         }
     }

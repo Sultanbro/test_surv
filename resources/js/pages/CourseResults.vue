@@ -1,18 +1,18 @@
 <template>
 <div class="course-results">
     <div class="d-flex mb-2">
-        <button class="btn btn-grey mr-2 rounded"  :class="{'btn-primary': type == BY_USER}" @click="type = BY_USER">
+        <button class="btn btn-grey mr-2 rounded" :class="{'btn-primary': type == BY_USER}" @click="type = BY_USER">
             <span>По сотрудникам</span>
         </button>
         <button class="btn btn-grey mr-2 rounded" :class="{'btn-primary': type == BY_GROUP}" @click="type = BY_GROUP">
             <span>По отделам</span>
         </button>
-    </div>  
-       
+    </div>
+
     <div v-if="type == BY_USER" class="by_user">
 
         <div class="table-responsive" v-if="users.items.length > 0">
-           
+
             <table class="table b-table table-bordered table-sm">
 
                 <tr>
@@ -21,7 +21,7 @@
                     </th>
                 </tr>
 
-                
+
                 <template v-for="(item, i) in users.items">
                     <tr class="pointer" :class="{
                         'expanded-title': item.expanded
@@ -31,19 +31,19 @@
                                 <p class="mb-0 mr-1">{{ item[field.key] }}</p>
                                 <progress :value="item[field.key].slice(0, -1)" max="100"></progress>
                             </div>
-                            <div v-else>{{ item[field.key] }}</div>  
+                            <div v-else>{{ item[field.key] }}</div>
                         </td>
                     </tr>
 
                     <template v-for="(course, c) in item.courses">
                         <tr v-if="item.expanded" class="expanded">
-                            <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
+                            <td v-for="(field, f) in users.fields" :key="f" :class="[field.class, {pointer: course.items && course.items.length > 1}]" @click="expandCourse(course, item)">
                                 <div v-if="field.key == 'progress'" class="d-flex jcc aic">
                                     <p class="mb-0 mr-1">{{ course[field.key] }}</p>
                                     <progress :value="course[field.key].slice(0, -1)" max="100"></progress>
                                 </div>
-                                <div v-else-if="field.key == 'name'" class="relative nullify-wrap">
-                                    
+                                <div v-else-if="field.key == 'name'" class="nullify-wrap relative">
+
                                     {{ course[field.key] }}
 
                                     <i class="absolute nullify fa fa-broom" title="Обнулить прогресс" @click="nullify(i, c)"></i>
@@ -52,10 +52,37 @@
                                 <div v-else>{{ course[field.key] }}</div>
                             </td>
                         </tr>
+
+                        <template v-if="course.items && course.items.length > 1 && course.expanded">
+                            <tr v-for="(courseItem, ci) in course.items" :key="ci" class="expanded-course-item">
+                                <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
+                                    <template v-if="courseItemsTable[item.user_id] && courseItemsTable[item.user_id][courseItem.item_id]">
+                                        <div v-if="field.key === 'name'" class="nullify-wrap relative">
+                                            {{ courseItem[course2item[field.key]] || field.key }}
+                                            <i
+                                                class="absolute nullify fa fa-broom"
+                                                title="Обнулить прогресс"
+                                                @click="regress(item.user_id, course.course_id, courseItem)"
+                                            />
+                                        </div>
+                                        <div v-else-if="field.key === 'progress'" class="d-flex jcc aic">
+                                            <p class="mb-0 mr-1">{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}%</p>
+                                            <progress :value="courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]]" max="100"/>
+                                        </div>
+                                        <div v-else-if="field.key === 'progress_on_week'">
+                                            <p class="mb-0 mr-1">{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}%</p>
+                                        </div>
+                                        <template v-else>
+                                            {{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}
+                                        </template>
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
                     </template>
 
                 </template>
-                
+
 
             </table>
 
@@ -64,7 +91,7 @@
 
     <div v-else class="by_group">
         <div class="table-responsive" v-if="groups.items.length > 0">
-           
+
             <table class="table b-table table-bordered table-sm">
 
                 <tr>
@@ -73,23 +100,23 @@
                     </th>
                 </tr>
 
-                
+
                 <template v-for="(item, i) in groups.items">
                     <tr>
                         <td v-for="(field, f) in groups.fields" :key="f" :class="field.class" @click="expandUser(item)">
-                            <div>{{ item[field.key] }}</div> 
+                            <div>{{ item[field.key] }}</div>
                         </td>
                     </tr>
                 </template>
-                
+
 
             </table>
 
         </div>
     </div>
 
-    
-    
+
+
 </div>
 </template>
 
@@ -98,7 +125,7 @@ const BY_USER = 1;
 const BY_GROUP = 2;
 
 export default {
-    name: "CourseResults", 
+    name: "CourseResults",
     watch: {
         monthInfo(val) {
             this.first = true;
@@ -108,7 +135,7 @@ export default {
             } else {
                 this.fetchData('users');
             }
-        }, 
+        },
         currentGroup() {
             this.first = true;
             if(this.type == this.BY_GROUP) {
@@ -148,6 +175,64 @@ export default {
                 items: [],
                 fields: [],
             },
+            course2item: {
+                name: 'title',
+                status: 'status',
+                points: 'points',
+                progress: 'progress',
+                progress_on_week: 'progress_on_week',
+                started_at: 'started_at',
+                ended_at: 'ended_at'
+            },
+            courses: {},
+            courseItems: {}
+        }
+    },
+    computed: {
+        courseItemsTable(){
+            const result = {}
+            for(let [userId, userResult] of Object.entries(this.courseItems)){
+                for(let [courseId, courseResult] of Object.entries(userResult)){
+                    const course = this.courses[courseId]
+                    if(!course) continue
+                    const points = course.points / course.stages
+
+                    if(!result[userId]) result[userId] = {}
+                    courseResult.forEach(courseItem => {
+                        const passedCount = courseItem.passed_stages ? courseItem.passed_stages.length : 0
+                        const status = (passedCount ? (courseItem.stages && courseItem.stages > passedCount ? 'Начат' : 'Завершен') : 'Запланирован')
+                        const progress = (((passedCount / courseItem.stages) * 100) || 0).toPrecision(2)
+                        const points = (courseItem.bonuses || []).reduce((sum, item) => sum + item.amount, 0)
+
+                        result[userId][courseItem.item_id] = {
+                            status,
+                            points,
+                            progress,
+                            progress_on_week: 0,
+                            started_at: new Date(),
+                            ended_at: new Date(0)
+                        }
+                        const res = result[userId][courseItem.item_id]
+
+                        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                        courseItem.passed_stages.forEach(stage => {
+                            const updated = new Date(stage.updated_at)
+                            if(res.started_at > updated) res.started_at = updated
+                            if(res.ended_at < updated) res.ended_at = updated
+                            if(updated > weekAgo) res.progress_on_week += 1
+                        })
+
+                        res.started_at = passedCount ? this.$moment(res.started_at).format('DD.MM.YYYY') : ''
+                        res.ended_at = courseItem.stages && courseItem.stages > passedCount ? '' : this.$moment(res.ended_at).format('DD.MM.YYYY')
+                        res.progress_on_week = (((res.progress_on_week / courseItem.stages) * 100) || 0).toPrecision(2)
+
+                        if(res.progress_on_week.endsWith('.0')) res.progress_on_week = res.progress_on_week.slice(0, -2)
+                        if(res.progress.endsWith('.0')) res.progress = res.progress.slice(0, -2)
+                    })
+                }
+            }
+            console.log('courseItems', result)
+            return result
         }
     },
     created() {
@@ -165,26 +250,59 @@ export default {
                     group_id: this.currentGroup !== undefined ? this.currentGroup :  null,
                 })
                 .then((response) => {
-                    
+
                     if(type == 'users') {
                         this.users = response.data.items;
                     }
                     if(type == 'groups') {
                         this.groups = response.data.items;
                     }
-                    
-            
+
+
                     loader.hide();
                 });
         },
 
+        fetchCourseItems(userId, courseId) {
+            axios.get('/course/progress', {
+                params: { userId, courseId }
+            }).then(({ data }) => {
+                if(!this.courseItems[userId]) this.$set(this.courseItems, userId, {})
+                this.$set(this.courseItems[userId], courseId, data.data.courseItems)
+                this.courses[data.data.course.id] = data.data.course
+            })
+        },
+
         expandUser(item) {
             let ex = item.expanded;
-            this.users.items.forEach(i => i.expanded = false);
+            this.users.items.forEach(i => {
+                i.expanded = false
+                if(i.courses) i.courses.forEach(c => this.$set(c, 'expanded', false))
+            });
             item.expanded = !ex;
-            
         },
-        
+
+        expandCourse(course, item) {
+            if(course.items && course.items.length > 1){
+                if(!(this.courseItems[item.user_id] && this.courseItems[item.user_id][course.course_id])){
+                    this.fetchCourseItems(item.user_id, course.course_id)
+                }
+                this.users.items.every(el => {
+                    // console.log('el.user_id', el.user_id, item.user_id)
+                    if(el.user_id !== item.user_id) return true
+                    item.courses.forEach(c => {
+                        // console.log('c.course_id', c.course_id, course.course_id)
+                        if(c.course_id === course.course_id){
+                            this.$set(c, 'expanded', !c.expanded)
+                        }
+                        else{
+                            this.$set(c, 'expanded', false)
+                        }
+                    })
+                })
+            }
+        },
+
         nullify(i, c) {
 
             if(!confirm('Вы уверены? Потом прогресс не восстановить')) {
@@ -218,26 +336,45 @@ export default {
 
         },
 
-        nullifyRequest(obj, callback) {
+        nullifyRequest({user_id, course_id}, callback) {
             let loader = this.$loading.show();
 
             axios
-                .post("/course-results/nullify", obj)
+                .post("/course/regress", {
+                    type: 'course',
+                    user_id,
+                    course_id
+                })
                 .then((response) => {
                     callback(response);
                 })
                 .catch(e => console.log(e));
 
             loader.hide();
-        }
-        
-     
-    } 
+        },
+
+        regress(user_id, course_id, courseItem){
+            if(!confirm('Вы уверены? Потом прогресс не восстановить')) return
+
+            const loader = this.$loading.show()
+
+            axios.post('/course/regress', {
+                type: 'item',
+                user_id,
+                course_item_id: courseItem.id
+            }).then((response) => {
+                this.fetchCourseItems(user_id, course_id)
+                this.$toast.success('Прогресс по разделу курса обнулен')
+            }).catch(e => console.log(e))
+
+            loader.hide()
+        },
+    }
 }
 </script>
 
 
-<style scoped>
+<style scoped lang="scss">
 .nullify {
     right: -6px;
     top: -2px;
@@ -247,8 +384,17 @@ export default {
     border-radius: 50px;
     display: none;
     cursor: pointer;
+    position: absolute;
+}
+.nullify-wrap{
+    padding: 5px 10px;
+    margin: -5px -10px;
 }
 .nullify-wrap:hover .nullify {
     display: block;
+}
+
+.expanded-course-item{
+    background: lighten(#c0def2, 5%);
 }
 </style>

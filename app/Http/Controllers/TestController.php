@@ -42,10 +42,9 @@ use Illuminate\Support\Facades\Http;
 class TestController extends Controller { 
   
 	
-	public function test() {
-		$centralUser = CentralUser::with('tenants')->where('email', 'ali.akpanov@yandex.ru')->first();
-
-		dd($centralUser->tenants());
+	public function test() { 
+		$lead = Lead::where('phone', '77711486535')->latest()->first();
+		dd($lead);
 	}
 
     public function testMethodForCheck()
