@@ -59,12 +59,14 @@ class CourseProgressService
                     ? (new CourseItemModel())->progress($userId, $item->id, $item->element)
                     : [];
 
-                $item->bonuses = TestBonus::query()
-                                    ->selectRaw("SUM(amount) as sum")
-                                    ->where('course_item_id', $item->id)
-                                    ->where('user_id', $userId)
-                                    ->first()
-                                    ->sum;
+                $bonuses = TestBonus::query()
+                    ->selectRaw("SUM(amount) as sum")
+                    ->where('course_item_id', $item->id)
+                    ->where('user_id', $userId)
+                    ->first()
+                    ->sum;
+                    
+                $item->bonuses = $bonuses ?? 0;
 
                 unset($item->element);
                 return $item;
