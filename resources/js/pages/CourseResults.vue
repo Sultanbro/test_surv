@@ -54,18 +54,27 @@
                         </tr>
 
                         <template v-if="course.items && course.items.length > 1 && course.expanded">
-                            <tr v-for="(coureItem, ci) in course.items" :key="ci" class="expanded-course-item">
+                            <tr v-for="(courseItem, ci) in course.items" :key="ci" class="expanded-course-item">
                                 <td v-for="(field, f) in users.fields" :key="f" :class="field.class">
-                                    <div v-if="field.key == 'name'" class="nullify-wrap relative">
-                                        {{ coureItem[course2item[field.key]] || field.key }}
-                                        <i
-                                            class="absolute nullify fa fa-broom"
-                                            title="Обнулить прогресс"
-                                            @click="regress(item.user_id, course.course_id, coureItem)"
-                                        />
-                                    </div>
-                                    <template v-else>
-                                        {{ courseItems[coureItem.id] ? coureItem[course2item[field.key]] : field.key }}
+                                    <template v-if="courseItemsTable[item.user_id] && courseItemsTable[item.user_id][courseItem.item_id]">
+                                        <div v-if="field.key === 'name'" class="nullify-wrap relative">
+                                            {{ courseItem[course2item[field.key]] || field.key }}
+                                            <i
+                                                class="absolute nullify fa fa-broom"
+                                                title="Обнулить прогресс"
+                                                @click="regress(item.user_id, course.course_id, courseItem)"
+                                            />
+                                        </div>
+                                        <div v-else-if="field.key === 'progress'" class="d-flex jcc aic">
+                                            <p class="mb-0 mr-1">{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}%</p>
+                                            <progress :value="courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]]" max="100"/>
+                                        </div>
+                                        <div v-else-if="field.key === 'progress_on_week'">
+                                            <p class="mb-0 mr-1">{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}%</p>
+                                        </div>
+                                        <template v-else>
+                                            {{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}
+                                        </template>
                                     </template>
                                 </td>
                             </tr>
@@ -176,30 +185,49 @@ export default {
                 ended_at: 'ended_at'
             },
             courses: {},
-            testResults: {}
+            courseItems: {}
         }
     },
     computed: {
-        courseItems(){
+        courseItemsTable(){
             const result = {}
-            for(let [userId, userResult] of Object.entries(this.testResults)){
+            for(let [userId, userResult] of Object.entries(this.courseItems)){
                 for(let [courseId, courseResult] of Object.entries(userResult)){
                     const course = this.courses[courseId]
                     if(!course) continue
                     const points = course.points / course.stages
 
                     if(!result[userId]) result[userId] = {}
-                    courseResult.forEach(testResult => {
-                        const courseItemId = testResult.course_item_model_id
-                        if(!result[userId][courseItemId]) result[userId][courseItemId] = {
-                            status: 1,
-                            points: 0,
-                            progress: 0,
+                    courseResult.forEach(courseItem => {
+                        const passedCount = courseItem.passed_stages ? courseItem.passed_stages.length : 0
+                        const status = (passedCount ? (courseItem.stages && courseItem.stages > passedCount ? 'Начат' : 'Завершен') : 'Запланирован')
+                        const progress = (((passedCount / courseItem.stages) * 100) || 0).toPrecision(2)
+                        const points = (courseItem.bonuses || []).reduce((sum, item) => sum + item.amount, 0)
+
+                        result[userId][courseItem.item_id] = {
+                            status,
+                            points,
+                            progress,
                             progress_on_week: 0,
                             started_at: new Date(),
                             ended_at: new Date(0)
                         }
-                        result[userId][courseItemId].points += points
+                        const res = result[userId][courseItem.item_id]
+
+                        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                        courseItem.passed_stages.forEach(stage => {
+                            const updated = new Date(stage.updated_at)
+                            if(res.started_at > updated) res.started_at = updated
+                            if(res.ended_at < updated) res.ended_at = updated
+                            if(updated > weekAgo) res.progress_on_week += 1
+                        })
+
+                        res.started_at = passedCount ? this.$moment(res.started_at).format('DD.MM.YYYY') : ''
+                        res.ended_at = courseItem.stages && courseItem.stages > passedCount ? '' : this.$moment(res.ended_at).format('DD.MM.YYYY')
+                        res.progress_on_week = (((res.progress_on_week / courseItem.stages) * 100) || 0).toPrecision(2)
+
+                        if(res.progress_on_week.endsWith('.0')) res.progress_on_week = res.progress_on_week.slice(0, -2)
+                        if(res.progress.endsWith('.0')) res.progress = res.progress.slice(0, -2)
                     })
                 }
             }
@@ -235,12 +263,12 @@ export default {
                 });
         },
 
-        fetchTestResults(userId, courseId) {
+        fetchCourseItems(userId, courseId) {
             axios.get('/course/progress', {
                 params: { userId, courseId }
             }).then(({ data }) => {
-                if(!this.testResults[userId]) this.$set(this.testResults, userId, {})
-                this.$set(this.testResults[userId], courseId, data.data.testResults)
+                if(!this.courseItems[userId]) this.$set(this.courseItems, userId, {})
+                this.$set(this.courseItems[userId], courseId, data.data.courseItems)
                 this.courses[data.data.course.id] = data.data.course
             })
         },
@@ -256,8 +284,8 @@ export default {
 
         expandCourse(course, item) {
             if(course.items && course.items.length > 1){
-                if(!(this.testResults[item.user_id] && this.testResults[item.user_id][course.course_id])){
-                    this.fetchTestResults(item.user_id, course.course_id)
+                if(!(this.courseItems[item.user_id] && this.courseItems[item.user_id][course.course_id])){
+                    this.fetchCourseItems(item.user_id, course.course_id)
                 }
                 this.users.items.every(el => {
                     // console.log('el.user_id', el.user_id, item.user_id)
@@ -308,11 +336,15 @@ export default {
 
         },
 
-        nullifyRequest(obj, callback) {
+        nullifyRequest({user_id, course_id}, callback) {
             let loader = this.$loading.show();
 
             axios
-                .post("/course-results/nullify", obj)
+                .post("/course/regress", {
+                    type: 'course',
+                    user_id,
+                    course_id
+                })
                 .then((response) => {
                     callback(response);
                 })
@@ -321,7 +353,7 @@ export default {
             loader.hide();
         },
 
-        regress(user_id, course_id, coureItem){
+        regress(user_id, course_id, courseItem){
             if(!confirm('Вы уверены? Потом прогресс не восстановить')) return
 
             const loader = this.$loading.show()
@@ -329,15 +361,9 @@ export default {
             axios.post('/course/regress', {
                 type: 'item',
                 user_id,
-                course_id,
-                course_item_id: coureItem.id
+                course_item_id: courseItem.id
             }).then((response) => {
-                // coureItem.progress = '0%'
-                // coureItem.started_at = ''
-                // coureItem.ended_at = ''
-                // coureItem.status = 'Запланирован'
-                // coureItem.points = '0 / 0 / 0%'
-                // coureItem.progress_on_week = '0%'
+                this.fetchCourseItems(user_id, course_id)
                 this.$toast.success('Прогресс по разделу курса обнулен')
             }).catch(e => console.log(e))
 
