@@ -42,28 +42,30 @@ trait RegistersUsers
         
         event(new Registered($user = $this->createCentralUser($request->all())));
 
-        //  $this->guard()->login($user);
+        if( !$user->hasTenant() ) {
 
-        if($user->hasTenant()) {
-            // redirect to first tenant to auth User impersonation
-            return redirect('/');
+            $tenant = $this->createTenant($user);
+            $this->createTenantUser($tenant, $user);
         } 
 
-        $tenant = $this->createTenant($user);
+        if($subDomainLink = $this->loginLink($user)) {
 
-        tenancy()->initialize($tenant);
-        
-        $this->createTenantUser($user);
-        
-        return $this->login($user); 
-
-        if ($response = $this->registered($request, $user)) {
-            return $response;
+            // $this->guard()->login($user);
+            
+            return response()->json([
+                'location' => $subDomainLink
+            ]);
         }
+        
+        // Native Laravel code
+        
+        // if ($response = $this->registered($request, $user)) {
+        //     return $response;
+        // }
 
-        return $request->wantsJson()
-                    ? new JsonResponse([], 201)
-                    : redirect($this->redirectPath());
+        // return $request->wantsJson()
+        //             ? new JsonResponse([], 201)
+        //             : redirect($this->redirectPath());
     }
 
     /**
@@ -92,7 +94,7 @@ trait RegistersUsers
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return \App\User
+     * @return User
      */
     protected function createCentralUser(array $data)
     {
@@ -108,11 +110,14 @@ trait RegistersUsers
     /**
      * Create a new user in tenant
      *
-     * @param  array  $data
-     * @return \App\User
+     * @param Tenant $tenant
+     * @param User $user
+     * @return User
      */
-    protected function createTenantUser(User $user)
+    protected function createTenantUser(Tenant $tenant, User $user)
     {
+        tenancy()->initialize($tenant);
+
         $user = User::create([
             'name' => $user->name,
             'last_name' => $user->last_name,
@@ -130,30 +135,56 @@ trait RegistersUsers
         return $user;
     }
 
+
     /**
-     * Create a new user in tenant
+     * Авторизоваться и вернуть ссылку на кабинет
+     * 
+     * @return String
+     */
+    protected function loginLink(User $user)
+    {
+        $centralUser = CentralUser::with('tenants')->where('email', $user->email)->first();
+
+        if($centralUser) {
+
+            // Get first tenant
+            //
+            // if user has more than one tenant and wants to change tenant
+            // he easily can do it by special select in frontend
+            // that gives this opportunity 
+            $tenant = $centralUser->tenants->first();
+
+            // find Owners User record in tenant
+            tenancy()->initialize($tenant);
+
+            $tenantUser = User::where('email', $centralUser->email)->first();
+
+            // create token to login through redirect
+            $token = tenancy()->impersonate($tenant, $tenantUser->id, '/profile');
+
+            return "https://{$tenant->id}.".config('app.domain')."/impersonate/{$token->token}";
+        }  
+
+        throw new \Exception('Something\'s gone wrong. Tenant created, but has not owner.');
+    }
+
+    /**
+     * Create tenant and attach it to owner
      *
-     * @param  array  $data
-     * @return \App\User
+     * @param  User $user
+     * @return Tenant
      */
     protected function createTenant(User $user)
     {   
-        $nameFound = false;
-
-        do {
-
-            $domain = $this->generateRandomString(12);
-
-            if(Tenant::where('id', $domain)->doesntExist()) {
-                $nameFound = true;
-            }
-
-        } while($nameFound == false);
+        $domain = $this->generateRandomName();
         
+        // create tenant
         $tenant = Tenant::create(['id' => $domain]);
 
+        // create domain
         $tenant->createDomain($domain);
 
+        // attach to owner
         $centralUser = CentralUser::where('email', $user->email)->first();
 
         if($centralUser) {
@@ -164,13 +195,36 @@ trait RegistersUsers
     }
 
     /**
-     * Create a new user in tenant
+     * Generate unique subdomain name
+     *
+     * @return String $domain
+     */
+    private function generateRandomName()
+    {   
+        $nameFound = false;
+
+        do {
+
+            $domain = $this->generateRandomString(6);
+
+            if(Tenant::where('id', $domain)->doesntExist()) {
+                $nameFound = true;
+            }
+
+        } while($nameFound == false);
+
+        return $domain;
+    }
+
+    /**
+     * Generate random string
      *
      * @param int $length
      * @return String
      */
-    protected function generateRandomString(int $length = 10) {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    private function generateRandomString(int $length = 10)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
         $charactersLength = strlen($characters);
         $randomString = '';
         for ($i = 0; $i < $length; $i++) {
@@ -179,25 +233,4 @@ trait RegistersUsers
         return $randomString;
     }
 
-
-    protected function login(User $user) {
-        $centralUser = CentralUser::with('tenants')->where('email', $user->email)->first();
-
-        if($centralUser) {
-
-            $tenant = $centralUser->tenants->first();
-
-            tenancy()->initialize($tenant);
-            
-            $domain = $tenant->id .".". config('app.domain');
-
-            $tenantUser = User::where('email', $centralUser->email)->first();
-
-            $token = tenancy()->impersonate($tenant, $tenantUser->id, '/profile');
-
-            return redirect("https://". $domain ."/impersonate/{$token->token}");
-        }   
-    }
-
-    
 }

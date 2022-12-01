@@ -14,7 +14,7 @@
     background: #fefefe;
     width: 20%;
     min-width: 360px;
-   
+
 }
 #sub-wrapper .login .login-content {
     width: 100%;
@@ -31,7 +31,84 @@
     letter-spacing: 1px;
     font-weight: 400;
 }
+
+
+
+.cabinet-loader::before, .cabinet-loader::after, .cabinet-loader {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.cabinet-loader {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  background: url("/static/img/logo-jobtron.png") no-repeat center rgba(0, 0, 0, 0.1);
+  background-size: 80%;
+  color: #42aaff;
+  box-shadow: inset 0 0 0 1px rgba(66, 170, 255, 0.5);
+}
+.cabinet-loader::before, .cabinet-loader::after {
+  content: "";
+  z-index: -1;
+  margin: -5%;
+  box-shadow: inset 0 0 0 2px;
+  animation: clipMe 8s linear infinite;
+}
+.cabinet-loader::before {
+  animation-delay: -4s;
+}
+
+@keyframes clipMe {
+  0%, 100% {
+    clip: rect(0px, 220px, 2px, 0px);
+  }
+  25% {
+    clip: rect(0px, 2px, 220px, 0px);
+  }
+  50% {
+    clip: rect(218px, 220px, 220px, 0px);
+  }
+  75% {
+    clip: rect(0px, 220px, 220px, 218px);
+  }
+}
+.cabinet-loader-bg{
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #0f222b;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+.cabinet-loader-bg.active{
+    opacity: 1;
+    visibility: visible;
+}
+.cabinet-loader-message{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 150px);
+    font-size: 24px;
+    color: #fff;
+}
+
 </style>
+<div class="cabinet-loader-bg">
+    <div class="cabinet-loader"></div>
+    <div class="cabinet-loader-message">
+        ваш кабинет создается ...
+    </div>
+</div>
 <div class="login-page">
 
     <div class="inner">
@@ -48,18 +125,18 @@
 
 
                     </div>
-             
+
                     <!-- <div style="margin: 10px;display:flex;justify-content:center">
                         <a href="/register" class="active">Регистрация </a>
                     </div> -->
 
                     <div class="tab-row fade-tabset">
-                       
+
                         <div class="tab-content">
                             <div id="tab-30" class="tab @if(!isset($_GET['tab'])) active @else js-tab-hidden  @endif">
 
                                 <h3 class="text-center">Регистрация</h3>
-                                <form class="form-horizontal" method="POST" action="{{ route('register') }}">
+                                <form id="register-form" class="form-horizontal" method="POST" action="{{ route('register') }}">
                                     @csrf
                                     <div class="form-subregistration">
 
@@ -67,19 +144,19 @@
                                             <input id="name" type="text" class="form-control" name="name"
                                                 value="{{ old('name') }}" required autofocus
                                                 placeholder="Ваше имя">
-                                            
+
                                         </div>
                                         @if ($errors->has('name'))
                                             <span class="help-block">
                                                 <strong>{{ $errors->first('name') }}</strong>
                                             </span>
                                         @endif
-                                        
+
                                         <div class="form-registration-row">
                                             <input id="last_name" type="text" class="form-control" name="last_name"
                                                 value="{{ old('last_name') }}" required autofocus
                                                 placeholder="Ваша фамилия">
-                                            
+
                                         </div>
                                         @if ($errors->has('last_name'))
                                             <span class="help-block">
@@ -91,7 +168,7 @@
                                             <input id="email" type="text" class="form-control" name="email"
                                                 value="{{ old('email') }}" required autofocus
                                                 placeholder="Ваш email">
-                                            
+
                                         </div>
                                         @if ($errors->has('email'))
                                             <span class="help-block">
@@ -103,7 +180,7 @@
                                             <input id="phone" type="text" class="form-control" name="phone"
                                                 value="{{ old('phone') }}" required autofocus
                                                 placeholder="Ваш телефон">
-                                            
+
                                         </div>
                                         @if ($errors->has('phone'))
                                             <span class="help-block">
@@ -126,7 +203,7 @@
                                         @endif
 
 
-                          
+
 
 
                                         <button type="submit" class="btn-form-login">
@@ -135,8 +212,8 @@
                                     </div>
                                 </form>
                             </div>
-                    
-                         
+
+
                         </div>
                     </div>
 
