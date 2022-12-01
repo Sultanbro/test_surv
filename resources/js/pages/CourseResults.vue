@@ -65,7 +65,7 @@
                                         />
                                     </div>
                                     <template v-else>
-                                        {{ coureItem[course2item[field.key]] || field.key }}
+                                        {{ courseItems[coureItem.id] ? coureItem[course2item[field.key]] : field.key }}
                                     </template>
                                 </td>
                             </tr>
@@ -174,7 +174,37 @@ export default {
                 progress_on_week: 'progress_on_week',
                 started_at: 'started_at',
                 ended_at: 'ended_at'
+            },
+            courses: {},
+            testResults: {}
+        }
+    },
+    computed: {
+        courseItems(){
+            const result = {}
+            for(let [userId, userResult] of Object.entries(this.testResults)){
+                for(let [courseId, courseResult] of Object.entries(userResult)){
+                    const course = this.courses[courseId]
+                    if(!course) continue
+                    const points = course.points / course.stages
+
+                    if(!result[userId]) result[userId] = {}
+                    courseResult.forEach(testResult => {
+                        const courseItemId = testResult.course_item_model_id
+                        if(!result[userId][courseItemId]) result[userId][courseItemId] = {
+                            status: 1,
+                            points: 0,
+                            progress: 0,
+                            progress_on_week: 0,
+                            started_at: new Date(),
+                            ended_at: new Date(0)
+                        }
+                        result[userId][courseItemId].points += points
+                    })
+                }
             }
+            console.log('courseItems', result)
+            return result
         }
     },
     created() {
@@ -205,6 +235,16 @@ export default {
                 });
         },
 
+        fetchTestResults(userId, courseId) {
+            axios.get('/course/progress', {
+                params: { userId, courseId }
+            }).then(({ data }) => {
+                if(!this.testResults[userId]) this.$set(this.testResults, userId, {})
+                this.$set(this.testResults[userId], courseId, data.data.testResults)
+                this.courses[data.data.course.id] = data.data.course
+            })
+        },
+
         expandUser(item) {
             let ex = item.expanded;
             this.users.items.forEach(i => {
@@ -216,11 +256,14 @@ export default {
 
         expandCourse(course, item) {
             if(course.items && course.items.length > 1){
+                if(!(this.testResults[item.user_id] && this.testResults[item.user_id][course.course_id])){
+                    this.fetchTestResults(item.user_id, course.course_id)
+                }
                 this.users.items.every(el => {
-                    console.log('el.user_id', el.user_id, item.user_id)
+                    // console.log('el.user_id', el.user_id, item.user_id)
                     if(el.user_id !== item.user_id) return true
                     item.courses.forEach(c => {
-                        console.log('c.course_id', c.course_id, course.course_id)
+                        // console.log('c.course_id', c.course_id, course.course_id)
                         if(c.course_id === course.course_id){
                             this.$set(c, 'expanded', !c.expanded)
                         }
@@ -299,7 +342,7 @@ export default {
             }).catch(e => console.log(e))
 
             loader.hide()
-        }
+        },
     }
 }
 </script>
