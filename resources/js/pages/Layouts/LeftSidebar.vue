@@ -2,7 +2,7 @@
 <div class="header__left closedd">
     <!-- avatar  -->
     <div class="header__avatar">
-        <img :src="$laravel.avatar" alt="avatar image" >
+        <img :src="avatar" alt="avatar image" >
 
         <!-- hover menu -->
         <div class="header__menu">
@@ -71,6 +71,7 @@
 
 <script>
 import LeftSidebarItem from './LeftSidebarItem'
+import { bus } from '../../bus'
 
 export default {
     name: 'LeftSidebar',
@@ -82,6 +83,7 @@ export default {
         return {
             height: 300,
             fields: [],
+            avatar: this.$laravel.avatar,
             token: Laravel.csrfToken,
         };
     },
@@ -280,6 +282,8 @@ export default {
     mounted(){
         this.onResize()
         new ResizeObserver(this.onResize).observe(this.$refs.nav)
+
+        bus.$on('user-avatar-update', avatar => (this.avatar = avatar))
     }
 };
 </script>
@@ -289,7 +293,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width:7rem;
+    width:8rem;
     min-height: inherit;
     max-height: inherit;
     padding-top: 0.5rem;
@@ -341,6 +345,7 @@ export default {
     display: flex;
     flex-direction: column;
     flex: 0 1 100%;
+    justify-content: space-evenly;
     gap:.3rem;
     overflow-y: auto;
     &::-webkit-scrollbar {
@@ -397,7 +402,7 @@ export default {
 
     text-align: center;
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 400;
     color:#8DA0C1;
 
     transition:.3s;
@@ -410,6 +415,7 @@ export default {
     font-size:2rem;
     &::before{
         transition:.2s;
+        width: auto;
     }
 }
 

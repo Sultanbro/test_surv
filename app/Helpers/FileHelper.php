@@ -49,11 +49,19 @@ class FileHelper
     {
         $storage =  Storage::disk('s3');
 
-        if (!$storage->exists($path)) {
+
+        if (!$storage->directoryExists($path)) {
             $storage->makeDirectory($path);
         }
 
         return $path;
+    }
+
+    public static function checkFile(string $path): string
+    {
+        $storage =  Storage::disk('s3');
+
+        return $storage->exists($path);
     }
 
     public static function getPath(string $folder, string $filename): string

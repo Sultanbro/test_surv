@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Award;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
-class UpdateAwardRequest extends FormRequest
+class UpdateAwardCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,18 +27,14 @@ class UpdateAwardRequest extends FormRequest
     public function rules()
     {
         return [
-            'award_type_id' => 'integer',
-            'course_ids' => 'array',
-            'name' => 'string|required',
+            'name' => 'string',
             'description' => 'string',
             'hide' => 'boolean',
-            'styles' => 'string',
-            'targetable_type' => 'string',
-            'targetable_id' => 'integer',
-            'file' => 'file|mimes:jpg,png,pdf|max:2048'
+            'type' => 'integer',
+
+
         ];
     }
-
     protected function failedValidation(Validator $validator)
     {
         $response = new JsonResponse([
@@ -48,5 +44,4 @@ class UpdateAwardRequest extends FormRequest
 
         throw new ValidationException($validator, $response);
     }
-
 }

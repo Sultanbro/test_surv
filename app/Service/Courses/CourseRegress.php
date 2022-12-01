@@ -46,7 +46,7 @@ class CourseRegress implements RegressInterface
         $items = (new CourseRepository)->getCourseItems($courseId)->pluck('id')->toArray();
         $courseItemModelIds = CourseItemModel::query()->where('user_id', $userId)->whereIn('course_item_id', $items)->get()->pluck('id')->toArray();
 
-        TestResult::query()->where('user_id', $userId)->whereIn('course_item_model_id', $courseItemModelIds)->delete();
+        TestResult::query()->where('user_id', $userId)->whereIn('course_item_model_id', $items)->delete();
         $this->deleteFromCourseItemModels($courseItemModelIds);
     }
 
