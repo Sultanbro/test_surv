@@ -26,7 +26,7 @@ class CourseProgressService
         try {
             return [
                 'course'      => $this->dto->course,
-                'testResults' => $this->dto->user->test_results()->get()
+                'courseItems' => $this->dto->courseItems
             ];
         } catch (NotResultsException $exception) {
             Log::error($exception->getMessage());

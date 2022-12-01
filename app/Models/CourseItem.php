@@ -10,6 +10,7 @@ use App\KnowBase;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class CourseItem extends Model
 {
@@ -46,6 +47,14 @@ class CourseItem extends Model
     {
         return $this->belongsTo(Course::class, 'course_id');
     }
+
+    public function courseable() {
+        return $this->morphTo();
+    } 
+
+    public function element() {
+        return $this->morphTo('element', 'item_model', 'item_id');
+    } 
 
     public function isVideo() {
         return $this->item_model == 'App\Models\Videos\VideoPlaylist';
