@@ -21,7 +21,7 @@
                 Очистить
             </BButton>
         </div>
-        <small style="float: right; margin: -15px 10px 0 0 ;">Загрузите подготовленный шаблон в формате PDF</small>
+        <small class="mb-4 d-block mt-1">Загрузите подготовленный шаблон в формате PDF</small>
         <br>
         <div v-if="hasImage || awards.length > 0" class="sertificate-prewiev">
             <div class="sertificate-modal">
@@ -232,10 +232,6 @@
                 height: 170px !important;
                 width: auto !important;
             }
-        }
-
-        .file {
-            margin-bottom: 20px;
         }
 
         .sertificate-modal {
