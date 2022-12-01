@@ -22,9 +22,7 @@ class AwardCategoryController extends Controller
 
     public function __construct(AwardCategoryService $awardCategoryService)
     {
-        $this->access();
         $this->awardCategoryService = $awardCategoryService;
-        $this->middleware('auth');
     }
 
     /**

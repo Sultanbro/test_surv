@@ -14,14 +14,4 @@ use Symfony\Component\HttpFoundation\Response;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
-    /**
-     * Проверяем доступ.
-     * @return void
-     */
-    protected function access(): void
-    {
-        $user = Auth::user()->is_admin ?? 0;
-        abort_if(!$user, Response::HTTP_FORBIDDEN, "You don't have permission to add award!");
-    }
 }
