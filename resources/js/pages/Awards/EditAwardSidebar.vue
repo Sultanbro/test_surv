@@ -16,7 +16,8 @@
                 <template #label>
                     <label class="with-info">Название награды <i class="fa fa-info" id="info1"></i></label>
                     <b-popover target="info1" triggers="hover" placement="right">
-                        <p style="font-size: 14px">Название вида награды, которое будет отображаться в профиле сотрудника</p>
+                        <p style="font-size: 14px">Название вида награды, которое будет отображаться в профиле
+                            сотрудника</p>
                     </b-popover>
                 </template>
                 <BFormInput
@@ -24,8 +25,13 @@
                         v-model="name"
                         type="text"
                         placeholder="Название"
+                        :state="invalidName"
+                        aria-describedby="input-live-feedback"
                         required
                 ></BFormInput>
+                <b-form-invalid-feedback id="input-live-feedback">
+                    Введите не менее 3 символов
+                </b-form-invalid-feedback>
 
             </BFormGroup>
             <BFormGroup
@@ -36,7 +42,8 @@
                 <template #label>
                     <label class="with-info">Описание награды <i class="fa fa-info" id="info2"></i></label>
                     <b-popover target="info2" triggers="hover" placement="right">
-                        <p style="font-size: 14px">Краткое или детальное описание награды. Будет хранить в себе информацию по этому виду награды</p>
+                        <p style="font-size: 14px">Краткое или детальное описание награды. Будет хранить в себе
+                            информацию по этому виду награды</p>
                     </b-popover>
                 </template>
                 <BFormTextarea
@@ -58,33 +65,48 @@
                 <template #label>
                     <label class="with-info">Тип награды <i class="fa fa-info" id="info3"></i></label>
                     <b-popover target="info3" triggers="hover" placement="right">
-                        <p style="font-size: 14px">Доступно 3 типа награды, где каждый отвечает за тот или иной успех сотрудников</p>
+                        <p style="font-size: 14px">Доступно 3 типа награды, где каждый отвечает за тот или иной успех
+                            сотрудников</p>
                     </b-popover>
                 </template>
-                <BDropdown id="input-3" :text="dropDownText" required class="dropdown-select-type">
+                <BDropdown id="input-3" :text="dropDownText" v-if="!readonly" required class="dropdown-select-type">
                     <BDropdownItem href="#" @click="setFileType(1)">
                         Загрузка картинки
                         <i class="fa fa-info" id="info4"></i>
                         <b-popover target="info4" triggers="hover" placement="top">
-                            <p style="font-size: 14px">Загрузка шаблонов (картинок) для дальнейшего использования. Служит для хранения Ваших шаблонов и быстрой их загрузки при награждении сотрудника</p>
+                            <p style="font-size: 14px">Загрузка шаблонов (картинок) для дальнейшего использования.
+                                Служит для хранения Ваших шаблонов и быстрой их загрузки при награждении сотрудника</p>
                         </b-popover>
                     </BDropdownItem>
                     <BDropdownItem href="#" @click="setFileType(2)">
                         Конструктор сертификата
-                          <i class="fa fa-info" id="info5"></i>
+                        <i class="fa fa-info" id="info5"></i>
                         <b-popover target="info5" triggers="hover" placement="top">
-                            <p style="font-size: 14px">Служит для создания уникального шаблона для одного или нескольких курсов. По окончаю того или иного курса, сотрудник будет награжден созданным сертификатом</p>
+                            <p style="font-size: 14px">Служит для создания уникального шаблона для одного или нескольких
+                                курсов. По окончаю того или иного курса, сотрудник будет награжден созданным
+                                сертификатом</p>
                         </b-popover>
                     </BDropdownItem>
                     <BDropdownItem href="#" @click="setFileType(3)">
                         Данные начислений
-                          <i class="fa fa-info" id="info6"></i>
+                        <i class="fa fa-info" id="info6"></i>
                         <b-popover target="info6" triggers="hover" placement="top">
-                            <p style="font-size: 14px">Служит для вывода трёх лучших сотрудников по отделу или должности. Если Вы создали этот тип, то сотрудник сможет увидеть топ 3 лучших сотрудников по своему отделу и (или) своей должности в своем профиле</p>
+                            <p style="font-size: 14px">Служит для вывода трёх лучших сотрудников по отделу или
+                                должности. Если Вы создали этот тип, то сотрудник сможет увидеть топ 3 лучших
+                                сотрудников по своему отделу и (или) своей должности в своем профиле</p>
                         </b-popover>
                     </BDropdownItem>
                 </BDropdown>
-                <p class="text-danger" v-if="!selectedType">Выберите тип награды*</p>
+                <div v-else>
+                    <span class="disable-select">
+                        <b-button disabled variant="secondary">{{dropDownText}}</b-button>
+                        <i class="fa fa-info" id="info7"></i>
+                    <b-popover target="info7" triggers="hover" placement="top">
+                        <p style="font-size: 14px">Вы уже не можете сменить тип награды. Создайте новую награду с нужным Вам типом.</p>
+                    </b-popover>
+                    </span>
+                </div>
+                <p class="text-danger" v-if="!selectedType" ref="selectedtype" style="display: none;">Выберите тип награды*</p>
             </BFormGroup>
 
             <BFormGroup class="file-type">
@@ -121,7 +143,8 @@
             </BFormGroup>
 
             <BFormGroup class="custom-switch custom-switch-sm" id="input-group-4" v-if="type === 1 || type === 2 ">
-                <b-form-checkbox v-model="hide" switch>Отображать пользователям награды других участников</b-form-checkbox>
+                <b-form-checkbox v-model="hide" switch>Отображать пользователям награды других участников
+                </b-form-checkbox>
             </BFormGroup>
             <BButton type="submit" variant="primary">Сохранить</BButton>
         </BForm>
@@ -151,9 +174,10 @@
         },
         data() {
             return {
+                readonly: false,
                 dropDownText: 'Выберите тип награды',
                 category_id: null,
-                selectedType: true,
+                selectedType: false,
                 uploadFiles: [],
                 fileCertificate: null,
                 targetable_id: null,
@@ -164,14 +188,15 @@
                 type: null,
                 course_ids: [],
                 styles: '',
-                awards: []
+                awards: [],
+                invalidName: true
             };
         },
         methods: {
-            addCourse(id){
+            addCourse(id) {
                 this.course_ids.push(id);
             },
-            removeCourse(id){
+            removeCourse(id) {
                 this.course_ids = this.course_ids.filter(n => n !== id);
             },
             superselectChoice(val) {
@@ -195,6 +220,7 @@
                         .post('/award-categories/store', formDataCategories, {
                             headers: {
                                 'Content-Type': 'multipart/form-data',
+                                'X-Requested-With': 'XMLHttpRequest',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
                         })
@@ -205,7 +231,7 @@
                             console.log(error);
                         })
                 } else {
-                    if(this.category_id || this.name !== this.item.name || this.description !== this.item.description || this.hide !== this.item.hide){
+                    if (this.category_id || this.name !== this.item.name || this.description !== this.item.description || this.hide !== this.item.hide) {
                         formDataCategories.append('_method', 'put');
                         await this.axios
                             .post('/award-categories/update/' + this.category_id, formDataCategories, {
@@ -214,7 +240,8 @@
                                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                                 },
                             })
-                            .then(() => {})
+                            .then(() => {
+                            })
                             .catch(error => {
                                 console.log(error);
                             })
@@ -228,7 +255,7 @@
                         formData.append('course_ids[]', this.course_ids[j]);
                     }
                     formData.append('styles', this.styles);
-                    if(this.fileCertificate){
+                    if (this.fileCertificate) {
                         formData.append('file', this.fileCertificate);
                     }
                 }
@@ -243,7 +270,7 @@
                     }
                 }
 
-                if(Object.keys(this.item).length > 0 && this.type !== 1){
+                if (Object.keys(this.item).length > 0 && this.type !== 1) {
                     formData.append('_method', 'put');
                     await this.axios
                         .post("/awards/update/" + this.awards[0].id, formData, {
@@ -260,7 +287,7 @@
                             console.log("error");
                             console.log(error);
                         });
-                } else if (Object.keys(this.item).length === 0 || this.type === 1){
+                } else if (Object.keys(this.item).length === 0 || this.type === 1) {
                     await this.axios
                         .post("/awards/store", formData, {
                             headers: {
@@ -279,7 +306,12 @@
                 }
             },
             async onSubmit() {
+                if(!this.selectedType){
+                    this.$refs.selectedtype.style.display = 'block';
+                }
                 if (this.type) {
+                    if(this.name.length > 2){
+                        this.invalidName = true;
                     let loader = this.$loading.show();
                     if (this.hide) {
                         this.hide = 0;
@@ -289,6 +321,9 @@
                     await this.saveCategory();
                     await this.saveAwards();
                     loader.hide();
+                    } else {
+                        this.invalidName = false;
+                    }
                 }
             },
             setFileType(type) {
@@ -307,7 +342,7 @@
             formFile(files) {
                 this.uploadFiles = files;
             },
-            formFileCertificate(file){
+            formFileCertificate(file) {
                 this.fileCertificate = file;
             },
             styleChange(styles) {
@@ -325,32 +360,23 @@
                     .catch(error => {
                         console.log(error);
                     });
-
+                this.readonly = true;
                 this.category_id = this.item.id;
                 this.type = this.item.type;
                 this.name = this.item.name;
                 this.description = this.item.description;
-                if(this.item.hide === 1){
+                if (this.item.hide === 1) {
                     this.hide = false;
                 }
-                if(this.item.hide === 0){
+                if (this.item.hide === 0) {
                     this.hide = true;
                 }
 
-                if(this.type === 2){
-                    // this.targetable_type = this.awards[0].targetable_type;
-                    // this.targetable_id = this.awards[0].targetable_id;
-                }
-
-                if(this.type === 3){
+                if (this.type === 3) {
                     this.targetable_type = this.awards[0].targetable_type;
                     this.targetable_id = this.awards[0].targetable_id;
                 }
-                // this.form.path = this.item.path;
-                // this.form.format = this.item.format;
-                // this.form.styles = this.item.styles;
-                // this.form.targetable_type = this.item.targetable_type;
-                // this.form.targetable_id = this.item.targetable_id;
+
 
                 if (this.item.type === 1) {
                     this.dropDownText = 'Загрузка картинки';
@@ -369,9 +395,10 @@
 
 <style lang="scss">
     #edit-award-sidebar {
-        .with-info, .dropdown-item{
+        .with-info, .dropdown-item, .disable-select {
             position: relative;
-            i{
+
+            i {
                 width: 16px;
                 font-size: 10px;
                 height: 16px;
@@ -387,12 +414,14 @@
                 margin-left: 3px;
             }
         }
-        .dropdown-item{
-            i{
+
+        .dropdown-item {
+            i {
                 top: 7px;
                 right: -7px;
             }
         }
+
         .custom-file-label {
             span {
                 display: flex !important;
@@ -444,18 +473,21 @@
             }
         }
 
-        .custom-switch{
+        .custom-switch {
             padding-left: 0;
+
             input[type="checkbox"] {
                 position: absolute;
                 margin: 8px 0 0 16px;
             }
+
             input[type="checkbox"] + label {
                 position: relative;
                 padding: 5px 0 0 50px;
                 line-height: 1;
                 margin: 10px 0;
             }
+
             input[type="checkbox"] + label:before {
                 content: "";
                 position: absolute;
@@ -470,6 +502,7 @@
                 -webkit-transition: all 0.3s;
                 transition: all 0.3s;
             }
+
             input[type="checkbox"] + label:after {
                 content: "";
                 position: absolute;
@@ -484,37 +517,46 @@
                 -webkit-transition: all 0.3s;
                 transition: all 0.3s;
             }
+
             input[type="checkbox"] + label:hover:after {
-                box-shadow: 0 0 5px rgba(0,0,0,0.3);
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
             }
+
             input[type="checkbox"]:checked + label:after {
                 margin-left: 16px;
             }
+
             input[type="checkbox"]:checked + label:before {
                 background: #55D069;
             }
-            &.custom-switch-small{
+
+            &.custom-switch-small {
                 input[type="checkbox"] {
                     margin: 5px 0 0 10px;
                 }
+
                 input[type="checkbox"] + label {
                     position: relative;
                     padding: 0 0 0 32px;
                     line-height: 1.3em;
                 }
+
                 input[type="checkbox"] + label:before {
                     width: 25px; /* x*5 */
                     height: 15px; /* x*3 */
                     border-radius: 10px; /* x*2 */
                 }
+
                 input[type="checkbox"] + label:after {
                     width: 15px; /* x*3 */
                     height: 15px; /* x*3 */
                     border-radius: 10px; /* x*2 */
                 }
+
                 input[type="checkbox"] + label:hover:after {
-                    box-shadow: 0 0 3px rgba(0,0,0,0.3);
+                    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
                 }
+
                 input[type="checkbox"]:checked + label:after {
                     margin-left: 10px; /* x*2 */
                 }

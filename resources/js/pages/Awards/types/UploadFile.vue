@@ -25,7 +25,7 @@
                 Очистить
             </BButton>
         </div>
-        <small style="float: right; margin: 5px 10px 0 0 ;">Загрузите одну или несколько картинок в формате PNG, JPG или PDF</small>
+        <small>Загрузите одну или несколько картинок в формате PNG, JPG или PDF</small>
 
         <b-row v-if="hasImage">
             <b-col cols="12" md="3" class="mt-4" v-for="(image, index) in imageSrc" :key="index">
@@ -37,7 +37,7 @@
                             fluid
                             block
                             rounded
-                            v-if="image.format !== 'application/pdf'"
+                            v-if="image.format !== 'pdf'"
                             @click="modalOpen(image)"
                     ></BImg>
                     <div @click="modalOpen(image)" v-else>
@@ -46,9 +46,6 @@
                 </div>
             </b-col>
         </b-row>
-        <div v-else>
-            <p class="text-danger">Выберите файл(ы)</p>
-        </div>
 
         <template v-if="awards.length > 0">
             <hr class="my-5">
@@ -83,6 +80,9 @@
         <BModal v-model="modal" v-if="selectedModal" size="lg" centered>
             <BImg :src="selectedModal.path" fluid block v-if="selectedModal.format !== 'pdf'"></BImg>
             <vue-pdf-embed :source="selectedModal.path" v-else/>
+            <template #modal-footer>
+                <b-button variant="secondary" @click="modal = !modal">Закрыть</b-button>
+            </template>
         </BModal>
     </div>
 </template>

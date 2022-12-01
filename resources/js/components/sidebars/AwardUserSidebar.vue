@@ -97,7 +97,7 @@
             </div>
             <template #modal-footer>
                 <b-button variant="secondary" @click="modalAdd = !modalAdd">Отмена</b-button>
-                <b-button variant="success" v-if="modalAddBase64" @click="addAndSaveReward">Наградить</b-button>
+                <b-button variant="success" v-if="modalAddBase64 && value" @click="addAndSaveReward">Наградить</b-button>
             </template>
         </BModal>
 
@@ -158,10 +158,10 @@
                 modalSelectBase64: null,
                 myAwards: [],
                 modalAdd: false,
-                modalAddFile: false,
-                modalAddBase64: false,
+                modalAddFile: null,
+                modalAddBase64: null,
                 awardCategories: [],
-                value: '',
+                value: null,
                 responseAward: []
 
             }
@@ -174,11 +174,21 @@
                 this.getAll();
             });
         },
+        watch: {
+            modalAdd(val){
+                if(!val){
+                    this.value = null;
+                    this.modalAddFile = null;
+                    this.modalAddBase64 = null;
+                }
+                return this.modalAdd;
+            }
+        },
         methods: {
             async getAll(){
                 let loader = this.$loading.show();
                 await this.axios
-                    .get('/awards/type?key=nomination')
+                    .get('/awards/type?key=nomination&user_id=' + this.userId)
                     .then(response => {
                         this.awards = [];
                         this.myAwards = [];
@@ -343,7 +353,6 @@
                 this.modalSelectBase64 = null;
             },
             reward(award, index) {
-                this.modalSelect = false;
                 const formData = new FormData();
                 formData.append('user_id', this.userId);
                 formData.append('award_id', this.modalSelectData.id);
@@ -364,7 +373,8 @@
                             this.modalSelectData = {};
                             this.modalSelectFile = null;
                             this.modalSelectBase64 = null;
-                        }, 300)
+                        }, 300);
+                        this.modalSelect = false;
                         this.getAll();
                     })
                     .catch(function (error) {
