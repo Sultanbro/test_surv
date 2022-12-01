@@ -104,7 +104,6 @@ class AwardCategoryController extends Controller
     public function categoryAwards(AwardCategory $awardCategory)
     {
         try {
-            $this->access();
             return response()->success($awardCategory->awards);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
