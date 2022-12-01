@@ -27,12 +27,14 @@
                         >
                             <b-form-checkbox v-model="fullName.fullWidth">На всю ширину</b-form-checkbox>
                         </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="fullName.color">
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker"
+                                                               v-model="fullName.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
-                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="lowercase">Первая заглавная
+                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="none">Первая заглавная
                             </b-form-radio>
-                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="uppercase">Все
+                                заглавные
                             </b-form-radio>
                         </b-form-group>
                     </div>
@@ -58,16 +60,18 @@
                         >
                             <b-form-checkbox v-model="courseName.fullWidth">На всю ширину</b-form-checkbox>
                         </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="courseName.color">
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker"
+                                                               v-model="courseName.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
-                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="lowercase">Первая
-                                заглавная
+                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="none">По умолчанию
                             </b-form-radio>
-                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="uppercase">Все
+                                заглавные
                             </b-form-radio>
                         </b-form-group>
                     </div>
+                    <!--
                     <div v-if="selectedEdit === 3">
                         <BFormGroup>
                             <h4>Количетсво потраченных часов на курс</h4>
@@ -92,13 +96,13 @@
                         <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="hours.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
-                            <b-form-radio v-model="hours.uppercase" name="some-radios" value="lowercase">Первая
-                                заглавная
+                            <b-form-radio v-model="hours.uppercase" name="some-radios" value="none">По умолчанию
                             </b-form-radio>
                             <b-form-radio v-model="hours.uppercase" name="some-radios" value="uppercase">Все заглавные
                             </b-form-radio>
                         </b-form-group>
                     </div>
+                    -->
                     <div v-if="selectedEdit === 4">
                         <BFormGroup>
                             <h4>Дата завершения курса</h4>
@@ -123,8 +127,7 @@
                         <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="date.color">
                         </BFormGroup>
                         <b-form-group label="Заглавность">
-                            <b-form-radio v-model="date.uppercase" name="some-radios" value="lowercase">Первая
-                                заглавная
+                            <b-form-radio v-model="date.uppercase" name="some-radios" value="none">По умолчанию
                             </b-form-radio>
                             <b-form-radio v-model="date.uppercase" name="some-radios" value="uppercase">Все заглавные
                             </b-form-radio>
@@ -135,22 +138,28 @@
             <BCol cols="9">
                 <div class="draggable-container">
                     <div class="draggable-edit">
-                        <div ref="fullName" name="fullName" class="draggable" :data-x="fullName.screenX" :data-y="fullName.screenY" follow-text="Имя и фамилия"
+                        <div ref="fullName" name="fullName" class="draggable" :data-x="fullName.screenX"
+                             :data-y="fullName.screenY" follow-text="Имя и фамилия"
                              :style="[styleFullName, transformFullName]" style="margin-top: 40px;"
                              :class="{'no-border': border, 'active': selectedEdit === 1}" @click="selectEdit(1)">
                             {{textFullName}}
                         </div>
-                        <div ref="courseName" name="courseName" class="draggable" :data-x="courseName.screenX" :data-y="courseName.screenY" follow-text="Название курса"
+                        <div ref="courseName" name="courseName" class="draggable" :data-x="courseName.screenX"
+                             :data-y="courseName.screenY" follow-text="Название курса"
                              :style="[styleCourseName, transformCourseName]" style="margin-top: 120px;"
                              :class="{'no-border': border, 'active': selectedEdit === 2}" @click="selectEdit(2)">
                             {{textCourseName}}
                         </div>
-                        <div ref="hours" name="hours" class="draggable" :data-x="hours.screenX" :data-y="hours.screenY" follow-text="Потраченное время на курсы"
+                        <!--
+                        <div ref="hours" name="hours" class="draggable" :data-x="hours.screenX" :data-y="hours.screenY"
+                             follow-text="Потраченное время на курсы"
                              :style="[styleHours, transformHoursName]" style="margin-top: 200px;"
                              :class="{'no-border': border, 'active': selectedEdit === 3}" @click="selectEdit(3)">
                             {{textHours}}
                         </div>
-                        <div ref="date" name="date" class="draggable" :data-x="date.screenX" :data-y="date.screenY" follow-text="Дата завершения курса"
+                        -->
+                        <div ref="date" name="date" class="draggable" :data-x="date.screenX" :data-y="date.screenY"
+                             follow-text="Дата завершения курса"
                              :style="[styleDate, transformDateName]" style="margin-top: 280px;"
                              :class="{'no-border': border, 'active': selectedEdit === 4}" @click="selectEdit(4)">
                             {{textDate}}
@@ -160,7 +169,9 @@
                 </div>
             </BCol>
         </BRow>
-        <BButton variant="success" @click="saveChanges">Сохранить</BButton>
+        <div class="modal-footer">
+            <BButton variant="success" @click="saveChanges">Сохранить</BButton>
+        </div>
     </div>
 </template>
 
@@ -171,9 +182,15 @@
     export default {
         name: "Draggable",
         props: {
-            sertificate: File,
-            img: String,
-            styles: String
+            img: {
+                type: String,
+                default: ''
+            },
+            styles: {
+                type: String,
+                default: ''
+            },
+            modalCertificate: Boolean
         },
         components: {
             VuePdfEmbed
@@ -181,7 +198,7 @@
         data() {
             return {
                 selectedUppercase: [],
-                border: false,
+                border: true,
                 selectedEdit: 1,
                 textFullName: 'Иван Иванович Иванов',
                 textCourseName: 'Название курса',
@@ -189,14 +206,14 @@
                 textDate: new Date().toLocaleDateString(),
                 transformFullName: {},
                 transformCourseName: {},
-                transformHoursName: {},
+                // transformHoursName: {},
                 transformDateName: {},
                 fullName: {
                     screenX: 0,
                     screenY: 0,
                     size: 32,
                     fontWeight: 700,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
                     color: '#000000'
                 },
@@ -206,59 +223,61 @@
                     text: 'Название курса',
                     size: 20,
                     fontWeight: 400,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
                     color: '#000000'
                 },
-                hours: {
-                    screenX: 0,
-                    screenY: 0,
-                    text: 'Название курса',
-                    size: 16,
-                    fontWeight: 400,
-                    uppercase: 'lowercase',
-                    fullWidth: false,
-                    color: '#000000'
-                },
+                // hours: {
+                //     screenX: 0,
+                //     screenY: 0,
+                //     text: 'Название курса',
+                //     size: 16,
+                //     fontWeight: 400,
+                //     uppercase: 'none',
+                //     fullWidth: false,
+                //     color: '#000000'
+                // },
                 date: {
                     screenX: 0,
                     screenY: 0,
                     text: 'Название курса',
                     size: 16,
                     fontWeight: 400,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
                     color: '#000000'
                 },
                 fontWeightList: [200, 300, 400, 500, 600, 700, 800, 900]
             };
         },
-        mounted () {
-            if(this.styles.length > 0){
-                const getStyles = JSON.parse(JSON.parse(this.styles).replace(/\\"/g,'\''));
+        mounted() {
+            console.log(this.styles);
+            if (this.styles.length > 0) {
+                const getStyles = JSON.parse(this.styles);
                 this.fullName = getStyles.fullName;
                 this.courseName = getStyles.courseName;
-                this.hours = getStyles.hours;
+                // this.hours = getStyles.hours;
                 this.date = getStyles.date;
                 this.transformFullName = {transform: `translate(${this.fullName.screenX}px, ${this.fullName.screenY}px)`};
                 this.transformCourseName = {transform: `translate(${this.courseName.screenX}px, ${this.courseName.screenY}px)`};
-                this.transformHoursName = {transform: `translate(${this.hours.screenX}px, ${this.hours.screenY}px)`};
+                // this.transformHoursName = {transform: `translate(${this.hours.screenX}px, ${this.hours.screenY}px)`};
                 this.transformDateName = {transform: `translate(${this.date.screenX}px, ${this.date.screenY}px)`};
             }
             let fullNameEdit = this.$refs.fullName;
             let courseNameEdit = this.$refs.courseName;
-            let hoursEdit = this.$refs.hours;
+            // let hoursEdit = this.$refs.hours;
             let dateEdit = this.$refs.date;
             this.initInteract(fullNameEdit);
             this.initInteract(courseNameEdit);
-            this.initInteract(hoursEdit);
+            // this.initInteract(hoursEdit);
             this.initInteract(dateEdit);
+            this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date);
         },
         computed: {
             styleFullName() {
                 let width = 'auto';
                 if (this.fullName.fullWidth) {
-                    width = '100%';
+                    width = '1000px';
                 }
                 return {
                     fontWeight: this.fullName.fontWeight,
@@ -271,7 +290,7 @@
             styleCourseName() {
                 let width = 'auto';
                 if (this.courseName.fullWidth) {
-                    width = '100%';
+                    width = '1000px';
                 }
                 return {
                     fontWeight: this.courseName.fontWeight,
@@ -281,23 +300,23 @@
                     color: this.courseName.color
                 };
             },
-            styleHours() {
-                let width = 'auto';
-                if (this.hours.fullWidth) {
-                    width = '100%';
-                }
-                return {
-                    fontWeight: this.hours.fontWeight,
-                    fontSize: `${this.hours.size}px`,
-                    textTransform: this.hours.uppercase,
-                    width: width,
-                    color: this.hours.color
-                };
-            },
+            // styleHours() {
+            //     let width = 'auto';
+            //     if (this.hours.fullWidth) {
+            //         width = '1000px';
+            //     }
+            //     return {
+            //         fontWeight: this.hours.fontWeight,
+            //         fontSize: `${this.hours.size}px`,
+            //         textTransform: this.hours.uppercase,
+            //         width: width,
+            //         color: this.hours.color
+            //     };
+            // },
             styleDate() {
                 let width = 'auto';
                 if (this.date.fullWidth) {
-                    width = '100%';
+                    width = '1000px';
                 }
                 return {
                     fontWeight: this.date.fontWeight,
@@ -309,8 +328,10 @@
             }
         },
         methods: {
-            saveChanges(){
-              this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date)
+            saveChanges() {
+                this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date);
+                this.$emit('update:modalCertificate', false);
+
             },
             selectEdit(val) {
                 this.selectedEdit = val;
@@ -345,9 +366,9 @@
                 if (name === 'courseName') {
                     x = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX) + event.dx;
                 }
-                if (name === 'hours') {
-                    x = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX) + event.dx;
-                }
+                // if (name === 'hours') {
+                //     x = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX) + event.dx;
+                // }
                 if (name === 'date') {
                     x = (parseFloat(target.getAttribute("data-x")) || this.date.screenX) + event.dx;
                 }
@@ -358,9 +379,9 @@
                 if (name === 'courseName') {
                     y = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY) + event.dy;
                 }
-                if (name === 'hours') {
-                    y = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY) + event.dy;
-                }
+                // if (name === 'hours') {
+                //     y = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY) + event.dy;
+                // }
                 if (name === 'date') {
                     y = (parseFloat(target.getAttribute("data-y")) || this.date.screenY) + event.dy;
                 }
@@ -380,10 +401,10 @@
                     this.courseName.screenX = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX);
                     this.courseName.screenY = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY)
                 }
-                if (name === 'hours') {
-                    this.hours.screenX = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX);
-                    this.hours.screenY = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY)
-                }
+                // if (name === 'hours') {
+                //     this.hours.screenX = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX);
+                //     this.hours.screenY = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY)
+                // }
                 if (name === 'date') {
                     this.date.screenX = (parseFloat(target.getAttribute("data-x")) || this.date.screenX);
                     this.date.screenY = (parseFloat(target.getAttribute("data-y")) || this.date.screenY)
@@ -395,16 +416,21 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-    .cestificates-constructor{
-        canvas{
-            width: 600px !important;
-            height: auto!important;
+    .cestificates-constructor {
+        canvas {
+            width: 1000px !important;
+            height: auto !important;
+            border: 3px solid #333;
+
         }
+
         .draggable-container {
-            padding: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 40px 0;
+            margin: 0 auto;
+            max-width: 1010px;
+            max-height: calc(100vh - 95px);
+            width: 100%;
+            overflow: auto;
         }
 
         .form-group {
@@ -432,10 +458,7 @@
 
         .draggable-edit {
             position: relative;
-            border: 3px solid #333;
-            max-width: 700px;
-            overflow: auto;
-            max-height: calc(100vh - 200px);
+
             img {
                 width: 100%;
                 height: auto;
@@ -453,6 +476,7 @@
                 border: 1px dashed #ddd;
                 box-shadow: 0 0 5px 0 #333;
                 background-color: #fff;
+
                 &:before {
                     content: attr(follow-text);
                     position: absolute;
@@ -473,9 +497,11 @@
                     border-radius: 0;
                     background: transparent;
                     box-shadow: none;
+
                     &:before {
                         content: none;
                     }
+
                     &.active {
                         border: 1px dashed #000;
                         background-color: rgba(255, 255, 255, 0.4);
@@ -504,8 +530,8 @@
         }
 
         .settings {
-            max-height: calc(100vh - 130px);
-            min-height: calc(100vh - 130px);
+            max-height: calc(100vh - 95px);
+            min-height: calc(100vh - 95px);
             padding: 20px 10px;
             overflow: auto;
             border-right: 1px solid #ddd;
