@@ -18,29 +18,45 @@ export type UserDataFilter = {
 }
 export type UserData = {
   id: number,
-  fio: string,
+  last_name?: string,
+  name?: string,
   email: string,
   created_at: string,
   login_at: string,
-  subdimains: number,
-  lead: string,
-  balance: string,
   birthday: string,
   country: string,
-  city: string
+  city: string,
+  lead: string,
+  balance: string,
+  subdimains: Array<string>,
+  full_name: string
 }
 export type UserDataResponse = {
-  user_data: Array<UserData>,
-  total: number
+  items: {
+    current_page: number,
+    data: Array<UserData>,
+    first_page_url?: string,
+    from?: number,
+    last_page?: number,
+    last_page_url?: string,
+    next_page_url?: string,
+    path?: string,
+    per_page?: number,
+    prev_page_url?: number,
+    to?: number,
+    total?: number
+  }
+
 }
 export type UserDataRequest = {
-  onpage?: number,
+  per_page?: number,
   page?: number,
-  filters?: Array<UserDataFilter>
+  '>balance'?: number,
+  '<balance'?: number
 }
 export const fetchUserData = async (req: UserDataRequest) => {
   try{
-    const {data, status} = await axios.get<UserDataResponse>('/someapi', {params: req})
+    const {data, status} = await axios.get<UserDataResponse>('/admin/owners', {params: req})
     return data
   }
   catch (error) {

@@ -1,20 +1,19 @@
 import { fetchUserData } from './api'
 import type { UserData, UserDataResponse, UserDataRequest } from './api'
-import test from 'node:test'
 
-const testUser: UserData = {
-  id: 1,
-  fio: 'test test test',
-  email: 'test@mail.ru',
-  created_at: '29.11.22',
-  login_at: '29.11.22',
-  subdimains: 3,
-  lead: 'https://bp.jobtron.org',
-  balance: '100 000 KZT',
-  birthday: '22.11.22',
-  country: 'Россия',
-  city: 'Владивосток'
-}
+// const testUser: UserData = {
+//   id: 1,
+//   fio: 'test test test',
+//   email: 'test@mail.ru',
+//   created_at: '29.11.22',
+//   login_at: '29.11.22',
+//   subdimains: 3,
+//   lead: 'https://bp.jobtron.org',
+//   balance: '100 000 KZT',
+//   birthday: '22.11.22',
+//   country: 'Россия',
+//   city: 'Владивосток'
+// }
 export type UserDataKeys = keyof UserData
 
 function compareNumbers(a: number, b: number){
@@ -38,7 +37,7 @@ type SortFunctions<T> = {
 }
 const sortFunctions: SortFunctions<UserData> = {
   id: compareNumbers,
-  fio: compareStrings,
+  full_name: compareStrings,
   email: compareStrings,
   created_at: compareDate,
   login_at: compareDate,
@@ -51,7 +50,7 @@ const sortFunctions: SortFunctions<UserData> = {
 }
 
 export const useUserDataStore = defineStore('user-data', () => {
-  const userData = ref<Array<UserData>>([testUser, testUser])
+  const userData = ref<Array<UserData>>([])
   const total = ref(2)
   const onPage = ref(10)
   const page = ref(1)
@@ -60,6 +59,8 @@ export const useUserDataStore = defineStore('user-data', () => {
     if(!sort.value[0]) return userData.value
 
     const field: UserDataKeys = sort.value[0]
+    if(!(field in sortFunctions)) return userData.value
+
     return userData.value.sort((a: UserData, b: UserData) => {
       if(sort.value[1] === 'desc'){
         return sortFunctions[field](b[field], a[field])
@@ -70,6 +71,16 @@ export const useUserDataStore = defineStore('user-data', () => {
   function setSort(field: UserDataKeys | '', type: string){
     sort.value = [field, type]
   }
+  function fetchUsers(): void {
+    fetchUserData({
+      page: page.value,
+      per_page: onPage.value
+    }).then(data => {
+      if(data !== undefined && 'items' in data){
+        userData.value = data.items.data
+      }
+    })
+  }
   return {
     userData,
     sortedData,
@@ -78,6 +89,7 @@ export const useUserDataStore = defineStore('user-data', () => {
     onPage,
     page,
 
+    fetchUsers,
     sort,
     setSort
   }

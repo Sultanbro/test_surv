@@ -30,7 +30,7 @@ function setSort(field: UserDataKeys | ''){
     <thead>
       <tr>
         <th @click="setSort('id')">id{{ sortSymbol('id') }}</th>
-        <th @click="setSort('fio')">ФИО{{ sortSymbol('fio') }}</th>
+        <th @click="setSort('full_name')">ФИО{{ sortSymbol('full_name') }}</th>
         <th @click="setSort('email')" class="text-center">
           email{{ sortSymbol('email') }}
         </th>
@@ -66,7 +66,7 @@ function setSort(field: UserDataKeys | ''){
         :key="item.id"
       >
         <td>{{ item.id }}</td>
-        <td>{{ item.fio }}</td>
+        <td>{{ item.full_name }}</td>
         <td class="text-center">
           <a :href="`mailto:${item.email}`">{{ item.email }}</a>
         </td>

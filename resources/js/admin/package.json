@@ -2,7 +2,8 @@
   "name": "vue-project",
   "version": "0.0.0",
   "scripts": {
-    "dev": "npm run build:icons && vite --host",
+    "watch": "npm run build:icons && vite --host",
+    "dev": "npm run build:icons && vite build --mode development",
     "build": "npm run build:icons && vite build",
     "preview": "vite preview --port 5050",
     "typecheck": "vue-tsc --noEmit",
