@@ -124,6 +124,10 @@
 const BY_USER = 1;
 const BY_GROUP = 2;
 
+function formatProgress(num, precision = 2){
+    return parseFloat(num.toFixed(precision))
+}
+
 export default {
     name: "CourseResults",
     watch: {
@@ -201,7 +205,7 @@ export default {
                     courseResult.forEach(courseItem => {
                         const passedCount = courseItem.passed_stages ? courseItem.passed_stages.length : 0
                         const status = (passedCount ? (courseItem.stages && courseItem.stages > passedCount ? 'Начат' : 'Завершен') : 'Запланирован')
-                        const progress = (((passedCount / courseItem.stages) * 100) || 0).toPrecision(2)
+                        const progress = formatProgress(((passedCount / courseItem.stages) * 100) || 0)
                         const points = (courseItem.bonuses || []).reduce((sum, item) => sum + item.amount, 0)
 
                         result[userId][courseItem.item_id] = {
@@ -224,14 +228,10 @@ export default {
 
                         res.started_at = passedCount ? this.$moment(res.started_at).format('DD.MM.YYYY') : ''
                         res.ended_at = courseItem.stages && courseItem.stages > passedCount ? '' : this.$moment(res.ended_at).format('DD.MM.YYYY')
-                        res.progress_on_week = (((res.progress_on_week / courseItem.stages) * 100) || 0).toPrecision(2)
-
-                        if(res.progress_on_week.endsWith('.0')) res.progress_on_week = res.progress_on_week.slice(0, -2)
-                        if(res.progress.endsWith('.0')) res.progress = res.progress.slice(0, -2)
+                        res.progress_on_week = formatProgress(((res.progress_on_week / courseItem.stages) * 100) || 0)
                     })
                 }
             }
-            console.log('courseItems', result)
             return result
         }
     },
