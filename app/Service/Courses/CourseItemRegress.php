@@ -53,11 +53,12 @@ class CourseItemRegress implements CourseRegress
     /**
      * @param int $courseItemId
      * @param int $userId
-     * @return int
+     * @return float
      */
-    protected function getProgress(int $courseItemId, int $userId): int
+    protected function getProgress(int $courseItemId, int $userId): float
     {
-        return CourseItemModel::query()->where('user_id', $userId)->where('course_item_id', $courseItemId)->count();
+        $course = (new CourseItemRepository)->getCourse($courseItemId);
+        return CourseItemModel::query()->where('user_id', $userId)->where('course_item_id', $courseItemId)->count() / $course->stages;
     }
 
     protected function deleteCourseItemModel(int $courseItemId, int $userId)
