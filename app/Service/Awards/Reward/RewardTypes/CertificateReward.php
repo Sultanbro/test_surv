@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace App\Service\Awards\Reward\RewardTypes;
 
@@ -9,7 +8,7 @@ use App\Service\Interfaces\Award\Reward\RewardInterface;
 use App\Traits\RewardTrait;
 use Illuminate\Http\Request;
 
-final class AccrualReward implements RewardInterface
+class CertificateReward implements RewardInterface
 {
     use RewardTrait;
 
@@ -20,6 +19,6 @@ final class AccrualReward implements RewardInterface
     public function reward()
     {
         $repository = new AwardRepository();
-        $this->rewardUser($this->rewardDTO, $repository);
+        $this->rewardUserWitCourse($this->rewardDTO, $repository);
     }
 }
