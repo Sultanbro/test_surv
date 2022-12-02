@@ -58,6 +58,7 @@ jQuery(function($){
     $('#register-form').submit(function(e){
         e.preventDefault();
         $('.cabinet-loader-bg').addClass('active');
+        $('.help-block').remove();
 
         var form = document.querySelector('#register-form');
 
@@ -82,7 +83,12 @@ jQuery(function($){
                 console.log(response)
                 $('.cabinet-loader-bg').removeClass('active');
                 if( response.status === 422 ) {
-                    alert(response.responseJSON.message)
+                    for(var inputName in response.responseJSON.errors){
+                        var errorMessage = response.responseJSON.errors[inputName];
+                        $('#' + inputName)
+                            .closest('.form-registration-row')
+                            .after('<span class="help-block"><strong>' + errorMessage + '</strong></span>');
+                    }
                 } else {
                     alert('Ошибка на стороне сервера')
                 }

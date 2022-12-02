@@ -91,7 +91,7 @@
                                                 required placeholder="Введите пароль">
                                         </div>
                                         <div class="form-registration-row">
-                                            <input id="password" type="password" class="form-control" name="password_confirmation"
+                                            <input id="password_confirmation" type="password" class="form-control" name="password_confirmation"
                                                 required placeholder="Введите пароль повторно">
                                         </div>
                                         @if ($errors->has('password'))
