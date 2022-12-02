@@ -102,9 +102,10 @@ class AwardController extends Controller
         $app->handle($request->toDto(), $repository)->reward();
     }
 
-    public function deleteReward(RewardRequest $request, AwardRepository $awardRepository)
+    public function deleteReward(RewardRequest $request, AwardRepository $repository)
     {
-        return $this->awardService->deleteReward($request, $awardRepository);
+        $app = app(RewardBuilder::class);
+        $app->execute($request->toDto(), $repository)->deleteReward();
     }
 
     /**

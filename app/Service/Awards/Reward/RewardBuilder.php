@@ -10,12 +10,15 @@ use App\Repositories\AwardRepository;
 use App\Service\Awards\Reward\RewardTypes\AccrualReward;
 use App\Service\Awards\Reward\RewardTypes\CertificateReward;
 use App\Service\Awards\Reward\RewardTypes\NominationReward;
+use App\Service\Interfaces\Award\Reward\DeleteRewardBuilderInterface;
 use App\Service\Interfaces\Award\Reward\RewardBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-final class RewardBuilder implements RewardBuilderInterface
+final class RewardBuilder implements RewardBuilderInterface, DeleteRewardBuilderInterface
 {
     /**
+     * Наградить сотрудника.
+     *
      * @throws BusinessLogicException
      */
     public function handle(RewardDTO $rewardDTO, AwardRepository $repository)
@@ -36,6 +39,60 @@ final class RewardBuilder implements RewardBuilderInterface
 
         return $this->{$method}($rewardDTO);
 
+    }
+
+    /**
+     * @throws BusinessLogicException
+     */
+    public function execute(RewardDTO $rewardDTO, AwardRepository $repository)
+    {
+        $award = $repository->getById($rewardDTO->awardId);
+
+        if (!$award->category()->exists())
+        {
+            throw new BusinessLogicException("Category for award, $award does not exists");
+        }
+
+        if ($award->category->type === AwardTypeEnum::CERTIFICATE && $rewardDTO->courseId == null)
+        {
+            throw new BusinessLogicException("Does not exists courseId for delete certificate");
+        }
+
+        $typeName = AwardTypeEnum::VALUES[$award->category->type];
+        $method = $typeName . 'DeleteReward';
+
+        if (!method_exists($this, $method)) {
+            throw new BusinessLogicException("Method $method does not exists");
+        }
+
+        return $this->{$method}($rewardDTO);
+    }
+
+    /**
+     * @param $rewardDTO
+     * @return NominationReward
+     */
+    public function nominationDeleteReward($rewardDTO): NominationReward
+    {
+        return new NominationReward($rewardDTO);
+    }
+
+    /**
+     * @param $rewardDTO
+     * @return AccrualReward
+     */
+    public function accrualDeleteReward($rewardDTO): AccrualReward
+    {
+        return new AccrualReward($rewardDTO);
+    }
+
+    /**
+     * @param $rewardDTO
+     * @return CertificateReward
+     */
+    public function certificateDeleteReward($rewardDTO): CertificateReward
+    {
+        return new CertificateReward($rewardDTO);
     }
 
     /**
