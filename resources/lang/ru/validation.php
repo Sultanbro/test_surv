@@ -56,6 +56,8 @@ return [
     'ip' => 'Значение поля :attribute должно быть действительным IP-адресом.',
     'ipv4' => 'Значение поля :attribute должно быть действительным IPv4-адресом.',
     'ipv6' => 'Значение поля :attribute должно быть действительным IPv6-адресом.',
+    'g-recaptcha-response.recaptcha' => 'Captcha verification failed',
+    'g-recaptcha-response.required' => 'Please complete the captcha',
     'json' => 'Значение поля :attribute должно быть JSON строкой.',
     'lt' => [
         'array' => 'Количество элементов в поле :attribute должно быть меньше :value.',
