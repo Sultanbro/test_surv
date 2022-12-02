@@ -15,6 +15,7 @@ use App\Models\Award\AwardCategory;
 use App\Repositories\AwardRepository;
 use App\Service\Awards\AwardBuilder;
 use App\Service\Awards\AwardService;
+use App\Service\Awards\Reward\RewardBuilder;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -95,9 +96,10 @@ class AwardController extends Controller
     /**
      * @throws Exception
      */
-    public function reward(RewardRequest $request, AwardRepository $awardRepository)
+    public function reward(RewardRequest $request, AwardRepository $repository)
     {
-        return $this->awardService->reward($request, $awardRepository);
+        $app = app(RewardBuilder::class);
+        $app->handle($request->toDto(), $repository)->reward();
     }
 
     public function deleteReward(RewardRequest $request, AwardRepository $awardRepository)
