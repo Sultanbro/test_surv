@@ -110,7 +110,6 @@
 
                 </b-tabs>
             </b-tab>
-            <!--
             <b-tab class="accrual-tab" no-body :title="award.name" active v-for="(award, index) in accrual"
                    :key="index">
                 <BRow>
@@ -151,7 +150,6 @@
                     </BCol>
                 </BRow>
             </b-tab>
-            -->
         </b-tabs>
         <div v-else>
             <h4 class="not-awards">У Вас пока нет ни одной награды</h4>
@@ -219,14 +217,14 @@
                 .catch(error => {
                     console.log(error);
                 });
-            // await this.axios
-            //     .get('/awards/type?key=accrual')
-            //     .then(response => {
-            //         this.accrual = response.data.data;
-            //     })
-            //     .catch(error => {
-            //         console.log(error);
-            //     });
+            await this.axios
+                .get('/awards/type?key=accrual')
+                .then(response => {
+                    this.accrual = response.data.data;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
             this.loading = false;
         },
         methods: {
