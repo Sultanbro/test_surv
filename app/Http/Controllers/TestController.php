@@ -28,6 +28,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\QualityRecordWeeklyStat;
 use App\Http\Controllers\IntellectController;
+use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\TraineeReport;
@@ -43,7 +44,7 @@ class TestController extends Controller {
   
 	
 	public function test() { 
-		$lead = Lead::where('phone', '77711486535')->latest()->first();
+		$lead = ObtainedBonus::getHistory(20122, '2022-11-01', 1);
 		dd($lead);
 	}
 

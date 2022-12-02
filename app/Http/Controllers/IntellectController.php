@@ -660,7 +660,7 @@ class IntellectController extends Controller {
                     'name' => $lead->name
                 ];
             } else {
-                return abort(404, 'Lead is not found');
+                return response()->json(['message' => 'Lead is not found'], 404);
             }
         } 
 	}
