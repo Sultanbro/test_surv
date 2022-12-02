@@ -132,4 +132,16 @@ class AwardRepository extends CoreRepository
     {
         return $this->getById($id)->users()->detach($userId);
     }
+
+    /**
+     * Удаляем вознаграждение для сотрудника.
+     * @param $id
+     * @param $courseId
+     * @param $userId
+     * @return mixed
+     */
+    public function detachUserCourse($id, $courseId, $userId)
+    {
+        return $this->getById($id)->courses()->wherePivot('user_id', $userId)->detach($courseId);
+    }
 }

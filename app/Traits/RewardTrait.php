@@ -64,6 +64,45 @@ trait RewardTrait
     }
 
     /**
+     * @param RewardDTO $dto
+     * @param AwardRepository $awardRepository
+     * @return mixed
+     * @throws Exception
+     */
+    public function deleteUserReward(RewardDTO $dto,AwardRepository $awardRepository)
+    {
+        try {
+            $awardId = $dto->awardId;
+            $userId  = $dto->userId;
+            $added   = $awardRepository->detachUser($awardId, $userId);
+
+            return response()->success($added);
+        }catch (Throwable $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param RewardDTO $dto
+     * @param AwardRepository $awardRepository
+     * @return mixed
+     * @throws Exception
+     */
+    public function deleteRewardCertificate(RewardDTO $dto,AwardRepository $awardRepository)
+    {
+        try {
+            $awardId = $dto->awardId;
+            $userId  = $dto->userId;
+            $courseId = $dto->courseId;
+            $added   = $awardRepository->detachUserCourse($awardId, $courseId, $userId);
+
+            return response()->success($added);
+        }catch (Throwable $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
+    /**
      * @param $dto
      * @return array|string[]
      * @throws BusinessLogicException

@@ -5,11 +5,12 @@ namespace App\Service\Awards\Reward\RewardTypes;
 
 use App\DTO\RewardDTO;
 use App\Repositories\AwardRepository;
+use App\Service\Interfaces\Award\Reward\DeleteRewardInterface;
 use App\Service\Interfaces\Award\Reward\RewardInterface;
 use App\Traits\RewardTrait;
 use Illuminate\Http\Request;
 
-final class NominationReward implements RewardInterface
+final class NominationReward implements RewardInterface, DeleteRewardInterface
 {
     use RewardTrait;
 
@@ -17,9 +18,25 @@ final class NominationReward implements RewardInterface
     {
     }
 
+    /**
+     * Наградить сотрудника.
+     *
+     * @return void
+     * @throws \Exception
+     */
     public function reward()
     {
         $repository = new AwardRepository();
         $this->rewardUser($this->rewardDTO, $repository);
+    }
+
+    /**
+     * @return void
+     * @throws \Exception
+     */
+    public function deleteReward()
+    {
+        $repository = new AwardRepository();
+        $this->deleteUserReward($this->rewardDTO, $repository);
     }
 }
