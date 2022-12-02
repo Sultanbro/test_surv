@@ -30,7 +30,7 @@ class UpdateAwardRequest extends FormRequest
             'award_category_id' => 'required|integer',
             'course_ids' => 'array',
             'styles' => 'string',
-            'file' => 'file|mimes:jpg,png,pdf|max:2048'
+            'file' => 'file|mimes:jpg,png|max:7168',
         ];
     }
 

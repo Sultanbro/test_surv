@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Award\Award;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
@@ -30,6 +31,11 @@ class Course extends Model
     public function award(): BelongsTo
     {
         return $this->belongsTo(Award::class);
+    }
+    public function courseAwards(): BelongsToMany
+    {
+        return $this->belongsToMany(Award::class, 'award_course', 'course_id', 'award_id')
+            ->withPivot(['user_id', 'path', 'format'])->withTimestamps();
     }
 
     public function items()

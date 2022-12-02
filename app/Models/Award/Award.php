@@ -24,6 +24,7 @@ class Award extends Model
         'targetable_type',
         'targetable_id',
     ];
+    protected $appends = ['tempPath'];
 
     protected $dates = [
         'created_at',
@@ -45,7 +46,16 @@ class Award extends Model
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'award_course', 'award_id', 'course_id')
-            ->withPivot(['user_id', 'path'])->withTimestamps();
+            ->withPivot(['user_id', 'path', 'format'])->withTimestamps();
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function courseUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'award_course', 'award_id', 'user_id')
+            ->withPivot(['course_id', 'path', 'format'])->withTimestamps();
     }
 
     /**
@@ -54,16 +64,17 @@ class Award extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'award_user', 'award_id','user_id')
-            ->withPivot('path')
+            ->withPivot('path', 'format')
             ->withTimestamps();
 
     }
 
-    public function getPathAttribute($value){
-        if ($value != ''){
-           return FileHelper::getUrl('awards', $value);
+    public function getTempPathAttribute(){
+        if ($this->path != ''){
+           return FileHelper::getUrl('awards', $this->path);
         }
-        return $value;
+        return $this->path;
 
     }
+
 }

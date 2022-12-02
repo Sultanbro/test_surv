@@ -31,7 +31,7 @@ trait RewardTrait
             }
 
             $file = $this->saveAwardFile($dto);
-            $added   = $awardRepository->attachUser($award, $dto->userId, $file['relative']);
+            $added   = $awardRepository->attachUser($award, $dto->userId, $file['relative'], $file['format']);
 
             return response()->success($added);
         }catch (Throwable $exception) {
@@ -55,7 +55,7 @@ trait RewardTrait
             }
 
             $file = $this->saveAwardFile($dto);
-            $added   = $awardRepository->attachUserCourse($award, $dto->courseId, $dto->userId, $file['relative']);
+            $added   = $awardRepository->attachUserCourse($award, $dto->courseId, $dto->userId, $file['relative'], $file['format']);
 
             return response()->success($added);
         }catch (Throwable $exception) {
@@ -112,6 +112,7 @@ trait RewardTrait
         if (!$dto->file){
             return [
                 'relative'  => '',
+                'format'=> '',
                 'temp'      => ''
             ];
         }

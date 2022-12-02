@@ -103,10 +103,10 @@ class AwardRepository extends CoreRepository
      * @param string $path
      * @return mixed
      */
-    public function attachUser($award, $userId, $path = '')
+    public function attachUser($award, $userId, $path = '', $format = '')
     {
 
-        return $award->users()->attach($userId, ['path' => $path]);
+        return $award->users()->attach($userId, ['path' => $path, 'format' => $format]);
     }
 
     /**
@@ -117,9 +117,9 @@ class AwardRepository extends CoreRepository
      * @param string $path
      * @return mixed
      */
-    public function attachUserCourse($award, $courseId, $userId, string $path = '')
+    public function attachUserCourse($award, $courseId, $userId, string $path = '', $format = '')
     {
-        return $award->courses()->attach($courseId, ['user_id' => $userId, 'path' => $path]);
+        return $award->courses()->attach($courseId, ['user_id' => $userId, 'path' => $path, 'format' => $format]);
     }
 
     /**
