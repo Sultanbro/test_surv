@@ -14,9 +14,9 @@
                     description="Например, сертификаты, грамоты и т.п."
             >
                 <template #label>
-                    <label class="with-info">Название награды <i class="fa fa-info" id="info1"></i></label>
+                    <label class="with-info">Название награды <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info1"></label>
                     <b-popover target="info1" triggers="hover" placement="right">
-                        <p style="font-size: 14px">Название вида награды, которое будет отображаться в профиле
+                        <p style="font-size: 15px">Название вида награды, которое будет отображаться в профиле
                             сотрудника</p>
                     </b-popover>
                 </template>
@@ -40,9 +40,9 @@
                     label-align-sm="left"
             >
                 <template #label>
-                    <label class="with-info">Описание награды <i class="fa fa-info" id="info2"></i></label>
+                    <label class="with-info">Описание награды <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info2"></label>
                     <b-popover target="info2" triggers="hover" placement="right">
-                        <p style="font-size: 14px">Краткое или детальное описание награды. Будет хранить в себе
+                        <p style="font-size: 15px">Краткое или детальное описание награды. Будет хранить в себе
                             информацию по этому виду награды</p>
                     </b-popover>
                 </template>
@@ -63,35 +63,35 @@
                     label-align-sm="left"
             >
                 <template #label>
-                    <label class="with-info">Тип награды <i class="fa fa-info" id="info3"></i></label>
+                    <label class="with-info">Тип награды <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info3"></label>
                     <b-popover target="info3" triggers="hover" placement="right">
-                        <p style="font-size: 14px">Доступно 3 типа награды, где каждый отвечает за тот или иной успех
+                        <p style="font-size: 15px">Доступно 3 типа награды, где каждый отвечает за тот или иной успех
                             сотрудников</p>
                     </b-popover>
                 </template>
                 <BDropdown id="input-3" :text="dropDownText" v-if="!readonly" required class="dropdown-select-type">
                     <BDropdownItem href="#" @click="setFileType(1)">
                         Загрузка картинки
-                        <i class="fa fa-info" id="info4"></i>
+                        <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info4">
                         <b-popover target="info4" triggers="hover" placement="top">
-                            <p style="font-size: 14px">Загрузка шаблонов (картинок) для дальнейшего использования.
+                            <p style="font-size: 15px">Загрузка шаблонов (картинок) для дальнейшего использования.
                                 Служит для хранения Ваших шаблонов и быстрой их загрузки при награждении сотрудника</p>
                         </b-popover>
                     </BDropdownItem>
                     <BDropdownItem href="#" @click="setFileType(2)">
                         Конструктор сертификата
-                        <i class="fa fa-info" id="info5"></i>
+                        <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info5">
                         <b-popover target="info5" triggers="hover" placement="top">
-                            <p style="font-size: 14px">Служит для создания уникального шаблона для одного или нескольких
+                            <p style="font-size: 15px">Служит для создания уникального шаблона для одного или нескольких
                                 курсов. По окончаю того или иного курса, сотрудник будет награжден созданным
                                 сертификатом</p>
                         </b-popover>
                     </BDropdownItem>
                     <BDropdownItem href="#" @click="setFileType(3)">
                         Данные начислений
-                        <i class="fa fa-info" id="info6"></i>
+                        <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info6">
                         <b-popover target="info6" triggers="hover" placement="top">
-                            <p style="font-size: 14px">Служит для вывода трёх лучших сотрудников по отделу или
+                            <p style="font-size: 15px">Служит для вывода трёх лучших сотрудников по отделу или
                                 должности. Если Вы создали этот тип, то сотрудник сможет увидеть топ 3 лучших
                                 сотрудников по своему отделу и (или) своей должности в своем профиле</p>
                         </b-popover>
@@ -100,9 +100,9 @@
                 <div v-else>
                     <span class="disable-select">
                         <b-button disabled variant="secondary">{{dropDownText}}</b-button>
-                        <i class="fa fa-info" id="info7"></i>
+                      <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info7">
                     <b-popover target="info7" triggers="hover" placement="top">
-                        <p style="font-size: 14px">Вы уже не можете сменить тип награды. Создайте новую награду с нужным Вам типом.</p>
+                        <p style="font-size: 15px">Вы уже не можете сменить тип награды. Создайте новую награду с нужным Вам типом.</p>
                     </b-popover>
                     </span>
                 </div>
@@ -395,31 +395,8 @@
 
 <style lang="scss">
     #edit-award-sidebar {
-        .with-info, .dropdown-item, .disable-select {
-            position: relative;
-
-            i {
-                width: 16px;
-                font-size: 10px;
-                height: 16px;
-                background-color: #ffc107;
-                color: #333;
-                border-radius: 50%;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                line-height: 1;
-                position: absolute;
-                top: -3px;
-                margin-left: 3px;
-            }
-        }
-
-        .dropdown-item {
-            i {
-                top: 7px;
-                right: -7px;
-            }
+        .img-info{
+            margin-top: -2px;
         }
 
         .custom-file-label {

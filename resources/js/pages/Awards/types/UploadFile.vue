@@ -28,7 +28,7 @@
         <small>Загрузите одну или несколько картинок в формате PNG, JPG или PDF</small>
 
         <b-row v-if="hasImage">
-            <b-col cols="12" md="3" class="mt-4" v-for="(image, index) in imageSrc" :key="index">
+            <b-col cols="12" md="4" lg="3" xl="2" class="mt-4" v-for="(image, index) in imageSrc" :key="index">
                 <div class="image-preview">
                     <BImg
                             v-b-modal="'myModal'"
@@ -51,7 +51,7 @@
             <hr class="my-5">
             <h4 class="uploaded-title">Загруженные шаблоны</h4>
             <b-row>
-                <b-col cols="12" md="3" class="mt-4" v-for="award in awards" :key="award.id">
+                <b-col cols="12" md="4" xl="2" lg="3" class="mt-4" v-for="award in awards" :key="award.id">
                     <div class="image-preview active">
                         <div class="image-preview-container" v-if="award.format !== 'pdf'">
                             <BImg
@@ -201,14 +201,14 @@
             }
 
             img {
-                width: auto;
+                width: 100%;
                 height: 100px;
                 object-fit: cover;
             }
 
             canvas {
-                width: auto;
-                height: 100px;
+                width: 100% !important;
+                height: 100px!important;
             }
 
             .image-preview-container {
