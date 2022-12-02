@@ -206,7 +206,7 @@ export default {
                         const passedCount = courseItem.passed_stages ? courseItem.passed_stages.length : 0
                         const status = (passedCount ? (courseItem.stages && courseItem.stages > passedCount ? 'Начат' : 'Завершен') : 'Запланирован')
                         const progress = formatProgress(((passedCount / courseItem.stages) * 100) || 0)
-                        const points = (courseItem.bonuses || []).reduce((sum, item) => sum + item.amount, 0)
+                        const points = courseItem.bonuses
 
                         result[userId][courseItem.item_id] = {
                             status,
