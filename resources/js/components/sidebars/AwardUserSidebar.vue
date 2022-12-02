@@ -291,6 +291,7 @@
                 let files = e.target.files || e.dataTransfer.files;
                 if (!files.length) return;
                 this.modalAddFile = files[0];
+                console.log(this.modalAddFile);
                 if(this.modalAddFile.size > 2097152){
                     this.$toast.error('Максимальный размер файла - 2 МБ', {
                         timeout: 5000
@@ -311,6 +312,7 @@
                 let files = e.target.files || e.dataTransfer.files;
                 if (!files.length) return;
                 this.modalSelectFile = files[0];
+                console.log(this.modalSelectFile);
                 if(this.modalSelectFile.size > 2097152){
                     this.$toast.error('Максимальный размер файла - 2 МБ', {
                         timeout: 5000

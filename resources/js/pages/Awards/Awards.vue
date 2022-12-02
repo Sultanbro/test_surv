@@ -159,7 +159,7 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
-                    padding: 5px 0;
+                    padding: 5px 10px;
                     text-align: left;
                 }
                 .clickable{
