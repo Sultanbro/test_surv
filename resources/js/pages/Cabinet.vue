@@ -370,6 +370,7 @@ import VueAvatar from "../components/vue-avatar-editor/src/components/VueAvatar.
 import VueAvatarScale from "../components/vue-avatar-editor/src/components/VueAvatarScale";
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
+import { bus } from '../bus'
 
 export default {
   name: "Cabinet",
@@ -481,14 +482,11 @@ export default {
         format: 'jpeg',
         quality: 0.8
       }).then(blob => {
-            const formData = new FormData();
-            formData.append("file", blob);
-            axios.post("/profile/upload/image/profile/", formData)
-                .then((response) => {
-                  $(".img_url_sm").html(response.data.img);
-                  $(".img_url_lg").html(response.data.img);
-
-                });
+        const formData = new FormData();
+        formData.append("file", blob);
+        axios.post("/profile/upload/image/profile/", formData).then((response) => {
+          bus.$emit('user-avatar-update', '/users_img/' + response.data.filename)
+        });
       })
       // });
 
@@ -512,14 +510,13 @@ export default {
       }).then(blob => {
             let loader = _this.$loading.show();
             const formData = new FormData();
-             formData.append("file", blob);
+            formData.append("file", blob);
             axios
                 .post("/profile/save-cropped-image", formData)
                 .then(function (res) {
                   loader.hide();
                   _this.crop_image.image = "/cropped_users_img/" + res.data.filename;
                   _this.crop_image.hide=false;
-
                 })
                 .catch(function (err) {
                   console.log(err, "error");

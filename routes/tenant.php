@@ -40,6 +40,7 @@ use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\CallibroController;
 use App\Http\Controllers\Course\RegressCourseController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\CourseResultController;
 use App\Http\Controllers\Department\UserController as DepartmentUserController;
 use App\Http\Controllers\Dictionary\DictionaryController;
@@ -124,7 +125,13 @@ Route::middleware([
 
     // admin routes 
     Route::get('/admino', [\App\Http\Controllers\Admin\AdminController::class, 'index']);    
-
+    
+    Route::group([
+        'prefix' => 'admin',
+        'as' => 'admin.'
+    ], function () {
+        Route::get('/owners', [\App\Http\Controllers\Admin\AdminController::class, 'owners']);
+    });
 
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
 
@@ -143,8 +150,8 @@ Route::middleware([
     Route::any('/bless', function() {
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
-    
-    
+
+    Route::get('/test-for-check', [TestController::class, 'testMethodForCheck'])->name('testMethodForCheck');
     // Profile
     // Route::any('/', [UserProfileController::class, 'getProfile']); // old
     Route::any('/', [ProfileController::class, 'newprofile']);
@@ -169,7 +176,14 @@ Route::middleware([
         Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
     });
 
-    Route::post('course/regress', [RegressCourseController::class, 'regress']);
+    Route::group([
+        'prefix' => 'course',
+        'as'    => 'course.'
+    ], function () {
+        Route::post('/regress', [RegressCourseController::class, 'regress']);
+        Route::get('/progress', CourseProgressController::class);
+    });
+
 
     Route::group([
         'prefix' => 'notifications',
@@ -617,6 +631,7 @@ Route::middleware([
     Route::group([
         'prefix' => 'award-categories',
         'as'     => 'award-categories.',
+        'middleware' => 'is_admin'
     ], function () {
         Route::get('/get', [AwardCategoryController::class, 'index'])->name('get');
         Route::get('/get/{awardCategory}', [AwardCategoryController::class, 'show'])->name('show');
@@ -634,15 +649,16 @@ Route::middleware([
     Route::group([
         'prefix' => 'awards',
         'as'     => 'awards.',
+        'middleware' => 'auth'
     ], function () {
-        Route::post('/reward', [AwardController::class, 'reward'])->name('reward');
-        Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->name('delete-reward');
+        Route::post('/reward', [AwardController::class, 'reward'])->middleware('is_admin')->name('reward');
+        Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->middleware('is_admin')->name('delete-reward');
         Route::get('/my', [AwardController::class, 'myAwards'])->name('my-awards');
         Route::get('/course', [AwardController::class, 'courseAward'])->name('course-awards');
         Route::get('/type', [AwardController::class, 'awardsByType'])->name('type-awards');
-        Route::get('/get', [AwardController::class, 'index'])->name('get');
-        Route::post('/store', [AwardController::class, 'store'])->name('store');
-        Route::put('/update/{award}', [AwardController::class, 'update'])->name('update');
+        Route::get('/get', [AwardController::class, 'index'])->middleware('is_admin')->name('get');
+        Route::post('/store', [AwardController::class, 'store'])->middleware('is_admin')->name('store');
+        Route::put('/update/{award}', [AwardController::class, 'update'])->middleware('is_admin')->name('update');
         Route::delete('/delete/{award}', [AwardController::class, 'destroy'])->name('destroy');
     });
 
@@ -723,10 +739,6 @@ Route::middleware([
         ->name('articles.')
         ->middleware([
             'auth',
-        ])
-        ->whereNumber([
-            'article_id',
-            'comment_id',
         ])
         ->group(function () {
             Route::get('', [NewsController::class, 'index'])->name('index');
@@ -821,9 +833,6 @@ Route::middleware([
         ->name('files.')
         ->middleware([
             'auth',
-        ])
-        ->whereNumber([
-            'file_id',
         ])
         ->group(function () {
 

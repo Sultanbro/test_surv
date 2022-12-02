@@ -3,6 +3,7 @@
 namespace App\Models\Award;
 
 use App\Helpers\FileHelper;
+use App\Models\Course;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +37,15 @@ class Award extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(AwardCategory::class, 'award_category_id');
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'award_course', 'award_id', 'course_id')
+            ->withPivot(['user_id', 'path'])->withTimestamps();
     }
 
     /**

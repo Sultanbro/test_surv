@@ -43,11 +43,21 @@ class TestController extends Controller {
   
 	
 	public function test() { 
-		$centralUser = CentralUser::with('tenants')->where('email', 'ali.akpanov@yandex.ru')->first();
+		$lead = Lead::where('phone', '77711486535')->latest()->first();
+		dd($lead);
+	}
 
-		dd($centralUser->tenants());
-	}  
+    public function testMethodForCheck()
+    {
+        $stat = AnalyticStat::getCellValue(
+            42,
+            'D15',
+            '2022-11-01',
+            2
+        );
 
+        dd($stat);
+    }
 	private function getSegmentAndSaveForLead($id) {
 
 		$res =	(new Bitrix)->getLeads(0, '', 'ALL', 'ASC', '2010-01-01', '2050-01-01', "DATE_CREATE", $id, 'title');

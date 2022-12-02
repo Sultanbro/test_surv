@@ -23,6 +23,7 @@ class AwardRepository extends CoreRepository
      * Связь между award и user.
      * Pivot таблица: award_user
      * @param $user
+     * @param int $type
      * @param string $operator
      * @return mixed
      */
@@ -97,14 +98,28 @@ class AwardRepository extends CoreRepository
 
     /**
      * Вознаграждаем сотрудника в профиле.
-     * @param $id
+     * @param $award
      * @param $userId
+     * @param string $path
      * @return mixed
      */
     public function attachUser($award, $userId, $path = '')
     {
 
         return $award->users()->attach($userId, ['path' => $path]);
+    }
+
+    /**
+     * Вознаграждаем сотрудника по курсу в профиле.
+     * @param $award
+     * @param $courseId
+     * @param $userId
+     * @param string $path
+     * @return mixed
+     */
+    public function attachUserCourse($award, $courseId, $userId, string $path = '')
+    {
+        return $award->courses()->attach($courseId, ['user_id' => $userId, 'path' => $path]);
     }
 
     /**

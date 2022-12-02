@@ -15,6 +15,7 @@ use App\Models\Award\AwardCategory;
 use App\Repositories\AwardRepository;
 use App\Service\Awards\AwardBuilder;
 use App\Service\Awards\AwardService;
+use App\Service\Awards\Reward\RewardBuilder;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,7 +31,6 @@ class AwardController extends Controller
     {
         $this->awardService = $awardService;
         $this->awardBuilder = app(AwardBuilder::class);
-        $this->middleware('auth');
     }
 
     /**
@@ -40,7 +40,6 @@ class AwardController extends Controller
     public function index()
     {
         try {
-            $this->access();
             $awardTypes = Award::all();
             return response()->success($awardTypes);
         } catch (Exception $exception) {
@@ -55,7 +54,6 @@ class AwardController extends Controller
      */
     public function store(StoreAwardRequest $request)
     {
-        $this->access();
         $type = $this->awardService->getAwardType($request->input('award_category_id'));
 
         $response = $this->awardBuilder
@@ -73,7 +71,6 @@ class AwardController extends Controller
      */
     public function update(Award $award, UpdateAwardRequest $request )
     {
-        $this->access();
         $type = $this->awardService->getAwardType($request['award_category_id'], $award);
         $response = $this->awardBuilder
             ->handle($type)
@@ -99,15 +96,14 @@ class AwardController extends Controller
     /**
      * @throws Exception
      */
-    public function reward(RewardRequest $request, AwardRepository $awardRepository)
+    public function reward(RewardRequest $request, AwardRepository $repository)
     {
-        $this->access();
-        return $this->awardService->reward($request, $awardRepository);
+        $app = app(RewardBuilder::class);
+        $app->handle($request->toDto(), $repository)->reward();
     }
 
     public function deleteReward(RewardRequest $request, AwardRepository $awardRepository)
     {
-        $this->access();
         return $this->awardService->deleteReward($request, $awardRepository);
     }
 
