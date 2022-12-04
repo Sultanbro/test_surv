@@ -1,13 +1,16 @@
 <?php
 
-
 namespace App\External\Bitrix;
-
 
 class Bitrix {
     
-    public $link = 'https://infinitys.bitrix24.kz/rest/2/09av6uq61up4ymhb/';
- 
+    public $link;
+    
+    public function __construct()
+    {
+        $this->link = config('bitrix.host') . config('bitrix.token') . '/';
+    }
+
     private function updateLead(int $lead_id, array $lead_fields)
     {
         $fields = [
@@ -91,7 +94,7 @@ class Bitrix {
             'fields' => $fields,
             'params' => ['REGISTER_SONET_EVENT' => 'Y'],
         ]);
-        
+       
         $result = $this->curl_post($this->link . 'crm.lead.add.json', $query);
         
         return $result;

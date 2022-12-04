@@ -15,8 +15,11 @@ use App\Models\Award\AwardCategory;
 use App\Repositories\AwardRepository;
 use App\Service\Awards\AwardBuilder;
 use App\Service\Awards\AwardService;
+use App\Service\Awards\Reward\RewardBuilder;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AwardController extends Controller
 {
@@ -84,25 +87,46 @@ class AwardController extends Controller
     public function destroy(Award $award)
     {
         try {
-//            $this->access();
             return response()->success($this->awardService->delete($award));
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
     }
 
+    /**
+     * @param Award $award
+     * @return StreamedResponse
+     * @throws Exception
+     */
+    public function downloadFile(Award $award)
+    {
+        try {
+            return  Storage::disk('s3')->download('awards/' . $award->path);
+        } catch (Exception $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
+
 
     /**
      * @throws Exception
      */
-    public function reward(RewardRequest $request, AwardRepository $awardRepository)
+    public function reward(RewardRequest $request, AwardRepository $repository)
     {
-        return $this->awardService->reward($request, $awardRepository);
+        $app = app(RewardBuilder::class);
+        $app->handle($request->toDto(), $repository)->reward();
     }
 
-    public function deleteReward(RewardRequest $request, AwardRepository $awardRepository)
+    /**
+     * @param RewardRequest $request
+     * @param AwardRepository $repository
+     * @return void
+     */
+    public function deleteReward(RewardRequest $request, AwardRepository $repository)
     {
-        return $this->awardService->deleteReward($request, $awardRepository);
+        $app = app(RewardBuilder::class);
+        $app->execute($request->toDto(), $repository)->deleteReward();
     }
 
     /**

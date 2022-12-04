@@ -23,6 +23,7 @@ class AwardRepository extends CoreRepository
      * Связь между award и user.
      * Pivot таблица: award_user
      * @param $user
+     * @param int $type
      * @param string $operator
      * @return mixed
      */
@@ -97,14 +98,28 @@ class AwardRepository extends CoreRepository
 
     /**
      * Вознаграждаем сотрудника в профиле.
-     * @param $id
+     * @param $award
      * @param $userId
+     * @param string $path
      * @return mixed
      */
-    public function attachUser($award, $userId, $path = '')
+    public function attachUser($award, $userId, $path = '', $format = '')
     {
 
-        return $award->users()->attach($userId, ['path' => $path]);
+        return $award->users()->attach($userId, ['path' => $path, 'format' => $format]);
+    }
+
+    /**
+     * Вознаграждаем сотрудника по курсу в профиле.
+     * @param $award
+     * @param $courseId
+     * @param $userId
+     * @param string $path
+     * @return mixed
+     */
+    public function attachUserCourse($award, $courseId, $userId, string $path = '', $format = '')
+    {
+        return $award->courses()->attach($courseId, ['user_id' => $userId, 'path' => $path, 'format' => $format]);
     }
 
     /**
@@ -116,5 +131,17 @@ class AwardRepository extends CoreRepository
     public function detachUser($id, $userId)
     {
         return $this->getById($id)->users()->detach($userId);
+    }
+
+    /**
+     * Удаляем вознаграждение для сотрудника.
+     * @param $id
+     * @param $courseId
+     * @param $userId
+     * @return mixed
+     */
+    public function detachUserCourse($id, $courseId, $userId)
+    {
+        return $this->getById($id)->courses()->wherePivot('user_id', $userId)->detach($courseId);
     }
 }

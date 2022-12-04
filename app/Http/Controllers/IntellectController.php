@@ -14,6 +14,7 @@ use App\Classes\Helpers\Phone;
 use App\Models\Bitrix\Lead;
 use App\External\Bitrix\Bitrix;
 use App\Models\Admin\History;
+use Illuminate\Http\JsonResponse;
 
 class IntellectController extends Controller {
 
@@ -640,113 +641,99 @@ class IntellectController extends Controller {
 
     /**
      * Запрос с intellect
+     * Получить имя лида и сохранить пришедшие данные в лид
+     * 
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function get_name(Request $request) {
-
-        TB::send($request->all());
+    public function get_name(Request $request)
+    {
+        if( !$request->has('phone') ) {
+            return response()->json(['message' => 'Phone is not provided'], 400);
+        }
         
-        if($request->has('phone')) {
-            $lead = Lead::where('phone', $request->phone)->latest()->first();
+        $lead = Lead::where('phone', $request->phone)->latest()->first();
 
-            TB::send($lead);
+        $name = 'Cоискатель';
 
-            if($lead) {
-
-                if($request->has('save')) {
-                    $this->save($request);
-                }
-
-                return [
-                    'name' => $lead->name
-                ];
-            } else {
-                return response()->json(['message' => 'Lead is not found'], 404);
+        if($lead) {
+            if($request->has('save')) {
+                $this->save($request);
             }
-        } 
+
+            $name =  $lead->name;
+        } else {
+            // Intellect не хочет получать 404
+            //return response()->json(['message' => 'Lead is not found'], 404);
+        }  
+
+        return response()->json(['name' => $name]);
 	}
 
-    public function get_link(Request $request) {
+    /**
+     * Получить ссылку 
+     * для удаленных если link = 1
+     * для офисных если link = 2
+     */
+    public function get_link(Request $request)
+    {
+        if( !$request->has('phone') ) {
+            return response()->json(['message' => 'Phone is not provided'], 400);
+        }
 
-        TB::send('get link');
-        
-        if($request->has('phone')) {
-            $lead = Lead::where('phone', $request->phone)->latest()->first();
-            if($lead) {
+        if( !$request->has('link') ) {
+            return response()->json(['message' => 'Link is not provided'], 400);
+        }
 
-                if($request->has('city')) {
-                    $lead->city = $request->city;
-                    $lead->save();
-                    $this->updateFields($lead->lead_id, [
-                        'UF_CRM_1658397129' => $request->city
-                    ]);
-                }
-                
-                $this->save($request);
+        $lead = Lead::where('phone', $request->phone)->latest()->first();
 
-                if($request->link == 1) { // ссылка для подписи договора дял удаленных
+        if( !$lead ) {
+            // return response()->json(['message' => 'Lead is not found'], 404);
+        }
 
-                    
-                   // $lead->files = json_encode([]);
-                   // $lead->signed = 2;   
-                   // $lead->status = '39';
-                   // $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6); // Раньше был, чтобы фиксировать время заполнения скайпа. Сейчас для хранения времени подписи
-                    // if($lead->status != 'LOSE') {
-                        
-                    // }
-                    
-                    $lead->save();
-    
-                    History::system('Уд Соискатель готов', [
-                        'lead_id' => $lead->lead_id,
-                        'date' => date('Y-m-d H:i:s', time() + 3600 * 6),
-                    ]);
-    
-                    // $this->updateFields($lead->lead_id, [
-                    //     'UF_CRM_1628091269' => 1, // Подписал соглашение о неразглашении
-                    // ]);
-                  
+        if($lead) {
 
-                    if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
-                        $lead->status = '40';
-
-                        $this->updateFields($lead->lead_id, [
-                            'STATUS_ID' => '40' // Статус: Рекрут: Подходящий, ждем подписания
-                        ]);
-
-                        //////////
-
-                        usleep(4000000); // 3 sec
-                        $bitrix = new Bitrix();
-                        $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
-                        $lead->save();
-                    }
-                    
-               
-                    // /////////////////
-                    
-                    $link = $this->contract_link . $lead->hash;
-                    //$this->send_msg($request->phone, 'Подписать соглашение: %0a' . $link);
-
-                    return [
-                        'link' => $this->contract_link . $lead->hash
-                    ];    
-                } 
-    
-                if($request->link == 2) { // ссылка для выбора времени для офисных
-
-                    // $link = $this->time_link . $lead->hash;
-                    // $this->send_msg($request->phone, 'Выберите, пожалуйста, удобное для вас время стажировки: %0a' . $link);
-                    
-                    return [
-                        'link' => $this->time_link . $lead->hash
-                    ];   
-                } 
+            if($request->has('city')) {
+                $lead->city = $request->city;
+                $lead->save();
+                $this->updateFields($lead->lead_id, [
+                    'UF_CRM_1658397129' => $request->city
+                ]);
             }
             
+            $this->save($request);
+
+            // ссылка для подписи договора дял удаленных
+            if($request->link == 1) { 
+            
+                if($lead->signed != 2 && !in_array($lead->status,['39', 'CON', 'LOSE'])) {
+                    $lead->status = '40';
+
+                    $this->updateFields($lead->lead_id, [
+                        'STATUS_ID' => '40' // Статус: Рекрут: Подходящий, ждем подписания
+                    ]);
+
+                    usleep(3000000); // 3 sec
+                    $bitrix = new Bitrix();
+                    $lead->deal_id = $bitrix->findDeal($lead->lead_id, false);
+                    $lead->save();
+                }
+                
+                return response()->json(['link' => $this->contract_link . $lead->hash ], 200);    
+            } 
+
+            // ссылка для выбора времени для офисных
+            if($request->link == 2) { 
+                return response()->json(['link' => $this->time_link . $lead->hash ], 200);
+            } 
+
         }
+
+        return response()->json(['link' => ''], 200);
 	}
 
-    public function change_status(Request $request) {
+    public function change_status(Request $request)
+    {
         
         History::intellect('Смена статуса', $request->all());
 
@@ -861,32 +848,6 @@ class IntellectController extends Controller {
         return $result;
     }
 
-    private function getLeads(
-        array $status = [],
-        String $title = '',
-        String $from = '2010-01-01',
-        String $to = '2050-01-01'
-    )
-    {
-        $filter = [];
-        $filter['>DATE_CREATE'] = $from . 'T00:00:00';
-        $filter['<DATE_CREATE'] = $to . 'T23:59:59';
-
-        if($title != '') $filter['?TITLE'] = 'удаленный | inhouse';
-        if(count($status) > 0) $filter['STATUS_ID'] = $status;
-        
-        $fields = [ 
-            'filter' => $filter,
-            'select' => ['id']
-        ];
-        
-        $query = http_build_query($fields);
-        
-        $result = $this->curl_post('https://infinitys.bitrix24.kz/rest/2/09av6uq61up4ymhb/crm.lead.list.json', $query);
-        
-        return $result;
-    }
-
     private function createLead(array $fields)
     {
         $query = http_build_query([
@@ -932,7 +893,6 @@ class IntellectController extends Controller {
 
 	public function curl_post($url, $query)
     {
-
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_SSL_VERIFYPEER => 0,

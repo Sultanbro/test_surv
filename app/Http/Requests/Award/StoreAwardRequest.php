@@ -32,7 +32,7 @@ class StoreAwardRequest extends FormRequest
             'styles'      => 'string',
             'targetable_type'      => 'string',
             'targetable_id'      => 'integer',
-            'file.*'          => 'file|mimes:jpg,png,pdf|max:2048',
+            'file.*'          => 'file|mimes:jpg,png,pdf|max:7168',
         ];
     }
     protected function failedValidation(Validator $validator)

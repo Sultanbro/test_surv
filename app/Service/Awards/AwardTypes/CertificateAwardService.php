@@ -31,49 +31,39 @@ class CertificateAwardService implements AwardInterface
         try {
             $type = AwardTypeEnum::TYPES[$params['key']];
 
-            //award category
-            //award
-            //course ? award_id
-            //course result
-//            CourseResult::query()
-//                ->where('user_id', $user->id)
-//                ->whereNotNull('ended_at')
-//                ->with('course', function ($q) use ($item){
-//                    $q->where('award_id', $item['award_id']);
-//                })
-//                ->get()
-//                ->pluck('course');
-            $result['my'] = AwardCategory::query()
-                ->where('type', $type)
-                ->with('awards', function ($query) use ($user) {
-                    $query->with('users');
-                    $query->whereHas('users', function ($q) use ($user) {
-                        $q->where('users.id', $user->id);
-                    });
+            $result['my'] = Award::whereHas('courses', function ($query) use ($user) {
+                $query->where('award_course.user_id', $user->id);
+            })
+                ->whereHas('category', function ($query) use ($type) {
+                    $query->where('type', $type);
                 })
+                ->with(['courseUsers' => function ($query) use($user) {
+                    $query->select('users.id', 'users.name', 'users.last_name', 'users.avatar')
+                        ->where('users.id', $user->id);
+                }, 'category'])
                 ->get();
 
-            $result['available'] = AwardCategory::query()
-                ->where('type', $type)
-                ->with('awards', function ($query) use ($user) {
-                    $query->whereDoesntHave('users', function ($q) use ($user) {
-                        $q->where('users.id', $user->id);
-                    });
-                })
+
+            $result['available']  = Course::whereDoesntHave('courseAwards', function ($query) use ($user){
+                $query->where('award_course.user_id', $user->id);
+            })->whereHas('award')
+                ->with('award', 'award.category')
                 ->get();
 
-            $result['other'] = AwardCategory::query()
-                ->where('type', $type)
-                ->with('awards', function ($query) use ($user) {
-                    $query->with('users', function ($q) {
-                        $q->select('users.id', 'users.name', 'users.last_name', 'users.avatar');
-                    })
-                        ->whereHas('users', function ($q) use ($user) {
-                            $q->whereNot('users.id', $user->id);
-                        });
+
+            $result['other'] = Award::whereHas('courses', function ($query) use ($user) {
+                $query->whereNot('award_course.user_id', $user->id);
+            })
+                ->whereHas('category', function ($query) use ($type) {
+                    $query->where('type', $type)
+                        ->where('hide', false);
                 })
-                ->where('hide', false)
+                ->with(['courseUsers' => function ($query) use($user) {
+                    $query->select('users.id', 'users.name', 'users.last_name', 'users.avatar')
+                        ->whereNot('users.id', $user->id);
+                }, 'category'])
                 ->get();
+
 
 
             return $this->mapAwardsData($result, $user);
@@ -204,48 +194,77 @@ class CertificateAwardService implements AwardInterface
         $otherAwards = $data['other'];
 
         foreach ($myAwards as $item) {
-            if (!isset($result[$item->id])) {
-                $result[$item->id] = [
-                    'id' => $item['id'],
-                    'name' => $item['name'],
-                    'description' => $item['description'],
-                    'type' => $item['type']
+            $category = $item->category;
+            if (!isset($result[$category->id])) {
+                $result[$category->id] = [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'description' => $category->description,
+                    'type' => $category->type,
                 ];
             }
-            $result[$item->id]['my'] = $item['awards']->map(function ($item) use ($user) {
-                return [
-                    'id' => $item->id,
-                    'award_category_id' => $item->award_category_id,
-                    'path' => FileHelper::getUrl($this->path, $item->users[0]->pivot->path),
+            foreach ($item->courseUsers as $user) {
+                $result[$category->id]['my'][] = [
+                    'award_id' => $item->id,
+                    'award_category_id' =>$category->id,
+                    'format' => $user->pivot->format,
+                    'name' => $user->name,
+                    'last_name' => $user->last_name,
+                    'user_id' => $user->id,
+                    'course_id' => $user->pivot->course_id,
+                    'tempPath' => FileHelper::getUrl($this->path, $user->pivot->path),
                 ];
-            });
+            }
+
         }
 
         foreach ($availableAwards as $item) {
-            if (!isset($result[$item->id])) {
-                $result[$item->id] = [
-                    'id' => $item['id'],
-                    'name' => $item['name'],
-                    'description' => $item['description'],
-                    'type' => $item['type']
+            $award = $item->award;
+            $category = $award->category;
+            if (!isset($result[$category->id])) {
+                $result[$category->id] = [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'description' => $category->description,
+                    'type' => $category->type,
                 ];
             }
-            $result[$item->id]['available'] = $item['awards'];
+            $result[$category->id]['available'][] = [
+                'award_id' => $award->id,
+                'award_category_id' => $category->id,
+                'format' => $award->format,
+                'course_id' => $item->id,
+                'course_name' => $item->name,
+                'tempPath' => FileHelper::getUrl($this->path, $award->path),
+            ];
 
         }
         foreach ($otherAwards as $item) {
-            if (!isset($result[$item->id])) {
-                $result[$item->id] = [
-                    'id' => $item['id'],
-                    'name' => $item['name'],
-                    'description' => $item['description'],
-                    'type' => $item['type']
+            $category = $item->category;
+
+            if (!isset($result[$category->id])) {
+                $result[$category->id] = [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'description' => $category->description,
+                    'type' => $category->type,
+                ];
+            }
+            foreach ($item->courseUsers as $user) {
+                $result[$category->id]['other'][] = [
+                    'award_id' => $item->id,
+                    'award_category_id' => $category->id,
+                    'format' => $user->pivot->format,
+                    'name' => $user->name,
+                    'last_name' => $user->last_name,
+                    'user_id' => $user->id,
+                    'course_id' => $user->pivot->course_id,
+                    'tempPath' => FileHelper::getUrl($this->path, $user->pivot->path),
                 ];
             }
 
-            $result[$item->id]['other'] = $item['awards'];
-
         }
+
 
 
         return array_values($result);

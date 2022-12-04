@@ -13,8 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('awards', function (Blueprint $table) {
-            $table->text('styles')->nullable();
+        Schema::create('award_course', function (Blueprint $table) {
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('award_id');
+            $table->unsignedInteger('course_id');
+            $table->string('path')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -25,8 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('awards', function (Blueprint $table) {
-            $table->dropColumn('styles');
-        });
+        Schema::dropIfExists('award_course');
     }
 };
