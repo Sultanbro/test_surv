@@ -140,7 +140,8 @@ class AwardService
                 ->with(['award', 'course_results'=> function($query) use($user) {
                     $query->whereNotNull('ended_at')
                     ->where('user_id', $user->id)
-                    ->where('status', CourseResult::COMPLETED);
+                    ->where('status', CourseResult::COMPLETED)
+                    ->with('user');
                 }])
                 ->findOrFail($request->input('course_id'))
                 ->toArray();
