@@ -26,39 +26,43 @@
         <div v-if="hasImage || awards.length > 0" class="sertificate-prewiev">
             <div class="sertificate-modal">
                 <div class="preview-canvas" @click="modalCertificate = !modalCertificate">
-                    <vue-pdf-embed v-if="imageSrc" :source="imageSrc"/>
+                    <vue-pdf-embed v-if="imageSrc" ref="vuePdfUploadCertificate" :source="imageSrc"/>
                 </div>
-                <BModal v-model="modalCertificate" modal-class="upload-certificate-modal" title="Контсруктор сертификата"
+                <BModal v-model="modalCertificate" modal-class="upload-certificate-modal"
+                        title="Контсруктор сертификата"
                         size="xl" hide-footer centered>
-                    <UploadSertificateModal :styles="styles" :img="imageSrc" :modalCertificate.sync="modalCertificate" @save-changes="saveStyles"/>
+                    <UploadSertificateModal :styles="styles" :img="imageSrc" :modalCertificate.sync="modalCertificate"
+                                            @save-changes="saveStyles"/>
                 </BModal>
             </div>
         </div>
-       <b-row>
-          <b-col cols="12" md="7">
-              <Multiselect
-                      v-model="value"
-                      :options="options"
-                      :multiple="true"
-                      :close-on-select="false"
-                      :clear-on-select="false"
-                      :preserve-search="true"
-                      placeholder="Выберите курсы"
-                      label="name"
-                      track-by="name"
-                      @select="onSelect"
-                      @remove="onRemove"
-                      :preselect-first="false"
+        <b-row>
+            <b-col cols="12" md="7">
+                <Multiselect
+                        v-model="value"
+                        :options="options"
+                        :multiple="true"
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        :preserve-search="true"
+                        placeholder="Выберите курсы"
+                        label="name"
+                        track-by="name"
+                        @select="onSelect"
+                        @remove="onRemove"
+                        :preselect-first="false"
 
-              />
-          </b-col>
-           <b-col cols="12" md="5">
-               <div class="d-flex">
-                   <b-button variant="outline-success" class="ml-2 btn-multiselect" @click="selectAll">Выбрать все <i class="fa fa-check ml-2"></i></b-button>
-                   <b-button variant="outline-danger" class="ml-2 btn-multiselect" @click="clearAll">Убрать все <i class="fa fa-trash ml-2"></i></b-button>
-               </div>
-           </b-col>
-       </b-row>
+                />
+            </b-col>
+            <b-col cols="12" md="5">
+                <div class="d-flex">
+                    <b-button variant="outline-success" class="ml-2 btn-multiselect" @click="selectAll">Выбрать все <i
+                            class="fa fa-check ml-2"></i></b-button>
+                    <b-button variant="outline-danger" class="ml-2 btn-multiselect" @click="clearAll">Убрать все <i
+                            class="fa fa-trash ml-2"></i></b-button>
+                </div>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -104,12 +108,13 @@
                 variant: 'success'
             };
         },
-        async mounted() {
+        mounted() {
             if (this.awards.length > 0) {
-                this.imageSrc = this.awards[0].path;
+                this.imageSrc = this.awards[0].tempPath;
                 this.styles = this.awards[0].styles;
+                console.log(this.$refs.vuePdfUploadCertificate);
             }
-            await this.getCourses();
+            this.getCourses();
         },
         computed: {
             hasImage() {
@@ -132,16 +137,20 @@
             },
         },
         methods: {
-            selectAll(){
-              this.value = this.options;
+            selectAll() {
+                this.value = [];
+                this.$emit("remove-course-all");
+                this.value = this.options;
+                this.$emit("add-course-all", this.value);
             },
-            clearAll(){
-                this.value = []
+            clearAll() {
+                this.value = [];
+                this.$emit("remove-course-all");
             },
-            onSelect(val){
+            onSelect(val) {
                 this.$emit("add-course", val.id);
             },
-            onRemove(val){
+            onRemove(val) {
                 this.$emit("remove-course", val.id);
             },
             async getCourses() {
@@ -152,12 +161,13 @@
                         const data = response.data.courses;
                         for (let i = 0; i < data.length; i++) {
                             this.options.push(data[i]);
-                            if (this.id) {
-                                if (data[i].id === this.id) {
+                            if (this.awards.length > 0) {
+                                if (data[i].award_id === this.awards[0].id) {
                                     this.value.push(data[i]);
                                 }
                             }
                         }
+                        this.$emit("add-course-all", this.value);
                         loader.hide();
                     })
                     .catch(error => {
@@ -208,13 +218,15 @@
     }
 
     .upload-certificate {
-        .multiselect__tags{
+        .multiselect__tags {
             overflow: hidden;
         }
-        .btn-multiselect{
+
+        .btn-multiselect {
             height: 40px;
             width: 100%;
         }
+
         .preview-canvas {
             cursor: pointer;
             border: 1px solid #999;
@@ -239,10 +251,10 @@
         }
 
         .form-file {
-            height: 40px;
+            height: 50px;
 
             .custom-file-input {
-                height: 40px;
+                height: 50px;
             }
 
             .custom-file-label {

@@ -4,47 +4,44 @@
         >Создать награду
         </BButton
         >
-        <BTableSimple
-                id="awards-table"
-                class="mb-3"
-                bordered
-                hover
-                small
-                @row-clicked="rowClickedHandler"
-                v-if="tableItems.length > 0"
-                :hover="false"
-        >
-            <BThead>
-                <BTr>
-                    <BTh>№</BTh>
-                    <BTh>Название</BTh>
-                    <BTh>Описание</BTh>
-                    <BTh>Тип</BTh>
-                    <BTh>Дата создания</BTh>
-                    <BTh>Постановщик</BTh>
-                </BTr>
-            </BThead>
-            <BTbody>
-                <BTr v-for="(item, key) in tableItems" :key="item.name + key">
-                    <BTd>{{ key + 1 }}</BTd>
-                    <BTd><div class="clickable" @click="rowClickedHandler(item)">{{ item.name }}</div></BTd>
-                    <BTd class="td-desc"><div class="desc">{{ item.description }}</div></BTd>
-                    <BTd v-if="item.type === 1">Картинка</BTd>
-                    <BTd v-if="item.type === 2">Конструктор</BTd>
-                    <BTd v-if="item.type === 3">Данные начислений</BTd>
-                    <BTd>{{ item.created_at | splitDate(item.created_at) }}</BTd>
-                    <BTd>{{ item.creator.name }} {{ item.creator.last_name }}</BTd>
-                    <BTd @click.stop>
-                        <bButton size="sm" pill variant="danger" @click="modalShow(item)"><i class="fa fa-trash"></i>
-                        </bButton>
-                    </BTd>
-                </BTr>
-            </BTbody>
-        </BTableSimple>
-
+        <div class="table-container" v-if="tableItems.length > 0">
+            <BTableSimple
+                    id="awards-table"
+                    striped
+                    :hover="false"
+                    @row-clicked="rowClickedHandler"
+            >
+                <BThead>
+                    <BTr>
+                        <BTh>№</BTh>
+                        <BTh>Название</BTh>
+                        <BTh class="text-left">Описание</BTh>
+                        <BTh>Тип</BTh>
+                        <BTh>Дата создания</BTh>
+                        <BTh>Постановщик</BTh>
+                        <BTh></BTh>
+                    </BTr>
+                </BThead>
+                <BTbody>
+                    <BTr v-for="(item, key) in tableItems" :key="item.name + key">
+                        <BTd>{{ key + 1 }}</BTd>
+                        <BTd><div class="clickable" @click="rowClickedHandler(item)">{{ item.name }}</div></BTd>
+                        <BTd class="td-desc"><div class="desc">{{ item.description }}</div></BTd>
+                        <BTd v-if="item.type === 1">Картинка</BTd>
+                        <BTd v-if="item.type === 2">Конструктор</BTd>
+                        <BTd v-if="item.type === 3">Данные начислений</BTd>
+                        <BTd>{{ item.created_at | splitDate(item.created_at) }}</BTd>
+                        <BTd>{{ item.creator.name }} {{ item.creator.last_name }}</BTd>
+                        <BTd @click.stop>
+                            <i class="fa fa-trash delete" @click="modalShow(item)"></i>
+                        </BTd>
+                    </BTr>
+                </BTbody>
+            </BTableSimple>
+        </div>
         <div v-else>
-            <hr>
-            <h4>Пока нет ни одного сертификата.</h4>
+            <hr class="my-4">
+            <h4 class="no-awards-title">Пока нет ни одного сертификата</h4>
         </div>
         <!--        <Draggable/>-->
 
@@ -143,13 +140,54 @@
 
 <style lang="scss">
     #awards-page {
+        #edit-award-sidebar{
+            .ui-sidebar__body{
+                transform: translateX(100%);
+            }
+            &.show{
+                .ui-sidebar__body{
+                    transform: translateX(0);
+                }
+            }
+        }
+        .no-awards-title{
+            font-size: 20px;
+            font-weight: 500;
+            color: #999;
+            text-transform: uppercase;
+        }
+        .table-container{
+            border: 1px solid #ddd;
+            overflow: hidden;
+            border-radius: 10px;
+        }
         #awards-table {
+            margin: 0;
             thead{
                 white-space: nowrap;
+                tr{
+                    position: relative;
+                    z-index: 2;
+                    box-shadow: 0 3px 5px 0 rgba(0,0,0,0.15);
+                }
+                td,th{
+                    padding: 15px 20px;
+                    text-transform: uppercase;
+                    font-weight: 700;
+                    font-size: 12px;
+                    color: #666666;
+                    border-bottom: none;
+                }
             }
             tbody {
                 tr{
                     cursor: default;
+                    &:nth-child(odd){
+                        background-color: #efeef5;
+                    }
+                    td,th{
+                        border-top: none;
+                    }
                 }
                 cursor: pointer;
                 .td-desc{
@@ -165,10 +203,29 @@
                 .clickable{
                     cursor: pointer;
                     height: 35px;
+                    padding: 0 15px;
+                    border-radius: 50px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: 0.15s all ease;
+                    &:hover{
+                        background-color: rgba(0,0,0,0.1);
+                    }
+                }
+                .delete{
+                    width: 30px;
+                    height: 30px;
                     display: inline-flex;
                     align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    border-radius: 50%;
+                    font-size: 16px;
+                    color: #dc3545;
+                    transition: 0.15s all ease;
                     &:hover{
-                        color: #ed2353;
+                        background-color: rgba(220,53, 69, 0.2);
                     }
                 }
             }
