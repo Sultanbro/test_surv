@@ -28,6 +28,7 @@ class CourseItemRegress implements CourseRegress
 
         DB::transaction(function () use ($data, $amount, $course, $progress){
             (new CourseResultRepository)->removeItemPoints($data['user_id'], $course, $amount, $progress);
+            (new CourseResultRepository)->setIsRegressed($course, $data['user_id']);
 
             $this->deleteCourseItemModel($data['course_item_id'], $data['user_id']);
             $this->deleteItemFromTestResult($data['user_id'], $data['course_item_id']);
