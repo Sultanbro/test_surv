@@ -8,12 +8,14 @@
 
 namespace Eddir\Messenger\Http\Controllers;
 
+use Eddir\Messenger\Models\MessengerChat;
 use Illuminate\Foundation\Auth\User;
 use Eddir\Messenger\Facades\MessengerFacade;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ChatsController extends Controller {
     protected int $perPage = 30;
@@ -33,16 +35,15 @@ class ChatsController extends Controller {
                 'name' => Auth::user()->name,
             ],
         ] );
- 
         // check if user authorized
         if ( Auth::check() ) {
-            return response()->json( json_decode(MessengerFacade::pusherAuth(
-                    $request['channel_name'],
-                    $request['socket_id'],
-                    $authData,
-                    Auth::user()->id
-                )
-            ));
+            return response()->json( json_decode( MessengerFacade::pusherAuth(
+                $request['channel_name'],
+                $request['socket_id'],
+                $authData,
+                Auth::user()->id
+            )
+            ) );
         }
 
         // if not authorized
@@ -61,6 +62,37 @@ class ChatsController extends Controller {
             'chats' => $chats,
             'user'  => Auth::user(),
         ] );
+    }
+
+    /**
+     * Get company data
+     *
+     * @return JsonResponse
+     */
+    public function fetchCompany(): JsonResponse {
+        $company = [ 'errors' => [] ];
+
+        try {
+            $company['users'] = User::where( 'deleted_at', null )->get();
+        } catch ( \Exception $e ) {
+            $company['users']    = [];
+            $company['errors'][] = $e->getMessage();
+        }
+        try {
+            // positions
+            $company['positions'] = DB::table( 'positions' )->select( 'id', 'position' )->get();
+        } catch ( \Exception $e ) {
+            $company['positions'] = [];
+            $company['errors'][]  = $e->getMessage();
+        }
+        try {
+            $company['profile_groups'] = DB::table( 'profile_groups' )->select( 'id', 'name' )->get();
+        } catch ( \Exception $e ) {
+            $company['profile_groups'] = [];
+            $company['errors'][]       = $e->getMessage();
+        }
+
+        return response()->json( $company );
     }
 
     /**
@@ -116,6 +148,20 @@ class ChatsController extends Controller {
 
         $chat                 = MessengerFacade::getChatAttributesForUser( $chat, Auth::user() );
         $chat->pinned_message = $chat->getPinnedMessages()->last();
+
+        if ($chat->private) {
+            $chat->users->map(function ($user) use ($chat) {
+                if ($user->id !== Auth::user()->id) {
+                    $position = DB::query()
+                        ->select('positions.position as position')
+                        ->from('positions')
+                        ->join('users', 'users.position_id', '=', 'positions.id')
+                        ->where('users.id', $user->id)
+                        ->first();
+                        $chat->position = $position?->position;
+                }
+            });
+        }
 
         // return chat model
         return response()->json( $chat );
@@ -218,14 +264,18 @@ class ChatsController extends Controller {
      *
      * @return JsonResponse
      */
-    public function deleteChat( int $chat_id ): JsonResponse {
+    public function removeChat( int $chat_id ): JsonResponse {
         // check if user is authorized
         if ( ! Auth::check() ) {
             return response()->json( [ 'message' => 'Unauthorized' ], 401 );
         }
         // check if user is member of chat
-        if ( ! MessengerFacade::isMember( $chat_id ) ) {
+        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
             return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
+        }
+        // check if user is owner of chat
+        if ( ! MessengerFacade::isAdmin( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not an owner of this chat' ], 403 );
         }
         // delete chat
         $chat = MessengerFacade::deleteChat( $chat_id, Auth::user() );
@@ -388,6 +438,68 @@ class ChatsController extends Controller {
         }
         // unpin chat
         $chat = MessengerFacade::unpinChat( $chat_id, Auth::user() );
+
+        return response()->json( $chat );
+    }
+
+    /**
+     * Set user as admin
+     *
+     * @param int $chat_id
+     * @param int $user_id
+     *
+     * @return JsonResponse
+     */
+    public function setAdmin( int $chat_id, int $user_id ): JsonResponse {
+        // check if user is authorized
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
+        }
+        // check if user is admin
+        if ( ! MessengerFacade::isAdmin( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not an admin of this chat' ], 403 );
+        }
+        // check if user exists
+        if ( ! User::find( $user_id ) ) {
+            return response()->json( [ 'message' => 'User not found' ], 404 );
+        }
+        // check if user is already admin
+        if ( MessengerFacade::isAdmin( $chat_id, $user_id ) ) {
+            return response()->json( [ 'message' => 'User is already an admin' ], 400 );
+        }
+        // set user as admin
+        $chat = MessengerFacade::setAdmin( MessengerChat::find( $chat_id ), User::find( $user_id ) );
+
+        return response()->json( $chat );
+    }
+
+    /**
+     * Remove user as admin
+     *
+     * @param int $chat_id
+     * @param int $user_id
+     *
+     * @return JsonResponse
+     */
+    public function removeAdmin( int $chat_id, int $user_id ): JsonResponse {
+        // check if user is authorized
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
+        }
+        // check if user is admin
+        if ( ! MessengerFacade::isAdmin( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not an admin of this chat' ], 403 );
+        }
+        // check if user exists
+        if ( ! User::find( $user_id ) ) {
+            return response()->json( [ 'message' => 'User not found' ], 404 );
+        }
+        // check if user is already admin
+        if ( ! MessengerFacade::isAdmin( $chat_id, $user_id ) ) {
+            return response()->json( [ 'message' => 'User is not an admin' ], 400 );
+        }
+        // remove user as admin
+        $chat = MessengerFacade::removeAdmin( MessengerChat::find( $chat_id ), User::find( $user_id ) );
 
         return response()->json( $chat );
     }
