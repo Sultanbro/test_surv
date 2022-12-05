@@ -122,11 +122,17 @@ class CertificateAwardService implements AwardInterface
                 FileHelper::delete($award->path, $this->path);
             }
 
-            $file = $this->saveAwardFile($request);
-            $parameters['format'] = $file['format'];
-            $parameters['path'] = $file['relative'];
+            if ($request->has('file')) {
+                $file = $this->saveAwardFile($request);
+                $parameters['format'] = $file['format'];
+                $parameters['path'] = $file['relative'];
+            }
 
-            $this->updateCourses($request->input('course_ids', []), $award);
+            if ($request->has('course_ids')){
+                $this->updateCourses($request->input('course_ids'), $award);
+
+            }
+
 
             return $award->update($parameters);
 
