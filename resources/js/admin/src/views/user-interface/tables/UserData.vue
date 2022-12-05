@@ -5,17 +5,18 @@ import type { UserDataKeys } from '@/stores/user-data'
 const userDataStore = useUserDataStore()
 
 function sortSymbol(field: string) {
-  if(field === userDataStore.sort[0]) return (userDataStore.sort[1] === 'desc' ? '▼' : '▲')
+  if (field === userDataStore.sort[0])
+    return (userDataStore.sort[1] === 'desc' ? '▼' : '▲')
+
   return ''
 }
-function setSort(field: UserDataKeys | ''){
-  if(userDataStore.sort[0] === field){
-    if(userDataStore.sort[1] === 'desc') {
+function setSort(field: UserDataKeys | '') {
+  if (userDataStore.sort[0] === field) {
+    if (userDataStore.sort[1] === 'desc')
       userDataStore.setSort('', '')
-    }
-    else{
+
+    else
       userDataStore.setSort(field, 'desc')
-    }
   }
   userDataStore.setSort(field, '')
 }
@@ -29,33 +30,64 @@ function setSort(field: UserDataKeys | ''){
   >
     <thead>
       <tr>
-        <th @click="setSort('id')">id{{ sortSymbol('id') }}</th>
-        <th @click="setSort('full_name')">ФИО{{ sortSymbol('full_name') }}</th>
-        <th @click="setSort('email')" class="text-center">
+        <th @click="setSort('id')">
+          id{{ sortSymbol('id') }}
+        </th>
+        <th @click="setSort('full_name')">
+          ФИО{{ sortSymbol('full_name') }}
+        </th>
+        <th
+          class="text-center"
+          @click="setSort('email')"
+        >
           email{{ sortSymbol('email') }}
         </th>
-        <th @click="setSort('created_at')" class="text-center">
+        <th
+          class="text-center"
+          @click="setSort('created_at')"
+        >
           Создан{{ sortSymbol('created_at') }}
         </th>
-        <th @click="setSort('login_at')" class="text-center">
+        <th
+          class="text-center"
+          @click="setSort('login_at')"
+        >
           Вход{{ sortSymbol('login_at') }}
         </th>
-        <th @click="setSort('subdimains')" class="text-center">
+        <th
+          class="text-center"
+          @click="setSort('subdimains')"
+        >
           Домены{{ sortSymbol('subdimains') }}
         </th>
-        <th @click="setSort('lead')" class="text-center">
+        <th
+          class="text-center"
+          @click="setSort('lead')"
+        >
           Лид{{ sortSymbol('lead') }}
         </th>
-        <th @click="setSort('balance')" class="text-center">
+        <th
+          class="text-center"
+          @click="setSort('balance')"
+        >
           Баланс{{ sortSymbol('balance') }}
         </th>
-        <th @click="setSort('birthday')" class="text-center">
+        <th
+          class="text-center"
+          @click="setSort('birthday')"
+        >
           День рождения{{ sortSymbol('birthday') }}
         </th>
-        <th @click="setSort('country')" class="text-center">
+        <th
+          class="text-center"
+          @click="setSort('country')"
+        >
           Страна{{ sortSymbol('country') }}
         </th>
-        <th @click="setSort('city')" class="text-center">
+        <th
+          class="text-center"
+          @click="setSort('city')"
+        >
           Город{{ sortSymbol('city') }}
         </th>
       </tr>
@@ -97,13 +129,14 @@ function setSort(field: UserDataKeys | ''){
       </tr>
     </tbody>
   </VTable>
-  <div v-else class="text-center">
+  <div
+    v-else
+    class="text-center"
+  >
     <VProgressCircular
       indeterminate
       color="primary"
     />
   </div>
-  <VContainer>
-
-  </VContainer>
+  <VContainer />
 </template>
