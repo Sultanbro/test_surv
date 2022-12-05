@@ -80,7 +80,7 @@ class ChatsController extends Controller {
         }
         try {
             // positions
-            $company['positions'] = DB::table( 'positions' )->select( 'id', 'position' )->get();
+            $company['positions'] = DB::table( 'position' )->select( 'id', 'position' )->get();
         } catch ( \Exception $e ) {
             $company['positions'] = [];
             $company['errors'][]  = $e->getMessage();
@@ -153,9 +153,9 @@ class ChatsController extends Controller {
             $chat->users->map(function ($user) use ($chat) {
                 if ($user->id !== Auth::user()->id) {
                     $position = DB::query()
-                        ->select('positions.position as position')
-                        ->from('positions')
-                        ->join('users', 'users.position_id', '=', 'positions.id')
+                        ->select('position.position as position')
+                        ->from('position')
+                        ->join('users', 'users.position_id', '=', 'position.id')
                         ->where('users.id', $user->id)
                         ->first();
                         $chat->position = $position?->position;

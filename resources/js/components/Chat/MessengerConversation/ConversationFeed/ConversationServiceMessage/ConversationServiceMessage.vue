@@ -8,9 +8,15 @@
           <span class="messenger__message-notification__link">{{ message.event.payload.user.name }}</span>
         </template>
         <template v-else-if="message.event.type === 'leave'">
-          <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
-          удалил
-          <span class="messenger__message-notification__link">{{ message.event.payload.user.name }}</span>
+          <template v-if="message.sender.id === message.event.payload.user.id">
+            <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
+            покинул чат
+          </template>
+          <template v-else>
+            <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
+            удалил
+            <span class="messenger__message-notification__link">{{ message.event.payload.user.name }}</span>
+          </template>
         </template>
         <template v-else-if="message.event.type === 'rename'">
           <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
@@ -29,7 +35,10 @@
           <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
           создал новый чат
         </template>
-
+        <template v-else-if="message.event.type === 'delete_chat'">
+          <span class="messenger__message-notification__link">{{ message.sender.name }}</span>
+          удалил этот чат
+        </template>
       </div>
     </div>
   </div>

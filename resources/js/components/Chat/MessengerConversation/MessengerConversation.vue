@@ -1,8 +1,9 @@
 <template>
   <div class="messenger__col-messages">
     <ConversationHeader></ConversationHeader>
-    <ConversationFeed></ConversationFeed>
-    <ConversationFooter></ConversationFooter>
+    <ConversationFeed v-show="!isChatSearchMode"></ConversationFeed>
+    <ConversationFooter v-show="!isChatSearchMode"></ConversationFooter>
+    <ConversationSearch v-show="isChatSearchMode"></ConversationSearch>
   </div>
 </template>
 
@@ -10,6 +11,8 @@
 import ConversationHeader from "./ConversationHeader/ConversationHeader.vue";
 import ConversationFeed from "./ConversationFeed/ConversationFeed.vue";
 import ConversationFooter from "./ConversationFooter/ConversationFooter.vue";
+import ConversationSearch from "./ConversationSearch/ConversationSearch.vue";
+import {mapGetters} from "vuex";
 
 export default {
   name: "MessengerConversation",
@@ -17,6 +20,10 @@ export default {
     ConversationHeader,
     ConversationFeed,
     ConversationFooter,
+    ConversationSearch,
+  },
+  computed: {
+    ...mapGetters(['isChatSearchMode'])
   },
 }
 </script>
@@ -30,7 +37,7 @@ export default {
   overflow: hidden;
   display: flex;
   flex-flow: column;
-  border: 1px solid #c6c6c6;
+  border: 1px solid #e2e2e2;
 }
 
 </style>

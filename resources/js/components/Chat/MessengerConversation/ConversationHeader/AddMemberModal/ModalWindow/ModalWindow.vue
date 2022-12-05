@@ -1,48 +1,53 @@
 <template>
-  <div class="messenger__modal-backdrop">
-    <div class="messenger__modal">
-      <header class="messenger__modal-header">
-        <slot name="header">
-          This is the default title!
-        </slot>
-        <button
-          type="button"
-          class="btn-close"
-          @click="close"
-        >
-          x
-        </button>
-      </header>
+  <transition name="fade">
+    <div class="messenger__modal-backdrop enter-active">
+      <div class="messenger__modal">
+        <header class="messenger__modal-header">
+          <slot name="header">
+            This is the default title!
+          </slot>
+          <button
+            type="button"
+            class="btn-close"
+            @click="close"
+          >
+            x
+          </button>
+        </header>
 
-      <section class="messenger__modal-body">
-        <slot name="body">
-          This is the default body!
-        </slot>
-      </section>
+        <section class="messenger__modal-body">
+          <slot name="body">
+            This is the default body!
+          </slot>
+        </section>
 
-      <footer class="messenger__modal-footer">
-        <slot name="footer">
-          This is the default footer!
-        </slot>
-        <button
-          v-if="closeButton"
-          type="button"
-          class="btn-green"
-          @click="close"
-        >
-          Закрыть
-        </button>
-      </footer>
+        <footer class="messenger__modal-footer">
+          <slot name="footer">
+            This is the default footer!
+          </slot>
+          <button
+            v-if="closeButton"
+            type="button"
+            class="btn-green"
+            @click="close"
+          >
+            Закрыть
+          </button>
+        </footer>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
+
 export default {
   methods: {
     close(e) {
       e.stopPropagation();
       this.$emit('close');
+      // set leave-active class
+      this.$el.classList.add('leave-active');
     },
   },
   props: {
@@ -69,14 +74,12 @@ export default {
 }
 
 .messenger__modal {
-  background: #FFFFFF;
-  box-shadow: 2px 2px 20px 1px;
-  /*overflow-x: auto;*/
-  display: flex;
-  flex-direction: column;
-  min-width: 350px;
-  max-width: 600px;
-  max-height: calc(100vh - 100px);
+  background-color: #ffffff;
+  border-radius: 1rem;
+  width: 286px;
+  height: auto;
+  display: grid;
+  box-shadow: #0000004a 0 3px 8px 0;
 }
 
 .messenger__modal-header, .messenger__modal-footer {
@@ -111,8 +114,20 @@ export default {
   padding: 10px;
   cursor: pointer;
   font-weight: bold;
-  color: #4AAE9B;
+  color: #5ebee9;
   background: transparent;
+}
+
+/*noinspection CssUnusedSymbol*/
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.21s;
+}
+
+/*noinspection CssUnusedSymbol*/
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 
 </style>

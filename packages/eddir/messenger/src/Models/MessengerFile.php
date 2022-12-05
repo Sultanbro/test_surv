@@ -21,10 +21,14 @@ class MessengerFile extends Model {
     }
 
     public function getFilePathAttribute( $value ): ?string {
-        return $value ? Storage::url( $value ) : null;
+        return $value ? Storage::disk('s3')->temporaryUrl(
+            $value, now()->addMinutes(360)
+        ) : null;
     }
 
     public function getThumbnailPathAttribute( $value ): ?string {
-        return $value ? Storage::url( $value ) : null;
+        return $value ? Storage::disk('s3')->temporaryUrl(
+            $value, now()->addMinutes(360)
+        ) : null;
     }
 }

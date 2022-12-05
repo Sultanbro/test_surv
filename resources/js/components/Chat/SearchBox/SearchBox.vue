@@ -91,7 +91,7 @@ export default {
   position: sticky;
   display: flex;
   align-items: center;
-  height: 64px;
+  height: 50px;
   padding: 0 5px;
   border-bottom: 1px solid #c6c6c6;
   font-size: 16px;
@@ -99,12 +99,14 @@ export default {
 
 .messenger__box-search__input {
   width: 100%;
-  height: 50px;
+  max-width: 400px;
+  height: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-left: 2px solid #d5d5d5;
   padding-left: 10px;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
 }
 
 .messenger__box-search__input input {
@@ -130,7 +132,6 @@ export default {
 .messenger__icon {
   display: flex;
   left: 30px;
-  margin: 0 5px;
 }
 
 .messenger__icon svg {

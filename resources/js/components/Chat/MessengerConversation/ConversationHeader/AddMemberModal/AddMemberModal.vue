@@ -1,86 +1,244 @@
 <template>
-  <ModalWindow v-on="$listeners" :closeButton="false">
-    <template v-slot:header>
-      <template v-if="chat && chat.private">Создать групповой чат</template>
-      <template v-else>Пригласить в чат</template>
-    </template>
-    <template v-slot:body>
-      <div class="form-group" v-if="chat.private">
-        <label for="name">Название</label>
-        <input type="text" class="form-control" id="name" v-model="title" placeholder="Название чата">
+  <div class="access-modal-bg" @click.self="toggleAccessModal(false, $event)">
+    <div class="access-modal">
+
+      <div class="access-modal__tabs">
+        <div :class="'access-modal__tab ' + (currentAccessTab === 1 ?'access-modal__tab--active' : '')"
+             @click="changeAccessTab(1)">Сотрудники
+        </div>
+        <div :class="'access-modal__tab ' + (currentAccessTab === 2 ?'access-modal__tab--active' : '')"
+             @click="changeAccessTab(2)">Отделы
+        </div>
+        <div :class="'access-modal__tab ' + (currentAccessTab === 3 ?'access-modal__tab--active' : '')"
+             @click="changeAccessTab(3)">Должности
+        </div>
+        <div :class="'access-modal__tab'" @click="toggleAvailableToEveryone">Все
+        </div>
       </div>
-      <div class="form-group">
-        <label for="users">Участники</label>
-        <multiselect v-model="members"
-                     :close-on-select="false"
-                     :hide-selected="true"
-                     :multiple="true"
-                     :options="contacts"
-                     track-by="id"
-                     label="name"
-                     :searchable="true"
-                     :allow-empty="false"
-                     placeholder="Выберите участников"
-        >
-          <template slot="singleLabel" slot-scope="{ option }">
-            <!--            <strong>{{ option.name }}</strong>-->
-            опция
-          </template>
-        </multiselect>
+
+      <div class="access-modal__search">
+        <img class="news-icon" src="/icon/news/filter/search.svg" alt="">
+        <input type="text"
+               v-model="accessSearch"
+               class="access-modal__search-input"
+               placeholder="Быстрый поиск">
       </div>
-    </template>
-    <template v-slot:footer>
-      <button type="button" class="messenger__add-button" @click="submitForm">Добавить</button>
-    </template>
-  </ModalWindow>
+
+      <div class="user-list">
+        <div v-show="currentAccessTab === 1" class="user-list__container">
+          <div
+            v-for="item in accessDictionaries.users"
+            :key="item.id"
+            v-show="item.name.toLowerCase().includes(accessSearch.toLowerCase())"
+            class="user-item"
+            @click="changeAccessList($event, item.id, item.name, 1, item.avatar)">
+            <img :src="item.avatar" class="user-item__avatar" alt="">
+            <div class="user-item__info">
+              <div class="user-item__sub">{{ item.position_name }}</div>
+              <div class="user-item__name">{{ item.name }}</div>
+            </div>
+            <label class="news-checkbox">
+              <input type="checkbox"
+                     @click="changeAccessList($event, item.id, item.name, 1, item.avatar)"
+                     :checked="checked(item, 1) ? 'checked' : ''">
+              <span class="news-checkmark"></span>
+            </label>
+          </div>
+        </div>
+        <div v-show="currentAccessTab === 2" class="user-list__container">
+          <div
+            v-for="item in accessDictionaries.profile_groups"
+            :key="item.id"
+            v-show="item.name.toLowerCase().includes(accessSearch.toLowerCase())"
+            class="user-item"
+            @click="changeAccessList($event, item.id, item.name, 2, item.avatar)">
+            <img :src="item.avatar" class="user-item__avatar" alt="">
+            <div class="user-item__info">
+              <div class="user-item__name">{{ item.name }}</div>
+            </div>
+            <label class="news-checkbox">
+              <input type="checkbox"
+                     @click="changeAccessList($event, item.id, item.name, 2, item.avatar)"
+                     :checked="checked(item, 2) ? 'checked' : ''">
+              <span class="news-checkmark"></span>
+            </label>
+          </div>
+        </div>
+        <div v-show="currentAccessTab === 3" class="user-list__container">
+          <div
+            v-for="item in accessDictionaries.positions"
+            :key="item.id"
+            v-show="item.position.toLowerCase().includes(accessSearch.toLowerCase())"
+            class="user-item"
+            @click="changeAccessList($event, item.id, item.position, 3)">
+            <div class="user-item__info">
+              <div class="user-item__name">{{ item.position }}</div>
+            </div>
+            <label class="news-checkbox">
+              <input type="checkbox"
+                     @click="changeAccessList($event, item.id, item.position, 3)"
+                     :checked="checked(item, 3) ? 'checked' : ''">
+              <span class="news-checkmark"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="access-modal__footer">
+        <span class="access-modal__selected-count"
+              v-html="enumerate(accessCount, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessCount + ' ' + enumerate(accessCount, ['элемент', 'элемента', 'элементов'])"/>
+        <a class="access-modal__add-employee hover-pointer" @click="submitForm">
+          <img src="/icon/news/access-modal/plus-accent.svg" alt="">
+          <span v-html="'Пригласить'"/>
+        </a>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import ModalWindow from "./ModalWindow/ModalWindow.vue";
-import Multiselect from 'vue-multiselect'
 import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "AddMemberModal",
-  components: {
-    ModalWindow,
-    Multiselect,
-  },
   computed: {
-    ...mapGetters(['contacts', 'newChatContacts', 'chat', 'user'])
+    ...mapGetters([
+      'contacts', 'newChatContacts',
+      'chat', 'user',
+      'users', 'profileGroups', 'positions',
+    ]),
+    accessDictionaries() {
+      return {
+        users: this.users,
+        profile_groups: this.profileGroups,
+        positions: this.positions,
+      }
+    },
+    accessCount() {
+      return this.accessList.filter(item => item.type === 1).length;
+    },
   },
   data() {
     return {
-      title: '',
-      members: []
+      title: 'Групповой чат',
+      members: [],
+      showAccessModal: {
+        type: Boolean,
+        default: false
+      },
+      accessSearch: '',
+      currentAccessTab: 1,
+      availableToEveryone: false,
+      accessList: []
     };
   },
-  created() {
+  mounted() {
     if (!this.chat.private) {
       this.title = this.chat.title;
-      this.members = this.chat.users.filter(user => user.id !== this.user.id);
+      this.accessList = this.chat.users.filter(user => user.id !== this.user.id).map(user => {
+        return {
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          type: 1
+        }
+      });
     }
+    this.loadCompany();
   },
   methods: {
-    ...mapActions(['createChat', 'addMembers', 'removeMembers']),
+    ...mapActions(['createChat', 'addMembers', 'removeMembers', 'loadCompany']),
+
+    toggleAccessModal(value, event) {
+      event.stopPropagation();
+      this.showAccessModal = value;
+      this.$emit('close');
+    },
+    changeAccessTab(tab) {
+      this.currentAccessTab = tab
+    },
+    changeAccessList(event, id, name, type, avatar = null) {
+      event.stopPropagation();
+
+      let users = [];
+      if (type === 2) {
+        users = this.accessDictionaries.users.filter(user => user.profile_group_id === id);
+      } else if (type === 3) {
+        users = this.accessDictionaries.users.filter(user => user.position_id === id);
+      }
+
+      let index = this.accessList.findIndex(i => i.id === id)
+      if (index === -1) {
+        this.accessList.push({
+          id: id,
+          name: name,
+          avatar: avatar,
+          type: type
+        });
+        this.addUsers(users);
+      } else {
+        this.accessList.splice(index, 1);
+        this.removeUsers(users);
+      }
+    },
+    addUsers(users) {
+      for (let user of users) {
+        let index = this.accessList.findIndex(i => i.id === user.id && i.type === 1);
+        if (index === -1) {
+          this.accessList.push({
+            id: user.id,
+            name: user.name,
+            avatar: user.avatar,
+            type: 1
+          });
+        }
+      }
+    },
+    removeUsers(users) {
+      for (let user of users) {
+        let index = this.accessList.findIndex(i => i.id === user.id && i.type === 1);
+        if (index !== -1) {
+          this.accessList.splice(index, 1);
+        }
+      }
+    },
+    checked(item, type) {
+      return this.accessList && this.accessList.findIndex(accessItem => accessItem.id === item.id && accessItem.type === type) !== -1
+    },
+    enumerate(number, titles) {
+      const cases = [2, 0, 1, 1, 1, 2];
+      return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+    },
+    toggleAvailableToEveryone() {
+      this.availableToEveryone = !this.availableToEveryone;
+      let users = this.accessDictionaries.users;
+
+      if (this.availableToEveryone) {
+        this.addUsers(users);
+      } else {
+        this.removeUsers(users);
+      }
+    },
     submitForm(e) {
       e.stopPropagation();
-      if (!this.title) {
-        return;
-      }
+
+      let members = this.accessList.filter(item => item.type === 1);
+
       if (this.chat.private) {
+        // title is a concatenation of first 3 members names
+        let title = members.slice(0, 3).map(item => item.name).join(', ');
         this.createChat({
-          title: this.title,
+          title: title,
           description: '',
-          members: this.members.map(member => member.id)
+          members: members.map(member => member.id)
         });
       } else {
         // find diff between members and chat.users
         // add new members
         // remove old members
-        this.members.push(this.user);
-        let add_members = this.members.filter(member => !this.chat.users.find(user => user.id === member.id));
-        let remove_members = this.chat.users.filter(user => !this.members.find(member => member.id === user.id));
+        this.accessList.push(this.user);
+        let add_members = members.filter(member => !this.chat.users.find(user => user.id === member.id));
+        let remove_members = members.filter(user => !this.accessList.find(member => member.id === user.id));
 
         if (add_members.length > 0) {
           this.addMembers(add_members);
@@ -95,25 +253,4 @@ export default {
 }
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-<style scoped>
-
-label {
-  display: block;
-}
-
-.form-control {
-  border: 1px solid #e8e8e8;
-}
-
-.messenger__add-button {
-  background: #2f80ed;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-</style>
+<style scoped></style>

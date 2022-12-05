@@ -21,4 +21,9 @@ export default {
   overflow-y: auto;
 }
 
+/*noinspection CssUnusedSymbol*/
+.header__right-nav {
+  margin-bottom: 2rem !important;
+}
+
 </style>

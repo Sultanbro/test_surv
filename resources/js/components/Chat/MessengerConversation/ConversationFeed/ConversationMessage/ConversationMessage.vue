@@ -1,10 +1,16 @@
 <template>
-  <div v-else :class="message.sender_id === user.id ?
+  <div :class="message.sender_id === user.id ?
     'messenger__message-box-right' :
     'messenger__message-box-left'">
+    <AlternativeAvatar v-if="message.sender_id !== user.id" :title="message.sender.name"
+                       :image="message.sender.img_url"></AlternativeAvatar>
     <div class="messenger__message-container">
       <div :class="messageCardClass">
         <div class="messenger__format-message-wrapper">
+          <div class="messenger__format-container_parent" v-if="message.parent" @click="goto(message.parent, $event)">
+            <div class="messenger__format-container_parent-author">{{ message.parent.sender.name }}</div>
+            <div class="messenger__format-container_parent-message">{{ message.parent.body }}</div>
+          </div>
           <div class="messenger__format-container">
             <span v-text="message.body"></span>
           </div>
@@ -19,9 +25,9 @@
               <div @click="openImage(file)" class="messenger__message-file-image">
                 <img v-on:load="$emit('loadImage')"
                      :src="file.thumbnail_path ? file.thumbnail_path : file.file_path" alt="file.name">
-<!--                <div v-if="message.files.length > 3 && key === 2" class="messenger__message-files_group-count">-->
-<!--                  <span>+{{ message.files.length - 3 }}</span>-->
-<!--                </div>-->
+                <div v-if="message.files.length > 3 && key === 2" class="messenger__message-files_group-count">
+                  <span>+{{ message.files.length - 3 }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -35,9 +41,11 @@
               </template>
               <template v-else-if="isAudio(file)">
                 <div class="messenger__message-file-audio">
-                  <audio controls>
-                    <source :src="file.file_path" type="audio/mpeg">
-                  </audio>
+                  <VoiceMessage :audioSource="file.file_path"
+                                :isActive="active"
+                                @play="$emit('active')"
+                  >
+                  </VoiceMessage>
                 </div>
               </template>
               <template v-else>
@@ -54,13 +62,33 @@
             </div>
           </div>
         </div>
-        <div class="messenger__text-timestamp">
-          <span>{{ message.created_at | moment }}</span>
-        </div>
       </div>
-      <template v-if="message.sender_id === user.id && message.readers && message.readers.length > 0">
-        <MessageReaders :message="message" :user="user"></MessageReaders>
-      </template>
+      <div v-if="message.readers && message.readers.length > 0" class="messenger__message-reactions">
+        <template v-if="last && message.readers && message.readers.length > 0 && message.sender_id === user.id">
+          <MessageReaders :message="message" :user="user"></MessageReaders>
+        </template>
+
+        <template v-for="reaction in reactions" v-if="reactions">
+          <div class="messenger__message-reaction" @click="reactMessage({message: message, emoji_id: reaction.type})">
+            <div class="messenger__message-reaction-icon">
+              <span v-if="reaction.type === 1">&#128077;</span>
+              <span v-else-if="reaction.type === 2">&#128078;</span>
+              <span v-else-if="reaction.type === 3">&#10004;</span>
+              <span v-else-if="reaction.type === 4">&#10006;</span>
+              <span v-else-if="reaction.type === 5">&#10067;</span>
+            </div>
+            <div class="messenger__message-reaction-count">
+              <span>{{ reaction.count }}</span>
+            </div>
+          </div>
+        </template>
+      </div>
+
+
+      <div class="messenger__text-timestamp">
+        <span>{{ message.created_at | moment }}</span>
+      </div>
+
     </div>
   </div>
 </template>
@@ -69,17 +97,27 @@
 import {mapActions, mapGetters} from "vuex";
 import moment from "moment";
 import MessageReaders from "./MessageReaders/MessageReaders.vue";
+import AlternativeAvatar from "../../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue";
+import VoiceMessage from "./VoiceMessage/VoiceMessage.vue";
 
 export default {
   name: "ConversationMessage",
+  components: {
+    MessageReaders, AlternativeAvatar, VoiceMessage
+  },
   props: {
     message: {
       type: Object,
-      required: true,
+      required: true
     },
-  },
-  components: {
-    MessageReaders,
+    last: {
+      type: Boolean,
+      default: false
+    },
+    active: {
+      type: Boolean,
+      default: false
+    },
   },
   computed: {
     ...mapGetters(['user', 'chat']),
@@ -88,20 +126,41 @@ export default {
         'messenger__message-card': true,
         'messenger__message__failed': this.message.failed,
       }
-    }
+    },
+    reactions() {
+      // go through each reader and if include reaction type
+      // add to reactions array
+      let reactions = [];
+      this.message.readers.forEach(reader => {
+        if (reader.pivot && reader.pivot.reaction) {
+          // increment reaction count if already in array
+          let reaction = reactions.find(reaction => reaction.type === reader.pivot.reaction);
+          if (reaction) {
+            reaction.count++;
+          } else {
+            reactions.push({
+              type: reader.pivot.reaction,
+              count: 1,
+            });
+          }
+        }
+      });
+      return reactions;
+    },
   },
   methods: {
-    ...mapActions(['showGallery']),
+    ...mapActions(['showGallery', 'reactMessage', 'loadMessages', 'loadMoreNewMessages', 'requestScroll',
+      'setLoading']),
     isImage(file) {
-      const ext = file.file_path.split('.').pop();
-      return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);
+      const ext = file.name.split('.').pop();
+      return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);//todo: другой способ определения. Хранить тип файла в БД.
     },
     isAudio(file) {
-      const ext = file.file_path.split('.').pop();
+      const ext = file.name.split('.').pop();
       return ['mp3', 'wav', 'ogg', 'webm'].includes(ext);
     },
     isGallery() {
-      return this.message.files && this.message.files.length > 0 && this.message.files.every(file => this.isImage(file));
+      return this.message.files && this.message.files.length > 1 && this.message.files.every(file => this.isImage(file));
     },
     getImages() {
       return this.message.files.filter(file => this.isImage(file)).map(file => file.file_path);
@@ -112,6 +171,18 @@ export default {
         index: this.message.files.findIndex(f => f.id === image.id),
       });
     },
+    goto(message, event) {
+      event.stopPropagation();
+      this.setLoading(true);
+      this.loadMessages({
+        reset: false, goto: message.id, callback: () => {
+          // after a second
+          setTimeout(() => {
+            this.setLoading(false);
+          }, 1000);
+        }
+      });
+    }
   },
   filters: {
     moment: function (date) {
@@ -136,6 +207,7 @@ export default {
   display: flex;
   flex: 0 0 50%;
   line-height: 1.4;
+  margin-left: 20px;
 }
 
 /*noinspection CssUnusedSymbol*/
@@ -151,18 +223,20 @@ export default {
 .messenger__message-container {
   position: relative;
   padding: 2px 10px;
-  align-items: flex-end;
-  min-width: 100px;
+  min-width: 75px;
   box-sizing: content-box;
   display: flex;
+  flex-wrap: wrap;
   flex-direction: column;
+  align-content: stretch;
+  align-items: stretch;
+  margin-top: 4px;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-card {
-  border-radius: 8px;
-  font-size: 14px;
-  padding: 6px 9px 3px;
+  font-size: 12px;
+  padding: 10px;
   white-space: pre-line;
   max-width: 360px;
   -webkit-transition-property: box-shadow, opacity;
@@ -170,6 +244,8 @@ export default {
   transition: box-shadow .28s cubic-bezier(.4, 0, .2, 1);
   will-change: box-shadow;
   box-shadow: 0 1px 1px -1px #0000001a, 0 1px 1px -1px #0000001c, 0 1px 2px -1px #0000001c;
+  background: #f4f6fa;
+  color: #5f5d5d;
 }
 
 /*noinspection CssUnusedSymbol*/
@@ -179,22 +255,24 @@ export default {
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-right .messenger__message-card {
-  background-color: #f5f5f5;
-  color: #0a0a0a;
   float: right;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-left .messenger__message-card {
-  background-color: #eff8fd;
-  color: #0a0a0a;
+  float: left;
 }
 
 .messenger__text-timestamp {
   font-size: 10px;
   line-height: 10px;
+  margin-top: 10px;
   color: #828c94;
   text-align: right;
+}
+
+.messenger__message-box-right .messenger__text-timestamp {
+  text-align: left;
 }
 
 .messenger__message-files {
@@ -255,13 +333,12 @@ audio {
 }
 
 .messenger__message-files_group-count {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: relative;
+  top: -75px;
   height: 100%;
   width: 100%;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .messenger__message-files_group-count span {
@@ -294,6 +371,54 @@ audio {
 .messenger__last-column {
   width: 100px;
   height: 75px;
+}
+
+.messenger__message-reactions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 5px;
+}
+
+.messenger__message-reactions .messenger__message-reaction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 40%;
+  margin-left: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 5px 10px;
+  background-color: #f5f5f5;
+}
+
+.messenger__message-reactions .messenger__message-reaction:hover {
+  background-color: #e0e0e0;
+}
+
+.messenger__message-reactions .messenger__message-reaction .messenger__message-reaction-count {
+  margin-left: 5px;
+}
+
+.messenger__message-reactions .messenger__message-reaction .messenger__message-reaction-count:hover {
+  background-color: transparent;
+}
+
+.messenger__format-container_parent {
+  border-left: 2px solid #5ebee9;
+  cursor: pointer;
+  padding: 2px 10px;
+}
+
+.messenger__format-container_parent-author {
+  font-weight: bold;
+}
+
+.messenger__format-container_parent-message {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 </style>

@@ -39,7 +39,7 @@ export default {
         const x = this.x - messengerWindowRect.left;
         const y = this.y - messengerWindowRect.top;
 
-        if (x + this.$el.offsetWidth > messengerWindowRect.width) {
+        if (x + this.$el.offsetWidth + 50 > messengerWindowRect.width) {
           this.style.left = messengerWindowRect.width - this.$el.offsetWidth + 'px';
         } else {
           this.style.left = x + 'px';
@@ -71,7 +71,7 @@ export default {
 
 .messenger__context-menu a {
   display: block;
-  padding: 5px 15px;
+  padding: 10px 10px;
   text-decoration: none;
   color: #0a0a0a;
 }

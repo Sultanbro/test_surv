@@ -33,7 +33,7 @@ export default {
       const points = [];
 
       const dataLength = this.spectrum.length || Object.keys(this.spectrum).length;
-      const sliceWidth = (this.width * 1.0) / dataLength;
+      const sliceWidth = this.width / dataLength;
 
       let x = 0;
       for (let i = 0; i < dataLength; i += 1) {

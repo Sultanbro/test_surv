@@ -1,8 +1,14 @@
 <template>
-  <div v-if="image && !imageError" class="messenger__avatar">
+  <div v-if="image && !imageError" :class="{
+    'messenger__avatar': true,
+    'messenger__avatar--small': inline,
+  }">
     <img :src="image" :alt="title" @error="imageError = true">
   </div>
-  <div v-else class="messenger__avatar_container">
+  <div v-else :class="{
+    'messenger__avatar_container': !inline,
+    'messenger__avatar_container--small': inline,
+  }">
     <div class="messenger__avatar_name" v-text="title[0]"></div>
   </div>
 </template>
@@ -14,14 +20,23 @@ export default {
       imageError: false,
     };
   },
+  watch: {
+    imageError() {
+      console.log('imageError', this.image, this.title);
+    },
+  },
   props: {
     image: {
-      type: String,
+      type: String | null,
       required: true,
     },
     title: {
       type: String,
       required: true,
+    },
+    inline: {
+      type: Boolean,
+      default: false,
     },
   },
 }
@@ -41,6 +56,15 @@ export default {
   border-radius: 50%;
 }
 
+.messenger__avatar--small {
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+  min-height: 25px;
+  min-width: 25px;
+  margin-right: 0;
+}
+
 .messenger__avatar img {
   height: 100%;
   width: 100%;
@@ -56,17 +80,38 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 20px;
-  font-weight: 500;
   background-color: #7ccaed;
   color: #fff;
   margin-right: 10px;
 }
 
-.messenger__avatar_name {
+.messenger__avatar_container--small {
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+  min-height: 25px;
+  min-width: 25px;
+  display: inline-block;
+  background-color: #7ccaed;
+  color: #fff;
+  transform: translateY(9px);
+}
+
+.messenger__avatar_container .messenger__avatar_name {
   font-size: 17px;
   font-weight: 700;
   line-height: 22px;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.messenger__avatar_container--small .messenger__avatar_name {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 25px;
   width: 100%;
   white-space: nowrap;
   overflow: hidden;

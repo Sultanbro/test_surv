@@ -7,11 +7,12 @@
       :y="contextMenuY"
       :parent-element="$refs.messengerChats"
     >
-      <a v-if="contextMenuChat && contextMenuChat.pinned" href="javascript:"
-         @click="contextMenuVisible = false; unpinChat(contextMenuChat)">Открепить чат</a>
-      <a v-else href="javascript:" @click="contextMenuVisible = false; pinChat(contextMenuChat)">Закрепить чат</a>
-      <a href="javascript:" @click="contextMenuVisible = false; leftChat(contextMenuChat)">Покинуть чат</a>
-
+      <template v-if="contextMenuChat">
+        <a v-if="contextMenuChat.pinned" href="javascript:" @click="contextMenuVisible = false; unpinChat(contextMenuChat)">Открепить чат</a>
+        <a v-else href="javascript:" @click="contextMenuVisible = false; pinChat(contextMenuChat)">Закрепить чат</a>
+        <a v-if="contextMenuChat.owner_id === user.id" href="javascript:" @click="contextMenuVisible = false; remove(contextMenuChat)">Удалить чат</a>
+        <a v-else href="javascript:" @click="contextMenuVisible = false; leftChat(contextMenuChat)">Покинуть чат</a>
+      </template>
     </ContextMenu>
     <div class="messenger__chats-list">
       <template v-if="!isSearchMode || !fullscreen">
@@ -55,11 +56,16 @@ import ContactItem from "./ContactItem/ContactItem.vue";
 
 export default {
   name: "ChatsList",
-  components: {ContextMenu, ContactItem},
+  components: {
+    ContextMenu,
+    ContactItem,
+  },
   computed: {
-    ...mapGetters(['sortedChats', 'chat',
+    ...mapGetters([
+      'sortedChats', 'chat', 'user',
       'contacts', 'searchMessagesChatsResults',
-      'isSearchMode'])
+      'isSearchMode', 'isOpen'
+    ])
   },
   props: {
     fullscreen: {
@@ -76,16 +82,34 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['loadChat', 'toggleMessenger', 'leftChat', 'pinChat', 'unpinChat']),
+    ...mapActions(['loadChat', 'toggleMessenger', 'leftChat', 'pinChat', 'unpinChat', 'removeChat', 'setLoading']),
     openChat(chat, event) {
       event.stopPropagation();
+      this.setLoading(true);
       this.contextMenuVisible = false;
       if (!this.chat || this.chat.id !== chat.id) {
-        this.loadChat(chat.id);
+        this.loadChat({chatId: chat.id, callback: () => {
+          this.setLoading(false);
+        }});
       }
-      if (!this.fullscreen) {
+      if (!this.isOpen) {
         this.toggleMessenger();
       }
+    },
+    remove(chat) {
+      this.$root.$emit('messengerConfirm', {
+        title: 'Удалить чат?',
+        message: 'Вы уверены, что хотите удалить чат ' + chat.title + '?',
+        button: {
+          yes: 'Удалить',
+          no: 'Отмена'
+        },
+        callback: confirm => {
+          if (confirm) {
+            this.removeChat(chat);
+          }
+        }
+      });
     },
     showChatContextMenu(event, chat) {
       this.contextMenuVisible = true;
@@ -104,14 +128,16 @@ export default {
   display: flex;
   flex-flow: column;
   flex: 0 0 25%;
-  min-width: 200px;
+  min-width: 240px;
   max-width: 500px;
   position: relative;
   height: 100%;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
+  background-color: #f4f6fa;
 }
 
+/*noinspection CssUnusedSymbol*/
 @media only screen and (max-width: 670px) {
   .messenger__fullscreen {
     display: none;
@@ -124,11 +150,11 @@ export default {
 }
 
 .messenger__collapsed .messenger__chat-item {
-  padding: 5px;
+  padding: 4px;
 }
 
 .messenger__chat-item:hover {
-  background: #e5effa;
+  background: #cbeefc;
 }
 
 .messenger__chats-list {
@@ -137,14 +163,14 @@ export default {
   max-width: 100%;
   cursor: pointer;
   overflow-y: auto;
-  margin: 20px 5px 0 10px;
+  margin: 20px 5px 0 0;
   padding-right: 10px;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__chat-selected {
-  color: #1976d2 !important;
-  background: #e5effa !important;
+  color: #fff !important;
+  background: #5d8ce7 !important;
 }
 
 /*noinspection CssUnusedSymbol*/
@@ -152,8 +178,7 @@ export default {
   align-items: center;
   display: flex;
   flex: 1 1 100%;
-  margin-bottom: 5px;
-  padding: 10px;
+  padding: 8px;
   position: relative;
   transition: background-color .3s cubic-bezier(.25, .8, .5, 1);
 }
@@ -163,32 +188,8 @@ export default {
   padding-right: 0;
 }
 
-/* total width */
 .messenger__chats-list::-webkit-scrollbar {
-  background-color: #fff;
-  width: 8px;
-}
-
-/* background of the scrollbar except button or resizer */
-.messenger__chats-list::-webkit-scrollbar-track {
-  background-color: #bcbcbd;
-  border-radius: 24px;
-}
-
-/* scrollbar itself */
-.messenger__chats-list::-webkit-scrollbar-thumb {
-  background-color: #7e7e81;
-  border-radius: 24px;
-}
-
-/* set button(top and bottom of the scrollbar) */
-.messenger__chats-list::-webkit-scrollbar-button {
-  display: none;
-}
-
-.messenger__collapsed .messenger__chats-list::-webkit-scrollbar {
   width: 0;
-  display: none;
 }
 
 </style>
