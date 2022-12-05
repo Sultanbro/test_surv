@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Award;
 
 use App\Enums\AwardTypeEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\User;
 use App\Http\Requests\Award\AwardsByTypeRequest;
 use App\Http\Requests\Award\CourseAwardRequest;
 use App\Http\Requests\Award\StoreAwardRequest;
@@ -16,6 +15,7 @@ use App\Repositories\AwardRepository;
 use App\Service\Awards\AwardBuilder;
 use App\Service\Awards\AwardService;
 use App\Service\Awards\Reward\RewardBuilder;
+use App\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -145,7 +145,9 @@ class AwardController extends Controller
      */
     public function courseAward(CourseAwardRequest $request)
     {
-        $response = $this->awardService->courseAward($request);
+        $authUser = Auth::user() ?? User::find(5);
+
+        $response = $this->awardService->courseAward($request, $authUser);
 
 
         return \response()->success($response);

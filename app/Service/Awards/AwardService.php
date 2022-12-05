@@ -10,6 +10,7 @@ use App\Http\Requests\RewardRequest;
 use App\Models\Award\Award;
 use App\Models\Award\AwardCategory;
 use App\Models\Course;
+use App\Models\CourseResult;
 use App\Repositories\AwardRepository;
 use App\Repositories\CoreRepository;
 use App\User;
@@ -132,12 +133,16 @@ class AwardService
     /**
      * @throws Exception
      */
-    public function courseAward(CourseAwardRequest $request): array
+    public function courseAward(CourseAwardRequest $request, $user): array
     {
         try {
             return Course::query()
+                ->with(['award', 'course_results'=> function($query) use($user) {
+                    $query->whereNotNull('ended_at')
+                    ->where('user_id', $user->id)
+                    ->where('status', CourseResult::COMPLETED);
+                }])
                 ->findOrFail($request->input('course_id'))
-                ->award
                 ->toArray();
 
         } catch (\Throwable $exception) {
