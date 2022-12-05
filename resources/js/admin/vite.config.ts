@@ -1,9 +1,9 @@
+import { fileURLToPath } from 'url'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import DefineOptions from 'unplugin-vue-define-options/vite'
-import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
 import Pages from 'vite-plugin-pages'
 import Layouts from 'vite-plugin-vue-layouts'
@@ -23,22 +23,23 @@ export default defineConfig({
       },
     }),
     Pages({
-      extendRoute(route){
-        if(route.path === '/admino/login'){
+      extendRoute(route) {
+        if (route.path === '/admino/login') {
           return {
             ...route,
             meta: {
-              layout: 'blank'
-            }
+              layout: 'blank',
+            },
           }
         }
+
         return {
           ...route,
           meta: {
-            auth: true
-          }
+            auth: true,
+          },
         }
-      }
+      },
     }),
     Layouts(),
     Components({
@@ -68,10 +69,10 @@ export default defineConfig({
     rollupOptions: {
       output: {
         entryFileNames: 'assets/[name].js',
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
-      }
-    }
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]',
+      },
+    },
   },
   optimizeDeps: {
     exclude: ['vuetify'],
@@ -81,7 +82,7 @@ export default defineConfig({
   },
   experimental: {
     renderBuiltUrl(filename: string) {
-      return '/js/admino/' + filename
-    }
-  }
+      return `/js/admino/${filename}`
+    },
+  },
 })

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import VueApexCharts from 'vue3-apexcharts';
-import { useTheme } from 'vuetify';
+import VueApexCharts from 'vue3-apexcharts'
+import { useTheme } from 'vuetify'
 
 const vuetifyTheme = useTheme()
 
