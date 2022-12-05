@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useTheme } from 'vuetify'
 import upgradeBannerDark from '@/assets/images/pro/upgrade-banner-dark.png'
 import upgradeBannerLight from '@/assets/images/pro/upgrade-banner-light.png'
 import logo from '@/assets/logo.svg?raw'
 import { VerticalNavLink, VerticalNavSectionTitle } from '@layouts'
-import { useTheme } from 'vuetify'
 
 const vuetifyTheme = useTheme()
 const upgradeBanner = computed(() => {
@@ -37,99 +37,107 @@ const upgradeBanner = computed(() => {
       :item="{
         title: 'Dashboard',
         to: 'admino',
-        icon: { icon: 'mdi-home-outline' }
+        icon: { icon: 'mdi-home-outline' },
       }"
     />
     <VerticalNavLink
       :item="{
         title: 'Данные пользователей',
         to: 'admino-user-data',
-        icon: { icon: 'mdi-account-cog-outline' }
+        icon: { icon: 'mdi-account-cog-outline' },
       }"
     />
     <!-- 👉 Pages -->
-    <!-- <VerticalNavSectionTitle :item="{ heading: 'Pages' }" />
-    <VerticalNavLink
+    <!--
+      <VerticalNavSectionTitle :item="{ heading: 'Pages' }" />
+      <VerticalNavLink
       :item="{
-        title: 'Login',
-        to: 'login',
-        target: '_blank',
-        icon: { icon: 'mdi-login' }
+      title: 'Login',
+      to: 'login',
+      target: '_blank',
+      icon: { icon: 'mdi-login' }
       }"
-    />
-    <VerticalNavLink
+      />
+      <VerticalNavLink
       :item="{
-        title: 'Register',
-        to: 'register',
-        target: '_blank',
-        icon: { icon: 'mdi-account-plus-outline' }
+      title: 'Register',
+      to: 'register',
+      target: '_blank',
+      icon: { icon: 'mdi-account-plus-outline' }
       }"
-    /> -->
+      />
+    -->
 
     <!-- ℹ️ This path doesn't exist so 404 route will catch this undefined path -->
-    <!-- <VerticalNavLink
+    <!--
+      <VerticalNavLink
       :item="{
-        title: 'Error',
-        to: { path: '/error' },
-        target: '_blank',
-        icon: { icon: 'mdi-alert-circle-outline' }
+      title: 'Error',
+      to: { path: '/error' },
+      target: '_blank',
+      icon: { icon: 'mdi-alert-circle-outline' }
       }"
-    /> -->
+      />
+    -->
 
     <!-- 👉 User Interface -->
     <!-- <VerticalNavSectionTitle :item="{ heading: 'User Interface' }" /> -->
 
-    <!-- <VerticalNavLink
+    <!--
+      <VerticalNavLink
       :item="{
-        title: 'Typography',
-        to: 'typography',
-        icon: { icon: 'mdi-alpha-t-box-outline' }
+      title: 'Typography',
+      to: 'typography',
+      icon: { icon: 'mdi-alpha-t-box-outline' }
       }"
-    />
-    <VerticalNavLink
+      />
+      <VerticalNavLink
       :item="{
-        title: 'Icons',
-        to: 'icons',
-        icon: { icon: 'mdi-eye-outline' }
+      title: 'Icons',
+      to: 'icons',
+      icon: { icon: 'mdi-eye-outline' }
       }"
-    />
-    <VerticalNavLink
+      />
+      <VerticalNavLink
       :item="{
-        title: 'Cards',
-        to: 'card-basic',
-        icon: { icon: 'mdi-credit-card-outline' }
+      title: 'Cards',
+      to: 'card-basic',
+      icon: { icon: 'mdi-credit-card-outline' }
       }"
-    />
-    <VerticalNavLink
+      />
+      <VerticalNavLink
       :item="{
-        title: 'Tables',
-        to: 'tables',
-        icon: { icon: 'mdi-table' }
+      title: 'Tables',
+      to: 'tables',
+      icon: { icon: 'mdi-table' }
       }"
-    />
-    <VerticalNavLink
+      />
+      <VerticalNavLink
       :item="{
-        title: 'Form Layouts',
-        to: 'form-layouts',
-        icon: { icon: 'mdi-form-select' }
+      title: 'Form Layouts',
+      to: 'form-layouts',
+      icon: { icon: 'mdi-form-select' }
       }"
-    /> -->
+      />
+    -->
   </ul>
 
   <!-- 👉 illustration -->
-  <!-- <a
+  <!--
+    <a
     href="https://themeselection.com/item/materio-vuetify-vuejs-admin-template"
     target="_blank"
     rel="noopener noreferrer"
-  >
-    <img
-      :src="upgradeBanner"
-      alt="upgrade-banner"
-      transition="scale-transition"
-      class="upgrade-banner mx-auto"
-      style="max-width: 230px"
     >
-  </a> -->
+    <img
+    :src="upgradeBanner"
+    alt="upgrade-banner"
+    transition="scale-transition"
+    class="upgrade-banner mx-auto"
+    style="max-width: 230px"
+    >
+    </a>
+  -->
 </template>
 
 <style lang="scss">

@@ -8,8 +8,13 @@ import '@/styles/styles.scss'
 import '@core/scss/index.scss'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
+import flatpickr from 'flatpickr'
+import { Russian } from 'flatpickr/dist/l10n/ru.js'
+import 'flatpickr/dist/flatpickr.css'
 
 loadFonts()
+
+flatpickr.localize(Russian)
 
 const app = createApp(App)
 
