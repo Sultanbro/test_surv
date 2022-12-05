@@ -12,10 +12,9 @@ const router = createRouter({
   },
 })
 router.beforeEach((to, from) => {
-  if(to.meta && to.meta.auth){
-    if(!('id' in {id: '0'})){
-      return {name: 'admino-login'}
-    }
+  if (to.meta && to.meta.auth) {
+    if (!('id' in { id: '0' }))
+      return { name: 'admino-login' }
   }
 })
 

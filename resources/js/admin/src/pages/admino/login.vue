@@ -27,7 +27,7 @@ const authThemeMask = computed(() => {
 
 const isPasswordVisible = ref(false)
 
-function onSubmit(){
+function onSubmit() {
   console.log('onSubmit')
   userStore.login(form.value.email, form.value.password)
   router.push('/admino')
