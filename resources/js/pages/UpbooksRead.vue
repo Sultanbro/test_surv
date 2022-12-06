@@ -254,7 +254,8 @@ export default {
         })
         .then((response) => {
           this.$emit('changeProgress');
-          this.activeSegment.item_model = {status: 1}; 
+          this.$emit('forGenerateCertificate', response.data.item_model);
+          this.activeSegment.item_model = {status: 1};
          // this.activeVideo.item_models.push(response.data.item_model);
         })
         .catch((error) => {

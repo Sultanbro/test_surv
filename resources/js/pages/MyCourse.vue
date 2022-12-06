@@ -122,6 +122,7 @@
                       :key="activeCourseKey"
                       @nextElement="nextElement"
                       @changeProgress="completed_stages++"
+                      @forGenerateCertificate="generateCertificateStart"
                     />
                   </div>
  
@@ -139,6 +140,7 @@
                           :key="activeCourseKey"
                           @nextElement="nextElement"
                           @changeProgress="completed_stages++"
+                          @forGenerateCertificate="generateCertificateStart"
                       />
                   </div>
 
@@ -159,6 +161,7 @@
                         :completed_stages="completed_stages"
                         :key="activeCourseKey"
                         @changeProgress="completed_stages++"
+                        @forGenerateCertificate="generateCertificateStart"
                         @nextElement="nextElement"
                       /> 
 
@@ -232,6 +235,12 @@ export default {
   mounted() {},
   
   methods: {
+      generateCertificateStart(model){
+          console.log(model);
+          if(model === 0){
+              this.generateCertificate = true;
+          }
+      },
       generateSuccess(){
           this.$toast.success('Ваш сертификат готов! Можете посмотреть и загрузить его в своем профиле во вкладке "Номинации"', {
               timeout: 5000
@@ -250,7 +259,6 @@ export default {
         this.activeCourseItem.status = 2;
           this.generateCertificate = false;
       } else {
-        this.generateCertificate = true;
         this.$toast.success('Поздравляем с завершением курса!');
         this.$toast.warning('Подождите пару секунд, Ваш сертификат почти готов...', {
             timeout: 5000

@@ -25,7 +25,7 @@
         <br>
         <div v-if="hasImage || awards.length > 0" class="sertificate-prewiev">
             <div class="sertificate-modal">
-                <div class="preview-canvas" @click="modalCertificate = !modalCertificate">
+                <div class="preview-canvas" @click="openModalCertificate">
                     <vue-pdf-embed v-if="imageSrc" ref="vuePdfUploadCertificate" :source="imageSrc"/>
                 </div>
                 <BModal v-model="modalCertificate" modal-class="upload-certificate-modal"
@@ -124,6 +124,7 @@
         watch: {
             image(newValue) {
                 this.imageSrc = null;
+                this.$emit('has-change-constructor', false);
                 if (newValue) {
                     base64Encode(newValue)
                         .then((val) => {
@@ -137,6 +138,10 @@
             },
         },
         methods: {
+            openModalCertificate(){
+              this.modalCertificate = !this.modalCertificate;
+              this.$emit('has-change-constructor', true)
+            },
             selectAll() {
                 this.value = [];
                 this.$emit("remove-course-all");
@@ -186,6 +191,7 @@
             clearImage() {
                 this.image = null;
                 this.imageSrc = null;
+                this.$emit('has-change-constructor', false)
             },
         },
     };

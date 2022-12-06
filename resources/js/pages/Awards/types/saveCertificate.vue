@@ -106,12 +106,15 @@
             },
             hasDownloaded(blobPdf) {
                 this.pdfDownloaded = true;
-                let file = new File([blobPdf], this.title);
+                let file = new File([blobPdf], 'qwerty.pdf', {
+                    type: blobPdf.type,
+                });
                 const formData = new FormData();
                 formData.append('course_id', this.course_id);
                 formData.append('award_id', this.award.award_id);
                 formData.append('user_id', this.user_id);
                 formData.append('file', file);
+                console.log(file);
                 this.axios
                     .post("/awards/reward", formData, {
                         headers: {
