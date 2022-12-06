@@ -56,30 +56,28 @@
                         <div class="image-preview-container" v-if="award.format !== 'pdf'">
                             <BImg
                                     v-b-modal="'myModal'"
-                                    :src="award.path"
+                                    :src="award.tempPath"
                                     class="mb-3 img"
                                     fluid
                                     block
                                     rounded
                                     @click="modalOpen(award)"
                             ></BImg>
-                            <b-button variant="danger" size="sm" @click="removeImage(award.id)"><i
-                                    class="fa fa-trash"></i></b-button>
+                           <i class="fa fa-times" @click="removeImage(award.id)"></i>
                         </div>
                         <div class="image-preview-container" v-else>
                             <div @click="modalOpen(award)">
-                                <vue-pdf-embed :source="award.path"/>
+                                <vue-pdf-embed :source="award.tempPath"/>
                             </div>
-                            <b-button variant="danger" size="sm" @click="removeImage(award.id)"><i
-                                    class="fa fa-trash"></i></b-button>
+                            <i class="fa fa-times" @click="removeImage(award.id)"></i>
                         </div>
                     </div>
                 </b-col>
             </b-row>
         </template>
         <BModal v-model="modal" v-if="selectedModal" size="lg" centered>
-            <BImg :src="selectedModal.path" fluid block v-if="selectedModal.format !== 'pdf'"></BImg>
-            <vue-pdf-embed :source="selectedModal.path" v-else/>
+            <BImg :src="selectedModal.tempPath" fluid block v-if="selectedModal.format !== 'pdf'"></BImg>
+            <vue-pdf-embed :source="selectedModal.tempPath" v-else/>
             <template #modal-footer>
                 <b-button variant="secondary" @click="modal = !modal">Закрыть</b-button>
             </template>
@@ -216,24 +214,37 @@
                 width: 100%;
                 height: 100px;
 
-                .btn {
+                i {
                     position: absolute;
                     top: 5px;
-                    left: 5px;
+                    right: 5px;
                     z-index: 22;
+                    color: #dc3545;
+                    width: 35px;
+                    height: 35px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: rgba(220,53,69,0.2);
+                    border-radius: 6px;
+                    transition: 0.2s all ease;
+                    &:hover{
+                        color: #fff;
+                        background-color: rgba(220,53,69,1);
+                    }
                 }
             }
         }
 
         .clear-btn {
-            height: 40px;
+            height: 50px;
         }
 
         .form-file {
-            height: 40px;
+            height: 50px;
 
             .custom-file-input {
-                height: 40px;
+                height: 50px;
             }
 
             .custom-file-label {

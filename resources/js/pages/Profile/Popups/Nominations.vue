@@ -4,161 +4,185 @@
             <div class="throbber-loader"></div>
         </div>
         <b-tabs ref="tabis" v-model="tabIndex"
-                v-if="Object.keys(nominations).length > 0 || Object.keys(certificates).length > 0 || Object.keys(accrual).length > 0">
+                v-if="nominations.length > 0 || certificates.length > 0 || accrual.length > 0">
             <div class="prev-next">
                 <span class="prev" @click="tabIndex--"><i class="fa fa-chevron-left"></i></span>
                 <span class="next" @click="tabIndex++"><i class="fa fa-chevron-right"></i></span>
             </div>
-            <b-tab no-body :title="award.name" v-for="(award, index) in nominations" :key="award.id">
-                <b-tabs class="inside-tabs">
-                    <b-tab no-body title="Мои номинации" active>
-                        <div class="certificates__title">
-                            Сертификатов: <span class="current">{{award.my.length}}</span> из <span
-                                class="all">{{award.available.length + award.my.length}}</span>
-                        </div>
-
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
-                                  :key="item.id + key">
-                                <div class="certificates__item" @click="modalShow(item)">
-                                    <img :src="item.path" alt="certificate image" v-if="item.format !== 'pdf'">
-                                    <vue-pdf-embed :source="item.path" v-else />
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-
-                    <b-tab no-body title="Доступные номинации">
-                        <div class="certificates__title">
-                            Сертификатов: <span
-                                class="current">{{award.available.length}}</span> из <span
-                                class="all">{{award.available.length + award.my.length}}</span>
-                        </div>
-
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
-                                  :key="item.id + key">
-                                <div class="certificates__item" @click="modalShow(item)">
-                                    <img :src="item.path" alt="certificate image" v-if="item.format !== 'pdf'">
-                                    <vue-pdf-embed :source="item.path" v-else />
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-                    <b-tab no-body title="Номинации других участников">
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
-                                  :key="item.id + key">
-                                <div class="certificates__item" @click="modalShow(item)">
-                                    <img :src="item.path" alt="certificate image" v-if="item.format !== 'pdf'">
-                                    <vue-pdf-embed :source="item.path" v-else />
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-
-                </b-tabs>
-            </b-tab>
-
-            <b-tab no-body :title="award.name" v-for="(award, index) in certificates" :key="award.id">
-                <b-tabs class="inside-tabs">
-                    <b-tab no-body title="Мои номинации" active>
-                        <div class="certificates__title">
-                            Сертификатов: <span class="current">{{award.my.length}}</span> из <span
-                                class="all">{{award.available.length + award.my.length}}</span>
-                        </div>
-
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
-                                  :key="item.id + key">
-                                <div class="certificates__item" @click="modalShow(item)">
-                                    <img :src="item.path" alt="certificate image" v-if="item.format !== 'pdf'">
-                                    <vue-pdf-embed :source="item.path" v-else />
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-
-                    <b-tab no-body title="Доступные номинации">
-                        <div class="certificates__title">
-                            Сертификатов: <span
-                                class="current">{{award.available.length}}</span> из <span
-                                class="all">{{award.available.length + award.my.length}}</span>
-                        </div>
-
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
-                                  :key="item.id + key">
-                                <div class="certificates__item" @click="modalShow(item)">
-                                    <img :src="item.path" alt="certificate image" v-if="item.format !== 'pdf'">
-                                    <vue-pdf-embed :source="item.path" v-else />
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-                    <b-tab no-body title="Номинации других участников">
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
-                                  :key="item.id + key">
-                                <div class="certificates__item" @click="modalShow(item)">
-                                    <img :src="item.path" alt="certificate image" v-if="item.format !== 'pdf'">
-                                    <vue-pdf-embed :source="item.path" v-else />
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-
-                </b-tabs>
-            </b-tab>
-            <b-tab class="accrual-tab" no-body :title="award.name" active v-for="(award, index) in accrual"
-                   :key="index">
-                <BRow>
-                    <BCol cols="12" md="4" v-for="(item, index) in award.top" :key="item.id">
-                        <div class="nominations__item" :class="{green: index === 1}">
-                            <div class="nominations__item-title">
-                                Процент успешных
-                                исходящих продаж
+            <template v-if="nominations.length > 0">
+                <b-tab no-body :title="award.name" v-for="(award, index) in nominations" :key="award.id">
+                    <b-tabs class="inside-tabs">
+                        <b-tab no-body title="Мои номинации" active>
+                            <div class="certificates__title">
+                                Сертификатов:
+                                <span class="current" v-if="award.hasOwnProperty('my')">{{award.my.length}}</span>
+                                <span v-else>0</span>
+                                из
+                                <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
+                                <span class="all" v-else>{{award.available.length}}</span>
                             </div>
-                            <div class="nominations__item-avatar" :class="'gift-' + (index + 1)">
-                                <img :src="item.path" alt="profile avatar" v-if="item.path.length > 10">
-                                <img src="images/avatar.png" alt="profile avatar" v-else>
+
+                            <BRow v-if="award.hasOwnProperty('my')">
+                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
+                                      :key="item.id">
+                                    <div class="certificates__item" @click="modalShow(item, award.name)">
+                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                        <vue-pdf-embed :source="item.tempPath" v-else />
+                                    </div>
+                                </BCol>
+                            </BRow>
+                        </b-tab>
+
+                        <b-tab no-body title="Доступные номинации">
+                            <div class="certificates__title">
+                                Сертификатов: <span
+                                    class="current">{{award.available.length}}</span> из
+                                <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
+                                <span class="all" v-else>{{award.available.length}}</span>
                             </div>
-                            <div class="nominations__item-name">
-                                {{item.name}} {{item.last_name}}
+
+                            <BRow v-if="award.hasOwnProperty('available')">
+                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
+                                      :key="item.id">
+                                    <div class="certificates__item" @click="modalShow(item, award.name)">
+                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                        <vue-pdf-embed :source="item.tempPath" v-else />
+                                    </div>
+                                </BCol>
+                            </BRow>
+                        </b-tab>
+                        <b-tab no-body title="Номинации других участников">
+                            <BRow v-if="award.hasOwnProperty('other')">
+                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
+                                      :key="item.id">
+                                    <div class="certificates__item" @click="modalShow(item, award.name)">
+                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                        <vue-pdf-embed :source="item.tempPath" v-else />
+                                    </div>
+                                </BCol>
+                            </BRow>
+                            <div v-else class="certificates__title">
+                                Ни один из участников еще не получил награды
                             </div>
-                            <div class="nominations__item-subtext">
-                                {{item.position}}
-                            </div>
-                            <div class="nominations__item-value">
-                                {{item.total | splitNumber(item.total)}} ₸
-                            </div>
-                            <div class="nominations__item-wrapper">
-                                <div class="nominations__item-row">
-                                    <p>KPI</p>
-                                    <p> {{item.kpi | splitNumber(item.kpi)}} ₸</p>
+                        </b-tab>
+                    </b-tabs>
+                </b-tab>
+            </template>
+
+           <template v-if="certificates.length > 0">
+               <b-tab no-body :title="award.name" v-for="(award, index) in certificates" :key="award.id">
+                   <b-tabs class="inside-tabs">
+                       <b-tab no-body title="Мои номинации" active>
+                           <div class="certificates__title">
+                               Сертификатов:
+                               <span class="current" v-if="award.hasOwnProperty('my')">{{award.my.length}}</span>
+                               <span v-else>0</span>
+                               из
+                               <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
+                               <span class="all" v-else>{{award.available.length}}</span>
+                           </div>
+
+                           <BRow v-if="award.hasOwnProperty('my')">
+                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
+                                     :key="item.id">
+                                   <div class="certificates__item" @click="modalShow(item, award.name)">
+                                       <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                       <vue-pdf-embed :source="item.tempPath" v-else />
+                                   </div>
+                               </BCol>
+                           </BRow>
+                       </b-tab>
+
+                       <b-tab no-body title="Доступные номинации">
+                           <div class="certificates__title">
+                               Сертификатов: <span
+                                   class="current">{{award.available.length}}</span> из
+                               <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
+                               <span class="all" v-else>{{award.available.length}}</span>
+                           </div>
+
+
+                           <BRow v-if="award.hasOwnProperty('available')">
+                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
+                                     :key="item.id">
+                                   <div class="certificates__item" @click="modalShow(item, award.name)">
+                                       <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                       <vue-pdf-embed :source="item.tempPath" v-else />
+                                   </div>
+                               </BCol>
+                           </BRow>
+                       </b-tab>
+                       <b-tab no-body title="Номинации других участников">
+                           <BRow v-if="award.hasOwnProperty('other')">
+                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
+                                     :key="item.id">
+                                   <div class="certificates__item" @click="modalShow(item, award.name)">
+                                       <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                       <vue-pdf-embed :source="item.tempPath" v-else />
+                                   </div>
+                               </BCol>
+                           </BRow>
+                           <div v-else class="certificates__title">
+                               Ни один из участников еще не получил награды
+                           </div>
+                       </b-tab>
+                   </b-tabs>
+               </b-tab>
+           </template>
+
+            <template v-if="accrual.length > 0">
+                <b-tab class="accrual-tab" no-body :title="award.name" active v-for="(award, index) in accrual"
+                       :key="index">
+                    <BRow>
+                        <BCol cols="12" md="4" v-for="(item, index) in award.top" :key="item.id + index">
+                            <div class="nominations__item" :class="{green: index === 1}">
+                                <div class="nominations__item-title">
+                                    Процент успешных
+                                    исходящих продаж
                                 </div>
-                                <div class="nominations__item-row">
-                                    <p>БОНУСЫ</p>
-                                    <p>{{item.bonuses | splitNumber(item.bonuses)}} ₸</p>
+                                <div class="nominations__item-avatar" :class="'gift-' + (index + 1)">
+                                    <img :src="item.path" alt="profile avatar" v-if="item.path.length > 10">
+                                    <img src="images/avatar.png" alt="profile avatar" v-else>
                                 </div>
-                                <div class="nominations__item-row">
-                                    <p>ОКЛАД</p>
-                                    <p>{{item.earnings | splitNumber(item.earnings)}} ₸</p>
+                                <div class="nominations__item-name">
+                                    {{item.name}} {{item.last_name}}
+                                </div>
+                                <div class="nominations__item-subtext">
+                                    {{item.position}}
+                                </div>
+                                <div class="nominations__item-value">
+                                    {{item.total | splitNumber(item.total)}} ₸
+                                </div>
+                                <div class="nominations__item-wrapper">
+                                    <div class="nominations__item-row">
+                                        <p>KPI</p>
+                                        <p> {{item.kpi | splitNumber(item.kpi)}} ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>БОНУСЫ</p>
+                                        <p>{{item.bonuses | splitNumber(item.bonuses)}} ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>ОКЛАД</p>
+                                        <p>{{item.earnings | splitNumber(item.earnings)}} ₸</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </BCol>
-                </BRow>
-            </b-tab>
+                        </BCol>
+                    </BRow>
+                </b-tab>
+            </template>
+
         </b-tabs>
         <div v-else>
             <h4 class="not-awards">У Вас пока нет ни одной награды</h4>
         </div>
-        <b-modal v-if="itemModal" centered size="xl" v-model="modal" :title="itemModal.name">
-            <img :src="itemModal.path" class="img-fluid" alt="certificate image" v-if="itemModal.format !== 'pdf'">
-            <vue-pdf-embed :source="itemModal.path" v-else />
+        <b-modal v-if="itemModal" modal-class="awards-profile-modal-preview" centered size="xl" v-model="modal" :title="itemModal.name">
+            <img :src="itemModal.tempPath" class="img-fluid" alt="certificate image" v-if="itemModal.format !== 'pdf'">
+            <vue-pdf-embed :source="itemModal.tempPath" v-else />
             <template #modal-footer>
                 <BButton variant="primary" @click="modal = !modal">Закрыть</BButton>
+                <BButton variant="success" @click="downloadImage(itemModal)">Скачать</BButton>
             </template>
         </b-modal>
 
@@ -181,9 +205,9 @@
                 itemModal: null,
                 fields: [],
                 awardTypes: null,
-                nominations: {},
-                certificates: {},
-                accrual: {},
+                nominations: [],
+                certificates: [],
+                accrual: [],
             };
         },
         filters: {
@@ -228,8 +252,42 @@
             this.loading = false;
         },
         methods: {
-            modalShow(item) {
+            downloadImage(data) {
+                console.log(data);
+                var xhr = new XMLHttpRequest();
+                console.log(data);
+                xhr.open("GET", data.tempPath, true);
+
+                xhr.responseType = "arraybuffer";
+
+                xhr.onload = function (e) {
+                    var arrayBufferView = new Uint8Array(this.response);
+                    let options = {};
+                    if (data.format === 'png') {
+                        options.type = 'image/png'
+                    }
+                    if (data.format === 'jpg') {
+                        options.type = 'image/jpeg'
+                    }
+                    if (data.format === 'pdf') {
+                        options.type = 'application/pdf'
+                    }
+                    var blob = new Blob([arrayBufferView], options);
+                    var imageUrl = window.URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = imageUrl;
+                    a.download = `${data.awardName}-${data.award_id | data.id}.${data.format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    console.log(a);
+                    document.body.removeChild(a);
+                };
+
+                xhr.send();
+            },
+            modalShow(item, name) {
                 this.itemModal = item;
+                this.itemModal.awardName = name;
                 this.modal = !this.modal;
             },
         }
@@ -238,12 +296,17 @@
 
 
 <style lang="scss">
-    .awards-profile {
-        position: relative;
+    .awards-profile-modal-preview{
+        .img-fluid{
+            width: 100% !important;
+        }
         canvas{
             width: 100%!important;
             height: auto!important;
         }
+    }
+    .awards-profile {
+        position: relative;
         .prev-next {
             position: absolute;
             top: 0;
@@ -400,9 +463,13 @@
             box-shadow: rgb(50 50 93 / 25%) 0px 13px 27px -5px, rgb(0 0 0 / 30%) 0px 8px 16px -8px;
 
             img {
-                width: auto;
+                width: 100%;
                 height: 200px;
                 object-fit: cover;
+            }
+            canvas{
+                width: 100%!important;
+                height: auto !important;
             }
         }
 
