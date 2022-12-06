@@ -25,6 +25,7 @@ class CourseRegress implements RegressInterface
         try {
             DB::transaction(function () use ($data) {
                 (new CourseResultRepository)->resetResult($data['course_id'], $data['user_id']);
+                (new CourseResultRepository)->setIsRegressed($data['course_id'], $data['user_id']);
 
                 $this->resetTestResult($data['course_id'], $data['user_id']);
                 $this->resetTestBonus($data['course_id'], $data['user_id']);
