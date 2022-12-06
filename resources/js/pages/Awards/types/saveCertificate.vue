@@ -1,10 +1,10 @@
 <template>
     <div class="certificate-creator">
         <vue-html2pdf
-                :show-layout="true"
+                :show-layout="false"
                 :float-layout="true"
                 :pdf-quality="2"
-                :preview-modal="true"
+                :preview-modal="false"
                 :enable-download="false"
                 pdf-content-width="1000px"
                 :manual-pagination="true"
@@ -23,7 +23,7 @@
                                  style="margin-top: 40px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
                                  :style="{color: styles.fullName.color, fontSize: styles.fullName.size + 'px', fontWeight: styles.fullName.fontWeight, textTransform: styles.fullName.uppercase, display: styles.fullName.fullWidth ? 'block' : 'inline-block', width: styles.fullName.fullWidth ? '100%' : 'auto', transform: transformFullName}"
                             >
-                                {{award.course_results.user.name}} {{award.course_results.user.last_name}}
+                                {{award.course_results[0].user.name}} {{award.course_results[0].user.last_name}}
                             </div>
                             <div class="draggable"
                                  style="margin-top: 120px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
@@ -40,7 +40,7 @@
                                  style="margin-top: 280px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
                                  :style="{color: styles.date.color, fontSize: styles.date.size + 'px', fontWeight: styles.date.fontWeight, textTransform: styles.date.uppercase, display: styles.date.fullWidth ? 'block' : 'inline-block', width: styles.date.fullWidth ? '100%' : 'auto', transform: transformDateName}"
                             >
-                                {{award.course_results.ended_at}}
+                               {{ $moment(award.course_results[0].ended_at).format('DD.MM.YYYY') }}
                             </div>
                         </div>
                         <vue-pdf-embed :source="award.award.tempPath" @rendered="renderedEmbed"/>
