@@ -1,10 +1,11 @@
 <template>
     <sidebar
             id="edit-award-sidebar"
-            title="Сертификат"
+            :title="name ? name : 'Сертификат'"
             :open="open"
+            :class="isShow ? 'show' : ''"
             @close="$emit('update:open', false)"
-            width="60%"
+            width="70%"
     >
         <BForm ref="newSertificateForm" @submit.prevent="onSubmit">
             <BFormGroup
@@ -122,6 +123,8 @@
                         @styles-change="styleChange"
                         @add-course="addCourse"
                         @remove-course="removeCourse"
+                        @add-course-all="addCourseAll"
+                        @remove-course-all="removeCourseAll"
                         v-if="type === 2"
                         :awards="awards"
                         :id="category_id"
@@ -174,6 +177,7 @@
         },
         data() {
             return {
+                isShow: false,
                 readonly: false,
                 dropDownText: 'Выберите тип награды',
                 category_id: null,
@@ -196,8 +200,16 @@
             addCourse(id) {
                 this.course_ids.push(id);
             },
+            addCourseAll(arr){
+                for(let i = 0; i < arr.length; i++){
+                    this.course_ids.push(arr[i].id);
+                }
+            },
             removeCourse(id) {
                 this.course_ids = this.course_ids.filter(n => n !== id);
+            },
+            removeCourseAll(){
+                this.course_ids = [];
             },
             superselectChoice(val) {
                 console.log(val);
@@ -306,7 +318,7 @@
                 }
             },
             async onSubmit() {
-                if(!this.selectedType){
+                if(!this.selectedType && Object.keys(this.item).length === 0){
                     this.$refs.selectedtype.style.display = 'block';
                 }
                 if (this.type) {
@@ -350,6 +362,9 @@
             }
         },
         async mounted() {
+            setTimeout(() => {
+                this.isShow = true;
+            }, 20)
             if (Object.keys(this.item).length > 0) {
                 let loader = this.$loading.show();
                 await this.axios
@@ -370,6 +385,10 @@
                 }
                 if (this.item.hide === 0) {
                     this.hide = true;
+                }
+
+                if (this.type === 2){
+                    this.styles = this.awards[0].styles;
                 }
 
                 if (this.type === 3) {
@@ -395,6 +414,45 @@
 
 <style lang="scss">
     #edit-award-sidebar {
+        .form-control, .custom-file-label{
+            height: 50px;
+            border-radius: 6px;
+            background-color: #f7fafc;
+            padding: 10px 20px;
+            border: 1px solid #ddd!important;
+            &::placeholder{
+                color: #a9b6cb;
+            }
+            &:active, &:focus{
+                background-color: #fff;
+                box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+            }
+            .multiselect{
+                .multiselect__tags{
+                    height: 50px;
+                    border-radius: 6px;
+                    background-color: #f7fafc;
+                    padding: 10px 20px;
+                }
+            }
+        }
+        .ui-sidebar__body{
+            border-radius: 20px 0 0 20px;
+            overflow: hidden !important;
+        }
+        .ui-sidebar__header{
+            padding: 20px 25px !important;
+            background: #ffffff !important;
+            border-bottom: 1px solid #ddd;
+            span{
+                font-size: 24px;
+                color: #333 !important;
+                font-weight: 700;
+            }
+        }
+        .ui-sidebar__content{
+            padding: 20px 25px!important;
+        }
         .img-info{
             margin-top: -2px;
         }
