@@ -97,21 +97,10 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 Route::middleware([
     'web',
-    'not_admin_subdomain',
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
     \Auth::routes(); 
-    
-
-    WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
-
-    Route::get('/impersonate/{token}', function ($token) {
-        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
-    });
-    
-  
- 
 
     // Authentication Routes...
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -124,13 +113,23 @@ Route::middleware([
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
-    Route::group([
-        'prefix' => 'admin',
-        'as' => 'admin.'
-    ], function () {
-        Route::get('/owners', [\App\Http\Controllers\Admin\AdminController::class, 'owners']);
-    });
+    Route::any('/', [ProfileController::class, 'newprofile']);
+});
 
+
+Route::middleware([
+    'web',
+    'not_admin_subdomain',
+    InitializeTenancyBySubdomain::class,
+    PreventAccessFromCentralDomains::class,
+])->group(function () {
+    
+    WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
+
+    Route::get('/impersonate/{token}', function ($token) {
+        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
+    });
+    
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
 
 
@@ -150,9 +149,7 @@ Route::middleware([
     });
 
     Route::get('/test-for-check', [TestController::class, 'testMethodForCheck'])->name('testMethodForCheck');
-    // Profile
-    // Route::any('/', [UserProfileController::class, 'getProfile']); // old
-    Route::any('/', [ProfileController::class, 'newprofile']);
+
     Route::view('/doc', 'docs.index');
     Route::view('/html', 'design');
 
@@ -853,9 +850,6 @@ Route::middleware([
                 ->name('store');
         });
 
-
-
-
     Route::any('/getnewimage',[UserController::class,'getProfileImage']);
 
     Route::group([
@@ -1033,6 +1027,7 @@ Route::middleware([
 });
 
 
+
 /**
  * Owners list
  * Admin.jobtron.org routes
@@ -1044,13 +1039,20 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
 
+    Route::group([
+        'prefix' => 'admin',
+        'as' => 'admin.'
+    ], function () {
+        Route::get('/owners', [\App\Http\Controllers\Admin\AdminController::class, 'owners']);
+    });
 
-    // admin routes 
-    Route::get('/',     [\App\Http\Controllers\Admin\AdminController::class, 'index']);   
-    Route::get('/admin/owners', [\App\Http\Controllers\Admin\AdminController::class, 'index']);   
-
-    Route::get('/admins', [\App\Http\Controllers\Admin\AdminController::class, 'admins']);   
-    Route::post('/admins/add', [\App\Http\Controllers\Admin\AdminController::class, 'addAdmin']);   
-    Route::delete('/admins/delete/{user}', [\App\Http\Controllers\Admin\AdminController::class, 'deleteAdmin']);
- 
+    Route::group([
+        'prefix' => 'admins',
+        'as' => 'admins.'
+    ], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'admins']);   
+        Route::post('/add', [\App\Http\Controllers\Admin\AdminController::class, 'addAdmin']);   
+        Route::delete('/delete/{user}', [\App\Http\Controllers\Admin\AdminController::class, 'deleteAdmin']);
+    });
+    
 });
