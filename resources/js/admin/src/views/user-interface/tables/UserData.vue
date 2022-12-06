@@ -122,7 +122,14 @@ function formatDateTime(dateZ: string){
             {{ formatDateTime(item.login_at) }}
           </td>
           <td class="text-center">
-            {{ item.subdomains ? item.subdomains.length : 0 }}
+            <template v-if="item.subdomains">
+              <VChip
+                v-for="sub in item.subdomains"
+                :key="sub"
+                class="ma-2"
+                size="small"
+              >{{ sub }}</VChip>
+            </template>
           </td>
           <td class="text-center">
             <a :href="item.lead" target="_blank">{{ item.lead.split('/').reverse()[0] }}</a>
