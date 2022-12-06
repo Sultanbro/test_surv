@@ -93,10 +93,11 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 /**
  * Custom websocket handler
  */
-WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
+// WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
 
 Route::middleware([
     'web',
+    'not_admin_subdomain',
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
@@ -123,9 +124,6 @@ Route::middleware([
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
-    // admin routes 
-    Route::get('/admino', [\App\Http\Controllers\Admin\AdminController::class, 'index']);    
-    
     Route::group([
         'prefix' => 'admin',
         'as' => 'admin.'
@@ -990,6 +988,7 @@ Route::middleware([
  */
 Route::middleware([
     'api',
+    'not_admin_subdomain',
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
@@ -1031,4 +1030,27 @@ Route::middleware([
 
     
 
+});
+
+
+/**
+ * Owners list
+ * Admin.jobtron.org routes
+ */
+Route::middleware([
+    'web',
+    'admin_subdomain',
+    InitializeTenancyBySubdomain::class,
+    PreventAccessFromCentralDomains::class,
+])->group(function () {
+
+
+    // admin routes 
+    Route::get('/',     [\App\Http\Controllers\Admin\AdminController::class, 'index']);   
+    Route::get('/admin/owners', [\App\Http\Controllers\Admin\AdminController::class, 'index']);   
+
+    Route::get('/admins', [\App\Http\Controllers\Admin\AdminController::class, 'admins']);   
+    Route::post('/admins/add', [\App\Http\Controllers\Admin\AdminController::class, 'addAdmin']);   
+    Route::delete('/admins/delete/{user}', [\App\Http\Controllers\Admin\AdminController::class, 'deleteAdmin']);
+ 
 });

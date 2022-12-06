@@ -100,6 +100,11 @@ class LoginController extends Controller
 
             $request->session()->regenerate();
             
+            // admin.jobtron.org
+            if(request()->getHost() == 'admin.' .config('app.domain')) {
+                return redirect('owners');
+            }
+
             // login in central app
             if(request()->getHost() == config('app.domain')) {
                 
@@ -121,7 +126,7 @@ class LoginController extends Controller
                 }   
 
             } 
-
+            
             return redirect($this->redirectTo);
 
         } else {
