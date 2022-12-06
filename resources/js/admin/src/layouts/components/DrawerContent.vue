@@ -34,6 +34,7 @@ const upgradeBanner = computed(() => {
   <!-- 👉 Nav items -->
   <ul>
     <VerticalNavLink
+      key="admino"
       :item="{
         title: 'Dashboard',
         to: 'admino',
@@ -41,6 +42,7 @@ const upgradeBanner = computed(() => {
       }"
     />
     <VerticalNavLink
+      key="admino-user-data"
       :item="{
         title: 'Данные пользователей',
         to: 'admino-user-data',
@@ -48,10 +50,11 @@ const upgradeBanner = computed(() => {
       }"
     />
     <VerticalNavLink
+      key="admino-user-permissions"
       :item="{
         title: 'Доступы',
         to: 'admino-user-permissions',
-        icon: { icon: 'mdi-account-cog-outline' },
+        icon: { icon: 'mdi-account-lock-open-outline' },
       }"
     />
     <!-- 👉 Pages -->

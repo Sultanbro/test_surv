@@ -48,10 +48,10 @@ const dateConfig = {
   display: block;
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid rgba(58, 53, 65, 0.68);
+  border: 1px solid rgba(208, 203, 215, 1);
   border-radius: 6px;
   font-size: 16px;
-  line-height: 1;
+  line-height: 1.35;
   color: rgba(58, 53, 65, 0.68);
   background: #fff;
   letter-spacing: .009375em;
@@ -60,8 +60,8 @@ const dateConfig = {
 .v-date-time-input::placeholder{
   opacity: 1 !important;
 }
-.v-date-time-input:focus{
-  outline: none;
+.v-date-time-input:hover{
+  border-color: rgb(108, 103, 115);
 }
 .v-date-time-input:focus ~ .v-date-time-label,
 .v-date-time_value .v-date-time-input ~ .v-date-time-label{
@@ -69,22 +69,28 @@ const dateConfig = {
   top: -0.357rem;
   font-size: 12px;
   line-height: 1;
-  color: rgba(58, 53, 65, 0.34);
+  color: rgb(158, 153, 165);
   transform: none;
   padding: 0 4px;
+}
+.v-date-time-input:focus{
+  outline: none;
+  border-color: rgb(145, 85, 253);
+}
+.v-date-time-input:focus ~ .v-date-time-label{
+  color: rgb(145, 85, 253);
 }
 .v-date-time-label{
   position: absolute;
   z-index: 1;
   top: 50%;
-  left: 50%;
+  left: 1rem;
   font-size: 1rem;
   line-height: 1;
-  color: rgba(58, 53, 65, 0.68);
+  color: rgba(58, 53, 65, 0.34);
   background: #fff;
-  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
   transition: 300ms ease all;
-  opacity: 0.68;
   white-space: nowrap;
 }
 </style>

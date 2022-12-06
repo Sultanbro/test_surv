@@ -15,6 +15,23 @@ declare interface UserData {
   full_name: string
 }
 
+declare interface UserDataRequest {
+  per_page?: number
+  page?: number
+  '>balance'?: string | number
+  '<balance'?: string | number
+  '>login_at'?: string
+  '<login_at'?: string
+  '>birthday'?: string
+  '<birthday'?: string
+  'name'?: string
+  'last_name'?: string
+  'email'?: string
+  'lead'?: string
+  'city'?: string
+  'country'?: string
+}
+
 declare interface UserDataResponse {
   items: {
     current_page: number
@@ -32,19 +49,22 @@ declare interface UserDataResponse {
   }
 }
 
-declare interface UserDataRequest {
+declare interface UserPermissions {
+  id: number,
+  name: string,
+  access: boolean
+}
+
+declare interface UserPermissionsRequest {
   per_page?: number
   page?: number
-  '>balance'?: string | number
-  '<balance'?: string | number
-  '>login_at'?: string
-  '<login_at'?: string
-  '>birthday'?: string
-  '<birthday'?: string
-  'name'?: string
-  'last_name'?: string
-  'email'?: string
-  'lead'?: string
-  'city'?: string
-  'country'?: string
+}
+
+declare interface UserPermissionsResponse {
+  items?: {
+    data: Array<UserPermissions>
+    total?: number
+    current_page?: number
+    last_page?: number
+  }
 }

@@ -109,7 +109,7 @@ function setSort(field: UserDataKeys | '') {
           {{ item.login_at }}
         </td>
         <td class="text-center">
-          {{ item.subdimains }}
+          {{ item.subdomains ? item.subdomains.length : 0 }}
         </td>
         <td class="text-center">
           <a :href="item.lead">{{ item.lead }}</a>

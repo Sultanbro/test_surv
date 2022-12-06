@@ -24,10 +24,28 @@ export const fetchUserData = async (req: UserDataRequest) => {
   }
 }
 
-export const fetchUserPermissions = async (req: UserDataRequest) => {
+export const fetchUserPermissions = async (req: UserPermissionsRequest) => {
   try {
-    const { data, status } = await axios.get<UserDataResponse>('/admin/owners', { params: req })
-
+    // const { data, status } = await axios.get<UserPermissionsResponse>('/admin/owners', { params: req })
+    const data: UserPermissionsResponse = {
+      items: {
+        data: [
+          {
+            id: 1,
+            name: 'Тестовый Юзер',
+            access: false
+          },
+          {
+            id: 2,
+            name: 'Тестовый Пользователь',
+            access: true
+          }
+        ],
+        total: 2,
+        current_page: 1,
+        last_page: 1,
+      }
+    }
     return data
   }
   catch (error) {
