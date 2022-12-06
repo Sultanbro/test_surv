@@ -44,8 +44,21 @@ class TestController extends Controller {
   
 	
 	public function test() { 
-		$lead = ObtainedBonus::getHistory(20122, '2022-11-01', 1);
-		dd($lead);
+		 
+        // create tenant
+        $tenant = Tenant::create(['id' => 'admin']);
+
+        // create domain
+        $tenant->createDomain('admin');
+
+        // attach to owner
+        $centralUser = CentralUser::where('email', 'karim_a@list.ru')->first();
+
+		if($centralUser) {
+            $centralUser->tenants()->attach($tenant);
+        }   
+
+		dd('ok');
 	}
 
     public function testMethodForCheck()
