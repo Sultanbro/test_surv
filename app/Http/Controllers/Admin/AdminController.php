@@ -46,7 +46,7 @@ class AdminController extends Controller
      * @param Request $request
      * @return JsonResponse 
      */
-    public function adminss(Request $request, OwnerRepository $ownerRepository)
+    public function admins(Request $request, OwnerRepository $ownerRepository)
     {
         return response()->json([
             'items' => $ownerRepository->getAdmins()
