@@ -192,10 +192,6 @@ Route::middleware([
 
     Route::any('/bonuses', [UserProfileController::class, 'getBonuses']);
 
-    Route::post('logout', [LoginController::class, 'logout']);//->name('logout');
-
-
-   
     Route::post('/corp_book/set-read/', [UserController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
     Route::any('/timetracking/user/{id}', [UserController::class, 'profile']);
     Route::post('/timetracking/change-password', [UserController::class, 'changePassword']);
@@ -209,8 +205,6 @@ Route::middleware([
     Route::post('/timetracking/edit-person/book', [UserController::class, 'editPersonBook']); // Удалять добавлять корп книги пользователю
     Route::any('/timetracking/delete-person', [UserController::class, 'deleteUser'])->name('removeUser');
     Route::any('/timetracking/recover-person', [UserController::class, 'recoverUser'])->name('recoverUser');
-
-    ///
 
     /* Самостоятельная отметка стажеров */
     Route::get('/autocheck/{id}', [TraineeController::class, 'autocheck']); // cтраница со ссылками для отметки стажерами
