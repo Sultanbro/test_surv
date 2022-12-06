@@ -101,7 +101,7 @@ class AdminController extends Controller
         }
 
         try {
-            return response()->success($user->delete());
+            return response()->success($user->forceDelete());
         }catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
