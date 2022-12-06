@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="old__content">
-<my-course />
+<my-course :user_id="{{auth()->user()->getAuthIdentifier()}}" />
 </div>
 @endsection
 

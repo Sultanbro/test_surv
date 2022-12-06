@@ -66,7 +66,7 @@ class UserController extends Controller
     public function __construct(AdminUserService $userService)
     {
         $this->userService = $userService;
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -924,9 +924,9 @@ class UserController extends Controller
      */
     public function updatePerson(Request $request)
     {
-        if(!auth()->user()->can('users_view')) {
-            return redirect('/');
-        }
+//        if(!auth()->user()->can('users_view')) {
+//            return redirect('/');
+//        }
         /*==============================================================*/
         /********** Подготовка  */
         /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника ), не знаю баг или нет  */
@@ -934,10 +934,10 @@ class UserController extends Controller
 
         //if(Auth::user()->id == 5) dd($request->all());
         $id = $request['id'];
-        $user = User::with('zarplata')->where('id', $id)->withTrashed()->first();
+        $user = User::with('zarplata')->where('id', 6288)->withTrashed()->first();
         $photo = Photo::where('user_id', $id)->first();
         $downloads = Downloads::where('user_id', $id)->first();
-      
+
         $zarplata = !is_null($user->zarplata) && !is_null($user->zarplata->zarplata) ? $user->zarplata->zarplata : 0;
         
 
@@ -1088,23 +1088,6 @@ class UserController extends Controller
             $ud->save();
         }
 
-//         Не понятно зачем этот функционал здесь?
-//        /*==============================================================*/
-//        /*******  Стажер или нет  */
-//        /*==============================================================*/
-//        $trainee = User::isTrainee($request->id);
-//
-//        if($request->is_trainee)  {
-//            if($trainee) {
-//                (new UserProfileService)->approveForTrainee($user);
-//            }
-//        }
-
-        /**
-         * Оплатите внешнему рекрутеру за нового сотрудника
-         */
-        //dd($request->all());
-
         if(in_array($user->segment, [7,8,9,10,11,12])) {
 
             $ud = UserDescription::where('is_trainee', 0)->where('user_id', $user->id)->first();
@@ -1141,7 +1124,7 @@ class UserController extends Controller
             }
 
             
-        }   
+        }
 
         /*==============================================================*/
         /*******  Руковод или нет  */
@@ -1158,6 +1141,10 @@ class UserController extends Controller
                 $gr->save();
                    
             }
+        } else {
+            $user->groups()->update([
+                'is_head' => 0
+            ]);
         }
         /*==============================================================*/
         /********** Добавление дополнительных телефонов  */

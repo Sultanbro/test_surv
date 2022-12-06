@@ -80,6 +80,8 @@ class Kernel extends HttpKernel
         'referral' => \App\Http\Middleware\Referral::class,
         'timezone' => \App\Http\Middleware\Timezone::class,
         'superuser' => \App\Http\Middleware\CheckSuperUser::class,
-        'is_admin' => CheckIsAdminMiddleware::class
+        'admin_subdomain' => \App\Http\Middleware\IsAdminSubDomain::class,
+        'not_admin_subdomain' => \App\Http\Middleware\IsNotAdminSubDomain::class,
+        'is_admin' => CheckIsAdminMiddleware::class,
     ];
 }

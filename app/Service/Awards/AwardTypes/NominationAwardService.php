@@ -12,6 +12,7 @@ use App\Models\Award\AwardCategory;
 use App\Service\Interfaces\Award\AwardInterface;
 use App\User;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 class NominationAwardService implements AwardInterface
 {
@@ -76,10 +77,9 @@ class NominationAwardService implements AwardInterface
 
     /**
      * @param StoreAwardRequest $request
-     * @return array
      * @throws Exception
      */
-    public function store(StoreAwardRequest $request): array
+    public function store(StoreAwardRequest $request)
     {
         $awards = [];
         try {
@@ -92,7 +92,7 @@ class NominationAwardService implements AwardInterface
                 ]);
 
             }
-            return $awards;
+            return \response()->success($awards);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }

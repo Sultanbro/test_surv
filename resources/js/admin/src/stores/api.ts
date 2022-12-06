@@ -1,65 +1,73 @@
 import axios from 'axios'
 
-function onError(error: any){
+function onError(error: any) {
   if (axios.isAxiosError(error)) {
-    console.log('error message: ', error.message);
-    return error.message;
+    console.log('error message: ', error.message)
+
+    return error.response ? error.response.data : {
+      errors: {
+        system: ['An unexpected error occurred']
+      }
+    }
   }
   else {
-    console.log('unexpected error: ', error);
-    return 'An unexpected error occurred';
+    console.log('unexpected error: ', error)
+
+    return {
+      errors: {
+        system: ['An unexpected error occurred']
+      }
+    }
   }
 }
 
-export type UserDataFilter = {
-  field: string,
-  operation: string,
-  value: string
-}
-export type UserData = {
-  id: number,
-  last_name?: string,
-  name?: string,
-  email: string,
-  created_at: string,
-  login_at: string,
-  birthday: string,
-  country: string,
-  city: string,
-  lead: string,
-  balance: string,
-  subdimains: Array<string>,
-  full_name: string
-}
-export type UserDataResponse = {
-  items: {
-    current_page: number,
-    data: Array<UserData>,
-    first_page_url?: string,
-    from?: number,
-    last_page?: number,
-    last_page_url?: string,
-    next_page_url?: string,
-    path?: string,
-    per_page?: number,
-    prev_page_url?: number,
-    to?: number,
-    total?: number
+export const logout = async () => {
+  try {
+    const { data, status } = await axios.post('/logout', {})
+    return data
   }
+  catch (error) {
+    return onError(error)
+  }
+}
 
-}
-export type UserDataRequest = {
-  per_page?: number,
-  page?: number,
-  '>balance'?: number,
-  '<balance'?: number
-}
 export const fetchUserData = async (req: UserDataRequest) => {
-  try{
-    const {data, status} = await axios.get<UserDataResponse>('/admin/owners', {params: req})
+  try {
+    const { data, status } = await axios.get<UserDataResponse>('/admin/owners', { params: req })
+
     return data
   }
   catch (error) {
     onError(error)
+  }
+}
+
+export const fetchUserPermissions = async (req: UserPermissionsRequest) => {
+  try {
+    const { data, status } = await axios.get<UserPermissionsResponse>('/admins', { params: req })
+    return data
+  }
+  catch (error) {
+    return onError(error)
+  }
+}
+
+export const addUserPermissions = async (req: AddUserPermissionsRequest) => {
+  try {
+    const { data, status } = await axios.post<AddUserPermissionsResponse>('/admins/add', req)
+    return data
+  }
+  catch (error) {
+    return onError(error)
+  }
+}
+
+export const removeUserPermissions = async (id: number) => {
+  try {
+    const { data, status } = await axios.delete<UserPermissionsResponse>(`/admins/delete/${id}`)
+    return data
+  }
+  catch (error) {
+    return onError(error)
   }
 }

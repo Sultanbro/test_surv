@@ -7,3 +7,9 @@
     </VLayout>
   </VApp>
 </template>
+
+<style>
+.aic{
+  align-items: center;
+}
+</style>

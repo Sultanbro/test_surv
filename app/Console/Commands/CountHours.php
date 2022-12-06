@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Components\TelegramBot;
-use App\Setting;
+use App\ProfileGroup;
+use App\Timetracking;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,11 @@ class CountHours extends Command
     protected $description = 'Command description';
 
     /**
+     * Selected date
+     */
+    protected Carbon $date;
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -40,146 +46,96 @@ class CountHours extends Command
      * @return mixed
      */
     public function handle()
-    {
-        $argDate1 = $this->argument('date');
-        $argUserId = $this->argument('user_id');
-
-        $timeZone = Setting::TIMEZONES[6];
-        if (!is_null($argDate1)) {
-            $date2 = Carbon::parse($argDate1, $timeZone)->startOfDay();
-        } else {
-            $date2 = Carbon::now($timeZone)->startOfDay();
-        }
-        $this->line("Дата ".$date2);
-
-        $date = explode(".", date("d.m.Y", strtotime($date2)));
-        $day = $date[0];
-        $month = $date[1];
-        $year = $date[2];
-
-
-        if (!is_null($argUserId)) {
-            // команда запускается, теперь надо посчитать минуты от одной даты до другой
-            $timetrackingDays = DB::table('timetracking')
-                ->select('id', 'enter','exit','total_hours','user_id', 'created_at', 'updated')
-                ->where('user_id', '=', $argUserId)
-                ->whereDay('enter', '=', $day)
-                ->whereMonth('enter', '=', $month)
-                ->whereYear('enter', '=', $year)
+    {   
+        $this->setDate();
+        
+        $timetrackingRecords = Timetracking::query()
+                ->select('id', 'enter', 'exit', 'total_hours', 'user_id')
+                ->whereDate('enter',  $this->date->format('Y-m-d'))
+                ->whereNotNull('exit')
+                ->where('updated', 0) // non updated records
                 ->get();
 
-            foreach ($timetrackingDays as $day) {
-                // теперь надо посчитать минуты
-                $diffInSeconds = round(strtotime($day->exit) - strtotime($day->enter));
-                $diffInMinutes = round($diffInSeconds/60);
-                DB::table('timetracking')->where('id', '=', $day->id)->update(['total_hours' => $diffInMinutes]);
-                $this->line('Было обновлено '. $diffInMinutes. ' минут');
+        $users = User::whereIn('id', $timetrackingRecords->pluck('user_id')->toArray())->get();
+
+        foreach($timetrackingRecords as $record) {
+
+            $user = $users->where('id', $record->user_id)->first();
+
+            if( !$user ) {
+                continue;
             }
-        } else {
-            $timetrackingUsers = DB::table('timetracking')
-                ->select('id', 'enter', 'exit', 'total_hours', 'user_id', 'created_at', 'updated')
-                ->whereDay('enter', '=', $day)
-                ->whereMonth('enter', '=', $month)
-                ->whereYear('enter', '=', $year)
-                ->get();
 
-            $userGroups = DB::table('profile_groups')->get();
+            $schedule = $user->schedule();
 
+            $workStart = $schedule['start'];
+            $workEnd   = $schedule['end'];
+            
+            $timeStart = $this->countFromShiftStartTime($workStart, $record->enter);
+            $timeEnd   = Carbon::parse($record->exit); // не учитываем конец дня, засчитываем как переработку
 
-            foreach($timetrackingUsers as $user) {
+            $minutes = $timeEnd->diffInMinutes($timeStart);
+            $minutes = $this->subtractLunchTime($minutes);
 
-
-                // вот здесь мне надо брать либо время профиля, либо время группы
-                $userProfile = DB::table('users')
-                    ->select('*')
-                    ->where('id', '=', $user->user_id)
-                    ->first();
-
-                if (!is_null($userProfile)) {
-
-                    $workStart = '09:00:00';
-                    if (!is_null($userProfile->work_start)) {
-                        $workStart = $userProfile->work_start;
-                        $this->line("ID пользователя ".$user->user_id);
-
-                    } else {
-
-
-                        foreach ($userGroups as $group) {
-                            $usersInGroup = explode(',', trim($group->users, '[]'));
-                            foreach ($usersInGroup as $userIDInGroup) {
-                                if ($user->user_id == $userIDInGroup ) {
-                                    $workStart = $group->work_start;
-                                    break;
-                                }
-
-                            }
-                        }
-
-                    }
-                    $timeStart = $user->enter;
-                    $timeEnd = $user->exit;
-
-                    $workStartInSeconds = strtotime($year.'-'.$month.'-'.$day.' '.$workStart);
-                    //  $this->line("Время начала смены ". $year.'-'.$month.'-'.$day.' '.$workStart);
-                    //  $this->line("Время начала работы ". $user->enter);
-                    //  $this->line("Время конца работы ". $user->exit);
-                    if ($workStartInSeconds > strtotime($user->enter) && $user->updated == 0) {
-                        $this->line("Время начала работы меньше чем время начала смены, значит считаем от начала смены");
-                        $timeStart = $year.'-'.$month.'-'.$day.' '.$workStart;
-                    }
-
-                    if($user->updated == 1) {
-                        $timeStart = $year.'-'.$month.'-'.$day.' '.$workStart;
-                    }
-
-                    //$this->line("Итого считает работу от ". $timeStart);
-                    //$this->line("до ". $timeEnd);
-                    $diffInSeconds = round(strtotime($timeEnd) - strtotime($timeStart));
-                    $diffInMinutes = round($diffInSeconds/60);
-                    $diffInHours = round(floatval($diffInMinutes/60),2);
-                    //                    $this->line("Отработано минут ". $diffInMinutes);
-                    //                    $this->line("Отработано часов ". $diffInHours);
-
-
-
-                    $lunch = 1;
-                    if ($user->updated === 0) {
-                        if ($diffInHours > 5) {
-                            $diffInHours = $diffInHours - $lunch;
-                        }
-                    }
-                    
-                    if($user->updated == 1) {
-                        if ($diffInHours > 5) {
-                            $diffInHours = $diffInHours - $lunch;
-                        }
-                    }
-
-
-                    $diffInMinutes = $diffInHours * 60;
-
-                    if ($diffInMinutes <= 0) {
-                        $diffInMinutes = 0;
-                    }
-
-
-                    if ($user->updated === 0) {
-                        DB::table('timetracking')->where('id', '=', $user->id)->update(['total_hours' => $diffInMinutes]);
-                        //$this->line('Было обновлено '. $diffInMinutes. ' минут, у пользователя '.$user->id);
-                    }
-
-                    // if($user->updated == 1) {
-                    //     DB::table('timetracking')->where('id', '=', $user->id)->update(['total_hours' => $diffInMinutes]);
-                    // }
-                    
-                    
-                }
-
+            if ($minutes <= 0) {
+                $minutes = 0;
             }
-            $this->line('Было найдено юзеров: '. count($timetrackingUsers));
 
+            $record->update(['total_hours' => $minutes]);
         }
+
+        $this->line('Было найдено нередактированных записей: '. count($timetrackingRecords));
 
     }
+
+    /**
+     * Время начала работы меньше чем время начала смены, значит считаем от начала смены
+     * @param Carbon $workStartAt
+     * @param Carbon $enterAt
+     * @return Carbon
+     */
+    protected function countFromShiftStartTime(Carbon $workStartAt, Carbon $enterAt)
+    {
+        $workStartAt = $this->date->setTimeFrom($workStartAt);
+
+        if ( $workStartAt->diffInMinutes($enterAt, false) > 0 ) {
+            return $workStartAt;
+        }
+        
+        return $enterAt;
+    }
+
+    /**
+     * Вычесть обед из отработанных минут
+     * @param int|float $minutes
+     * @return int|float
+     */
+    protected function subtractLunchTime(int|float $minutes)
+    {
+        $lunch = 60 * 1;
+
+        if ($minutes > 60 * 5) {
+            $minutes = $minutes - $lunch;
+        }
+             
+        return $minutes;
+    }
+
+    /**
+     * Выбранная дата
+     * @return void
+     */
+    protected function setDate()
+    {
+        $timeZone = \App\Setting::TIMEZONES[6];
+
+        if ($this->argument('date')) {
+            $this->date = Carbon::parse($this->argument('date'), $timeZone)->startOfDay();
+        } else {
+            $this->date = Carbon::now($timeZone)->startOfDay();
+        }
+
+        // $argUserId = $this->argument('user_id');
+    }
+    
 }

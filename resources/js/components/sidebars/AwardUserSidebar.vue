@@ -2,10 +2,10 @@
     <sidebar
             id="award-user-sidebar"
             title="Наградить пользователя"
-            v-if="open"
             :open="open"
+            :class="isShow ? 'show' : ''"
             @close="open = false"
-            width="45%"
+            width="70%"
     >
         <b-button variant="primary" class="mx-auto d-block my-3" @click="openModalAdd">
             Загрузить файл награды
@@ -13,52 +13,74 @@
         <p class="or">или</p>
         <p class="or2">Выберите один из шаблонов</p>
         <hr>
-       <div class="available-container">
-           <div v-for="award in awards" :key="award.name">
-               <b-card :title="award.name"
-                       border-variant="secondary"
-                       header-border-variant="secondary"
-               >
-                   <b-row>
-                       <b-col cols="12" md="3" class="mb-4" v-for="item in award.available" :key="item.id + item.format">
-                           <div class="award-image" @click="openModalSelect(item, award.name)">
-                               <img :src="item.path" alt="" v-if="item.format !== 'pdf'">
-                               <vue-pdf-embed v-else :source="item.path"/>
-                           </div>
-                       </b-col>
-                   </b-row>
-               </b-card>
-               <hr>
-           </div>
-       </div>
-        <hr>
-       <div class="my-container">
-           <b-card title="Выданные награды"
-                   border-variant="secondary"
-                   header-border-variant="secondary"
-           >
-               <b-row v-if="myAwards.length > 0">
-                   <b-col cols="12" md="3" class="mb-4" v-for="item in myAwards" :key="item.id + item.format">
-                       <div class="award-image" @click="removeReward(item)">
-                           <img :src="item.path" alt="" v-if="item.format !== 'pdf'">
-                           <vue-pdf-embed :source="item.path" v-else/>
-                           <i class="fa fa-trash"></i>
-                       </div>
-                   </b-col>
-               </b-row>
-               <div v-else>
-                   <p class="title-not-rewards">Нет ни одной выданной награды</p>
-               </div>
-           </b-card>
-       </div>
+        <b-tabs ref="tabAwardUser" v-model="tabIndex">
+            <template v-if="awards.length > 0">
+                <div class="prev-next">
+                    <span class="prev" @click="tabIndex--"><i class="fa fa-chevron-left"></i></span>
+                    <span class="next" @click="tabIndex++"><i class="fa fa-chevron-right"></i></span>
+                </div>
+                <b-tab :title="award.name" v-for="award in awards" :key="award.name">
+                    <b-card
+                            title="Доступные награды"
+                            border-variant="secondary"
+                            header-border-variant="secondary"
+                    >
+                        <b-row>
+                            <b-col cols="12" md="2" class="mt-4 remove-award-modal"
+                                   v-for="item in award.available"
+                                   :key="item.id + item.format">
+                                <div class="award-image">
+                                    <div @click="previewImage(item)">
+                                        <img :src="item.tempPath" alt="" v-if="item.format !== 'pdf'">
+                                        <vue-pdf-embed v-else ref="vuePdfEmbeds" :source="item.tempPath"/>
+                                    </div>
+                                    <i class="fa fa-download button download"
+                                       @click="downloadImage(item, award.name)"></i>
+                                    <i class="fa fa-award button award" @click="openModalSelect(item, award.name)"></i>
+                                </div>
+                            </b-col>
+                        </b-row>
+                    </b-card>
+                    <template v-if="award.hasOwnProperty('my')">
+                        <hr class="mt-4">
+                        <div class="my-container">
+                            <b-card title="Выданные награды"
+                                    border-variant="secondary"
+                                    header-border-variant="secondary"
+                            >
+                                <b-row>
+                                    <b-col cols="12" md="2" class="mt-4" v-for="item in award.my"
+                                           :key="item.id + item.format">
+                                        <div class="award-image" @click="removeReward(item)">
+                                            <img :src="item.tempPath" alt="" v-if="item.format !== 'pdf'">
+                                            <vue-pdf-embed :source="item.tempPath" v-else/>
+                                            <i class="fa fa-trash"></i>
+                                        </div>
+                                    </b-col>
+                                </b-row>
+                            </b-card>
+                        </div>
+                    </template>
+                </b-tab>
+            </template>
+        </b-tabs>
+
+        <BModal v-model="modalPreview" modal-class="preview-modal" title="Предосмотр награды"
+                size="lg" centered>
+            <img :src="modalPreviewData.tempPath" alt="" v-if="modalPreviewData.format !== 'pdf'">
+            <vue-pdf-embed :source="modalPreviewData.tempPath" v-else/>
+            <template #modal-footer>
+                <b-button variant="secondary" @click="modalPreview = !modalPreview">Закрыть</b-button>
+            </template>
+        </BModal>
 
         <BModal v-model="modalRemoveReward" modal-class="remove-award-modal" title="Отмена награды"
                 size="lg" centered>
             <h4 class="title-remove">Вы действительно хотите отозвать награду?</h4>
             <hr class="my-4">
             <div class="award-image-remove" v-if="modalRemoveRewardData">
-                <img :src="modalRemoveRewardData.path" alt="" v-if="modalRemoveRewardData.format !== 'pdf'">
-                <vue-pdf-embed :source="modalRemoveRewardData.path" v-else/>
+                <img :src="modalRemoveRewardData.tempPath" alt="" v-if="modalRemoveRewardData.format !== 'pdf'">
+                <vue-pdf-embed :source="modalRemoveRewardData.tempPath" v-else/>
             </div>
             <template #modal-footer>
                 <b-button variant="secondary" @click="modalRemoveReward = !modalRemoveReward">Отмена</b-button>
@@ -66,60 +88,79 @@
             </template>
         </BModal>
 
-
         <BModal v-model="modalAdd" modal-class="selected-modal" title="Добавление новой награды"
                 size="lg" centered>
-            <p class="selected-modal-title">Выберите вид награды, в которую будет добавлена картинка</p>
-            <hr class="my-4">
-           <b-row class="mb-4">
-               <b-col cols="12" md="10" offset-md="1">
-                   <Multiselect
-                           v-model="value"
-                           :options="awardCategories"
-                           :multiple="false"
-                           :close-on-select="true"
-                           :clear-on-select="false"
-                           :preserve-search="true"
-                           placeholder="Выберите вид награды"
-                           label="name"
-                           track-by="name"
-                           :preselect-first="false"
+            <b-row class="mb-4">
+                <b-col cols="12" md="6" class="border-right-custom">
+                    <b-form-group
+                            label="Выберите вид награды"
+                            class="m-0"
+                    >
+                        <Multiselect
+                                v-model="value"
+                                :options="awardCategories"
+                                :multiple="false"
+                                :close-on-select="true"
+                                :clear-on-select="false"
+                                :preserve-search="true"
+                                placeholder="Выберите вид награды"
+                                label="name"
+                                track-by="name"
+                                :preselect-first="false"
+                                :class="value ? '' : 'error'"
 
-                   />
-               </b-col>
-           </b-row>
-            <label for="file-add" class="custom-file-upload" ref="inputFileAdd"></label>
-            <input type="file" accept="application/pdf, image/jpeg, image/png" id="file-add"
-                   @change="modalAddEvent" style="display: none;">
-            <div class="result-container" v-if="modalAddFile">
-                <img :src="modalAddBase64" alt="" v-if="modalAddFile.type !== 'application/pdf'">
-                <vue-pdf-embed v-else :source="modalAddBase64"/>
-            </div>
+                        />
+                    </b-form-group>
+                </b-col>
+                <b-col cols="12" md="6">
+                    <label for="file-add" class="custom-file-upload" :class="modalAddFile ? '' : 'error'"
+                           ref="inputFileAdd"></label>
+                    <input type="file" accept="application/pdf, image/jpeg, image/png" id="file-add"
+                           @change="modalAddEvent" style="display: none;">
+                </b-col>
+            </b-row>
+
+            <template v-if="modalAddFile">
+                <hr class="my-4">
+                <div class="result-container">
+                    <img :src="modalAddBase64" alt="" v-if="modalAddFile.type !== 'application/pdf'">
+                    <vue-pdf-embed v-else :source="modalAddBase64"/>
+                </div>
+            </template>
             <template #modal-footer>
                 <b-button variant="secondary" @click="modalAdd = !modalAdd">Отмена</b-button>
-                <b-button variant="success" v-if="modalAddBase64 && value" @click="addAndSaveReward">Наградить</b-button>
+                <b-button variant="success" v-if="modalAddBase64 && value" @click="addAndSaveReward">Наградить
+                </b-button>
             </template>
         </BModal>
 
-
-        <BModal v-model="modalSelect" modal-class="selected-modal" :title="modalSelectData.name"
+        <BModal v-model="modalSelect" modal-class="selected-modal" title="Добавление награды"
                 size="lg" centered>
-            <p class="selected-modal-title">Нажмите на картинку для скачивания. <br>Отредактируйте её и загрузите
-                обратно</p>
-            <hr class="my-4">
-            <div class="download-image-container" @click="downloadItem(modalSelectData)" ref="downloadFile">
-                <img :src="modalSelectData.path" alt="" v-if="modalSelectData.format !== 'pdf'">
-                <vue-pdf-embed v-else :source="modalSelectData.path"/>
-            </div>
-
-            <label for="file" class="custom-file-upload" ref="inputFile" style="display: none;"></label>
-            <input type="file" accept="application/pdf, image/jpeg, image/png" id="file"
-                   @change="modalSelectDataUploadEvent" style="display: none;">
-
-            <div class="result-container" v-if="modalSelectFile">
-                <img :src="modalSelectBase64" alt="" v-if="modalSelectFile.type !== 'application/pdf'">
-                <vue-pdf-embed v-else :source="modalSelectBase64"/>
-            </div>
+            <b-row>
+                <b-col cols="12" md="6" class="border-right-custom">
+                    <div class="selected-modal-title with-image">
+                        {{modalSelectData.type}}
+                        <span class="image-mini">
+                    <img :src="modalSelectData.tempPath" alt="" v-if="modalSelectData.format !== 'pdf'">
+                    <vue-pdf-embed v-else :source="modalSelectData.tempPath"/>
+                </span>
+                        <span class="text">Награждение сотрудника по выбранному шаблону</span>
+                    </div>
+                </b-col>
+                <b-col cols="12" md="6">
+                    <label for="file" class="custom-file-upload" :class="modalSelectFile ? '' : 'error'"
+                           ref="inputFile"></label>
+                    <input type="file" accept="application/pdf, image/jpeg, image/png" id="file"
+                           @change="modalSelectDataUploadEvent" style="display: none;">
+                </b-col>
+            </b-row>
+            <template v-if="modalSelectFile">
+                <hr class="my-4">
+                <div class="result-container">
+                    <img :src="modalSelectBase64" alt="" v-if="modalSelectFile.type !== 'application/pdf'">
+                    <vue-pdf-embed v-else :source="modalSelectBase64"/>
+                </div>
+            </template>
             <template #modal-footer>
                 <b-button variant="secondary" @click="modalSelect = !modalSelect">Отмена</b-button>
                 <b-button variant="success" v-if="modalSelectBase64" @click="reward">Наградить</b-button>
@@ -146,6 +187,10 @@
         components: {UploadModal, VuePdfEmbed, Multiselect},
         data() {
             return {
+                isShow: false,
+                modalPreview: false,
+                modalPreviewData: {},
+                tabIndex: 0,
                 modalRemoveReward: false,
                 modalRemoveRewardData: null,
                 open: false,
@@ -156,7 +201,6 @@
                 modalSelectData: {},
                 modalSelectFile: null,
                 modalSelectBase64: null,
-                myAwards: [],
                 modalAdd: false,
                 modalAddFile: null,
                 modalAddBase64: null,
@@ -167,6 +211,9 @@
             }
         },
         mounted() {
+            setTimeout(() => {
+                this.isShow = true;
+            }, 500);
             document.addEventListener('award-user-sidebar', (e) => {
                 this.open = true;
                 console.log('USER ID:', e.detail);
@@ -175,29 +222,75 @@
             });
         },
         watch: {
-            modalAdd(val){
-                if(!val){
+            modalAdd(val) {
+                if (!val) {
                     this.value = null;
                     this.modalAddFile = null;
                     this.modalAddBase64 = null;
                 }
                 return this.modalAdd;
+            },
+            modalSelect(val) {
+                if (!val) {
+                    this.modalSelectData = {};
+                    this.modalSelectFile = null;
+                    this.modalSelectBase64 = null;
+                }
+                return this.modalSelect;
+            },
+            tabIndex(val) {
+                // for (let i = 0; i < this.$refs.vuePdfEmbeds.length; i++) {
+                //     this.$refs.vuePdfEmbeds[i].render();
+                // }
+
+                let buttons = this.$refs.tabAwardUser.$refs.buttons;
+                buttons[val].$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
             }
         },
         methods: {
-            async getAll(){
+            previewImage(data) {
+                this.modalPreview = !this.modalPreview;
+                this.modalPreviewData = data;
+            },
+            downloadImage(data, name) {
+                var xhr = new XMLHttpRequest();
+                console.log(data);
+                xhr.open("GET", data.tempPath, true);
+
+                xhr.responseType = "arraybuffer";
+
+                xhr.onload = function (e) {
+                    var arrayBufferView = new Uint8Array(this.response);
+                    let options = {};
+                    if (data.format === 'png') {
+                        options.type = 'image/png'
+                    }
+                    if (data.format === 'jpg') {
+                        options.type = 'image/jpeg'
+                    }
+                    if (data.format === 'pdf') {
+                        options.type = 'application/pdf'
+                    }
+                    var blob = new Blob([arrayBufferView], options);
+                    var imageUrl = window.URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = imageUrl;
+                    a.download = `${name}.${data.format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    console.log(a);
+                    document.body.removeChild(a);
+                };
+
+                xhr.send();
+            },
+            async getAll() {
                 let loader = this.$loading.show();
                 await this.axios
                     .get('/awards/type?key=nomination&user_id=' + this.userId)
                     .then(response => {
                         this.awards = [];
-                        this.myAwards = [];
                         this.awards = response.data.data;
-                        for (let i = 0; i < this.awards.length; i++) {
-                            if(this.awards[i].my.length > 0){
-                                this.myAwards = this.myAwards.concat(this.awards[i].my);
-                            }
-                        }
                         loader.hide();
                     })
                     .catch(error => {
@@ -205,27 +298,27 @@
                         loader.hide();
                     })
             },
-            removeRewardUser(item){
-                // const formDataRemove = new FormData();
-                // formDataRemove.append('user_id', this.userId);
-                // formDataRemove.append('award_id', data.id);
+            removeRewardUser(item) {
+                let loader = this.$loading.show();
                 this.axios
-                .delete('/awards/reward-delete', {data: {user_id: this.userId, award_id: item.id}})
-                .then(response => {
-                    this.modalRemoveReward = false;
-                    this.$toast.success('Награда убрана');
-                    console.log(response);
-                    this.getAll();
-                })
-                .catch(error => {
-                    console.log(error);
-                })
+                    .delete('/awards/reward-delete', {data: {user_id: item.user_id, award_id: item.award_id}})
+                    .then(response => {
+                        this.modalRemoveReward = false;
+                        this.$toast.success('Награда убрана');
+                        console.log(response);
+                        loader.hide();
+                        this.getAll();
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
             },
-            removeReward(item){
+            removeReward(item) {
                 this.modalRemoveReward = !this.modalRemoveReward;
                 this.modalRemoveRewardData = item;
             },
-            async addAndSaveReward(){
+            async addAndSaveReward() {
+                let loader = this.$loading.show();
                 const formData = new FormData();
                 formData.append('award_category_id', this.value.id);
                 formData.append('file[]', this.modalAddFile);
@@ -237,10 +330,12 @@
                     })
                     .then(response => {
                         this.responseAward = response.data.data;
+                        loader.hide();
                         this.$toast.success('Добавлено');
                     })
                     .catch(function (error) {
                         console.log(error);
+                        loader.hide();
                     });
 
                 const formDataReward = new FormData();
@@ -269,9 +364,9 @@
                         console.log(error);
                     });
             },
-             openModalAdd(){
-                 this.modalAdd = !this.modalAdd;
-                if(this.awardCategories.length === 0){
+            openModalAdd() {
+                this.modalAdd = !this.modalAdd;
+                if (this.awardCategories.length === 0) {
                     let loader = this.$loading.show();
                     this.axios
                         .get("/award-categories/get")
@@ -287,12 +382,11 @@
                         });
                 }
             },
-            modalAddEvent(e){
+            modalAddEvent(e) {
                 let files = e.target.files || e.dataTransfer.files;
                 if (!files.length) return;
                 this.modalAddFile = files[0];
-                console.log(this.modalAddFile);
-                if(this.modalAddFile.size > 2097152){
+                if (this.modalAddFile.size > 2097152) {
                     this.$toast.error('Максимальный размер файла - 2 МБ', {
                         timeout: 5000
                     });
@@ -300,7 +394,6 @@
                     base64Encode(this.modalAddFile)
                         .then((val) => {
                             this.modalAddBase64 = val;
-                            this.$refs.inputFileAdd.style.display = 'none';
                         })
                         .catch(() => {
                             this.modalAddBase64 = null;
@@ -312,15 +405,13 @@
                 let files = e.target.files || e.dataTransfer.files;
                 if (!files.length) return;
                 this.modalSelectFile = files[0];
-                console.log(this.modalSelectFile);
-                if(this.modalSelectFile.size > 2097152){
+                if (this.modalSelectFile.size > 2097152) {
                     this.$toast.error('Максимальный размер файла - 2 МБ', {
                         timeout: 5000
                     });
-                } else{
+                } else {
                     base64Encode(this.modalSelectFile)
                         .then((val) => {
-                            this.$refs.inputFile.style.display = 'none';
                             this.modalSelectBase64 = val;
                         })
                         .catch(() => {
@@ -328,24 +419,6 @@
                         });
                 }
 
-            },
-            downloadItem(item) {
-                this.$refs.downloadFile.style.display = 'none';
-                this.$refs.inputFile.style.display = 'block';
-                console.log(item);
-                this.axios({
-                    url: item.path,
-                    method: 'GET',
-                    responseType: 'blob',
-                }).then((res) => {
-                    const FILE = window.URL.createObjectURL(new Blob([res.data]));
-
-                    const docUrl = document.createElement('x');
-                    docUrl.href = FILE;
-                    docUrl.setAttribute('download', 'file.pdf');
-                    document.body.appendChild(docUrl);
-                    docUrl.click();
-                });
             },
             openModalSelect(item, name) {
                 this.modalSelect = !this.modalSelect;
@@ -355,6 +428,7 @@
                 this.modalSelectBase64 = null;
             },
             reward(award, index) {
+                let loader = this.$loading.show();
                 const formData = new FormData();
                 formData.append('user_id', this.userId);
                 formData.append('award_id', this.modalSelectData.id);
@@ -377,11 +451,12 @@
                             this.modalSelectBase64 = null;
                         }, 300);
                         this.modalSelect = false;
+                        loader.hide();
                         this.getAll();
                     })
                     .catch(function (error) {
-                        console.log("error");
                         console.log(error);
+                        loader.hide();
                     });
             }
         }
@@ -389,24 +464,67 @@
 </script>
 
 <style lang="scss">
-    .remove-award-modal{
-        .title-remove{
+    .remove-award-modal {
+        .title-remove {
             font-size: 20px;
             color: red;
             text-align: center;
         }
-        .award-image-remove{
-            img, canvas{
-                width: 100% !important;
-                height: auto!important;
-            }
+
+        img, canvas {
+            width: 100% !important;
+            height: auto !important;
         }
     }
+
+    .preview-modal {
+        img, canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+    }
+
     .selected-modal {
+        .multiselect {
+            .multiselect__tags {
+                border: 1px solid #28a745;
+            }
+
+            &.error {
+                .multiselect__tags {
+                    border: 1px solid red;
+                }
+            }
+        }
+
+        .border-right-custom {
+            border-right: 1px solid #ddd;
+        }
+
         .selected-modal-title {
-            text-align: center;
-            font-size: 20px;
-            color: #888;
+            display: flex;
+            align-items: center;
+
+            .text {
+                font-size: 16px;
+                line-height: 1.5;
+                color: #888;
+                margin-left: 20px;
+            }
+
+            .image-mini {
+                min-width: 75px;
+                min-height: 75px;
+                max-height: 75px;
+                border-radius: 8px;
+                overflow: hidden;
+
+                img, .vue-pdf-embed {
+                    width: 100%;
+                    height: 100px;
+                    object-fit: cover;
+                }
+            }
         }
 
         .result-container {
@@ -496,17 +614,17 @@
         }
 
         .custom-file-upload {
-            width: 90%;
+            width: 100%;
             margin: 0 auto;
-            height: 300px;
-            border-radius: 20px;
-            border: 3px dashed #ddd;
+            height: 75px;
+            border-radius: 10px;
+            border: 1px dashed #28a745;
             position: relative;
             cursor: pointer;
             transition: 0.2s all ease;
 
             &:before {
-                content: 'Нажмите, чтобы загрузить файл';
+                content: 'Нажмите, чтобы загрузить другой файл';
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -515,11 +633,20 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 20px;
+                font-size: 14px;
                 color: #999;
                 text-transform: uppercase;
                 transition: 0.2s all ease;
             }
+
+            &.error {
+                border: 1px dashed red;
+
+                &:before {
+                    content: 'Нажмите, чтобы загрузить файл';
+                }
+            }
+
 
             &:hover {
                 background-color: #f2f2f2;
@@ -533,41 +660,167 @@
     }
 
     #award-user-sidebar {
-        .my-container{
-            max-height: 200px;
-            overflow: auto;
-            .award-image{
+        &.show{
+            .ui-sidebar__body{
+                transform: translateX(0);
+            }
+        }
+        .ui-sidebar__body{
+            border-radius: 20px 0 0 20px;
+            transform: translateX(100%);
+            overflow: hidden !important;
+        }
+        .ui-sidebar__header{
+            padding: 20px 25px !important;
+            background: #ffffff !important;
+            border-bottom: 1px solid #ddd;
+            span{
+                font-size: 24px;
+                color: #333 !important;
+                font-weight: 700;
+            }
+        }
+        .ui-sidebar__content{
+            padding: 20px 25px!important;
+        }
+        @media screen and (min-width: 768px) {
+            .col-md-20 {
+                flex: 0 0 20%;
+                max-width: 20%;
+            }
+        }
+
+        .prev-next {
+            position: absolute;
+            top: -1px;
+            right: 0;
+            height: 63px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #dee2e6;
+            background-color: #fff;
+            width: 120px;
+
+            span {
+                width: 40px;
+                height: 40px;
+                border-radius: 50px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid #ED2353;
+                cursor: pointer;
+
+                i {
+                    font-size: 18px;
+                    color: #ED2353;
+                }
+
+                &:hover {
+                    background-color: #ED2353;
+
+                    i {
+                        color: #fff;
+                    }
+                }
+            }
+
+            .next {
+                margin-left: 10px;
+            }
+        }
+
+        .tabs {
+            position: relative;
+
+            .accrual-tab {
+                margin-top: 30px;
+                overflow-x: hidden;
+                padding-bottom: 30px;
+            }
+
+            .nav-tabs {
+                flex-wrap: nowrap;
+                white-space: nowrap;
+                overflow: hidden;
+                margin-right: 120px;
+
+                .nav-item {
+                    .nav-link {
+                        font-size: 2.1rem;
+                        border-bottom: none;
+                        margin-top: 0.1rem;
+                        line-height: 2em;
+                        color: #8D8D8D;
+                        font-family: "Open Sans", sans-serif;
+                        font-weight: 600;
+                        transition: color 0.3s;
+                        padding: 1.5rem 0 0 0;
+                        cursor: pointer;
+                        margin-right: 40px;
+                        background-color: transparent;
+                        border-top: 4px solid transparent;
+
+                        &:hover {
+                            border-color: transparent;
+                            color: #ED2353;
+                        }
+
+                        &.active {
+                            border-top: 4px solid #ED2353;
+                            color: #ED2353;
+                        }
+                    }
+                }
+            }
+        }
+
+        .my-container {
+            .award-image {
                 border: 2px solid green;
                 position: relative;
-                img{
+
+                canvas {
+                    width: 100% !important;
+                    height: auto !important;
+                }
+
+                img, .vue-pdf-embed {
                     transition: 0.15s all ease;
                 }
-                i{
+
+                i {
                     position: absolute;
                     top: 50%;
                     left: 50%;
                     font-size: 16px;
-                    transform: translate(-50%,-50%) scale(0.9);
+                    transform: translate(-50%, -50%) scale(0.9);
                     opacity: 0;
                     transition: 0.2s all ease;
                     color: red;
                 }
-                &:hover{
+
+                &:hover {
                     border: 2px solid red;
-                    img{
+
+                    img, .vue-pdf-embed {
                         filter: grayscale(1);
                     }
-                    i{
-                        transform: translate(-50%,-50%) scale(1.1);
+
+                    i {
+                        transform: translate(-50%, -50%) scale(1.1);
                         opacity: 1;
                     }
                 }
             }
         }
-        .available-container{
+
+        .available-container {
             max-height: calc(100vh - 400px);
             overflow: auto;
         }
+
         .or {
             font-size: 18px;
             color: #999;
@@ -594,6 +847,7 @@
         }
 
         .award-image {
+            position: relative;
             height: 100px;
             width: 100%;
             display: flex;
@@ -605,19 +859,51 @@
             cursor: pointer;
             transition: 0.15s all ease;
 
+            .button {
+                position: absolute;
+                bottom: 0;
+                padding: 10px 12px;
+                font-size: 20px;
+                z-index: 22;
+                background-color: #fff;
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+                &.download {
+                    left: 0;
+                    color: #045e92;
+                    border-radius: 0 0 0 4px;
+                }
+
+                &.award {
+                    right: 0;
+                    color: #28a745;
+                    border-radius: 0 0 4px 0;
+                }
+            }
+
             &:hover {
-                transform: scale(1.04);
+
             }
 
             img {
-                width: auto;
+                width: 100%;
                 height: 100px;
                 object-fit: cover;
+                transition: 0.15s all ease;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
             }
 
-            canvas {
-                width: auto;
-                height: 100px;
+            .vue-pdf-embed {
+                width: 100%;
+                object-fit: cover;
+                transition: 0.15s all ease;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
             }
         }
     }

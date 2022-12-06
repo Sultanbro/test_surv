@@ -1,3 +1,4 @@
+/* global userInfo */
 import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import routes from '~pages'
@@ -12,9 +13,10 @@ const router = createRouter({
   },
 })
 router.beforeEach((to, from) => {
-  if(to.meta && to.meta.auth){
-    if(!('id' in {id: '0'})){
-      return {name: 'admino-login'}
+  if (to.meta && to.meta.auth) {
+    if (!('id' in userInfo)){
+      window.location.href = '/login'
+      return 
     }
   }
 })

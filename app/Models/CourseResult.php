@@ -51,7 +51,14 @@ class CourseResult extends Model
     {
         return $this->belongsTo('App\Models\Course', 'course_id', 'id');
     }
-    
+   /**
+     * relation to user_id
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'user_id', 'id');
+    }
+
     /**
      * get users with course_results in selected group
      */
@@ -234,6 +241,7 @@ class CourseResult extends Model
 
                 $arr['status'] = self::STATUSES[$result->status];
                 $arr['user_id'] = $user->id;
+                $arr['is_regressed'] = $result->is_regressed;
 
                 /**
                  * total progress

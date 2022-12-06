@@ -43,11 +43,17 @@ class AccrualAwardService implements AwardInterface
         try {
             if (!($request->has('targetable_type') &&
                 $request->has('targetable_id'))) {
-                throw new BusinessLogicException('targetable_type, targetable_id are required for certificate award');
+                return \response()->success('targetable_type, targetable_id обязательны к заполнению', 500, 'error');
             }
             if (Award::query()
                 ->where('award_category_id', $request->input('award_category_id'))->exists()) {
-                throw new BusinessLogicException('accrual category already has award');
+                return \response()->success('Категория начисления уже имеет награду', 500, 'error');
+            }
+
+           if (Award::query()
+               ->where('targetable_id',  $request->input('targetable_id'))
+               ->where('targetable_type', $request->input('targetable_type'))->exists()) {
+                return \response()->success('На данный отдел или позицию уже существует награда, пожалуйста выберите другой отдел, позицию', 500, 'error');
             }
 
             $params = [
@@ -58,7 +64,7 @@ class AccrualAwardService implements AwardInterface
 
             $success = Award::query()->create($params);
 
-            return $success;
+            return \response()->success($success);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
@@ -88,17 +94,20 @@ class AccrualAwardService implements AwardInterface
         $today = Carbon::now();
         $date = Carbon::createFromDate($today->year, $today->month, 1);
 
+
         $awardCategories = AwardCategory::query()
             ->where('type', $type)
-            ->with('awards',function ($query) use ($user, $groups) {
-                $query->where(function ($q) use ($user) {
-                    $q->where('targetable_id',$user->position_id)
-                        ->where('targetable_type', self::POSITION);
-                })
-                    ->orWhere(function ($q) use ($groups) {
-                        $q->whereIn('targetable_id', $groups)
-                            ->where('targetable_type', self::GROUP);
-                    });
+            ->withWhereHas('awards',function ($query) use ($user, $groups) {
+                $query->where( function ($q) use ($user, $groups){
+                    $q->orWhere(function ($qu) use ($user) {
+                        $qu->where('targetable_id',$user->position_id)
+                            ->where('targetable_type', self::POSITION);
+                    })
+                        ->orWhere(function ($qu) use ($groups) {
+                            $qu->whereIn('targetable_id', $groups)
+                                ->where('targetable_type', self::GROUP);
+                        });
+                });
 
             })
             ->get();
@@ -119,7 +128,7 @@ class AccrualAwardService implements AwardInterface
                 ];
             }
 
-            if ($targetable_type == self::POSITION){
+            if ($targetable_type == self::POSITION && $user->position_id == $targetable_id){
                 $user_ids = Position::query()
                     ->findOrFail($targetable_id)
                     ->users

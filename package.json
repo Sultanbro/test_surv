@@ -11,7 +11,8 @@
         "watch-prod": "mix --production -- --watch --progress",
         "sub-install": "subpkg install",
         "sub-build": "subpkg run build",
-        "sub-dev": "subpkg run dev"
+        "sub-dev": "subpkg run dev",
+        "sub-lint": "subpkg run lint"
     },
     "subPackages": [
         "resources/js/admin"

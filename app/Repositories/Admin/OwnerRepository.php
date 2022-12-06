@@ -3,6 +3,7 @@
 namespace App\Repositories\Admin;
 
 use App\Repositories\CoreRepository;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -141,6 +142,25 @@ class OwnerRepository extends CoreRepository
 
         return $owners;
     }
+
+    /**
+     * List of admins
+     * who can login to admin.jobtron.org
+     * 
+     * @return \Illuminate\Support\Collection <\App\User>
+     */
+    public function getAdmins()
+    {
+        $admins = User::select([
+            'id',
+            'last_name',
+            'name',
+            'email',
+            'is_admin',
+        ])->get();
+        
+        return $admins;
+    }   
 
    
 }

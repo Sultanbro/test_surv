@@ -220,7 +220,6 @@
                 courseName: {
                     screenX: 0,
                     screenY: 0,
-                    text: 'Название курса',
                     size: 20,
                     fontWeight: 400,
                     uppercase: 'none',
@@ -240,7 +239,6 @@
                 date: {
                     screenX: 0,
                     screenY: 0,
-                    text: 'Название курса',
                     size: 16,
                     fontWeight: 400,
                     uppercase: 'none',
