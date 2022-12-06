@@ -102,7 +102,7 @@ class LoginController extends Controller
             
             // admin.jobtron.org
             if(request()->getHost() == 'admin.' .config('app.domain')) {
-                return redirect('owners');
+                return redirect('/');
             }
 
             // login in central app
