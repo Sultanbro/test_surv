@@ -84,7 +84,7 @@ class SetAbsent extends Command
 
                 if($traineeNotMarked) {
                     
-                    $this->mark($user);
+                    $this->mark($user, DayType::DAY_TYPES['ABCENSE']);
 
                     // $this->logHistory($user);
                     
@@ -95,7 +95,7 @@ class SetAbsent extends Command
 
                 if($traineeMarked) {
 
-                    $this->mark($user);
+                    $this->mark($user, DayType::DAY_TYPES['TRAINEE']);
                     
                     $this->deleteOldInfo($user);
 
@@ -175,9 +175,10 @@ class SetAbsent extends Command
      * Отметить день как стажировка
      * 
      * @param User $user
+     * @param int $daytype
      * @return void
      */
-    protected function mark(User $user) 
+    protected function mark(User $user, int $type) 
     {
         $daytype = DayType::where([
             'user_id' => $user->id,
@@ -186,14 +187,14 @@ class SetAbsent extends Command
 
         if($daytype) {
             $daytype->update([
-                'type' => 2,
+                'type' => $type,
                 'email' => $user->email,
                 'admin_id' => 1,
             ]);
         } else {
             $daytype = DayType::create([
                 'user_id' => $user->id,
-                'type' => 2,
+                'type' => $type,
                 'email' => $user->email,
                 'date' => Carbon::now()->format('Y-m-d'),
                 'admin_id' => 1,
