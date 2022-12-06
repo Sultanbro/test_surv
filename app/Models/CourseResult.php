@@ -234,6 +234,7 @@ class CourseResult extends Model
 
                 $arr['status'] = self::STATUSES[$result->status];
                 $arr['user_id'] = $user->id;
+                $arr['is_regressed'] = $result->is_regressed;
 
                 /**
                  * total progress
