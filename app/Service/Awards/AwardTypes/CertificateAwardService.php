@@ -83,10 +83,12 @@ class CertificateAwardService implements AwardInterface
         try {
             if (Award::query()
                 ->where('award_category_id', $request->input('award_category_id'))->exists()) {
-                throw new BusinessLogicException('certificate category already has award');
+                return \response()->success('Категория сертификат уже имеет награду', 500, 'error');
+
             }
             if (!$request->has('course_ids')) {
-                throw new BusinessLogicException('course_ids are required for certificate award');
+                return \response()->success('Пожалуйста укажите курс', 500, 'error');
+
             }
 
             $file = $this->saveAwardFile($request);
@@ -102,7 +104,7 @@ class CertificateAwardService implements AwardInterface
                     ->update(['award_id' => $success->id]);
 
             }
-            return $success;
+            return \response()->success($success);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }

@@ -92,7 +92,7 @@ class NominationAwardService implements AwardInterface
                 ]);
 
             }
-            return $awards;
+            return \response()->success($awards);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
