@@ -91,7 +91,7 @@ class AccrualAwardService implements AwardInterface
         $awardCategories = AwardCategory::query()
             ->where('type', $type)
             ->with('awards',function ($query) use ($user, $groups) {
-                $query->where(function ($q) use ($user) {
+                $query->orWhere(function ($q) use ($user) {
                     $q->where('targetable_id',$user->position_id)
                         ->where('targetable_type', self::POSITION);
                 })
