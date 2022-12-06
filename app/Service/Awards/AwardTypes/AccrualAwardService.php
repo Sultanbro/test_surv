@@ -125,7 +125,7 @@ class AccrualAwardService implements AwardInterface
                 ];
             }
 
-            if ($targetable_type == self::POSITION){
+            if ($targetable_type == self::POSITION && $user->position_id == $targetable_id){
                 $user_ids = Position::query()
                     ->findOrFail($targetable_id)
                     ->users
