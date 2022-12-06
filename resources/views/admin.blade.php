@@ -7,20 +7,13 @@
     <title>Администрирование</title>
     <script type="module" src="/js/admino/assets/index.js"></script>
     <link rel="stylesheet" href="/js/admino/assets/index.css">
+    <script>
+        var userInfo = @json(auth()->user())
+    </script>
 </head>
 <body>
-
     <div id="app">
         Добро пожаловать в Админку!
-
-        <!-- переменная -->
-        {{ auth()->user() }}
-
-        <!-- в виде json -->
-        @json(auth()->user())
     </div>
-
-
-
 </body>
 </html>
