@@ -50,9 +50,11 @@ declare interface UserDataResponse {
 }
 
 declare interface UserPermissions {
-  id: number,
-  name: string,
-  access: boolean
+  id: number
+  last_name: string
+  name: string
+  email: string
+  is_admin: number
 }
 
 declare interface UserPermissionsRequest {
@@ -61,10 +63,23 @@ declare interface UserPermissionsRequest {
 }
 
 declare interface UserPermissionsResponse {
-  items?: {
-    data: Array<UserPermissions>
-    total?: number
-    current_page?: number
-    last_page?: number
+  items?: Array<UserPermissions>
+}
+
+declare interface AddUserPermissionsRequest {
+  last_name: string
+  name: string
+  email: string
+  password: string
+  password_confirmation: string
+}
+
+declare interface UserPermissionsResponse {
+  items?: Array<UserPermissions>
+}
+
+declare interface AddUserPermissionsResponse {
+  errors?: {
+    [key: string]: Array<string>
   }
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* global userInfo */
 import { useTheme } from 'vuetify'
 import upgradeBannerDark from '@/assets/images/pro/upgrade-banner-dark.png'
 import upgradeBannerLight from '@/assets/images/pro/upgrade-banner-light.png'
@@ -11,13 +12,15 @@ const upgradeBanner = computed(() => {
     ? upgradeBannerLight
     : upgradeBannerDark
 })
+
+const isAdmin = userInfo.is_admin
 </script>
 
 <template>
   <!-- 👉 Nav header -->
   <div class="nav-header">
     <RouterLink
-      to="/admino"
+      to="/"
       class="app-logo d-flex align-center gap-x-3 app-title-wrapper"
     >
       <!-- ℹ️ You can also use img tag or VImg here -->
@@ -37,19 +40,20 @@ const upgradeBanner = computed(() => {
       key="admino"
       :item="{
         title: 'Dashboard',
-        to: 'admino',
+        to: 'index',
         icon: { icon: 'mdi-home-outline' },
       }"
     />
     <VerticalNavLink
       key="admino-user-data"
       :item="{
-        title: 'Данные пользователей',
+        title: 'Пользователи',
         to: 'admino-user-data',
-        icon: { icon: 'mdi-account-cog-outline' },
+        icon: { icon: 'mdi-account-search-outline' },
       }"
     />
     <VerticalNavLink
+      v-if="isAdmin"
       key="admino-user-permissions"
       :item="{
         title: 'Доступы',

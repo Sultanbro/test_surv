@@ -4,12 +4,30 @@ function onError(error: any) {
   if (axios.isAxiosError(error)) {
     console.log('error message: ', error.message)
 
-    return error.message
+    return error.response ? error.response.data : {
+      errors: {
+        system: ['An unexpected error occurred']
+      }
+    }
   }
   else {
     console.log('unexpected error: ', error)
 
-    return 'An unexpected error occurred'
+    return {
+      errors: {
+        system: ['An unexpected error occurred']
+      }
+    }
+  }
+}
+
+export const logout = async () => {
+  try {
+    const { data, status } = await axios.post('/logout', {})
+    return data
+  }
+  catch (error) {
+    return onError(error)
   }
 }
 
@@ -26,29 +44,30 @@ export const fetchUserData = async (req: UserDataRequest) => {
 
 export const fetchUserPermissions = async (req: UserPermissionsRequest) => {
   try {
-    // const { data, status } = await axios.get<UserPermissionsResponse>('/admin/owners', { params: req })
-    const data: UserPermissionsResponse = {
-      items: {
-        data: [
-          {
-            id: 1,
-            name: 'Тестовый Юзер',
-            access: false
-          },
-          {
-            id: 2,
-            name: 'Тестовый Пользователь',
-            access: true
-          }
-        ],
-        total: 2,
-        current_page: 1,
-        last_page: 1,
-      }
-    }
+    const { data, status } = await axios.get<UserPermissionsResponse>('/admins', { params: req })
     return data
   }
   catch (error) {
-    onError(error)
+    return onError(error)
+  }
+}
+
+export const addUserPermissions = async (req: AddUserPermissionsRequest) => {
+  try {
+    const { data, status } = await axios.post<AddUserPermissionsResponse>('/admins/add', req)
+    return data
+  }
+  catch (error) {
+    return onError(error)
+  }
+}
+
+export const removeUserPermissions = async (id: number) => {
+  try {
+    const { data, status } = await axios.delete<UserPermissionsResponse>(`/admins/delete/${id}`)
+    return data
+  }
+  catch (error) {
+    return onError(error)
   }
 }

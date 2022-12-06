@@ -35,13 +35,15 @@ function onPerPage(value: number){
 </script>
 
 <template>
-  <VRow>
-    <VCol cols="12">
-      <VCard title="Права пользователей">
-        <UserPermissions/>
-      </VCard>
-    </VCol>
-  </VRow>
+  <VCard title="Права пользователей">
+    <VContainer>
+      <VRow>
+        <VCol cols="12">  
+          <UserPermissions/>
+        </VCol>
+      </VRow>
+    </VContainer>
+  </VCard>
   <TableFooter
     :page="page"
     :pages="pages"

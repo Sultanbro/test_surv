@@ -1,4 +1,4 @@
-import { fetchUserPermissions } from './api'
+import { fetchUserPermissions, addUserPermissions, removeUserPermissions } from './api'
 
 export const useUserPermissionsStore = defineStore('user-permissions', () => {
   const permissions = ref<Array<UserPermissions>>([])
@@ -17,17 +17,30 @@ export const useUserPermissionsStore = defineStore('user-permissions', () => {
     })
     fetchUserPermissions(options).then(data => {
       if (data !== undefined && 'items' in data)
-      permissions.value = data.items.data
+      permissions.value = data.items
     })
+  }
+
+  async function addPermissions(req: AddUserPermissionsRequest){
+    const data = await addUserPermissions(req)
+    if(!data.errors) fetchPermissions({})
+    return data
+  }
+  async function removePermissions(id: number){
+    const data = await removeUserPermissions(id)
+    if(!data.errors) fetchPermissions({})
+    return data
   }
 
   return {
     permissions,
 
-    total,
+    total, 
     onPage,
     page,
 
     fetchPermissions,
+    addPermissions,
+    removePermissions,
   }
 })
