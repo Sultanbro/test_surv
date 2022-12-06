@@ -1,20 +1,6 @@
 import { fetchUserData } from './api'
 import type { UserData, UserDataRequest, UserDataResponse } from './api'
 
-// const testUser: UserData = {
-//   id: 1,
-//   fio: 'test test test',
-//   email: 'test@mail.ru',
-//   created_at: '29.11.22',
-//   login_at: '29.11.22',
-//   subdimains: 3,
-//   lead: 'https://bp.jobtron.org',
-//   balance: '100 000 KZT',
-//   birthday: '22.11.22',
-//   country: 'Россия',
-//   city: 'Владивосток'
-// }
-
 export type UserDataKeys = keyof UserData
 
 function compareNumbers(a: number, b: number) {
@@ -76,7 +62,9 @@ export const useUserDataStore = defineStore('user-data', () => {
   }
   function fetchUsers(filters: UserDataRequest): void {
     const options = Object.entries(filters).reduce((opt, [key, value]) => {
-      if(value !== '') opt[key] = value
+      if (value !== '')
+        opt[key] = value
+
       return opt
     }, {
       page: page.value,
