@@ -7,7 +7,7 @@
             class="selected-item"
             :class="'value' + value.type">
             {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i)" v-if="!one_choice_made"></i>
+            <i class="fa fa-times" @click.stop="removeValue(i, value.id)" v-if="!one_choice_made"></i>
         </div>
         <div 
             id="placeholder"
@@ -49,19 +49,32 @@
     
             <div class="options">
 
-                <div 
-                    class="option"
-                    v-for="(option, index) in filtered_options"
-                    :key="index"
-                    @click="addValue(index)"
-                    :class="{'selected': option.selected}" 
-                >
-                    <i class="fa fa-user" v-if="option.type == 1"></i> 
-                    <i class="fa fa-users" v-if="option.type == 2"></i> 
-                    <i class="fa fa-briefcase" v-if="option.type == 3"></i> 
-                    {{ option.name }}
-                    <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i> 
-                </div>
+                <template v-for="(option, index) in filtered_options">
+                    <div
+                            class="option shown-profile"
+                            :key="index"
+                            v-if="option.shownProfile"
+                    >
+                        <i class="fa fa-user" v-if="option.type == 1"></i>
+                        <i class="fa fa-users" v-if="option.type == 2"></i>
+                        <i class="fa fa-briefcase" v-if="option.type == 3"></i>
+                        {{ option.name }}
+                        <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
+                    </div>
+                    <div
+                            class="option"
+                            :key="index"
+                            @click="addValue(index)"
+                            :class="{'selected': option.selected}"
+                            v-else
+                    >
+                        <i class="fa fa-user" v-if="option.type == 1"></i>
+                        <i class="fa fa-users" v-if="option.type == 2"></i>
+                        <i class="fa fa-briefcase" v-if="option.type == 3"></i>
+                        {{ option.name }}
+                        <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
+                    </div>
+                </template>
 
             </div>
         </div>
@@ -115,6 +128,10 @@ export default {
             type: Boolean,
             default: false
         },
+        available_courses: {
+            type: Array,
+            default: []
+        }
     },
     data() {
         return {
@@ -145,11 +162,19 @@ export default {
                     } else{
                         this.options = response.data.options;
                     }
+                    if(this.available_courses.length > 0){
+                        this.available_courses.forEach(item => {
+                            this.options.filter((option, index) => {
+                                if(option.id === item.id && option.type === item.type){
+                                    this.options[index].shownProfile = true;
+                                }
+                            })
+                        })
+                    }
                     if(this.value_id){
                         this.valueList.push(this.options.find(x => x.id === this.value_id));
                         document.getElementById('placeholder').style.display = "none";
                     }
-                    console.log(this.options);
                     this.first_time = false;
                     this.filterType();
                     this.addSelectedAttr();
@@ -250,7 +275,7 @@ export default {
             }
         },
 
-        removeValue(i) {
+        removeValue(i, id) {
             if(this.ask_before_delete != '') {
                 if(!confirm(this.ask_before_delete)) return;
             }
@@ -261,11 +286,19 @@ export default {
 
             this.valueList.splice(i, 1);
 
-            let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
-            if(index != -1) {
-                this.filtered_options.splice(index, 1);
-                this.$emit('remove');
-            }
+            this.filtered_options.filter((option, index) => {
+                if(option.id === id){
+                    this.filtered_options[index].selected = false;
+                    this.filtered_options[index].shownProfile = false;
+                }
+            });
+            this.$emit('remove');
+
+            // let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
+            // if(index != -1) {
+                // this.filtered_options.splice(index, 1);
+                // this.$emit('remove');
+            // }
         },
 
         removeValueFromList(i) {
@@ -336,5 +369,29 @@ export default {
     .placeholder{
        color: rgba(0,0,0,0.5);
         background-color: transparent!important;
+    }
+    .options{
+        .shown-profile{
+            background-color: #f2f2f2;
+            color: #999;
+            position: relative;
+            cursor: default;
+            i{
+                opacity: 0.3;
+            }
+            &:before{
+                content: 'Уже создан';
+                position: absolute;
+                top: 10px;
+                right: 5px;
+                font-size: 12px;
+                color: #666;
+                font-weight: 600;
+            }
+            &:hover{
+                background-color: #f2f2f2;
+                cursor: default;
+            }
+        }
     }
 </style>

@@ -191,6 +191,7 @@
             clearImage() {
                 this.image = null;
                 this.imageSrc = null;
+                this.$emit("image-download", null);
                 this.$emit('has-change-constructor', false)
             },
         },

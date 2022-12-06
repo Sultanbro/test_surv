@@ -131,24 +131,18 @@
                         required
                 />
 
-                <superselect
+                <ChoiceTop
                         v-if="type === 3"
-                        class="w-50 mb-4"
-                        :key="1"
-                        :onlytype="2"
-                        @choose="superselectChoice"
-                        :single="true"
-                        :placeholder="'Выберите должность или отдел'"
-                        :disable_type="1"
-                        :value_id="targetable_id"
-                        :pre_build="true"
-                        :select_all_btn="false"/>
+                        :targetable_id="targetable_id"
+                        @choiced-top="choicedTop"
+                />
             </BFormGroup>
 
             <BFormGroup class="custom-switch custom-switch-sm" id="input-group-4" v-if="type === 1 || type === 2 ">
                 <b-form-checkbox v-model="hide" switch>Отображать пользователям награды других участников
                 </b-form-checkbox>
             </BFormGroup>
+            <hr class="mb-4">
             <BButton type="submit" variant="primary">Сохранить</BButton>
         </BForm>
     </sidebar>
@@ -156,7 +150,7 @@
 
 <script>
     import UploadFile from "./types/UploadFile.vue";
-    import FormUsers from "./types/FormUsers.vue";
+    import ChoiceTop from "./types/ChoiceTop.vue";
     import UploadSertificate from "./types/UploadSertificate.vue";
     import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
 
@@ -164,7 +158,7 @@
         name: "EditAwardSidebar",
         components: {
             UploadFile,
-            FormUsers,
+            ChoiceTop,
             UploadSertificate,
             VuePdfEmbed
         },
@@ -198,6 +192,10 @@
             };
         },
         methods: {
+            choicedTop(data){
+                this.targetable_id = data.id;
+                this.targetable_type = data.type;
+            },
             hasChangeConstructor(arg){
                 this.constructorChange = arg;
             },
@@ -214,15 +212,6 @@
             },
             removeCourseAll(){
                 this.course_ids = [];
-            },
-            superselectChoice(val) {
-                this.targetable_id = val.id;
-                if (val.type === 2) {
-                    this.targetable_type = 'App\\ProfileGroup';
-                }
-                if (val.type === 3) {
-                    this.targetable_type = 'App\\Position';
-                }
             },
             async saveCategory() {
                 const formDataCategories = new FormData();
@@ -334,7 +323,7 @@
                                 this.hide = 1;
                             }
 
-                            if (this.type === 1 || this.type === 3) {
+                            if (this.type === 1) {
                                 await this.saveCategory();
                                 await this.saveAwards();
                             }
@@ -342,8 +331,14 @@
                             if (this.type === 2) {
                                 if(this.fileCertificate !== null){
                                     if (this.constructorChange) {
-                                        await this.saveCategory();
-                                        await this.saveAwards();
+                                        if(this.course_ids.length > 0){
+                                            await this.saveCategory();
+                                            await this.saveAwards();
+                                        } else {
+                                            this.$toast.error('Выберите один или несколько курсов', {
+                                                timeout: 5000
+                                            });
+                                        }
                                     } else {
                                         this.$toast.error('Сперва отредактируйте выбранный шаблон', {
                                             timeout: 5000
@@ -354,7 +349,17 @@
                                         timeout: 5000
                                     });
                                 }
+                            }
 
+                            if (this.type === 3) {
+                                if(this.targetable_type && this.targetable_id){
+                                    await this.saveCategory();
+                                    await this.saveAwards();
+                                } else{
+                                    this.$toast.error('Выберите должность или отдел', {
+                                        timeout: 5000
+                                    });
+                                }
                             }
 
 
@@ -392,7 +397,7 @@
         async mounted() {
             setTimeout(() => {
                 this.isShow = true;
-            }, 20)
+            }, 20);
             if (Object.keys(this.item).length > 0) {
                 let loader = this.$loading.show();
                 await this.axios
