@@ -66,7 +66,7 @@ class UserController extends Controller
     public function __construct(AdminUserService $userService)
     {
         $this->userService = $userService;
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**
@@ -924,9 +924,9 @@ class UserController extends Controller
      */
     public function updatePerson(Request $request)
     {
-//        if(!auth()->user()->can('users_view')) {
-//            return redirect('/');
-//        }
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
+        }
         /*==============================================================*/
         /********** Подготовка  */
         /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника ), не знаю баг или нет  */
@@ -934,7 +934,7 @@ class UserController extends Controller
 
         //if(Auth::user()->id == 5) dd($request->all());
         $id = $request['id'];
-        $user = User::with('zarplata')->where('id', 6288)->withTrashed()->first();
+        $user = User::with('zarplata')->where('id', $id)->withTrashed()->first();
         $photo = Photo::where('user_id', $id)->first();
         $downloads = Downloads::where('user_id', $id)->first();
 
