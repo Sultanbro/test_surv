@@ -340,14 +340,21 @@
                             }
 
                             if (this.type === 2) {
-                                if (this.constructorChange) {
-                                    await this.saveCategory();
-                                    await this.saveAwards();
+                                if(this.fileCertificate !== null){
+                                    if (this.constructorChange) {
+                                        await this.saveCategory();
+                                        await this.saveAwards();
+                                    } else {
+                                        this.$toast.error('Сперва отредактируйте выбранный шаблон', {
+                                            timeout: 5000
+                                        });
+                                    }
                                 } else {
-                                    this.$toast.error('Сперва отредактируйте выбранный шаблон!', {
+                                    this.$toast.error('Загрузите шаблон', {
                                         timeout: 5000
                                     });
                                 }
+
                             }
 
 
