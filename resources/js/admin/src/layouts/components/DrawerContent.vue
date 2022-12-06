@@ -47,6 +47,13 @@ const upgradeBanner = computed(() => {
         icon: { icon: 'mdi-account-cog-outline' },
       }"
     />
+    <VerticalNavLink
+      :item="{
+        title: 'Доступы',
+        to: 'admino-user-permissions',
+        icon: { icon: 'mdi-account-cog-outline' },
+      }"
+    />
     <!-- 👉 Pages -->
     <!--
       <VerticalNavSectionTitle :item="{ heading: 'Pages' }" />

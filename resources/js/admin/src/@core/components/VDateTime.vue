@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import flatPickr from 'vue-flatpickr-component'
+import FlatPickr from 'vue-flatpickr-component'
 
 interface Props {
-  modelValue: string,
+  modelValue: string
   label: string
 }
 const props = defineProps<Props>()
@@ -15,15 +15,18 @@ const dateConfig = {
   altFormat: 'd.m.Y H:i',
   dateFormat: 'Z',
 }
-
 </script>
+
 <template>
-  <label class="v-date-time">
-    <flat-pickr
-      :modelValue="modelValue"
+  <label
+    class="v-date-time"
+    :class="{'v-date-time_value': modelValue}"
+  >
+    <FlatPickr
+      :model-value="modelValue"
       :config="dateConfig"
-      @update:modelValue="emit('update:modelValue', $event)"
       class="v-date-time-input"
+      @update:modelValue="emit('update:modelValue', $event)"
     />
     <div class=" v-date-time-label">
       {{ label }}
@@ -61,7 +64,7 @@ const dateConfig = {
   outline: none;
 }
 .v-date-time-input:focus ~ .v-date-time-label,
-.v-date-time-input:not(:placeholder-shown) ~ .v-date-time-label{
+.v-date-time_value .v-date-time-input ~ .v-date-time-label{
   left: 1rem;
   top: -0.357rem;
   font-size: 12px;
@@ -69,7 +72,6 @@ const dateConfig = {
   color: rgba(58, 53, 65, 0.34);
   transform: none;
   padding: 0 4px;
-  opacity: 0.68;
 }
 .v-date-time-label{
   position: absolute;

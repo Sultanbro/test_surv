@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 import UserData from '@/views/user-interface/tables/UserData.vue'
-import TableFooter from '@/views/user-interface/tables/TableFooter.vue'
-import UserDataFilters from '@/views/user-interface/form-layouts/UserDataFilters.vue'
 import { useUserDataStore } from '@/stores/user-data'
 
 import type { UserDataRequest } from '@/stores/api'
@@ -32,21 +30,19 @@ const filters = ref<UserDataRequest>({
   'country': '',
 })
 
-function onPage(value: number){
-  page.value = value
+watch(page, value => {
   userDataStore.$patch({
     page: value,
   })
   userDataStore.fetchUsers(filters.value)
-}
+})
 
-function onPerPage(value: number){
-  perPage.value = value
+watch(perPage, value => {
   userDataStore.$patch({
     onPage: value,
   })
   userDataStore.fetchUsers(filters.value)
-}
+})
 
 watch(filters, value => {
   userDataStore.fetchUsers(filters.value)
@@ -56,14 +52,7 @@ watch(filters, value => {
 <template>
   <VRow>
     <VCol cols="12">
-      <VCard title="Фильтры">
-        <UserDataFilters
-          v-model="filters"
-        />
-      </VCard>
-    </VCol>
-    <VCol cols="12">
-      <VCard title="Данные пользователей">
+      <VCard title="Права пользователей">
         <UserData />
       </VCard>
     </VCol>
