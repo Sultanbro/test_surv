@@ -94,26 +94,6 @@ class AccrualAwardService implements AwardInterface
         $today = Carbon::now();
         $date = Carbon::createFromDate($today->year, $today->month, 1);
 
-//        $awardCategories = AwardCategory::query()
-//            ->where('type', $type)
-//            ->with('awards',function ($query) use ($user, $groups) {
-//                $query->where( function ($q) use ($user, $groups){
-//                    $q->orWhere(function ($qu) use ($user) {
-//                        $qu->where('targetable_id',$user->position_id)
-//                            ->where('targetable_type', self::POSITION);
-//                    })
-//                        ->orWhere(function ($qu) use ($groups) {
-//                            $qu->whereIn('targetable_id', $groups)
-//                                ->where('targetable_type', self::GROUP);
-//                        });
-//                });
-//
-//
-//
-//
-//            })
-//            ->get();
-
 
         $awardCategories = AwardCategory::query()
             ->where('type', $type)
