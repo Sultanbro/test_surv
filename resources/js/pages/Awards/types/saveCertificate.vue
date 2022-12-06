@@ -40,7 +40,7 @@
                                  style="margin-top: 280px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
                                  :style="{color: styles.date.color, fontSize: styles.date.size + 'px', fontWeight: styles.date.fontWeight, textTransform: styles.date.uppercase, display: styles.date.fullWidth ? 'block' : 'inline-block', width: styles.date.fullWidth ? '100%' : 'auto', transform: transformDateName}"
                             >
-                                {{award.course_results[0].ended_at}}
+                               {{ $moment(award.course_results[0].ended_at).format('DD.MM.YYYY') }}
                             </div>
                         </div>
                         <vue-pdf-embed :source="award.award.tempPath" @rendered="renderedEmbed"/>
