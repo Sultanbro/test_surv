@@ -252,7 +252,7 @@ export default {
       } else {
         this.generateCertificate = true;
         this.$toast.success('Поздравляем с завершением курса!');
-        this.$toast.warning('Подождите пару секунд, Ваш сертификат почти готов..', {
+        this.$toast.warning('Подождите пару секунд, Ваш сертификат почти готов...', {
             timeout: 5000
         });
       }

@@ -5,7 +5,7 @@
                 :float-layout="true"
                 :pdf-quality="2"
                 :preview-modal="false"
-                :enable-download="false"
+                :enable-download="pdfDownloaded"
                 pdf-content-width="1000px"
                 :manual-pagination="true"
                 ref="html2Pdf"
@@ -13,6 +13,7 @@
                 @progress="onProgress($event)"
                 @beforeDownload="beforeDownload($event)"
                 @hasDownloaded="hasDownloaded($event)"
+                v-if="!loading"
         >
             <!-- 1 = 24.4мм -->
             <section slot="pdf-content">
@@ -108,32 +109,29 @@
                 let file = new File([blobPdf], this.title);
                 const formData = new FormData();
                 formData.append('course_id', this.course_id);
-                formData.append('award_id', this.award.id);
+                formData.append('award_id', this.award.award_id);
                 formData.append('user_id', this.user_id);
                 formData.append('file', file);
-                // this.axios
-                //     .post("/awards/reward", formData, {
-                //         headers: {
-                //             'Content-Type': 'multipart/form-data'
-                //         },
-                //     })
-                //     .then(response => {
-                //         console.log(response);
-                //         this.$emit('generate-success');
-                //     })
-                //     .catch(function (error) {
-                //         console.log(error);
-                //     });
+                this.axios
+                    .post("/awards/reward", formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                    })
+                    .then(response => {
+                        console.log('СЕРТИФИКАТ УСПЕШНО СГЕНЕРИРОВАН!');
+                        this.$emit('generate-success');
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             },
             renderedEmbed() {
                 const canvas = document.querySelector('.vue-pdf-embed canvas');
-                console.log(canvas);
                 let canvasHeight = canvas.offsetHeight;
                 let canvasWidth = canvas.offsetWidth;
                 let canvasHeightCalc = parseFloat((canvasHeight * 0.264583) + 2).toFixed(2);
                 let canvasWidthCalc = parseFloat(canvasWidth * 0.264583).toFixed(2);
-                console.log(canvasHeightCalc);
-                console.log(canvasWidthCalc);
                 this.options.jsPDF.format = [canvasWidthCalc, canvasHeightCalc];
                 if (canvasWidthCalc > canvasHeightCalc) {
                     this.options.jsPDF.orientation = 'landscape';
@@ -155,7 +153,14 @@
                         this.transformFullName = `translate(${this.styles.fullName.screenX}px, ${this.styles.fullName.screenY}px)`;
                         this.transformCourseName = `translate(${this.styles.courseName.screenX}px, ${this.styles.courseName.screenY}px)`;
                         this.transformDateName = `translate(${this.styles.date.screenX}px, ${this.styles.date.screenY}px)`;
-                        this.loading = false;
+
+                        if(this.award.course_results.length === 0 || Object.keys(this.award.course_results).length === 0){
+                            this.$toast.error('Курс еще не завершен. Генерация сертификата не выполнена', {
+                                timeout: 5000
+                            });
+                        } else {
+                            this.loading = false;
+                        }
                     })
                     .catch(error => {
                         console.log(error);
