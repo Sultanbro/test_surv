@@ -1,10 +1,10 @@
 <template>
     <div class="certificate-creator">
         <vue-html2pdf
-                :show-layout="false"
+                :show-layout="true"
                 :float-layout="true"
                 :pdf-quality="2"
-                :preview-modal="false"
+                :preview-modal="true"
                 :enable-download="false"
                 pdf-content-width="1000px"
                 :manual-pagination="true"
@@ -22,12 +22,14 @@
                             <div class="draggable"
                                  style="margin-top: 40px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
                                  :style="{color: styles.fullName.color, fontSize: styles.fullName.size + 'px', fontWeight: styles.fullName.fontWeight, textTransform: styles.fullName.uppercase, display: styles.fullName.fullWidth ? 'block' : 'inline-block', width: styles.fullName.fullWidth ? '100%' : 'auto', transform: transformFullName}"
-                            >{{img.name}}
+                            >
+                                {{award.course_results.user.name}} {{award.course_results.user.last_name}}
                             </div>
                             <div class="draggable"
                                  style="margin-top: 120px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
                                  :style="{color: styles.courseName.color, fontSize: styles.courseName.size + 'px', fontWeight: styles.courseName.fontWeight, textTransform: styles.courseName.uppercase, display: styles.courseName.fullWidth ? 'block' : 'inline-block', width: styles.courseName.fullWidth ? '100%' : 'auto', transform: transformCourseName}"
-                            >{{img.certificate}}
+                            >
+                                {{award.name}}
                             </div>
 <!--                            <div class="draggable"-->
 <!--                                 style="margin-top: 200px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"-->
@@ -37,10 +39,11 @@
                             <div class="draggable"
                                  style="margin-top: 280px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
                                  :style="{color: styles.date.color, fontSize: styles.date.size + 'px', fontWeight: styles.date.fontWeight, textTransform: styles.date.uppercase, display: styles.date.fullWidth ? 'block' : 'inline-block', width: styles.date.fullWidth ? '100%' : 'auto', transform: transformDateName}"
-                            >{{img.date}}
+                            >
+                                {{award.course_results.ended_at}}
                             </div>
                         </div>
-                        <vue-pdf-embed :source="award.tempPath" @rendered="renderedEmbed"/>
+                        <vue-pdf-embed :source="award.award.tempPath" @rendered="renderedEmbed"/>
                     </div>
                 </div>
             </section>
@@ -76,11 +79,6 @@
             return {
                 loading: true,
                 award: {},
-                img: {
-                    name: 'Хайруллин Тимур',
-                    certificate: 'За лучшие заслуги лучших',
-                    date: '24.11.2022',
-                },
                 transformFullName: {},
                 transformCourseName: {},
                 transformDateName: {},
@@ -113,19 +111,19 @@
                 formData.append('award_id', this.award.id);
                 formData.append('user_id', this.user_id);
                 formData.append('file', file);
-                this.axios
-                    .post("/awards/reward", formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        },
-                    })
-                    .then(response => {
-                        console.log(response);
-                        this.$emit('generate-success');
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
+                // this.axios
+                //     .post("/awards/reward", formData, {
+                //         headers: {
+                //             'Content-Type': 'multipart/form-data'
+                //         },
+                //     })
+                //     .then(response => {
+                //         console.log(response);
+                //         this.$emit('generate-success');
+                //     })
+                //     .catch(function (error) {
+                //         console.log(error);
+                //     });
             },
             renderedEmbed() {
                 const canvas = document.querySelector('.vue-pdf-embed canvas');
@@ -146,15 +144,14 @@
             }
         },
         async mounted() {
-            console.log('USER ID USER ID ====== ' + this.user_id);
             if (this.course_id) {
                 await this.axios
                     .get('/awards/course?course_id=' + this.course_id)
                     .then(response => {
                         const data = response.data.data;
                         this.award = data;
-                        console.log(data);
-                        this.styles = JSON.parse(data.styles);
+                        console.log(this.award);
+                        this.styles = JSON.parse(data.award.styles);
                         this.transformFullName = `translate(${this.styles.fullName.screenX}px, ${this.styles.fullName.screenY}px)`;
                         this.transformCourseName = `translate(${this.styles.courseName.screenX}px, ${this.styles.courseName.screenY}px)`;
                         this.transformDateName = `translate(${this.styles.date.screenX}px, ${this.styles.date.screenY}px)`;

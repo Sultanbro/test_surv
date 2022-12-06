@@ -239,6 +239,10 @@
     color: #fff;
 }
 
+.g-recaptcha {
+    width: 100%;
+    transform: scale(0.8) translate(-15px, -1px);
+}
 </style>
 @endsection
 

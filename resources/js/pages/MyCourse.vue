@@ -170,7 +170,7 @@
                   <h1>Поздравляем с завершением курса! 😁 😁 😆 </h1>
                   <p>Спасибо, что прошли курс несмотря ни на что!</p>
               </div>
-<!--                <saveCertificate v-if="generateCertificate" @generate-success="generateSuccess" :course_id="activeCourseItem.course_id" :user_id="user_id" :title="activeCourseItem.title"/>-->
+                <saveCertificate v-if="generateCertificate" @generate-success="generateSuccess" :course_id="activeCourseItem.course_id" :user_id="user_id" :title="activeCourseItem.title"/>
             </div>
 
       </div>
@@ -236,6 +236,9 @@ export default {
           this.$toast.success('Ваш сертификат готов! Можете посмотреть и загрузить его в своем профиле во вкладке "Номинации"', {
               timeout: 5000
           });
+          this.activeCourseItem.status = 1;
+          this.activeCourseItem = null;
+          this.congrats = true;
       },
     after_click_next_element() {
       let index = this.items.findIndex(el => el.id == this.activeCourseItem.id);
@@ -247,12 +250,12 @@ export default {
         this.activeCourseItem.status = 2;
           this.generateCertificate = false;
       } else {
-        this.activeCourseItem.status = 1;
-        this.activeCourseItem = null;
-        this.congrats = true;
-        this.$toast.success('Поздравляем с завершением курса!');
         this.generateCertificate = true;
-      } 
+        this.$toast.success('Поздравляем с завершением курса!');
+        this.$toast.warning('Подождите пару секунд, Ваш сертификат почти готов..', {
+            timeout: 5000
+        });
+      }
       
     },
 

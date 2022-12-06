@@ -19,7 +19,8 @@
 			</div>
 			<div class="autorize">
 				@guest
-				<div><a class="autorization" href="/login">Авторизоваться</a></div>
+				<div><a class="autorization" href="/login">Вход</a></div>
+				<div><a class="" href="/register">Регистрация</a></div>
 				@else
 				<form method="POST" action="/logout">
 					@csrf
