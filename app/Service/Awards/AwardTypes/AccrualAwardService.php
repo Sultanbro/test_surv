@@ -43,11 +43,17 @@ class AccrualAwardService implements AwardInterface
         try {
             if (!($request->has('targetable_type') &&
                 $request->has('targetable_id'))) {
-                throw new BusinessLogicException('targetable_type, targetable_id are required for certificate award');
+                return \response()->success('targetable_type, targetable_id обязательны к заполнению', 500, 'error');
             }
             if (Award::query()
                 ->where('award_category_id', $request->input('award_category_id'))->exists()) {
-                throw new BusinessLogicException('accrual category already has award');
+                return \response()->success('Категория начисления уже имеет награду', 500, 'error');
+            }
+
+           if (Award::query()
+               ->where('targetable_id',  $request->input('targetable_id'))
+               ->where('targetable_type', $request->input('targetable_type'))->exists()) {
+                return \response()->success('На данный отдел или позицию уже существует награда, пожалуйста выберите другой отдел, позицию', 500, 'error');
             }
 
             $params = [
@@ -58,7 +64,7 @@ class AccrualAwardService implements AwardInterface
 
             $success = Award::query()->create($params);
 
-            return $success;
+            return \response()->success($success);
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
