@@ -8,7 +8,10 @@ use App\Http\Requests\Award\AwardsByTypeRequest;
 use App\Http\Requests\Award\CourseAwardRequest;
 use App\Http\Requests\Award\StoreAwardRequest;
 use App\Http\Requests\Award\UpdateAwardRequest;
+use App\Http\Requests\GetCoursesAwardsRequest;
 use App\Http\Requests\RewardRequest;
+use App\Http\Requests\SaveCoursesAwardsRequest;
+use App\Http\Requests\StoreCoursesAwardsRequest;
 use App\Models\Award\Award;
 use App\Models\Award\AwardCategory;
 use App\Repositories\AwardRepository;
@@ -155,10 +158,21 @@ class AwardController extends Controller
     /**
      * @throws Exception
      */
-    public function coursesAwards()
+    public function coursesAward(GetCoursesAwardsRequest $request)
     {
 
-        $response = $this->awardService->courseAwards();
+        $response = $this->awardService->courseAwards($request);
+
+
+        return \response()->success($response);
+    }
+    /**
+     * @throws Exception
+     */
+    public function storeCoursesAward(StoreCoursesAwardsRequest $request, Award $award)
+    {
+
+        $response = $this->awardService->saveCourseAwards($request, $award);
 
 
         return \response()->success($response);
