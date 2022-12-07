@@ -41,6 +41,8 @@
                                             @save-changes="saveStyles"/>
                 </BModal>
             </div>
+            <hr class="my-4">
+            <RegenerateCertificates :award="awards[0]" :courses="value"/>
         </div>
         <b-row>
             <b-col cols="12" md="7">
@@ -74,6 +76,7 @@
 
 <script>
     import UploadSertificateModal from "../types/UploadSertificateModal.vue";
+    import RegenerateCertificates from "./RegenerateCertificates";
     import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
     import Multiselect from "vue-multiselect";
 
@@ -89,6 +92,7 @@
         name: "UploadSertificate",
         components: {
             UploadSertificateModal,
+            RegenerateCertificates,
             Multiselect,
             VuePdfEmbed
         },
