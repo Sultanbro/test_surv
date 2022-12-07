@@ -151,6 +151,35 @@ class AwardService
         }
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function courseAwards(): array
+    {
+        try {
+            return CourseResult::whereHas('user', function ($query){
+                $query->whereHas('description', function ($q) {
+                    $q->where('is_trainee', 0);
+                })->where('deleted_at', null);
+            })
+                ->whereNotNull('ended_at')
+                ->where('status',CourseResult::COMPLETED)
+                ->with(['user' => function($q){
+                    $q->select('id', 'name', 'last_name');
+                },'course' => function($q) {
+                    $q->select('id', 'name', 'text');
+                }])
+                ->select('id','ended_at', 'status', 'user_id', 'course_id')
+                ->get()
+                ->toArray();
+
+
+        } catch (\Throwable $exception) {
+            throw new Exception($exception->getMessage());
+        }
+    }
+
 
 
     private function saveAwardFile($request): array
