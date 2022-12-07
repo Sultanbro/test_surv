@@ -174,7 +174,7 @@ class AwardService
                 },'course' => function($q) {
                     $q->select('id', 'name', 'text');
                 }])
-                ->whereIn('course_id', $request->input('course_ids'))
+                ->whereIn('course_id', $request->input('course_ids', []))
                 ->select('id','ended_at', 'status', 'user_id', 'course_id')
                 ->get()
                 ->toArray();
