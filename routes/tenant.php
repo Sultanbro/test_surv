@@ -638,7 +638,7 @@ Route::middleware([
     Route::group([
         'prefix' => 'awards',
         'as'     => 'awards.',
-//        'middleware' => 'auth'
+        'middleware' => 'auth'
     ], function () {
         Route::post('/reward', [AwardController::class, 'reward'])->name('reward');
         Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->name('delete-reward');

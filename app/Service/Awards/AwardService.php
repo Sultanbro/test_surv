@@ -224,7 +224,9 @@ class AwardService
                     $files[] = [
                         'relative' => $filename,
                         'format' => $file->getClientOriginalExtension(),
-                        'temp' => FileHelper::getUrl($this->path, $filename)
+                        'temp' => FileHelper::getUrl($this->path, $filename),
+                        'user_id' => $userId,
+                        'course_id' => $courseId
                     ];
                 }
 
