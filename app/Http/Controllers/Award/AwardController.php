@@ -152,6 +152,17 @@ class AwardController extends Controller
 
         return \response()->success($response);
     }
+    /**
+     * @throws Exception
+     */
+    public function coursesAwards()
+    {
+
+        $response = $this->awardService->courseAwards();
+
+
+        return \response()->success($response);
+    }
 
       /**
      * @throws Exception
