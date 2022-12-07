@@ -162,6 +162,7 @@ class AccrualAwardService implements AwardInterface
                 'bonuses' => $userFot['bonuses'],
                 'total' => array_sum(array_values($userFot)),
                 'position' => $user->position?->position,
+                'group' => $group->name,
                 'name' => $user->name,
                 'last_name' => $user->last_name,
                 'path'=> 'users_img/' . $user->img_url,
