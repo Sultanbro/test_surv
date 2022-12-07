@@ -129,7 +129,7 @@ class ProfileGroup extends Model
      */
     public function scopeProfileGroupsWithArchived($query, $year, $month): array
     {
-        $date = Carbon::create($year, $month)->firstOfMonth()->format('Y-m-d');
+        $date = Carbon::create($year, $month)->endOfMonth()->format('Y-m-d');
 
         return $this->where('active', self::IS_ACTIVE)
             ->whereDate('created_at', '<=', $date)->where(fn($q) => $q->whereNull('archived_date')->orWhere('archived_date', '>=', $date))
