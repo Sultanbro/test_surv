@@ -249,7 +249,6 @@
             };
         },
         mounted() {
-            console.log(this.styles);
             if (this.styles.length > 0) {
                 const getStyles = JSON.parse(this.styles);
                 this.fullName = getStyles.fullName;
@@ -327,7 +326,7 @@
         },
         methods: {
             saveChanges() {
-                this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date);
+                this.$emit('save-changes', this.fullName, this.courseName, this.date);
                 this.$emit('update:modalCertificate', false);
 
             },

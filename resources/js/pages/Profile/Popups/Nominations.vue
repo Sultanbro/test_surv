@@ -25,7 +25,7 @@
                             <BRow v-if="award.hasOwnProperty('my')">
                                 <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
                                       :key="item.id">
-                                    <div class="certificates__item" @click="modalShow(item, award.name)">
+                                    <div class="certificates__item" @click="modalShow(item, award.name, true)">
                                         <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                         <vue-pdf-embed :source="item.tempPath" v-else />
                                     </div>
@@ -44,7 +44,7 @@
                             <BRow v-if="award.hasOwnProperty('available')">
                                 <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
                                       :key="item.id">
-                                    <div class="certificates__item" @click="modalShow(item, award.name)">
+                                    <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                         <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                         <vue-pdf-embed :source="item.tempPath" v-else />
                                     </div>
@@ -55,7 +55,7 @@
                             <BRow v-if="award.hasOwnProperty('other')">
                                 <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
                                       :key="item.id">
-                                    <div class="certificates__item" @click="modalShow(item, award.name)">
+                                    <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                         <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                         <vue-pdf-embed :source="item.tempPath" v-else />
                                     </div>
@@ -85,7 +85,7 @@
                            <BRow v-if="award.hasOwnProperty('my')">
                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
                                      :key="item.id">
-                                   <div class="certificates__item" @click="modalShow(item, award.name)">
+                                   <div class="certificates__item" @click="modalShow(item, award.name, true)">
                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                        <vue-pdf-embed :source="item.tempPath" v-else />
                                    </div>
@@ -105,7 +105,7 @@
                            <BRow v-if="award.hasOwnProperty('available')">
                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
                                      :key="item.id">
-                                   <div class="certificates__item" @click="modalShow(item, award.name)">
+                                   <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                        <vue-pdf-embed :source="item.tempPath" v-else />
                                    </div>
@@ -116,7 +116,7 @@
                            <BRow v-if="award.hasOwnProperty('other')">
                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
                                      :key="item.id">
-                                   <div class="certificates__item" @click="modalShow(item, award.name)">
+                                   <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                        <vue-pdf-embed :source="item.tempPath" v-else />
                                    </div>
@@ -182,7 +182,7 @@
             <vue-pdf-embed :source="itemModal.tempPath" v-else />
             <template #modal-footer>
                 <BButton variant="primary" @click="modal = !modal">Закрыть</BButton>
-                <BButton variant="success" @click="downloadImage(itemModal)">Скачать</BButton>
+                <BButton variant="success" v-if="itemModal.isMy" @click="downloadImage(itemModal)">Скачать</BButton>
             </template>
         </b-modal>
 
@@ -285,9 +285,10 @@
 
                 xhr.send();
             },
-            modalShow(item, name) {
+            modalShow(item, name, isMy) {
                 this.itemModal = item;
                 this.itemModal.awardName = name;
+                this.itemModal.isMy = isMy;
                 this.modal = !this.modal;
             },
         }

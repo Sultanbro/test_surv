@@ -637,6 +637,7 @@ export default {
         })
         .then((response) => {
             this.$emit('changeProgress');
+            this.$emit('forGenerateCertificate', response.data.item_model);
             if(el != null) el.item_model = {status: 1}; 
             this.activesbook.item_model = response.data.item_model;
         })
