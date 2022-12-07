@@ -137,8 +137,7 @@
                         <BCol cols="12" md="4" v-for="(item, index) in award.top" :key="item.id + index">
                             <div class="nominations__item" :class="{green: index === 1}">
                                 <div class="nominations__item-title">
-                                    Процент успешных
-                                    исходящих продаж
+                                    {{item.group}}
                                 </div>
                                 <div class="nominations__item-avatar" :class="'gift-' + (index + 1)">
                                     <img :src="item.path" alt="profile avatar" v-if="item.path.length > 10">
