@@ -137,11 +137,11 @@ class ProfileGroup extends Model
             ->where(fn($group) => $group->whereNull('archived_date')->orWhere(
             fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month))
         )->get()->reject(function ($group) {
-            if ($group->has_analytics == self::HAS_ANALYTICS && $group->archived_date == null)
+            if ($group->has_analytics == self::HAS_ANALYTICS && $group->archived_date != null)
             {
                 return $group;
             }
-            if ($group->has_analytics == self::ARCHIVED && $group->archived_date != null)
+            if ($group->has_analytics == self::ARCHIVED && $group->archived_date == null)
             {
                 return $group;
             }
