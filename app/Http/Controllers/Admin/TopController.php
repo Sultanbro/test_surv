@@ -142,8 +142,7 @@ class TopController extends Controller
             $w_col_sum = 0;
             foreach($this->groups as $group_id) {
                 $group = ProfileGroup::find($group_id);
-                
-                
+
                 if($group) {
 
                     

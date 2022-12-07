@@ -127,10 +127,19 @@ class ProfileGroup extends Model
     public function scopeProfileGroupsWithArchived($query, $year, $month): array
     {
         return $this->where('active', 1)
-            ->where('has_analytics', self::HAS_ANALYTICS)
+            ->whereIn('has_analytics', [self::HAS_ANALYTICS, self::ARCHIVED])
             ->where(fn($group) => $group->whereNull('archived_date')->orWhere(
             fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month))
-        )->get()->pluck('id')->toArray();
+        )->get()->reject(function ($q) {
+            if ($q->has_analytics == self::HAS_ANALYTICS && $q->archived_date != null)
+            {
+                return $q;
+            }
+
+            if ($q->has_analytics == self::ARCHIVED && $q->archived_date == null) {
+                return $q;
+            }
+        })->pluck('id')->toArray();
     }
 
     /**
