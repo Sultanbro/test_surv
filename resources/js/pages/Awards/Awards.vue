@@ -26,7 +26,12 @@
                     <BTr v-for="(item, key) in tableItems" :key="item.name + key">
                         <BTd>{{ key + 1 }}</BTd>
                         <BTd><div class="clickable" @click="rowClickedHandler(item)">{{ item.name }}</div></BTd>
-                        <BTd class="td-desc"><div class="desc">{{ item.description }}</div></BTd>
+                        <BTd class="td-desc">
+                            <div class="desc">{{ item.description }}</div>
+                            <div class="full-text">
+                                {{item.description}}
+                            </div>
+                        </BTd>
                         <BTd v-if="item.type === 1">Картинка</BTd>
                         <BTd v-if="item.type === 2">Конструктор</BTd>
                         <BTd v-if="item.type === 3">Данные начислений</BTd>
@@ -158,7 +163,6 @@
         }
         .table-container{
             border: 1px solid #ddd;
-            overflow: hidden;
             border-radius: 10px;
         }
         #awards-table {
@@ -192,6 +196,32 @@
                 cursor: pointer;
                 .td-desc{
                     max-width: calc(100vw - 1000px);
+                    position: relative;
+                    .full-text{
+                        position: absolute;
+                        top: 20px;
+                        left: 10px;
+                        max-width: 400px;
+                        visibility: hidden;
+                        opacity: 0;
+                        padding: 10px 20px;
+                        background-color: #fff;
+                        font-size: 14px;
+                        border: 1px solid #999;
+                        line-height: 1.3;
+                        text-align: left;
+                        border-radius: 10px;
+                        box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+                        transition: 0.2s all ease;
+                    }
+                    &:hover{
+                        .full-text{
+                            visibility: visible;
+                            opacity: 1;
+                            top: 40px;
+                            z-index: 11;
+                        }
+                    }
                 }
                 .desc{
                     overflow: hidden;

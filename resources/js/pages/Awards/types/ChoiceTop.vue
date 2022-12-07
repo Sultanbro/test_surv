@@ -40,19 +40,19 @@
                 .then(response => {
                     const data = response.data.data;
                     data.forEach(item => {
-                        if(item.targetable_id !== null && item.targetable_type !== null){
-                            let type = 0;
-                            if(item.targetable_type === 'App\\ProfileGroup'){
-                                type = 2;
+                            if(item.targetable_id !== null && item.targetable_type !== null){
+                                let type = 0;
+                                if(item.targetable_type === 'App\\ProfileGroup'){
+                                    type = 2;
+                                }
+                                if(item.targetable_type === 'App\\Position'){
+                                    type = 3;
+                                }
+                                this.courses.push({
+                                    id: item.targetable_id,
+                                    type: type
+                                })
                             }
-                            if(item.targetable_type === 'App\\Position'){
-                                type = 3;
-                            }
-                            this.courses.push({
-                                id: item.targetable_id,
-                                type: type
-                            })
-                        }
                     });
                     this.done = true;
                     loader.hide();
