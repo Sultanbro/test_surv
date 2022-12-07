@@ -100,16 +100,9 @@ class TopController extends Controller
      * Таблица выручки колл центра
      */
     private function getProceeds($date) {
-       
-
-        
-
         $calendar_days = Carbon::parse($date)->daysInMonth; // календарные дни
 
         $days = $this->daysInMonth($date);
-        
-        
-
         // get weeks array 
         $weeks = [];
         
@@ -121,10 +114,7 @@ class TopController extends Controller
                 $start_week++;
             }
             $weeks[$start_week][] = $date;
-            
         }
-
-      
 
             $week_proceeds = [
                 'fields' => $this->getProceedFields($days),
@@ -147,10 +137,7 @@ class TopController extends Controller
                 $total_row[$date->format('d.m')] = 0;
             }
 
-            
             $this->groups = ProfileGroup::profileGroupsWithArchived($date->year, $date->month);
-            
-
 
             $w_col_sum = 0;
             foreach($this->groups as $group_id) {
