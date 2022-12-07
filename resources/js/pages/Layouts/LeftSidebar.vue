@@ -24,7 +24,11 @@
         </div>
     </div>
 
-    <nav class="header__nav" ref="nav">
+    <nav
+        ref="nav"
+        class="header__nav"
+        :class="{'header__nav_even': height - filteredItems.totalHeight < 50}"
+    >
         <template v-for="item in filteredItems.visible">
             <LeftSidebarItem
                 :key="item.name"
@@ -262,11 +266,10 @@ export default {
             ]
         },
         filteredItems(){
-            let h = this.items[0].height
             return this.items.reduce((res, item) => {
                 if(item.hide) return res;
-                h += item.height + 4
-                if(this.height - h > 0){
+                res.totalHeight += item.height + 4
+                if(this.height - res.totalHeight > 0){
                     res.visible.push(item)
                 }
                 else{
@@ -275,7 +278,8 @@ export default {
                 return res;
             }, {
                 visible: [],
-                more: []
+                more: [],
+                totalHeight: this.items[0].height
             })
         }
     },
@@ -345,12 +349,14 @@ export default {
     display: flex;
     flex-direction: column;
     flex: 0 1 100%;
-    justify-content: space-evenly;
     gap:.3rem;
     overflow-y: auto;
     &::-webkit-scrollbar {
         width: 0; /* высота для горизонтального скролла */
         height: 0;
+    }
+    &_even{
+        justify-content: space-evenly;
     }
 }
 
