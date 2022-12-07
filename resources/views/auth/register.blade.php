@@ -1,10 +1,22 @@
 @extends('layouts.auth')
 @section('content')
 
-<div class="cabinet-loader-bg">
-    <div class="cabinet-loader"></div>
-    <div class="cabinet-loader-message">
-        Ваш кабинет создается ...
+<div class="preloader">
+    <div class="preloader__status">
+    <div class="v-progress-circular v-progress-circular--indeterminate v-progress-circular--visible v-theme--dark text-primary" style="width: 50px; height: 50px;" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-v-67cad751="">
+        <svg style="transform: rotate(calc(-90deg));" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 43.47826086956522 43.47826086956522">
+            <circle class="v-progress-circular__underlay" fill="transparent" cx="50%" cy="50%" r="20" stroke-width="3.4782608695652177" stroke-dasharray="125.66370614359172" stroke-dashoffset="0"></circle>
+            <circle class="v-progress-circular__overlay" fill="transparent" cx="50%" cy="50%" r="20" stroke-width="3.4782608695652177" stroke-dasharray="125.66370614359172" stroke-dashoffset="125.66370614359172px"></circle>
+        </svg>
+    </div>
+        <div class="preloader__status-text">Созаем портал</div>
+    </div>
+</div>
+<div class="frontpage container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1 class="frontpage__title">Включайся в работу и наслаждайся. Jobtron.org</h1>
+        </div>
     </div>
 </div>
 <div class="login-page">
@@ -171,78 +183,133 @@
 
 
 
-.cabinet-loader::before, .cabinet-loader::after, .cabinet-loader {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+@font-face {
+    font-family: 'Raleway';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/raleway/v28/1Ptxg8zYS_SKggPN4iEgvnHyvveLxVvaorCIPrQ.ttf) format('truetype');
 }
+.preloader {
+    display: none;
+    width: 100vw;
+    height: 100vh;
 
-.cabinet-loader {
-  width: 200px;
-  height: 200px;
-  margin: auto;
-  background: url("/static/img/logo-jobtron.png") no-repeat center rgba(0, 0, 0, 0.1);
-  background-size: 80%;
-  color: #42aaff;
-  box-shadow: inset 0 0 0 1px rgba(66, 170, 255, 0.5);
-}
-.cabinet-loader::before, .cabinet-loader::after {
-  content: "";
-  z-index: -1;
-  margin: -5%;
-  box-shadow: inset 0 0 0 2px;
-  animation: clipMe 8s linear infinite;
-}
-.cabinet-loader::before {
-  animation-delay: -4s;
-}
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
-@keyframes clipMe {
-  0%, 100% {
-    clip: rect(0px, 220px, 2px, 0px);
-  }
-  25% {
-    clip: rect(0px, 2px, 220px, 0px);
-  }
-  50% {
-    clip: rect(218px, 220px, 220px, 0px);
-  }
-  75% {
-    clip: rect(0px, 220px, 220px, 218px);
-  }
-}
-.cabinet-loader-bg{
     position: fixed;
-    z-index: 999;
+    z-index: 9995;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #0f222b;
 
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s;
+    background: #3498db;
+    color: white;
+    font-family: 'Raleway', sans-serif;
 }
-.cabinet-loader-bg.active{
-    opacity: 1;
-    visibility: visible;
+.preloader_active{
+    display: flex;
 }
-.cabinet-loader-message{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, 150px);
-    font-size: 24px;
-    color: #fff;
-}
-
-.g-recaptcha {
+.preloader__status {
     width: 100%;
-    transform: scale(0.8) translate(-15px, -1px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
+.preloader__status-text {
+    font-size: 40px;
+    font-family: 'Raleway', sans-serif;
+    margin-bottom: 20px;
+}
+.preloader__status-loader {
+    width: 100%;
+    height: 3px;
+}
+.preloader__status-bar {
+    background: white;
+    height: 100%;
+}
+.v-progress-circular{
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    position: relative;
+    vertical-align: middle;
+    color: rgb(48, 63, 159);
+    margin: 1rem;
+}
+.v-progress-circular > svg{
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+}
+
+@keyframes progress-circular-dash {
+ 0% {
+  stroke-dasharray:1,200;
+  stroke-dashoffset:0px
+ }
+ 50% {
+  stroke-dasharray:100,200;
+  stroke-dashoffset:-15px
+ }
+ to {
+  stroke-dasharray:100,200;
+  stroke-dashoffset:-124px
+ }
+}
+@keyframes progress-circular-rotate {
+ to {
+  transform:rotate(270deg)
+ }
+}
+
+.v-progress-circular--indeterminate > svg{
+    animation: progress-circular-rotate 1.4s linear infinite;
+    transform-origin: center center;
+    transition: all .2s ease-in-out;
+}
+.v-progress-circular__underlay{
+    color: rgba(255, 255, 255, 0.12);
+    stroke: currentColor;
+    z-index: 1;
+
+}
+.v-progress-circular__overlay {
+    stroke: currentColor;
+    transition: all .2s ease-in-out,stroke-width 0s;
+    z-index: 2;
+    animation: progress-circular-dash 1.4s ease-in-out infinite;
+    stroke-dasharray: 25,200;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+}
+
+.frontpage {
+    width: 100vw;
+    height: 100vh;
+
+    position: fixed;
+    z-index: 9996;
+    top: 100vh;
+    left: 0;
+
+    background: #34495e;
+}
+.frontpage__title {
+    color: white;
+}
+
+
 </style>
 @endsection
 
