@@ -6,6 +6,19 @@
 
         <!-- hover menu -->
         <div class="header__menu">
+            <div v-if="isAdmin" class="header__menu-project">
+                <img src="/images/dist/icon-settings.svg" alt="settings icon">
+                Проект: {{ project }}
+                <div class="header__submenu">
+                    <a class="header__submenu-item">
+                        {{ project }}
+                    </a>
+                    <div class="header__submenu-divider"/>
+                    <div @click="onNewProject" class="header__submenu-item">
+                        Добавить проект
+                    </div>
+                </div>
+            </div>
             <div class="header__menu-title">
                 Пользователь <a class="header__menu-userid" href="#">#{{ $laravel.userId }}</a>
                 <p class="header__menu-email">{{ $laravel.email }}</p>
@@ -89,11 +102,16 @@ export default {
             fields: [],
             avatar: this.$laravel.avatar,
             token: Laravel.csrfToken,
+            isAdmin: this.$laravel.is_admin,
+            project: window.location.hostname.split('.')[0]
         };
     },
     methods: {
         onResize(){
             this.height = this.$refs.nav.offsetHeight
+        },
+        onNewProject(){
+            console.log('LeftSidebar.onNewProject - Not implemented')
         }
     },
     computed: {
@@ -344,6 +362,72 @@ export default {
         }
     }
 }
+
+.header__menu-project{
+    padding: 1.2rem 1.3rem;
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+    &:hover{
+        background: #FAFCFD;
+        .header__submenu{
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+}
+.header__submenu{
+    display: flex;
+    width: auto;
+    flex-direction: column;
+    padding-top: 0;
+
+    position: absolute;
+    z-index: 1010;
+    top: 100%;
+    right: 0;
+
+    background: #fff;
+    color: #657A9F;
+    font-size: 1.3rem;
+    box-shadow: 1rem 0 2rem rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    visibility: hidden;
+    transition: .5s;
+}
+.header__submenu-item{
+    display: flex;
+    gap:1rem;
+    align-items: center;
+
+    height: 3.4rem;
+    padding: 1rem 2rem;
+
+    background: #fff;
+    cursor:pointer;
+    color:#657A9F;
+
+    &:first-of-type{
+        border-radius: 0 1rem 0 0;
+    }
+
+    &:last-of-type{
+        border-radius: 0 0 1rem 0;
+    }
+
+    &:hover{
+        background: #FAFCFD;
+        .menu__item-title,
+        .menu__item-icon{
+            color: #156AE8;
+        }
+    }
+}
+.header__submenu-divider{
+    margin: 0.5rem 0;
+    border-top: 1px solid lighten(#657A9F, 25%);
+}
+
 .header__nav{
     display: flex;
     flex-direction: column;
