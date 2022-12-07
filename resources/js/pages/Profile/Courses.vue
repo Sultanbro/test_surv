@@ -53,6 +53,9 @@
                         &nbsp;
                     </template>
                 </div>
+                <div class="courses__regress" v-if="getResults(course.id).is_regressed">
+                    <div class="courses__regress-message">Курс обнулен!</div>
+                </div>
                 <a :href="'/my-courses?id=' + course.id" class="courses__button">
                     <span>{{ coursesMap[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
                 </a>
@@ -78,7 +81,7 @@
                     <div class="profit__info-text mobile" v-html="activeCourse.text"></div>
                     <div class="profit__info__wrapper">
 
-                        <div v-for="(item, index) in items" 
+                        <div v-for="(item, index) in items"
                             :key="index"
                             class="info__wrapper-item"
                             :class="{'done': item.status == 1}"
@@ -103,11 +106,11 @@
 
 <script>
 export default {
-    name: 'Courses', 
+    name: 'Courses',
     props: {},
     data: function () {
         return {
-            data: [], 
+            data: [],
             items: [],
             courses: [],
             activeCourse: null,
@@ -136,7 +139,7 @@ export default {
 
     methods: {
         /**
-         * Загрузка данных 
+         * Загрузка данных
          */
         fetchData() {
             axios.post('/profile/courses').then(response => {
@@ -283,7 +286,7 @@ export default {
          * count progress of course item
          */
         itemProgress(item) {
-            return item.all_stages > 0 
+            return item.all_stages > 0
                 ? Number(item.completed_stages / item.all_stages).toFixed(1)
                 : 0;
         },
@@ -306,8 +309,41 @@ export default {
 }
 
 .courses__item{
+    position: relative;
     &:hover{
         box-shadow: inset 0 0 5px #8FAF00;
+        .courses__regress{
+            display: block;
+        }
+    }
+}
+.courses__regress{
+    display: none;
+    border-radius: 2rem;
+
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    background-color: rgba(0,0,0,0.25);
+
+    pointer-events: none;
+
+    &-message{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+
+        text-align: center;
+        color: red;
+        font-size: 1.4rem;
+        font-weight: 700;
+        text-shadow: 0 -2px 1px #fff, 0 2px 1px #fff, 2px 0 1px #fff, -2px 0 1px #fff;
+
+        transform: translate(-50%, -50%);
     }
 }
 </style>
