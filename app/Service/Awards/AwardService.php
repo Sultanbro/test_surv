@@ -6,6 +6,7 @@ use App\Enums\AwardTypeEnum;
 use App\Exceptions\News\BusinessLogicException;
 use App\Helpers\FileHelper;
 use App\Http\Requests\Award\CourseAwardRequest;
+use App\Http\Requests\GetCoursesAwardsRequest;
 use App\Http\Requests\RewardRequest;
 use App\Http\Requests\SaveCoursesAwardsRequest;
 use App\Http\Requests\StoreCoursesAwardsRequest;
@@ -157,7 +158,7 @@ class AwardService
      * @return array
      * @throws Exception
      */
-    public function courseAwards(): array
+    public function courseAwards(GetCoursesAwardsRequest $request): array
     {
         try {
             return CourseResult::whereHas('user', function ($query){
@@ -173,6 +174,7 @@ class AwardService
                 },'course' => function($q) {
                     $q->select('id', 'name', 'text');
                 }])
+                ->whereIn('course_id', $request->input('course_ids'))
                 ->select('id','ended_at', 'status', 'user_id', 'course_id')
                 ->get()
                 ->toArray();
