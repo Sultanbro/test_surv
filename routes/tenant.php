@@ -640,13 +640,13 @@ Route::middleware([
         'as'     => 'awards.',
         'middleware' => 'auth'
     ], function () {
-        Route::post('/reward', [AwardController::class, 'reward'])->middleware('is_admin')->name('reward');
-        Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->middleware('is_admin')->name('delete-reward');
+        Route::post('/reward', [AwardController::class, 'reward'])->name('reward');
+        Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->name('delete-reward');
         Route::get('/my', [AwardController::class, 'myAwards'])->name('my-awards');
         Route::get('/course', [AwardController::class, 'courseAward'])->name('course-awards');
         Route::get('/type', [AwardController::class, 'awardsByType'])->name('type-awards');
         Route::get('/get', [AwardController::class, 'index'])->middleware('is_admin')->name('get');
-        Route::post('/store', [AwardController::class, 'store'])->middleware('is_admin')->name('store');
+        Route::post('/store', [AwardController::class, 'store'])->name('store');
         Route::put('/update/{award}', [AwardController::class, 'update'])->middleware('is_admin')->name('update');
         Route::delete('/delete/{award}', [AwardController::class, 'destroy'])->name('destroy');
         Route::get('/download/{award}', [AwardController::class, 'downloadFile'])->name('downloadFile');

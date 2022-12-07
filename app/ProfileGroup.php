@@ -58,6 +58,10 @@ class ProfileGroup extends Model
 
     ];
 
+    CONST NOT_ANALYTICS = 0;
+    CONST HAS_ANALYTICS = 1;
+    CONST ARCHIVED      = -1;
+
     // time_address
     CONST FROM_UCALLS = -1;
     CONST NOWHERE = 0;
@@ -122,15 +126,11 @@ class ProfileGroup extends Model
      */
     public function scopeProfileGroupsWithArchived($query, $year, $month): array
     {
-        return $this->where([
-            ['has_analytics','=',1],
-            ['active','=',1]
-        ])
-            ->orWhere(fn ($query) => $query
-                ->whereYear('archived_date','=', $year)
-                ->whereMonth('archived_date','=', $month)
-            )
-            ->get()->pluck('id')->toArray();
+        return $this->where('active', 1)
+            ->where('has_analytics', self::HAS_ANALYTICS)
+            ->where(fn($group) => $group->whereNull('archived_date')->orWhere(
+            fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month))
+        )->get()->pluck('id')->toArray();
     }
 
     /**

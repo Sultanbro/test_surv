@@ -10,7 +10,7 @@ jQuery(function($){
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    
+
     function moveBackground() {
         x += (lFollowX - x) * friction;
         y += (lFollowY - y) * friction;
@@ -55,9 +55,25 @@ jQuery(function($){
         $('#forgetPass').removeClass('js-tab-hidden');
     });
 
+    function animatePreloader(){
+        var preloader = $('.preloader');
+        var frontpage = $('.frontpage');
+        var properties = {
+            'top': `0`
+        };
+        var options    = {
+            duration: 1000,
+            easing: 'swing',
+            complete(){
+                preloader.remove();
+            }
+        };
+        frontpage.delay(500).animate(properties, options);
+    }
+
     $('#register-form').submit(function(e){
         e.preventDefault();
-        $('.cabinet-loader-bg').addClass('active');
+        $('.preloader').addClass('preloader_active');
         $('.help-block').remove();
 
         var form = document.querySelector('#register-form');
@@ -69,19 +85,23 @@ jQuery(function($){
         formData.forEach(function(value, key){
             data[key] = value;
         });
- 
+
         $.ajax({
             url: form.action,
             data: data,
             processData: true,
             type: 'POST',
             success: function ( data ) {
-                console.log(data)
-                location.assign(data.location);
+                console.log(data);
+                $('.preloader__status-text').html('Начнем работу!');
+                animatePreloader();
+                setTimeout(function(){
+                    location.assign(data.location);
+                }, 3000);
             },
             error :function( response ) {
                 console.log(response)
-                $('.cabinet-loader-bg').removeClass('active');
+                $('.preloader').removeClass('preloader_active');
                 if( response.status === 422 ) {
                     for(var inputName in response.responseJSON.errors){
                         var errorMessage = response.responseJSON.errors[inputName];
