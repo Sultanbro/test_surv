@@ -4,6 +4,7 @@ namespace App\Models\Award;
 
 use App\Helpers\FileHelper;
 use App\Models\Course;
+use App\Observers\AwardObserver;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,7 +32,9 @@ class Award extends Model
         'updated_at',
         'deleted_at'
     ];
-
+    protected $dispatchesEvents = [
+        'deleted' => AwardObserver::class
+    ];
     /**
      * @return BelongsTo
      */
