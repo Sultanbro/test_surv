@@ -1142,7 +1142,7 @@ class UserController extends Controller
                    
             }
         } else {
-            $user->groups()->update([
+            $user->groups()->where('status', 'active')->update([
                 'is_head' => 0
             ]);
         }
