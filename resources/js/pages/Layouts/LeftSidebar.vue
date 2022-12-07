@@ -297,12 +297,12 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width:8rem;
+    width:7rem;
     min-height: inherit;
     max-height: inherit;
     padding-top: 0.5rem;
     padding-bottom: 1rem;
-    background-color: #F6F7FC;
+    background-color: darken(#F6F7FC, 3%);
     transform:translateX(0);
     opacity:1;
     visibility: visible;
@@ -319,10 +319,9 @@ export default {
 .header__avatar{
     cursor:pointer;
     display: block;
-    width: 8rem;
-    max-width: 8rem;
+    width: 6rem;
+    max-width: 6rem;
     margin-bottom: 0.5rem;
-    padding: 0 1.2rem;
     position:relative;
     border-radius: 10px;
     z-index: 1003;
@@ -404,7 +403,7 @@ export default {
 
     width: 100%;
     height: 100%;
-    padding:  0.9rem 1.2rem;
+    padding:  0.9rem 0.5rem;
 
     text-align: center;
     font-size: 1.2rem;
@@ -434,7 +433,7 @@ export default {
 
     position: fixed;
     z-index: 1005;
-    left: 8rem;
+    left: 7rem;
 
     background: #fff;
     color: #657A9F;
