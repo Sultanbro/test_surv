@@ -129,9 +129,11 @@ class AccrualAwardService implements AwardInterface
             }
 
             if ($targetable_type == self::POSITION && $user->position_id == $targetable_id){
-                $user_ids = Position::query()
-                    ->findOrFail($targetable_id)
-                    ->users
+                $user_ids = User::whereHas('description', function ($query) use ($targetable_id) {
+                    $query->where('position_id', $targetable_id)
+                    ->where('is_trainee',0);
+                })
+                    ->get()
                     ->pluck('id');
                 $result[] = [
                     'name' => $awardCategory->name,
