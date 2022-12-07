@@ -22,24 +22,19 @@
                         <div class="draggable-block" id="draggable-block">
                             <div class="draggable"
                                  style="margin-top: 40px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
-                                 :style="{color: styles.fullName.color, fontSize: styles.fullName.size + 'px', fontWeight: styles.fullName.fontWeight, textTransform: styles.fullName.uppercase, display: styles.fullName.fullWidth ? 'block' : 'inline-block', width: styles.fullName.fullWidth ? '100%' : 'auto', transform: transformFullName}"
+                                 :style="{fontStyle: styles.fullName.fontStyle, color: styles.fullName.color, fontSize: styles.fullName.size + 'px', fontWeight: styles.fullName.fontWeight, textTransform: styles.fullName.uppercase, width: styles.fullName.fullWidth + 'px', transform: transformFullName}"
                             >
                                 {{award.course_results[0].user.name}} {{award.course_results[0].user.last_name}}
                             </div>
                             <div class="draggable"
                                  style="margin-top: 120px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
-                                 :style="{color: styles.courseName.color, fontSize: styles.courseName.size + 'px', fontWeight: styles.courseName.fontWeight, textTransform: styles.courseName.uppercase, display: styles.courseName.fullWidth ? 'block' : 'inline-block', width: styles.courseName.fullWidth ? '100%' : 'auto', transform: transformCourseName}"
+                                 :style="{fontStyle: styles.courseName.fontStyle, color: styles.courseName.color, fontSize: styles.courseName.size + 'px', fontWeight: styles.courseName.fontWeight, textTransform: styles.courseName.uppercase, width: styles.courseName.fullWidth + 'px', transform: transformCourseName}"
                             >
                                 {{award.name}}
                             </div>
-<!--                            <div class="draggable"-->
-<!--                                 style="margin-top: 200px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"-->
-<!--                                 :style="{color: styles.hours.color, fontSize: styles.hours.size + 'px', fontWeight: styles.hours.fontWeight, textTransform: styles.hours.uppercase, display: styles.hours.fullWidth ? 'block' : 'inline-block', width: styles.hours.fullWidth ? '100%' : 'auto', transform: transformHoursName}"-->
-<!--                            >{{img.time}}-->
-<!--                            </div>-->
                             <div class="draggable"
                                  style="margin-top: 280px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
-                                 :style="{color: styles.date.color, fontSize: styles.date.size + 'px', fontWeight: styles.date.fontWeight, textTransform: styles.date.uppercase, display: styles.date.fullWidth ? 'block' : 'inline-block', width: styles.date.fullWidth ? '100%' : 'auto', transform: transformDateName}"
+                                 :style="{fontStyle: styles.date.fontStyle, color: styles.date.color, fontSize: styles.date.size + 'px', fontWeight: styles.date.fontWeight, textTransform: styles.date.uppercase, width: styles.date.fullWidth + 'px', transform: transformDateName}"
                             >
                                {{ $moment(award.course_results[0].ended_at).format('DD.MM.YYYY') }}
                             </div>
