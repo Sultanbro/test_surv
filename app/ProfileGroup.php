@@ -132,7 +132,7 @@ class ProfileGroup extends Model
         $date = Carbon::create($year, $month)->lastOfMonth()->format('Y-m-d');
 
         return $this->where('active', self::IS_ACTIVE)
-            ->where(fn($q) => $q->whereYear('created_at', '<=', $year)->whereMonth('created_at', '<=', $month))
+            ->whereDate('created_at', '<=', $date)
             ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month)))
             ->whereIn('has_analytics', [self::HAS_ANALYTICS, self::ARCHIVED])
             ->where(fn($group) => $group->whereNull('archived_date')->orWhere(
