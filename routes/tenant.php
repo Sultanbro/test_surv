@@ -638,13 +638,14 @@ Route::middleware([
     Route::group([
         'prefix' => 'awards',
         'as'     => 'awards.',
-        'middleware' => 'auth'
+//        'middleware' => 'auth'
     ], function () {
         Route::post('/reward', [AwardController::class, 'reward'])->name('reward');
         Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->name('delete-reward');
         Route::get('/my', [AwardController::class, 'myAwards'])->name('my-awards');
         Route::get('/course', [AwardController::class, 'courseAward'])->name('course-awards');
-        Route::get('/courses', [AwardController::class, 'coursesAwards'])->name('courses-awards');
+        Route::get('/courses', [AwardController::class, 'coursesAward'])->name('courses-awards');
+        Route::post('/courses/store/{award}', [AwardController::class, 'storeCoursesAward'])->name('courses-awards-store');
         Route::get('/type', [AwardController::class, 'awardsByType'])->name('type-awards');
         Route::get('/get', [AwardController::class, 'index'])->middleware('is_admin')->name('get');
         Route::post('/store', [AwardController::class, 'store'])->name('store');
