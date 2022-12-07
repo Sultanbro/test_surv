@@ -13,7 +13,7 @@
             >
             </BFormFile>
             <BButton
-                    v-if="hasImage || awards.length > 0"
+                    v-if="imageSrc"
                     variant="danger"
                     class="ml-3 clear-btn"
                     @click="clearImage"
@@ -23,7 +23,7 @@
         </div>
         <small class="mb-4 d-block mt-1">Загрузите подготовленный шаблон в формате PDF</small>
         <br>
-        <div v-if="hasImage || awards.length > 0" class="sertificate-prewiev">
+        <div v-if="imageSrc" class="sertificate-prewiev">
             <div class="sertificate-modal">
                        <div class="preview-canvas" @click="openModalCertificate">
                            <vue-pdf-embed v-if="imageSrc" ref="vuePdfUploadCertificate" :source="imageSrc"/>
@@ -118,14 +118,9 @@
             if (this.awards.length > 0) {
                 this.imageSrc = this.awards[0].tempPath;
                 this.styles = this.awards[0].styles;
-                console.log(this.$refs.vuePdfUploadCertificate);
+                this.$emit('has-change-constructor', true);
             }
             this.getCourses();
-        },
-        computed: {
-            hasImage() {
-                return !!this.image;
-            },
         },
         watch: {
             image(newValue) {
@@ -135,7 +130,7 @@
                     base64Encode(newValue)
                         .then((val) => {
                             this.imageSrc = val;
-                            this.$emit("image-download", this.image);
+                            this.$emit("image-download", this.image, true);
                         })
                         .catch(() => {
                             this.imageSrc = null;
@@ -197,7 +192,7 @@
             clearImage() {
                 this.image = null;
                 this.imageSrc = null;
-                this.$emit("image-download", null);
+                this.$emit("image-download", null, false);
                 this.$emit('has-change-constructor', false)
             },
         },

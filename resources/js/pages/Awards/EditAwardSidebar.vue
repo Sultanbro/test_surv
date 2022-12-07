@@ -183,12 +183,13 @@
                 targetable_type: null,
                 name: '',
                 description: '',
-                hide: false,
+                hide: true,
                 type: null,
                 course_ids: [],
                 styles: '',
                 awards: [],
-                invalidName: true
+                invalidName: true,
+                hasFileCertificate: false
             };
         },
         methods: {
@@ -214,10 +215,17 @@
                 this.course_ids = [];
             },
             async saveCategory() {
+                let hidePhp = null;
+                if (this.hide) {
+                    hidePhp = 0;
+                } else {
+                    hidePhp = 1;
+                }
+
                 const formDataCategories = new FormData();
                 formDataCategories.append('name', this.name);
                 formDataCategories.append('description', this.description);
-                formDataCategories.append('hide', this.hide);
+                formDataCategories.append('hide', hidePhp);
                 if (Object.keys(this.item).length === 0) {
                     formDataCategories.append('type', this.type);
                     await this.axios
@@ -317,11 +325,6 @@
                         if (this.name.length > 2) {
                             let loader = this.$loading.show();
                             this.invalidName = true;
-                            if (this.hide) {
-                                this.hide = 0;
-                            } else {
-                                this.hide = 1;
-                            }
 
                             if (this.type === 1) {
                                 await this.saveCategory();
@@ -329,7 +332,7 @@
                             }
 
                             if (this.type === 2) {
-                                if(this.fileCertificate !== null){
+                                if(this.hasFileCertificate){
                                     if (this.constructorChange) {
                                         if(this.course_ids.length > 0){
                                             await this.saveCategory();
@@ -387,8 +390,9 @@
             formFile(files) {
                 this.uploadFiles = files;
             },
-            formFileCertificate(file) {
+            formFileCertificate(file, bool) {
                 this.fileCertificate = file;
+                this.hasFileCertificate = bool;
             },
             styleChange(styles) {
                 this.styles = JSON.stringify(styles);
@@ -400,6 +404,7 @@
             }, 20);
             if (Object.keys(this.item).length > 0) {
                 let loader = this.$loading.show();
+                this.hasFileCertificate = true;
                 await this.axios
                     .get('/award-categories/get/awards/' + this.item.id)
                     .then(response => {
@@ -413,13 +418,12 @@
                 this.type = this.item.type;
                 this.name = this.item.name;
                 this.description = this.item.description;
-                if (this.item.hide === 1) {
+                if(this.item.hide === 1){
                     this.hide = false;
                 }
-                if (this.item.hide === 0) {
+                if(this.item.hide === 0){
                     this.hide = true;
                 }
-
                 if (this.type === 2){
                     this.styles = this.awards[0].styles;
                 }
