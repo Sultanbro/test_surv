@@ -71,8 +71,10 @@ trait RegistersUsers
         // find tenant
         $tenant = $user->tenants()->first() ?? $this->createTenant($user);
 
-        // redirect 
-        return $this->loginToSubDomain($tenant, $user->email);
+        // link
+        return response()->json([
+            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
+        ]);
     }
 
     /**

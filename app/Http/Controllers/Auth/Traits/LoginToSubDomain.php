@@ -7,7 +7,7 @@ use App\Models\Tenant;
 use App\User;
 
 trait LoginToSubDomain
-{
+{   
     /**
      * Login to subdomain through UserImpersonate
      *
@@ -16,6 +16,18 @@ trait LoginToSubDomain
      * @return \Illuminate\Http\RedirectResponse
      */
     public function loginToSubDomain(Tenant $tenant = null, String $email = null)
+    { 
+        return redirect( $this->loginLinkToSubDomain( $tenant, $email ) );
+    }
+
+    /**
+     * Login to subdomain through UserImpersonate
+     *
+     * @param  \App\Models\Tenant $tenant null
+     * @param  String $email null
+     * @return String
+     */
+    public function loginLinkToSubDomain(Tenant $tenant = null, String $email = null)
     {   
         $email = $email ?? auth()->user()->email;
 
@@ -26,7 +38,7 @@ trait LoginToSubDomain
         $tenant = $tenant ?? $centralUser->tenants->first();
 
         // redirect to subdomain login link
-        return redirect( $this->getSubDomainLink( $tenant, $email ) );
+        return $this->getSubDomainLink( $tenant, $email );
     }
 
     /**
