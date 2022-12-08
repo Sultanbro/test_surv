@@ -2448,8 +2448,8 @@ class TimetrackingController extends Controller
     private function addHours($user): void
     {
         foreach ($user->trackHistory as $history) {
-            $history->created_at = $history->created_at->addHours($user->timezone);
-            $history->updated_at = $history->updated_at->addHours($user->timezone);
+            $history->created_at = $history->created_at->addHours($user->timezone)->format('Y-m-d H:i:s');
+            $history->updated_at = $history->updated_at->addHours($user->timezone)->format('Y-m-d H:i:s');
         }
     }
 }
