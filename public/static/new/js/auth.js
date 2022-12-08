@@ -91,12 +91,13 @@ jQuery(function($){
             data: data,
             processData: true,
             type: 'POST',
+            cache: false,
             success: function ( data ) {
                 console.log(data);
                 $('.preloader__status-text').html('Начнем работу!');
                 animatePreloader();
                 setTimeout(function(){
-                    location.assign(data.location);
+                    location.assign(data.link);
                 }, 3000);
             },
             error :function( response ) {
