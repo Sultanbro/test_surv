@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 
 use App\Http\Controllers\Admin\ActivityController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\BpartnersController;
@@ -126,6 +128,9 @@ Route::middleware([
     
     WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
 
+    Route::get('/login/{subdomain}', [ProjectController::class, 'login']);
+    Route::post('/projects/create', [ProjectController::class, 'create']);
+    
     Route::get('/impersonate/{token}', function ($token) {
         return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
     });
