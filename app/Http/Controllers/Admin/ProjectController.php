@@ -30,18 +30,16 @@ class ProjectController extends Controller
     /**
      * Login to another tenant - subdomain
      * 
-     * @param Request $request
+     * @param String $subdomain
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    public function login(String $subdomain)
     {   
         // $subdomain = array_first(explode('.', request()->getHost()));
-        if( !$request->has('subdomain') ) {
-            return redirect('/');
-        } 
-
-        // find tenant
-        $tenant = auth()->user()->tenants()->where('id', $request->subdomain)->first();
+        // Find tenant
+        $tenant = auth()->user()->tenants()
+            ->where('id', trim( strtolower($subdomain) ))
+            ->first();
 
         // can't login cause tenant not found
         if( !$tenant ) {
