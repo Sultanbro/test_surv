@@ -43,8 +43,7 @@
                 <template #label>
                     <label class="with-info">Описание награды <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info2"></label>
                     <b-popover target="info2" triggers="hover" placement="right">
-                        <p style="font-size: 15px">Краткое или детальное описание награды. Будет хранить в себе
-                            информацию по этому виду награды</p>
+                        <p style="font-size: 15px">Краткое или детальное описание награды.</p>
                     </b-popover>
                 </template>
                 <BFormTextarea

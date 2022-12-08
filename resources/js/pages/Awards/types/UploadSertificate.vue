@@ -74,6 +74,7 @@
 
 <script>
     import UploadSertificateModal from "../types/UploadSertificateModal.vue";
+    import RegenerateCertificates from "./RegenerateCertificates";
     import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
     import Multiselect from "vue-multiselect";
 
@@ -89,6 +90,7 @@
         name: "UploadSertificate",
         components: {
             UploadSertificateModal,
+            RegenerateCertificates,
             Multiselect,
             VuePdfEmbed
         },

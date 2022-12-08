@@ -83,8 +83,11 @@
                 <vue-pdf-embed :source="modalRemoveRewardData.tempPath" v-else/>
             </div>
             <template #modal-footer>
-                <b-button variant="secondary" @click="modalRemoveReward = !modalRemoveReward">Отмена</b-button>
-                <b-button variant="danger" @click="removeRewardUser(modalRemoveRewardData)">Отозвать награду</b-button>
+                <b-button variant="secondary" @click="modalRemoveReward = !modalRemoveReward" :disabled="btnLoading">Отмена</b-button>
+                <b-button variant="danger" @click="removeRewardUser(modalRemoveRewardData)" :disabled="btnLoading">
+                    <span class="btn-spinner" v-if="btnLoading"></span>
+                    Отозвать награду
+                </b-button>
             </template>
         </BModal>
 
@@ -128,15 +131,17 @@
                 </div>
             </template>
             <template #modal-footer>
-                <b-button variant="secondary" @click="modalAdd = !modalAdd">Отмена</b-button>
-                <b-button variant="success" v-if="modalAddBase64 && value" @click="addAndSaveReward">Наградить
+                <b-button variant="secondary" @click="modalAdd = !modalAdd" :disabled="btnLoading">Отмена</b-button>
+                <b-button variant="success" v-if="modalAddBase64 && value" @click="addAndSaveReward" :disabled="btnLoading">
+                    <span class="btn-spinner" v-if="btnLoading"></span>
+                    Наградить
                 </b-button>
             </template>
         </BModal>
 
-        <BModal v-model="modalSelect" modal-class="selected-modal" title="Добавление награды"
-                size="lg" centered>
-            <b-row>
+        <BModal v-model="modalSelect" modal-class="selected-modal" title="Награждение"
+                :size="modalSize" centered>
+            <b-row v-if="newFileCheck">
                 <b-col cols="12" md="6" class="border-right-custom">
                     <div class="selected-modal-title with-image">
                         {{modalSelectData.type}}
@@ -154,7 +159,10 @@
                            @change="modalSelectDataUploadEvent" style="display: none;">
                 </b-col>
             </b-row>
-            <template v-if="modalSelectFile">
+            <div v-else>
+                <div class="simple-reward-title text-center">Наградить сотрудника выбранной наградой?</div>
+            </div>
+            <template v-if="modalSelectFile && newFileCheck">
                 <hr class="my-4">
                 <div class="result-container">
                     <img :src="modalSelectBase64" alt="" v-if="modalSelectFile.type !== 'application/pdf'">
@@ -162,8 +170,23 @@
                 </div>
             </template>
             <template #modal-footer>
-                <b-button variant="secondary" @click="modalSelect = !modalSelect">Отмена</b-button>
-                <b-button variant="success" v-if="modalSelectBase64" @click="reward">Наградить</b-button>
+                <div class="d-flex align-items-center justify-content-between w-100">
+                    <BFormGroup class="custom-switch custom-switch-sm m-0" id="input-group-4">
+                        <b-form-checkbox v-model="newFileCheck" switch :disabled="btnLoading">Загрузить другой шаблон
+                        </b-form-checkbox>
+                    </BFormGroup>
+                    <div>
+                        <b-button variant="secondary" @click="modalSelect = !modalSelect" :disabled="btnLoading">Отмена</b-button>
+                        <b-button variant="success" v-if="!newFileCheck" @click="reward" :disabled="btnLoading">
+                            <span class="btn-spinner" v-if="btnLoading"></span>
+                            Наградить
+                        </b-button>
+                        <b-button variant="success" v-if="newFileCheck && modalSelectBase64" @click="rewardNew" :disabled="btnLoading">
+                            <span class="btn-spinner" v-if="btnLoading"></span>
+                            Наградить
+                        </b-button>
+                    </div>
+                </div>
             </template>
         </BModal>
     </sidebar>
@@ -181,12 +204,13 @@
     import UploadModal from '../modals/Upload'
     import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
     import Multiselect from "vue-multiselect";
-
     export default {
         name: 'AwardUserSidebar',
         components: {UploadModal, VuePdfEmbed, Multiselect},
         data() {
             return {
+                btnLoading: false,
+                newFileCheck: false,
                 isShow: false,
                 modalPreview: false,
                 modalPreviewData: {},
@@ -210,6 +234,15 @@
 
             }
         },
+        computed:{
+            modalSize(){
+                if(this.newFileCheck){
+                    return 'lg';
+                } else {
+                    return 'md';
+                }
+            }
+        },
         mounted() {
             setTimeout(() => {
                 this.isShow = true;
@@ -227,6 +260,7 @@
                     this.value = null;
                     this.modalAddFile = null;
                     this.modalAddBase64 = null;
+                    this.btnLoading = false;
                 }
                 return this.modalAdd;
             },
@@ -235,14 +269,11 @@
                     this.modalSelectData = {};
                     this.modalSelectFile = null;
                     this.modalSelectBase64 = null;
+                    this.btnLoading = false;
                 }
                 return this.modalSelect;
             },
             tabIndex(val) {
-                // for (let i = 0; i < this.$refs.vuePdfEmbeds.length; i++) {
-                //     this.$refs.vuePdfEmbeds[i].render();
-                // }
-
                 let buttons = this.$refs.tabAwardUser.$refs.buttons;
                 buttons[val].$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
             }
@@ -300,12 +331,14 @@
             },
             removeRewardUser(item) {
                 let loader = this.$loading.show();
+                this.btnLoading = true;
                 this.axios
                     .delete('/awards/reward-delete', {data: {user_id: item.user_id, award_id: item.award_id}})
                     .then(response => {
                         this.modalRemoveReward = false;
                         this.$toast.success('Награда убрана');
                         console.log(response);
+                        this.btnLoading = false;
                         loader.hide();
                         this.getAll();
                     })
@@ -319,6 +352,7 @@
             },
             async addAndSaveReward() {
                 let loader = this.$loading.show();
+                this.btnLoading = true;
                 const formData = new FormData();
                 formData.append('award_category_id', this.value.id);
                 formData.append('file[]', this.modalAddFile);
@@ -353,10 +387,11 @@
                         console.log(response);
                         this.modalAdd = false;
                         this.$toast.success('Награжден');
-                        setTimeout(function () {
+                        setTimeout( () => {
                             this.modalAddFile = null;
                             this.modalAddBase64 = null;
-                        }, 300)
+                        }, 300);
+                        this.btnLoading = false;
                         this.getAll();
                     })
                     .catch(function (error) {
@@ -427,8 +462,41 @@
                 this.modalSelectFile = null;
                 this.modalSelectBase64 = null;
             },
-            reward(award, index) {
+            reward(){
                 let loader = this.$loading.show();
+                this.btnLoading = true;
+                const formData = new FormData();
+                formData.append('user_id', this.userId);
+                formData.append('award_id', this.modalSelectData.id);
+                this.axios
+                    .post('/awards/reward', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                    })
+                    .then(response => {
+                        console.log(response);
+                        this.$toast.success('Добавлено');
+                        setTimeout( () => {
+                            this.modalSelectData = {};
+                            this.modalSelectFile = null;
+                            this.modalSelectBase64 = null;
+                            this.newFileCheck = false;
+                        }, 300);
+                        this.btnLoading = false;
+                        this.modalSelect = false;
+                        loader.hide();
+                        this.getAll();
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        loader.hide();
+                    });
+            },
+            rewardNew() {
+                let loader = this.$loading.show();
+                this.btnLoading = true;
                 const formData = new FormData();
                 formData.append('user_id', this.userId);
                 formData.append('award_id', this.modalSelectData.id);
@@ -443,13 +511,13 @@
                     .then(response => {
                         console.log(response);
                         this.$toast.success('Добавлено');
-                        setTimeout(function () {
-                            this.$refs.downloadFile.style.display = 'block';
-                            this.$refs.inputFile.style.display = 'none';
+                        setTimeout( () => {
                             this.modalSelectData = {};
                             this.modalSelectFile = null;
                             this.modalSelectBase64 = null;
+                            this.newFileCheck = false;
                         }, 300);
+                        this.btnLoading = false;
                         this.modalSelect = false;
                         loader.hide();
                         this.getAll();
@@ -475,6 +543,23 @@
             width: 100% !important;
             height: auto !important;
         }
+        .btn-spinner{
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            margin-bottom: -2px;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            -webkit-animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { -webkit-transform: rotate(360deg); }
+        }
+        @-webkit-keyframes spin {
+            to { -webkit-transform: rotate(360deg); }
+        }
     }
 
     .preview-modal {
@@ -485,6 +570,123 @@
     }
 
     .selected-modal {
+        .simple-reward-title{
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+        }
+        .btn-spinner{
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            margin-bottom: -2px;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            -webkit-animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { -webkit-transform: rotate(360deg); }
+        }
+        @-webkit-keyframes spin {
+            to { -webkit-transform: rotate(360deg); }
+        }
+        .custom-switch {
+            padding-left: 0;
+            .custom-control-label{
+                font-size: 14px;
+            }
+            input[type="checkbox"] {
+                position: absolute;
+                margin: 8px 0 0 16px;
+            }
+
+            input[type="checkbox"] + label {
+                position: relative;
+                padding: 5px 0 0 50px;
+                line-height: 1;
+                margin: 10px 0;
+            }
+
+            input[type="checkbox"]:disabled + label {
+                opacity: 0.5;
+            }
+
+            input[type="checkbox"] + label:before {
+                content: "";
+                position: absolute;
+                display: block;
+                left: 0;
+                top: 0;
+                width: 40px; /* x*5 */
+                height: 24px; /* x*3 */
+                border-radius: 16px; /* x*2 */
+                background: #fff;
+                border: 1px solid #d9d9d9;
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+
+            input[type="checkbox"] + label:after {
+                content: "";
+                position: absolute;
+                display: block;
+                left: 0px;
+                top: 0px;
+                width: 24px; /* x*3 */
+                height: 24px; /* x*3 */
+                border-radius: 16px; /* x*2 */
+                background: #fff;
+                border: 1px solid #d9d9d9;
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+
+            input[type="checkbox"] + label:hover:after {
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            }
+
+            input[type="checkbox"]:checked + label:after {
+                margin-left: 16px;
+            }
+
+            input[type="checkbox"]:checked + label:before {
+                background: #55D069;
+            }
+
+            &.custom-switch-small {
+                input[type="checkbox"] {
+                    margin: 5px 0 0 10px;
+                }
+
+                input[type="checkbox"] + label {
+                    position: relative;
+                    padding: 0 0 0 32px;
+                    line-height: 1.3em;
+                }
+
+                input[type="checkbox"] + label:before {
+                    width: 25px; /* x*5 */
+                    height: 15px; /* x*3 */
+                    border-radius: 10px; /* x*2 */
+                }
+
+                input[type="checkbox"] + label:after {
+                    width: 15px; /* x*3 */
+                    height: 15px; /* x*3 */
+                    border-radius: 10px; /* x*2 */
+                }
+
+                input[type="checkbox"] + label:hover:after {
+                    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+                }
+
+                input[type="checkbox"]:checked + label:after {
+                    margin-left: 10px; /* x*2 */
+                }
+            }
+        }
         .multiselect {
             .multiselect__tags {
                 border: 1px solid #28a745;
