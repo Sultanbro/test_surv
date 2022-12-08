@@ -117,14 +117,6 @@ function isValidDate(date) {
 }
 
 let moment = require('moment');
-moment.locale();
-
-moment.updateLocale("en", {
-    week: {
-        dow: 1,
-        doy: 7
-    }
-});
 
 export default {
     name: "FilterComponent",

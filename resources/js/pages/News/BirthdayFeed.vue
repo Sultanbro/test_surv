@@ -20,19 +20,8 @@
 </template>
 
 <script>
-
-let moment = require('moment');
-moment.locale();
-
-moment.updateLocale("en", {
-    week: {
-        dow: 1,
-        doy: 7
-    }
-});
-
 export default {
-    name: "BirthdayFeed",
+    name: 'BirthdayFeed',
     data() {
         return {
             usersBirthday: [],
