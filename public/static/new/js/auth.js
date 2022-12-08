@@ -112,6 +112,7 @@ jQuery(function($){
                 } else {
                     alert('Ошибка на стороне сервера')
                 }
+                if(document.querySelector('.g-recaptcha')) grecaptcha.reset();
             }
         });
     });
