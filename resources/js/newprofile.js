@@ -83,20 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
     //     VJQuery('.courses__content').removeClass('hidden')
     // })
 
-
-
-
-
-
-
-    if(window.innerWidth>900){
-        VJQuery('.header__left,.header__right').removeClass('closed');
-
-    }
-
-
-
-
     // Table's background filling %
     // In trainee report estimations
 

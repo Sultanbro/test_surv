@@ -5,14 +5,14 @@ declare interface UserData {
   name?: string
   email: string
   created_at: string
-  login_at: string
-  birthday: string
-  country: string
-  city: string
-  lead: string
-  balance: string
-  subdimains: Array<string>
-  full_name: string
+  login_at?: string
+  birthday?: string
+  country?: string
+  city?: string
+  lead?: string
+  balance?: string
+  subdimains?: Array<string>
+  full_name?: string
 }
 
 declare interface UserDataRequest {

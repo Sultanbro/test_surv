@@ -60,7 +60,7 @@ class HeadhunterNegotiations extends Command
      */
     public function handle() {
        
-        $this->bitrix = new Bitrix();
+        $this->bitrix = new Bitrix('hh');
         $this->hh = new HeadHunter();
         $stage = $this->argument('stage');
         

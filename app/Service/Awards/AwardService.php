@@ -216,8 +216,21 @@ class AwardService
                     $userId = (int)$data[1];
                 }
 
-                if ($userId && $courseId){
-                    if (!$filename = FileHelper::save($file, $this->path)) {
+                if (!($userId && $courseId)){
+                    continue;
+                }
+
+                if ($award->courses()->where('course_id', $courseId)->wherePivot('user_id', $userId)->exists()){
+                    $path = $award->courses()->where('course_id', $courseId)->wherePivot('user_id', $userId)->get()->pluck('pivot.path');
+                    if (FileHelper::checkFile($path)){
+                        FileHelper::delete($path, $this->path);
+                    }
+                    $this->awardRepository->detachUserCourse($award->id, $courseId, $userId);
+                }
+
+
+
+                if (!$filename = FileHelper::save($file, $this->path)) {
                         throw new BusinessLogicException(__('exception.save_error'));
                     }
 
@@ -230,7 +243,7 @@ class AwardService
                         'user_id' => $userId,
                         'course_id' => $courseId
                     ];
-                }
+
 
 
             }

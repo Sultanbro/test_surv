@@ -6,15 +6,15 @@
             :profit="intro['profit']"
             :estimation="intro['estimation']"
             :indicators="intro['indicators']"
-        ></new-intro-top>
-        <new-intro-stats @pop="pop"></new-intro-stats>
+        />
+        <new-intro-stats @pop="pop"/>
         <!-- <new-intro-smart-table></new-intro-smart-table> -->
     </div>
-
-    <new-courses @init="intro['courses'] = true"></new-courses>
-    <new-profit @init="intro['profit'] = true"></new-profit>
-    <new-trainee-estimation @init="intro['estimation'] = true"></new-trainee-estimation>
-    <new-compare-indicators @init="intro['indicators'] = true"></new-compare-indicators>
+    <MobileProfileSidebar v-show="isProfileVisible"/>
+    <new-courses @init="intro['courses'] = true"/>
+    <new-profit @init="intro['profit'] = true"/>
+    <new-trainee-estimation @init="intro['estimation'] = true"/>
+    <new-compare-indicators @init="intro['indicators'] = true"/>
 
     <popup v-if="popBalance"
         title="Баланс оклада"
@@ -22,7 +22,7 @@
         :open="popBalance"
         @close="popBalance=false"
         :width="popupWidth">
-        <popup-balance></popup-balance>
+        <popup-balance/>
     </popup>
 
     <popup v-if="popKpi"
@@ -31,7 +31,7 @@
         :open="popKpi"
         @close="popKpi=false"
         :width="popupWidth">
-        <popup-kpi></popup-kpi>
+        <popup-kpi/>
     </popup>
 
     <popup v-if="popBonuses"
@@ -40,7 +40,7 @@
         :open="popBonuses"
         @close="popBonuses=false"
         :width="popupWidth">
-        <popup-bonuses></popup-bonuses>
+        <popup-bonuses/>
     </popup>
 
     <popup v-if="popQuartalPremiums"
@@ -49,7 +49,7 @@
         :open="popQuartalPremiums"
         @close="popQuartalPremiums=false"
         :width="popupWidth">
-        <popup-quartal></popup-quartal>
+        <popup-quartal/>
     </popup>
 
     <popup v-if="popNominations"
@@ -64,17 +64,14 @@
 </template>
 
 <script>
+import MobileProfileSidebar from '../Layouts/MobileProfileSidebar.vue'
+
 export default {
     name: 'ProfilePage',
-    props: {},
-    computed: {
-        popupWidth(){
-            const w = this.$viewportSize.width
-            if(w < 651) return '100%'
-            if(w < 1360) return '75%'
-            return w - (19 * this.$viewportSize.rem) + 'px'
-        }
+    components: {
+        MobileProfileSidebar
     },
+    props: {},
     data: function () {
         return {
             desc: 'Подождите, идет загрузка...',
@@ -91,6 +88,17 @@ export default {
                 indicators: false,
             }
         };
+    },
+    computed: {
+        popupWidth(){
+            const w = this.$viewportSize.width
+            if(w < 651) return '100%'
+            if(w < 1360) return '75%'
+            return w - (19 * this.$viewportSize.rem) + 'px'
+        },
+        isProfileVisible(){
+           return this.$viewportSize.width < 1360
+        }
     },
     methods: {
         pop(window) {

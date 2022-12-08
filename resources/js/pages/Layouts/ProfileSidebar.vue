@@ -145,20 +145,13 @@
 </template>
 
 <script>
-import axios from 'axios';
+import Vue from 'vue'
+import axios from 'axios'
+import { bus } from '../../bus'
 
 export default {
     name: 'ProfileSidebar',
     props: {},
-    computed: {
-        canChangeLogo(){
-            return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
-        },
-        showButton(){
-            if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
-            return this.workdayStatus === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
-        }
-    },
     data: function () {
         return {
             fields: [],
@@ -182,8 +175,16 @@ export default {
             showCorpBookPage: false,
         };
     },
+    computed: {
+        canChangeLogo(){
+            return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
+        },
+        showButton(){
+            if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
+            return this.workdayStatus === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+        }
+    },
     mounted(){
-        this.getLogo();
         const isRoot = window.location.pathname === '/'
         const isProfile = window.location.pathname === '/profile'
         if(!isRoot && !isProfile){
@@ -196,22 +197,27 @@ export default {
         scrollObserver.observe(this.$el)
     },
     created(){
+        bus.$data.profileSidebar = Vue.observable({
+            userInfo: {},
+            balance: 0,
+            currency: 'KZT',
+        })
+        this.getLogo()
         this.fetchUserInfo()
         this.fetchTTStatus()
     },
     methods: {
         getLogo(){
-            const _this = this;
             axios.post('/settings/get', {
                 type: 'company'
-            }).then((response) => {
+            }).then(response => {
                 const settings = response.data.settings;
                 if (settings.logo){
-                    _this.logo.image =  settings.logo;
+                    this.logo.image =  settings.logo;
                 }
                 console.log(settings)
                 console.log(settings.logo)
-                console.log(_this.logo.image)
+                console.log(this.logo.image)
             }).catch((error) => {
                 this.$toast(error);
             });
@@ -310,6 +316,7 @@ export default {
 
             axios.get('/profile/personal-info').then(response => {
                 this.userInfo = response.data
+                bus.$data.profileSidebar.userInfo = this.userInfo
                 this.loading = false
             }).catch((e) => console.log(e))
         },
@@ -331,6 +338,8 @@ export default {
                 }
 
                 this.currentBalance(response.data.balance)
+                bus.$data.profileSidebar.balance = this.balance
+                bus.$data.profileSidebar.currency = this.currency
 
                 this.buttonStatus = 'init'
             })
@@ -550,24 +559,33 @@ export default {
     border-radius: 0.5rem;
 }
 @media(max-width:1359px){
+    .header__profile{
+        border-radius: 1.5rem;
+    }
     .profile__content{
         display: flex;
         flex-flow: row nowrap;
         padding: 2rem 7rem 1rem;
         justify-content: space-evenly;
     }
+    .profile__about{
+        margin-top: 0;
+    }
     .profile__col{
         flex: 0 1 28rem;
     }
 }
 @media(max-width:1200px){
+    .profile__content{
+        gap: 2rem;
+        padding: 2rem 2rem 1rem;
+    }
     .profile__col{
-        flex: 0 1 30%;
+        flex: 0 1 50%;
     }
 }
 @media(max-width:900px){
     .profile__content{
-        padding-top: 6rem;
         flex-flow: row wrap;
     }
     .profile__col{

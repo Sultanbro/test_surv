@@ -1,5 +1,5 @@
 <template>
-<div class="header__right closedd">
+<div class="header__right closed">
     <div class="header__right-nav">
         <a href="javascript:void(0)" class="header__right-icon" v-b-popover.hover.left.html="'Вопросы и ответы - Этот функционал в разработке'">
             <img src="/images/dist/header-right-1.svg" alt="nav icon" class="header__icon-img">

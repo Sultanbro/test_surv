@@ -704,6 +704,17 @@
     padding: 1rem;
   }
 }
+@media(max-width:767px){
+    .profit__inner-item{
+      margin-bottom: 0;
+    }
+    .profit__inner-right{
+      border-radius:  0 0 1.5rem 1.5rem;
+    }
+    .profit__inner__one{
+      border-radius: 1.5rem;
+    }
+}
 
 @media(min-width:1251px){
   .profit__inner-left{

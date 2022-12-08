@@ -61,7 +61,7 @@ class CountHours extends Command
         foreach($timetrackingRecords as $record) {
 
             $user = $users->where('id', $record->user_id)->first();
-
+            
             if( !$user ) {
                 continue;
             }
@@ -72,7 +72,7 @@ class CountHours extends Command
             $workEnd   = $schedule['end'];
             
             $timeStart = $this->countFromShiftStartTime($workStart, $record->enter);
-            $timeEnd   = Carbon::parse($record->exit); // не учитываем конец дня, засчитываем как переработку
+            $timeEnd   = Carbon::parse($record->exit, $user->timezone()); // не учитываем конец дня, засчитываем как переработку
 
             $minutes = $timeEnd->diffInMinutes($timeStart);
             $minutes = $this->subtractLunchTime($minutes);
@@ -95,7 +95,10 @@ class CountHours extends Command
      * @return Carbon
      */
     protected function countFromShiftStartTime(Carbon $workStartAt, Carbon $enterAt)
-    {
+    {      
+        // in User::schedule() subtracts 30 minutes. Here we add it to count worked hours correctly
+        $workStartAt->addMinutes(30); 
+
         $workStartAt = $this->date->setTimeFrom($workStartAt);
 
         if ( $workStartAt->diffInMinutes($enterAt, false) > 0 ) {

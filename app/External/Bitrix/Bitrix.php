@@ -6,9 +6,14 @@ class Bitrix {
     
     public $link;
     
-    public function __construct()
+    public function __construct(String $line = 'common')
     {
         $this->link = config('bitrix.host') . config('bitrix.token') . '/';
+
+        // Headhunter 
+        if($line == 'hh') {
+            $this->link = 'https://infinitys.bitrix24.kz/rest/1/h42tawdhk8sf2m41/';
+        }
     }
 
     private function updateLead(int $lead_id, array $lead_fields)
