@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Components\TelegramBot;
+use App\Setting;
 use App\Timetracking;
 use App\TimetrackingHistory;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -85,7 +87,9 @@ class UserFineController extends Controller
                     'author' => Auth::user()->name.' '.Auth::user()->last_name,
                     'author_id' => Auth::user()->id,
                     'date' => $request['date'],
-                    'description' => isset($comment) ? 'Удален штраф №'.$item." ".$fine->name.', причина: '.$comment : 'Штраф'
+                    'description' => isset($comment) ? 'Удален штраф №'.$item." ".$fine->name.', причина: '.$comment : 'Штраф',
+                    'created_at' => Carbon::now(Auth::user()->timezone()),
+                    'updated_at' => Carbon::now(Auth::user()->timezone())
                 ];
                 TimetrackingHistory::create($history);
             }
