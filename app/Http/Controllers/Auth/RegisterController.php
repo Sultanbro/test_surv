@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use App\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Auth\Traits\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -15,10 +14,10 @@ class RegisterController extends Controller
     | Register Controller
     |--------------------------------------------------------------------------
     | Register new tenants
+    | Login through UserImpersonation to subdomain
     |
     */
-
-    use \App\Http\Controllers\Auth\Traits\RegistersUsers;
+    use RegistersUsers;
 
     /**
      * Where to redirect users after registration.
