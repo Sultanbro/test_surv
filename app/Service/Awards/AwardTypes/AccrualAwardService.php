@@ -128,7 +128,7 @@ class AccrualAwardService implements AwardInterface
                 $result[] = [
                     'name' => $awardCategory->name,
                     'description'=>$awardCategory->description,
-                    'top' => $this->getTopSalaryEmployees($user_ids, $date, $targetable_id),
+                    'top' => $this->getTopSalaryEmployees($user_ids, $date, ProfileGroup::find( $targetable_id)),
                 ];
             }
 
@@ -142,7 +142,7 @@ class AccrualAwardService implements AwardInterface
                 $result[] = [
                     'name' => $awardCategory->name,
                     'description'=>$awardCategory->description,
-                    'top' => $this->getTopSalaryEmployees($user_ids, $date, $group_id),
+                    'top' => $this->getTopSalaryEmployees($user_ids, $date, $group),
 
                 ];
 
@@ -152,10 +152,9 @@ class AccrualAwardService implements AwardInterface
         return $result;
     }
 
-    public function getTopSalaryEmployees($user_ids,Carbon $date,$group_id){
+    public function getTopSalaryEmployees($user_ids,Carbon $date,$group){
         $result = [];
         $month = $date->startOfMonth();
-        $group = ProfileGroup::find($group_id);
 
         $users = Salary::getUsersData($month, $user_ids);
 
@@ -169,7 +168,7 @@ class AccrualAwardService implements AwardInterface
                 'bonuses' => $userFot['bonuses'],
                 'total' => array_sum(array_values($userFot)),
                 'position' => $user->position?->position,
-                'group' => $user->inGroups(true)->first()->name ?? '',
+                'group' => $group->name ?? '',
                 'name' => $user->name,
                 'last_name' => $user->last_name,
                 'path'=> 'users_img/' . $user->img_url,
