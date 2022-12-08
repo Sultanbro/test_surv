@@ -41,8 +41,6 @@
                                             @save-changes="saveStyles"/>
                 </BModal>
             </div>
-            <hr class="my-4">
-            <RegenerateCertificates :award="awards[0]" :courses="value"/>
         </div>
         <b-row>
             <b-col cols="12" md="7">
