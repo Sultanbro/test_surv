@@ -48,7 +48,8 @@ class AppServiceProvider extends ServiceProvider
                             : 'https://cp.callibro.org/files/img/8.png',
                         'email'       => auth()->user()->email,
                         'is_admin'    => auth()->user()->is_admin == 1,
-                        'permissions' => $permissions
+                        'permissions' => $permissions,
+                        'tenants'     => auth()->user()->tenants()->pluck('id')->toArray()
                     ]
                 ]);
 
