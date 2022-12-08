@@ -31,6 +31,12 @@ trait RewardTrait
             }
 
             $file = $this->saveAwardFile($dto);
+            if (!$file){
+                $file = [
+                    'relative'=> $award->path,
+                    'format'=> $award->format,
+                ];
+            }
             $added   = $awardRepository->attachUser($award, $dto->userId, $file['relative'], $file['format']);
 
             return response()->success($added);
