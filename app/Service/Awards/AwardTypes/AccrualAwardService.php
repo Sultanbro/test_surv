@@ -89,7 +89,7 @@ class AccrualAwardService implements AwardInterface
     public function getAccrual($user, $type): array
     {
         $result = [];
-        $group_id = $user->inGroups()->first()->id;
+        $group_id = $user->inGroups(true)->first()->id;
 
         $today = Carbon::now();
         $date = Carbon::createFromDate($today->year, $today->month, 1);
@@ -157,6 +157,7 @@ class AccrualAwardService implements AwardInterface
 
         $internship_pay_rate = $group->paid_internship == 1 ? 0.5 : 0;
         foreach ($users as $user){
+
             $userFot = $user->calculateFot($internship_pay_rate, $date);
             $result[] = [
                 'kpi' => $userFot['kpi'],
@@ -164,7 +165,7 @@ class AccrualAwardService implements AwardInterface
                 'bonuses' => $userFot['bonuses'],
                 'total' => array_sum(array_values($userFot)),
                 'position' => $user->position?->position,
-                'group' => $user->inGroups()->first()->name ?? '',
+                'group' => $user->inGroups(true)->first()->name ?? '',
                 'name' => $user->name,
                 'last_name' => $user->last_name,
                 'path'=> 'users_img/' . $user->img_url,
