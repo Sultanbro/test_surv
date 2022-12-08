@@ -4,17 +4,21 @@ import type { UserData, UserDataRequest, UserDataResponse } from './api'
 export type UserDataKeys = keyof UserData
 
 function compareNumbers(a: number, b: number) {
-  return a - b
+  return parseFloat(a) - parseFloat(b)
 }
 function compareStrings(a: string, b: string) {
+  if(!a) return -1
+  if(!b) return 1
   return a.localeCompare(b)
 }
 function compareDate(a: string, b: string) {
+  if(!a) return -1
+  if(!b) return 1
   // пока как строки, позже прикручу moment
   return a.localeCompare(b)
 }
 function unformateBalance(balance: string) {
-  return parseFloat(balance.split(' ').join(''))
+  return balance ? parseFloat(balance.split(' ').join('')) : 0
 }
 function formatedNumberCompare(a: string, b: string) {
   return unformateBalance(a) - unformateBalance(b)
