@@ -318,11 +318,15 @@ class User extends Authenticatable implements Authorizable
             $bonusesSum += ObtainedBonus::onDay($this->id, $award_date->day($i)->format('Y-m-d'));
 
 
-            //test bonuses
-            $bonusesSum += $this->testBonuses
-                ->where('date', 'like', '%' . $award_date->format('Y-m-') . '%')
-                ->sum('amount');
+
+
+
         }
+        //test bonuses
+        $bonusesSum += $this->testBonuses
+            ->where('date','>=', now()->format('Y-m-d'))
+            ->sum('amount');
+
         $kpi = SavedKpi::where('user_id', $this->id)
             ->where('date', $date->format('Y-m-d'))
             ->first();
