@@ -67,6 +67,7 @@ trait CreateTenant
             'last_name' => $user->last_name,
             'email' => $user['email'],
             'phone' => $user['phone'],
+            'currency' => $user['currency'],
             'password' => $user['password'],
             'is_admin' => 1
         ]);
@@ -75,6 +76,9 @@ trait CreateTenant
             'is_trainee' => 0,
             'user_id'    => $user->id
         ]);
+
+        // run seeders
+        // Setting::create();
         
         return $user;
     }

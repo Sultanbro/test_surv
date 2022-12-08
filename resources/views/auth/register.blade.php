@@ -112,13 +112,20 @@
                                         </span>
                                         @endif
 
+                                        <div class="form-registration-row">
+                                            <select id="currency" name="currency" required class="chosen-select">
+                                                <option value="">Выберите Валюту</option>
+                                                <option value="kzt">KZT Казахстанский тенге</option>
+                                                <option value="rub">RUB Российский рубль</option>
+                                                <option value="usd">USD Американский доллар</option>
+                                            </select>
+                                        </div>
+                                      
                                         @if(config('services.recaptcha.key'))
                                             <div class="g-recaptcha"
-                                                data-sitekey="{{config('services.recaptcha.key')}}">
+                                                data-sitekey="{{ config('services.recaptcha.key') }}">
                                             </div>
                                         @endif
-
-
 
                                         <button type="submit" class="btn-form-login">
                                             Зарегистрироваться

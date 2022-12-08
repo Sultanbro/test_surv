@@ -102,7 +102,7 @@ Route::middleware([
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    \Auth::routes(); 
+    //\Auth::routes(); 
 
     // Authentication Routes...
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');

@@ -47,6 +47,7 @@ trait RegistersUsers
             'last_name' => $data['last_name'],
             'email' => $data['email'],
             'phone' => $data['phone'],
+            'currency' => $data['currency'],
             'password' => \Hash::make($data['password']),
         ]);
     }
