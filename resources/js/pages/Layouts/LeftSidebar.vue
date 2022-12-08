@@ -326,12 +326,6 @@ export default {
     visibility: visible;
     transition: all 0.5s;
     // box-shadow: -0.1rem 0px 0.5rem rgba(0, 0, 0, 0.25);
-
-    &.closed{
-        transform:translateX(-30px);
-        opacity:0;
-        visibility: hidden;
-    }
 }
 
 .header__avatar{
@@ -586,6 +580,16 @@ export default {
 .header__nav-link-more{
     .header__menu{
         transform: translateY(calc(-100% + 5rem));
+    }
+}
+
+@media(max-width:900px){
+    .header__left{
+        &.closed{
+            transform:translateX(-30px);
+            opacity:0;
+            visibility: hidden;
+        }
     }
 }
 </style>
