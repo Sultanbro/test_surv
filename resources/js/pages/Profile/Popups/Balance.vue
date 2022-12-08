@@ -250,9 +250,11 @@ export default {
                 calculated: data.calculated
             }
 
-            setTimeout(() => {
-                this.$refs.historyElement.scrollIntoView({ behavior: 'smooth' })
-            }, 1)
+            if(day){
+                setTimeout(() => {
+                    this.$refs.historyElement.scrollIntoView({ behavior: 'smooth' })
+                }, 1)
+            }
         },
 
         /**
