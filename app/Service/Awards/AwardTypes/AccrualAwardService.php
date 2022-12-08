@@ -89,8 +89,12 @@ class AccrualAwardService implements AwardInterface
     public function getAccrual($user, $type): array
     {
         $result = [];
-        $group_id = $user->inGroups(true)->first()->id;
+        $group = $user->inGroups()->first();
+        if (!$group){
+            $group = $user->inGroups(true)->first();
+        }
 
+        $group_id = $group->id;
         $today = Carbon::now();
         $date = Carbon::createFromDate($today->year, $today->month, 1);
 
