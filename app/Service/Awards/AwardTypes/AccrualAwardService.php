@@ -128,7 +128,7 @@ class AccrualAwardService implements AwardInterface
                 $result[] = [
                     'name' => $awardCategory->name,
                     'description'=>$awardCategory->description,
-                    'top' => $this->getTopSalaryEmployees($user_ids, $date, ProfileGroup::find( $targetable_id)),
+                    'top' => $this->getTopSalaryEmployees($user_ids, $date),
                 ];
             }
 
@@ -142,7 +142,7 @@ class AccrualAwardService implements AwardInterface
                 $result[] = [
                     'name' => $awardCategory->name,
                     'description'=>$awardCategory->description,
-                    'top' => $this->getTopSalaryEmployees($user_ids, $date, $group),
+                    'top' => $this->getTopSalaryEmployees($user_ids, $date),
 
                 ];
 
@@ -152,15 +152,19 @@ class AccrualAwardService implements AwardInterface
         return $result;
     }
 
-    public function getTopSalaryEmployees($user_ids,Carbon $date,$group){
+    public function getTopSalaryEmployees($user_ids,Carbon $date){
         $result = [];
         $month = $date->startOfMonth();
 
         $users = Salary::getUsersData($month, $user_ids);
 
-        $internship_pay_rate = $group->paid_internship == 1 ? 0.5 : 0;
+        $internship_pay_rate = 0;
         foreach ($users as $user){
 
+            $group = $user->inGroups()->first();
+            if (!$group){
+                $group = $user->inGroups(true)->first();
+            }
             $userFot = $user->calculateFot($internship_pay_rate, $date);
             $result[] = [
                 'kpi' => $userFot['kpi'],
