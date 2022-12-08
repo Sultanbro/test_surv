@@ -142,7 +142,7 @@ class Timetracking extends Model
 
             //->get(['id', 'email', DB::raw("CONCAT(name,' ',last_name) as full_name"), 'user_type', 'working_time_id']);
 
-            ->select(['id', 'email', 'deleted_at', 'name', 'last_name', 'user_type', 'working_time_id', 'program_id', 'full_time', 'weekdays'])
+            ->select(['id', 'email', 'deleted_at', 'name', 'last_name', 'user_type', 'working_time_id', 'program_id', 'full_time', 'weekdays', 'timezone'])
             ->paginate($perPage);
     
         return $users;

@@ -880,7 +880,7 @@ class TimetrackingController extends Controller
         //////////////////////
       
         $users = Timetracking::getTimeTrackingReportPaginate($request, $_user_ids, $year);
-      
+
 
         $data = [];
 
@@ -902,10 +902,12 @@ class TimetrackingController extends Controller
 
     
         foreach ($users as $user) {
+            $this->addHours($user);
+
             $fines = [];
             $daytypes = [];
             $weekdays = [];
-   
+
             $days = $user->daytypes->whereIn('type', [5,7])->sortBy('day')->toArray();
           
             $data['total_resources'] += $user->full_time == 1 ? 1 : 0.5;
@@ -2437,5 +2439,17 @@ class TimetrackingController extends Controller
         $response = $groupUserService->drop($request->users, $request->group_id);
 
         return response()->json($response);
+    }
+
+    /**
+     * @param $user
+     * @return void
+     */
+    private function addHours($user): void
+    {
+        foreach ($user->trackHistory as $history) {
+            $history->created_at = $history->created_at->addHours($user->timezone);
+            $history->updated_at = $history->updated_at->addHours($user->timezone);
+        }
     }
 }
