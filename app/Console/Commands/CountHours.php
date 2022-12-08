@@ -74,13 +74,8 @@ class CountHours extends Command
             $timeStart = $this->countFromShiftStartTime($workStart, $record->enter);
             $timeEnd   = Carbon::parse($record->exit, $user->timezone()); // не учитываем конец дня, засчитываем как переработку
 
-            if($user->id == 20802) dump($timeStart);
-            if($user->id == 20802) dump($timeEnd);
-
             $minutes = $timeEnd->diffInMinutes($timeStart);
             $minutes = $this->subtractLunchTime($minutes);
-
-            if($user->id == 20802) dump($minutes);
 
             if ($minutes <= 0) {
                 $minutes = 0;
