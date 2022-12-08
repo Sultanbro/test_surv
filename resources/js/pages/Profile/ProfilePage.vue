@@ -54,11 +54,11 @@
 
     <popup v-if="popNominations"
         title="Номинации"
-        desc="Дополнительное поле с описанием функционала данного окна"
+        :desc="desc"
         :open="popNominations"
         @close="popNominations=false"
         :width="popupWidth">
-        <popup-nominations></popup-nominations>
+        <popup-nominations @get-desc="getDesc"></popup-nominations>
     </popup>
 </div>
 </template>
@@ -77,6 +77,7 @@ export default {
     },
     data: function () {
         return {
+            desc: 'Подождите, идет загрузка...',
             fields: [],
             popBalance: false,
             popKpi: false,
@@ -99,6 +100,9 @@ export default {
             if(window == 'bonus') this.popBonuses = true;
             if(window == 'qp') this.popQuartalPremiums = true;
             if(window == 'nominations') this.popNominations = true;
+        },
+        getDesc(text){
+            this.desc = text;
         }
     }
 };
