@@ -61,11 +61,9 @@ class AwardController extends Controller
     {
         $type = $this->awardService->getAwardType($request->input('award_category_id'));
 
-        $response = $this->awardBuilder
+        return $this->awardBuilder
             ->handle($type)
             ->store($request);
-
-        return response()->success($response);
     }
 
     /**
