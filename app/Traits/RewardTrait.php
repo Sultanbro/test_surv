@@ -31,7 +31,7 @@ trait RewardTrait
             }
 
             $file = $this->saveAwardFile($dto);
-            if (!$file){
+            if (!$file['relative']){
                 $file = [
                     'relative'=> $award->path,
                     'format'=> $award->format,
