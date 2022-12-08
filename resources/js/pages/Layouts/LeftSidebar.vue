@@ -6,12 +6,17 @@
 
         <!-- hover menu -->
         <div class="header__menu">
-            <div v-if="isAdmin" class="header__menu-project">
+            <div v-if="isOwner" class="header__menu-project" v-scroll-lock="isCreatingProject">
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
                 Проект: {{ project }}
                 <div class="header__submenu">
-                    <a class="header__submenu-item">
-                        {{ project }}
+                    <a
+                        v-for="tenant in tenants"
+                        :href="tenant === project ? 'javascript:void(0)' : `/login/${tenant}`"
+                        class="header__submenu-item"
+                        :class="{'header__submenu-item_active': tenant === project}"
+                    >
+                        {{ tenant }}
                     </a>
                     <div class="header__submenu-divider"/>
                     <div @click="onNewProject" class="header__submenu-item">
@@ -103,7 +108,9 @@ export default {
             avatar: this.$laravel.avatar,
             token: Laravel.csrfToken,
             isAdmin: this.$laravel.is_admin,
-            project: window.location.hostname.split('.')[0]
+            project: window.location.hostname.split('.')[0],
+            tenants: Laravel.tenants,
+            isCreatingProject: false,
         };
     },
     methods: {
@@ -111,7 +118,30 @@ export default {
             this.height = this.$refs.nav.offsetHeight
         },
         onNewProject(){
-            console.log('LeftSidebar.onNewProject - Not implemented')
+            if(!confirm('Вы уверены? Создатся еще один кабинет под другим субдоменом. Вам это нужно ?')) return
+            this.isCreatingProject = true
+            const loader = this.$loading.show({
+                zIndex: 99999
+            })
+            this.$toast.info('Ваш кабинет создается', {
+                timeout: 20000,
+                closeOnClick: false,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: false,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: false,
+                icon: true
+            })
+            axios.post('/projects/create', {}).then(response => {
+                if(response.data) location.assign(response.data.link)
+            }).catch(error => {
+                loader.hide()
+                this.isCreatingProject = false
+                this.$toast.error('Ошибка при создании кабинета')
+                console.error(error)
+            })
         }
     },
     computed: {
@@ -299,6 +329,9 @@ export default {
                 more: [],
                 totalHeight: this.items[0].height
             })
+        },
+        isOwner(){
+            return this.tenants && this.tenants.includes(this.project)
         }
     },
     mounted(){
@@ -411,9 +444,22 @@ export default {
 
     &:hover{
         background: #FAFCFD;
+        color: #156AE8;
         .menu__item-title,
         .menu__item-icon{
             color: #156AE8;
+        }
+    }
+}
+.header__submenu-item_active{
+    cursor: default;
+    font-weight: 700;
+    &:hover{
+        background: #fff;
+        color: #657A9F;
+        .menu__item-title,
+        .menu__item-icon{
+            color: #657A9F;
         }
     }
 }
