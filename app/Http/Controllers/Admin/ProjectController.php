@@ -65,7 +65,9 @@ class ProjectController extends Controller
 
         $tenant = $this->createTenant($user);
 
-        return $this->loginToSubDomain($tenant, $user->email);
+        return response()->json([
+            'link' => $this->loginLinkToSubDomain($tenant, $user->email)
+        ]);
     }
 
   
