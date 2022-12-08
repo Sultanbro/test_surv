@@ -91,7 +91,6 @@ class AccrualAwardService implements AwardInterface
         $result = [];
         $group_id = $user->inGroups()[0]->id;
 
-        error_log(json_encode($group_id));
         $today = Carbon::now();
         $date = Carbon::createFromDate($today->year, $today->month, 1);
 
@@ -113,7 +112,6 @@ class AccrualAwardService implements AwardInterface
             })
             ->get();
 
-        error_log(json_encode($awardCategories));
         foreach ($awardCategories as $awardCategory){
             $award = $awardCategory['awards'][0];
             $targetable_type = $award['targetable_type'];
