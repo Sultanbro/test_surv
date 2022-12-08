@@ -6,10 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class TimetrackingHistory extends Model
 {
-    protected $casts = [
-        'timezone' => Setting::TIMEZONES[6]
-    ];
-
     protected $table = 'timetracking_history';
 
     protected $fillable = [
