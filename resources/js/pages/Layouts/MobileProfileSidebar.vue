@@ -6,6 +6,12 @@
     }">
         <div class="profile__content">
             <div class="profile__col">
+                <start-day-btn
+                    v-if="showButton"
+                    :status="buttonStatus"
+                    :workdayStatus="workdayStatus"
+                    @clickStart="startDay"
+                />
                 <div class="profile__balance">
                     Текущий баланс
                     <p>{{ balance }} <span>{{ currency }}</span></p>
@@ -23,7 +29,7 @@
 import { bus } from '../../bus'
 
 export default {
-    name: 'ProfileSidebar',
+    name: 'MobileProfileSidebar',
     props: {},
     data: function () {
         return {
@@ -42,6 +48,17 @@ export default {
         userInfo(){
             return bus.$data.profileSidebar.userInfo
         },
+        workdayStatus(){
+            return bus.$data.profileSidebar.workdayStatus
+        },
+        buttonStatus(){
+            return bus.$data.profileSidebar.buttonStatus
+        },
+        showButton(){
+            if(this.$viewportSize.width < 768) return false
+            if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
+            return this.workdayStatus === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+        }
     },
     mounted(){
         const scrollObserver = new IntersectionObserver(() => {
@@ -50,7 +67,11 @@ export default {
         scrollObserver.observe(this.$el)
     },
     created(){},
-    methods: {}
+    methods: {
+        startDay(){
+            bus.$emit('MobileProfileSidebarStartDay')
+        }
+    }
 };
 </script>
 

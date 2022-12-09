@@ -15,21 +15,34 @@
     <div class="custom-scroll">
         <table class="indicators-table-fixed" :id="'sticky-'+ activity.id">
             <tr>
-                <th class="indicators-table-fixed-name sticky-left" rowspan="2">
+                <th
+                    rowspan="2"
+                    class="indicators-table-fixed-name"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div class="text-left pl-4">
                         ФИО
                         <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
                     </div>
                 </th>
 
-                <th class="indicators-table-fixed-hmonth sticky-left" rowspan="2">
+                <th
+                    rowspan="2"
+                    class="indicators-table-fixed-hmonth"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div class="text-left pl-4" v-if="is_admin">
                         Итог к выдаче
                         <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('plan')"></i>
                     </div>
                     <div class="" v-else></div>
                 </th>
-                <th class="indicators-table-fixed-hplan sticky-left" v-if="is_admin" rowspan="2">
+                <th
+                    v-if="is_admin"
+                    rowspan="2"
+                    class="indicators-table-fixed-hplan"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div class="text-left pl-4">
                         Сборы
                         <i class="fa fa-sort ml-2" @click="sort('count')"></i>
@@ -56,13 +69,24 @@
                     'prize third-place': item.show_cup == 3,
                 }"
             >
-                <td class="indicators-table-fixed-name sticky-left text-left" :title="item.id + ' ' + item.email">
+                <td
+                    :title="item.id + ' ' + item.email"
+                    class="indicators-table-fixed-name text-left"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div class="d-flex align-items-center max-content">
                         {{ item.lastname }} {{ item.name }}
                     </div>
                 </td>
-                <td class="indicators-table-fixed-hmonth sticky-left px-2">{{ item.plan }}</td>
-                <td v-if="is_admin" class="indicators-table-fixed-hplan sticky-left px-2">{{ item.count }}</td>
+                <td
+                    class="indicators-table-fixed-hmonth px-2"
+                    :class="{'sticky-left': isDesktop}"
+                >{{ item.plan }}</td>
+                <td
+                    v-if="is_admin"
+                    class="indicators-table-fixed-hplan px-2"
+                    :class="{'sticky-left': isDesktop}"
+                >{{ item.count }}</td>
                 <template v-for="day in month.daysInMonth">
                     <td v-if="item.editable"
                         :class="'text-center ' + item._cellVariants[day]"
@@ -142,6 +166,11 @@ export default {
             loading: false
         };
     },
+    computed: {
+        isDesktop(){
+            return this.$viewportSize.width >= 1300
+        },
+    },
     watch: {
         activity: function(newVal, oldVal) { // watch it
             this.fetchData();
@@ -149,8 +178,6 @@ export default {
     },
     created() {
         this.fetchData();
-
-
     },
     mounted() {
         document.getElementById("sticky-" + this.activity.id).style.height = window.innerHeight + "px";

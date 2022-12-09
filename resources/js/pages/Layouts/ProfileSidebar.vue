@@ -33,7 +33,7 @@
                     :status="buttonStatus"
                     :workdayStatus="workdayStatus"
                     @clickStart="startDay"
-                ></start-day-btn>
+                />
                 <div class="profile__balance">
                     Текущий баланс
                     <p>{{ balance }} <span>{{ currency }}</span></p>
@@ -201,7 +201,10 @@ export default {
             userInfo: {},
             balance: 0,
             currency: 'KZT',
+            buttonStatus: this.buttonStatus,
+            workdayStatus: this.workdayStatus,
         })
+        bus.$on('MobileProfileSidebarStartDay', this.startDay)
         this.getLogo()
         this.fetchUserInfo()
         this.fetchTTStatus()
@@ -331,8 +334,8 @@ export default {
             axios.post('/timetracking/status', {}).then((response) => {
                 this.workdayStatus = response.data.status
 
-                if(this.workdayStatus === 'started' && response.data.corp_book.has) {
-                    this.corp_book_page = response.data.corp_book.page
+                if(this.workdayStatus === 'started' && response.data.corp_book) {
+                    this.corp_book_page = response.data.corp_book
                     this.showCorpBookPage = this.corp_book_page !== null
                     this.bookCounter()
                 }
