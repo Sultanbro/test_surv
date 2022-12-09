@@ -35,10 +35,6 @@
                     :class="{'is-active': w == 0}"
                 >
                     <div class="kpi__kaspi">
-                        <div class="kpi__title popup__content-title">
-                            <template v-if="wrap_item.target != null">{{ wrap_item.target.name }}</template>
-                            <template v-else>---</template>
-                        </div>
                         <div class="kpi__kaspi-wrapper">
                             <div class="kpi__kaspi-left">
                                 <table>
