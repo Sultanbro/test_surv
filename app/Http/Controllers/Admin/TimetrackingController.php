@@ -376,22 +376,6 @@ class TimetrackingController extends Controller
     {
         $user = User::bitrixUser();
 
-        $running = $user->timetracking()->running()->first();
-
-        // @TODO В userController есть похожая фунцкия
-
-        $groupsall = $user->headInGroups();
-
-        ////////////////////////////////////////////// end of TODO
-        
-        $status = 'stopped';
-        if (!is_null($running)) {
-            $status = 'started';
-        }
-        
-        
-        $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
-        
         // count bonuses
         $bonuses = Salary::where('user_id', $user->id)
             ->whereYear('date',  date('Y'))
@@ -433,39 +417,26 @@ class TimetrackingController extends Controller
         // заработано по окладу за вычетом штрафов и авансов
         $salary = $user->getCurrentSalary();
 
+        // currency
+        $currency_rate = in_array($user->currency, array_keys(Currency::rates()))
+            ? (float)Currency::rates()[$user->currency]
+            : 0.0000001;
+
         // balance
         $total_earned = number_format(round(($salary + $kpi + $bonus) * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency);
 
-        // corp book page 
-        $page = [
-            'title' => '',
-            'description' => ''
-        ];
-         
-        $has_corp_book = false;
-     
-         if(!$user->readCorpBook()) {
-            $has_corp_book = true;
-            $page = \App\KnowBase::getRandomPage();
-            if($page == null) $has_corp_book = false;
-        }
-
-     
         return response()->json([
-            'status' => $status,
-            'groupsall' => $groupsall,
-            'orders' => $this->getGroupOrders(),
-            'zarplata' => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
-            'bonus' => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
+            'status'    => $user->timetracking()->running()->first() ? 'started' : 'stopped',
+            'groupsall' => $user->headInGroups(),
+            'orders'    => $this->getGroupOrders(),
+            'zarplata'  => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
+            'bonus'     => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
             'total_earned' => $total_earned,
-            'balance'  => [
+            'balance'   => [
                 'sum' => number_format(round(($salary + $kpi + $bonus) * $currency_rate, 2), 0, '.', ','),
                 'currency' => strtoupper($user->currency),
             ],
-            'corp_book' => [
-                'has' => $has_corp_book,
-                'page' => $page,
-            ],
+            'corp_book' => $user->getCorpbook()
         ]);
     }
     
