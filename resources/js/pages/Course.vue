@@ -127,7 +127,7 @@
         <superselect 
             :values="course.targets"
             class="w-50 mb-4" 
-            :key="1"
+            :key="superselectKey"
             :select_all_btn="true" />
         
       </div>
@@ -153,7 +153,8 @@ export default {
         img: ''
       },
       image: '/users_img/noavatar.png',
-      croppa_key: 1
+      croppa_key: 1,
+      superselectKey: 1
     };
   },
   created() {
@@ -177,6 +178,7 @@ export default {
           this.course = response.data.course;
           this.image = this.course.img;
           this.croppa_key++;
+          this.superselectKey++;
         })
         .catch((error) => {
           loader.hide()
