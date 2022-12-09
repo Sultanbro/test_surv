@@ -118,7 +118,7 @@ export default {
 
 <style lang="scss">
 #page-profile{
-    padding-bottom: 10rem;
+    padding-bottom: 2rem;
     padding-right: 2rem;
 }
 @media(max-width:1910px){
