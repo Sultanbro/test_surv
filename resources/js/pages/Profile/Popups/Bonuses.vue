@@ -56,32 +56,33 @@
                 <!--                    -->
                 <!--                    <div v-html="potential_bonuses"></div>-->
                 <!--                </div>-->
-                <table>
-                    <template v-for=" (bonus, i) in bonuses">
-                        <thead :key="i">
-                            <tr>
-                                <div class="kaspi__content-subtitle">
-                                    {{ bonus.name }}
-                                </div>
-                            </tr>
-                            <tr>
-                                <th class="text-center">Название</th>
-                                <th class="text-center">За что</th>
-                                <th class="text-center">Сумма</th>
-                            </tr>
-                        </thead>
-                        <tbody :key="i">
-                            <tr
-                                v-for="(item, index) in bonus.items"
-                                :key="index"
-                            >
-                                <td class="text-center">{{ item.title }}</td>
-                                <td class="text-center">{{ item.text }}</td>
-                                <td class="text-center">{{ item.sum }}</td>
-                            </tr>
-                        </tbody>
-                    </template>
-                </table>
+                <b-tabs>
+                    <b-tab
+                        v-for=" (bonus, i) in bonuses"
+                        :key="i"
+                        :title="bonus.name"
+                    >
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Название</th>
+                                    <th class="text-center">За что</th>
+                                    <th class="text-center">Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(item, index) in bonus.items"
+                                    :key="index"
+                                >
+                                    <td class="text-center">{{ item.title }}</td>
+                                    <td class="text-center">{{ item.text }}</td>
+                                    <td class="text-center">{{ item.sum }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </b-tab>
+                </b-tabs>
               </div>
             </div>
         </div>
