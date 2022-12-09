@@ -2,15 +2,6 @@
 <div class="popup__content  mt-5" :class="{'v-loading': loading}">
     <div class="tabs">
         <div class="popup__filter">
-            <div class="trainee__tabs tabs__wrapper">
-                <div class="trainee__tab tab__item is-active" onclick="switchTabs(this)" data-index="1">Заработанные бонусы</div>
-                <div class="trainee__tab tab__item" onclick="switchTabs(this)" data-index="2">Можно заработать</div>
-            </div>
-            <select class="select-css trainee-select mobile-select">
-                <option value="1">Заработанные бонусы</option>
-                <option value="2">Можно заработать</option>
-            </select>
-
             <select class="select-css" v-model="currentMonth" @change="fetchData()">
                 <option
                     v-for="month in $moment.months()"
@@ -22,65 +13,78 @@
             </select>
         </div>
 
-        <div class="tab__content">
-            <div class="kaspi__content custom-scroll-y tab__content-item is-active" data-content="1">
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="text-center">Дата</th>
-                            <th class="text-center">Сумма</th>
-                            <th class="text-center">Комментарии</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(item, index) in history"
-                            :key="index"
-                        >
-                            <td class="text-center">{{ (new Date(item.date)).addHours(6).toLocaleString('ru-RU') }}</td>
-                            <td class="text-center">{{ item.sum }}</td>
-                            <td>
-                                <p class="kaspi__content-comment fz14 mb-0">
-                                    {{ item.comment }}
-                                </p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="tabs">
+            <div class="tabs__wrapper custom-scroll">
+                <div class="trainee__tabs tabs__wrapper">
+                    <div class="trainee__tab tab__item is-active" onclick="switchTabs(this)" data-index="1">Заработанные бонусы</div>
+                    <div class="trainee__tab tab__item" onclick="switchTabs(this)" data-index="2">Можно заработать</div>
+                </div>
+                <select class="select-css trainee-select mobile-select">
+                    <option value="1">Заработанные бонусы</option>
+                    <option value="2">Можно заработать</option>
+                </select>
             </div>
-          <div class="kaspi__content custom-scroll-y tab__content-item"  data-content="2">
-            <!--                <div class="kaspi__wrapper">-->
-            <!--                    -->
-            <!--                    <div v-html="potential_bonuses"></div>-->
 
-            <!--                </div>-->
-            <table>
-                <template v-for=" (bonus, i) in bonuses">
-                    <thead :key="i">
-                        <tr>
-                            <div class="kaspi__content-subtitle">
-                                {{ bonus.name }}
-                            </div>
-                        </tr>
-                        <tr>
-                            <th class="text-center">Название</th>
-                            <th class="text-center">За что</th>
-                            <th class="text-center">Сумма</th>
-                        </tr>
-                    </thead>
-                    <tbody :key="i">
-                        <tr
-                            v-for="(item, index) in bonus.items"
-                            :key="index"
-                        >
-                            <td class="text-center">{{ item.title }}</td>
-                            <td class="text-center">{{ item.text }}</td>
-                            <td class="text-center">{{ item.sum }}</td>
-                        </tr>
-                    </tbody>
-                </template>
-            </table>
-          </div>
+            <div class="tab__content">
+                <div class="kaspi__content custom-scroll-y tab__content-item is-active" data-content="1">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="text-center">Дата</th>
+                                <th class="text-center">Сумма</th>
+                                <th class="text-center">Комментарии</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(item, index) in history"
+                                :key="index"
+                            >
+                                <td class="text-center">{{ (new Date(item.date)).addHours(6).toLocaleString('ru-RU') }}</td>
+                                <td class="text-center">{{ item.sum }}</td>
+                                <td>
+                                    <p class="kaspi__content-comment fz14 mb-0">
+                                        {{ item.comment }}
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+              <div class="kaspi__content custom-scroll-y tab__content-item"  data-content="2">
+                <!--                <div class="kaspi__wrapper">-->
+                <!--                    -->
+                <!--                    <div v-html="potential_bonuses"></div>-->
+                <!--                </div>-->
+                <b-tabs>
+                    <b-tab
+                        v-for=" (bonus, i) in bonuses"
+                        :key="i"
+                        :title="bonus.name"
+                    >
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Название</th>
+                                    <th class="text-center">За что</th>
+                                    <th class="text-center">Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(item, index) in bonus.items"
+                                    :key="index"
+                                >
+                                    <td class="text-center">{{ item.title }}</td>
+                                    <td class="text-center">{{ item.text }}</td>
+                                    <td class="text-center">{{ item.sum }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </b-tab>
+                </b-tabs>
+              </div>
+            </div>
         </div>
     </div>
 </div>
@@ -90,7 +94,7 @@
 import {fields} from "../../kpi/bonuses";
 
 export default {
-    name: "PopupBonuses", 
+    name: "PopupBonuses",
     props: {},
     data: function () {
         return {

@@ -9,7 +9,10 @@
       <div class="">
           <table class="class indicators-table-fixed">
               <tr>
-                  <th class="indicators-table-fixed-name sticky-left text-left pl-4">
+                  <th
+                      class="indicators-table-fixed-name text-left pl-4"
+                      :class="{'sticky-left': isDesktop}"
+                  >
                       <div class="max-content">Сотрудник</div>
                   </th>
                   <template v-for="(field, key) in fields">
@@ -27,7 +30,10 @@
                   'prize third-place': item.show_cup == 3,
                 }"
               >
-                  <td class="indicators-table-fixed-name sticky-left text-left">
+                  <td
+                      class="indicators-table-fixed-name text-left"
+                      :class="{'sticky-left': isDesktop}"
+                  >
                       <div class="d-flex max-content">
                           {{ item.name }}
                       </div>
@@ -60,7 +66,11 @@ export default {
             loader: null,
         };
     },
-
+    computed: {
+        isDesktop(){
+            return this.$viewportSize.width >= 1300
+        },
+    },
     created() {
         this.setWeeksTableFields()
         this.users = this.items;

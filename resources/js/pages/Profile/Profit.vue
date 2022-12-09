@@ -262,25 +262,23 @@ export default {
             /**
              * set some style
             *  */
+            if(this.$viewportSize.width > 767){
+                let leftSlides = document.getElementsByClassName("left-slide");
+                let rightSlides = document.getElementsByClassName("right-slide");
+                let height = 0;
 
-            let leftSlides = document.getElementsByClassName("left-slide");
-            let rightSlides = document.getElementsByClassName("right-slide");
-            let height = 0;
-
-            for(let i = 0; i < leftSlides.length; i++) {
-                for(let j = 0; j < rightSlides.length; j++) {
-                    const leftHeight = leftSlides[i].offsetHeight;
-                    const rightHeight = rightSlides[j].offsetHeight;
-                    height = leftHeight > rightHeight ? leftHeight : rightHeight;
+                for(let i = 0; i < leftSlides.length; i++) {
+                    for(let j = 0; j < rightSlides.length; j++) {
+                        const leftHeight = leftSlides[i].offsetHeight;
+                        const rightHeight = rightSlides[j].offsetHeight;
+                        height = leftHeight > rightHeight ? leftHeight : rightHeight;
+                    }
                 }
-            }
 
-            console.log('height');
-            console.log(height);
-            const arr = [1,1,1,2,3,4];
-            console.log(leftSlides);
-            [...leftSlides].forEach(data => {data.style.minHeight = height + "px"});
-            [...rightSlides].forEach(data => {data.style.minHeight = height + "px"});
+                const arr = [1,1,1,2,3,4];
+                [...leftSlides].forEach(data => {data.style.minHeight = height + "px"});
+                [...rightSlides].forEach(data => {data.style.minHeight = height + "px"});
+            }
         }
     }
 };

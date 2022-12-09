@@ -116,15 +116,7 @@ function isValidDate(date) {
     return date instanceof Date && !isNaN(date);
 }
 
-let moment = require('moment');
-moment.locale();
-
-moment.updateLocale("en", {
-    week: {
-        dow: 1,
-        doy: 7
-    }
-});
+const moment = require('moment');
 
 export default {
     name: "FilterComponent",
