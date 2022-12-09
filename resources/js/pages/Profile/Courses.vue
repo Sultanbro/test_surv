@@ -293,7 +293,7 @@ export default {
          */
         itemProgress(item) {
             return item.all_stages > 0
-                ? Number(item.completed_stages / item.all_stages).toFixed(1)
+                ? Number((item.completed_stages / item.all_stages) * 100).toFixed(1)
                 : 0;
         },
 
