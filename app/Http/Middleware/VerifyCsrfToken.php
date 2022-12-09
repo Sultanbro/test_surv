@@ -19,5 +19,4 @@ class VerifyCsrfToken extends Middleware
         '/course-results/nullify',
         '/profile/upload/edit'
     ];
-
 }
