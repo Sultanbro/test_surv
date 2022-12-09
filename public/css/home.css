@@ -45,6 +45,12 @@ footer{
 .footer_line{
 	width:100% !important;
 }
+
+.footer_logo-wrapper {
+	display: flex;
+	align-items: center;
+}
+
 .footer_logo{
 	width: 245px;
 	height: 50px;

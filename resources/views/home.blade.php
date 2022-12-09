@@ -353,7 +353,9 @@
 	</body>
 	<footer>
 		<div class="footer_content">
-			<div><img src="footer_logo.png"></div>
+			<div class="footer_logo-wrapper">
+				<img class="footer_logo" src="footer_logo.png">
+			</div>
 			<div>
 				<p>Цены</p>
 				<p>Отзывы</p>
