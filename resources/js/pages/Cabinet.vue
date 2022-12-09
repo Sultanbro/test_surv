@@ -753,6 +753,9 @@ export default {
 </script>
 
 <style lang="scss">
+.container-left-padding{
+  padding-top: 0;
+}
 .upload-to-server-example {
   .upload-example-cropper {
     border: solid 1px #eee;
