@@ -334,8 +334,8 @@ export default {
             axios.post('/timetracking/status', {}).then((response) => {
                 this.workdayStatus = response.data.status
 
-                if(this.workdayStatus === 'started' && response.data.corp_book.has) {
-                    this.corp_book_page = response.data.corp_book.page
+                if(this.workdayStatus === 'started' && response.data.corp_book) {
+                    this.corp_book_page = response.data.corp_book
                     this.showCorpBookPage = this.corp_book_page !== null
                     this.bookCounter()
                 }
