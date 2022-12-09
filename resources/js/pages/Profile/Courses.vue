@@ -81,21 +81,24 @@
                     <div class="profit__info-text mobile" v-html="activeCourse.text"></div>
                     <div class="profit__info__wrapper">
 
-                        <div v-for="(item, index) in items"
-                            :key="index"
-                            class="info__wrapper-item"
-                            :class="{'done': item.status == 1}"
-                        >
-                            <a class="info__item-box">
-                                <img src="/images/dist/info-circle.png" alt="play image" onerror="this.src = '/images/course.jpg';">
-                                <p>{{ item.completed_stages }} / {{ item.all_stages }}</p>
-                            </a>
-                            <div class="info__item-value">{{ itemProgress(item) }}%</div>
-                            <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Books\\Book'">Книга</div>
-                            <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Videos\\VideoPlaylist'">Видеоплейлист</div>
-                            <div class="info__item-value" v-if="item.item_model == 'App\\KnowBase'">База знаний</div>
-                            <div class="info__item-value">{{ item.title }}</div>
-                        </div>
+                        <template v-if="items[activeCourse.id]">
+                            <div
+                                v-for="(item, index) in items[activeCourse.id]"
+                                :key="index"
+                                class="info__wrapper-item"
+                                :class="{'done': item.status == 1}"
+                            >
+                                <a class="info__item-box">
+                                    <img src="/images/dist/info-circle.png" alt="play image" onerror="this.src = '/images/course.jpg';">
+                                    <p>{{ item.completed_stages }} / {{ item.all_stages }}</p>
+                                </a>
+                                <div class="info__item-value">{{ itemProgress(item) }}%</div>
+                                <div class="info__item-value" v-if="item.item_model == 'App\Models\Books\Book'">Книга</div>
+                                <div class="info__item-value" v-if="item.item_model == 'App\Models\Videos\VideoPlaylist'">Видеоплейлист</div>
+                                <div class="info__item-value" v-if="item.item_model == 'App\KnowBase'">База знаний</div>
+                                <div class="info__item-value">{{ item.title }}</div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -111,7 +114,7 @@ export default {
     data: function () {
         return {
             data: [],
-            items: [],
+            items: {},
             courses: [],
             activeCourse: null,
             loading: false
@@ -145,6 +148,13 @@ export default {
             axios.post('/profile/courses').then(response => {
                 this.data = response.data
                 this.$nextTick(() => this.initSlider())
+
+                setTimeout(() => {
+                    // preload course items
+                    this.data.forEach(course => {
+                        this.fetchCourse(course.id)
+                    })
+                }, 1000);
             }).catch((e) => console.log(e))
 
             axios.get('/my-courses/get', {}).then(response => {
@@ -157,16 +167,13 @@ export default {
          */
         selectCourse(index) {
             this.activeCourse = this.data[index]
-            this.fetchCourse();
-            // this.$nextTick(() => this.initInnerSlider())
         },
 
-        fetchCourse() {
+        fetchCourse(id) {
             this.loading = true
 
-            axios.get('/my-courses/get/' + this.activeCourse.id).then(response => {
-                this.items = response.data.items
-                // this.$nextTick(() => this.initSlider())
+            axios.get('/my-courses/get/' + id).then(response => {
+                this.items[id] = response.data.items
                 this.loading = false
             }).catch((e) => console.log(e));
         },
@@ -176,7 +183,6 @@ export default {
          */
         back() {
             this.activeCourse = null;
-            this.items = [];
         },
 
         /**
