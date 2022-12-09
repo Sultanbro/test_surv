@@ -89,13 +89,20 @@
                                 :class="{'done': item.status == 1}"
                             >
                                 <a class="info__item-box">
-                                    <img src="/images/dist/info-circle.png" alt="play image" onerror="this.src = '/images/course.jpg';">
-                                    <p>{{ item.completed_stages }} / {{ item.all_stages }}</p>
+                                    <i
+                                        class="info__item-icon"
+                                        :class="{
+                                            'icon-ci-book': item.item_model == 'App\\Models\\Books\\Book',
+                                            'icon-ci-play': item.item_model == 'App\\Models\\Videos\\VideoPlaylist',
+                                            'icon-ci-database': item.item_model == 'App\\KnowBase',
+                                        }"
+                                    />
+                                    <p class="info__item-stages">{{ item.completed_stages }} / {{ item.all_stages }}</p>
                                 </a>
                                 <div class="info__item-value">{{ itemProgress(item) }}%</div>
-                                <div class="info__item-value" v-if="item.item_model == 'App\Models\Books\Book'">Книга</div>
-                                <div class="info__item-value" v-if="item.item_model == 'App\Models\Videos\VideoPlaylist'">Видеоплейлист</div>
-                                <div class="info__item-value" v-if="item.item_model == 'App\KnowBase'">База знаний</div>
+                                <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Books\\Book'">Книга</div>
+                                <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Videos\\VideoPlaylist'">Видеоплейлист</div>
+                                <div class="info__item-value" v-if="item.item_model == 'App\\KnowBase'">База знаний</div>
                                 <div class="info__item-value">{{ item.title }}</div>
                             </div>
                         </template>
