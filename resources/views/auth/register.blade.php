@@ -9,7 +9,7 @@
             <circle class="v-progress-circular__overlay" fill="transparent" cx="50%" cy="50%" r="20" stroke-width="3.4782608695652177" stroke-dasharray="125.66370614359172" stroke-dashoffset="125.66370614359172px"></circle>
         </svg>
     </div>
-        <div class="preloader__status-text">Созаем портал</div>
+        <div class="preloader__status-text">Создаем портал</div>
     </div>
 </div>
 <div class="frontpage container-fluid">
@@ -112,13 +112,20 @@
                                         </span>
                                         @endif
 
+                                        <div class="form-registration-row">
+                                            <select id="currency" name="currency" required class="chosen-select">
+                                                <option value="">Выберите Валюту</option>
+                                                <option value="kzt">KZT Казахстанский тенге</option>
+                                                <option value="rub">RUB Российский рубль</option>
+                                                <option value="usd">USD Американский доллар</option>
+                                            </select>
+                                        </div>
+
                                         @if(config('services.recaptcha.key'))
                                             <div class="g-recaptcha"
-                                                data-sitekey="{{config('services.recaptcha.key')}}">
+                                                data-sitekey="{{ config('services.recaptcha.key') }}">
                                             </div>
                                         @endif
-
-
 
                                         <button type="submit" class="btn-form-login">
                                             Зарегистрироваться

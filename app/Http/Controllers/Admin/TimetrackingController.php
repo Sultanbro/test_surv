@@ -343,11 +343,6 @@ class TimetrackingController extends Controller
 
         } 
 
-        // Cтраница из Базы знаний 
-        // Показывается при начале дня Сотрудника
-        // Сотрудник обязан читать минимум 60 сек
-        $corp_book = $user->getCorpbook();
-
         // Если есть конфликтное сообщение
         if ($message != '') {
             return response()->json([
@@ -358,11 +353,13 @@ class TimetrackingController extends Controller
         }
 
         return response()->json([
+            // status Started or Stopped day
             'status' => isset($status) ? $status : 'stopped',
-            'corp_book' => [
-                'has' => $corp_book ? true : false,
-                'page' => $corp_book,
-            ],
+
+            // Cтраница из Базы знаний 
+            // Показывается при начале дня Сотрудника
+            // Сотрудник обязан читать минимум 60 сек
+            'corp_book' => $user->getCorpbook()
         ]);
 
     }
@@ -880,7 +877,7 @@ class TimetrackingController extends Controller
         //////////////////////
       
         $users = Timetracking::getTimeTrackingReportPaginate($request, $_user_ids, $year);
-      
+
 
         $data = [];
 
@@ -902,10 +899,12 @@ class TimetrackingController extends Controller
 
     
         foreach ($users as $user) {
+            $this->addHours($user);
+
             $fines = [];
             $daytypes = [];
             $weekdays = [];
-   
+
             $days = $user->daytypes->whereIn('type', [5,7])->sortBy('day')->toArray();
           
             $data['total_resources'] += $user->full_time == 1 ? 1 : 0.5;
@@ -2437,5 +2436,17 @@ class TimetrackingController extends Controller
         $response = $groupUserService->drop($request->users, $request->group_id);
 
         return response()->json($response);
+    }
+
+    /**
+     * @param $user
+     * @return void
+     */
+    private function addHours($user): void
+    {
+        foreach ($user->trackHistory as $history) {
+            $history->created_at = $history->created_at->addHours(6)->format('Y-m-d H:i:s');
+            $history->updated_at = $history->updated_at->addHours(6)->format('Y-m-d H:i:s');
+        }
     }
 }
