@@ -1,7 +1,7 @@
 <template>
 <div class="super-select" ref="select" :class="posClass" v-click-outside="close">
     <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
-        <div 
+        <div
             v-for="(value, i) in valueList"
             :key="i"
             class="selected-item"
@@ -9,7 +9,7 @@
             {{ value.name }}
             <i class="fa fa-times" @click.stop="removeValue(i, value.id)" v-if="!one_choice_made"></i>
         </div>
-        <div 
+        <div
             id="placeholder"
             class="selected-item placeholder">
             {{ placeholder }}
@@ -17,16 +17,16 @@
     </div>
     <div class="show" v-if="show">
         <div class="search">
-            <input 
+            <input
                 v-model="searchText"
                 type="text"
                 placeholder="Поиск..."
                 ref="search"
                 @keyup="onSearch()">
         </div>
-        
+
         <div class="options-window">
-            <div class="types"> 
+            <div class="types">
                 <div class="type" v-if="disable_type !== 1" :class="{'active': type == 1}" @click="changeType(1)" >
                     <div class="text">Сотрудники</div>
                     <i class="fa fa-user"></i>
@@ -42,11 +42,11 @@
 
                 <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
                     <div class="text">Все</div>
-                    <i class="fa fa-check"></i>  
+                    <i class="fa fa-check"></i>
                 </div>
             </div>
-            
-    
+
+
             <div class="options">
 
                 <template v-for="(option, index) in filtered_options">
@@ -79,8 +79,8 @@
             </div>
         </div>
     </div>
-   
- 
+
+
 </div>
 </template>
 
@@ -130,7 +130,7 @@ export default {
         },
         available_courses: {
             type: Array,
-            default: []
+            default: () => []
         }
     },
     data() {
@@ -182,10 +182,10 @@ export default {
         }
         this.valueList = this.values;
         if(this.one_choice && this.valueList.length > 0) this.one_choice_made = true;
-        this.checkSelectedAll(); 
+        this.checkSelectedAll();
         if(this.onlytype > 0){
             this.changeType(2);
-        } 
+        }
     },
     methods: {
         hidePlaceholder(){
@@ -196,12 +196,12 @@ export default {
                 && this.valueList[0]['id']== 0
                 && this.valueList[0]['type'] == 0) {
                 this.selected_all = true;
-                 console.log('okay');
+                //  console.log('okay');
             } else {
-                console.log('wtf');
+                // console.log('wtf');
             }
         },
-        
+
         filterType() {
             this.filtered_options = this.options.filter((el, index) => {
                 return el.type == this.type
@@ -218,7 +218,7 @@ export default {
             if(this.one_choice_made) {
                 return;
             }
-             
+
             this.show = !this.show;
             if(this.show){
                 document.getElementById('placeholder').style.display = "none";
@@ -253,9 +253,9 @@ export default {
             if(this.single) this.show = false;
             if(this.single && this.valueList.length > 0) {
                 return;
-            }; 
+            };
 
-            
+
             if(this.selected_all) return;
 
             let item = this.filtered_options[index];
@@ -279,9 +279,9 @@ export default {
             if(this.ask_before_delete != '') {
                 if(!confirm(this.ask_before_delete)) return;
             }
-            
+
             let v = this.valueList[i];
-            console.log(v);
+            // console.log(v);
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
             this.valueList.splice(i, 1);
@@ -311,17 +311,17 @@ export default {
         },
 
         onSearch() {
-              
+
             if(this.searchText == '') {
-                this.filtered_options = this.options; 
+                this.filtered_options = this.options;
             } else {
                 this.filtered_options = this.options.filter((el, index) => {
                     return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
-                }); 
+                });
             }
 
             this.addSelectedAttr();
-        }, 
+        },
 
         close() {
             this.show = false;
@@ -350,7 +350,7 @@ export default {
         },
 
         selectAll() {
-            if(this.selected_all) return; 
+            if(this.selected_all) return;
             this.valueList.splice(0, this.valueList.length);
             this.valueList.push({
                 name: 'Все',
