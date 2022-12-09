@@ -14,9 +14,15 @@ class Bitrix {
         if($line == 'hh') {
             $this->link = 'https://infinitys.bitrix24.kz/rest/1/h42tawdhk8sf2m41/';
         }
+
+        // Intellect dialog
+        if($line == 'intellect') {
+            $this->link = 'https://infinitys.bitrix24.kz/rest/2/dnd7yenlqg9mhbnj/';
+        }
+        
     }
 
-    private function updateLead(int $lead_id, array $lead_fields)
+    public function updateLead(int $lead_id, array $lead_fields)
     {
         $fields = [
             'id' =>  $lead_id,
