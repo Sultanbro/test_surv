@@ -88,7 +88,7 @@
                                 class="info__wrapper-item"
                                 :class="{'done': item.status == 1}"
                             >
-                                <a class="info__item-box">
+                                <a :href="`/my-courses?id=${activeCourse.id}`" class="info__item-box">
                                     <i
                                         class="info__item-icon"
                                         :class="{
