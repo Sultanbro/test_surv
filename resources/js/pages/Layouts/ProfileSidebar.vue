@@ -614,6 +614,9 @@ export default {
         max-height: 100%;
         position:relative;
     }
+    .profile__col{
+        flex: 1 1 auto;
+    }
 }
 @media(min-width:1360px){
     .header__profile {
