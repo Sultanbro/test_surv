@@ -415,22 +415,14 @@ $training: #f90;
 }
 
 .balance__table{
-    margin-top: 4rem;
     width: 100%;
+    margin: 4rem 0.1rem 0;
     border-spacing: 0;
 
-    tr{
-        td:first-child,th:first-child{
-            text-align: left;
-            padding-left: 1.5rem;
-            padding-right: 1rem;
-        }
-    }
-    th:first-child{
-        border-radius:1.2rem 0 0 0;
-    }
-    th:last-child{
-        border-radius:0 1.2rem 0 0;
+    td:first-child,th:first-child{
+        text-align: left;
+        padding-left: 1.5rem;
+        padding-right: 1rem;
     }
     th{
         white-space: nowrap;
@@ -443,7 +435,16 @@ $training: #f90;
         padding: 0 1rem;
         color: #62788B;
         border: 1px solid #EBEDF5;
-
+    }
+    th:first-child{
+        border-radius:1.2rem 0 0 0;
+        border: none;
+        outline: 1px solid #EBEDF5;
+    }
+    th:last-child{
+        border-radius:0 1.2rem 0 0;
+        border: none;
+        outline: 1px solid #EBEDF5;
     }
     td{
         min-width:4rem;

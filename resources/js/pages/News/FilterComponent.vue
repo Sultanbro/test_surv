@@ -116,7 +116,7 @@ function isValidDate(date) {
     return date instanceof Date && !isNaN(date);
 }
 
-let moment = require('moment');
+const moment = require('moment');
 
 export default {
     name: "FilterComponent",

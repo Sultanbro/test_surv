@@ -30,7 +30,7 @@
                 <div
                     v-for="(wrap_item, w) in items.slice().reverse()"
                     :key="w"
-                    :data-content="w" 
+                    :data-content="w"
                     class="tab__content-item"
                     :class="{'is-active': w == 0}"
                 >
@@ -74,65 +74,71 @@
                         <div class="kpi__title popup__content-title">
                             Активности KPI
                         </div>
-                        
-                            
 
-                            <table>
+
+
+                            <table class="kpi__activities-table">
 
                                 <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
                                     <tr class="collapsable" :class="{'active': wrap_item.expanded || !editable }" :key="w + 'a'">
-                                        <td :colspan="editable ? 3 : 7">
+                                        <td
+                                            :colspan="editable ? 3 : 7"
+                                            class="kpi__activities-outer"
+                                        >
                                             <div class="table__wrapper">
-                                            <table class="child-table">
-                                                <template v-for="(user, i) in wrap_item.users">
-                                                    <tr :key="i" class="child-row" v-if="editable">
-                                                        <td  @click="user.expanded = !user.expanded" class="pointer px-2">
-                                                            <span class="ml-2 bg-transparent">{{ i + 1 }}</span>
-                                                        </td>
-                                                        <td class="px-2 py-1">{{ user.name }}</td>
-                                                        
-                                                        <template v-if="user.items !== undefined">
-                                                            <td class="px-2" v-for="kpi_item in user.items">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
-                                                        </template>
-                                                        
-                                                    </tr>
-
-                                                    <template v-if="user.items !== undefined">
-                                                        <tr class="collapsable" :class="{'active': true}" :key="i + 'a'">
-                                                            <td :colspan="fields.length + 2">
-                                                                <div class="table__wrapper__second">
-                                                                    <kpi-items
-                                                                        :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
-                                                                        :kpi_id="user.id"
-                                                                        :items="user.items" 
-                                                                        :expanded="true"
-                                                                        :activities="activities"
-                                                                        :groups="groups"
-                                                                        :completed_80="wrap_item.completed_80"
-                                                                        :completed_100="wrap_item.completed_100"
-                                                                        :lower_limit="wrap_item.lower_limit"
-                                                                        :upper_limit="wrap_item.upper_limit"
-                                                                        :editable="false"
-                                                                        :kpi_page="false"
-                                                                        date="date"
-                                                                        @getSum="wrap_item.my_sum = $event"
-                                                                        @recalced="countAvg"
-                                                                    />
-                                                                </div>
+                                                <table class="child-table">
+                                                    <template v-for="(user, i) in wrap_item.users">
+                                                        <tr :key="i" class="child-row" v-if="editable">
+                                                            <td  @click="user.expanded = !user.expanded" class="pointer px-2">
+                                                                <span class="ml-2 bg-transparent">{{ i + 1 }}</span>
                                                             </td>
-                                                        </tr>                
+                                                            <td class="px-2 py-1">{{ user.name }}</td>
+
+                                                            <template v-if="user.items !== undefined">
+                                                                <td class="px-2" v-for="kpi_item in user.items">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
+                                                            </template>
+
+                                                        </tr>
+
+                                                        <template v-if="user.items !== undefined">
+                                                            <tr class="collapsable" :class="{'active': true}" :key="i + 'a'">
+                                                                <td
+                                                                    :colspan="fields.length + 2"
+                                                                    class="kpi__activities-outer"
+                                                                >
+                                                                    <div class="table__wrapper__second">
+                                                                        <kpi-items
+                                                                            :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
+                                                                            :kpi_id="user.id"
+                                                                            :items="user.items"
+                                                                            :expanded="true"
+                                                                            :activities="activities"
+                                                                            :groups="groups"
+                                                                            :completed_80="wrap_item.completed_80"
+                                                                            :completed_100="wrap_item.completed_100"
+                                                                            :lower_limit="wrap_item.lower_limit"
+                                                                            :upper_limit="wrap_item.upper_limit"
+                                                                            :editable="false"
+                                                                            :kpi_page="false"
+                                                                            date="date"
+                                                                            @getSum="wrap_item.my_sum = $event"
+                                                                            @recalced="countAvg"
+                                                                        />
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+
                                                     </template>
-                                                
-                                                </template>
-                                            </table>
+                                                </table>
                                             </div>
                                         </td>
                                     </tr>
                                 </template>
 
-                        
+
                             </table>
-                
+
 
                         <div class="kpi__activities-tip">
                             * сумма премии за выполнение показателей начнет меняться после достижения 80% от целевого значения на месяц
@@ -150,11 +156,11 @@
 import {kpi_fields} from "../../kpi/kpis.js";
 
 export default {
-    name: "PopupKpi", 
+    name: "PopupKpi",
     props: {},
     data: function () {
         return {
-            groups: [], 
+            groups: [],
             editable: false,
             activities: [],
             items: [],
@@ -217,13 +223,13 @@ export default {
             this.loading = true
 
             axios.post('/statistics/kpi', {
-                filters: filters 
+                filters: filters
             }).then(response => {
-                
+
                 // items
                 this.items = response.data.items;
                 this.items = this.items.map(res=> ({...res, my_sum: 0}))
-                
+
                 this.activities = response.data.activities;
                 this.groups = response.data.groups;
 
@@ -235,7 +241,7 @@ export default {
         },
 
         countAvg() {
-            
+
             this.items.forEach(kpi => {
 
                 let kpi_sum = 0;
@@ -259,24 +265,24 @@ export default {
 
                     user.avg = avg;
 
-                    // all kpi sum 
+                    // all kpi sum
                     kpi_sum += Number(avg);
                     kpi_count++;
                 });
 
                 console.log(kpi_count, kpi_sum);
-                /** 
+                /**
                  * count avg completed percent of kpi by users
                  */
                 kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
-                
+
             });
         },
 
         prepareFields() {
             let visible_fields = [],
                 show_fields = this.show_fields;
-            
+
             kpi_fields.forEach((field, i) => {
                 if(this.show_fields[field.key] != undefined
                     && this.show_fields[field.key]
@@ -286,7 +292,7 @@ export default {
             });
 
             this.fields = kpi_fields;
-        }, 
+        },
     }
 };
 </script>
