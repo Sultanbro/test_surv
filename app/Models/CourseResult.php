@@ -543,9 +543,9 @@ class CourseResult extends Model
     /**
      * active courses of User
      */
-    public static function activeCourses() : array
+    public static function activeCourses($user_id) : array
     {
-        $courseIds = self::notFinishedCourses(auth()->id());
+        $courseIds = self::notFinishedCourses($user_id);
         
         /**
          * Has active courses
