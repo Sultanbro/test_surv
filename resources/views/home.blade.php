@@ -12,9 +12,15 @@
 			</div>
 			<div class="menu">
 				<ul class="menu_items">
-					<li>Цены</li>
-					<li>Отзывы</li>
-					<li>Особенности платформы</li>
+					<li>
+						<a class="menu__link" href="#">Цены</a>
+					</li>
+					<li>
+						<a class="menu__link" href="#">Отзывы</a>
+					</li>
+					<li>
+						<a class="menu__link" href="#">Особенности платформы</a>
+					</li>
 				</ul>
 			</div>
 			<div class="autorize">
@@ -42,10 +48,16 @@
 		</nav>
 		<div id="topnav" class="topnav">
 			<div class="mobile_menu">
-				<ul class="menu_items">
-					<li>Цены</li>
-					<li>Отзывы</li>
-					<li>Особенности платформы</li>
+			<ul class="menu_items">
+					<li>
+						<a class="menu__link" href="#">Цены</a>
+					</li>
+					<li>
+						<a class="menu__link" href="#">Отзывы</a>
+					</li>
+					<li>
+						<a class="menu__link" href="#">Особенности платформы</a>
+					</li>
 				</ul>
 			</div>
 			<div class=autorize">
@@ -66,12 +78,12 @@
 			<center><p class="main_title">JOBTRON: удобно для сотрудников, полезно для бизнеса</p></center>	
 			<div class="content_menu_main">
 				<ul class="content_menu">
-					<li><a class="menu_link active" href="#">Личный профиль</a>&nbsp;<img src="question.png" width="15"></li>
-					<li><a class="menu_link" href="#">База знаний</a>&nbsp;<img src="question.png" width="15"></li>
-					<li><a class="menu_link" href="#">KPI</a>&nbsp;<img src="question.png" width="15"></li>
-					<li><a class="menu_link" href="#">Курсы</a>&nbsp;<img src="question.png" width="15"></li>
-					<li><a class="menu_link" href="#">Структура компании</a>&nbsp;<img src="question.png" width="15"></li>
-					<li><a class="menu_link" href="#">Новости и чат</a>&nbsp;<img src="question.png" width="15"></li>
+					<li><a class="menu__link menu__slide-link active" href="#">Личный профиль</a>&nbsp;<img src="question.png" width="15"></li>
+					<li><a class="menu__link menu__slide-link" href="#">База знаний</a>&nbsp;<img src="question.png" width="15"></li>
+					<li><a class="menu__link menu__slide-link" href="#">KPI</a>&nbsp;<img src="question.png" width="15"></li>
+					<li><a class="menu__link menu__slide-link" href="#">Курсы</a>&nbsp;<img src="question.png" width="15"></li>
+					<li><a class="menu__link menu__slide-link" href="#">Структура компании</a>&nbsp;<img src="question.png" width="15"></li>
+					<li><a class="menu__link menu__slide-link" href="#">Новости и чат</a>&nbsp;<img src="question.png" width="15"></li>
 				</ul>
 			</div>
 		</div>
@@ -351,27 +363,39 @@
 			</div>
 		</div>
 	</body>
-	<footer>
+	<footer class="footer">
 		<div class="footer_content">
 			<div class="footer_logo-wrapper">
 				<img class="footer_logo" src="footer_logo.png">
 			</div>
-			<div>
-				<p>Цены</p>
-				<p>Отзывы</p>
-				<p>Особенности платформы</p>
+			<ul class="menu">
+				<li class="menu__item">
+					<a class="menu__link" href="#">Цены</a>
+				</li>
+				<li class="menu__item">
+					<a class="menu__link" href="#">Отзывы</a>
+				</li class="menu__item">
+				<li class="menu__item">
+					<a class="menu__link" href="#">Особенности платформы</a>
+				</li>
 				<br>
 				<p>Подпишитесь на новости:</p>
 				<p class="footer_icons1"><img src="telegram.svg"><img src="instagram/instagram.svg"><img src="youtube.svg"></p>
-			</div>
-			<div>
-				<p>Документы</p>
-				<p>Информация об оплате</p>
-				<p>Лицензионное соглашение</p>
+			</ul>
+			<ul class="menu">
+				<li class="menu__item">
+					<a class="menu__link" href="#">Документы</a>
+				</li>
+				<li class="menu__item">
+					<a class="menu__link" href="#">Информация об оплате</a>
+				</li>
+				<li class="menu__item">
+					<a class="menu__link" href="#">Лицензионное соглашение</a>
+				</li>
 				<br>
 				<p>Способы оплаты:</p>
 				<div class="footer_icons1"><img src="footer_icons2/mir.svg"><img src="footer_icons2/visa.svg"><img src="footer_icons2/money.svg"></div>
-			</div>
+			</ul>
 			<div>
 				<p>Отдел продаж:</p>
 				<p>8 777 788 08 00</p>
@@ -383,7 +407,9 @@
 		</div>
 		<hr class="footer_line"/>
 		<div class="license">
-			<div><p>© 2022 «Jobton», Все права защищены</p></div>
+			<div>
+				<p>© 2022 «Jobton», Все права защищены</p>
+			</div>
 			<div>
 				<p>Политика конфиденциальности</p>
 			</div>

@@ -15,19 +15,31 @@ html, body {
 }
 
 footer{
-	height: 341px;
+	height: 358px;
 	background: #424D53;
 	color: #FFFFFF;
 }
 
-.license{
+li {
+    list-style-type: none;
+   }
+
+a {
+	text-decoration: none;
+}
+
+a, select, button {
+	cursor: pointer;
+}
+
+.license {
 	display: flex;
 	justify-content: space-between;
 	padding: 0px 145px;
 	margin-top: -10px;
 }
 
-.license > div{
+.license > div {
 	display: flex;
 }
 
@@ -237,9 +249,22 @@ footer{
 	font-weight: 700;
 }
 
-.menu_link{
-	padding: 12px 0;
+.menu__item {
+	margin-bottom: 16px;
+
+}
+
+.footer .menu__link {
+	color: #ffffff;
+}
+
+.menu__link {
 	text-decoration: none;
+	color: black;
+}
+
+.menu__slide-link {
+	padding: 12px 0;
 }
 
 .content_1{
