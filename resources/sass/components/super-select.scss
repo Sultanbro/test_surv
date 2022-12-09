@@ -148,8 +148,11 @@
         height: 300px;
         overflow-x: hidden;
         overflow-y: auto;
-        @media screen and (max-width: 1200px){
+        @media screen and (max-height: 700px){
             height: 200px;
+        }
+        @media screen and (max-height: 500px){
+            height: 150px;
         }
         .option {
             padding: 5px 15px;

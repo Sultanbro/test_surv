@@ -1,9 +1,12 @@
 <template>
     <div id="awards-page">
-        <BButton variant="success" class="mb-2" @click="addAwardButtonClickHandler"
-        >Создать награду
-        </BButton
-        >
+        <BButton variant="success" class="mb-2" @click="addAwardButtonClickHandler">Создать награду</BButton>
+
+<!--        <BButton variant="danger" class="mb-2" @click="modalRegenerate = !modalRegenerate">Регенерация</BButton>-->
+<!--        <b-modal hide-footer no-close-on-backdrop no-close-on-esc no-enforce-focus v-model="modalRegenerate" size="lg" centered title="Принудительно обновление всех сертификатов по курсу">-->
+<!--            <RegenerateCertificates/>-->
+<!--        </b-modal>-->
+
         <div class="table-container" v-if="tableItems.length > 0">
             <BTableSimple
                     id="awards-table"
@@ -48,7 +51,6 @@
             <hr class="my-4">
             <h4 class="no-awards-title">Пока нет ни одного сертификата</h4>
         </div>
-        <!--        <Draggable/>-->
 
         <EditAwardSidebar
                 v-if="showEditAwardSidebar"
@@ -69,14 +71,15 @@
 
 <script>
     import EditAwardSidebar from "./EditAwardSidebar.vue";
-
+    // import RegenerateCertificates from "./types/RegenerateCertificates";
     export default {
         name: "Awards",
         components: {
-            EditAwardSidebar
+            EditAwardSidebar,
         },
         data() {
             return {
+                modalRegenerate: false,
                 modal: false,
                 itemRemove: null,
                 showEditAwardSidebar: false,
