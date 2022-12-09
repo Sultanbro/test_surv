@@ -19,7 +19,8 @@
                                 <span v-else>0</span>
                                 из
                                 <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
-                                <span class="all" v-else>{{award.available.length}}</span>
+                                <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                                <span class="all" v-else>0</span>
                             </div>
 
                             <BRow v-if="award.hasOwnProperty('my')">
@@ -35,10 +36,13 @@
 
                         <b-tab no-body title="Доступные номинации">
                             <div class="certificates__title">
-                                Сертификатов: <span
-                                    class="current">{{award.available.length}}</span> из
+                                Сертификатов:
+                                <span class="current" v-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                                <span v-else>0</span>
+                                из
                                 <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
-                                <span class="all" v-else>{{award.available.length}}</span>
+                                <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                                <span class="all" v-else>0</span>
                             </div>
 
                             <BRow v-if="award.hasOwnProperty('available')">
@@ -79,7 +83,8 @@
                                <span v-else>0</span>
                                из
                                <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
-                               <span class="all" v-else>{{award.available.length}}</span>
+                               <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                               <span class="all" v-else>0</span>
                            </div>
 
                            <BRow v-if="award.hasOwnProperty('my')">
@@ -95,10 +100,13 @@
 
                        <b-tab no-body title="Доступные сертификаты за курсы">
                            <div class="certificates__title">
-                               Сертификатов: <span
-                                   class="current">{{award.available.length}}</span> из
+                               Сертификатов:
+                               <span class="current" v-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                               <span v-else>0</span>
+                               из
                                <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
-                               <span class="all" v-else>{{award.available.length}}</span>
+                               <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                               <span class="all" v-else>0</span>
                            </div>
 
 
