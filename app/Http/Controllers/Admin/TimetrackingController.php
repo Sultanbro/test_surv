@@ -343,11 +343,6 @@ class TimetrackingController extends Controller
 
         } 
 
-        // Cтраница из Базы знаний 
-        // Показывается при начале дня Сотрудника
-        // Сотрудник обязан читать минимум 60 сек
-        $corp_book = $user->getCorpbook();
-
         // Если есть конфликтное сообщение
         if ($message != '') {
             return response()->json([
@@ -358,11 +353,13 @@ class TimetrackingController extends Controller
         }
 
         return response()->json([
+            // status Started or Stopped day
             'status' => isset($status) ? $status : 'stopped',
-            'corp_book' => [
-                'has' => $corp_book ? true : false,
-                'page' => $corp_book,
-            ],
+
+            // Cтраница из Базы знаний 
+            // Показывается при начале дня Сотрудника
+            // Сотрудник обязан читать минимум 60 сек
+            'corp_book' => $user->getCorpbook()
         ]);
 
     }
