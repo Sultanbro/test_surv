@@ -7,6 +7,7 @@ use App\Http\Requests\Birthday\BirthdayRequest;
 use App\Http\Requests\Birthday\BirthdaySendGiftRequest;
 use App\Http\Resources\Birthday\BirthdayCollection;
 use App\Http\Resources\Responses\JsonSuccessResponse;
+use App\Salary;
 use App\Service\PaginationService;
 use App\User;
 use Carbon\Carbon;
@@ -16,12 +17,17 @@ class BirthdayController extends Controller
 {
     public function index(BirthdayRequest $request, PaginationService $paginationService): JsonResponse
     {
-        $dateStart = Carbon::today()->format('m-d');
-        $dateEnd = Carbon::today()->addMonth()->format('m-d');
 
-        $birthdays = User::whereRaw(
-            'date_format(`birthday`, \'%m-%d\') BETWEEN \'' . $dateStart . '\' AND \'' . $dateEnd . '\''
-        )->oldest(\DB::raw('date_format(`birthday`, \'%m-%d\')'));
+        $date = now();
+
+        $birthdays =User::whereMonth('birthday','>', $date->month)
+
+            ->orWhere(function ($query) use ($date) {
+                $query->whereMonth('birthday', '=', $date->month)
+                    ->whereDay('birthday', '>=', $date->day);
+            })
+
+            ->oldest(\DB::raw('date_format(`birthday`, \'%m-%d\')'));
 
         return response()->json(
             new JsonSuccessResponse(
@@ -35,23 +41,37 @@ class BirthdayController extends Controller
 
     public function sendGift(BirthdaySendGiftRequest $request, User $user): JsonResponse
     {
-        $params = $request->validated();
         $today = today();
-        $avansParams = $params + [
+        $avans =   Salary::where('user_id', \Auth::id())
+            ->whereYear('date', $today->year)
+            ->whereMonth('date', $today->month)
+            ->whereDay('date', $today->day)
+            ->first()
+            ->paid + $request->input('amount') ?? 0;
+        $bonus = Salary::where('user_id',$user->id)
+            ->whereYear('date', $today->year)
+            ->whereMonth('date', $today->month)
+            ->whereDay('date', $today->day)
+            ->first()
+            ->bonus  + $request->input('amount') ?? 0;
+
+        $avansParams = [
             'user_id' => \Auth::id(),
             'type' => 'avans',
             'day' =>  $today->day,
             'month' => $today->month,
             'year' => $today->year,
-            'comment' =>'Аванс в виде подаренной суммы на день рождения ' . $user->full_name,
+                'amount' =>  $avans,
+            'comment' =>'Аванс в виде подаренной суммы на день рождения',
         ];
-        $bonusParams = $params + [
+        $bonusParams =  [
             'user_id' => $user->id,
             'type' => 'bonus',
             'day' =>  $today->day,
             'month' => $today->month,
             'year' => $today->year,
-            'comment' =>'Бонус в виде подарка на день рождения от ' . \Auth::user()->full_name,
+                'amount' =>  $bonus,
+                'comment' =>'Бонус в виде подарка на день рождения',
         ];
 
 

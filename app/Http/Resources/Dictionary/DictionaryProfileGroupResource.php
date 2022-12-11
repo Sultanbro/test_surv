@@ -16,8 +16,8 @@ class DictionaryProfileGroupResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'name' => $this->resource->name,
-            'employees' => DictionaryEmployeeResource::collection($this->resource->profileGroupUsers)
-                ->toArray($request)
+//            'employees' => DictionaryEmployeeResource::collection($this->resource->profileGroupUsers)
+//                ->toArray($request)
         ];
     }
 }
