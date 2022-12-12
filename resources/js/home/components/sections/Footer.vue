@@ -101,8 +101,6 @@ export default {
 }
 
 .jFooter-contact {
-  justify-content: flex-start;
-  align-items: flex-start;
   margin: -0.25rem 0 0.75rem;
 }
 
@@ -179,7 +177,7 @@ export default {
   .jFooter-cols {
     display: flex;
     flex-flow: row wrap;
-    align-items: start;
+    align-items: flex-start;
   }
 }
 

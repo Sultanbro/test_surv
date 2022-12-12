@@ -2,7 +2,7 @@
   <nav id="jNav">
     <div class="section-content jNav-content">
       <a href="" class="jNav-logo">
-        <img class="jNav-logo-img" src="../../assets/img/logo.svg" alt="">
+        <img class="jNav-logo-img" src="../../assets/img/logo.svg" alt="logo-img">
       </a>
       <div
         class="jNav-menu"

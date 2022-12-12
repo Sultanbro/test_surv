@@ -1268,7 +1268,7 @@ var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_4___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_footer_visa_svg__WEBPACK_IMPORTED_MODULE_6__["default"]);
 var ___CSS_LOADER_URL_REPLACEMENT_5___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_footer_ym_svg__WEBPACK_IMPORTED_MODULE_7__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jFooter {\n  width: 100%;\n  padding-top: 2rem;\n  background: #424d53;\n  color: #fff;\n}\n#jFooter a {\n  color: #fff;\n  text-decoration: none;\n}\n#jFooter a:hover {\n  text-decoration: underline;\n}\n.jFooter-separator {\n  border-top: 0.0625rem solid #72c6f9;\n}\n.jFooter-cols {\n  padding-bottom: 2rem;\n}\n.jFooter-sub {\n  margin: 2rem 0 0.5rem;\n}\n.jFooter-contact {\n  justify-content: flex-start;\n  align-items: flex-start;\n  margin: -0.25rem 0 0.75rem;\n}\n.jFooter-social {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n}\n.jFooter-social-link {\n  display: inline-block;\n  background-size: cover;\n}\n.jFooter-social-tg {\n  width: 1.5rem;\n  height: 1.5rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jFooter-social-ig {\n  width: 1.25rem;\n  height: 1.25rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n}\n.jFooter-social-yt {\n  width: 2rem;\n  height: 2rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n}\n.jFooter-pay {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  padding-top: 0.5rem;\n}\n.jFooter-pay-link {\n  display: inline-block;\n  background-size: cover;\n}\n.jFooter-pay-mir {\n  width: 3.4375rem;\n  height: 0.9375rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n}\n.jFooter-pay-visa {\n  width: 2.9375rem;\n  height: 0.9375rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n}\n.jFooter-pay-ym {\n  width: 4.75rem;\n  height: 1rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_5___ + ");\n}\n.jFooter-rules {\n  display: flex;\n  order: 2;\n  gap: 1rem;\n}\n.jFooter-rules a {\n  display: block;\n}\n@media screen and (min-width 780px) {\n.jFooter-cols {\n    display: flex;\n    flex-flow: row wrap;\n    align-items: start;\n}\n}\n.jFooter-col {\n  flex: 0 0 25%;\n}\n.jFooter-bottom {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  white-space: nowrap;\n}\n.jFooter-copy {\n  order: 1;\n}\n@media screen and (min-width 1260px) {\n.jFooter-cols {\n    flex-flow: row nowrap;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jFooter {\n  width: 100%;\n  padding-top: 2rem;\n  background: #424d53;\n  color: #fff;\n}\n#jFooter a {\n  color: #fff;\n  text-decoration: none;\n}\n#jFooter a:hover {\n  text-decoration: underline;\n}\n.jFooter-separator {\n  border-top: 0.0625rem solid #72c6f9;\n}\n.jFooter-cols {\n  padding-bottom: 2rem;\n}\n.jFooter-sub {\n  margin: 2rem 0 0.5rem;\n}\n.jFooter-contact {\n  margin: -0.25rem 0 0.75rem;\n}\n.jFooter-social {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n}\n.jFooter-social-link {\n  display: inline-block;\n  background-size: cover;\n}\n.jFooter-social-tg {\n  width: 1.5rem;\n  height: 1.5rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jFooter-social-ig {\n  width: 1.25rem;\n  height: 1.25rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n}\n.jFooter-social-yt {\n  width: 2rem;\n  height: 2rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n}\n.jFooter-pay {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  padding-top: 0.5rem;\n}\n.jFooter-pay-link {\n  display: inline-block;\n  background-size: cover;\n}\n.jFooter-pay-mir {\n  width: 3.4375rem;\n  height: 0.9375rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n}\n.jFooter-pay-visa {\n  width: 2.9375rem;\n  height: 0.9375rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n}\n.jFooter-pay-ym {\n  width: 4.75rem;\n  height: 1rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_5___ + ");\n}\n.jFooter-rules {\n  display: flex;\n  order: 2;\n  gap: 1rem;\n}\n.jFooter-rules a {\n  display: block;\n}\n@media screen and (min-width 780px) {\n.jFooter-cols {\n    display: flex;\n    flex-flow: row wrap;\n    align-items: flex-start;\n}\n}\n.jFooter-col {\n  flex: 0 0 25%;\n}\n.jFooter-bottom {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  white-space: nowrap;\n}\n.jFooter-copy {\n  order: 1;\n}\n@media screen and (min-width 1260px) {\n.jFooter-cols {\n    flex-flow: row nowrap;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4117,7 +4117,7 @@ var render = function () {
       _c("div", { staticClass: "jSec3-block-image" }, [
         _c("img", {
           staticClass: "jSec3-block-img",
-          attrs: { alt: _vm.alt, src: _vm.img },
+          attrs: { alt: _vm.alt, src: __webpack_require__(/*! ../../assets/img/s3-b1.png */ "./resources/js/home/assets/img/s3-b1.png") },
         }),
       ]),
       _vm._v(" "),
@@ -4418,7 +4418,7 @@ var staticRenderFns = [
     return _c("a", { staticClass: "jNav-logo", attrs: { href: "" } }, [
       _c("img", {
         staticClass: "jNav-logo-img",
-        attrs: { src: __webpack_require__(/*! ../../assets/img/logo.svg */ "./resources/js/home/assets/img/logo.svg"), alt: "" },
+        attrs: { src: __webpack_require__(/*! ../../assets/img/logo.svg */ "./resources/js/home/assets/img/logo.svg"), alt: "logo-img" },
       }),
     ])
   },
@@ -4913,32 +4913,19 @@ var render = function () {
         "div",
         { staticClass: "jSec3-blocks" },
         [
-          _c(
-            "S3Block",
-            {
-              staticClass: "jSec3-block-1",
-              attrs: { img: __webpack_require__(/*! ../../assets/img/s3-b1.png */ "./resources/js/home/assets/img/s3-b1.png") },
-            },
-            [
-              _c("h3", { staticClass: "jSec3-block-title" }, [
-                _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-title"))),
-              ]),
-              _vm._v(" "),
-              _c("p", { staticClass: "jSec3-block-text" }, [
-                _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-text"))),
-              ]),
-            ]
-          ),
+          _c("S3Block", { staticClass: "jSec3-block-1" }, [
+            _c("h3", { staticClass: "jSec3-block-title" }, [
+              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-title"))),
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "jSec3-block-text" }, [
+              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-text"))),
+            ]),
+          ]),
           _vm._v(" "),
           _c(
             "S3Block",
-            {
-              staticClass: "jSec3-block-2",
-              attrs: {
-                img: __webpack_require__(/*! ../../assets/img/s3-b1.png */ "./resources/js/home/assets/img/s3-b1.png"),
-                right: true,
-              },
-            },
+            { staticClass: "jSec3-block-2", attrs: { right: true } },
             [
               _c("h3", { staticClass: "jSec3-block-title" }, [
                 _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b2-title"))),
@@ -4950,22 +4937,15 @@ var render = function () {
             ]
           ),
           _vm._v(" "),
-          _c(
-            "S3Block",
-            {
-              staticClass: "jSec3-block-3",
-              attrs: { img: __webpack_require__(/*! ../../assets/img/s3-b1.png */ "./resources/js/home/assets/img/s3-b1.png") },
-            },
-            [
-              _c("h3", { staticClass: "jSec3-block-title" }, [
-                _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-title"))),
-              ]),
-              _vm._v(" "),
-              _c("p", { staticClass: "jSec3-block-text" }, [
-                _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-text"))),
-              ]),
-            ]
-          ),
+          _c("S3Block", { staticClass: "jSec3-block-3" }, [
+            _c("h3", { staticClass: "jSec3-block-title" }, [
+              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-title"))),
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "jSec3-block-text" }, [
+              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-text"))),
+            ]),
+          ]),
         ],
         1
       ),
