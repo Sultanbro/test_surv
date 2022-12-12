@@ -4117,7 +4117,10 @@ var render = function () {
       _c("div", { staticClass: "jSec3-block-image" }, [
         _c("img", {
           staticClass: "jSec3-block-img",
-          attrs: { alt: _vm.alt, src: __webpack_require__(/*! ../../assets/img/s3-b1.png */ "./resources/js/home/assets/img/s3-b1.png") },
+          attrs: {
+            alt: _vm.alt,
+            src: (__webpack_require__(/*! ../../assets/img/s3-b1.png */ "./resources/js/home/assets/img/s3-b1.png")["default"]),
+          },
         }),
       ]),
       _vm._v(" "),
@@ -4150,7 +4153,17 @@ var render = function () {
   return _c("footer", { attrs: { id: "jFooter" } }, [
     _c("div", { staticClass: "section-content" }, [
       _c("div", { staticClass: "jFooter-cols" }, [
-        _vm._m(0),
+        _c("div", { staticClass: "jFooter-col" }, [
+          _c("a", { staticClass: "jNav-logo", attrs: { href: "" } }, [
+            _c("img", {
+              staticClass: "jNav-logo-img",
+              attrs: {
+                alt: "",
+                src: (__webpack_require__(/*! ../../assets/img/footer-logo.svg */ "./resources/js/home/assets/img/footer-logo.svg")["default"]),
+              },
+            }),
+          ]),
+        ]),
         _vm._v(" "),
         _c("div", { staticClass: "jFooter-col" }, [
           _c("p", [_vm._v(_vm._s(_vm.$lang(_vm.lang, "footer-prices")))]),
@@ -4163,7 +4176,7 @@ var render = function () {
             _vm._v(_vm._s(_vm.$lang(_vm.lang, "footer-subscribe"))),
           ]),
           _vm._v(" "),
-          _vm._m(1),
+          _vm._m(0),
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "jFooter-col" }, [
@@ -4177,7 +4190,7 @@ var render = function () {
             _vm._v(_vm._s(_vm.$lang(_vm.lang, "footer-pay"))),
           ]),
           _vm._v(" "),
-          _vm._m(2),
+          _vm._m(1),
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "jFooter-col" }, [
@@ -4230,19 +4243,6 @@ var render = function () {
   ])
 }
 var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "jFooter-col" }, [
-      _c("a", { staticClass: "jNav-logo", attrs: { href: "" } }, [
-        _c("img", {
-          staticClass: "jNav-logo-img",
-          attrs: { alt: "", src: __webpack_require__(/*! ../../assets/img/footer-logo.svg */ "./resources/js/home/assets/img/footer-logo.svg") },
-        }),
-      ]),
-    ])
-  },
   function () {
     var _vm = this
     var _h = _vm.$createElement
@@ -4309,7 +4309,15 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c("nav", { attrs: { id: "jNav" } }, [
     _c("div", { staticClass: "section-content jNav-content" }, [
-      _vm._m(0),
+      _c("a", { staticClass: "jNav-logo", attrs: { href: "" } }, [
+        _c("img", {
+          staticClass: "jNav-logo-img",
+          attrs: {
+            src: (__webpack_require__(/*! ../../assets/img/logo.svg */ "./resources/js/home/assets/img/logo.svg")["default"]),
+            alt: "logo-img",
+          },
+        }),
+      ]),
       _vm._v(" "),
       _c(
         "div",
@@ -4410,19 +4418,7 @@ var render = function () {
     ]),
   ])
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("a", { staticClass: "jNav-logo", attrs: { href: "" } }, [
-      _c("img", {
-        staticClass: "jNav-logo-img",
-        attrs: { src: __webpack_require__(/*! ../../assets/img/logo.svg */ "./resources/js/home/assets/img/logo.svg"), alt: "logo-img" },
-      }),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -4780,7 +4776,15 @@ var render = function () {
                 ),
               ]),
               _vm._v(" "),
-              _vm._m(0),
+              _c("div", { staticClass: "jSec1-profile-banner" }, [
+                _c("img", {
+                  staticClass: "jSec1-profile-banner-img",
+                  attrs: {
+                    src: (__webpack_require__(/*! ../../assets/img/s1-profile-banner.png */ "./resources/js/home/assets/img/s1-profile-banner.png")["default"]),
+                    alt: "",
+                  },
+                }),
+              ]),
             ]
           ),
           _vm._v(" "),
@@ -4800,22 +4804,7 @@ var render = function () {
     ]),
   ])
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "jSec1-profile-banner" }, [
-      _c("img", {
-        staticClass: "jSec1-profile-banner-img",
-        attrs: {
-          src: __webpack_require__(/*! ../../assets/img/s1-profile-banner.png */ "./resources/js/home/assets/img/s1-profile-banner.png"),
-          alt: "",
-        },
-      }),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 

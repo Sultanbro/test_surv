@@ -1,7 +1,7 @@
 <template>
   <div :class="{'jSec3-block-right': right}" class="jSec3-block">
     <div class="jSec3-block-image">
-      <img :alt="alt" src="../../assets/img/s3-b1.png" class="jSec3-block-img">
+      <img :alt="alt" :src="require('../../assets/img/s3-b1.png').default" class="jSec3-block-img">
     </div>
     <div class="jSec3-block-content">
       <slot/>

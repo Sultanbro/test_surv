@@ -4,7 +4,7 @@
       <div class="jFooter-cols">
         <div class="jFooter-col">
           <a class="jNav-logo" href="">
-            <img alt="" class="jNav-logo-img" src="../../assets/img/footer-logo.svg">
+            <img alt="" class="jNav-logo-img" :src="require('../../assets/img/footer-logo.svg').default">
           </a>
         </div>
         <div class="jFooter-col">

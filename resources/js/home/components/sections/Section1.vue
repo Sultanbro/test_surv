@@ -98,7 +98,7 @@
               <a href="javascript:void(0)" class="jSec1-profile-button jButton">{{ $lang(lang, 's1-for-free') }}</a>
             </div>
             <div class="jSec1-profile-banner">
-              <img src="../../assets/img/s1-profile-banner.png" alt="" class="jSec1-profile-banner-img">
+              <img :src="require('../../assets/img/s1-profile-banner.png').default" alt="" class="jSec1-profile-banner-img">
             </div>
           </div>
           <div class="jSec1-tabs-item" v-show="activeTab === 'news'"></div>
