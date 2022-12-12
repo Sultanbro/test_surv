@@ -129,7 +129,7 @@
         <b-modal v-model="showCorpBookPage" title="Н" size="xl" class="modalle" hide-footer hide-header no-close-on-backdrop>
             <div class="corpbook" v-if="corp_book_page !== undefined && corp_book_page !== null">
                 <div class="inner">
-                    <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей корпоративной книги</h5>
+                    <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей базы знаний</h5>
                     <h3 class="text-center">{{ corp_book_page.title }}</h3>
 
                     <div v-html="corp_book_page.text"></div>
