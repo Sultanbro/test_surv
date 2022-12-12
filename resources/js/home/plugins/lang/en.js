@@ -3,6 +3,7 @@ export default {
   reviews: 'Reviews',
   features: 'Platform Features',
   auth: 'Login',
+  register: 'Register',
 
   's1-header': 'JOBTRON: convenient for employees, useful for business',
   's1-profile': 'Personal Profile',

@@ -369,6 +369,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -387,8 +393,13 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      menu: false
+      menu: false,
+      csrf: ''
     };
+  },
+  mounted: function mounted() {
+    var _document$getElementB;
+    this.csrf = (_document$getElementB = document.getElementById('csrf')) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.value;
   }
 });
 
@@ -463,14 +474,14 @@ __webpack_require__.r(__webpack_exports__);
       activeItem: 0,
       prefix: 'https://www.youtube.com/embed/',
       items: [{
-        thumbnail: 'https://i3.ytimg.com/vi/1WHUFpcDqPI/maxresdefault.jpg',
-        video: '1WHUFpcDqPI'
+        thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+        video: 'LQtmJnljYyk'
       }, {
-        thumbnail: 'https://i3.ytimg.com/vi/RRq4-uktHiI/maxresdefault.jpg',
-        video: 'RRq4-uktHiI'
+        thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+        video: 'LQtmJnljYyk'
       }, {
-        thumbnail: 'https://i3.ytimg.com/vi/35VEHme3p94/maxresdefault.jpg',
-        video: '35VEHme3p94'
+        thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+        video: 'LQtmJnljYyk'
       }]
     };
   }
@@ -900,6 +911,7 @@ __webpack_require__.r(__webpack_exports__);
   reviews: 'Reviews',
   features: 'Platform Features',
   auth: 'Login',
+  register: 'Register',
   's1-header': 'JOBTRON: convenient for employees, useful for business',
   's1-profile': 'Personal Profile',
   's1-db': 'Knowledge base',
@@ -983,7 +995,8 @@ __webpack_require__.r(__webpack_exports__);
   prices: 'Цены',
   reviews: 'Отзывы',
   features: 'Особенности платформы',
-  auth: 'Авторизоваться',
+  auth: 'Вход',
+  register: 'Регистрация',
   's1-header': 'JOBTRON: удобно для сотрудников, полезно для бизнеса',
   's1-profile': 'Личный профиль',
   's1-db': 'База знаний',
@@ -1296,7 +1309,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_user_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  width: 100vw;\n  position: sticky;\n  z-index: 9000;\n  top: 0;\n  left: 0;\n  right: 0;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.jNav-logo-img {\n  width: 12.25rem;\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: none;\n  max-width: 85vw;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: column nowrap;\n  position: fixed;\n  z-index: 9005;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  background: #fff;\n  box-shadow: 0 0 0.125rem rgba(0, 0, 0, 0.25);\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2.625rem;\n  height: 2.625rem;\n  border-radius: 2.625rem;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-auth {\n    margin-left: 2.5rem;\n}\n.jNav-menu-user {\n    margin-left: 2.5rem;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  width: 100vw;\n  position: sticky;\n  z-index: 9000;\n  top: 0;\n  left: 0;\n  right: 0;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.jNav-logo-img {\n  width: 12.25rem;\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: none;\n  max-width: 85vw;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: column nowrap;\n  position: fixed;\n  z-index: 9005;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  background: #fff;\n  box-shadow: 0 0 0.125rem rgba(0, 0, 0, 0.25);\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2.625rem;\n  height: 2.625rem;\n  border: none;\n  border-radius: 2.625rem;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-auth {\n    margin-left: 2.5rem;\n}\n.jNav-menu-user {\n    margin-left: 2.5rem;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4370,16 +4383,38 @@ var render = function () {
                 "span",
                 { staticClass: "jNav-menu-auth" },
                 [
-                  _c("NavbarButton", {
-                    attrs: { lang: _vm.lang, href: "#auth", text: "auth" },
-                  }),
-                  _vm._v(" "),
-                  _c("a", {
-                    staticClass: "jNav-menu-user",
-                    attrs: { href: "#user" },
-                  }),
+                  _vm.csrf
+                    ? _c(
+                        "form",
+                        { attrs: { method: "POST", action: "/logout" } },
+                        [
+                          _c("input", {
+                            attrs: { type: "hidden", name: "csrf" },
+                            domProps: { value: _vm.csrf },
+                          }),
+                          _vm._v(" "),
+                          _c("button", { staticClass: "jNav-menu-user" }),
+                        ]
+                      )
+                    : [
+                        _c("NavbarButton", {
+                          attrs: {
+                            lang: _vm.lang,
+                            href: "/login",
+                            text: "auth",
+                          },
+                        }),
+                        _vm._v(" "),
+                        _c("NavbarButton", {
+                          attrs: {
+                            lang: _vm.lang,
+                            href: "/register",
+                            text: "register",
+                          },
+                        }),
+                      ],
                 ],
-                1
+                2
               ),
             ]),
             _vm._v(" "),
