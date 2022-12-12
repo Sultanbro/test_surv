@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\TimeTrack;
 
-use App\DTO\TimeTrackSettingDTO;
+use App\DTO\TimeTrack\StoreSettingDTO;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
-class TimeTrackSettingRequest extends FormRequest
+class StoreSettingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,16 +26,19 @@ class TimeTrackSettingRequest extends FormRequest
     public function rules()
     {
         return [
-            'tabId' => ['required', 'numeric', 'min:1', 'max:7']
+            'position' => ['required', 'string']
         ];
     }
 
-    public function toDto(): TimeTrackSettingDTO
+    /**
+     * @return StoreSettingDTO
+     */
+    public function toDto(): StoreSettingDTO
     {
-        $transferData = $this->validated();
+        $validated = $this->validated();
 
-        $tabId = Arr::get($transferData, 'tabId');
+        $position = Arr::get($validated, 'position');
 
-        return TimeTrackSettingDTO::toArray($tabId);
+        return new StoreSettingDTO($position);
     }
 }

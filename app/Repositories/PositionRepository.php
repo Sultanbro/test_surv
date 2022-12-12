@@ -38,4 +38,24 @@ class PositionRepository extends CoreRepository
     {
         return $this->model()->select('position as name', 'id')->get()->toArray();
     }
+
+    /**
+     * @param string $positionName
+     * @return mixed
+     */
+    public function createPosition(string $positionName)
+    {
+        return $this->model()->create([
+            'position' => $positionName
+        ]);
+    }
+
+    /**
+     * @param int $positionId
+     * @return mixed
+     */
+    public function deletePosition(int $positionId)
+    {
+        return $this->model()->findOrFail($positionId)->delete();
+    }
 }

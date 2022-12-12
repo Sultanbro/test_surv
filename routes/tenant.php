@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\QualityController;
 use App\Http\Controllers\Admin\QuartalBonusController;
 use App\Http\Controllers\Admin\SalaryController;
+use App\Http\Controllers\Admin\TimeTrack\TimeTrackSettingController;
 use App\Http\Controllers\Admin\TimetrackingController;
 use App\Http\Controllers\Admin\TopController;
 use App\Http\Controllers\Admin\TraineeController;
@@ -407,7 +408,8 @@ Route::middleware([
     Route::any('/timetracking/info', [TimetrackingController::class, 'info']);
     Route::any('/timetracking/set-day', [TimetrackingController::class, 'setDay']);
     Route::any('/timetracking/history', [TimetrackingController::class, 'getHistory']);
-    Route::any('/timetracking/settings', [TimetrackingController::class, 'settings']);
+    Route::any('/timetracking/settings-new', [TimeTrackSettingController::class, 'setting']);
+    Route::any('/timetracking/settings', [TimeTrackSettingController::class, 'setting']);
     Route::any('/timetracking/settings/positions', [TimetrackingController::class, 'positions']);
     Route::any('/timetracking/settings/positions/get', [TimetrackingController::class, 'getPosition']);
     Route::any('/timetracking/settings/positions/save', [TimetrackingController::class, 'savePositions']);
@@ -415,8 +417,8 @@ Route::middleware([
     Route::post('/timetracking/settings/positions/delete', [TimetrackingController::class, 'deletePosition']);
     Route::post('timetracking/settings/get_time_addresses', [TimetrackingController::class, 'getTimeAddresses']);
     Route::post('timetracking/settings/save_time_addresses', [TimetrackingController::class, 'saveTimeAddresses']);
-    Route::any('/timetracking/settings/add', [TimetrackingController::class, 'addsettings']);
-    Route::any('/timetracking/settings/delete', [TimetrackingController::class, 'deletesettings']);
+    Route::any('/timetracking/settings/add', [TimeTrackSettingController::class, 'create']);
+    Route::any('/timetracking/settings/delete', [TimeTrackSettingController::class, 'delete']);
     Route::any('/timetracking/user/save', [TimetrackingController::class, 'saveprofile']);
     Route::post('/timetracking/settings/notifications/update', [TimetrackingController::class, 'updateNotificationTemplate']);
     Route::get('/timetracking/settings/notifications/get', [TimetrackingController::class, 'getNotificationTemplates']);

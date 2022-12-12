@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTO;
+namespace App\DTO\TimeTrack;
 
-class TimeTrackSettingDTO
+class SettingDTO
 {
     public function __construct(
         public int $tab
