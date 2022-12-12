@@ -1,0 +1,159 @@
+<template>
+  <footer id="jFooter">
+    <div class="section-content">
+      <div class="jFooter-cols">
+        <div class="jFooter-col">
+          <a href="" class="jNav-logo">
+            <img class="jNav-logo-img" src="@/assets/footer-logo.svg" alt="">
+          </a>
+        </div>
+        <div class="jFooter-col">
+          <p>{{ $lang(lang, 'footer-prices') }}</p>
+          <p>{{ $lang(lang, 'footer-reviews') }}</p>
+          <p>{{ $lang(lang, 'footer-platform') }}</p>
+          <p class="jFooter-sub">{{ $lang(lang, 'footer-subscribe') }}</p>
+          <div class="jFooter-social">
+            <a href="#" class="jFooter-social-link jFooter-social-tg"></a>
+            <a href="#" class="jFooter-social-link jFooter-social-ig"></a>
+            <a href="#" class="jFooter-social-link jFooter-social-yt"></a>
+          </div>
+        </div>
+        <div class="jFooter-col">
+          <p>{{ $lang(lang, 'footer-docs') }}</p>
+          <p>{{ $lang(lang, 'footer-info') }}</p>
+          <p>{{ $lang(lang, 'footer-lic') }}</p>
+          <p class="jFooter-sub">{{ $lang(lang, 'footer-pay') }}</p>
+          <div class="jFooter-pay">
+            <a href="#" class="jFooter-pay-link jFooter-pay-mir"></a>
+            <a href="#" class="jFooter-pay-link jFooter-pay-visa"></a>
+            <a href="#" class="jFooter-pay-link jFooter-pay-ym"></a>
+          </div>
+        </div>
+        <div class="jFooter-col">
+          <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
+          <p class="jFooter-contact">8 777 788 08 00</p>
+          <p class="jFooter-contact">8 777 788 08 00</p>
+          <p class="jFooter-contact">sales@jobtron.com</p>
+          <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
+          <p class="jFooter-contact">sales@jobtron.com</p>
+        </div>
+      </div>
+    </div>
+    <div class="jFooter-separator"></div>
+    <div class="section-content">
+      <div class="jFooter-bottom">
+        <div class="jFooter-rules">
+          <a href="#">{{ $lang(lang, 'footer-rules') }}</a>
+          <a href="#">{{ $lang(lang, 'footer-conf') }}</a>
+        </div>
+        <div class="jFooter-copy">
+          <p>{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</template>
+
+<script>
+export default {
+  computed: {
+    lang () {
+      return this.$root.$data.lang
+    }
+  },
+  data(){
+    return {
+      year: new Date().getFullYear()
+    }
+  }
+}
+</script>
+
+<style lang="stylus">
+@import '../../themes/app.variables.styl'
+#jFooter
+  width 100%
+  padding-top 2rem
+  background #424d53
+  color #fff
+  a
+    color #fff
+    text-decoration none
+    &:hover
+      text-decoration underline
+.jFooter-separator
+  border-top 0.0625rem solid #72C6F9
+.jFooter-cols
+  padding-bottom 2rem
+.jFooter-sub
+  margin 2rem 0 0.5rem
+.jFooter-contact
+  margin -0.25rem 0 0.75rem
+.jFooter-social
+  display flex
+  align-items center
+  gap 0.75rem
+.jFooter-social-link
+  display inline-block
+  background-size cover
+.jFooter-social-tg
+  width 1.5rem
+  height 1.5rem
+  background-image url(../../assets/footer-tg.svg)
+.jFooter-social-ig
+  width 1.25rem
+  height 1.25rem
+  background-image url(../../assets/footer-ig.svg)
+.jFooter-social-yt
+  width 2rem
+  height 2rem
+  background-image url(../../assets/footer-yt.svg)
+.jFooter-pay
+  display flex
+  align-items center
+  gap 0.75rem
+  padding-top .5rem
+.jFooter-pay-link
+  display inline-block
+  background-size cover
+.jFooter-pay-mir
+  width 3.4375rem
+  height 0.9375rem
+  background-image url(../../assets/footer-mir.svg)
+.jFooter-pay-visa
+  width 2.9375rem
+  height 0.9375rem
+  background-image url(../../assets/footer-visa.svg)
+.jFooter-pay-ym
+  width 4.75rem
+  height 1rem
+  background-image url(../../assets/footer-ym.svg)
+.jFooter-rules
+  a
+    display block
+@media screen and (min-width: $small)
+  .jFooter-cols
+    display flex
+    flex-flow row wrap
+    align-items start
+  .jFooter-col
+    flex 0 0 50%
+  .jFooter-bottom
+    display flex
+    justify-content space-between
+    align-items center
+    white-space nowrap
+  .jFooter-rules
+    display flex
+    order 2
+    gap 1rem
+    a
+      display block
+  .jFooter-copy
+    order 1
+@media screen and (min-width: $medium)
+  .jFooter-cols
+    flex-flow row nowrap
+  .jFooter-col
+    flex 0 0 25%
+</style>
