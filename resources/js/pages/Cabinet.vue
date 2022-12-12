@@ -5,22 +5,26 @@
       <h1 class="page-title">Настройка кабинета</h1>
       <div class="settingCabinet">
         <ul class="p-0">
-          <li v-if="user.is_admin === 1">
+          <li v-if="user.is_admin === 1" class="lp-item">
             <a
               class="lp-link"
               @click="page = 'admin'"
               :class="{ active: page == 'admin' }"
+              tabindex="0"
             >
+              <i class="fa fa-key"/>
               Административные настройки
             </a>
           </li>
 
-          <li class="position-relative">
+          <li class="position-relative lp-item">
             <a
               class="lp-link"
               @click="page = 'profile'"
               :class="{ active: page == 'profile' }"
+              tabindex="0"
             >
+              <i class="fa fa-user"/>
               Настройка собственного профиля
             </a>
           </li>
@@ -29,7 +33,7 @@
     </div>
 
     <!-- Cabinet page -->
-    <div v-if="page == 'admin'" class="rp" style="flex: 1 1 0%">
+    <div v-if="page == 'admin'" class="rp cabinet-page-admin" style="flex: 1 1 0%">
       <div class="hat">
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">
@@ -42,12 +46,12 @@
         <div class="p-3">
           <div class="form-group">
             Субдомен
-            <input class="form-control mt-1" id="view_own_orders" type="text" />
+            <input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
           </div>
 
           <div class="form-group">
             Часовой пояс
-            <input class="form-control mt-1" id="view_own_orders" type="text" />
+            <input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
           </div>
 
           <div class="form-group">
@@ -65,12 +69,12 @@
               track-by="email"
               :taggable="true"
               @tag="addTag"
-            >
-            </multiselect>
+              class="multiselect-surv"
+            />
           </div>
 
           <div class="mt-3">
-            <button class="btn btn-success" @click="save">Сохранить</button>
+            <button class="btn btn-success btn-surv" @click="save">Сохранить</button>
           </div>
         </div>
       </div>
@@ -91,13 +95,13 @@
           <!-- profile data -->
           <div class="col-8">
             <div class="form-group row mt-3">
-              <label class="col-sm-4 col-form-label font-weight-bold">
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv">
                 Имя <span class="red">*</span>
               </label>
 
               <div class="col-sm-8 p-0">
                 <input
-                  class="form-control"
+                  class="form-control input-surv"
                   type="text"
                   name="name"
                   id="firstName"
@@ -108,12 +112,12 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >Фамилия <span class="red">*</span></label
               >
               <div class="col-sm-8 p-0">
                 <input
-                  class="form-control"
+                  class="form-control input-surv"
                   type="text"
                   name="last_name"
                   id="lastName"
@@ -124,12 +128,12 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >Email <span class="red">*</span></label
               >
               <div class="col-sm-8 p-0">
                 <input
-                  class="form-control"
+                  class="form-control input-surv"
                   type="text"
                   name="email"
                   id="email"
@@ -140,14 +144,14 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >Новый пароль
               </label>
               <div class="col-sm-8 p-0">
                 <input
                   v-model="password"
                   minlength="5"
-                  class="form-control"
+                  class="form-control input-surv"
                   type="password"
                   name="new_pwd"
                   id="new_pwd"
@@ -156,13 +160,13 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >День рождения <span class="red">*</span></label
               >
               <div class="col-sm-8 p-0">
                 <input
                   v-model="birthday"
-                  class="form-control"
+                  class="form-control input-surv"
                   type="date"
                   name="birthday"
                   id="birthday"
@@ -171,14 +175,14 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >Город<span class="red">*</span></label
               >
               <div class="col-sm-8 p-0">
 
                   <input
                       v-model="keywords"
-                      class="form-control"
+                      class="form-control input-surv"
                       type="text"
                       name="country"
                       id="country"
@@ -242,7 +246,7 @@
 
 <!--              ></croppa>-->
               <div class="hidden-file-wrapper">
-                <button class="btn btn-success w-100 mt-2">
+                <button class="btn btn-success w-100 mt-2 btn-surv">
                   Выбрать фото
                 </button>
                 <label class="hidden-file-label" for="CabinetProfileImage"/>
@@ -259,7 +263,7 @@
               <div class="col-2">
                 <input
                   v-model="payment.bank"
-                  class="form-control"
+                  class="form-control input-surv"
                   placeholder="Банк"
                 />
               </div>
@@ -267,7 +271,7 @@
               <div class="col-2">
                 <input
                   v-model="payment.country"
-                  class="form-control"
+                  class="form-control input-surv"
                   placeholder="Страна"
                 />
               </div>
@@ -275,7 +279,7 @@
               <div class="col-2">
                 <input
                   v-model="payment.cardholder"
-                  class="form-control"
+                  class="form-control input-surv"
                   placeholder="Имя на карте"
                 />
               </div>
@@ -284,7 +288,7 @@
                 <input
                   type="number"
                   v-model="payment.phone"
-                  class="form-control"
+                  class="form-control input-surv"
                   placeholder="Телефон"
                 />
               </div>
@@ -293,7 +297,7 @@
                 <input
                   type="number"
                   v-model="payment.number"
-                  class="form-control card-number"
+                  class="form-control card-number input-surv"
                   placeholder="Номер карты"
                 />
               </div>
@@ -302,7 +306,7 @@
                 <button
                   v-if="payment.id"
                   style="position: absolute; left: 0px"
-                  class="btn btn-danger btn-sm card-delete rounded mt-1"
+                  class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
                   @click="removePaymentCart(index, payment.id)"
                 >
                   <span class="fa fa-trash"></span>
@@ -311,7 +315,7 @@
                 <button
                   v-else
                   style="position: absolute; left: 0px"
-                  class="btn btn-primary btn-sm card-delete rounded mt-1"
+                  class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
                   @click="removePaymentCart(index, 'dev')"
                 >
                   <span class="fa fa-trash"></span>
@@ -325,12 +329,12 @@
               </div>
             </div>
 
-            <div class="p-0 row mt-3">
+            <div class="p-0 row mt-5">
               <div class="col-3">
                 <button
                   @click="addPayment()"
                   style="color: white"
-                  class="btn btn-phone btn-primary btn-block"
+                  class="btn btn-phone btn-primary btn-surv"
                 >
                   Добавить карту
                 </button>
@@ -340,7 +344,7 @@
                 <button
                   @click.prevent="editProfileUser()"
                   style="color: white"
-                  class="btn btn-success btn-block btn-block"
+                  class="btn btn-success btn-surv"
                   type="button"
                 >
                   Сохранить
@@ -753,6 +757,16 @@ export default {
 </script>
 
 <style lang="scss">
+.container-left-padding{
+  padding-top: 0;
+}
+.cabinet-page-admin{
+  .multiselect__tag{
+    display: inline-block !important;
+    max-width: 100% !important;
+    margin-bottom: 0.5rem !important;
+  }
+}
 .upload-to-server-example {
   .upload-example-cropper {
     border: solid 1px #eee;
@@ -871,13 +885,33 @@ export default {
 .contacts-info {
   margin-top: 30px;
 }
+.lp-item{
+  .fa{
+    margin-right: 0.25em;
+  }
+}
 a.lp-link {
   display: block;
   margin: 5px 0;
+  padding: 5px 0;
   font-weight: bold;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: darken(#2459a4, 5%);
 
   &.active {
-    color: #2459a4 !important;
+    cursor: default;
+    text-decoration: none;
+    color: #333;
+    &:hover{
+      color: #333;
+      text-decoration: none;
+    }
+  }
+
+  &:hover{
+    color: #2459a4;
+    text-decoration: underline dotted;
   }
 }
 
