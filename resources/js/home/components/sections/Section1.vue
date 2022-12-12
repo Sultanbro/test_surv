@@ -132,7 +132,6 @@ export default {
 @import '../../assets/scss/app.variables.scss';
 #jSec1 {
   width: 100%;
-  min-height: 100vh;
   padding-top: 1rem;
   background-image: url("../../assets/img/s1-bg.svg");
   background-repeat: no-repeat;

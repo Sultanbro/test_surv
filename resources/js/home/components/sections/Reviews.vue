@@ -168,7 +168,7 @@ export default {
 
 @media screen and (min-width: $medium) {
   #jReviews {
-    padding-bottom: 15rem;
+    padding-bottom: 3rem;
   }
   .jReviews-types {
     display: block;

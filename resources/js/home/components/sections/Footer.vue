@@ -32,7 +32,7 @@
         <div class="jFooter-col">
           <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
           <p class="jFooter-contact">8 777 788 08 00</p>
-          <p class="jFooter-contact">8 777 788 08 00</p>
+          <p class="jFooter-contact">8 495 136 42 82</p>
           <p class="jFooter-contact">sales@jobtron.com</p>
           <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
           <p class="jFooter-contact">sales@jobtron.com</p>
@@ -43,7 +43,6 @@
     <div class="section-content">
       <div class="jFooter-bottom">
         <div class="jFooter-rules">
-          <a href="#">{{ $lang(lang, 'footer-rules') }}</a>
           <a href="#">{{ $lang(lang, 'footer-conf') }}</a>
         </div>
         <div class="jFooter-copy">
@@ -89,7 +88,7 @@ export default {
 }
 
 .jFooter-separator {
-  border-top: 0.0625rem solid #72c6f9;
+  border-top: 0.0625rem solid white;
 }
 
 .jFooter-cols {

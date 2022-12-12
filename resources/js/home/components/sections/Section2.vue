@@ -113,11 +113,7 @@ export default {
   }
 }
 
-
 @media screen and (min-width: $medium) {
-  #jSec2 {
-    padding-bottom: 5rem;
-  }
   .jSec2-items {
     flex-flow: row nowrap;
     justify-content: stretch;

@@ -87,9 +87,6 @@ export default {
 }
 
 @media screen and (min-width: $medium) {
-  #jSec3 {
-    padding-bottom: 5rem;
-  }
   .jSec3-block-title {
     margin-bottom: 1rem;
     font-size: 1.5rem;
