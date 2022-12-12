@@ -222,6 +222,22 @@
   display: flex;
   align-items: center;
 }
+.multiselect-surv{
+  .multiselect__tags{
+    padding: 1.5rem 4rem 1rem 2rem;
+    border: none;
+    border-radius: 0.6rem;
+
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    background: #F7FAFC;
+  }
+  .multiselect__select{
+    top: 1rem;
+  }
+}
 
 @media(max-width:440px){
   .index__tabs{

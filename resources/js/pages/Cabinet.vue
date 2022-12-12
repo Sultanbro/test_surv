@@ -33,7 +33,7 @@
     </div>
 
     <!-- Cabinet page -->
-    <div v-if="page == 'admin'" class="rp" style="flex: 1 1 0%">
+    <div v-if="page == 'admin'" class="rp cabinet-page-admin" style="flex: 1 1 0%">
       <div class="hat">
         <div class="d-flex jsutify-content-between hat-top">
           <div class="bc">
@@ -46,12 +46,12 @@
         <div class="p-3">
           <div class="form-group">
             Субдомен
-            <input class="form-control mt-1" id="view_own_orders" type="text" />
+            <input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
           </div>
 
           <div class="form-group">
             Часовой пояс
-            <input class="form-control mt-1" id="view_own_orders" type="text" />
+            <input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
           </div>
 
           <div class="form-group">
@@ -69,12 +69,12 @@
               track-by="email"
               :taggable="true"
               @tag="addTag"
-            >
-            </multiselect>
+              class="multiselect-surv"
+            />
           </div>
 
           <div class="mt-3">
-            <button class="btn btn-success" @click="save">Сохранить</button>
+            <button class="btn btn-success btn-surv" @click="save">Сохранить</button>
           </div>
         </div>
       </div>
@@ -759,6 +759,13 @@ export default {
 <style lang="scss">
 .container-left-padding{
   padding-top: 0;
+}
+.cabinet-page-admin{
+  .multiselect__tag{
+    display: inline-block !important;
+    max-width: 100% !important;
+    margin-bottom: 0.5rem !important;
+  }
 }
 .upload-to-server-example {
   .upload-example-cropper {
