@@ -5,22 +5,26 @@
       <h1 class="page-title">Настройка кабинета</h1>
       <div class="settingCabinet">
         <ul class="p-0">
-          <li v-if="user.is_admin === 1">
+          <li v-if="user.is_admin === 1" class="lp-item">
             <a
               class="lp-link"
               @click="page = 'admin'"
               :class="{ active: page == 'admin' }"
+              tabindex="0"
             >
+              <i class="fa fa-key"/>
               Административные настройки
             </a>
           </li>
 
-          <li class="position-relative">
+          <li class="position-relative lp-item">
             <a
               class="lp-link"
               @click="page = 'profile'"
               :class="{ active: page == 'profile' }"
+              tabindex="0"
             >
+              <i class="fa fa-user"/>
               Настройка собственного профиля
             </a>
           </li>
@@ -874,13 +878,33 @@ export default {
 .contacts-info {
   margin-top: 30px;
 }
+.lp-item{
+  .fa{
+    margin-right: 0.25em;
+  }
+}
 a.lp-link {
   display: block;
   margin: 5px 0;
+  padding: 5px 0;
   font-weight: bold;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: darken(#2459a4, 5%);
 
   &.active {
-    color: #2459a4 !important;
+    cursor: default;
+    text-decoration: none;
+    color: #333;
+    &:hover{
+      color: #333;
+      text-decoration: none;
+    }
+  }
+
+  &:hover{
+    color: #2459a4;
+    text-decoration: underline dotted;
   }
 }
 
