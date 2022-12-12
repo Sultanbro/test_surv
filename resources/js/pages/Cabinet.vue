@@ -95,13 +95,13 @@
           <!-- profile data -->
           <div class="col-8">
             <div class="form-group row mt-3">
-              <label class="col-sm-4 col-form-label font-weight-bold">
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv">
                 Имя <span class="red">*</span>
               </label>
 
               <div class="col-sm-8 p-0">
                 <input
-                  class="form-control"
+                  class="form-control input-surv"
                   type="text"
                   name="name"
                   id="firstName"
@@ -112,12 +112,12 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >Фамилия <span class="red">*</span></label
               >
               <div class="col-sm-8 p-0">
                 <input
-                  class="form-control"
+                  class="form-control input-surv"
                   type="text"
                   name="last_name"
                   id="lastName"
@@ -128,12 +128,12 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >Email <span class="red">*</span></label
               >
               <div class="col-sm-8 p-0">
                 <input
-                  class="form-control"
+                  class="form-control input-surv"
                   type="text"
                   name="email"
                   id="email"
@@ -144,14 +144,14 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >Новый пароль
               </label>
               <div class="col-sm-8 p-0">
                 <input
                   v-model="password"
                   minlength="5"
-                  class="form-control"
+                  class="form-control input-surv"
                   type="password"
                   name="new_pwd"
                   id="new_pwd"
@@ -160,13 +160,13 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >День рождения <span class="red">*</span></label
               >
               <div class="col-sm-8 p-0">
                 <input
                   v-model="birthday"
-                  class="form-control"
+                  class="form-control input-surv"
                   type="date"
                   name="birthday"
                   id="birthday"
@@ -175,14 +175,14 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold"
+              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
                 >Город<span class="red">*</span></label
               >
               <div class="col-sm-8 p-0">
 
                   <input
                       v-model="keywords"
-                      class="form-control"
+                      class="form-control input-surv"
                       type="text"
                       name="country"
                       id="country"
@@ -246,7 +246,7 @@
 
 <!--              ></croppa>-->
               <div class="hidden-file-wrapper">
-                <button class="btn btn-success w-100 mt-2">
+                <button class="btn btn-success w-100 mt-2 btn-surv">
                   Выбрать фото
                 </button>
                 <label class="hidden-file-label" for="CabinetProfileImage"/>
@@ -263,7 +263,7 @@
               <div class="col-2">
                 <input
                   v-model="payment.bank"
-                  class="form-control"
+                  class="form-control input-surv"
                   placeholder="Банк"
                 />
               </div>
@@ -271,7 +271,7 @@
               <div class="col-2">
                 <input
                   v-model="payment.country"
-                  class="form-control"
+                  class="form-control input-surv"
                   placeholder="Страна"
                 />
               </div>
@@ -279,7 +279,7 @@
               <div class="col-2">
                 <input
                   v-model="payment.cardholder"
-                  class="form-control"
+                  class="form-control input-surv"
                   placeholder="Имя на карте"
                 />
               </div>
@@ -288,7 +288,7 @@
                 <input
                   type="number"
                   v-model="payment.phone"
-                  class="form-control"
+                  class="form-control input-surv"
                   placeholder="Телефон"
                 />
               </div>
@@ -297,7 +297,7 @@
                 <input
                   type="number"
                   v-model="payment.number"
-                  class="form-control card-number"
+                  class="form-control card-number input-surv"
                   placeholder="Номер карты"
                 />
               </div>
@@ -306,7 +306,7 @@
                 <button
                   v-if="payment.id"
                   style="position: absolute; left: 0px"
-                  class="btn btn-danger btn-sm card-delete rounded mt-1"
+                  class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
                   @click="removePaymentCart(index, payment.id)"
                 >
                   <span class="fa fa-trash"></span>
@@ -315,7 +315,7 @@
                 <button
                   v-else
                   style="position: absolute; left: 0px"
-                  class="btn btn-primary btn-sm card-delete rounded mt-1"
+                  class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
                   @click="removePaymentCart(index, 'dev')"
                 >
                   <span class="fa fa-trash"></span>
@@ -329,12 +329,12 @@
               </div>
             </div>
 
-            <div class="p-0 row mt-3">
+            <div class="p-0 row mt-5">
               <div class="col-3">
                 <button
                   @click="addPayment()"
                   style="color: white"
-                  class="btn btn-phone btn-primary btn-block"
+                  class="btn btn-phone btn-primary btn-surv"
                 >
                   Добавить карту
                 </button>
@@ -344,7 +344,7 @@
                 <button
                   @click.prevent="editProfileUser()"
                   style="color: white"
-                  class="btn btn-success btn-block btn-block"
+                  class="btn btn-success btn-surv"
                   type="button"
                 >
                   Сохранить
