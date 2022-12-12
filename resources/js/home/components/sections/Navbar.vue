@@ -24,8 +24,14 @@
           </li>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
-              <NavbarButton :lang="lang" href="#auth" text="auth"/>
-              <a class="jNav-menu-user" href="#user"/>
+              <form v-if="csrf" method="POST" action="/logout">
+                <input type="hidden" :value="csrf" name="csrf">
+                <button class="jNav-menu-user"/>
+              </form>
+              <template v-else>
+                <NavbarButton :lang="lang" href="/login" text="auth"/>
+                <NavbarButton :lang="lang" href="/register" text="register"/>
+              </template>
             </span>
           </li>
           <li class="jNav-menu-item">
@@ -57,8 +63,12 @@ export default {
   },
   data() {
     return {
-      menu: false
+      menu: false,
+      csrf: ''
     }
+  },
+  mounted(){
+    this.csrf = document.getElementById('csrf')?.value
   }
 }
 </script>
@@ -154,12 +164,14 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .jNav-menu-user {
   display: inline-block;
   width: 2.625rem;
   height: 2.625rem;
+  border: none;
   border-radius: 2.625rem;
   vertical-align: middle;
   background: #6f4f28 url("../../assets/img/user.svg") center center no-repeat;
