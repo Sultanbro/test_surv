@@ -92,6 +92,7 @@ class KnowBase extends Model implements CourseInterface
         if(count($corp_book_ids) == 0) return null;
        
         $books = KnowBase::query()
+            ->with('questions')
             ->where('text', '!=' , '')
             ->whereNotNull('text')
             ->whereIn('id', $corp_book_ids)
