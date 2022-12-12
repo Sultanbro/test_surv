@@ -26,6 +26,8 @@ mix.webpackConfig({
     }
 });
 
+mix.js('resources/js/home.js', 'public/js').vue();
+
 // mix.js('resources/assets/js/app.js', 'public/js')
 //     // .extract([
 //     //     'vue',
