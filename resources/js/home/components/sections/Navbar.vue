@@ -1,31 +1,31 @@
 <template>
   <nav id="jNav">
     <div class="section-content jNav-content">
-      <a href="" class="jNav-logo">
-        <img class="jNav-logo-img" :src="require('../../assets/img/logo.svg').default" alt="logo-img">
+      <a class="jNav-logo" href="">
+        <img :src="require('../../assets/img/logo.svg').default" alt="logo-img" class="jNav-logo-img">
       </a>
       <div
-        class="jNav-menu"
-        :class="{'jNav-menu-active': menu}"
+          :class="{'jNav-menu-active': menu}"
+          class="jNav-menu"
       >
         <button
-          class="jNav-menu-hamburger jButton"
-          @click="menu = !menu"
+            class="jNav-menu-hamburger jButton"
+            @click="menu = !menu"
         />
         <ul class="jNav-menu-items">
           <li class="jNav-menu-item">
-            <NavbarLink text="prices" href="#prices" :lang="lang"/>
+            <NavbarLink :lang="lang" href="#prices" text="prices"/>
           </li>
           <li class="jNav-menu-item">
-            <NavbarLink text="reviews" href="#reviews" :lang="lang"/>
+            <NavbarLink :lang="lang" href="#reviews" text="reviews"/>
           </li>
           <li class="jNav-menu-item">
-            <NavbarLink text="features" href="#features" :lang="lang"/>
+            <NavbarLink :lang="lang" href="#features" text="features"/>
           </li>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
-              <NavbarButton text="auth" href="#auth" :lang="lang"/>
-              <a href="#user" class="jNav-menu-user"/>
+              <NavbarButton :lang="lang" href="#auth" text="auth"/>
+              <a class="jNav-menu-user" href="#user"/>
             </span>
           </li>
           <li class="jNav-menu-item">
@@ -51,11 +51,11 @@ export default {
     NavbarLang
   },
   computed: {
-    lang () {
+    lang() {
       return this.$root.$data.lang
     }
   },
-  data(){
+  data() {
     return {
       menu: false
     }
@@ -65,6 +65,7 @@ export default {
 
 <style lang="scss">
 @import '../../assets/scss/app.variables.scss';
+
 #jNav {
   width: 100vw;
   position: sticky;
@@ -73,24 +74,29 @@ export default {
   left: 0;
   right: 0;
   background: #fff;
-  box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.05);
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);
 }
+
 .jNav-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .jNav-logo-img {
   width: 12.25rem;
 }
+
 .jNav-menu-active {
   .jNav-menu-items {
     display: flex;
   }
+
   .jNav-menu-bg {
     display: block;
   }
 }
+
 .jNav-menu-hamburger {
   &.jButton {
     display: block;
@@ -98,6 +104,7 @@ export default {
     height: 2rem;
     padding: 1.25rem;
     position: relative;
+
     &:before {
       content: '';
       width: 50%;
@@ -110,6 +117,7 @@ export default {
     }
   }
 }
+
 .jNav-menu-bg {
   display: none;
   position: fixed;
@@ -118,9 +126,10 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(6px);
 }
+
 .jNav-menu-items {
   display: none;
   max-width: 85vw;
@@ -133,17 +142,20 @@ export default {
   right: 0;
   bottom: 0;
   background: #fff;
-  box-shadow: 0 0 0.125rem rgba(0,0,0,0.25);
+  box-shadow: 0 0 0.125rem rgba(0, 0, 0, 0.25);
 }
+
 .jNav-menu-item {
   display: block;
   list-style: none;
 }
+
 .jNav-menu-auth {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .jNav-menu-user {
   display: inline-block;
   width: 2.625rem;

@@ -1103,7 +1103,7 @@ var ___CSS_LOADER_URL_REPLACEMENT_9___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_10___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_fonts_GothamPro_Bold_woff__WEBPACK_IMPORTED_MODULE_9__["default"]);
 var ___CSS_LOADER_URL_REPLACEMENT_11___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_fonts_GothamPro_Bold_ttf__WEBPACK_IMPORTED_MODULE_10__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "@font-face {\n  font-family: \"Gotham Pro\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  src: local(\"Gotham Pro\"), local(\"GothamPro\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ") format(\"truetype\");\n  font-weight: normal;\n  font-style: normal;\n  font-family: \"Gotham Pro\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n  src: local(\"Gotham Pro Medium\"), local(\"GothamPro-Medium\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_5___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_6___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_7___ + ") format(\"truetype\");\n  font-weight: 500;\n  font-style: normal;\n  font-family: \"Gotham Pro\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_8___ + ");\n  src: local(\"Gotham Pro Bold\"), local(\"GothamPro-Bold\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_9___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_10___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_11___ + ") format(\"truetype\");\n  font-weight: bold;\n  font-style: normal;\n}\n:root * {\n  box-sizing: border-box;\n}\nbody {\n  font-size: 16px;\n  color: #252525;\n  line-height: 1.25;\n}\ninput,\nbutton {\n  font-family: \"Gotham Pro\", sans-serif;\n}\n#app {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  justify-content: center;\n  font-family: \"Gotham Pro\", sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.jHeader {\n  font-size: 1.75rem;\n  line-height: 1;\n  font-weight: 500;\n  text-align: center;\n}\n.jButton {\n  display: block;\n  width: -moz-fit-content;\n  width: fit-content;\n  padding: 0.875rem 1.1875rem;\n  outline: none;\n  border: none;\n  border-radius: 3.125rem;\n  background: #43a9fe;\n  font-size: 1.125rem;\n  line-height: 1;\n  text-decoration: none;\n  color: #fff;\n  cursor: pointer;\n}\n.jButton:disabled {\n  background: #f0f9ff;\n  color: #b1acc1;\n  cursor: default;\n}\n.jButton:hover {\n  background: #76c0fe;\n}\n.section-content {\n  width: 78.125rem;\n  max-width: 100%;\n  padding: 0.625rem;\n  margin: 0 auto;\n}\n.ancor {\n  display: block;\n  height: 0;\n  position: relative;\n  top: -6rem;\n}\n@media screen and (min-width: 780px) {\n.JHeader {\n    font-size: 2.5rem;\n}\n}\n@media screen and (min-width: 2560px) {\nhtml, body {\n    font-size: 32px;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "@font-face {\n  font-family: \"Gotham Pro\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  src: local(\"Gotham Pro\"), local(\"GothamPro\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ") format(\"truetype\");\n  font-weight: normal;\n  font-style: normal;\n  font-family: \"Gotham Pro\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n  src: local(\"Gotham Pro Medium\"), local(\"GothamPro-Medium\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_5___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_6___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_7___ + ") format(\"truetype\");\n  font-weight: 500;\n  font-style: normal;\n  font-family: \"Gotham Pro\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_8___ + ");\n  src: local(\"Gotham Pro Bold\"), local(\"GothamPro-Bold\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_9___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_10___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_11___ + ") format(\"truetype\");\n  font-weight: bold;\n  font-style: normal;\n}\n:root * {\n  box-sizing: border-box;\n}\nbody {\n  font-size: 16px;\n  color: #252525;\n  line-height: 1.25;\n}\ninput,\nbutton {\n  font-family: \"Gotham Pro\", sans-serif;\n}\n#app {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  justify-content: center;\n  font-family: \"Gotham Pro\", sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.jHeader {\n  font-size: 1.75rem;\n  line-height: 1;\n  font-weight: 500;\n  text-align: center;\n}\n.jButton {\n  display: block;\n  width: -moz-fit-content;\n  width: fit-content;\n  padding: 0.875rem 1.1875rem;\n  outline: none;\n  border: none;\n  border-radius: 3.125rem;\n  background: #43a9fe;\n  font-size: 1.125rem;\n  line-height: 1;\n  text-decoration: none;\n  color: #fff;\n  cursor: pointer;\n}\n.jButton:disabled {\n  background: #f0f9ff;\n  color: #b1acc1;\n  cursor: default;\n}\n.jButton:hover {\n  background: #76c0fe;\n}\n.section-content {\n  width: 78.125rem;\n  max-width: 100%;\n  margin: 0 auto;\n}\n.ancor {\n  display: block;\n  height: 0;\n  position: relative;\n  top: -6rem;\n}\n@media screen and (min-width: 780px) {\n.JHeader {\n    font-size: 2.5rem;\n}\n}\n@media screen and (min-width: 2560px) {\nhtml, body {\n    font-size: 32px;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4338,7 +4338,7 @@ var render = function () {
               { staticClass: "jNav-menu-item" },
               [
                 _c("NavbarLink", {
-                  attrs: { text: "prices", href: "#prices", lang: _vm.lang },
+                  attrs: { lang: _vm.lang, href: "#prices", text: "prices" },
                 }),
               ],
               1
@@ -4349,7 +4349,7 @@ var render = function () {
               { staticClass: "jNav-menu-item" },
               [
                 _c("NavbarLink", {
-                  attrs: { text: "reviews", href: "#reviews", lang: _vm.lang },
+                  attrs: { lang: _vm.lang, href: "#reviews", text: "reviews" },
                 }),
               ],
               1
@@ -4361,9 +4361,9 @@ var render = function () {
               [
                 _c("NavbarLink", {
                   attrs: {
-                    text: "features",
-                    href: "#features",
                     lang: _vm.lang,
+                    href: "#features",
+                    text: "features",
                   },
                 }),
               ],
@@ -4376,7 +4376,7 @@ var render = function () {
                 { staticClass: "jNav-menu-auth" },
                 [
                   _c("NavbarButton", {
-                    attrs: { text: "auth", href: "#auth", lang: _vm.lang },
+                    attrs: { lang: _vm.lang, href: "#auth", text: "auth" },
                   }),
                   _vm._v(" "),
                   _c("a", {
