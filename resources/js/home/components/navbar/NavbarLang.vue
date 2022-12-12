@@ -26,35 +26,40 @@ export default {
 }
 </script>
 
-<style lang="stylus">
-.jNav-menu-lang
-  display inline-block
-  padding 0.25rem 0
-  margin 0.5rem 0
-  position relative
-  font-size: 1.125rem
-  color #000
-  text-decoration none
-  &:after
-    content ''
-    display inline-block
-    width 0.5rem
-    height 0.3125rem
-    vertical-align middle
-    // transform rotate(-180deg)
-    background-image url(../../assets/select-arrow.svg)
-    background-repeat no-repeat
-.jNav-menu-lang-popup
-  display none
-  width auto
-  position absolute
-  top 100%
-  right 0
-  background #fff
-  box-shadow 0 0.125rem 0.1875rem rgba(#000, 0.5)
-.jNav-menu-lang-active
-  .jNav-menu-lang-popup
-    display block
-.jNav-menu-lang-button
-  padding 0.25rem
+<style lang="scss">
+.jNav-menu-lang {
+  display: inline-block;
+  padding: 0.25rem 0;
+  margin: 0.5rem 0;
+  position: relative;
+  font-size: 1.125rem;
+  color: #000;
+  text-decoration: none;
+  &:after {
+    content: '';
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.3125rem;
+    vertical-align: middle;
+    background-image: url("../../assets/img/select-arrow.svg");
+    background-repeat: no-repeat;
+  }
+}
+.jNav-menu-lang-popup {
+  display: none;
+  width: auto;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  box-shadow: 0 0.125rem 0.1875rem rgba(0,0,0,0.5);
+}
+.jNav-menu-lang-active {
+  .jNav-menu-lang-popup {
+    display: block;
+  }
+}
+.jNav-menu-lang-button {
+  padding: 0.25rem;
+}
 </style>

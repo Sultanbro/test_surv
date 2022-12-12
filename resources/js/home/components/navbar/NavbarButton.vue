@@ -14,20 +14,23 @@ export default {
 }
 </script>
 
-<style lang="stylus">
-@import '../../themes/app.variables.styl'
+<style lang="scss">
+@import '../../assets/scss/app.variables';
 
-.jNav-menu-button
-  display inline-block
-  padding 0.875rem 1.1875rem
-  margin 0.5rem 0
-  vertical-align middle
-  background: $button-color
-  border-radius: 3.125rem
-  font-size: 0.938rem
-  line-height 0.875rem
-  text-decoration none
-  color #fff
-  &:hover
-    background $button-color-hover
+.jNav-menu-button {
+  display: inline-block;
+  padding: 0.875rem 1.1875rem;
+  margin: 0.5rem 0;
+  vertical-align: middle;
+  background: $button-color;
+  border-radius: 3.125rem;
+  font-size: 0.938rem;
+  line-height: 0.875rem;
+  text-decoration: none;
+  color: #fff;
+
+  &:hover {
+    background: $button-color-hover;
+  }
+}
 </style>

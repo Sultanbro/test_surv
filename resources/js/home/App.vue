@@ -35,7 +35,7 @@ export default {
   }
 }
 </script>
-<style lang="stylus">
-@import 'themes/app.variables.styl'
-@import 'themes/app.global.styl'
+<style lang="scss">
+@import 'assets/scss/app.variables.scss';
+@import 'assets/scss/app.global.scss';
 </style>

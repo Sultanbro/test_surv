@@ -1,0 +1,95 @@
+@import './app.variables';
+
+@font-face {
+	font-family: 'Gotham Pro';
+	src: url("assets/fonts/GothamPro.eot");
+	src: local('Gotham Pro'), local('GothamPro'), url("assets/fonts/GothamPro.eot?#iefix") format('embedded-opentype'), url("assets/fonts/GothamPro.woff") format('woff'), url("assets/fonts/GothamPro.ttf") format('truetype');
+	font-weight: normal;
+	font-style: normal;
+	font-family: 'Gotham Pro';
+	src: url("assets/fonts/GothamPro-Medium.eot");
+	src: local('Gotham Pro Medium'), local('GothamPro-Medium'), url("assets/fonts/GothamPro-Medium.eot?#iefix") format('embedded-opentype'), url("assets/fonts/GothamPro-Medium.woff") format('woff'), url("assets/fonts/GothamPro-Medium.ttf") format('truetype');
+	font-weight: 500;
+	font-style: normal;
+	font-family: 'Gotham Pro';
+	src: url("assets/fonts/GothamPro-Bold.eot");
+	src: local('Gotham Pro Bold'), local('GothamPro-Bold'), url("assets/fonts/GothamPro-Bold.eot?#iefix") format('embedded-opentype'), url("assets/fonts/GothamPro-Bold.woff") format('woff'), url("assets/fonts/GothamPro-Bold.ttf") format('truetype');
+	font-weight: bold;
+	font-style: normal;
+}
+:root {
+	* {
+		box-sizing: border-box;
+	}
+}
+body {
+	font-size: 16px;
+	color: #252525;
+	line-height: 1.25;
+}
+input,
+button {
+	font-family: $font-stack;
+}
+#app {
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+	justify-content: center;
+	font-family: $font-stack;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+.jHeader {
+	font-size: 1.75rem;
+	line-height: 1;
+	font-weight: 500;
+	text-align: center;
+}
+.jButton {
+	display: block;
+	width: fit-content;
+	padding: 0.875rem 1.1875rem;
+	outline: none;
+	border: none;
+	border-radius: 3.125rem;
+	background: $button-color;
+	font-size: 1.125rem;
+	line-height: 1;
+	text-decoration: none;
+	color: #fff;
+	cursor: pointer;
+	&:disabled {
+		background: #f0f9ff;
+		color: #b1acc1;
+		cursor: default;
+	}
+	&:hover {
+		background: $button-color-hover;
+	}
+}
+.section-content {
+	width: 78.125rem;
+	max-width: 100%;
+	padding: 0.625rem;
+	margin: 0 auto;
+}
+.ancor {
+	display: block;
+	height: 0;
+	position: relative;
+	top: -6rem;
+}
+
+@media screen and (min-width: $small) {
+    .JHeader {
+        font-size: 2.5rem;
+    }
+}
+
+@media screen and (min-width: $large) {
+    html, body {
+        font-size: 32px;
+
+    }
+}

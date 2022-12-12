@@ -30,24 +30,25 @@
 </template>
 
 <script>
-import InputText from '@/components/InputText'
+import InputText from '../../components/InputText'
+
 export default {
   components: {
     InputText
   },
-  data(){
+  data() {
     return {
       name: '',
       phone: ''
     }
   },
   computed: {
-    lang () {
+    lang() {
       return this.$root.$data.lang
     }
   },
   methods: {
-    onSubmit(e){
+    onSubmit(e) {
       e.preventDefault()
       alert(`name: ${this.name}, phone: ${this.phone}`)
     }
@@ -55,91 +56,127 @@ export default {
 }
 </script>
 
-<style lang="stylus">
-@import '../../themes/app.variables.styl'
-#jSec4
-  width 100%
-.jSec4-header
-  width fit-content
-  margin-left auto
-  margin-right auto
-  margin-bottom 5rem
-  position relative
-  &:before
-    content ''
-    display block
-    width 10.625rem
-    height 6.625rem
-    position absolute
-    z-index -1
-    top -2.5rem
-    left -3rem
-    background-image url(../../assets/s2-bg.svg)
-.jSec4-subheader
-  text-align center
-  font-size 1.125rem
-.jSec4-items
-  display flex
-  flex-flow row wrap
-  justify-content stretch
-  padding 0
-  margin 0
-  list-style none
-.jSec4-item
-  display flex
-  flex-flow column nowrap
-  align-items center
-  flex 0 0 100%
-  padding 2rem
-  margin-bottom 1.25rem
-  border-radius 0.9375rem
-.jSec4-item-title
-  margin-bottom 0.5rem
-  font-weight 700
-  font-size 3.125rem
-  line-height 2
-.jSec4-item-text
-  font-size 1.125rem
-  line-height 1.39
-  text-align center
-.jSec4-item-1
-  background #EDF8FF
-  .jSec4-item-title
-    color #72C6F9
-.jSec4-item-2
-  background #FFF9EA
-  .jSec4-item-title
-    color #FFD86B
-.jSec4-item-3
-  background #F3F0FC
-  .jSec4-item-title
-    color #9082BB
+<style lang="scss">
+@import '../../assets/scss/app.variables.scss';
 
+#jSec4 {
+  width: 100%;
+}
 
-@media screen and (min-width: $medium)
-  #jSec4
-    padding-bottom 5rem
-  .jSec4-items
-    flex-flow row nowrap
-    justify-content stretch
-    align-items stretch
-    gap 1.25rem
-  .jSec4-item
-    flex 0 1 33%
-    padding 2rem 3rem
-  .jSec4-form
-    display flex
-    flex-flow row nowrap
-    align-items center
-    gap 1.25rem
-    .jButton
-      white-space nowrap
-  .jSec4-form-inputs
-    display flex
-    flex-flow row nowrap
-    gap 1.25rem
-  .jSec4-footer
-    flex 1 1 30%
-    font-size 1.125rem
-    line-height 1.39
+.jSec4-header {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5rem;
+  position: relative;
+
+  &:before {
+    content: '';
+    display: block;
+    width: 10.625rem;
+    height: 6.625rem;
+    position: absolute;
+    z-index: -1;
+    top: -2.5rem;
+    left: -3rem;
+    background-image: url("../../assets/img/s2-bg.svg");
+  }
+}
+
+.jSec4-subheader {
+  text-align: center;
+  font-size: 1.125rem;
+}
+
+.jSec4-items {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: stretch;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.jSec4-item {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  flex: 0 0 100%;
+  padding: 2rem;
+  margin-bottom: 1.25rem;
+  border-radius: 0.9375rem;
+}
+
+.jSec4-item-title {
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  font-size: 3.125rem;
+  line-height: 2;
+}
+
+.jSec4-item-text {
+  font-size: 1.125rem;
+  line-height: 1.39;
+  text-align: center;
+}
+
+.jSec4-item-1 {
+  background: #edf8ff;
+
+  .jSec4-item-title {
+    color: #72c6f9;
+  }
+}
+
+.jSec4-item-2 {
+  background: #fff9ea;
+
+  .jSec4-item-title {
+    color: #ffd86b;
+  }
+}
+
+.jSec4-item-3 {
+  background: #f3f0fc;
+
+  .jSec4-item-title {
+    color: #9082bb;
+  }
+}
+
+@media screen and (min-width: $medium) {
+  #jSec4 {
+    padding-bottom: 5rem;
+  }
+  .jSec4-items {
+    flex-flow: row nowrap;
+    justify-content: stretch;
+    align-items: stretch;
+    gap: 1.25rem;
+  }
+  .jSec4-item {
+    flex: 0 1 33%;
+    padding: 2rem 3rem;
+  }
+  .jSec4-form {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 1.25rem;
+
+    .jButton {
+      white-space: nowrap;
+    }
+  }
+  .jSec4-form-inputs {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 1.25rem;
+  }
+  .jSec4-footer {
+    flex: 1 1 30%;
+    font-size: 1.125rem;
+    line-height: 1.39;
+  }
+}
 </style>

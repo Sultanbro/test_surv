@@ -3,8 +3,8 @@
     <div class="section-content">
       <div class="jFooter-cols">
         <div class="jFooter-col">
-          <a href="" class="jNav-logo">
-            <img class="jNav-logo-img" src="@/assets/footer-logo.svg" alt="">
+          <a class="jNav-logo" href="">
+            <img alt="" class="jNav-logo-img" src="../../assets/img/footer-logo.svg">
           </a>
         </div>
         <div class="jFooter-col">
@@ -13,9 +13,9 @@
           <p>{{ $lang(lang, 'footer-platform') }}</p>
           <p class="jFooter-sub">{{ $lang(lang, 'footer-subscribe') }}</p>
           <div class="jFooter-social">
-            <a href="#" class="jFooter-social-link jFooter-social-tg"></a>
-            <a href="#" class="jFooter-social-link jFooter-social-ig"></a>
-            <a href="#" class="jFooter-social-link jFooter-social-yt"></a>
+            <a class="jFooter-social-link jFooter-social-tg" href="#"></a>
+            <a class="jFooter-social-link jFooter-social-ig" href="#"></a>
+            <a class="jFooter-social-link jFooter-social-yt" href="#"></a>
           </div>
         </div>
         <div class="jFooter-col">
@@ -24,9 +24,9 @@
           <p>{{ $lang(lang, 'footer-lic') }}</p>
           <p class="jFooter-sub">{{ $lang(lang, 'footer-pay') }}</p>
           <div class="jFooter-pay">
-            <a href="#" class="jFooter-pay-link jFooter-pay-mir"></a>
-            <a href="#" class="jFooter-pay-link jFooter-pay-visa"></a>
-            <a href="#" class="jFooter-pay-link jFooter-pay-ym"></a>
+            <a class="jFooter-pay-link jFooter-pay-mir" href="#"></a>
+            <a class="jFooter-pay-link jFooter-pay-visa" href="#"></a>
+            <a class="jFooter-pay-link jFooter-pay-ym" href="#"></a>
           </div>
         </div>
         <div class="jFooter-col">
@@ -57,11 +57,11 @@
 <script>
 export default {
   computed: {
-    lang () {
+    lang() {
       return this.$root.$data.lang
     }
   },
-  data(){
+  data() {
     return {
       year: new Date().getFullYear()
     }
@@ -69,91 +69,139 @@ export default {
 }
 </script>
 
-<style lang="stylus">
-@import '../../themes/app.variables.styl'
-#jFooter
-  width 100%
-  padding-top 2rem
-  background #424d53
-  color #fff
-  a
-    color #fff
-    text-decoration none
-    &:hover
-      text-decoration underline
-.jFooter-separator
-  border-top 0.0625rem solid #72C6F9
-.jFooter-cols
-  padding-bottom 2rem
-.jFooter-sub
-  margin 2rem 0 0.5rem
-.jFooter-contact
-  margin -0.25rem 0 0.75rem
-.jFooter-social
-  display flex
-  align-items center
-  gap 0.75rem
-.jFooter-social-link
-  display inline-block
-  background-size cover
-.jFooter-social-tg
-  width 1.5rem
-  height 1.5rem
-  background-image url(../../assets/footer-tg.svg)
-.jFooter-social-ig
-  width 1.25rem
-  height 1.25rem
-  background-image url(../../assets/footer-ig.svg)
-.jFooter-social-yt
-  width 2rem
-  height 2rem
-  background-image url(../../assets/footer-yt.svg)
-.jFooter-pay
-  display flex
-  align-items center
-  gap 0.75rem
-  padding-top .5rem
-.jFooter-pay-link
-  display inline-block
-  background-size cover
-.jFooter-pay-mir
-  width 3.4375rem
-  height 0.9375rem
-  background-image url(../../assets/footer-mir.svg)
-.jFooter-pay-visa
-  width 2.9375rem
-  height 0.9375rem
-  background-image url(../../assets/footer-visa.svg)
-.jFooter-pay-ym
-  width 4.75rem
-  height 1rem
-  background-image url(../../assets/footer-ym.svg)
-.jFooter-rules
-  a
-    display block
-@media screen and (min-width: $small)
-  .jFooter-cols
-    display flex
-    flex-flow row wrap
-    align-items start
-  .jFooter-col
-    flex 0 0 50%
-  .jFooter-bottom
-    display flex
-    justify-content space-between
-    align-items center
-    white-space nowrap
-  .jFooter-rules
-    display flex
-    order 2
-    gap 1rem
-    a
-      display block
-  .jFooter-copy
-    order 1
-@media screen and (min-width: $medium)
-  .jFooter-cols
-    flex-flow row nowrap
-  .jFooter-col
-    flex 0 0 25%
+<style lang="scss">
+@import '../../assets/scss/app.variables.scss';
+
+#jFooter {
+  width: 100%;
+  padding-top: 2rem;
+  background: #424d53;
+  color: #fff;
+
+  a {
+    color: #fff;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.jFooter-separator {
+  border-top: 0.0625rem solid #72c6f9;
+}
+
+.jFooter-cols {
+  padding-bottom: 2rem;
+}
+
+.jFooter-sub {
+  margin: 2rem 0 0.5rem;
+}
+
+.jFooter-contact {
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin: -0.25rem 0 0.75rem;
+}
+
+.jFooter-social {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.jFooter-social-link {
+  display: inline-block;
+  background-size: cover;
+}
+
+.jFooter-social-tg {
+  width: 1.5rem;
+  height: 1.5rem;
+  background-image: url("../../assets/img/footer-tg.svg");
+}
+
+.jFooter-social-ig {
+  width: 1.25rem;
+  height: 1.25rem;
+  background-image: url("../../assets/img/footer-ig.svg");
+}
+
+.jFooter-social-yt {
+  width: 2rem;
+  height: 2rem;
+  background-image: url("../../assets/img/footer-yt.svg");
+}
+
+.jFooter-pay {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.jFooter-pay-link {
+  display: inline-block;
+  background-size: cover;
+}
+
+.jFooter-pay-mir {
+  width: 3.4375rem;
+  height: 0.9375rem;
+  background-image: url("../../assets/img/footer-mir.svg");
+}
+
+.jFooter-pay-visa {
+  width: 2.9375rem;
+  height: 0.9375rem;
+  background-image: url("../../assets/img/footer-visa.svg");
+}
+
+.jFooter-pay-ym {
+  width: 4.75rem;
+  height: 1rem;
+  background-image: url("../../assets/img/footer-ym.svg");
+}
+
+.jFooter-rules {
+  display: flex;
+  order: 2;
+  gap: 1rem;
+
+  a {
+    display: block;
+  }
+}
+
+@media screen and (min-width $small) {
+  .jFooter-cols {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: start;
+  }
+}
+
+.jFooter-col {
+  //flex: 0 0 50%;
+  flex: 0 0 25%;
+}
+
+.jFooter-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.jFooter-copy {
+  order: 1;
+}
+
+@media screen and (min-width $medium) {
+  .jFooter-cols {
+    flex-flow: row nowrap;
+  }
+}
 </style>
