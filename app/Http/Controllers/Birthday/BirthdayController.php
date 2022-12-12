@@ -21,7 +21,9 @@ class BirthdayController extends Controller
         $date = now();
 
         $birthdays =User::whereMonth('birthday','>', $date->month)
-
+            ->whereHas('description', function ($query)  {
+                    $query->where('is_trainee',0);
+            })
             ->orWhere(function ($query) use ($date) {
                 $query->whereMonth('birthday', '=', $date->month)
                     ->whereDay('birthday', '>=', $date->day);

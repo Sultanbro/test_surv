@@ -538,8 +538,9 @@ export default {
 
       formData.append('title', this.postTitle);
       formData.append('content', this.editorData);
+      formData.append('_method', 'put');
 
-      await axios.put('/news/' + this.editableId, formData, {
+      await axios.post('/news/' + this.editableId, formData, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
