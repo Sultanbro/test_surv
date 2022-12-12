@@ -58,16 +58,16 @@ export default {
       prefix: 'https://www.youtube.com/embed/',
       items: [
         {
-          thumbnail: 'https://i3.ytimg.com/vi/1WHUFpcDqPI/maxresdefault.jpg',
-          video: '1WHUFpcDqPI'
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          video: 'LQtmJnljYyk'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/RRq4-uktHiI/maxresdefault.jpg',
-          video: 'RRq4-uktHiI'
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          video: 'LQtmJnljYyk'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/35VEHme3p94/maxresdefault.jpg',
-          video: '35VEHme3p94'
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          video: 'LQtmJnljYyk'
         },
       ]
     }
