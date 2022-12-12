@@ -20,15 +20,15 @@ class BirthdayController extends Controller
 
         $date = now();
 
-        $birthdays =User::whereMonth('birthday','>', $date->month)
+        $birthdays =User::query()
             ->whereHas('description', function ($query)  {
                     $query->where('is_trainee',0);
             })
-            ->orWhere(function ($query) use ($date) {
+            ->where(function ($query) use ($date) {
                 $query->whereMonth('birthday', '=', $date->month)
                     ->whereDay('birthday', '>=', $date->day);
             })
-
+            ->whereNotNull('birthday')
             ->oldest(\DB::raw('date_format(`birthday`, \'%m-%d\')'));
 
         return response()->json(
