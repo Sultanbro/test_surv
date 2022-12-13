@@ -93,10 +93,19 @@ class Messenger {
 
         if ( $chat->private ) {
             // get second user in private chat
+
             $second_user    = $chat->users->firstWhere( 'id', '!=', $user->id );
-            $chat->title    = $second_user->name . " " . $second_user->last_name;
-            $chat->image    = $second_user->img_url;
-            $chat->isOnline = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
+
+            $chat->title    = "Багнутый чат";
+            $chat->image    = "";
+            $chat->isOnline = false;
+
+            if($second_user) {
+                $chat->title    = $second_user->name . " " . $second_user->last_name;
+                $chat->image    = $second_user->img_url;
+                $chat->isOnline = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
+            }   
+            
         }
 
         $chat->users = $chat->users->map( function ( $user ) {
