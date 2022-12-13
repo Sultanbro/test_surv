@@ -322,10 +322,19 @@ class TimetrackingController extends Controller
             } else {
                 $status = 'started';
                 
-                Timetracking::create([
-                    'enter' => Carbon::now($user->timezone()),
-                    'user_id' => $user->id,
-                ]);
+                $timeTrack = Timetracking::query()
+                    ->where('user_id', $user->id)
+                    ->whereDate('enter', Carbon::now( $user->timezone())->format('Y-m-d' ))
+                    ->first();
+
+                // @TODO: If exists, save times to JSON field in Timetracking. It will be useful for Frontend 
+                if( !$timeTrack ) {
+                    Timetracking::create([
+                        'enter' => Carbon::now( $user->timezone() ),
+                        'user_id' => $user->id,
+                    ]);
+                }
+                
             }
 
         } 
