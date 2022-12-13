@@ -45,20 +45,8 @@ class TestController extends Controller {
 	
 	public function test() { 
 		 
-        // create tenant
-        $tenant = Tenant::create(['id' => 'admin']);
-
-        // create domain
-        $tenant->createDomain('admin');
-
-        // attach to owner
-        $centralUser = CentralUser::where('email', 'karim_a@list.ru')->first();
-
-		if($centralUser) {
-            $centralUser->tenants()->attach($tenant);
-        }   
-
-		dd('ok');
+        
+		dd( config());
 	}
 
     public function testMethodForCheck()

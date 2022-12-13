@@ -6,6 +6,8 @@ export default {
     newChatContacts: [],
     searchFocus: false,
     searchMessagesResults: [],
+    chatSearchMessagesResults: [],
+    chatSearchFilesResults: [],
     searchType: "messages"
   },
   mutations: {
@@ -26,12 +28,20 @@ export default {
     },
     setSearchFocus(state, focus) {
       state.searchFocus = focus;
+    },
+    setChatMessagesResults(state, messages) {
+      state.chatSearchMessagesResults = messages;
+    },
+    setChatFilesResults(state, files) {
+      state.chatSearchFilesResults = files;
     }
   },
   getters: {
     contacts: state => state.contacts,
     newChatContacts: state => state.newChatContacts,
     searchMessagesChatsResults: state => state.searchMessagesResults,
+    chatSearchMessagesResults: state => state.chatSearchMessagesResults,
+    chatSearchFilesResults: state => state.chatSearchFilesResults,
     searchType: state => state.searchType,
     isSearchFocus: state => state.searchFocus,
   },
@@ -55,7 +65,7 @@ export default {
     async findMessages({commit, getters, dispatch}, text) {
       if (text.length > 1) {
         commit('setSearchMode', true);
-        await API.searchMessages(text, messages => {
+        await API.searchMessages(text, null,  null,false, messages => {
           // result_chats is an array of chats with messages
           let result_chats = [];
           messages.forEach(message => {
@@ -75,14 +85,23 @@ export default {
         commit('clearMessagesSearchResults');
       }
     },
-    async getUsers({commit}) {
-      await API.fetchUsers(users => {
-        users.forEach(user => {
-          user.title = user.name;
-          user.private = true;
+    async findMessagesInChat({commit, getters, dispatch}, {text, chat_id, date}) {
+      if (text.length > 1) {
+        await API.searchMessages(text, chat_id, date, false, messages => {
+          commit('setChatMessagesResults', messages);
         });
-        commit('setContacts', users);
-      });
+      } else {
+        commit('setChatMessagesResults', []);
+      }
+    },
+    async findFilesInChat({commit, getters, dispatch}, {text, chat_id}) {
+      if (text.length > 1) {
+        await API.searchMessages(text, chat_id, null, true, files => {
+          commit('setChatFilesResults', files);
+        });
+      } else {
+        commit('setChatFilesResults', []);
+      }
     },
     async setCurrentChatContacts({commit, getters, dispatch}, contacts) {
       commit('setNewChatContacts', contacts);

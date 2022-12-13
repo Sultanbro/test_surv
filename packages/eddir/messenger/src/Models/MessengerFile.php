@@ -31,5 +31,4 @@ class MessengerFile extends Model {
             $value, now()->addMinutes(360)
         ) : null;
     }
-    
 }
